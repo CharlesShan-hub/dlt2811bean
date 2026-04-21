@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.ysh.dlt2811bean.CorePerTest
+-------------------------------------------------------------------------------
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s -- in com.ysh.dlt2811bean.CorePerTest
