@@ -131,11 +131,11 @@ class PerOctetStringTest {
     @DisplayName("mixed: uint16 + octetString(3)")
     void mixed() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        PerInteger.encodeUint16(pos, 100);
+        PerInteger.encode(pos, 100, 0, 65535);
         PerOctetString.encodeFixedSize(pos, new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC}, 3);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(100, PerInteger.decodeUint16(pis));
+        assertEquals(100, PerInteger.decode(pis, 0, 65535));
         byte[] result = PerOctetString.decodeFixedSize(pis, 3);
         assertArrayEquals(new byte[]{(byte) 0xAA, (byte) 0xBB, (byte) 0xCC}, result);
     }

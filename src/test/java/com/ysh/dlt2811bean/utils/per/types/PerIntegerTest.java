@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("PerInteger")
+@DisplayName("PerInteger — core PER integer codec")
 class PerIntegerTest {
 
     // ==================== Constrained encode/decode ====================
@@ -87,112 +87,6 @@ class PerIntegerTest {
         PerOutputStream pos = new PerOutputStream();
         assertThrows(IllegalArgumentException.class,
             () -> PerInteger.encode(pos, 300, 0, 255));
-    }
-
-    // ==================== Typed convenience methods ====================
-
-    @Test
-    @DisplayName("Uint8 round-trip")
-    void uint8() throws PerDecodeException {
-        for (int v : new int[]{0, 1, 127, 128, 255}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeUint8(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeUint8(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Uint16 round-trip")
-    void uint16() throws PerDecodeException {
-        for (int v : new int[]{0, 1, 255, 256, 65535}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeUint16(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeUint16(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Uint32 round-trip")
-    void uint32() throws PerDecodeException {
-        for (long v : new long[]{0, 255, 65536, 4294967295L}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeUint32(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeUint32(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Uint64 round-trip")
-    void uint64() throws PerDecodeException {
-        for (long v : new long[]{0, 255, 65536, Long.MAX_VALUE}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeUint64(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeUint64(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Uint64 negative value throws")
-    void uint64_negative_throws() {
-        PerOutputStream pos = new PerOutputStream();
-        assertThrows(IllegalArgumentException.class,
-            () -> PerInteger.encodeUint64(pos, -1L));
-    }
-
-    @Test
-    @DisplayName("Int8 round-trip")
-    void int8() throws PerDecodeException {
-        for (int v : new int[]{-128, -1, 0, 1, 127}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeInt8(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeInt8(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Int16 round-trip")
-    void int16() throws PerDecodeException {
-        for (int v : new int[]{-32768, -1, 0, 32767}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeInt16(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeInt16(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Int32 round-trip")
-    void int32() throws PerDecodeException {
-        for (long v : new long[]{Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeInt32(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals((int) v, PerInteger.decodeInt32(pis));
-        }
-    }
-
-    @Test
-    @DisplayName("Int64 round-trip")
-    void int64() throws PerDecodeException {
-        for (long v : new long[]{Long.MIN_VALUE, -1, 0, 1, Long.MAX_VALUE}) {
-            PerOutputStream pos = new PerOutputStream();
-            PerInteger.encodeInt64(pos, v);
-
-            PerInputStream pis = new PerInputStream(pos.toByteArray());
-            assertEquals(v, PerInteger.decodeInt64(pis));
-        }
     }
 
     // ==================== Small non-negative ====================
@@ -322,18 +216,18 @@ class PerIntegerTest {
     // ==================== Mixed types in sequence ====================
 
     @Test
-    @DisplayName("mixed: boolean + uint8 + uint16 + int8")
+    @DisplayName("mixed: boolean + constrained(0..7) + constrained(0..65535) + constrained(-128..127)")
     void mixedTypes() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
         PerBoolean.encode(pos, true);
-        PerInteger.encodeUint8(pos, 42);
-        PerInteger.encodeUint16(pos, 1000);
-        PerInteger.encodeInt8(pos, -50);
+        PerInteger.encode(pos, 5, 0, 7);
+        PerInteger.encode(pos, 1000, 0, 65535);
+        PerInteger.encode(pos, -50, -128, 127);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
         assertTrue(PerBoolean.decode(pis));
-        assertEquals(42, PerInteger.decodeUint8(pis));
-        assertEquals(1000, PerInteger.decodeUint16(pis));
-        assertEquals(-50, PerInteger.decodeInt8(pis));
+        assertEquals(5, PerInteger.decode(pis, 0, 7));
+        assertEquals(1000, PerInteger.decode(pis, 0, 65535));
+        assertEquals(-50, PerInteger.decode(pis, -128, 127));
     }
 }

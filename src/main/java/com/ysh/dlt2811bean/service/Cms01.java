@@ -1,35 +1,44 @@
 package com.ysh.dlt2811bean.service;
 
+import com.ysh.dlt2811bean.utils.per.data.CmsVisibleString;
+
+import static com.ysh.dlt2811bean.utils.per.data.CmsVisibleString.Mode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.types.PerInteger;
-import com.ysh.dlt2811bean.utils.per.types.PerVisibleString;
 import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
 
 /**
- * CMS 服务码 01 — Associate（关联请求）。
+ * CMS Service Code 01 — Associate (association request).
  *
- * <p>ASDU 字段布局（PER 编码，按顺序）：
+ * <p>ASDU field layout (PER encoded, in order):
  * <pre>
  * ┌─────────────────────────────────────────────────┐
- * │ ReqID           OCTET STRING (SIZE(2))          │  2 字节请求序号
- * │ ProtocolVersion INTEGER (0..255)                │  协议版本号
- * │ ApduSize        INTEGER (0..65535)              │  本端最大 APDU 长度
- * │ AsduSize        INTEGER (0..65535)              │  本端最大 ASDU 长度
- * │ ServerName      VisibleString (SIZE(0..255))    │  本端服务器名称
+ * │ ReqID           OCTET STRING (SIZE(2))          │  2-byte request sequence number
+ * │ ProtocolVersion INTEGER (0..255)                │  protocol version
+ * │ ApduSize        INTEGER (0..65535)              │  local max APDU length
+ * │ AsduSize        INTEGER (0..65535)              │  local max ASDU length
+ * │ ServerName      VisibleString (SIZE(0..255))    │  local server name
  * └─────────────────────────────────────────────────┘
  * </pre>
  *
- * <p>⚠️ 字段定义及约束范围是占位值，需对照 GB/T 45906.3 标准正文修正。
+ * <p>WARNING: Field definitions and constraints are placeholder values,
+ * must be verified against GB/T 45906.3 standard.
  */
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Cms01 extends CmsService {
 
     public Cms01() {
         super(1);
     }
 
-    // ==================== 字段 ====================
+    // ==================== Fields ====================
 
     private int reqId;
     private int protocolVersion;
@@ -37,49 +46,31 @@ public class Cms01 extends CmsService {
     private int asduSize;
     private String serverName;
 
-    // ==================== 编码 ====================
+    // ==================== Encode ====================
 
     @Override
     protected byte[] encodeAsdu() {
         PerOutputStream pos = new PerOutputStream();
 
-        PerOctetString.encodeFixedSize(pos, intToBytes2(reqId), 2);
-        PerInteger.encode(pos, protocolVersion, 0, 255);
-        PerInteger.encode(pos, apduSize, 0, 65535);
-        PerInteger.encode(pos, asduSize, 0, 65535);
-        PerVisibleString.encodeConstrained(pos, serverName != null ? serverName : "", 0, 255);
+        PerOctetString.encodeInt2(pos, reqId);
+        PerInteger.encode(pos, protocolVersion & 0xFFL, 0, 255);
+        PerInteger.encode(pos, apduSize & 0xFFFFL, 0, 65535);
+        PerInteger.encode(pos, asduSize & 0xFFFFL, 0, 65535);
+        CmsVisibleString.encode(pos, serverName != null ? serverName : "", Mode.VARIABLE, 255);
 
         return pos.toByteArray();
     }
 
-    // ==================== 解码 ====================
+    // ==================== Decode ====================
 
     @Override
     protected void decodeAsdu(PerInputStream pis) throws PerDecodeException {
-        byte[] reqIdBytes = PerOctetString.decodeFixedSize(pis, 2);
-        this.reqId = bytes2ToInt(reqIdBytes);
+        this.reqId = PerOctetString.decodeInt2(pis);
         this.protocolVersion = (int) PerInteger.decode(pis, 0, 255);
         this.apduSize = (int) PerInteger.decode(pis, 0, 65535);
         this.asduSize = (int) PerInteger.decode(pis, 0, 65535);
-        this.serverName = PerVisibleString.decodeConstrained(pis, 0, 255);
+        this.serverName = CmsVisibleString.decode(pis, Mode.VARIABLE, 255).getValue();
     }
-
-    // ==================== Getter / Setter ====================
-
-    public int getReqId() { return reqId; }
-    public Cms01 setReqId(int reqId) { this.reqId = reqId; return this; }
-
-    public int getProtocolVersion() { return protocolVersion; }
-    public Cms01 setProtocolVersion(int protocolVersion) { this.protocolVersion = protocolVersion; return this; }
-
-    public int getApduSize() { return apduSize; }
-    public Cms01 setApduSize(int apduSize) { this.apduSize = apduSize; return this; }
-
-    public int getAsduSize() { return asduSize; }
-    public Cms01 setAsduSize(int asduSize) { this.asduSize = asduSize; return this; }
-
-    public String getServerName() { return serverName; }
-    public Cms01 setServerName(String serverName) { this.serverName = serverName; return this; }
 
     @Override
     public String toString() {

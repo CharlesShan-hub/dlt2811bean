@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.ysh.dlt2811bean.utils.per.types.PerVisibleStringTest
--------------------------------------------------------------------------------
-Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s -- in com.ysh.dlt2811bean.utils.per.types.PerVisibleStringTest

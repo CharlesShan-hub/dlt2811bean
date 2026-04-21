@@ -119,12 +119,12 @@ class PerVisibleStringTest {
     @DisplayName("mixed: uint8 + visibleString(129) + boolean")
     void mixed() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        PerInteger.encodeUint8(pos, 1);
+        PerInteger.encode(pos, 1, 0, 255);
         PerVisibleString.encodeFixedSize(pos, "S1", 129);
         PerBoolean.encode(pos, true);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(1, PerInteger.decodeUint8(pis));
+        assertEquals(1, PerInteger.decode(pis, 0, 255));
         assertEquals("S1", PerVisibleString.decodeFixedSize(pis, 129));
         assertTrue(PerBoolean.decode(pis));
     }

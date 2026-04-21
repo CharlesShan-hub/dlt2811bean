@@ -164,11 +164,11 @@ class PerBitStringTest {
         PerOutputStream pos = new PerOutputStream();
         PerBoolean.encode(pos, true);
         PerBitString.encodeFixedSize(pos, 0b000110, 6);
-        PerInteger.encodeUint8(pos, 42);
+        PerInteger.encode(pos, 42, 0, 255);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
         assertTrue(PerBoolean.decode(pis));
         assertEquals(0b000110, PerBitString.decodeFixedSize(pis, 6));
-        assertEquals(42, PerInteger.decodeUint8(pis));
+        assertEquals(42, PerInteger.decode(pis, 0, 255));
     }
 }

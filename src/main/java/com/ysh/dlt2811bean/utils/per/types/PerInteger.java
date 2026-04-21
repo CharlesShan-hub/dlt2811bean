@@ -10,13 +10,8 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
  * <p>ASN.1 type: <b>INTEGER</b> (ITU-T X.680 §21)
  * <br>Encoding rules: ITU-T X.691 §12
  *
- * <p>DL/T 2811 usage:
- * <ul>
- *   <li>INT8U (0..255), INT16U (0..65535), INT32U (0..4294967295) — unsigned types</li>
- *   <li>INT8 (-128..127), INT16 (-32768..32767) — signed types</li>
- *   <li>apduSize / asduSize in Associate service (Table 82)</li>
- *   <li>startPosition in file read/write service parameters</li>
- * </ul>
+ * <p>This class provides the core PER encoding primitives.
+ * For 2811-specific typed integers (INT8U, INT16U, etc.), see {@code CmsInt8U}, {@code CmsInt16U} etc. in the {@code data} package.
  *
  * <h3>Constrained INTEGER (lb..ub):</h3>
  * <ul>
@@ -44,29 +39,15 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
  *
  * <h3>Examples</h3>
  * <pre>{@code
- *   // --- Using typed convenience methods ---
- *   PerOutputStream pos = new PerOutputStream();
- *   PerInteger.encodeUint8(pos, 1);        // INT8U: protocolVersion
- *   PerInteger.encodeUint16(pos, 65535);   // INT16U: apduSize
- *   PerInteger.encodeInt8(pos, -100);      // INT8: signed 8-bit
- *   PerInteger.encodeInt32(pos, 42);       // INT32: signed 32-bit
- *
- *   PerInputStream pis = new PerInputStream(pos.toByteArray());
- *   int ver = PerInteger.decodeUint8(pis);         // 1
- *   int size = PerInteger.decodeUint16(pis);       // 65535
- *   int s8 = PerInteger.decodeInt8(pis);           // -100
- *   int s32 = PerInteger.decodeInt32(pis);         // 42
- *
- *   // --- Using generic constrained encode ---
- *   PerInteger.encode(pos, 300, 0, 65535);  // equivalent to encodeUint16 for in-range value
+ *   // --- Generic constrained encode ---
+ *   PerInteger.encode(pos, 300, 0, 65535);
  *   long val = PerInteger.decode(pis, 0, 65535);
  *
  *   // --- Unconstrained: signed value ---
  *   PerOutputStream pos2 = new PerOutputStream();
  *   PerInteger.encodeUnconstrained(pos2, -100);
- *   byte[] data2 = pos2.toByteArray();
  *
- *   PerInputStream pis2 = new PerInputStream(data2);
+ *   PerInputStream pis2 = new PerInputStream(pos2.toByteArray());
  *   long unconstrained = PerInteger.decodeUnconstrained(pis2);  // -100
  *
  *   // --- Normally small non-negative (CHOICE index, etc.) ---
@@ -328,114 +309,6 @@ public final class PerInteger {
             totalLength = totalLength + ((hi << 8) | lo);
         }
         return totalLength;
-    }
-
-    // ==================== Typed convenience methods ====================
-
-    // --- Unsigned types (INTxxU) ---
-
-    /** Encodes INT8U (0..255). */
-    public static void encodeUint8(PerOutputStream pos, int value) {
-        encode(pos, value & 0xFFL, 0, 255);
-    }
-
-    /** Decodes INT8U (0..255). */
-    public static int decodeUint8(PerInputStream pis) throws PerDecodeException {
-        return (int) decode(pis, 0, 255);
-    }
-
-    /** Encodes INT16U (0..65535). */
-    public static void encodeUint16(PerOutputStream pos, int value) {
-        encode(pos, value & 0xFFFFL, 0, 65535);
-    }
-
-    /** Decodes INT16U (0..65535). */
-    public static int decodeUint16(PerInputStream pis) throws PerDecodeException {
-        return (int) decode(pis, 0, 65535);
-    }
-
-    /** Encodes INT32U (0..4294967295). */
-    public static void encodeUint32(PerOutputStream pos, long value) {
-        encode(pos, value & 0xFFFFFFFFL, 0, 4294967295L);
-    }
-
-    /** Decodes INT32U (0..4294967295). */
-    public static long decodeUint32(PerInputStream pis) throws PerDecodeException {
-        return decode(pis, 0, 4294967295L);
-    }
-
-    /** Encodes INT64U (0..18446744073709551615). Java long treated as unsigned. */
-    public static void encodeUint64(PerOutputStream pos, long value) {
-        // Range 2^64 overflows Java long arithmetic.
-        // Use unsigned encoding: write 8 bytes big-endian after alignment.
-        if (value < 0) {
-            throw new IllegalArgumentException("INT64U value must be >= 0 (unsigned)");
-        }
-        pos.align();
-        for (int i = 7; i >= 0; i--) {
-            pos.writeByteAligned((byte) ((value >> (i * 8)) & 0xFF));
-        }
-    }
-
-    /** Decodes INT64U (0..18446744073709551615). */
-    public static long decodeUint64(PerInputStream pis) throws PerDecodeException {
-        pis.align();
-        long result = 0;
-        for (int i = 0; i < 8; i++) {
-            result = (result << 8) | (pis.readByteAligned() & 0xFFL);
-        }
-        return result;
-    }
-
-    // --- Signed types (INTxx) ---
-
-    /** Encodes INT8 (-128..127). */
-    public static void encodeInt8(PerOutputStream pos, int value) {
-        encode(pos, value, -128, 127);
-    }
-
-    /** Decodes INT8 (-128..127). */
-    public static int decodeInt8(PerInputStream pis) throws PerDecodeException {
-        return (int) decode(pis, -128, 127);
-    }
-
-    /** Encodes INT16 (-32768..32767). */
-    public static void encodeInt16(PerOutputStream pos, int value) {
-        encode(pos, value, -32768, 32767);
-    }
-
-    /** Decodes INT16 (-32768..32767). */
-    public static int decodeInt16(PerInputStream pis) throws PerDecodeException {
-        return (int) decode(pis, -32768, 32767);
-    }
-
-    /** Encodes INT32 (-2147483648..2147483647). */
-    public static void encodeInt32(PerOutputStream pos, long value) {
-        encode(pos, value, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    /** Decodes INT32 (-2147483648..2147483647). */
-    public static int decodeInt32(PerInputStream pis) throws PerDecodeException {
-        return (int) decode(pis, Integer.MIN_VALUE, Integer.MAX_VALUE);
-    }
-
-    /** Encodes INT64 (-9223372036854775808..9223372036854775807). */
-    public static void encodeInt64(PerOutputStream pos, long value) {
-        // Range MAX - MIN + 1 overflows to 0; use 8-byte big-endian directly.
-        pos.align();
-        for (int i = 7; i >= 0; i--) {
-            pos.writeByteAligned((byte) ((value >> (i * 8)) & 0xFF));
-        }
-    }
-
-    /** Decodes INT64 (-9223372036854775808..9223372036854775807). */
-    public static long decodeInt64(PerInputStream pis) throws PerDecodeException {
-        pis.align();
-        long result = 0;
-        for (int i = 0; i < 8; i++) {
-            result = (result << 8) | (pis.readByteAligned() & 0xFFL);
-        }
-        return result;
     }
 
     // ==================== Internal utilities ====================

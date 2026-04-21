@@ -68,6 +68,127 @@ public final class PerOctetString {
 
     private PerOctetString() { /* utility class */ }
 
+    // ==================== Int ⇔ Fixed-size OCTET STRING ====================
+
+    /**
+     * Encodes an int as a 2-byte big-endian OCTET STRING (SIZE(2)).
+     * Equivalent to {@code encodeFixedSize(pos, new byte[]{(v>>8)&0xFF, v&0xFF}, 2)}.
+     *
+     * @param pos   output stream
+     * @param value int value (only lower 16 bits are used)
+     */
+    public static void encodeInt2(PerOutputStream pos, int value) {
+        pos.align();
+        pos.writeByteAligned((byte) ((value >> 8) & 0xFF));
+        pos.writeByteAligned((byte) (value & 0xFF));
+    }
+
+    /**
+     * Decodes a 2-byte big-endian OCTET STRING (SIZE(2)) to int.
+     *
+     * @param pis input stream
+     * @return decoded int value
+     * @throws PerDecodeException if insufficient data
+     */
+    public static int decodeInt2(PerInputStream pis) throws PerDecodeException {
+        pis.align();
+        byte[] b = pis.readBytes(2);
+        return ((b[0] & 0xFF) << 8) | (b[1] & 0xFF);
+    }
+
+    /**
+     * Encodes an int as a 4-byte big-endian OCTET STRING (SIZE(4)).
+     *
+     * @param pos   output stream
+     * @param value int value
+     */
+    public static void encodeInt4(PerOutputStream pos, int value) {
+        pos.align();
+        pos.writeByteAligned((byte) ((value >> 24) & 0xFF));
+        pos.writeByteAligned((byte) ((value >> 16) & 0xFF));
+        pos.writeByteAligned((byte) ((value >> 8) & 0xFF));
+        pos.writeByteAligned((byte) (value & 0xFF));
+    }
+
+    /**
+     * Decodes a 4-byte big-endian OCTET STRING (SIZE(4)) to int.
+     *
+     * @param pis input stream
+     * @return decoded int value
+     * @throws PerDecodeException if insufficient data
+     */
+    public static int decodeInt4(PerInputStream pis) throws PerDecodeException {
+        pis.align();
+        byte[] b = pis.readBytes(4);
+        return ((b[0] & 0xFF) << 24) | ((b[1] & 0xFF) << 16)
+             | ((b[2] & 0xFF) << 8) | (b[3] & 0xFF);
+    }
+
+    // ==================== UtcTime / GeneralizedTime ====================
+
+    /** UTCTime fixed length: YYMMDDHHMMSSZ (8 ASCII bytes) */
+    public static final int UTC_TIME_SIZE = 8;
+
+    /** GeneralizedTime fixed length: YYYYMMDDHHMMSSZ (13 ASCII bytes) */
+    public static final int GENERALIZED_TIME_SIZE = 13;
+
+    /**
+     * Encodes a UTCTime string (YYMMDDHHMMSSZ) as a fixed 8-byte OCTET STRING.
+     *
+     * @param pos      output stream
+     * @param timeStr  ASCII time string, e.g. "260421093000Z"
+     * @throws IllegalArgumentException if timeStr is not exactly 8 bytes
+     */
+    public static void encodeUtcTime(PerOutputStream pos, String timeStr) {
+        byte[] bytes = toAsciiBytes(timeStr, UTC_TIME_SIZE, "UtcTime");
+        encodeFixedSize(pos, bytes, UTC_TIME_SIZE);
+    }
+
+    /**
+     * Decodes a fixed 8-byte OCTET STRING to a UTCTime string.
+     *
+     * @param pis input stream
+     * @return ASCII time string, e.g. "260421093000Z"
+     * @throws PerDecodeException if insufficient data
+     */
+    public static String decodeUtcTime(PerInputStream pis) throws PerDecodeException {
+        byte[] bytes = decodeFixedSize(pis, UTC_TIME_SIZE);
+        return new String(bytes, java.nio.charset.StandardCharsets.US_ASCII);
+    }
+
+    /**
+     * Encodes a GeneralizedTime string (YYYYMMDDHHMMSSZ) as a fixed 13-byte OCTET STRING.
+     *
+     * @param pos      output stream
+     * @param timeStr  ASCII time string, e.g. "20260421093000Z"
+     * @throws IllegalArgumentException if timeStr is not exactly 13 bytes
+     */
+    public static void encodeGeneralizedTime(PerOutputStream pos, String timeStr) {
+        byte[] bytes = toAsciiBytes(timeStr, GENERALIZED_TIME_SIZE, "GeneralizedTime");
+        encodeFixedSize(pos, bytes, GENERALIZED_TIME_SIZE);
+    }
+
+    /**
+     * Decodes a fixed 13-byte OCTET STRING to a GeneralizedTime string.
+     *
+     * @param pis input stream
+     * @return ASCII time string, e.g. "20260421093000Z"
+     * @throws PerDecodeException if insufficient data
+     */
+    public static String decodeGeneralizedTime(PerInputStream pis) throws PerDecodeException {
+        byte[] bytes = decodeFixedSize(pis, GENERALIZED_TIME_SIZE);
+        return new String(bytes, java.nio.charset.StandardCharsets.US_ASCII);
+    }
+
+    private static byte[] toAsciiBytes(String s, int expectedLen, String typeName) {
+        byte[] bytes = (s != null ? s : "").getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        if (bytes.length != expectedLen) {
+            throw new IllegalArgumentException(
+                typeName + " must be exactly " + expectedLen + " ASCII bytes, got " + bytes.length);
+        }
+        return bytes;
+    }
+
     // ==================== Fixed-size ====================
 
     /**
