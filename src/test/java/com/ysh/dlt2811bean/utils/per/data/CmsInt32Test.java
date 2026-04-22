@@ -1,10 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,109 +12,91 @@ class CmsInt32Test {
 
     @Test
     @DisplayName("positive value")
-    void positive() throws PerDecodeException {
+    void positive() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, 100000);
+        new CmsInt32(1000000).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(100000, CmsInt32.decode(pis).getValue());
+        CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(1000000, r.get());
     }
 
     @Test
     @DisplayName("negative value")
-    void negative() throws PerDecodeException {
+    void negative() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, -100000);
+        new CmsInt32(-1000000).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(-100000, CmsInt32.decode(pis).getValue());
+        CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(-1000000, r.get());
     }
 
     @Test
     @DisplayName("minimum value")
-    void min() throws PerDecodeException {
+    void min() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, CmsInt32.MIN);
+        new CmsInt32(CmsInt32.MIN).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt32.MIN, CmsInt32.decode(pis).getValue());
+        CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(CmsInt32.MIN, r.get());
     }
 
     @Test
     @DisplayName("maximum value")
-    void max() throws PerDecodeException {
+    void max() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, CmsInt32.MAX);
+        new CmsInt32(CmsInt32.MAX).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt32.MAX, CmsInt32.decode(pis).getValue());
+        CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(CmsInt32.MAX, r.get());
     }
 
     @Test
     @DisplayName("zero")
-    void zero() throws PerDecodeException {
+    void zero() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, 0);
+        new CmsInt32(0).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(0, CmsInt32.decode(pis).getValue());
+        CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(0, r.get());
     }
 
     @Test
-    @DisplayName("validateValue method always returns true")
-    void validateValue() {
-        assertTrue(CmsInt32.validateValue(0));
-        assertTrue(CmsInt32.validateValue(CmsInt32.MIN));
-        assertTrue(CmsInt32.validateValue(CmsInt32.MAX));
-        assertTrue(CmsInt32.validateValue(-1));
-        assertTrue(CmsInt32.validateValue(1));
+    @DisplayName("default value is 0")
+    void defaultValue() {
+        assertEquals(0, new CmsInt32().get());
     }
 
     @Test
-    @DisplayName("bean encode overload")
-    void beanEncode() throws PerDecodeException {
-        PerOutputStream pos = new PerOutputStream();
-        CmsInt32.encode(pos, new CmsInt32(100000));
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(100000, CmsInt32.decode(pis).getValue());
-    }
-
-    @Test
-    @DisplayName("bean chain setter")
-    void chainSetter() {
-        CmsInt32 val = new CmsInt32().setValue(100000);
-        assertEquals(100000, val.getValue());
-    }
-
-    @Test
-    @DisplayName("default constructor")
-    void defaultConstructor() {
+    @DisplayName("set method")
+    void set() {
         CmsInt32 val = new CmsInt32();
-        assertEquals(0, val.getValue());
+        val.set(1000000);
+        assertEquals(1000000, val.get());
     }
 
     @Test
-    @DisplayName("constructor with value")
-    void constructorWithValue() {
-        CmsInt32 val = new CmsInt32(100000);
-        assertEquals(100000, val.getValue());
+    @DisplayName("set null throws exception")
+    void setNull() {
+        assertThrows(IllegalArgumentException.class, () -> new CmsInt32().set(null));
     }
 
     @Test
-    @DisplayName("constructor accepts any int value")
-    void constructorAcceptsAnyValue() {
-        assertDoesNotThrow(() -> new CmsInt32(CmsInt32.MIN));
-        assertDoesNotThrow(() -> new CmsInt32(CmsInt32.MAX));
-        assertDoesNotThrow(() -> new CmsInt32(0));
-        assertDoesNotThrow(() -> new CmsInt32(-1));
-        assertDoesNotThrow(() -> new CmsInt32(1));
+    @DisplayName("chain usage")
+    void chainUsage() throws Exception {
+        CmsInt32 val = new CmsInt32().set(1000000);
+        assertEquals(1000000, val.get());
+
+        PerOutputStream pos = new PerOutputStream();
+        val.encode(pos);
+
+        CmsInt32 decoded = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(1000000, decoded.get());
     }
 
     @Test
-    @DisplayName("toString method")
-    void toStringMethod() {
-        CmsInt32 val = new CmsInt32(100000);
-        assertEquals("100000", val.toString());
+    @DisplayName("toString")
+    void toStringTest() {
+        assertEquals("INT32: 1000000", new CmsInt32(1000000).toString());
+        assertEquals("INT32: 0", new CmsInt32(0).toString());
     }
 }

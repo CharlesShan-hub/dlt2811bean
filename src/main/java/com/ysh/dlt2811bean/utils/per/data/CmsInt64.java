@@ -1,91 +1,42 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 /**
- * DL/T 2811 INT64 type — signed 64-bit integer.
+ * DL/T 2811 INT64 type (§7.1.2) — signed 64-bit integer.
  *
  * <pre>
- * ┌──────────┬──────────────────────────┬──────┬───────────┐
- * │ 2811     │ Range                    │ Bits │ Java type │
- * ├──────────┼──────────────────────────┼──────┼───────────┤
- * │ INT64    │ -2^63 .. 2^63-1          │ 64   │ long      │
- * └──────────┴──────────────────────────┴──────┴───────────┘
+ * ┌──────────┬──────────────────────────────────────────────┬──────┬───────────┐
+ * │ 2811     │ Range                                        │ Bits │ Java type │
+ * ├──────────┼──────────────────────────────────────────────┼──────┼───────────┤
+ * │ INT64    │ -9223372036854775808 .. 9223372036854775807  │ 64   │ long      │
+ * └──────────┴──────────────────────────────────────────────┴──────┴───────────┘
  * </pre>
  *
- * <p>Uses 8-byte big-endian byte-aligned encoding.
+ * <p>Encoding: 64-bit signed integer, two's complement form, 8-byte big-endian byte-aligned encoding.
  *
  * <pre>
  * // Bean usage
- * CmsInt64 val = new CmsInt64(-1234567890L);
- * CmsInt64.encode(pos, val);
+ * CmsInt64 val = new CmsInt64(-1000000000000L);
+ * val.set(2000000000000L);
+ * val.encode(pos);
  *
- * // Quick usage — pass raw long directly
- * CmsInt64.encode(pos, -1234567890L);
+ * // Chain usage
+ * CmsInt64 val2 = new CmsInt64().set(-1000000000000L).encode(pos);
  *
- * // Decode always returns a bean
- * CmsInt64 r = CmsInt64.decode(pis);
+ * // Decode (returns self for chaining)
+ * CmsInt64 r = new CmsInt64().decode(pis);
+ * long l = r.get();
  * </pre>
  */
-@Getter
-@Setter
-@Accessors(chain = true)
-public final class CmsInt64 {
+public final class CmsInt64 extends AbstractCmsScalar<CmsInt64> {
 
-    /** Minimum value for INT64. */
     public static final long MIN = Long.MIN_VALUE;
-    /** Maximum value for INT64. */
     public static final long MAX = Long.MAX_VALUE;
 
-    private long value;
-
-    /** All long values are valid for INT64. Always returns true. */
-    public static boolean validateValue(long value) {
-        return true;
-    }
-
     public CmsInt64() {
-        this.value = 0L;
+        this(0L);
     }
 
     public CmsInt64(long value) {
-        this.value = value;
-    }
-
-    // ==================== Encode / Decode ====================
-
-    /** Encodes a CmsInt64 bean. */
-    public static void encode(PerOutputStream pos, CmsInt64 val) {
-        pos.align();
-        for (int i = 7; i >= 0; i--) {
-            pos.writeByteAligned((byte) ((val.value >> (i * 8)) & 0xFF));
-        }
-    }
-
-    /** Encodes a raw long value (no validation needed — all long values are valid). */
-    public static void encode(PerOutputStream pos, long val) {
-        pos.align();
-        for (int i = 7; i >= 0; i--) {
-            pos.writeByteAligned((byte) ((val >> (i * 8)) & 0xFF));
-        }
-    }
-
-    public static CmsInt64 decode(PerInputStream pis) throws PerDecodeException {
-        pis.align();
-        long result = 0;
-        for (int i = 0; i < 8; i++) {
-            result = (result << 8) | (pis.readByteAligned() & 0xFFL);
-        }
-        return new CmsInt64(result);
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
+        super("INT64", MIN, MAX, value);
     }
 }

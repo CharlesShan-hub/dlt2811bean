@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.service;
 
-import com.ysh.dlt2811bean.utils.per.data.CmsVisibleString;
+import com.ysh.dlt2811bean.utils.per.data2.CmsVisibleString;
 
-import static com.ysh.dlt2811bean.utils.per.data.CmsVisibleString.Mode;
+import static com.ysh.dlt2811bean.utils.per.data2.CmsVisibleString.Mode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

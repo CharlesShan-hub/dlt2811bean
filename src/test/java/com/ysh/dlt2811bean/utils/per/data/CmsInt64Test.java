@@ -1,10 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -13,109 +12,91 @@ class CmsInt64Test {
 
     @Test
     @DisplayName("positive value")
-    void positive() throws PerDecodeException {
+    void positive() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, 1234567890L);
+        new CmsInt64(1000000000000L).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(1234567890L, CmsInt64.decode(pis).getValue());
+        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(1000000000000L, r.get());
     }
 
     @Test
     @DisplayName("negative value")
-    void negative() throws PerDecodeException {
+    void negative() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, -1234567890L);
+        new CmsInt64(-1000000000000L).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(-1234567890L, CmsInt64.decode(pis).getValue());
+        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(-1000000000000L, r.get());
     }
 
     @Test
     @DisplayName("minimum value")
-    void min() throws PerDecodeException {
+    void min() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, CmsInt64.MIN);
+        new CmsInt64(CmsInt64.MIN).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt64.MIN, CmsInt64.decode(pis).getValue());
+        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(CmsInt64.MIN, r.get());
     }
 
     @Test
     @DisplayName("maximum value")
-    void max() throws PerDecodeException {
+    void max() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, CmsInt64.MAX);
+        new CmsInt64(CmsInt64.MAX).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt64.MAX, CmsInt64.decode(pis).getValue());
+        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(CmsInt64.MAX, r.get());
     }
 
     @Test
     @DisplayName("zero")
-    void zero() throws PerDecodeException {
+    void zero() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, 0L);
+        new CmsInt64(0L).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(0L, CmsInt64.decode(pis).getValue());
+        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(0L, r.get());
     }
 
     @Test
-    @DisplayName("validateValue method always returns true")
-    void validateValue() {
-        assertTrue(CmsInt64.validateValue(0L));
-        assertTrue(CmsInt64.validateValue(CmsInt64.MIN));
-        assertTrue(CmsInt64.validateValue(CmsInt64.MAX));
-        assertTrue(CmsInt64.validateValue(-1L));
-        assertTrue(CmsInt64.validateValue(1L));
+    @DisplayName("default value is 0")
+    void defaultValue() {
+        assertEquals(0L, new CmsInt64().get());
     }
 
     @Test
-    @DisplayName("bean encode overload")
-    void beanEncode() throws PerDecodeException {
-        PerOutputStream pos = new PerOutputStream();
-        CmsInt64.encode(pos, new CmsInt64(1234567890L));
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(1234567890L, CmsInt64.decode(pis).getValue());
-    }
-
-    @Test
-    @DisplayName("bean chain setter")
-    void chainSetter() {
-        CmsInt64 val = new CmsInt64().setValue(1234567890L);
-        assertEquals(1234567890L, val.getValue());
-    }
-
-    @Test
-    @DisplayName("default constructor")
-    void defaultConstructor() {
+    @DisplayName("set method")
+    void set() {
         CmsInt64 val = new CmsInt64();
-        assertEquals(0L, val.getValue());
+        val.set(1000000000000L);
+        assertEquals(1000000000000L, val.get());
     }
 
     @Test
-    @DisplayName("constructor with value")
-    void constructorWithValue() {
-        CmsInt64 val = new CmsInt64(1234567890L);
-        assertEquals(1234567890L, val.getValue());
+    @DisplayName("set null throws exception")
+    void setNull() {
+        assertThrows(IllegalArgumentException.class, () -> new CmsInt64().set(null));
     }
 
     @Test
-    @DisplayName("constructor accepts any long value")
-    void constructorAcceptsAnyValue() {
-        assertDoesNotThrow(() -> new CmsInt64(CmsInt64.MIN));
-        assertDoesNotThrow(() -> new CmsInt64(CmsInt64.MAX));
-        assertDoesNotThrow(() -> new CmsInt64(0L));
-        assertDoesNotThrow(() -> new CmsInt64(-1L));
-        assertDoesNotThrow(() -> new CmsInt64(1L));
+    @DisplayName("chain usage")
+    void chainUsage() throws Exception {
+        CmsInt64 val = new CmsInt64().set(1000000000000L);
+        assertEquals(1000000000000L, val.get());
+
+        PerOutputStream pos = new PerOutputStream();
+        val.encode(pos);
+
+        CmsInt64 decoded = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(1000000000000L, decoded.get());
     }
 
     @Test
-    @DisplayName("toString method")
-    void toStringMethod() {
-        CmsInt64 val = new CmsInt64(1234567890L);
-        assertEquals("1234567890", val.toString());
+    @DisplayName("toString")
+    void toStringTest() {
+        assertEquals("INT64: 1000000000000", new CmsInt64(1000000000000L).toString());
+        assertEquals("INT64: 0", new CmsInt64(0L).toString());
     }
 }

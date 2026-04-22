@@ -1,13 +1,5 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerBoolean;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 /**
  * DL/T 2811 boolean type (§7.1.1).
  *
@@ -24,49 +16,24 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Bean usage
  * CmsBoolean val = new CmsBoolean(true);
- * val.setValue(false);
- * CmsBoolean.encode(pos, val);
+ * val.set(false);
+ * val.encode(pos);
  *
- * // Quick usage — pass raw boolean directly
- * CmsBoolean.encode(pos, true);
+ * // Chain usage
+ * CmsBoolean val2 = new CmsBoolean().set(true).encode(pos);
  *
- * // Decode always returns a bean
- * CmsBoolean r = CmsBoolean.decode(pis);
+ * // Decode (returns self for chaining)
+ * CmsBoolean r = new CmsBoolean().decode(pis);
+ * boolean b = r.get();
  * </pre>
  */
-@Getter
-@Setter
-@Accessors(chain = true)
-public final class CmsBoolean {
-
-    private boolean value;
-
-    public CmsBoolean() {
-        this.value = false;
-    }
+public final class CmsBoolean extends AbstractCmsScalar<CmsBoolean> {
 
     public CmsBoolean(boolean value) {
-        this.value = value;
+        super("BOOLEAN", 0, 1, value);
     }
 
-    // ==================== Encode / Decode ====================
-
-    /** Encodes a CmsBoolean bean. */
-    public static void encode(PerOutputStream pos, CmsBoolean val) {
-        PerBoolean.encode(pos, val.value);
-    }
-
-    /** Encodes a raw boolean value. */
-    public static void encode(PerOutputStream pos, boolean val) {
-        PerBoolean.encode(pos, val);
-    }
-
-    public static CmsBoolean decode(PerInputStream pis) throws PerDecodeException {
-        return new CmsBoolean(PerBoolean.decode(pis));
-    }
-
-    @Override
-    public String toString() {
-        return String.valueOf(value);
+    public CmsBoolean() {
+        this(false);
     }
 }

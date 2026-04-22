@@ -1,4 +1,4 @@
-import com.ysh.dlt2811bean.utils.per.data.CmsInt64U;
+import com.ysh.dlt2811bean.utils.per.data2.CmsInt64U;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;

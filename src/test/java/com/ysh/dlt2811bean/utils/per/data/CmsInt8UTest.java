@@ -18,7 +18,7 @@ class CmsInt8UTest {
         CmsInt8U.encode(pos, 200);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(200, CmsInt8U.decode(pis).getValue());
+        assertEquals(200, CmsInt8U.decode(pis).get());
     }
 
     @Test
@@ -28,7 +28,7 @@ class CmsInt8UTest {
         CmsInt8U.encode(pos, CmsInt8U.MIN);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt8U.MIN, CmsInt8U.decode(pis).getValue());
+        assertEquals(CmsInt8U.MIN, CmsInt8U.decode(pis).get());
     }
 
     @Test
@@ -38,7 +38,7 @@ class CmsInt8UTest {
         CmsInt8U.encode(pos, CmsInt8U.MAX);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt8U.MAX, CmsInt8U.decode(pis).getValue());
+        assertEquals(CmsInt8U.MAX, CmsInt8U.decode(pis).get());
     }
 
     @Test
@@ -48,7 +48,7 @@ class CmsInt8UTest {
         CmsInt8U.encode(pos, 0);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(0, CmsInt8U.decode(pis).getValue());
+        assertEquals(0, CmsInt8U.decode(pis).get());
     }
 
     @Test
@@ -68,56 +68,79 @@ class CmsInt8UTest {
     @Test
     @DisplayName("validateValue method")
     void validateValue() {
-        assertDoesNotThrow(() -> CmsInt8U.validateValue(0));
-        assertDoesNotThrow(() -> CmsInt8U.validateValue(CmsInt8U.MIN));
-        assertDoesNotThrow(() -> CmsInt8U.validateValue(CmsInt8U.MAX));
-        
+        CmsInt8U.validateValue(0);
+        CmsInt8U.validateValue(128);
+        CmsInt8U.validateValue(255);
+
         assertThrows(IllegalArgumentException.class, () -> CmsInt8U.validateValue(-1));
         assertThrows(IllegalArgumentException.class, () -> CmsInt8U.validateValue(256));
+        assertThrows(IllegalArgumentException.class, () -> CmsInt8U.validateValue(null));
     }
 
     @Test
-    @DisplayName("bean encode overload")
-    void beanEncode() throws PerDecodeException {
+    @DisplayName("instance encode+decode")
+    void instanceRoundTrip() throws PerDecodeException {
+        CmsInt8U val = new CmsInt8U(100);
+
         PerOutputStream pos = new PerOutputStream();
-        CmsInt8U.encode(pos, new CmsInt8U(200));
+        val.encode(pos);
+
+        CmsInt8U val2 = CmsInt8U.decode(new PerInputStream(pos.toByteArray()));
+
+        assertEquals(100, val2.get());
+        assertEquals(val.get(), val2.get());
+    }
+
+    @Test
+    @DisplayName("set method with null value throws exception")
+    void setNullValue() {
+        CmsInt8U val = new CmsInt8U(100);
+        assertThrows(IllegalArgumentException.class, () -> val.set(null));
+        assertEquals(100, val.get());
+    }
+
+    @Test
+    @DisplayName("chain usage")
+    void chainUsage() throws PerDecodeException {
+        CmsInt8U val = new CmsInt8U().set(200);
+        assertEquals(200, val.get());
+
+        PerOutputStream pos = new PerOutputStream();
+        val.encode(pos);
+
+        CmsInt8U decoded = CmsInt8U.decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(200, decoded.get());
+    }
+
+    @Test
+    @DisplayName("static encode with CmsInt8U object")
+    void staticEncodeObject() throws PerDecodeException {
+        CmsInt8U val = new CmsInt8U(50);
+
+        PerOutputStream pos = new PerOutputStream();
+        CmsInt8U.encode(pos, val);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(200, CmsInt8U.decode(pis).getValue());
+        assertEquals(50, CmsInt8U.decode(pis).get());
     }
 
     @Test
-    @DisplayName("bean chain setter")
-    void chainSetter() {
-        CmsInt8U val = new CmsInt8U().setValue(200);
-        assertEquals(200, val.getValue());
+    @DisplayName("static encode with null object")
+    void staticEncodeNullObject() throws PerDecodeException {
+        PerOutputStream pos = new PerOutputStream();
+        CmsInt8U.encode(pos, (CmsInt8U) null);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertEquals(0, CmsInt8U.decode(pis).get());
     }
 
     @Test
-    @DisplayName("default constructor")
-    void defaultConstructor() {
-        CmsInt8U val = new CmsInt8U();
-        assertEquals(0, val.getValue());
-    }
-
-    @Test
-    @DisplayName("constructor with value")
-    void constructorWithValue() {
-        CmsInt8U val = new CmsInt8U(200);
-        assertEquals(200, val.getValue());
-    }
-
-    @Test
-    @DisplayName("constructor validates range")
-    void constructorValidatesRange() {
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt8U(-1));
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt8U(256));
-    }
-
-    @Test
-    @DisplayName("toString method")
-    void toStringMethod() {
+    @DisplayName("toString")
+    void toStringTest() {
         CmsInt8U val = new CmsInt8U(200);
         assertEquals("200", val.toString());
+
+        CmsInt8U val2 = new CmsInt8U(0);
+        assertEquals("0", val2.toString());
     }
 }

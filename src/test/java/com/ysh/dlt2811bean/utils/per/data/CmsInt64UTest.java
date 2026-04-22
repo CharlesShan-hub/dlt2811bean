@@ -14,24 +14,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsInt64UTest {
 
     @Test
-    @DisplayName("positive value with long")
-    void positiveLong() throws PerDecodeException {
+    @DisplayName("positive value")
+    void positive() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.encode(pos, 123456789012345L);
+        CmsInt64U.encode(pos, new BigInteger("12345678901234567890"));
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(BigInteger.valueOf(123456789012345L), CmsInt64U.decode(pis).getValue());
-    }
-
-    @Test
-    @DisplayName("positive value with BigInteger")
-    void positiveBigInteger() throws PerDecodeException {
-        PerOutputStream pos = new PerOutputStream();
-        BigInteger value = new BigInteger("12345678901234567890");
-        CmsInt64U.encode(pos, value);
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(value, CmsInt64U.decode(pis).getValue());
+        assertEquals(new BigInteger("12345678901234567890"), CmsInt64U.decode(pis).get());
     }
 
     @Test
@@ -41,159 +30,119 @@ class CmsInt64UTest {
         CmsInt64U.encode(pos, CmsInt64U.MIN);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt64U.MIN, CmsInt64U.decode(pis).getValue());
+        assertEquals(CmsInt64U.MIN, CmsInt64U.decode(pis).get());
     }
 
     @Test
-    @DisplayName("maximum value (2^64-1)")
+    @DisplayName("maximum value")
     void max() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
         CmsInt64U.encode(pos, CmsInt64U.MAX);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(CmsInt64U.MAX, CmsInt64U.decode(pis).getValue());
+        assertEquals(CmsInt64U.MAX, CmsInt64U.decode(pis).get());
     }
 
     @Test
     @DisplayName("zero")
     void zero() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.encode(pos, 0L);
+        CmsInt64U.encode(pos, BigInteger.ZERO);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(BigInteger.ZERO, CmsInt64U.decode(pis).getValue());
+        assertEquals(BigInteger.ZERO, CmsInt64U.decode(pis).get());
     }
 
     @Test
-    @DisplayName("value below minimum throws exception (long)")
-    void belowMinLong() {
+    @DisplayName("value below minimum throws exception")
+    void belowMin() {
         PerOutputStream pos = new PerOutputStream();
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.encode(pos, -1L));
-    }
-
-    @Test
-    @DisplayName("value below minimum throws exception (BigInteger)")
-    void belowMinBigInteger() {
-        PerOutputStream pos = new PerOutputStream();
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.encode(pos, BigInteger.valueOf(-1)));
+        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.encode(pos, new BigInteger("-1")));
     }
 
     @Test
     @DisplayName("value above maximum throws exception")
     void aboveMax() {
         PerOutputStream pos = new PerOutputStream();
-        BigInteger tooLarge = CmsInt64U.MAX.add(BigInteger.ONE);
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.encode(pos, tooLarge));
+        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.encode(pos, new BigInteger("18446744073709551616")));
     }
 
     @Test
-    @DisplayName("validateValue method for long")
-    void validateValueLong() {
-        assertDoesNotThrow(() -> CmsInt64U.validateValue(0L));
-        assertDoesNotThrow(() -> CmsInt64U.validateValue(100L));
-        
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(-1L));
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(-100L));
+    @DisplayName("validateValue method")
+    void validateValue() {
+        CmsInt64U.validateValue(BigInteger.ZERO);
+        CmsInt64U.validateValue(new BigInteger("9223372036854775807"));
+        CmsInt64U.validateValue(CmsInt64U.MAX);
+
+        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(new BigInteger("-1")));
+        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(new BigInteger("18446744073709551616")));
+        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(null));
     }
 
     @Test
-    @DisplayName("validateValue method for BigInteger")
-    void validateValueBigInteger() {
-        assertDoesNotThrow(() -> CmsInt64U.validateValue(CmsInt64U.MIN));
-        assertDoesNotThrow(() -> CmsInt64U.validateValue(CmsInt64U.MAX));
-        assertDoesNotThrow(() -> CmsInt64U.validateValue(new BigInteger("12345678901234567890")));
-        
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(BigInteger.valueOf(-1)));
-        assertThrows(IllegalArgumentException.class, () -> CmsInt64U.validateValue(CmsInt64U.MAX.add(BigInteger.ONE)));
-    }
+    @DisplayName("instance encode+decode")
+    void instanceRoundTrip() throws PerDecodeException {
+        CmsInt64U val = new CmsInt64U(new BigInteger("9876543210987654321"));
 
-    @Test
-    @DisplayName("bean encode overload")
-    void beanEncode() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.encode(pos, new CmsInt64U(123456789012345L));
+        val.encode(pos);
+
+        CmsInt64U val2 = CmsInt64U.decode(new PerInputStream(pos.toByteArray()));
+
+        assertEquals(new BigInteger("9876543210987654321"), val2.get());
+        assertEquals(val.get(), val2.get());
+    }
+
+    @Test
+    @DisplayName("set method with null value throws exception")
+    void setNullValue() {
+        CmsInt64U val = new CmsInt64U(new BigInteger("12345678901234567890"));
+        assertThrows(IllegalArgumentException.class, () -> val.set(null));
+        assertEquals(new BigInteger("12345678901234567890"), val.get());
+    }
+
+    @Test
+    @DisplayName("chain usage")
+    void chainUsage() throws PerDecodeException {
+        CmsInt64U val = new CmsInt64U().set(new BigInteger("12345678901234567890"));
+        assertEquals(new BigInteger("12345678901234567890"), val.get());
+
+        PerOutputStream pos = new PerOutputStream();
+        val.encode(pos);
+
+        CmsInt64U decoded = CmsInt64U.decode(new PerInputStream(pos.toByteArray()));
+        assertEquals(new BigInteger("12345678901234567890"), decoded.get());
+    }
+
+    @Test
+    @DisplayName("static encode with CmsInt64U object")
+    void staticEncodeObject() throws PerDecodeException {
+        CmsInt64U val = new CmsInt64U(new BigInteger("5000000000000000000"));
+
+        PerOutputStream pos = new PerOutputStream();
+        CmsInt64U.encode(pos, val);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(BigInteger.valueOf(123456789012345L), CmsInt64U.decode(pis).getValue());
+        assertEquals(new BigInteger("5000000000000000000"), CmsInt64U.decode(pis).get());
     }
 
     @Test
-    @DisplayName("bean chain setter")
-    void chainSetter() {
-        CmsInt64U val = new CmsInt64U().setValue(BigInteger.valueOf(123456789012345L));
-        assertEquals(BigInteger.valueOf(123456789012345L), val.getValue());
-    }
-
-    @Test
-    @DisplayName("default constructor")
-    void defaultConstructor() {
-        CmsInt64U val = new CmsInt64U();
-        assertEquals(BigInteger.ZERO, val.getValue());
-    }
-
-    @Test
-    @DisplayName("constructor with long value")
-    void constructorWithLongValue() {
-        CmsInt64U val = new CmsInt64U(123456789012345L);
-        assertEquals(BigInteger.valueOf(123456789012345L), val.getValue());
-    }
-
-    @Test
-    @DisplayName("constructor with BigInteger value")
-    void constructorWithBigIntegerValue() {
-        BigInteger value = new BigInteger("12345678901234567890");
-        CmsInt64U val = new CmsInt64U(value);
-        assertEquals(value, val.getValue());
-    }
-
-    @Test
-    @DisplayName("constructor validates range for long")
-    void constructorValidatesRangeLong() {
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt64U(-1L));
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt64U(-100L));
-        
-        assertDoesNotThrow(() -> new CmsInt64U(0L));
-        assertDoesNotThrow(() -> new CmsInt64U(100L));
-    }
-
-    @Test
-    @DisplayName("constructor validates range for BigInteger")
-    void constructorValidatesRangeBigInteger() {
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt64U(BigInteger.valueOf(-1)));
-        assertThrows(IllegalArgumentException.class, () -> new CmsInt64U(CmsInt64U.MAX.add(BigInteger.ONE)));
-        
-        assertDoesNotThrow(() -> new CmsInt64U(CmsInt64U.MIN));
-        assertDoesNotThrow(() -> new CmsInt64U(CmsInt64U.MAX));
-    }
-
-    @Test
-    @DisplayName("toString method")
-    void toStringMethod() {
-        CmsInt64U val = new CmsInt64U(123456789012345L);
-        assertEquals("123456789012345", val.toString());
-    }
-
-    @Test
-    @DisplayName("decode full range bytes (0xFFFFFFFFFFFFFFFF)")
-    void decodeFullRange() throws PerDecodeException {
-        byte[] allOnes = new byte[] {(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, 
-                                     (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF};
-        PerInputStream pis = new PerInputStream(allOnes);
-        CmsInt64U decoded = CmsInt64U.decode(pis);
-        
-        assertEquals(CmsInt64U.MAX, decoded.getValue());
-        assertEquals("18446744073709551615", decoded.toString());
-    }
-
-    @Test
-    @DisplayName("encode and decode full range")
-    void encodeDecodeFullRange() throws PerDecodeException {
+    @DisplayName("static encode with null object")
+    void staticEncodeNullObject() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.encode(pos, CmsInt64U.MAX);
+        CmsInt64U.encode(pos, (CmsInt64U) null);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
-        CmsInt64U decoded = CmsInt64U.decode(pis);
-        
-        assertEquals(CmsInt64U.MAX, decoded.getValue());
+        assertEquals(BigInteger.ZERO, CmsInt64U.decode(pis).get());
+    }
+
+    @Test
+    @DisplayName("toString")
+    void toStringTest() {
+        CmsInt64U val = new CmsInt64U(new BigInteger("12345678901234567890"));
+        assertEquals("12345678901234567890", val.toString());
+
+        CmsInt64U val2 = new CmsInt64U(BigInteger.ZERO);
+        assertEquals("0", val2.toString());
     }
 }

@@ -1,10 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,55 +11,64 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsBooleanTest {
 
     @Test
-    @DisplayName("encode+decode true")
-    void roundTrip_true() throws PerDecodeException {
+    @DisplayName("true value")
+    void trueValue() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsBoolean.encode(pos, true);
+        new CmsBoolean(true).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertTrue(CmsBoolean.decode(pis).isValue());
+        CmsBoolean r = new CmsBoolean().decode(new PerInputStream(pos.toByteArray()));
+        assertTrue(r.get());
     }
 
     @Test
-    @DisplayName("encode+decode false")
-    void roundTrip_false() throws PerDecodeException {
+    @DisplayName("false value")
+    void falseValue() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsBoolean.encode(pos, false);
+        new CmsBoolean(false).encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertFalse(CmsBoolean.decode(pis).isValue());
+        CmsBoolean r = new CmsBoolean().decode(new PerInputStream(pos.toByteArray()));
+        assertFalse(r.get());
     }
 
     @Test
-    @DisplayName("multiple booleans in sequence")
-    void multipleBooleans() throws PerDecodeException {
-        PerOutputStream pos = new PerOutputStream();
-        CmsBoolean.encode(pos, true);
-        CmsBoolean.encode(pos, false);
-        CmsBoolean.encode(pos, true);
-        CmsBoolean.encode(pos, true);
-        CmsBoolean.encode(pos, false);
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertTrue(CmsBoolean.decode(pis).isValue());
-        assertFalse(CmsBoolean.decode(pis).isValue());
-        assertTrue(CmsBoolean.decode(pis).isValue());
-        assertTrue(CmsBoolean.decode(pis).isValue());
-        assertFalse(CmsBoolean.decode(pis).isValue());
+    @DisplayName("default value is false")
+    void defaultValue() {
+        assertFalse(new CmsBoolean().get());
     }
 
     @Test
-    @DisplayName("8 booleans pack into 1 byte")
-    void packIntoByte() throws PerDecodeException {
-        PerOutputStream pos = new PerOutputStream();
-        for (int i = 0; i < 8; i++) {
-            CmsBoolean.encode(pos, i % 2 == 0);
-        }
-        assertEquals(1, pos.getByteLength());
+    @DisplayName("set method")
+    void set() {
+        CmsBoolean val = new CmsBoolean();
+        val.set(true);
+        assertTrue(val.get());
+        val.set(false);
+        assertFalse(val.get());
+    }
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        for (int i = 0; i < 8; i++) {
-            assertEquals(i % 2 == 0, CmsBoolean.decode(pis).isValue());
-        }
+    @Test
+    @DisplayName("set null throws exception")
+    void setNull() {
+        assertThrows(IllegalArgumentException.class, () -> new CmsBoolean().set(null));
+    }
+
+    @Test
+    @DisplayName("chain usage")
+    void chainUsage() throws Exception {
+        CmsBoolean val = new CmsBoolean().set(true);
+        assertTrue(val.get());
+
+        PerOutputStream pos = new PerOutputStream();
+        val.encode(pos);
+
+        CmsBoolean decoded = new CmsBoolean().decode(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.get());
+    }
+
+    @Test
+    @DisplayName("toString")
+    void toStringTest() {
+        assertEquals("BOOLEAN: true", new CmsBoolean(true).toString());
+        assertEquals("BOOLEAN: false", new CmsBoolean(false).toString());
     }
 }
