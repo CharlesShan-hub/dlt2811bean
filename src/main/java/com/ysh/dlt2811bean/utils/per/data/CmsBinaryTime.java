@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
 import lombok.Getter;
 
 /**
@@ -35,7 +34,7 @@ import lombok.Getter;
  * r.getDaysSince1984(); // → 15000
  * </pre>
  */
-public final class CmsBinaryTime {
+public class CmsBinaryTime {
 
     @Getter
     /* Milliseconds since last midnight (INT32U, 0..86399999). */
@@ -59,28 +58,19 @@ public final class CmsBinaryTime {
 
     /**
      * Encodes a BinaryTime into the output stream (6 bytes).
+     * msOfDay as INT32U (4 bytes) + daysSince1984 as INT16U (2 bytes).
      */
     public static void encode(PerOutputStream pos, CmsBinaryTime value) {
-        byte[] buf = new byte[6];
-        buf[0] = (byte) (value.msOfDay >>> 24);
-        buf[1] = (byte) (value.msOfDay >>> 16);
-        buf[2] = (byte) (value.msOfDay >>> 8);
-        buf[3] = (byte) value.msOfDay;
-        buf[4] = (byte) (value.daysSince1984 >>> 8);
-        buf[5] = (byte) value.daysSince1984;
-        PerOctetString.encodeFixedSize(pos, buf, 6);
+        CmsInt32U.encode(pos, value.msOfDay & 0xFFFFFFFFL);
+        CmsInt16U.encode(pos, value.daysSince1984);
     }
 
     /**
      * Decodes a BinaryTime from the input stream.
      */
     public static CmsBinaryTime decode(PerInputStream pis) throws PerDecodeException {
-        byte[] buf = PerOctetString.decodeFixedSize(pis, 6);
-        int msOfDay = ((buf[0] & 0xFF) << 24)
-                    | ((buf[1] & 0xFF) << 16)
-                    | ((buf[2] & 0xFF) << 8)
-                    | (buf[3] & 0xFF);
-        int daysSince1984 = ((buf[4] & 0xFF) << 8) | (buf[5] & 0xFF);
+        int msOfDay       = (int) CmsInt32U.decode(pis).getValue();
+        int daysSince1984 = CmsInt16U.decode(pis).getValue();
         return new CmsBinaryTime(msOfDay, daysSince1984);
     }
 

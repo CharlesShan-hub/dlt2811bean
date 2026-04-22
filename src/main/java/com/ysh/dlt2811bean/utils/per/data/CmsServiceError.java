@@ -3,15 +3,12 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * DL/T 2811 service error type (§7.3.11, Table 12).
  *
- * <p>Encoded as INT8 (§7.1.6 ENUMERATED).
+ * <p>Encoded as a 4-bit constrained enumeration (ENUMERATED 0..12).
  *
  * <pre>
  * ┌─────┬─────────────────────────────────────────┐
@@ -36,20 +33,17 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Create
  * CmsServiceError err = new CmsServiceError(CmsServiceError.NO_ERROR);
- * err.setCode(CmsServiceError.ACCESS_VIOLATION);
+ * err.setAccessViolation();
  *
  * // Check
- * if (err.isSuccess()) { ... }
- * String name = err.getCodeName(); // "access-violation"
+ * if (err.isNoError()) { ... }
+ * String name = err.getValue(); // 3
  *
  * // Encode / Decode
  * CmsServiceError.encode(pos, err);
  * CmsServiceError r = CmsServiceError.decode(pis);
  * </pre>
  */
-@Getter
-@Setter
-@Accessors(chain = true)
 public final class CmsServiceError {
 
     public static final int NO_ERROR = 0;
@@ -66,61 +60,69 @@ public final class CmsServiceError {
     public static final int FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT = 11;
     public static final int FAILED_DUE_TO_SERVER_CONSTRAINT = 12;
 
-    private int code;
+    @Getter
+    private int value;
 
     public CmsServiceError() {
-        this.code = NO_ERROR;
+        this.value = NO_ERROR;
     }
 
-    public CmsServiceError(int code) {
-        if (code < 0 || code > 127) {
-            throw new IllegalArgumentException("code out of INT8 range");
+    public CmsServiceError(int value) {
+        if (value < 0 || value > 12) {
+            throw new IllegalArgumentException("value out of range (0..12)");
         }
-        this.code = code;
+        this.value = value;
     }
 
-    /** Returns true if code == NO_ERROR (0). */
-    public boolean isSuccess() {
-        return code == NO_ERROR;
-    }
+    // ==================== Semantic setters ====================
 
-    /** Returns true if code != NO_ERROR. */
-    public boolean isError() {
-        return code != NO_ERROR;
-    }
+    public CmsServiceError setNoError() { this.value = NO_ERROR; return this; }
+    public CmsServiceError setInstanceNotAvailable() { this.value = INSTANCE_NOT_AVAILABLE; return this; }
+    public CmsServiceError setInstanceInUse() { this.value = INSTANCE_IN_USE; return this; }
+    public CmsServiceError setAccessViolation() { this.value = ACCESS_VIOLATION; return this; }
+    public CmsServiceError setAccessNotAllowedInCurrentState() { this.value = ACCESS_NOT_ALLOWED_IN_CURRENT_STATE; return this; }
+    public CmsServiceError setParameterValueInappropriate() { this.value = PARAMETER_VALUE_INAPPROPRIATE; return this; }
+    public CmsServiceError setParameterValueInconsistent() { this.value = PARAMETER_VALUE_INCONSISTENT; return this; }
+    public CmsServiceError setClassNotSupported() { this.value = CLASS_NOT_SUPPORTED; return this; }
+    public CmsServiceError setInstanceLockedByOtherClient() { this.value = INSTANCE_LOCKED_BY_OTHER_CLIENT; return this; }
+    public CmsServiceError setControlMustBeSelected() { this.value = CONTROL_MUST_BE_SELECTED; return this; }
+    public CmsServiceError setTypeConflict() { this.value = TYPE_CONFLICT; return this; }
+    public CmsServiceError setFailedDueToCommunicationsConstraint() { this.value = FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT; return this; }
+    public CmsServiceError setFailedDueToServerConstraint() { this.value = FAILED_DUE_TO_SERVER_CONSTRAINT; return this; }
 
-    /** Returns the symbolic name for known codes, or "unknown-" + code. */
-    public String getCodeName() {
-        switch (code) {
-            case NO_ERROR: return "no-error";
-            case INSTANCE_NOT_AVAILABLE: return "instance-not-available";
-            case INSTANCE_IN_USE: return "instance-in-use";
-            case ACCESS_VIOLATION: return "access-violation";
-            case ACCESS_NOT_ALLOWED_IN_CURRENT_STATE: return "access-not-allowed-in-current-state";
-            case PARAMETER_VALUE_INAPPROPRIATE: return "parameter-value-inappropriate";
-            case PARAMETER_VALUE_INCONSISTENT: return "parameter-value-inconsistent";
-            case CLASS_NOT_SUPPORTED: return "class-not-supported";
-            case INSTANCE_LOCKED_BY_OTHER_CLIENT: return "instance-locked-by-other-client";
-            case CONTROL_MUST_BE_SELECTED: return "control-must-be-selected";
-            case TYPE_CONFLICT: return "type-conflict";
-            case FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT: return "failed-due-to-communications-constraint";
-            case FAILED_DUE_TO_SERVER_CONSTRAINT: return "failed-due-to-server-constraint";
-            default: return "unknown-" + code;
-        }
-    }
+    // ==================== Semantic getters ====================
+
+    public boolean isNoError() { return value == NO_ERROR; }
+    public boolean isInstanceNotAvailable() { return value == INSTANCE_NOT_AVAILABLE; }
+    public boolean isInstanceInUse() { return value == INSTANCE_IN_USE; }
+    public boolean isAccessViolation() { return value == ACCESS_VIOLATION; }
+    public boolean isAccessNotAllowedInCurrentState() { return value == ACCESS_NOT_ALLOWED_IN_CURRENT_STATE; }
+    public boolean isParameterValueInappropriate() { return value == PARAMETER_VALUE_INAPPROPRIATE; }
+    public boolean isParameterValueInconsistent() { return value == PARAMETER_VALUE_INCONSISTENT; }
+    public boolean isClassNotSupported() { return value == CLASS_NOT_SUPPORTED; }
+    public boolean isInstanceLockedByOtherClient() { return value == INSTANCE_LOCKED_BY_OTHER_CLIENT; }
+    public boolean isControlMustBeSelected() { return value == CONTROL_MUST_BE_SELECTED; }
+    public boolean isTypeConflict() { return value == TYPE_CONFLICT; }
+    public boolean isFailedDueToCommunicationsConstraint() { return value == FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT; }
+    public boolean isFailedDueToServerConstraint() { return value == FAILED_DUE_TO_SERVER_CONSTRAINT; }
 
     // ==================== Encode / Decode ====================
 
     public static void encode(PerOutputStream pos, CmsServiceError value) {
-        PerInteger.encode(pos, value.code, -128, 127);
+        encode(pos, value.value);
+    }
+
+    public static void encode(PerOutputStream pos, int value) {
+        CmsEnumerated.encode(pos, value, 12);
     }
 
     public static CmsServiceError decode(PerInputStream pis) throws PerDecodeException {
-        return new CmsServiceError((int) PerInteger.decode(pis, -128, 127));
+        int raw = (int) CmsEnumerated.decode(pis, 12).getValue();
+        return new CmsServiceError(raw);
     }
 
     @Override
     public String toString() {
-        return String.format("ServiceError[%d=%s]", code, getCodeName());
+        return "ServiceError[" + value + "]";
     }
 }

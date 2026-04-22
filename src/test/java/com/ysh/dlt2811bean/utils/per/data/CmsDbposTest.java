@@ -65,4 +65,25 @@ class CmsDbposTest {
         d.setOff();
         assertEquals(CmsDbpos.OFF, d.getValue());
     }
+
+    @Test
+    void encode_intOverload() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsDbpos.encode(pos, CmsDbpos.ON);
+        assertEquals(CmsDbpos.ON, CmsDbpos.decode(new PerInputStream(pos.toByteArray())).getValue());
+    }
+
+    @Test
+    void isOn_isOff_isBad_isIntermediate() {
+        assertTrue(new CmsDbpos(CmsDbpos.ON).isOn());
+        assertFalse(new CmsDbpos(CmsDbpos.ON).isOff());
+
+        assertTrue(new CmsDbpos(CmsDbpos.OFF).isOff());
+        assertFalse(new CmsDbpos(CmsDbpos.OFF).isOn());
+
+        assertTrue(new CmsDbpos(CmsDbpos.BAD).isBad());
+        assertFalse(new CmsDbpos(CmsDbpos.BAD).isOn());
+
+        assertTrue(new CmsDbpos(CmsDbpos.INTERMEDIATE).isIntermediate());
+    }
 }

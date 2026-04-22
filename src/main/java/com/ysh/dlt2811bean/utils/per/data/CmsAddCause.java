@@ -3,15 +3,12 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerEnumerated;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * DL/T 2811 additional cause for control operations (§7.5.4, Table 15).
  *
- * <p>Encoded as ENUMERATED (§7.1.6), range 0..27.
+ * <p>Encoded as ENUMERATED (0..27).
  *
  * <pre>
  * ┌──────┬──────────────────────────────────────┐
@@ -49,23 +46,21 @@ import lombok.experimental.Accessors;
  * </pre>
  *
  * <pre>
- * // Create
- * CmsAddCause cause = new CmsAddCause(CmsAddCause.BLOCKED_BY_INTERLOCKING);
- * cause.setCode(CmsAddCause.TIME_LIMIT_OVER);
+ * // Construct
+ * CmsAddCause cause = new CmsAddCause();
+ * cause.setCode(CmsAddCause.BLOCKED_BY_INTERLOCKING);
  *
  * // Check
- * String name = cause.getCodeName(); // "time-limit-over"
- * boolean blocked = cause.isBlocked(); // true for all "blocked-by-*" codes
+ * cause.is(CmsAddCause.BLOCKED_BY_INTERLOCKING); // true
  *
  * // Encode / Decode
  * CmsAddCause.encode(pos, cause);
  * CmsAddCause r = CmsAddCause.decode(pis);
  * </pre>
  */
-@Getter
-@Setter
-@Accessors(chain = true)
 public final class CmsAddCause {
+
+    // ==================== Constants (ENUMERATED 0..27) ====================
 
     public static final int UNKNOWN = 0;
     public static final int NOT_SUPPORTED = 1;
@@ -96,9 +91,9 @@ public final class CmsAddCause {
     public static final int LOCKED_BY_OTHER_CLIENT = 26;
     public static final int INCONSISTENT_PARAMETERS = 27;
 
-    /** Maximum valid code (27). */
-    public static final int MAX_CODE = 27;
+    private static final int MAX_VALUE = 27;
 
+    @Getter
     private int code;
 
     public CmsAddCause() {
@@ -106,98 +101,81 @@ public final class CmsAddCause {
     }
 
     public CmsAddCause(int code) {
-        if (code < 0 || code > MAX_CODE) {
-            throw new IllegalArgumentException(
-                String.format("AddCause code %d out of range [0, %d]", code, MAX_CODE));
+        if (code < 0 || code > MAX_VALUE) {
+            throw new IllegalArgumentException("AddCause code out of range (0..27): " + code);
         }
         this.code = code;
     }
 
-    /** Returns true if code indicates a blocked state (codes 2, 8-14, 20, 24, 26). */
-    public boolean isBlocked() {
-        switch (code) {
-            case BLOCKED_BY_SWITCHING_HIERARCHY:
-            case BLOCKED_BY_MODE:
-            case BLOCKED_BY_PROCESS:
-            case BLOCKED_BY_INTERLOCKING:
-            case BLOCKED_BY_SYNCHROCHECK:
-            case BLOCKED_BY_HEALTH:
-            case BLOCKED_BY_COMMAND:
-            case NO_ACCESS_AUTHORITY:
-            case LOCKED_BY_OTHER_CLIENT:
-                return true;
-            default:
-                return false;
+    // ==================== Semantic setter ====================
+
+    public CmsAddCause setCode(int value) {
+        if (value < 0 || value > MAX_VALUE) {
+            throw new IllegalArgumentException("AddCause code out of range (0..27): " + value);
         }
+        this.code = value;
+        return this;
     }
 
-    /** Returns true if code indicates an aborted operation (codes 15, 17, 22, 23). */
-    public boolean isAborted() {
-        switch (code) {
-            case ABORTION_BY_CANCEL:
-            case ABORTION_BY_TRIP:
-            case ABORTION_DUE_TO_DEVIATION:
-            case ABORTION_BY_COMMUNICATION_LOSS:
-                return true;
-            default:
-                return false;
-        }
-    }
+    // ==================== Semantic query ====================
 
-    /** Returns the symbolic name for known codes, or "unknown-" + code. */
-    public String getCodeName() {
-        switch (code) {
-            case UNKNOWN: return "unknown";
-            case NOT_SUPPORTED: return "not-supported";
-            case BLOCKED_BY_SWITCHING_HIERARCHY: return "blocked-by-switching-hierarchy";
-            case SELECT_FAILED: return "select-failed";
-            case INVALID_POSITION: return "invalid-position";
-            case POSITION_REACHED: return "position-reached";
-            case PARAMETER_CHANGE_IN_EXECUTION: return "parameter-change-in-execution";
-            case STEP_LIMIT: return "step-limit";
-            case BLOCKED_BY_MODE: return "blocked-by-mode";
-            case BLOCKED_BY_PROCESS: return "blocked-by-process";
-            case BLOCKED_BY_INTERLOCKING: return "blocked-by-interlocking";
-            case BLOCKED_BY_SYNCHROCHECK: return "blocked-by-synchrocheck";
-            case COMMAND_ALREADY_IN_EXECUTION: return "command-already-in-execution";
-            case BLOCKED_BY_HEALTH: return "blocked-by-health";
-            case ONE_OF_N_CONTROL: return "1-of-n-control";
-            case ABORTION_BY_CANCEL: return "abortion-by-cancel";
-            case TIME_LIMIT_OVER: return "time-limit-over";
-            case ABORTION_BY_TRIP: return "abortion-by-trip";
-            case OBJECT_NOT_SELECTED: return "object-not-selected";
-            case OBJECT_ALREADY_SELECTED: return "object-already-selected";
-            case NO_ACCESS_AUTHORITY: return "no-access-authority";
-            case ENDED_WITH_OVERSHOOT: return "ended-with-overshoot";
-            case ABORTION_DUE_TO_DEVIATION: return "abortion-due-to-deviation";
-            case ABORTION_BY_COMMUNICATION_LOSS: return "abortion-by-communication-loss";
-            case BLOCKED_BY_COMMAND: return "blocked-by-command";
-            case NONE: return "none";
-            case LOCKED_BY_OTHER_CLIENT: return "locked-by-other-client";
-            case INCONSISTENT_PARAMETERS: return "inconsistent-parameters";
-            default: return "unknown-" + code;
-        }
+    /**
+     * Check if code matches the given value.
+     * Use with constants: {@code cause.is(CmsAddCause.BLOCKED_BY_MODE)}
+     */
+    public boolean is(int value) {
+        if (value < 0 || value > MAX_VALUE) throw new IllegalArgumentException("AddCause code out of range (0..27): " + value);
+        return code == value;
     }
 
     // ==================== Encode / Decode ====================
 
-    /**
-     * Encodes AddCause as ENUMERATED (0..27).
-     * <p>Range 0..27 requires ceil(log2(28)) = 5 bits in constrained PER.
-     */
     public static void encode(PerOutputStream pos, CmsAddCause value) {
-        PerEnumerated.encode(pos, value.code, MAX_CODE);
+        CmsEnumerated.encode(pos, value.code, MAX_VALUE);
     }
 
-    /**
-     * Decodes AddCause from ENUMERATED (0..27).
-     */
+    public static void encode(PerOutputStream pos, int code) {
+        CmsEnumerated.encode(pos, code, MAX_VALUE);
+    }
+
     public static CmsAddCause decode(PerInputStream pis) throws PerDecodeException {
-        return new CmsAddCause(PerEnumerated.decode(pis, MAX_CODE));
+        return new CmsAddCause(CmsEnumerated.decode(pis, MAX_VALUE).getValue());
     }
 
     @Override
     public String toString() {
-        return String.format("AddCause[%d=%s]", code, getCodeName());
+        String name;
+        switch (code) {
+            case UNKNOWN: name = "unknown"; break;
+            case NOT_SUPPORTED: name = "not-supported"; break;
+            case BLOCKED_BY_SWITCHING_HIERARCHY: name = "blocked-by-switching-hierarchy"; break;
+            case SELECT_FAILED: name = "select-failed"; break;
+            case INVALID_POSITION: name = "invalid-position"; break;
+            case POSITION_REACHED: name = "position-reached"; break;
+            case PARAMETER_CHANGE_IN_EXECUTION: name = "parameter-change-in-execution"; break;
+            case STEP_LIMIT: name = "step-limit"; break;
+            case BLOCKED_BY_MODE: name = "blocked-by-mode"; break;
+            case BLOCKED_BY_PROCESS: name = "blocked-by-process"; break;
+            case BLOCKED_BY_INTERLOCKING: name = "blocked-by-interlocking"; break;
+            case BLOCKED_BY_SYNCHROCHECK: name = "blocked-by-synchrocheck"; break;
+            case COMMAND_ALREADY_IN_EXECUTION: name = "command-already-in-execution"; break;
+            case BLOCKED_BY_HEALTH: name = "blocked-by-health"; break;
+            case ONE_OF_N_CONTROL: name = "1-of-n-control"; break;
+            case ABORTION_BY_CANCEL: name = "abortion-by-cancel"; break;
+            case TIME_LIMIT_OVER: name = "time-limit-over"; break;
+            case ABORTION_BY_TRIP: name = "abortion-by-trip"; break;
+            case OBJECT_NOT_SELECTED: name = "object-not-selected"; break;
+            case OBJECT_ALREADY_SELECTED: name = "object-already-selected"; break;
+            case NO_ACCESS_AUTHORITY: name = "no-access-authority"; break;
+            case ENDED_WITH_OVERSHOOT: name = "ended-with-overshoot"; break;
+            case ABORTION_DUE_TO_DEVIATION: name = "abortion-due-to-deviation"; break;
+            case ABORTION_BY_COMMUNICATION_LOSS: name = "abortion-by-communication-loss"; break;
+            case BLOCKED_BY_COMMAND: name = "blocked-by-command"; break;
+            case NONE: name = "none"; break;
+            case LOCKED_BY_OTHER_CLIENT: name = "locked-by-other-client"; break;
+            case INCONSISTENT_PARAMETERS: name = "inconsistent-parameters"; break;
+            default: name = "unknown-" + code;
+        }
+        return String.format("AddCause[%d=%s]", code, name);
     }
 }

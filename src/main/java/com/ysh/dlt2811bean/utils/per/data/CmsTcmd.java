@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerBitString;
 import lombok.Getter;
 
 /**
@@ -20,7 +19,7 @@ import lombok.Getter;
  * └──────┴──────┴──────────────────┴───────────┘
  * </pre>
  *
- * <p>Encoded as a 2-bit fixed-size bit string.
+ * <p>Encoded as a 2-bit constrained enumeration (ENUMERATED 0..3).
  *
  * <pre>
  * // Create
@@ -69,14 +68,25 @@ public final class CmsTcmd {
     public CmsTcmd setHigher()   { this.value = HIGHER; return this; }
     public CmsTcmd setReserved() { this.value = RESERVED; return this; }
 
+    // ==================== Semantic getters ====================
+
+    public boolean isStop()     { return value == STOP; }
+    public boolean isLower()    { return value == LOWER; }
+    public boolean isHigher()   { return value == HIGHER; }
+    public boolean isReserved() { return value == RESERVED; }
+
     // ==================== Encode / Decode ====================
 
     public static void encode(PerOutputStream pos, CmsTcmd value) {
-        PerBitString.encodeFixedSize(pos, value.value, 2);
+        encode(pos, value.value);
+    }
+
+    public static void encode(PerOutputStream pos, int value) {
+        CmsEnumerated.encode(pos, value, 3);
     }
 
     public static CmsTcmd decode(PerInputStream pis) throws PerDecodeException {
-        int raw = (int) PerBitString.decodeFixedSize(pis, 2);
+        int raw = (int) CmsEnumerated.decode(pis, 3).getValue();
         return new CmsTcmd(raw);
     }
 

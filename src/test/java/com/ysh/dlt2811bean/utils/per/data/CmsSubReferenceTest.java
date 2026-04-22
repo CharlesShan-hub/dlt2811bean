@@ -43,6 +43,34 @@ class CmsSubReferenceTest {
     }
 
     @Test
+    void validate_allowsDot() {
+        CmsSubReference.validate("LLN0.MMXU.UmxInst.mag.f");
+    }
+
+    @Test
+    void validate_allowsEmpty() {
+        CmsSubReference.validate("");
+    }
+
+    @Test
+    void validate_allowsNull() {
+        CmsSubReference.validate(null);
+    }
+
+    @Test
+    void validate_rejectsSlash() {
+        assertThrows(IllegalArgumentException.class,
+                () -> CmsSubReference.validate("LD1/LLN0.MMXU.UmxInst.mag.f"));
+    }
+
+    @Test
+    void encode_rejectsSlash() {
+        PerOutputStream pos = new PerOutputStream();
+        assertThrows(IllegalArgumentException.class,
+                () -> CmsSubReference.encode(pos, "LD1/LLN0.Health"));
+    }
+
+    @Test
     void encodeDecode_129chars() throws Exception {
         String ref = "A".repeat(129);
         PerOutputStream pos = new PerOutputStream();

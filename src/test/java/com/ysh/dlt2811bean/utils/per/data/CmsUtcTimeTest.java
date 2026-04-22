@@ -21,12 +21,12 @@ class CmsUtcTimeTest {
 
         assertEquals(utc.getSecondsSinceEpoch(), result.getSecondsSinceEpoch());
         assertEquals(utc.getFractionOfSecond(), result.getFractionOfSecond());
-        assertEquals(utc.getTimeQuality(), result.getTimeQuality());
+        assertEquals(utc.getTimeQuality().toRaw(), result.getTimeQuality().toRaw());
     }
 
     @Test
     void encodeDecode_zeros() throws Exception {
-        CmsUtcTime utc = new CmsUtcTime(0, 0, 0);
+        CmsUtcTime utc = new CmsUtcTime(0, 0, new CmsTimeQuality());
 
         PerOutputStream pos = new PerOutputStream();
         CmsUtcTime.encode(pos, utc);
@@ -37,7 +37,7 @@ class CmsUtcTimeTest {
 
         assertEquals(0, result.getSecondsSinceEpoch());
         assertEquals(0, result.getFractionOfSecond());
-        assertEquals(0, result.getTimeQuality());
+        assertEquals(0, result.getTimeQuality().toRaw());
     }
 
     @Test
@@ -53,12 +53,33 @@ class CmsUtcTimeTest {
 
         assertEquals(0xFFFFFFFFL, result.getSecondsSinceEpoch());
         assertEquals(0xFFFFFF, result.getFractionOfSecond());
-        assertEquals(0xFF, result.getTimeQuality());
+        assertEquals(0xFF, result.getTimeQuality().toRaw());
+    }
+
+    @Test
+    void encodeDecode_timeQualityFlags() throws Exception {
+        CmsTimeQuality tq = new CmsTimeQuality()
+            .set(CmsTimeQuality.LEAP_SECOND_KNOWN, true)
+            .set(CmsTimeQuality.CLOCK_FAULT, true)
+            .setSubSecondPrecision(24);
+
+        CmsUtcTime utc = new CmsUtcTime(1715000000L, 0, tq);
+
+        PerOutputStream pos = new PerOutputStream();
+        CmsUtcTime.encode(pos, utc);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        CmsUtcTime result = CmsUtcTime.decode(pis);
+
+        assertTrue(result.getTimeQuality().is(CmsTimeQuality.LEAP_SECOND_KNOWN));
+        assertTrue(result.getTimeQuality().is(CmsTimeQuality.CLOCK_FAULT));
+        assertFalse(result.getTimeQuality().is(CmsTimeQuality.CLOCK_NOT_SYNCED));
+        assertEquals(24, result.getTimeQuality().getSubSecondPrecision());
     }
 
     @Test
     void encode_is8Bytes() {
-        CmsUtcTime utc = new CmsUtcTime(1000, 0, 0);
+        CmsUtcTime utc = new CmsUtcTime(1000, 0, new CmsTimeQuality());
 
         PerOutputStream pos = new PerOutputStream();
         CmsUtcTime.encode(pos, utc);
@@ -69,24 +90,16 @@ class CmsUtcTimeTest {
     @Test
     void constructor_rejectsInvalidSeconds() {
         assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(-1, 0, 0));
+                () -> new CmsUtcTime(-1, 0, new CmsTimeQuality()));
         assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(0x100000000L, 0, 0));
+                () -> new CmsUtcTime(0x100000000L, 0, new CmsTimeQuality()));
     }
 
     @Test
     void constructor_rejectsInvalidFraction() {
         assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(0, -1, 0));
+                () -> new CmsUtcTime(0, -1, new CmsTimeQuality()));
         assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(0, 0x1000000, 0));
-    }
-
-    @Test
-    void constructor_rejectsInvalidQuality() {
-        assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(0, 0, -1));
-        assertThrows(IllegalArgumentException.class,
-                () -> new CmsUtcTime(0, 0, 0x100));
+                () -> new CmsUtcTime(0, 0x1000000, new CmsTimeQuality()));
     }
 }

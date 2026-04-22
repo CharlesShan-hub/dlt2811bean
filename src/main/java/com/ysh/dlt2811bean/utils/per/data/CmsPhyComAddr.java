@@ -3,8 +3,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerInteger;
-
 import static com.ysh.dlt2811bean.utils.per.data.CmsOctetString.Mode;
 import lombok.Getter;
 import lombok.Setter;
@@ -53,17 +51,17 @@ public final class CmsPhyComAddr {
 
     public static void encode(PerOutputStream pos, CmsPhyComAddr value) {
         CmsOctetString.encode(pos, value.addr, Mode.FIXED, 6);
-        PerInteger.encode(pos, value.priority & 0xFFL, 0, 255);
-        PerInteger.encode(pos, value.vid & 0xFFFFL, 0, 65535);
-        PerInteger.encode(pos, value.appid & 0xFFFFL, 0, 65535);
+        CmsInt8U.encode(pos, value.priority);
+        CmsInt16U.encode(pos, value.vid);
+        CmsInt16U.encode(pos, value.appid);
     }
 
     public static CmsPhyComAddr decode(PerInputStream pis) throws PerDecodeException {
         CmsPhyComAddr addr = new CmsPhyComAddr();
         addr.addr = CmsOctetString.decode(pis, Mode.FIXED, 6).getValue();
-        addr.priority = (int) PerInteger.decode(pis, 0, 255);
-        addr.vid = (int) PerInteger.decode(pis, 0, 65535);
-        addr.appid = (int) PerInteger.decode(pis, 0, 65535);
+        addr.priority = CmsInt8U.decode(pis).getValue();
+        addr.vid = CmsInt16U.decode(pis).getValue();
+        addr.appid = CmsInt16U.decode(pis).getValue();
         return addr;
     }
 

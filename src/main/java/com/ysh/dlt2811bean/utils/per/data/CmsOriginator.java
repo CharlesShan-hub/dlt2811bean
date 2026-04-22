@@ -3,10 +3,7 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import static com.ysh.dlt2811bean.utils.per.data.CmsOctetString.Mode;
 
@@ -64,7 +61,7 @@ import static com.ysh.dlt2811bean.utils.per.data.CmsOctetString.Mode;
  */
 public final class CmsOriginator {
 
-    // ==================== orCat constants ====================
+    // ==================== orCat constants (ENUMERATED 0..8) ====================
 
     public static final int NOT_SUPPORTED = 0;
     public static final int BAY_CONTROL = 1;
@@ -76,17 +73,13 @@ public final class CmsOriginator {
     public static final int MAINTENANCE = 7;
     public static final int PROCESS = 8;
 
-    /** Maximum valid orCat value (8). */
-    public static final int MAX_OR_CAT = 8;
+    /** Maximum orCat value for ENUMERATED encoding. */
+    private static final int MAX_OR_CAT = 8;
 
     @Getter
-    @Setter
-    @Accessors(chain = true)
     private int orCat;
 
     @Getter
-    @Setter
-    @Accessors(chain = true)
     private byte[] orIdent;
 
     public CmsOriginator() {
@@ -94,46 +87,67 @@ public final class CmsOriginator {
         this.orIdent = new byte[0];
     }
 
-    /** Returns the symbolic name for known orCat values, or "unknown-" + value. */
-    public String getOrCatName() {
-        switch (orCat) {
-            case NOT_SUPPORTED: return "not-supported";
-            case BAY_CONTROL: return "bay-control";
-            case STATION_CONTROL: return "station-control";
-            case REMOTE_CONTROL: return "remote-control";
-            case AUTOMATIC_BAY: return "automatic-bay";
-            case AUTOMATIC_STATION: return "automatic-station";
-            case AUTOMATIC_REMOTE: return "automatic-remote";
-            case MAINTENANCE: return "maintenance";
-            case PROCESS: return "process";
-            default: return "unknown-" + orCat;
+    // ==================== orCat semantic setters ====================
+
+    public CmsOriginator setOrCat(int value) {
+        if (value < 0 || value > MAX_OR_CAT) {
+            throw new IllegalArgumentException("orCat out of range (0..8): " + value);
         }
+        this.orCat = value;
+        return this;
     }
 
-    // ==================== Encode / Decode ====================
-
-    /**
-     * Encodes Originator as SEQUENCE { orCat INTEGER(0..8), orIdent OCTET STRING(0..64) }.
-     * <p>In APER, IMPLICIT-tagged mandatory fields are encoded in declaration order.
-     */
-    public static void encode(PerOutputStream pos, CmsOriginator value) {
-        PerInteger.encode(pos, value.orCat, 0, MAX_OR_CAT);
-        CmsOctetString.encode(pos, value.orIdent != null ? value.orIdent : new byte[0], Mode.VARIABLE, 64);
+    public CmsOriginator setOrIdent(byte[] value) {
+        this.orIdent = value != null ? value : new byte[0];
+        return this;
     }
 
+    // ==================== orCat semantic getters ====================
+
     /**
-     * Decodes Originator from SEQUENCE { orCat INTEGER(0..8), orIdent OCTET STRING(0..64) }.
+     * Check if orCat matches the given value.
+     * Use with constants: {@code orig.is(CmsOriginator.BAY_CONTROL)}
      */
-    public static CmsOriginator decode(PerInputStream pis) throws PerDecodeException {
-        CmsOriginator orig = new CmsOriginator();
-        orig.orCat = (int) PerInteger.decode(pis, 0, MAX_OR_CAT);
-        orig.orIdent = CmsOctetString.decode(pis, Mode.VARIABLE, 64).getValue();
-        return orig;
+    public boolean is(int value) {
+        if (value < 0 || value > MAX_OR_CAT) throw new IllegalArgumentException("orCat out of range (0..8): " + value);
+        return orCat == value;
     }
 
     @Override
     public String toString() {
-        return String.format("Originator[cat=%d(%s), identLen=%d]", orCat, getOrCatName(),
+        String catName;
+        switch (orCat) {
+            case NOT_SUPPORTED: catName = "not-supported"; break;
+            case BAY_CONTROL: catName = "bay-control"; break;
+            case STATION_CONTROL: catName = "station-control"; break;
+            case REMOTE_CONTROL: catName = "remote-control"; break;
+            case AUTOMATIC_BAY: catName = "automatic-bay"; break;
+            case AUTOMATIC_STATION: catName = "automatic-station"; break;
+            case AUTOMATIC_REMOTE: catName = "automatic-remote"; break;
+            case MAINTENANCE: catName = "maintenance"; break;
+            case PROCESS: catName = "process"; break;
+            default: catName = "unknown-" + orCat;
+        }
+        return String.format("Originator[cat=%d(%s), identLen=%d]", orCat, catName,
                 orIdent != null ? orIdent.length : 0);
+    }
+
+    /**
+     * Encodes Originator as SEQUENCE { orCat ENUMERATED(0..8), orIdent OCTET STRING(0..64) }.
+     * <p>In APER, IMPLICIT-tagged mandatory fields are encoded in declaration order.
+     */
+    public static void encode(PerOutputStream pos, CmsOriginator value) {
+        CmsEnumerated.encode(pos, value.orCat, MAX_OR_CAT);
+        CmsOctetString.encode(pos, value.orIdent != null ? value.orIdent : new byte[0], Mode.VARIABLE, 64);
+    }
+
+    /**
+     * Decodes Originator from SEQUENCE { orCat ENUMERATED(0..8), orIdent OCTET STRING(0..64) }.
+     */
+    public static CmsOriginator decode(PerInputStream pis) throws PerDecodeException {
+        CmsOriginator orig = new CmsOriginator();
+        orig.orCat = CmsEnumerated.decode(pis, MAX_OR_CAT).getValue();
+        orig.orIdent = CmsOctetString.decode(pis, Mode.VARIABLE, 64).getValue();
+        return orig;
     }
 }

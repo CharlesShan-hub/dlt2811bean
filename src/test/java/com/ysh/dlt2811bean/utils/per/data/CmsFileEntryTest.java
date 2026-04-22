@@ -13,7 +13,7 @@ class CmsFileEntryTest {
         CmsFileEntry entry = new CmsFileEntry();
         entry.setFileName("report.txt")
              .setFileSize(2048)
-             .setLastModified(new CmsUtcTime(1715000000L, 0, 0))
+             .setLastModified(new CmsUtcTime(1715000000L, 0, new CmsTimeQuality()))
              .setCheckSum(0x12345678L);
 
         PerOutputStream pos = new PerOutputStream();
@@ -31,7 +31,7 @@ class CmsFileEntryTest {
         CmsFileEntry entry = new CmsFileEntry();
         entry.setFileName("docs/")
              .setFileSize(0)
-             .setLastModified(new CmsUtcTime(0, 0, 0))
+             .setLastModified(new CmsUtcTime(0, 0, new CmsTimeQuality()))
              .setCheckSum(0);
 
         PerOutputStream pos = new PerOutputStream();
@@ -47,7 +47,7 @@ class CmsFileEntryTest {
         CmsFileEntry entry = new CmsFileEntry();
         entry.setFileName("big.bin")
              .setFileSize(0xFFFFFFFFL)
-             .setLastModified(new CmsUtcTime(0xFFFFFFFFL, 0xFFFFFF, 0xFF))
+             .setLastModified(new CmsUtcTime(0xFFFFFFFFL, 0xFFFFFF, new CmsTimeQuality(0xFF)))
              .setCheckSum(0xFFFFFFFFL);
 
         PerOutputStream pos = new PerOutputStream();
@@ -63,7 +63,7 @@ class CmsFileEntryTest {
         CmsFileEntry entry = new CmsFileEntry();
         entry.setFileName(null)
              .setFileSize(0)
-             .setLastModified(new CmsUtcTime(0, 0, 0))
+             .setLastModified(new CmsUtcTime(0, 0, new CmsTimeQuality()))
              .setCheckSum(0);
 
         PerOutputStream pos = new PerOutputStream();

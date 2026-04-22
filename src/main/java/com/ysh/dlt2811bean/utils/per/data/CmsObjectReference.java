@@ -12,11 +12,10 @@ import static com.ysh.dlt2811bean.utils.per.data.CmsVisibleString.Mode;
  * <p>Object reference is a constrained VisibleString with max length 129,
  * format: {@code LDName/LNName[.Name[....]]}
  *
- * <p>Constraints:
+ * <p>Constraints enforced by {@link #validate(String)}:
  * <ul>
- *   <li>No FC (functional constraint) in the reference</li>
- *   <li>No '$' character</li>
- *   <li>For non-persistent datasets: {@code @DataSetName} format</li>
+ *   <li>No FC (functional constraint) suffix — e.g. {@code .st$cf} is rejected</li>
+ *   <li>No '$' character allowed in the reference</li>
  * </ul>
  *
  * <p>This class provides semantic wrappers around {@link CmsVisibleString}.
@@ -26,8 +25,24 @@ public final class CmsObjectReference {
     /** Maximum length per 2811 standard (§7.3.2). */
     public static final int MAX_LENGTH = 129;
 
-    private CmsObjectReference() {
-        // utility class
+    public static void validate(String value) {
+        if (value == null) return;
+
+        // (c) no '$'
+        if (value.indexOf('$') >= 0) {
+            throw new IllegalArgumentException(
+                    "ObjectReference must not contain '$': " + value);
+        }
+
+        // (b) no FC suffix — check if the part after the last '.' is an FC code
+        int dot = value.lastIndexOf('.');
+        if (dot >= 0 && dot < value.length() - 1) {
+            String lastSegment = value.substring(dot + 1);
+            if (CmsFC.isValid(lastSegment) || CmsFC.isValid(lastSegment.toUpperCase())) {
+                throw new IllegalArgumentException(
+                        "ObjectReference must not contain FC suffix '." + lastSegment.toUpperCase() + "': " + value);
+            }
+        }
     }
 
     /**
@@ -35,13 +50,14 @@ public final class CmsObjectReference {
      *
      * @param pos   output stream
      * @param value reference string, max 129 chars
-     * @throws IllegalArgumentException if value exceeds 129 characters
+     * @throws IllegalArgumentException if value exceeds 129 characters or violates constraints
      */
     public static void encode(PerOutputStream pos, String value) {
         if (value != null && value.length() > MAX_LENGTH) {
             throw new IllegalArgumentException(
                     "ObjectReference exceeds max length " + MAX_LENGTH + ": " + value.length());
         }
+        validate(value);
         CmsVisibleString.encode(pos, value != null ? value : "", Mode.VARIABLE, MAX_LENGTH);
     }
 

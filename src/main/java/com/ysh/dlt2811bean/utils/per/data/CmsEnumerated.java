@@ -90,6 +90,13 @@ public final class CmsEnumerated {
 
     /** Encodes a raw int value with explicit maxOrdinal. */
     public static void encode(PerOutputStream pos, int value, int maxOrdinal) {
+        if (maxOrdinal < 0) {
+            throw new IllegalArgumentException("maxOrdinal must be non-negative");
+        }
+        if (value < 0 || value > maxOrdinal) {
+            throw new IllegalArgumentException(
+                    String.format("Enumerated value %d out of range [0, %d]", value, maxOrdinal));
+        }
         PerEnumerated.encode(pos, value, maxOrdinal);
     }
 

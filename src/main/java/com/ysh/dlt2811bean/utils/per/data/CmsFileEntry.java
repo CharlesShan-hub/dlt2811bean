@@ -3,12 +3,9 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import static com.ysh.dlt2811bean.utils.per.data.CmsVisibleString.Mode;
 
 /**
  * DL/T 2811 file entry type (§7.3.10, Table 11).
@@ -55,18 +52,18 @@ public final class CmsFileEntry {
     // ==================== Encode / Decode ====================
 
     public static void encode(PerOutputStream pos, CmsFileEntry value) {
-        CmsVisibleString.encode(pos, value.fileName != null ? value.fileName : "", Mode.VARIABLE, 129);
-        PerInteger.encode(pos, value.fileSize & 0xFFFFFFFFL, 0, 4294967295L);
+        CmsVisibleString.encode(pos, value.fileName != null ? value.fileName : "", CmsVisibleString.Mode.VARIABLE, 129);
+        CmsInt32U.encode(pos, value.fileSize & 0xFFFFFFFFL);
         CmsUtcTime.encode(pos, value.lastModified);
-        PerInteger.encode(pos, value.checkSum & 0xFFFFFFFFL, 0, 4294967295L);
+        CmsInt32U.encode(pos, value.checkSum & 0xFFFFFFFFL);
     }
 
     public static CmsFileEntry decode(PerInputStream pis) throws PerDecodeException {
         CmsFileEntry entry = new CmsFileEntry();
-        entry.fileName = CmsVisibleString.decode(pis, Mode.VARIABLE, 129).getValue();
-        entry.fileSize = PerInteger.decode(pis, 0, 4294967295L);
+        entry.fileName = CmsVisibleString.decode(pis, CmsVisibleString.Mode.VARIABLE, 129).toString();
+        entry.fileSize = CmsInt32U.decode(pis).getValue();
         entry.lastModified = CmsUtcTime.decode(pis);
-        entry.checkSum = PerInteger.decode(pis, 0, 4294967295L);
+        entry.checkSum = CmsInt32U.decode(pis).getValue();
         return entry;
     }
 

@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerBitString;
 import lombok.Getter;
 
 /**
@@ -20,7 +19,7 @@ import lombok.Getter;
  * └──────┴───────┴────────────────────┴──────────────┘
  * </pre>
  *
- * <p>Encoded as a 2-bit fixed-size bit string.
+ * <p>Encoded as a 2-bit constrained enumeration (ENUMERATED 0..3).
  *
  * <pre>
  * // Construct
@@ -71,14 +70,25 @@ public final class CmsDbpos {
     public CmsDbpos setOn()          { this.value = ON;          return this; }
     public CmsDbpos setBad()         { this.value = BAD;         return this; }
 
+    // ==================== Semantic getters ====================
+
+    public boolean isIntermediate() { return value == INTERMEDIATE; }
+    public boolean isOff()          { return value == OFF; }
+    public boolean isOn()           { return value == ON; }
+    public boolean isBad()          { return value == BAD; }
+
     // ==================== Encode / Decode ====================
 
     public static void encode(PerOutputStream pos, CmsDbpos value) {
-        PerBitString.encodeFixedSize(pos, value.value, 2);
+        encode(pos, value.value);
+    }
+
+    public static void encode(PerOutputStream pos, int value) {
+        CmsEnumerated.encode(pos, value, 3);
     }
 
     public static CmsDbpos decode(PerInputStream pis) throws PerDecodeException {
-        int raw = (int) PerBitString.decodeFixedSize(pis, 2);
+        int raw = (int) CmsEnumerated.decode(pis, 3).getValue();
         return new CmsDbpos(raw);
     }
 

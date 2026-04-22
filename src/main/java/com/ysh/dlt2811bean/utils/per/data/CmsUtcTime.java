@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerBitString;
 import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 import lombok.Getter;
 
@@ -11,55 +10,70 @@ import lombok.Getter;
  * DL/T 2811 UtcTime type (§7.2.1 / §7.3.4 TimeStamp, RFC 5905 encoding).
  *
  * <pre>
- * ┌───────────────────────┬───────────┬────────┬───────────┐
- * │ Field                 │ 2811 Type │ Bits   │ Java type │
- * ├───────────────────────┼───────────┼────────┼───────────┤
- * │ secondsSinceEpoch     │ INT32U    │ 32     │ long      │
- * │ fractionOfSecond      │ INT24U    │ 24     │ int       │
- * │ timeQuality           │ BIT STR   │ 8      │ int       │
- * └───────────────────────┴───────────┴────────┴───────────┘
+ * ┌───────────────────────┬───────────┬────────┬──────────────────┐
+ * │ Field                 │ 2811 Type │ Bits   │ Java type        │
+ * ├───────────────────────┼───────────┼────────┼──────────────────┤
+ * │ secondsSinceEpoch     │ INT32U    │ 32     │ long             │
+ * │ fractionOfSecond      │ INT24U    │ 24     │ int              │
+ * │ timeQuality           │ CODEDENUM │ 8      │ CmsTimeQuality   │
+ * └───────────────────────┴───────────┴────────┴──────────────────┘
  * </pre>
  *
  * <p>Total: 64 bits (8 bytes), aligned. Encoding order: seconds (MSB first),
  * then fraction (MSB first), then timeQuality (MSB first).
  *
  * <pre>
- * // Construct
- * CmsUtcTime t = new CmsUtcTime(1715000000L, 1234567, 0x20);
+ * // Bean mode — chain setters
+ * CmsUtcTime t = new CmsUtcTime()
+ *     .setSecondsSinceEpoch(1715000000L)
+ *     .setFractionOfSecond(1234567)
+ *     .setTimeQuality(new CmsTimeQuality().setSubSecondPrecision(24));
+ *
+ * // Quick mode — raw values
+ * CmsUtcTime t = new CmsUtcTime(1715000000L, 1234567, new CmsTimeQuality(0x20));
  *
  * // Encode / Decode
  * CmsUtcTime.encode(pos, t);
  * CmsUtcTime r = CmsUtcTime.decode(pis);
  *
  * // Access fields
- * r.getSecondsSinceEpoch(); // → 1715000000
- * r.getFractionOfSecond();  // → 1234567
- * r.getTimeQuality();       // → 0x20
+ * r.getSecondsSinceEpoch();                     // → 1715000000
+ * r.getFractionOfSecond();                      // → 1234567
+ * r.getTimeQuality().is(CmsTimeQuality.CLOCK_FAULT);  // → boolean
+ * r.getTimeQuality().getSubSecondPrecision();   // → int
  * </pre>
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5905">RFC 5905</a>
  */
-public final class CmsUtcTime {
+@Getter
+public class CmsUtcTime {
 
-    @Getter
     /* Seconds since 1970-01-01 00:00:00 UTC (INT32U). */
-    private final long secondsSinceEpoch;
-    @Getter
-    /* Fraction of current second, in units of 1/2^24 s (INT24U). */
-    private final int fractionOfSecond;
-    @Getter
-    /* Time quality bit flags (8-bit, see Table 7). */
-    private final int timeQuality;
+    private long secondsSinceEpoch;
 
-    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, int timeQuality) {
+    /* Fraction of current second, in units of 1/2^24 s (INT24U). */
+    private int fractionOfSecond;
+
+    /* Time quality (CODED ENUM, 8-bit). */
+    private CmsTimeQuality timeQuality;
+
+    public CmsUtcTime() {
+        this.secondsSinceEpoch = 0;
+        this.fractionOfSecond = 0;
+        this.timeQuality = new CmsTimeQuality();
+    }
+
+    /** Convenience constructor — accepts raw int for timeQuality. */
+    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, int rawTimeQuality) {
+        this(secondsSinceEpoch, fractionOfSecond, new CmsTimeQuality(rawTimeQuality));
+    }
+
+    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, CmsTimeQuality timeQuality) {
         if (secondsSinceEpoch < 0 || secondsSinceEpoch > 0xFFFFFFFFL) {
             throw new IllegalArgumentException("secondsSinceEpoch out of INT32U range");
         }
         if (fractionOfSecond < 0 || fractionOfSecond > 0xFFFFFF) {
             throw new IllegalArgumentException("fractionOfSecond out of INT24U range");
-        }
-        if (timeQuality < 0 || timeQuality > 0xFF) {
-            throw new IllegalArgumentException("timeQuality out of 8-bit range");
         }
         this.secondsSinceEpoch = secondsSinceEpoch;
         this.fractionOfSecond = fractionOfSecond;
@@ -72,18 +86,18 @@ public final class CmsUtcTime {
      * Encodes a UtcTime into the output stream (8 bytes, aligned).
      */
     public static void encode(PerOutputStream pos, CmsUtcTime value) {
-        PerInteger.encode(pos, value.secondsSinceEpoch & 0xFFFFFFFFL, 0, 4294967295L);
+        CmsInt32U.encode(pos, value.secondsSinceEpoch & 0xFFFFFFFFL);
         encodeUint24(pos, value.fractionOfSecond);
-        PerBitString.encodeFixedSize(pos, value.timeQuality, 8);
+        CmsTimeQuality.encode(pos, value.timeQuality);
     }
 
     /**
      * Decodes a UtcTime from the input stream.
      */
     public static CmsUtcTime decode(PerInputStream pis) throws PerDecodeException {
-        long seconds = PerInteger.decode(pis, 0, 4294967295L);
+        long seconds = CmsInt32U.decode(pis).getValue();
         int fraction = decodeUint24(pis);
-        int quality = (int) PerBitString.decodeFixedSize(pis, 8);
+        CmsTimeQuality quality = CmsTimeQuality.decode(pis);
         return new CmsUtcTime(seconds, fraction, quality);
     }
 
@@ -99,7 +113,7 @@ public final class CmsUtcTime {
 
     @Override
     public String toString() {
-        return String.format("UtcTime[s=%d, frac=%d, q=0x%02X]",
+        return String.format("UtcTime[s=%d, frac=%d, %s]",
                 secondsSinceEpoch, fractionOfSecond, timeQuality);
     }
 }

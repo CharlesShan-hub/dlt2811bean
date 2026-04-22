@@ -3,10 +3,7 @@ package com.ysh.dlt2811bean.utils.per.data;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerBitString;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * DL/T 2811 control operation check type (§7.5.3, Table 14).
@@ -23,81 +20,77 @@ import lombok.experimental.Accessors;
  * </pre>
  *
  * <p>Bit 0 = synchrocheck, Bit 1 = interlock-check.
- * Encoded as a 2-bit fixed-size bit string.
+ * Encoded as a 2-bit CODED ENUM (fixed-size bit string).
  *
  * <pre>
- * // Construct with raw value
- * CmsCheck c = new CmsCheck(0b11); // both checks enabled
+ * // Construct
+ * CmsCheck c = new CmsCheck();
+ * c.bits().setBit(0, true);  // synchrocheck
+ * c.bits().setBit(1, true);  // interlock
  *
- * // Construct with semantic setters
- * CmsCheck c2 = new CmsCheck()
- *     .setSynchrocheck(true)
- *     .setInterlock(true);
+ * // Or from raw value
+ * CmsCheck c2 = new CmsCheck(0b11);
  *
  * // Encode / Decode
  * CmsCheck.encode(pos, c);
  * CmsCheck r = CmsCheck.decode(pis);
  *
- * // Query individual flags
- * r.isSynchrocheck(); // → boolean
- * r.isInterlock();    // → boolean
+ * // Query
+ * r.is(0);  // synchrocheck?
+ * r.is(1);  // interlock?
  * </pre>
  */
 public final class CmsCheck {
 
-    @Getter
-    @Setter
-    @Accessors(chain = true)
-    /** Whether synchrocheck is required (bit 0). */
-    private boolean synchrocheck;
+    public static final int BIT_SYNCHROCHECK = 0;
+    public static final int BIT_INTERLOCK = 1;
+    public static final int SIZE = 2;
 
     @Getter
-    @Setter
-    @Accessors(chain = true)
-    /** Whether interlock-check is required (bit 1). */
-    private boolean interlock;
+    private final CmsCodedEnum bits;
 
     public CmsCheck() {
-        this.synchrocheck = false;
-        this.interlock = false;
+        this.bits = new CmsCodedEnum(0, SIZE);
     }
 
-    /**
-     * Construct from raw 2-bit value.
-     *
-     * @param raw 2-bit value (0..3)
-     */
     public CmsCheck(int raw) {
         if (raw < 0 || raw > 3) {
             throw new IllegalArgumentException("check value out of range (0..3)");
         }
-        this.synchrocheck = (raw & 0b01) != 0;
-        this.interlock = (raw & 0b10) != 0;
+        this.bits = new CmsCodedEnum(raw, SIZE);
     }
 
     /**
-     * Convert to raw 2-bit value.
+     * Check if the given bit is set.
+     * Use with constants: {@code check.is(CmsCheck.BIT_SYNCHROCHECK)}
      */
+    public boolean is(int bit) {
+        if (bit < 0 || bit >= SIZE) throw new IllegalArgumentException("bit out of range (0..1): " + bit);
+        return bits.testBit(bit);
+    }
+
+    /** Convert to raw 2-bit value. */
     public int toRaw() {
-        int raw = 0;
-        if (synchrocheck) raw |= 0b01;
-        if (interlock)    raw |= 0b10;
-        return raw;
+        return (int) bits.getValue();
     }
 
     // ==================== Encode / Decode ====================
 
     public static void encode(PerOutputStream pos, CmsCheck value) {
-        PerBitString.encodeFixedSize(pos, value.toRaw(), 2);
+        CmsCodedEnum.encode(pos, value.bits);
+    }
+
+    public static void encode(PerOutputStream pos, int raw) {
+        CmsCodedEnum.encode(pos, raw, SIZE);
     }
 
     public static CmsCheck decode(PerInputStream pis) throws PerDecodeException {
-        int raw = (int) PerBitString.decodeFixedSize(pis, 2);
-        return new CmsCheck(raw);
+        return new CmsCheck((int) CmsCodedEnum.decode(pis, SIZE).getValue());
     }
 
     @Override
     public String toString() {
-        return "Check[interlock=" + interlock + ",synchrocheck=" + synchrocheck + "]";
+        return String.format("Check[synchrocheck=%s,interlock=%s]",
+                is(BIT_SYNCHROCHECK), is(BIT_INTERLOCK));
     }
 }

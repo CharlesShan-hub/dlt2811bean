@@ -14,9 +14,8 @@ class CmsServiceErrorTest {
         PerOutputStream pos = new PerOutputStream();
         CmsServiceError.encode(pos, err);
         CmsServiceError r = CmsServiceError.decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsServiceError.NO_ERROR, r.getCode());
-        assertTrue(r.isSuccess());
-        assertFalse(r.isError());
+        assertEquals(CmsServiceError.NO_ERROR, r.getValue());
+        assertTrue(r.isNoError());
     }
 
     @Test
@@ -25,9 +24,8 @@ class CmsServiceErrorTest {
         PerOutputStream pos = new PerOutputStream();
         CmsServiceError.encode(pos, err);
         CmsServiceError r = CmsServiceError.decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, r.getCode());
-        assertFalse(r.isSuccess());
-        assertTrue(r.isError());
+        assertEquals(CmsServiceError.ACCESS_VIOLATION, r.getValue());
+        assertTrue(r.isAccessViolation());
     }
 
     @Test
@@ -36,31 +34,20 @@ class CmsServiceErrorTest {
         PerOutputStream pos = new PerOutputStream();
         CmsServiceError.encode(pos, err);
         CmsServiceError r = CmsServiceError.decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(12, r.getCode());
-    }
-
-    @Test
-    void getCodeName_known() {
-        assertEquals("no-error", new CmsServiceError(0).getCodeName());
-        assertEquals("access-violation", new CmsServiceError(3).getCodeName());
-        assertEquals("failed-due-to-server-constraint", new CmsServiceError(12).getCodeName());
-    }
-
-    @Test
-    void getCodeName_unknown() {
-        assertEquals("unknown-99", new CmsServiceError(99).getCodeName());
+        assertEquals(12, r.getValue());
     }
 
     @Test
     void chainSetter() {
         CmsServiceError err = new CmsServiceError();
-        err.setCode(CmsServiceError.CLASS_NOT_SUPPORTED);
-        assertEquals(CmsServiceError.CLASS_NOT_SUPPORTED, err.getCode());
+        err.setClassNotSupported();
+        assertEquals(CmsServiceError.CLASS_NOT_SUPPORTED, err.getValue());
+        assertTrue(err.isClassNotSupported());
     }
 
     @Test
     void constructor_rejectsOutOfRange() {
         assertThrows(IllegalArgumentException.class, () -> new CmsServiceError(-1));
-        assertThrows(IllegalArgumentException.class, () -> new CmsServiceError(128));
+        assertThrows(IllegalArgumentException.class, () -> new CmsServiceError(13));
     }
 }

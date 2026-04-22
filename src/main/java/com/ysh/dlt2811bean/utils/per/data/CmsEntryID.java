@@ -21,12 +21,23 @@ import static com.ysh.dlt2811bean.utils.per.data.CmsOctetString.Mode;
  */
 public final class CmsEntryID {
 
-    private static final int SIZE = 8;
+    /** Fixed size per §7.3.8. */
+    public static final int SIZE = 8;
 
     private CmsEntryID() {}
 
+    /**
+     * Encodes an 8-byte entry identifier.
+     *
+     * @param data exactly 8 bytes
+     * @throws IllegalArgumentException if data length is not {@value #SIZE}
+     */
     public static void encode(PerOutputStream pos, byte[] data) {
-        CmsOctetString.encode(pos, data, Mode.FIXED, SIZE);
+        if (data != null && data.length != SIZE) {
+            throw new IllegalArgumentException(
+                    "EntryID length must be " + SIZE + ", got " + data.length);
+        }
+        CmsOctetString.encode(pos, data != null ? data : new byte[SIZE], Mode.FIXED, SIZE);
     }
 
     public static byte[] decode(PerInputStream pis) throws PerDecodeException {
