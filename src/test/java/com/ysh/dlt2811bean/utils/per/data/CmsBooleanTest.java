@@ -14,9 +14,12 @@ class CmsBooleanTest {
     @DisplayName("true value")
     void trueValue() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        new CmsBoolean(true).encode(pos);
 
-        CmsBoolean r = new CmsBoolean().decode(new PerInputStream(pos.toByteArray()));
+        CmsBoolean.write(pos, true);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+
+        CmsBoolean r = CmsBoolean.read(pis);
         assertTrue(r.get());
     }
 

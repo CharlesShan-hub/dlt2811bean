@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.utils.per.types.PerInteger;
+
 /**
  * DL/T 2811 INT32U type (§7.1.3) — unsigned 32-bit integer.
  *
@@ -27,7 +31,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  * long l = r.get();
  * </pre>
  */
-public final class CmsInt32U extends AbstractCmsScalar<CmsInt32U> {
+public final class CmsInt32U extends AbstractCmsScalar<CmsInt32U, Long> {
 
     public static final long MIN = 0L;
     public static final long MAX = 4294967295L;
@@ -38,5 +42,31 @@ public final class CmsInt32U extends AbstractCmsScalar<CmsInt32U> {
 
     public CmsInt32U(long value) {
         super("INT32U", MIN, MAX, value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerInteger.encode(pos, get(), MIN, MAX);
+    }
+
+    @Override
+    public CmsInt32U decode(PerInputStream pis) throws Exception {
+        set(PerInteger.decode(pis, MIN, MAX));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        new CmsInt32U(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsInt32U obj) {
+        new CmsInt32U(obj == null ? 0L : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsInt32U read(PerInputStream pis) throws Exception {
+        return new CmsInt32U().decode(pis);
     }
 }

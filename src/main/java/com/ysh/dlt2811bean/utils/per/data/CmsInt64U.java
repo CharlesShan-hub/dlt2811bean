@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 import java.math.BigInteger;
 
 /**
@@ -29,7 +32,7 @@ import java.math.BigInteger;
  * BigInteger bi = r.get();
  * </pre>
  */
-public final class CmsInt64U extends AbstractCmsScalar<CmsInt64U> {
+public final class CmsInt64U extends AbstractCmsScalar<CmsInt64U, BigInteger> {
 
     public static final BigInteger MIN = BigInteger.ZERO;
     public static final BigInteger MAX = new BigInteger("18446744073709551615");
@@ -40,5 +43,53 @@ public final class CmsInt64U extends AbstractCmsScalar<CmsInt64U> {
 
     public CmsInt64U(BigInteger value) {
         super("INT64U", MIN, MAX, value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        for (byte b : bigIntegerToBytes(get()))
+            pos.writeByteAligned(b);
+    }
+
+    @Override
+    public CmsInt64U decode(PerInputStream pis) throws Exception {
+        byte[] bytes = new byte[9];
+        for (int i = 1; i < bytes.length; i++) {
+            bytes[i] = (byte) pis.readByteAligned();
+        }
+        set(new BigInteger(1, bytes));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, BigInteger value) {
+        new CmsInt64U(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsInt64U obj) {
+        new CmsInt64U(obj == null ? BigInteger.ZERO : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsInt64U read(PerInputStream pis) throws Exception {
+        return new CmsInt64U().decode(pis);
+    }
+
+    private static byte[] bigIntegerToBytes(BigInteger val) {
+        byte[] bytes = val.toByteArray();
+        int length = 8;
+        int startIndex = (bytes[0] == 0 && bytes.length > length) ? 1 : 0;
+        int actualLength = bytes.length - startIndex;
+
+        if (actualLength > length) {
+            throw new IllegalArgumentException(
+                    String.format("Value too large: requires %d bytes, max is %d", actualLength, length));
+        }
+
+        byte[] result = new byte[length];
+        int offset = length - actualLength;
+        System.arraycopy(bytes, startIndex, result, offset, actualLength);
+        return result;
     }
 }

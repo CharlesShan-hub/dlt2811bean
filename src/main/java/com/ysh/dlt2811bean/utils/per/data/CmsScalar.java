@@ -2,15 +2,14 @@ package com.ysh.dlt2811bean.utils.per.data;
 
 /**
  * Interface for all CMS scalar types.
- * Defines get/set operations on top of {@link CmsType}.
- *
- * <p>Scalar types represent single values such as integers, booleans, and floats.
+ * Defines set/get operations on top of {@link CmsType}.
  *
  * @param <T> the concrete type implementing this interface
+ * @param <V> the wrapper type of the value
  */
-public interface CmsScalar<T extends CmsScalar<T>> extends CmsType<T> {
+public interface CmsScalar<T extends CmsScalar<T, V>, V> extends CmsType<T> {
 
-    T set(Object value);
+    T set(V value);
 
-    <V> V get();
+    V get();
 }

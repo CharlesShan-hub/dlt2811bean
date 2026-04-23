@@ -17,7 +17,7 @@ class CmsInt16Test {
         new CmsInt16(1000).encode(pos);
 
         CmsInt16 r = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(1000, r.get());
+        assertEquals(1000, (int) r.get());
     }
 
     @Test
@@ -27,7 +27,7 @@ class CmsInt16Test {
         new CmsInt16(-1000).encode(pos);
 
         CmsInt16 r = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(-1000, r.get());
+        assertEquals(-1000, (int) r.get());
     }
 
     @Test
@@ -57,7 +57,7 @@ class CmsInt16Test {
         new CmsInt16(0).encode(pos);
 
         CmsInt16 r = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(0, r.get());
+        assertEquals(0, (int) r.get());
     }
 
     @Test
@@ -83,7 +83,7 @@ class CmsInt16Test {
     void set() {
         CmsInt16 val = new CmsInt16();
         val.set(1000);
-        assertEquals(1000, val.get());
+        assertEquals(1000, (int) val.get());
     }
 
     @Test
@@ -104,13 +104,13 @@ class CmsInt16Test {
     @DisplayName("chain usage")
     void chainUsage() throws Exception {
         CmsInt16 val = new CmsInt16().set(1000);
-        assertEquals(1000, val.get());
+        assertEquals(1000, (int) val.get());
 
         PerOutputStream pos = new PerOutputStream();
         val.encode(pos);
 
         CmsInt16 decoded = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(1000, decoded.get());
+        assertEquals(1000, (int) decoded.get());
     }
 
     @Test

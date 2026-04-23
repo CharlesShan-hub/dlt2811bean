@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.utils.per.types.PerInteger;
+
 /**
  * DL/T 2811 INT8U type (§7.1.3) — unsigned 8-bit integer.
  *
@@ -25,9 +29,13 @@ package com.ysh.dlt2811bean.utils.per.data;
  * // Decode (returns self for chaining)
  * CmsInt8U r = new CmsInt8U().decode(pis);
  * int i = r.get();
+ *
+ * // Static usage
+ * CmsInt8U.write(pos, 200);
+ * CmsInt8U decoded = CmsInt8U.read(pis);
  * </pre>
  */
-public final class CmsInt8U extends AbstractCmsScalar<CmsInt8U> {
+public final class CmsInt8U extends AbstractCmsScalar<CmsInt8U, Integer> {
 
     public static final int MIN = 0;
     public static final int MAX = 255;
@@ -38,5 +46,31 @@ public final class CmsInt8U extends AbstractCmsScalar<CmsInt8U> {
 
     public CmsInt8U(int value) {
         super("INT8U", MIN, MAX, value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerInteger.encode(pos, get(), MIN, MAX);
+    }
+
+    @Override
+    public CmsInt8U decode(PerInputStream pis) throws Exception {
+        set((int)PerInteger.decode(pis, MIN, MAX));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        new CmsInt8U(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsInt8U obj) {
+        new CmsInt8U(obj == null ? 0 : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsInt8U read(PerInputStream pis) throws Exception {
+        return new CmsInt8U().decode(pis);
     }
 }

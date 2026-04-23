@@ -16,8 +16,8 @@ class CmsInt64Test {
         PerOutputStream pos = new PerOutputStream();
         new CmsInt64(1000000000000L).encode(pos);
 
-        CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(1000000000000L, r.get());
+        CmsInt64 r = CmsInt64.read(new PerInputStream(pos.toByteArray()));
+        assertEquals(1000000000000L, (long) r.get());
     }
 
     @Test
@@ -27,7 +27,7 @@ class CmsInt64Test {
         new CmsInt64(-1000000000000L).encode(pos);
 
         CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(-1000000000000L, r.get());
+        assertEquals(-1000000000000L, (long) r.get());
     }
 
     @Test
@@ -57,7 +57,7 @@ class CmsInt64Test {
         new CmsInt64(0L).encode(pos);
 
         CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(0L, r.get());
+        assertEquals(0L, (long) r.get());
     }
 
     @Test
@@ -71,7 +71,7 @@ class CmsInt64Test {
     void set() {
         CmsInt64 val = new CmsInt64();
         val.set(1000000000000L);
-        assertEquals(1000000000000L, val.get());
+        assertEquals(1000000000000L, (long) val.get());
     }
 
     @Test
@@ -84,13 +84,13 @@ class CmsInt64Test {
     @DisplayName("chain usage")
     void chainUsage() throws Exception {
         CmsInt64 val = new CmsInt64().set(1000000000000L);
-        assertEquals(1000000000000L, val.get());
+        assertEquals(1000000000000L, (long) val.get());
 
         PerOutputStream pos = new PerOutputStream();
         val.encode(pos);
 
         CmsInt64 decoded = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(1000000000000L, decoded.get());
+        assertEquals(1000000000000L, (long) decoded.get());
     }
 
     @Test

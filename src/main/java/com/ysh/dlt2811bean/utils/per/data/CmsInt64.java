@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 INT64 type (§7.1.2) — signed 64-bit integer.
  *
@@ -27,7 +30,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  * long l = r.get();
  * </pre>
  */
-public final class CmsInt64 extends AbstractCmsScalar<CmsInt64> {
+public final class CmsInt64 extends AbstractCmsScalar<CmsInt64, Long> {
 
     public static final long MIN = Long.MIN_VALUE;
     public static final long MAX = Long.MAX_VALUE;
@@ -38,5 +41,37 @@ public final class CmsInt64 extends AbstractCmsScalar<CmsInt64> {
 
     public CmsInt64(long value) {
         super("INT64", MIN, MAX, value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        for (int i = 7; i >= 0; i--) {
+            pos.writeByteAligned((byte) ((get() >> (i * 8)) & 0xFF));
+        }
+    }
+
+    @Override
+    public CmsInt64 decode(PerInputStream pis) throws Exception {
+        long result = 0;
+        for (int i = 0; i < 8; i++) {
+            result = (result << 8) | (pis.readByteAligned() & 0xFFL);
+        }
+        set(result);
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        new CmsInt64(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsInt64 obj) {
+        new CmsInt64(obj == null ? 0L : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsInt64 read(PerInputStream pis) throws Exception {
+        return new CmsInt64().decode(pis);
     }
 }

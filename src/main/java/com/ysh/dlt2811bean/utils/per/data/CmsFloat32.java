@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.utils.per.types.PerReal;
+
 /**
  * DL/T 2811 FLOAT32 type — IEEE 754 single-precision floating-point (§7.1.4).
  *
@@ -27,7 +31,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  * float f = r.get();
  * </pre>
  */
-public final class CmsFloat32 extends AbstractCmsScalar<CmsFloat32> {
+public final class CmsFloat32 extends AbstractCmsScalar<CmsFloat32, Float> {
 
     public CmsFloat32() {
         this(0.0f);
@@ -35,5 +39,31 @@ public final class CmsFloat32 extends AbstractCmsScalar<CmsFloat32> {
 
     public CmsFloat32(float value) {
         super("FLOAT32", value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerReal.encodeFloat32(pos, get());
+    }
+
+    @Override
+    public CmsFloat32 decode(PerInputStream pis) throws Exception {
+        set(PerReal.decodeFloat32(pis));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, float value) {
+        new CmsFloat32(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsFloat32 obj) {
+        new CmsFloat32(obj == null ? 0.0f : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsFloat32 read(PerInputStream pis) throws Exception {
+        return new CmsFloat32().decode(pis);
     }
 }

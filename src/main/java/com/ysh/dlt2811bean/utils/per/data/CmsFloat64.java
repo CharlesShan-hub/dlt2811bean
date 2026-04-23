@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.utils.per.types.PerReal;
+
 /**
  * DL/T 2811 FLOAT64 type — IEEE 754 double-precision floating-point (§7.1.4).
  *
@@ -27,7 +31,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  * double d = r.get();
  * </pre>
  */
-public final class CmsFloat64 extends AbstractCmsScalar<CmsFloat64> {
+public final class CmsFloat64 extends AbstractCmsScalar<CmsFloat64, Double> {
 
     public CmsFloat64() {
         this(0.0);
@@ -35,5 +39,31 @@ public final class CmsFloat64 extends AbstractCmsScalar<CmsFloat64> {
 
     public CmsFloat64(double value) {
         super("FLOAT64", value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerReal.encodeFloat64(pos, get());
+    }
+
+    @Override
+    public CmsFloat64 decode(PerInputStream pis) throws Exception {
+        set(PerReal.decodeFloat64(pis));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, double value) {
+        new CmsFloat64(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsFloat64 obj) {
+        new CmsFloat64(obj == null ? 0.0 : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsFloat64 read(PerInputStream pis) throws Exception {
+        return new CmsFloat64().decode(pis);
     }
 }

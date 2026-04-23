@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.utils.per.types.PerInteger;
+
 /**
  * DL/T 2811 INT16U type (§7.1.3) — unsigned 16-bit integer.
  *
@@ -27,7 +31,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  * int i = r.get();
  * </pre>
  */
-public final class CmsInt16U extends AbstractCmsScalar<CmsInt16U> {
+public final class CmsInt16U extends AbstractCmsScalar<CmsInt16U, Integer> {
 
     public static final int MIN = 0;
     public static final int MAX = 65535;
@@ -38,5 +42,31 @@ public final class CmsInt16U extends AbstractCmsScalar<CmsInt16U> {
 
     public CmsInt16U(int value) {
         super("INT16U", MIN, MAX, value);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerInteger.encode(pos, get(), MIN, MAX);
+    }
+
+    @Override
+    public CmsInt16U decode(PerInputStream pis) throws Exception {
+        set((int)PerInteger.decode(pis, MIN, MAX));
+        return this;
+    }
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        new CmsInt16U(value).encode(pos);
+    }
+
+    /** Static write with instance (null encodes default 0). */
+    public static void write(PerOutputStream pos, CmsInt16U obj) {
+        new CmsInt16U(obj == null ? 0 : obj.get()).encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsInt16U read(PerInputStream pis) throws Exception {
+        return new CmsInt16U().decode(pis);
     }
 }
