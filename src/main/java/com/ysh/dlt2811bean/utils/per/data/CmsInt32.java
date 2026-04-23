@@ -33,8 +33,8 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
  */
 public final class CmsInt32 extends AbstractCmsNumeric<CmsInt32, Integer> {
 
-    public static final int MIN = -2147483648;
-    public static final int MAX = 2147483647;
+    public static final int MIN = -(1 << 31); // -2147483648
+    public static final int MAX = (1 << 31) - 1; // 2147483647
 
     public CmsInt32() {
         this(0);

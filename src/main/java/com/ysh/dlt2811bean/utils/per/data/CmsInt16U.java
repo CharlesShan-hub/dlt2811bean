@@ -34,7 +34,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 public final class CmsInt16U extends AbstractCmsNumeric<CmsInt16U, Integer> {
 
     public static final int MIN = 0;
-    public static final int MAX = 65535;
+    public static final int MAX = (1 << 16) - 1; // 65535
 
     public CmsInt16U() {
         this(0);

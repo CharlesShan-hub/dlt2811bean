@@ -27,15 +27,29 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> ex
     /** Tests whether the bit at the given position (0-based, LSB-first) is set. */
     @Override
     public boolean testBit(int pos) {
+        checkBitPos(pos);
         return (value & (1L << pos)) != 0;
     }
 
     /** Sets or clears the bit at the given position (0-based, LSB-first). */
     @Override
     public T setBit(int pos, boolean value) {
+        checkBitPos(pos);
         if (value) this.value |= (1L << pos);
         else       this.value &= ~(1L << pos);
         return self();
+    }
+
+    private void checkBitPos(int pos) {
+        if (pos < 0 || pos >= size) {
+            throw new IllegalArgumentException("bit position out of range [0, " + (size - 1) + "]: " + pos);
+        }
+    }
+
+    @Override
+    public long getBits(int pos, int width) {
+        long mask = (1L << width) - 1;
+        return (value >>> pos) & mask;
     }
 
     @Override

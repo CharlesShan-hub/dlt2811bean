@@ -115,4 +115,32 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
     public CmsQuality(long value) {
         super("CmsQuality", value, 13);
     }
+
+    // ==================== Convenience methods ====================
+
+    /**
+     * Gets the validity value (bits 0~1, 2-bit).
+     *
+     * @return validity value 0~3:
+     *         <ul>
+     *           <li>{@link #GOOD} (0) — valid</li>
+     *           <li>{@link #INVALID} (1) — invalid</li>
+     *           <li>{@link #RESERVED} (2) — reserved</li>
+     *           <li>{@link #QUESTIONABLE} (3) — questionable</li>
+     *         </ul>
+     */
+    public int getValidity() {
+        return (int) getBits(VALIDITY, VALIDITY_WIDTH);
+    }
+
+    /**
+     * Sets the validity value (bits 0~1, 2-bit).
+     *
+     * @param validity validity value 0~3
+     * @return this instance for chaining
+     */
+    public CmsQuality setValidity(int validity) {
+        setBits(VALIDITY, VALIDITY_WIDTH, validity);
+        return this;
+    }
 }

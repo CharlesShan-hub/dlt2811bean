@@ -38,7 +38,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
 public final class CmsInt8U extends AbstractCmsNumeric<CmsInt8U, Integer> {
 
     public static final int MIN = 0;
-    public static final int MAX = 255;
+    public static final int MAX = (1 << 8) - 1; // 255
 
     public CmsInt8U() {
         this(0);
