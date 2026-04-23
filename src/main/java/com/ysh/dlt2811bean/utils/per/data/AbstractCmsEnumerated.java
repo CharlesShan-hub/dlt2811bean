@@ -4,18 +4,31 @@ import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.types.PerEnumerated;
 
-public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>> implements CmsEnumerated<T> {
+public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>> extends AbstractCmsScalar<T, Integer> implements CmsEnumerated<T> {
 
     private static final int initSize = -1;
-    protected final String typeName;
-    protected int value;
     protected int size = initSize;
 
     protected AbstractCmsEnumerated(String typeName, int value, int size) {
-        this.typeName = typeName;
-        this.value = value;
+        super(typeName, value);
         this.size = size;
     }
+
+    // ==================== Public API ====================
+
+    @Override
+    public T set(Integer value) {
+        super.set(value);
+        validate();
+        return self();
+    }
+
+    @Override
+    public boolean is(int value) {
+        return this.value == value;
+    }
+
+    // ==================== Encode / Decode ====================
 
     @Override
     public void encode(PerOutputStream pos) {
@@ -28,30 +41,7 @@ public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>> 
         return self();
     }
 
-    public T set(Integer value) {
-        this.value = value;
-        validate();
-        return self();
-    }
-
-    public Integer get() {
-        return value;
-    }
-
-    @SuppressWarnings("unchecked")
-    private T self() {
-        return (T) this;
-    }
-
-    @Override
-    public boolean is(int value) {
-        return this.value == value;
-    }
-
-    @Override
-    public String toString() {
-        return typeName + "[" + value + "]";
-    }
+    // ==================== Private Helpers ====================
 
     private void validate() {
         if (size == initSize) {

@@ -45,7 +45,7 @@ package com.ysh.dlt2811bean.utils.per.data;
  *
  * // Multi-bit field access
  * q.setBits(CmsQuality.VALIDITY, CmsQuality.VALIDITY_WIDTH, CmsQuality.QUESTIONABLE);
- * q.getBits(CmsQuality.VALIDITY, CmsQuality.VALIDITY_WIDTH); // 3
+ * q.testBits(CmsQuality.VALIDITY, CmsQuality.VALIDITY_WIDTH, CmsQuality.QUESTIONABLE); // true
  *
  * // Getting the raw value
  * long raw = q.get();
@@ -113,6 +113,6 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
      * @param value raw 13-bit CODED ENUM value
      */
     public CmsQuality(long value) {
-        super(value, 13);
+        super("CmsQuality", value, 13);
     }
 }

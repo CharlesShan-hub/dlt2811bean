@@ -13,21 +13,20 @@ import java.math.BigInteger;
  * @param <T> the concrete type implementing this class
  * @param <V> the value type (e.g. Integer, Long, Boolean, BigInteger)
  */
-public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> implements CmsNumeric<T, V> {
-    private final String typeName;
+public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> extends AbstractCmsScalar<T, V> implements CmsNumeric<T, V> {
+    
     private final BigInteger min;
     private final BigInteger max;
-    private Object value;
 
     /**
      * Constructor with range validation (for integer types).
      */
+    @SuppressWarnings("unchecked")
     protected AbstractCmsNumeric(String typeName, Object min, Object max, Object defaultValue) {
-        this.typeName = typeName;
+        super(typeName, (V) defaultValue);
         this.min = toBigInteger(min);
         this.max = toBigInteger(max);
         validateRange(defaultValue);
-        this.value = defaultValue;
     }
 
     /**
@@ -51,16 +50,7 @@ public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> 
         return self();
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public V get() {
-        return (V) value;
-    }
-
-    @Override
-    public String toString() {
-        return typeName + ": " + value;
-    }
+    // ==================== Encode / Decode ====================
 
     @Override
     public T decode(PerInputStream pis) throws Exception {
@@ -74,11 +64,6 @@ public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> 
     protected abstract V decodeValue(PerInputStream pis) throws Exception;
 
     // ==================== Private Helpers ====================
-
-    @SuppressWarnings("unchecked")
-    private T self() {
-        return (T) this;
-    }
 
     private void validateRange(Object value) {
         if (value instanceof Boolean) return;

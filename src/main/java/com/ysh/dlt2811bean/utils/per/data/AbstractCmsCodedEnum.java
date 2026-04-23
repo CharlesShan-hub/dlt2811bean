@@ -5,16 +5,23 @@ import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.types.PerBitString;
 
-public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> implements CmsCodedEnum<T> {
+public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> extends AbstractCmsScalar<T, Long> implements CmsCodedEnum<T> {
 
-    /** Bit pattern stored in low bits of a long. */
-    private long value;
     /** Fixed bit count. Must be set before encode/decode. */
     private Integer size;
 
-    public AbstractCmsCodedEnum(long value, int size) {
-        this.value = value;
+    public AbstractCmsCodedEnum(String typeName, long value, int size) {
+        super(typeName, value);
         this.size = size;
+    }
+
+    // ==================== Public API ====================
+
+    @Override
+    public T set(Long value) {
+        super.set(value);
+        validate();
+        return self();
     }
 
     /** Tests whether the bit at the given position (0-based, LSB-first) is set. */
@@ -31,14 +38,10 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> im
         return self();
     }
 
-    /**
-     * Gets a multi-bit field starting at pos (LSB-first), width bits wide.
-     * For example, getBits(0, 2) extracts bits 0~1 as a 2-bit value.
-     */
     @Override
-    public long getBits(int pos, int width) {
+    public boolean testBits(int pos, int width, int fieldValue) {
         long mask = (1L << width) - 1;
-        return (Long) ((value >>> pos) & mask);
+        return ((value >>> pos) & mask) == (fieldValue & mask);
     }
 
     /**
@@ -56,18 +59,6 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> im
     // ==================== Encode / Decode ====================
 
     @Override
-    public T set(Long value) {
-        this.value = value;
-        validate();
-        return self();
-    }
-
-    @Override
-    public Long get() {
-        return value;
-    }
-
-    @Override
     public void encode(PerOutputStream pos) {
         PerBitString.encodeFixedSize(pos, value, size);
     }
@@ -78,10 +69,7 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> im
         return self();
     }
 
-    @SuppressWarnings("unchecked")
-    private T self() {
-        return (T) this;
-    }
+    // ==================== Private Helpers ====================
 
     private void validate() {
         if (size == null) {

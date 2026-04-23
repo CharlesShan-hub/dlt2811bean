@@ -16,7 +16,7 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
  * @param <T> the concrete string type
  * @param <V> the value type (String, byte[], etc.)
  */
-public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> implements CmsString<T, V> {
+public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> extends AbstractCmsScalar<T, V> implements CmsString<T, V> {
 
     /** Encoding mode: FIXED for SIZE(n), VARIABLE for SIZE(0..max). */
     public enum Mode {
@@ -26,8 +26,6 @@ public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> im
         VARIABLE
     }
 
-    protected final String typeName;
-    protected V value;
     protected Integer size;
     protected Integer max;
 
@@ -38,9 +36,10 @@ public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> im
      * @param value initial value (empty string/array for default)
      */
     protected AbstractCmsString(String typeName, V value) {
-        this.typeName = typeName;
-        this.value = value;
+        super(typeName, value);
     }
+
+    // ==================== Public API ====================
 
     /**
      * Set fixed size (SIZE(n)). Clears max.
@@ -60,33 +59,7 @@ public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> im
         return self();
     }
 
-    /**
-     * Set the value.
-     */
-    public T set(V value) {
-        if (value == null) {
-            throw new IllegalArgumentException(typeName + " value cannot be null");
-        }
-        this.value = value;
-        return self();
-    }
-
-    /**
-     * Get the value.
-     */
-    public V get() {
-        return value;
-    }
-
-    @Override
-    public String toString() {
-        return typeName + ": " + String.valueOf(value);
-    }
-
-    @SuppressWarnings("unchecked")
-    private T self() {
-        return (T) this;
-    }
+    // ==================== Encode / Decode ====================
 
     @Override
     public void encode(PerOutputStream pos) {
