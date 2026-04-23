@@ -31,7 +31,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
  * long l = r.get();
  * </pre>
  */
-public final class CmsInt32U extends AbstractCmsScalar<CmsInt32U, Long> {
+public final class CmsInt32U extends AbstractCmsNumeric<CmsInt32U, Long> {
 
     public static final long MIN = 0L;
     public static final long MAX = 4294967295L;
@@ -50,9 +50,8 @@ public final class CmsInt32U extends AbstractCmsScalar<CmsInt32U, Long> {
     }
 
     @Override
-    public CmsInt32U decode(PerInputStream pis) throws Exception {
-        set(PerInteger.decode(pis, MIN, MAX));
-        return this;
+    protected Long decodeValue(PerInputStream pis) throws Exception {
+        return PerInteger.decode(pis, MIN, MAX);
     }
 
     /** Static write with raw value. */

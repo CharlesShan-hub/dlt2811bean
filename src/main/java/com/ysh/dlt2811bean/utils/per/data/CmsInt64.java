@@ -30,7 +30,7 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
  * long l = r.get();
  * </pre>
  */
-public final class CmsInt64 extends AbstractCmsScalar<CmsInt64, Long> {
+public final class CmsInt64 extends AbstractCmsNumeric<CmsInt64, Long> {
 
     public static final long MIN = Long.MIN_VALUE;
     public static final long MAX = Long.MAX_VALUE;
@@ -51,13 +51,12 @@ public final class CmsInt64 extends AbstractCmsScalar<CmsInt64, Long> {
     }
 
     @Override
-    public CmsInt64 decode(PerInputStream pis) throws Exception {
+    protected Long decodeValue(PerInputStream pis) throws Exception {
         long result = 0;
         for (int i = 0; i < 8; i++) {
             result = (result << 8) | (pis.readByteAligned() & 0xFFL);
         }
-        set(result);
-        return this;
+        return result;
     }
 
     /** Static write with raw value. */

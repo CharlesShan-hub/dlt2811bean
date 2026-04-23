@@ -31,7 +31,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
  * int i = r.get();
  * </pre>
  */
-public final class CmsInt8 extends AbstractCmsScalar<CmsInt8, Integer> {
+public final class CmsInt8 extends AbstractCmsNumeric<CmsInt8, Integer> {
 
     public static final int MIN = -128;
     public static final int MAX = 127;
@@ -50,9 +50,8 @@ public final class CmsInt8 extends AbstractCmsScalar<CmsInt8, Integer> {
     }
 
     @Override
-    public CmsInt8 decode(PerInputStream pis) throws Exception {
-        set((int) PerInteger.decode(pis, MIN, MAX));
-        return this;
+    protected Integer decodeValue(PerInputStream pis) throws Exception {
+        return (int) PerInteger.decode(pis, MIN, MAX);
     }
 
     /** Static write with raw value. */

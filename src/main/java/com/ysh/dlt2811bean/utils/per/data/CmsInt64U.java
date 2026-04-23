@@ -32,7 +32,7 @@ import java.math.BigInteger;
  * BigInteger bi = r.get();
  * </pre>
  */
-public final class CmsInt64U extends AbstractCmsScalar<CmsInt64U, BigInteger> {
+public final class CmsInt64U extends AbstractCmsNumeric<CmsInt64U, BigInteger> {
 
     public static final BigInteger MIN = BigInteger.ZERO;
     public static final BigInteger MAX = new BigInteger("18446744073709551615");
@@ -52,13 +52,12 @@ public final class CmsInt64U extends AbstractCmsScalar<CmsInt64U, BigInteger> {
     }
 
     @Override
-    public CmsInt64U decode(PerInputStream pis) throws Exception {
+    protected BigInteger decodeValue(PerInputStream pis) throws Exception {
         byte[] bytes = new byte[9];
         for (int i = 1; i < bytes.length; i++) {
             bytes[i] = (byte) pis.readByteAligned();
         }
-        set(new BigInteger(1, bytes));
-        return this;
+        return new BigInteger(1, bytes);
     }
 
     /** Static write with raw value. */

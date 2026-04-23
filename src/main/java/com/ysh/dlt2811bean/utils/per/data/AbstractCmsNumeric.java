@@ -13,7 +13,7 @@ import java.math.BigInteger;
  * @param <T> the concrete type implementing this class
  * @param <V> the value type (e.g. Integer, Long, Boolean, BigInteger)
  */
-public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> implements CmsScalar<T, V> {
+public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> implements CmsNumeric<T, V> {
     private final String typeName;
     private final BigInteger min;
     private final BigInteger max;
@@ -22,7 +22,7 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> im
     /**
      * Constructor with range validation (for integer types).
      */
-    protected AbstractCmsScalar(String typeName, Object min, Object max, Object defaultValue) {
+    protected AbstractCmsNumeric(String typeName, Object min, Object max, Object defaultValue) {
         this.typeName = typeName;
         this.min = toBigInteger(min);
         this.max = toBigInteger(max);
@@ -33,7 +33,7 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> im
     /**
      * Constructor without range validation (for float types).
      */
-    protected AbstractCmsScalar(String typeName, Object defaultValue) {
+    protected AbstractCmsNumeric(String typeName, Object defaultValue) {
         this(typeName, null, null, defaultValue);
     }
 
@@ -61,6 +61,17 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> im
     public String toString() {
         return typeName + ": " + value;
     }
+
+    @Override
+    public T decode(PerInputStream pis) throws Exception {
+        V decodedValue = decodeValue(pis);
+        set(decodedValue);
+        return self();
+    }
+
+    public abstract void encode(PerOutputStream pos);
+
+    protected abstract V decodeValue(PerInputStream pis) throws Exception;
 
     // ==================== Private Helpers ====================
 

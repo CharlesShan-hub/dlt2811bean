@@ -31,7 +31,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerReal;
  * double d = r.get();
  * </pre>
  */
-public final class CmsFloat64 extends AbstractCmsScalar<CmsFloat64, Double> {
+public final class CmsFloat64 extends AbstractCmsNumeric<CmsFloat64, Double> {
 
     public CmsFloat64() {
         this(0.0);
@@ -47,9 +47,8 @@ public final class CmsFloat64 extends AbstractCmsScalar<CmsFloat64, Double> {
     }
 
     @Override
-    public CmsFloat64 decode(PerInputStream pis) throws Exception {
-        set(PerReal.decodeFloat64(pis));
-        return this;
+    protected Double decodeValue(PerInputStream pis) throws Exception {
+        return PerReal.decodeFloat64(pis);
     }
 
     /** Static write with raw value. */

@@ -31,7 +31,7 @@ import com.ysh.dlt2811bean.utils.per.types.PerInteger;
  * boolean b = r.get();
  * </pre>
  */
-public final class CmsBoolean extends AbstractCmsScalar<CmsBoolean, Boolean> {
+public final class CmsBoolean extends AbstractCmsNumeric<CmsBoolean, Boolean> {
 
     public CmsBoolean(boolean value) {
         super("BOOLEAN", 0, 1, value);
@@ -47,9 +47,8 @@ public final class CmsBoolean extends AbstractCmsScalar<CmsBoolean, Boolean> {
     }
 
     @Override
-    public CmsBoolean decode(PerInputStream pis) throws Exception {
-        set(PerInteger.decode(pis, 0L, 1L) == 1L);
-        return this;
+    protected Boolean decodeValue(PerInputStream pis) throws Exception {
+        return PerInteger.decode(pis, 0L, 1L) == 1L;
     }
 
     /** Static write with raw value. */

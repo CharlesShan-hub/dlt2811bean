@@ -1,0 +1,121 @@
+package com.ysh.dlt2811bean.utils.per.data;
+
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
+/**
+ * Abstract base class for all CMS string types.
+ * Provides common structure for string-like types with size/max constraints.
+ *
+ * <p>String types support two constraint modes:
+ * <ul>
+ *   <li><b>FIXED</b> (SIZE(n)): fixed length, padded/trimmed as needed</li>
+ *   <li><b>VARIABLE</b> (SIZE(0..max)): variable length with length prefix</li>
+ * </ul>
+ *
+ * @param <T> the concrete string type
+ * @param <V> the value type (String, byte[], etc.)
+ */
+public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> implements CmsString<T, V> {
+
+    /** Encoding mode: FIXED for SIZE(n), VARIABLE for SIZE(0..max). */
+    public enum Mode {
+        /** Fixed-size: SIZE(n), padded/trimmed as needed. */
+        FIXED,
+        /** Variable-size: SIZE(0..max), length prefix encoded. */
+        VARIABLE
+    }
+
+    protected final String typeName;
+    protected V value;
+    protected Integer size;
+    protected Integer max;
+
+    /**
+     * Constructor for string types.
+     *
+     * @param typeName the DL/T 2811 type name (e.g., "OCTET STRING")
+     * @param value initial value (empty string/array for default)
+     */
+    protected AbstractCmsString(String typeName, V value) {
+        this.typeName = typeName;
+        this.value = value;
+    }
+
+    /**
+     * Set fixed size (SIZE(n)). Clears max.
+     */
+    public T size(int size) {
+        this.size = size;
+        this.max = null;
+        return self();
+    }
+
+    /**
+     * Set maximum size (SIZE(0..max)). Clears size.
+     */
+    public T max(int max) {
+        this.max = max;
+        this.size = null;
+        return self();
+    }
+
+    /**
+     * Set the value.
+     */
+    public T set(V value) {
+        if (value == null) {
+            throw new IllegalArgumentException(typeName + " value cannot be null");
+        }
+        this.value = value;
+        return self();
+    }
+
+    /**
+     * Get the value.
+     */
+    public V get() {
+        return value;
+    }
+
+    @Override
+    public String toString() {
+        return typeName + ": " + String.valueOf(value);
+    }
+
+    @SuppressWarnings("unchecked")
+    private T self() {
+        return (T) this;
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        if (size != null && max == null) {
+            encodeFixedSize(pos);
+        } else if (size == null && max != null) {
+            encodeConstrained(pos);
+        } else {
+            throw new IllegalStateException("String must have either size or max constraint");
+        }
+    }
+
+    @Override
+    public T decode(PerInputStream pis) throws Exception {
+        if (size != null && max == null) {
+            set(decodeValueFixedSize(pis));
+        } else if (size == null && max != null) {
+            set(decodeValueConstrained(pis));
+        } else {
+            throw new IllegalStateException("String must have either size or max constraint");
+        }
+        return self();
+    }
+    
+    protected abstract void encodeFixedSize(PerOutputStream pos);
+
+    protected abstract void encodeConstrained(PerOutputStream pos);
+
+    protected abstract V decodeValueFixedSize(PerInputStream pis) throws Exception;
+
+    protected abstract V decodeValueConstrained(PerInputStream pis) throws Exception;
+}
