@@ -29,8 +29,8 @@ public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>> 
     }
 
     public T set(Integer value) {
-        validate();
         this.value = value;
+        validate();
         return self();
     }
 
@@ -55,7 +55,7 @@ public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>> 
 
     private void validate() {
         if (size == initSize) {
-            throw new IllegalStateException("size is not set");
+            throw new IllegalArgumentException("size is not set");
         }
         if (value < 0 || value >= size) { // size = max index + 1
             throw new IllegalArgumentException(
