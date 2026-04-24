@@ -43,20 +43,20 @@
 | 7.3.12公共ACSI | 物理通信地址 | CmsPhyComAddr | bean |   ✅   |  ✅   |
 | 7.4功能约束 | 功能约束 | CmsFC | bean |   ✅   |  ✅   |
 | 7.5.1控制对象属性 | 控制对象属性 | - | - | - | - |
-|   7.5.2控制操作   |         发出者         |    CmsOriginator     | bean |   ✅   |  ✅   |
-|   7.5.2控制操作   |    发出者-内部字段     |       CmsOrCat       | enum |   ✅   |  ✅   |
-|   7.5.3控制操作   |          检测          |       CmsCheck       | code |   ✅   |  ✅   |
-|   7.5.4控制操作   |        附加原因        |     CmsAddCause      | enum |   ✅   |  ✅   |
-|  7.6.1控制块属性  |       控制块属性       |          -           |  -   |   -   |  -   |
-|    7.6.2控制块    |        触发条件        | CmsTriggerConditions | code |   ✅   |  ✅   |
-|    7.6.3控制块    |        触发原因        |    CmsReasonCode     | code |   ✅   |  ✅   |
-|    7.6.4控制块    |  缓存报告控制块选项域  |    CmsRcbOptFlds     | code |   ✅   |  ✅   |
-|    7.6.5控制块    |    日志控制块选项域    |    CmsLcbOptFlds     | code |   ✅   |  ✅   |
-|    7.6.6控制块    | 多播采样值控制块选项域 |   CmsMsvcbOptFlds    | code |   ✅   |  ✅   |
+|   7.5.2控制操作   |         发出者         |    CmsOriginator     |  bean  |   ✅   |  ✅   |
+|   7.5.2控制操作   |    发出者-内部字段     |       CmsOrCat       |  enum  |   ✅   |  ✅   |
+|   7.5.3控制操作   |          检测          |       CmsCheck       |  code  |   ✅   |  ✅   |
+|   7.5.4控制操作   |        附加原因        |     CmsAddCause      |  enum  |   ✅   |  ✅   |
+|  7.6.1控制块属性  |       控制块属性       |          -           |   -    |   -   |  -   |
+|    7.6.2控制块    |        触发条件        | CmsTriggerConditions |  code  |   ✅   |  ✅   |
+|    7.6.3控制块    |        触发原因        |    CmsReasonCode     |  code  |   ✅   |  ✅   |
+|    7.6.4控制块    |  缓存报告控制块选项域  |    CmsRcbOptFlds     |  code  |   ✅   |  ✅   |
+|    7.6.5控制块    |    日志控制块选项域    |    CmsLcbOptFlds     |  code  |   ✅   |  ✅   |
+|    7.6.6控制块    | 多播采样值控制块选项域 |   CmsMsvcbOptFlds    |  code  |   ✅   |  ✅   |
 | 7.6.7控制块 | 采样模式 | CmsSmpMod | enum |✅|✅|
-| 7.7.1 |                         |                      |      |||
-|               |                         |                      |      |||
-|               |                         |                      |      |||
+| 7.7.1数据 | 数据 | CmsData | choice |✅|✅|
+| 7.7.1数据 | 内容相同的列表 | CmsArray | array |✅|✅|
+| 7.7.1数据 | 内容可不同的列表 | CmsStructure | array |✅|✅|
 |               |                         |                      |      |||
 |               |                         |                      |      |||
 |               |                         |                      |      |||
