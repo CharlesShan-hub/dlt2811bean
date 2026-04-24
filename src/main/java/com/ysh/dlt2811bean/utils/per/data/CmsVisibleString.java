@@ -37,14 +37,19 @@ import com.ysh.dlt2811bean.utils.per.types.PerVisibleString;
  * CmsVisibleString r2 = CmsVisibleString.read(pis, Mode.VARIABLE, 255);
  * </pre>
  */
-public final class CmsVisibleString extends AbstractCmsString<CmsVisibleString, String> {
+public class CmsVisibleString extends AbstractCmsString<CmsVisibleString, String> {
 
     public CmsVisibleString() {
-        super("VISIBLE STRING", "");
+        this("");
     }
 
     public CmsVisibleString(String value) {
-        super("VISIBLE STRING", value != null ? value : "");
+        this("VISIBLE STRING", value != null ? value : "");
+    }
+
+    /** Subclass constructor — allows subclasses to set a custom type name. */
+    protected CmsVisibleString(String typeName, String value) {
+        super(typeName, value != null ? value : "");
     }
 
     @Override

@@ -42,14 +42,19 @@ import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
  * CmsOctetString r2 = CmsOctetString.read(pis, Mode.FIXED, 8);
  * </pre>
  */
-public final class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
+public class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
 
     public CmsOctetString() {
         this(new byte[0]);
     }
 
     public CmsOctetString(byte[] value) {
-        super("OCTET STRING", value != null ? value : new byte[0]);
+        this("OCTET STRING", value);
+    }
+
+    /** Subclass constructor — allows subclasses to set a custom type name. */
+    protected CmsOctetString(String typeName, byte[] value) {
+        super(typeName, value != null ? value : new byte[0]);
     }
 
     @Override

@@ -42,7 +42,7 @@ import java.util.Objects;
  * </pre>
  */
 @Getter
-public final class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
+public class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
 
     /**
      * -- GETTER --
@@ -51,8 +51,7 @@ public final class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> 
     private int bitLength;
 
     public CmsBitString() {
-        super("BIT STRING", new byte[0]);
-        this.bitLength = 0;
+        this("BIT STRING", new byte[0], 0);
     }
 
     /**
@@ -61,17 +60,15 @@ public final class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> 
      * @param bitLength number of valid bits
      */
     public CmsBitString(long longValue, int bitLength) {
-        super("BIT STRING", longToBytes(longValue, bitLength));
-        this.bitLength = bitLength;
+        this("BIT STRING", longToBytes(longValue, bitLength), bitLength);
     }
 
-    /**
-     * Constructor with byte array.
-     * @param value    bit data
-     * @param bitLength number of valid bits
-     */
     public CmsBitString(byte[] value, int bitLength) {
-        super("BIT STRING", value != null ? value : new byte[0]);
+        this("BIT STRING", value, bitLength);
+    }
+
+    public CmsBitString(String typeName, byte[] value, int bitLength) {
+        super(typeName, value != null ? value : new byte[0]);
         this.bitLength = bitLength;
     }
 

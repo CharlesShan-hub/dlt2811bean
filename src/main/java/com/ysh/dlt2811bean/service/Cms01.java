@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.service;
 
-import com.ysh.dlt2811bean.utils.per.data2.CmsVisibleString;
+import com.ysh.dlt2811bean.utils.per.data.CmsVisibleString;
 
-import static com.ysh.dlt2811bean.utils.per.data2.CmsVisibleString.Mode;
+import static com.ysh.dlt2811bean.utils.per.data.AbstractCmsString.Mode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -56,7 +56,7 @@ public class Cms01 extends CmsService {
         PerInteger.encode(pos, protocolVersion & 0xFFL, 0, 255);
         PerInteger.encode(pos, apduSize & 0xFFFFL, 0, 65535);
         PerInteger.encode(pos, asduSize & 0xFFFFL, 0, 65535);
-        CmsVisibleString.encode(pos, serverName != null ? serverName : "", Mode.VARIABLE, 255);
+        CmsVisibleString.write(pos, serverName != null ? serverName : "", Mode.VARIABLE, 255);
 
         return pos.toByteArray();
     }
@@ -69,7 +69,7 @@ public class Cms01 extends CmsService {
         this.protocolVersion = (int) PerInteger.decode(pis, 0, 255);
         this.apduSize = (int) PerInteger.decode(pis, 0, 65535);
         this.asduSize = (int) PerInteger.decode(pis, 0, 65535);
-        this.serverName = CmsVisibleString.decode(pis, Mode.VARIABLE, 255).getValue();
+        this.serverName = CmsVisibleString.read(pis, Mode.VARIABLE, 255).get();
     }
 
     @Override

@@ -39,14 +39,21 @@ import com.ysh.dlt2811bean.utils.per.types.PerUtf8String;
  * CmsUtf8String r2 = CmsUtf8String.read(pis, Mode.VARIABLE, 255);
  * </pre>
  */
-public final class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
+public class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
 
     private boolean bmp = false;
 
-    public CmsUtf8String(){ this(""); }
+    public CmsUtf8String() {
+        this("");
+    }
 
     public CmsUtf8String(String value) {
-        super("UTF8String", value != null ? value : "");
+        this("UTF8String", value);
+    }
+
+    /** Subclass constructor — allows subclasses to set a custom type name. */
+    protected CmsUtf8String(String typeName, String value) {
+        super(typeName, value != null ? value : "");
     }
 
     /** Enable BMP mode (UCS-2, 2 bytes per character). */
