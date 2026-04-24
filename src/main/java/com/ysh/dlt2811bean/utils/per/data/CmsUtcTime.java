@@ -1,7 +1,7 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * DL/T 2811 UtcTime type (§7.2.1 / §7.3.4 TimeStamp, RFC 5905 encoding).
@@ -20,124 +20,47 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
  * then fraction (MSB first), then timeQuality (MSB first).
  *
  * <pre>
- * // Bean mode — chain setters
+ * // Chain usage
  * CmsUtcTime t = new CmsUtcTime()
- *     .setSecondsSinceEpoch(1715000000L)
- *     .setFractionOfSecond(1234567)
- *     .setTimeQuality(new CmsTimeQuality().setSubSecondPrecision(24));
+ *     .secondsSinceEpoch(new CmsInt32U(1715000000L))
+ *     .fractionOfSecond(new CmsInt24U(1234567))
+ *     .timeQuality(new CmsTimeQuality(0x20));
  *
- * // Quick mode — raw values
+ * // Quick mode
  * CmsUtcTime t = new CmsUtcTime(1715000000L, 1234567, new CmsTimeQuality(0x20));
  *
- * // Encode / Decode (instance)
+ * // Encode / Decode
  * t.encode(pos);
  * CmsUtcTime r = new CmsUtcTime().decode(pis);
  *
- * // Encode / Decode (static)
- * CmsUtcTime.write(pos, t);
- * CmsUtcTime r = CmsUtcTime.read(pis);
- *
  * // Access fields
- * r.getSecondsSinceEpoch();                     // → 1715000000
- * r.getFractionOfSecond();                      // → 1234567
- * r.getTimeQuality().is(CmsTimeQuality.CLOCK_FAULT);  // → boolean
- * r.getTimeQuality().getSubSecondPrecision();   // → int
+ * r.secondsSinceEpoch.get();                     // → 1715000000
+ * r.fractionOfSecond.get();                      // → 1234567
+ * r.timeQuality.is(CmsTimeQuality.CLOCK_FAULT);  // → boolean
+ * r.timeQuality.getSubSecondPrecision();         // → int
  * </pre>
  *
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc5905">RFC 5905</a>
  */
+@Setter
+@Accessors(fluent = true)
 public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
 
-    private final CmsInt32U secondsSinceEpoch;
-    private final CmsInt24U fractionOfSecond;
-    private final CmsTimeQuality timeQuality;
+    public CmsInt32U secondsSinceEpoch = new CmsInt32U(0L);
+    public CmsInt24U fractionOfSecond = new CmsInt24U(0);
+    public CmsTimeQuality timeQuality = new CmsTimeQuality();
 
     public CmsUtcTime() {
-        this.secondsSinceEpoch = new CmsInt32U();
-        this.fractionOfSecond = new CmsInt24U();
-        this.timeQuality = new CmsTimeQuality();
+        super("UtcTime");
+        registerField("secondsSinceEpoch");
+        registerField("fractionOfSecond");
+        registerField("timeQuality");
     }
 
-    /** Convenience constructor — accepts raw int for timeQuality. */
-    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, int rawTimeQuality) {
-        this(secondsSinceEpoch, fractionOfSecond, new CmsTimeQuality(rawTimeQuality));
-    }
-
-    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, CmsTimeQuality timeQuality) {
+    public CmsUtcTime(long secondsSinceEpoch, int fractionOfSecond, long timeQualityValue) {
         this();
-        setSecondsSinceEpoch(secondsSinceEpoch);
-        setFractionOfSecond(fractionOfSecond);
-        setTimeQuality(timeQuality);
-    }
-
-    // ==================== Getters / Setters ====================
-
-    public long getSecondsSinceEpoch() {
-        return secondsSinceEpoch.get();
-    }
-
-    public CmsUtcTime setSecondsSinceEpoch(long secondsSinceEpoch) {
         this.secondsSinceEpoch.set(secondsSinceEpoch);
-        return this;
-    }
-
-    public int getFractionOfSecond() {
-        return fractionOfSecond.get();
-    }
-
-    public CmsUtcTime setFractionOfSecond(int fractionOfSecond) {
         this.fractionOfSecond.set(fractionOfSecond);
-        return this;
-    }
-
-    public CmsTimeQuality getTimeQuality() {
-        return timeQuality;
-    }
-
-    public CmsUtcTime setTimeQuality(CmsTimeQuality timeQuality) {
-        this.timeQuality.set(timeQuality.get());
-        return this;
-    }
-
-    public CmsUtcTime setTimeQuality(int rawTimeQuality) {
-        this.timeQuality.set((long) rawTimeQuality);
-        return this;
-    }
-
-    // ==================== Encode / Decode ====================
-
-    @Override
-    public void encode(PerOutputStream pos) {
-        secondsSinceEpoch.encode(pos);
-        fractionOfSecond.encode(pos);
-        timeQuality.encode(pos);
-    }
-
-    @Override
-    public CmsUtcTime decode(PerInputStream pis) throws Exception {
-        secondsSinceEpoch.decode(pis);
-        fractionOfSecond.decode(pis);
-        timeQuality.decode(pis);
-        return this;
-    }
-
-    // ==================== Static helpers ====================
-
-    public static void write(PerOutputStream pos, CmsUtcTime value) {
-        if (value == null) {
-            new CmsUtcTime().encode(pos);
-        } else {
-            value.encode(pos);
-        }
-    }
-
-    public static CmsUtcTime read(PerInputStream pis) throws Exception {
-        return new CmsUtcTime().decode(pis);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("UtcTime[s=%d, frac=%d, %s]",
-                secondsSinceEpoch.get(), fractionOfSecond.get(), timeQuality);
+        this.timeQuality.set(timeQualityValue);
     }
 }

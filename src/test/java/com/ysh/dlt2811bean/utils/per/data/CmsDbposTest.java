@@ -161,7 +161,7 @@ class CmsDbposTest {
     @DisplayName("toString format")
     void toStringFormat() {
         CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
-        assertEquals("CmsDbpos[2]", dbpos.toString());
+        assertEquals("CmsDbpos: 2", dbpos.toString());
     }
 
     @Test

@@ -1,12 +1,12 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
-public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> implements CmsScalar<T, V> {
+public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
+        extends AbstractCmsType<T> implements CmsScalar<T, V> {
 
-    protected final String typeName;
     protected V value;
 
     protected AbstractCmsScalar(String typeName, V defaultValue) {
-        this.typeName = typeName;
+        super(typeName);
         this.value = defaultValue;
     }
 
@@ -27,10 +27,5 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V> im
     @Override
     public String toString() {
         return typeName + ": " + value;
-    }
-
-    @SuppressWarnings("unchecked")
-    protected T self() {
-        return (T) this;
     }
 }
