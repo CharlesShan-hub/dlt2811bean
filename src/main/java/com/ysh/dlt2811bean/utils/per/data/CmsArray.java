@@ -97,6 +97,9 @@ public class CmsArray<T extends CmsType<?>> extends AbstractCmsScalar<CmsArray<T
 
     @Override
     public CmsArray<T> decode(PerInputStream pis) throws Exception {
+        if (max <= 0) {
+            throw new IllegalStateException("max must be set before decode");
+        }
         value.clear();
         int count = PerInteger.decodeLength(pis);
         for (int i = 0; i < count; i++) {

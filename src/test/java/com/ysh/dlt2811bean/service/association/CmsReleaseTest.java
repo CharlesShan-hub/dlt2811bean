@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.association;
 
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import org.junit.jupiter.api.DisplayName;
@@ -8,8 +8,8 @@ import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Cms03 Release (SC=3)")
-class Cms03Test {
+@DisplayName("CmsRelease (SC=3)")
+class CmsReleaseTest {
 
     @Test
     @DisplayName("encode+decode round-trip")
@@ -19,12 +19,12 @@ class Cms03Test {
         assocId[1] = (byte) 0xAB;
         assocId[63] = (byte) 0xFF;
 
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setAssociationId(assocId);
 
         byte[] frame = req.encode();
 
-        Cms03 decoded = new Cms03();
+        CmsRelease decoded = new CmsRelease();
         decoded.decode(frame);
         assertArrayEquals(assocId, decoded.getAssociationId());
     }
@@ -34,12 +34,12 @@ class Cms03Test {
     void allZeros() throws PerDecodeException {
         byte[] assocId = new byte[64];
 
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setAssociationId(assocId);
 
         byte[] frame = req.encode();
 
-        Cms03 decoded = new Cms03();
+        CmsRelease decoded = new CmsRelease();
         decoded.decode(frame);
         assertArrayEquals(assocId, decoded.getAssociationId());
     }
@@ -47,7 +47,7 @@ class Cms03Test {
     @Test
     @DisplayName("APCH header: PI=0x01, SC=0x03")
     void header() {
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setAssociationId(new byte[64]);
 
         byte[] frame = req.encode();
@@ -61,14 +61,14 @@ class Cms03Test {
         byte[] assocId = new byte[64];
         Arrays.fill(assocId, (byte) 0xAA);
 
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setResponse(true);
         req.setAssociationId(assocId);
 
         byte[] frame = req.encode();
         assertTrue((frame[2] & 0x80) != 0);
 
-        Cms03 decoded = new Cms03();
+        CmsRelease decoded = new CmsRelease();
         decoded.decode(frame);
         assertTrue(decoded.isResponse());
         assertArrayEquals(assocId, decoded.getAssociationId());
@@ -77,7 +77,7 @@ class Cms03Test {
     @Test
     @DisplayName("frame length = APCH(5) + ASDU(64)")
     void frameLength() {
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setAssociationId(new byte[64]);
 
         byte[] frame = req.encode();
@@ -90,9 +90,9 @@ class Cms03Test {
     @Test
     @DisplayName("decode service code mismatch throws")
     void serviceCodeMismatch() {
-        byte[] frame = {0x01, 0x02, 0x00, 0x00, 0x00};  // SC=2 but Cms03 expects SC=3
+        byte[] frame = {0x01, 0x02, 0x00, 0x00, 0x00};  // SC=2 but CmsRelease expects SC=3
 
-        Cms03 decoded = new Cms03();
+        CmsRelease decoded = new CmsRelease();
         assertThrows(PerDecodeException.class, () -> decoded.decode(frame));
     }
 
@@ -103,7 +103,7 @@ class Cms03Test {
         assocId[0] = (byte) 0xDE;
         assocId[1] = (byte) 0xAD;
 
-        Cms03 req = new Cms03();
+        CmsRelease req = new CmsRelease();
         req.setAssociationId(assocId);
         assertTrue(req.toString().contains("DEAD"));
     }

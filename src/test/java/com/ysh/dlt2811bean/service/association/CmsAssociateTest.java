@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.association;
 
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import org.junit.jupiter.api.DisplayName;
@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("Cms01 Associate (SC=1)")
-class Cms01Test {
+@DisplayName("CmsAssociate (SC=1)")
+class CmsAssociateTest {
 
 //    @Test
 //    @DisplayName("encode+decode round-trip")

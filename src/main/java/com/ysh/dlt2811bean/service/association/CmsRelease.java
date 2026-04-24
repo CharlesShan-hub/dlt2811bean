@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.association;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +7,7 @@ import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
+import com.ysh.dlt2811bean.service.CmsService;
 
 /**
  * CMS Service Code 03 — Release (release association).
@@ -23,12 +24,12 @@ import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Cms03 extends CmsService {
+public class CmsRelease extends CmsService {
 
     /** Fixed association identifier length: 64 bytes */
     private static final int ASSOC_ID_SIZE = 64;
 
-    public Cms03() {
+    public CmsRelease() {
         super(3);
     }
 
@@ -54,8 +55,8 @@ public class Cms03 extends CmsService {
 
     @Override
     public String toString() {
-        if (associationId == null) return "Cms03{associationId=null}";
-        StringBuilder sb = new StringBuilder("Cms03{associationId=");
+        if (associationId == null) return "CmsRelease{associationId=null}";
+        StringBuilder sb = new StringBuilder("CmsRelease{associationId=");
         for (byte b : associationId) sb.append(String.format("%02X", b & 0xFF));
         sb.append('}');
         return sb.toString();

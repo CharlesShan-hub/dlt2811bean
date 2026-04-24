@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.association;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +7,7 @@ import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.utils.per.types.PerEnumerated;
+import com.ysh.dlt2811bean.service.CmsService;
 
 /**
  * CMS Service Code 02 — Abort.
@@ -32,12 +33,12 @@ import com.ysh.dlt2811bean.utils.per.types.PerEnumerated;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Cms02 extends CmsService {
+public class CmsAbort extends CmsService {
 
     /** Max enum index for abort reason (0..4, 5 values) */
     static final int REASON_MAX = 4;
 
-    public Cms02() {
+    public CmsAbort() {
         super(2);
     }
 
@@ -71,6 +72,6 @@ public class Cms02 extends CmsService {
 
     @Override
     public String toString() {
-        return "Cms02{reason=" + reason + "}";
+        return "CmsAbort{reason=" + reason + "}";
     }
 }

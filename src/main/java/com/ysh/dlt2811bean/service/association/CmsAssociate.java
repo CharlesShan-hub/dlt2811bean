@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.association;
 
 import com.ysh.dlt2811bean.utils.per.data.CmsInt16U;
 import com.ysh.dlt2811bean.utils.per.data.CmsInt8U;
@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.CmsService;
 
 /**
  * CMS Service Code 01 — Associate (association request).
@@ -30,9 +31,9 @@ import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
 @Getter
 @Setter
 @Accessors(chain = true)
-public class Cms01 extends CmsService {
+public class CmsAssociate extends CmsService {
 
-    public Cms01() {
+    public CmsAssociate() {
         super(1);
     }
 
@@ -76,7 +77,7 @@ public class Cms01 extends CmsService {
 
     @Override
     public String toString() {
-        return "Cms01{reqId=" + reqId
+        return "CmsAssociate{reqId=" + reqId
             + ", protocolVersion=" + protocolVersion
             + ", apduSize=" + apduSize
             + ", asduSize=" + asduSize
