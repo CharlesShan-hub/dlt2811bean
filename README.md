@@ -58,5 +58,94 @@
 | 7.7.1数据 | 内容相同的列表 | CmsArray | array |✅|✅|
 | 7.7.1数据 | 内容可不同的列表 | CmsStructure | array |✅|✅|
 
+## 服务
+
+```plaintext
+service/
+├── CmsService.java              ← 已有：APCH 基类
+├── CmsServiceError.java         ← 已有：错误码枚举
+│
+├── association/                 ← 关联服务组 (SC=1,2,3,154)
+│   ├── CmsAssociateNegotiate.java   ← SC=154 (新建)
+│   ├── CmsAssociate.java            ← SC=1 (已有 Cms01 改名)
+│   ├── CmsRelease.java              ← SC=3 (已有 Cms03 改名)
+│   └── CmsAbort.java                ← SC=2 (已有 Cms02 改名)
+│
+├── directory/                   ← 目录服务组 (SC=80~83,155,156)
+│   ├── CmsGetServerDirectory.java
+│   ├── CmsGetLogicDeviceDirectory.java
+│   ├── CmsGetLogicNodeDirectory.java
+│   ├── CmsGetAllDataValues.java
+│   ├── CmsGetAllDataDefinition.java
+│   └── CmsGetAllCBValues.java
+│
+├── data/                        ← 数据服务组 (SC=48~51)
+│   ├── CmsGetDataValues.java
+│   ├── CmsSetDataValues.java
+│   ├── CmsGetDataDirectory.java
+│   └── CmsGetDataDefinition.java
+│
+├── dataset/                     ← 数据集服务组 (SC=54~59)
+│   ├── CmsCreateDataSet.java
+│   ├── CmsDeleteDataSet.java
+│   ├── CmsGetDataSetDirectory.java
+│   ├── CmsGetDataSetValues.java
+│   └── CmsSetDataSetValues.java
+│
+├── control/                     ← 控制服务组 (SC=68~74)
+│   ├── CmsSelect.java
+│   ├── CmsSelectWithValue.java
+│   ├── CmsCancel.java
+│   ├── CmsOperate.java
+│   ├── CmsCommandTermination.java
+│   ├── CmsTimeActivatedOperate.java
+│   └── CmsTimeActivatedOperateTermination.java
+│
+├── report/                      ← 报告服务组 (SC=90~94)
+│   ├── CmsReport.java
+│   ├── CmsGetBRCBValues.java
+│   ├── CmsSetBRCBValues.java
+│   ├── CmsGetURCBValues.java
+│   └── CmsSetURCBValues.java
+│
+├── setting/                     ← 定值组+日志 (SC=84~89,95~99)
+│   ├── CmsSelectActiveSG.java
+│   ├── CmsSelectEditSG.java
+│   ├── CmsSetEditSGValue.java
+│   ├── CmsConfirmEditSGValues.java
+│   ├── CmsGetEditSGValue.java
+│   ├── CmsGetSGCBValues.java
+│   ├── CmsGetLCBValues.java
+│   ├── CmsSetLCBValues.java
+│   ├── CmsQueryLogByTime.java
+│   ├── CmsQueryLogAfter.java
+│   └── CmsGetLogStatusValues.java
+│
+├── goose/                       ← GOOSE 控制块 (SC=102,103)
+│   ├── CmsGetGoCBValues.java
+│   └── CmsSetGoCBValues.java
+│
+├── sv/                          ← 采样值控制块 (SC=105,106)
+│   ├── CmsGetMSVCBValues.java
+│   └── CmsSetMSVCBValues.java
+│
+├── file/                        ← 文件服务 (SC=128~132)
+│   ├── CmsGetFile.java
+│   ├── CmsSetFile.java
+│   ├── CmsDeleteFile.java
+│   ├── CmsGetFileAttributeValues.java
+│   └── CmsGetFileDirectory.java
+│
+├── rpc/                         ← RPC 服务 (SC=110~114)
+│   ├── CmsGetRpcInterfaceDirectory.java
+│   ├── CmsGetRpcMethodDirectory.java
+│   ├── CmsGetRpcInterfaceDefinition.java
+│   ├── CmsGetRpcMethodDefinition.java
+│   └── CmsRpcCall.java
+│
+└── misc/                        ← 杂项 (SC=153)
+    └── CmsTest.java
+```
+
 
 
