@@ -9,6 +9,28 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * SEQUENCE OF Data type representing a collection of heterogeneous elements (structure).
+ * <p>
+ * Unlike {@link CmsArray}, CmsStructure elements can be different Data value types.
+ * Values added via {@link #add(CmsType)} are automatically wrapped in {@link CmsData}.
+ * <p>
+ * Encode example:
+ * <pre>{@code
+ * CmsData.write(pos, new CmsStructure().max(10)
+ *     .add(new CmsInt32(42))
+ *     .add(new CmsVisibleString("hello").max(10)));
+ * }</pre>
+ * <p>
+ * Decode example:
+ * <pre>{@code
+ * CmsStructure template = new CmsStructure().max(10)
+ *     .add(new CmsInt32())
+ *     .add(new CmsVisibleString("").max(10));
+ * CmsData.read(pis, template);
+ * int val = ((CmsInt32) ((CmsData<?>) template.get(0)).get()).get();
+ * }</pre>
+ */
 public class CmsStructure extends AbstractCmsScalar<CmsStructure, List<CmsData<?>>> implements Iterable<CmsData<?>> {
 
     private int max;
@@ -26,9 +48,18 @@ public class CmsStructure extends AbstractCmsScalar<CmsStructure, List<CmsData<?
         return max;
     }
 
-    public CmsStructure add(CmsData<?> item) {
+    // public CmsStructure add(CmsData<?> item) {
+    //     Objects.requireNonNull(item, "item cannot be null");
+    //     value.add(item);
+    //     return this;
+    // }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsStructure add(CmsType<?> item) {
         Objects.requireNonNull(item, "item cannot be null");
-        value.add(item);
+        CmsData data = new CmsData();
+        data.value = (CmsType) item;
+        value.add(data);
         return this;
     }
 

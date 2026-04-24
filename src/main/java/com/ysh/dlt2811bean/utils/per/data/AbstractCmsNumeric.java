@@ -67,6 +67,7 @@ public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> 
 
     private void validateRange(Object value) {
         if (value instanceof Boolean) return;
+        if (min == null || max == null) return;
         BigInteger bi = toBigInteger(value);
         if (bi.compareTo(min) < 0 || bi.compareTo(max) > 0) {
             throw new IllegalArgumentException(
@@ -75,6 +76,7 @@ public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> 
     }
 
     private static BigInteger toBigInteger(Object obj) {
+        if (obj == null) return null;
         if (obj instanceof BigInteger) return (BigInteger) obj;
         if (obj instanceof Number) return BigInteger.valueOf(((Number) obj).longValue());
         throw new IllegalArgumentException("Unsupported type: " + obj.getClass());

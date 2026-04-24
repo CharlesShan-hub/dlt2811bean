@@ -10,6 +10,23 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * SEQUENCE OF type representing a collection of homogeneous elements.
+ * <p>
+ * Encode example:
+ * <pre>{@code
+ * CmsArray<CmsInt32> arr = new CmsArray<>(CmsInt32.class).max(10);
+ * arr.add(new CmsInt32(100)).add(new CmsInt32(200));
+ * CmsData.write(pos, arr);
+ * }</pre>
+ * <p>
+ * Decode example:
+ * <pre>{@code
+ * CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32.class).max(10);
+ * CmsData.read(pis, template);
+ * int val = template.get(0).get();
+ * }</pre>
+ */
 public class CmsArray<T extends CmsType<?>> extends AbstractCmsScalar<CmsArray<T>, List<T>> implements Iterable<T> {
 
     private final Class<T> elementType;
