@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.types;
 
+import com.ysh.dlt2811bean.service.enums.MessageType;
+import com.ysh.dlt2811bean.service.enums.ServiceCode;
 import lombok.Getter;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
@@ -50,12 +52,9 @@ public abstract class CmsService {
     @Getter
     private final ServiceCode serviceCode;
 
-    /** Request/response flag */
+    /** Message type (request / positive response / negative response) */
     @Getter
-    private boolean response;
-    /** Error flag (only meaningful for responses) */
-    @Getter
-    private boolean error;
+    private MessageType messageType = MessageType.REQUEST;
     /** Fragment flag (more frames follow if true) */
     @Getter
     private boolean fragmented;
@@ -66,8 +65,7 @@ public abstract class CmsService {
 
     // ==================== Header Setters ====================
 
-    public void setResponse(boolean response) { this.response = response; }
-    public void setError(boolean error) { this.error = error; }
+    public void setMessageType(MessageType messageType) { this.messageType = messageType; }
     public void setFragmented(boolean fragmented) { this.fragmented = fragmented; }
 
     // ==================== Encode/Decode ====================
@@ -148,15 +146,17 @@ public abstract class CmsService {
 
     private byte encodeFlags() {
         int flags = 0;
-        if (response)   flags |= 0x80;  // bit7
-        if (error)      flags |= 0x40;  // bit6
-        if (fragmented) flags |= 0x20;  // bit5
+        if (messageType.isResponse())   flags |= 0x80;  // bit7
+        if (messageType.isError())      flags |= 0x40;  // bit6
+        if (fragmented)                 flags |= 0x20;  // bit5
         return (byte) flags;
     }
 
     private void decodeFlags(byte flagsByte) {
-        this.response   = (flagsByte & 0x80) != 0;
-        this.error      = (flagsByte & 0x40) != 0;
+        this.messageType = MessageType.fromFlags(
+            (flagsByte & 0x80) != 0,
+            (flagsByte & 0x40) != 0
+        );
         this.fragmented = (flagsByte & 0x20) != 0;
     }
 

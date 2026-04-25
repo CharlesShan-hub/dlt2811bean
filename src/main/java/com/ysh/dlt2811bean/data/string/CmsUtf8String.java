@@ -4,6 +4,7 @@ import com.ysh.dlt2811bean.data.type.AbstractCmsString;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerUtf8String;
+import lombok.Getter;
 
 /**
  * DL/T 2811 UNICODE STRING (UTF8String) type (§7.1.5, Table 6).
@@ -40,6 +41,7 @@ import com.ysh.dlt2811bean.per.types.PerUtf8String;
  * CmsUtf8String r2 = CmsUtf8String.read(pis, Mode.VARIABLE, 255);
  * </pre>
  */
+@Getter
 public class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
 
     private boolean bmp = false;
@@ -71,8 +73,6 @@ public class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
         this.bmp = bmp;
         return this;
     }
-
-    public boolean isBmp() { return bmp; }
 
     @Override
     protected void encodeFixedSize(PerOutputStream pos) {

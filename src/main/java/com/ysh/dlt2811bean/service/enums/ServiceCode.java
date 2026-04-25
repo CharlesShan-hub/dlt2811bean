@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service;
+package com.ysh.dlt2811bean.service.enums;
 
 /**
  * Service Code enumeration for DL/T 2811 (GB/T 45906.3-2025) communication protocol.

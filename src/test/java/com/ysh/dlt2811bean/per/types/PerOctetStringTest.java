@@ -64,6 +64,13 @@ class PerOctetStringTest {
         assertArrayEquals(new byte[]{0x01, 0x02, 0x00, 0x00}, result);
     }
 
+    @Test
+    @DisplayName("fixed-size: null data throws exception")
+    void fixedSize_nullData() {
+        assertThrows(IllegalArgumentException.class,
+            () -> PerOctetString.encodeFixedSize(new PerOutputStream(), null, 4));
+    }
+
     // ==================== Constrained ====================
 
     @Test

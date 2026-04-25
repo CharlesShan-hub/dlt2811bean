@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.service.association;
 
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.service.enums.MessageType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +53,7 @@ class CmsAbortTest {
     @DisplayName("response flag")
     void responseFlag() throws PerDecodeException {
         CmsAbort req = new CmsAbort();
-        req.setResponse(true);
+        req.setMessageType(MessageType.RESPONSE_POSITIVE);
         req.setReason(CmsAbort.REASON_URGENT);
 
         byte[] frame = req.encode();
@@ -60,7 +61,7 @@ class CmsAbortTest {
 
         CmsAbort decoded = new CmsAbort();
         decoded.decode(frame);
-        assertTrue(decoded.isResponse());
+        assertEquals(MessageType.RESPONSE_POSITIVE, decoded.getMessageType());
         assertEquals(CmsAbort.REASON_URGENT, decoded.getReason());
     }
 

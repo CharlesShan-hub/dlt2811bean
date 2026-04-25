@@ -7,8 +7,8 @@ import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerEnumerated;
-import com.ysh.dlt2811bean.service.CmsService;
-import com.ysh.dlt2811bean.service.ServiceCode;
+import com.ysh.dlt2811bean.service.types.CmsService;
+import com.ysh.dlt2811bean.service.enums.ServiceCode;
 
 /**
  * CMS Service Code 02 — Abort.

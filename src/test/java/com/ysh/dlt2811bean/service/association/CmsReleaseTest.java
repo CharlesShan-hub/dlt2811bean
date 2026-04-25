@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.service.association;
 
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.service.enums.MessageType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -62,7 +63,7 @@ class CmsReleaseTest {
         Arrays.fill(assocId, (byte) 0xAA);
 
         CmsRelease req = new CmsRelease();
-        req.setResponse(true);
+        req.setMessageType(MessageType.RESPONSE_POSITIVE);
         req.setAssociationId(assocId);
 
         byte[] frame = req.encode();
@@ -70,7 +71,7 @@ class CmsReleaseTest {
 
         CmsRelease decoded = new CmsRelease();
         decoded.decode(frame);
-        assertTrue(decoded.isResponse());
+        assertEquals(MessageType.RESPONSE_POSITIVE, decoded.getMessageType());
         assertArrayEquals(assocId, decoded.getAssociationId());
     }
 

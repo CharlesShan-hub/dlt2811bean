@@ -73,6 +73,33 @@ public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> ex
         return max;
     }
 
+    @Override
+    public T set(V value) {
+        super.set(value);
+        validateConstraints();
+        return self();
+    }
+
+    private void validateConstraints() {
+        if (value == null) return;
+        int len;
+        if (value instanceof byte[]) {
+            len = ((byte[]) value).length;
+        } else if (value instanceof String) {
+            len = ((String) value).length();
+        } else {
+            return;
+        }
+        if (size != null && len > size) {
+            throw new IllegalArgumentException(
+                typeName + " value length " + len + " exceeds fixed size " + size);
+        }
+        if (max != null && len > max) {
+            throw new IllegalArgumentException(
+                typeName + " value length " + len + " exceeds maximum " + max);
+        }
+    }
+
     // ==================== Encode / Decode ====================
 
     @Override

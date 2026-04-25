@@ -1,140 +1,113 @@
 package com.ysh.dlt2811bean.service.association;
 
+import com.ysh.dlt2811bean.data.string.CmsVisibleString;
+import com.ysh.dlt2811bean.data.string.CmsOctetString;
+import com.ysh.dlt2811bean.data.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.enums.MessageType;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
-@DisplayName("CmsAssociate (SC=1)")
+import static org.junit.jupiter.api.Assertions.*;
+
+@DisplayName("CmsAssociate")
 class CmsAssociateTest {
 
-//    @Test
-//    @DisplayName("encode+decode round-trip")
-//    void roundTrip() throws PerDecodeException {
-//        Cms01 req = new Cms01();
-//        req.setReqId(42);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(65535);
-//        req.setAsduSize(65531);
-//        req.setServerName("MyServer");
-//
-//        byte[] frame = req.encode();
-//
-//        Cms01 decoded = new Cms01();
-//        decoded.decode(frame);
-//
-//        assertEquals(42, decoded.getReqId());
-//        assertEquals(1, decoded.getProtocolVersion());
-//        assertEquals(65535, decoded.getApduSize());
-//        assertEquals(65531, decoded.getAsduSize());
-//        assertEquals("MyServer", decoded.getServerName());
-//    }
-//
-//    @Test
-//    @DisplayName("APCH header: PI=0x01, SC=0x01")
-//    void header() {
-//        Cms01 req = new Cms01();
-//        req.setReqId(0);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(1024);
-//        req.setAsduSize(512);
-//        req.setServerName("");
-//
-//        byte[] frame = req.encode();
-//
-//        assertEquals(0x01, frame[0] & 0xFF);  // PI
-//        assertEquals(0x01, frame[1] & 0xFF);  // SC
-//    }
-//
-//    @Test
-//    @DisplayName("response flag in header")
-//    void responseFlag() throws PerDecodeException {
-//        Cms01 req = new Cms01();
-//        req.setResponse(true);
-//        req.setReqId(1);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(1024);
-//        req.setAsduSize(512);
-//        req.setServerName("");
-//
-//        byte[] frame = req.encode();
-//        assertTrue((frame[2] & 0x80) != 0);  // Resp bit
-//
-//        Cms01 decoded = new Cms01();
-//        decoded.decode(frame);
-//        assertTrue(decoded.isResponse());
-//    }
-//
-//    @Test
-//    @DisplayName("error flag in header")
-//    void errorFlag() throws PerDecodeException {
-//        Cms01 req = new Cms01();
-//        req.setError(true);
-//        req.setReqId(1);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(1024);
-//        req.setAsduSize(512);
-//        req.setServerName("");
-//
-//        byte[] frame = req.encode();
-//        assertTrue((frame[2] & 0x40) != 0);  // Err bit
-//
-//        Cms01 decoded = new Cms01();
-//        decoded.decode(frame);
-//        assertTrue(decoded.isError());
-//    }
-//
-//    @Test
-//    @DisplayName("decode invalid PI throws")
-//    void invalidPi() {
-//        Cms01 req = new Cms01();
-//        req.setReqId(1);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(1024);
-//        req.setAsduSize(512);
-//        req.setServerName("");
-//        byte[] frame = req.encode();
-//        frame[0] = 0x02;  // corrupt PI
-//
-//        Cms01 decoded = new Cms01();
-//        assertThrows(PerDecodeException.class, () -> decoded.decode(frame));
-//    }
-//
-//    @Test
-//    @DisplayName("decode service code mismatch throws")
-//    void serviceCodeMismatch() {
-//        byte[] frame = {0x01, 0x03, 0x00, 0x00, 0x00};  // SC=3 but Cms01 expects SC=1
-//
-//        Cms01 decoded = new Cms01();
-//        assertThrows(PerDecodeException.class, () -> decoded.decode(frame));
-//    }
-//
-//    @Test
-//    @DisplayName("empty serverName round-trip")
-//    void emptyServerName() throws PerDecodeException {
-//        Cms01 req = new Cms01();
-//        req.setReqId(1);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(4096);
-//        req.setAsduSize(2048);
-//        req.setServerName("");
-//
-//        byte[] frame = req.encode();
-//
-//        Cms01 decoded = new Cms01();
-//        decoded.decode(frame);
-//        assertEquals("", decoded.getServerName());
-//    }
-//
-//    @Test
-//    @DisplayName("FL matches ASDU length")
-//    void frameLength() {
-//        Cms01 req = new Cms01();
-//        req.setReqId(0);
-//        req.setProtocolVersion(1);
-//        req.setApduSize(1024);
-//        req.setAsduSize(512);
-//        req.setServerName("test");
-//
-//        byte[] frame = req.encode();
-//        int fl = ((frame[3] & 0xFF) << 8) | (frame[4] & 0xFF);
-//        assertEquals(frame.length - 5, fl);
-//    }
+    @Test
+    @DisplayName("encode and decode REQUEST")
+    void request() throws Exception {
+        CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
+        req.setReqId(new byte[]{0x00, 0x01});
+        req.setServerAccessPointReference(new CmsVisibleString("MyServer").max(129));
+        req.setAuthenticationParameter(new CmsOctetString(new byte[]{0x01, 0x02, 0x03}).max(65535));
+
+        byte[] frame = req.encode();
+
+        CmsAssociate decoded = new CmsAssociate(MessageType.REQUEST);
+        decoded.decode(frame);
+
+        assertEquals(MessageType.REQUEST, decoded.getMessageType());
+        assertArrayEquals(new byte[]{0x00, 0x01}, decoded.getReqId().get());
+        assertEquals("MyServer", decoded.getServerAccessPointReference().get());
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, decoded.getAuthenticationParameter().get());
+    }
+
+    @Test
+    @DisplayName("encode and decode RESPONSE_POSITIVE")
+    void responsePositive() throws Exception {
+        CmsAssociate resp = new CmsAssociate(MessageType.RESPONSE_POSITIVE);
+        resp.getReqId().set(new byte[]{0x00, 0x01});
+        resp.setAssociationId(new CmsOctetString(new byte[64]).size(64));
+        resp.setResult(new CmsServiceError(CmsServiceError.NO_ERROR));
+        resp.setResponseAuthenticationParameter(new CmsOctetString(new byte[]{0x05}).max(65535));
+
+        byte[] frame = resp.encode();
+
+        CmsAssociate decoded = new CmsAssociate(MessageType.RESPONSE_POSITIVE);
+        decoded.decode(frame);
+
+        assertEquals(MessageType.RESPONSE_POSITIVE, decoded.getMessageType());
+        assertArrayEquals(new byte[]{0x00, 0x01}, decoded.getReqId().get());
+        assertEquals(CmsServiceError.NO_ERROR, decoded.getResult().get());
+        assertArrayEquals(new byte[]{0x05}, decoded.getResponseAuthenticationParameter().get());
+    }
+
+    @Test
+    @DisplayName("encode and decode RESPONSE_NEGATIVE")
+    void responseNegative() throws Exception {
+        CmsAssociate resp = new CmsAssociate(MessageType.RESPONSE_NEGATIVE);
+        resp.getReqId().set(new byte[]{0x00, 0x01});
+        resp.setServiceError(new CmsServiceError(CmsServiceError.ACCESS_VIOLATION));
+
+        byte[] frame = resp.encode();
+
+        CmsAssociate decoded = new CmsAssociate(MessageType.RESPONSE_NEGATIVE);
+        decoded.decode(frame);
+
+        assertEquals(MessageType.RESPONSE_NEGATIVE, decoded.getMessageType());
+        assertArrayEquals(new byte[]{0x00, 0x01}, decoded.getReqId().get());
+        assertEquals(CmsServiceError.ACCESS_VIOLATION, decoded.getServiceError().get());
+    }
+
+    @Test
+    @DisplayName("APCH header flags are set correctly for each message type")
+    void apchFlags() throws Exception {
+        CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
+        req.setReqId(new byte[]{0x00, 0x01});
+        req.setServerAccessPointReference(new CmsVisibleString("test").max(129));
+        byte[] reqFrame = req.encode();
+        assertEquals(MessageType.REQUEST, req.getMessageType());
+        assertFalse((reqFrame[2] & 0x80) != 0, "Request should have Resp=0");
+
+        CmsAssociate resp = new CmsAssociate(MessageType.RESPONSE_POSITIVE);
+        resp.setReqId(new byte[]{0x00, 0x01});
+        resp.setAssociationId(new CmsOctetString(new byte[64]).size(64));
+        resp.setResult(new CmsServiceError(CmsServiceError.NO_ERROR));
+        byte[] respFrame = resp.encode();
+        assertTrue((respFrame[2] & 0x80) != 0, "Response should have Resp=1");
+        assertFalse((respFrame[2] & 0x40) != 0, "Positive response should have Err=0");
+
+        CmsAssociate neg = new CmsAssociate(MessageType.RESPONSE_NEGATIVE);
+        neg.setReqId(new byte[]{0x00, 0x01});
+        neg.setServiceError(new CmsServiceError(CmsServiceError.ACCESS_VIOLATION));
+        byte[] negFrame = neg.encode();
+        assertTrue((negFrame[2] & 0x80) != 0, "Negative response should have Resp=1");
+        assertTrue((negFrame[2] & 0x40) != 0, "Negative response should have Err=1");
+    }
+
+    @Test
+    @DisplayName("toString includes fields based on message type")
+    void toStringFormat() {
+        CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
+        req.getReqId().set(new byte[]{0x00, 0x01});
+        req.setServerAccessPointReference(new CmsVisibleString("MyServer").max(129));
+        String reqStr = req.toString();
+        assertTrue(reqStr.contains("serverAccessPointReference"));
+        assertTrue(reqStr.contains("MyServer"));
+
+        CmsAssociate neg = new CmsAssociate(MessageType.RESPONSE_NEGATIVE);
+        neg.getReqId().set(new byte[]{0x00, 0x01});
+        neg.setServiceError(new CmsServiceError(CmsServiceError.ACCESS_VIOLATION));
+        String negStr = neg.toString();
+        assertTrue(negStr.contains("serviceError"));
+    }
 }

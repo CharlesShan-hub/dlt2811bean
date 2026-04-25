@@ -20,7 +20,6 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         fieldNames.add(name);
     }
 
-    @SuppressWarnings("unchecked")
     private AbstractCmsType<?> getField(String name) {
         try {
             Field f = getClass().getField(name);
@@ -34,7 +33,6 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void encode(PerOutputStream pos) {
         validate();
         for (String name : fieldNames) {

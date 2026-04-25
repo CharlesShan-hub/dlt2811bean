@@ -202,9 +202,13 @@ public final class PerOctetString {
     public static void encodeFixedSize(PerOutputStream pos, byte[] data, int fixedSize) {
         if (fixedSize == 0) return;
 
+        if (data == null) {
+            throw new IllegalArgumentException("data cannot be null");
+        }
+
         pos.align();
 
-        int writeLen = Math.min(data != null ? data.length : 0, fixedSize);
+        int writeLen = Math.min(data.length, fixedSize);
         for (int i = 0; i < writeLen; i++) {
             pos.writeByteAligned(data[i]);
         }
