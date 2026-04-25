@@ -81,15 +81,6 @@ public class CmsVisibleString extends AbstractCmsString<CmsVisibleString, String
         }
     }
 
-    /** Static write with instance (null encodes default empty). */
-    public static void write(PerOutputStream pos, CmsVisibleString obj) {
-        if (obj == null) {
-            new CmsVisibleString().encode(pos);
-        } else {
-            obj.encode(pos);
-        }
-    }
-
     @Override
     public CmsVisibleString copy() {
         CmsVisibleString clone = new CmsVisibleString(get());

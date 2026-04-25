@@ -116,20 +116,10 @@ class CmsInt32UTest {
         CmsInt32U val = new CmsInt32U(500000000L);
 
         PerOutputStream pos = new PerOutputStream();
-        CmsInt32U.write(pos, val);
+        val.encode(pos);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
         assertEquals(500000000L, (long) CmsInt32U.read(pis).get());
-    }
-
-    @Test
-    @DisplayName("static encode with null object")
-    void staticEncodeNullObject() throws Exception {
-        PerOutputStream pos = new PerOutputStream();
-        CmsInt32U.write(pos, (CmsInt32U) null);
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(0L, (long) CmsInt32U.read(pis).get());
     }
 
     @Test

@@ -116,20 +116,10 @@ class CmsInt8UTest {
         CmsInt8U val = new CmsInt8U(50);
 
         PerOutputStream pos = new PerOutputStream();
-        CmsInt8U.write(pos, val);
+        val.encode(pos);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
         assertEquals(50, (int) CmsInt8U.read(pis).get());
-    }
-
-    @Test
-    @DisplayName("static write with null object")
-    void staticWriteNullObject() throws Exception {
-        PerOutputStream pos = new PerOutputStream();
-        CmsInt8U.write(pos, (CmsInt8U) null);
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(0, (int) CmsInt8U.read(pis).get());
     }
 
     @Test

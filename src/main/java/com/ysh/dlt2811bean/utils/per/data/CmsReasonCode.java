@@ -44,6 +44,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 7-bit CODED ENUM layout.
  * Bit 0 is reserved; bits 1~6 are reason codes.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsReasonCode extends AbstractCmsCodedEnum<CmsReasonCode> {
 
     // ==================== Bit position constants ====================
@@ -77,5 +80,18 @@ public class CmsReasonCode extends AbstractCmsCodedEnum<CmsReasonCode> {
      */
     public CmsReasonCode(long value) {
         super("CmsReasonCode", value, 7);
+    }
+
+    private static final CmsReasonCode SHARED = new CmsReasonCode();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsReasonCode read(PerInputStream pis) throws Exception {
+        return new CmsReasonCode().decode(pis);
     }
 }

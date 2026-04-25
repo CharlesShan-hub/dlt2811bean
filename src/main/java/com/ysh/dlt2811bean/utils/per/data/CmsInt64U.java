@@ -60,14 +60,12 @@ public final class CmsInt64U extends AbstractCmsNumeric<CmsInt64U, BigInteger> {
         return new BigInteger(1, bytes);
     }
 
+    private static final CmsInt64U SHARED = new CmsInt64U();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, BigInteger value) {
-        new CmsInt64U(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt64U obj) {
-        new CmsInt64U(obj == null ? BigInteger.ZERO : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

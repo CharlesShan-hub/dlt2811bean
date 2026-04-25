@@ -51,14 +51,12 @@ public final class CmsFloat32 extends AbstractCmsNumeric<CmsFloat32, Float> {
         return PerReal.decodeFloat32(pis);
     }
 
+    private static final CmsFloat32 SHARED = new CmsFloat32();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, float value) {
-        new CmsFloat32(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsFloat32 obj) {
-        new CmsFloat32(obj == null ? 0.0f : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

@@ -41,6 +41,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 5-bit CODED ENUM layout.
  * Bits 0~4 are MSVCB optional field flags.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsMsvcbOptFlds extends AbstractCmsCodedEnum<CmsMsvcbOptFlds> {
 
     // ==================== Bit position constants ====================
@@ -70,5 +73,18 @@ public class CmsMsvcbOptFlds extends AbstractCmsCodedEnum<CmsMsvcbOptFlds> {
      */
     public CmsMsvcbOptFlds(long value) {
         super("CmsMsvcbOptFlds", value, 5);
+    }
+
+    private static final CmsMsvcbOptFlds SHARED = new CmsMsvcbOptFlds();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsMsvcbOptFlds read(PerInputStream pis) throws Exception {
+        return new CmsMsvcbOptFlds().decode(pis);
     }
 }

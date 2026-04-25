@@ -54,14 +54,12 @@ public final class CmsInt16U extends AbstractCmsNumeric<CmsInt16U, Integer> {
         return (int)PerInteger.decode(pis, MIN, MAX);
     }
 
+    private static final CmsInt16U SHARED = new CmsInt16U();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, int value) {
-        new CmsInt16U(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt16U obj) {
-        new CmsInt16U(obj == null ? 0 : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

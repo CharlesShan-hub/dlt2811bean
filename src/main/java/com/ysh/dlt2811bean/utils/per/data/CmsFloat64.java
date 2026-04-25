@@ -51,14 +51,12 @@ public final class CmsFloat64 extends AbstractCmsNumeric<CmsFloat64, Double> {
         return PerReal.decodeFloat64(pis);
     }
 
+    private static final CmsFloat64 SHARED = new CmsFloat64();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, double value) {
-        new CmsFloat64(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsFloat64 obj) {
-        new CmsFloat64(obj == null ? 0.0 : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

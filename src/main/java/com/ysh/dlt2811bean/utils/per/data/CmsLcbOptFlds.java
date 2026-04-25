@@ -29,6 +29,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 1-bit CODED ENUM layout.
  * The only valid value is 1 (bit 0 set).
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsLcbOptFlds extends AbstractCmsCodedEnum<CmsLcbOptFlds> {
 
     /** Bit 0 — reserved (always 1). */
@@ -48,5 +51,18 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum<CmsLcbOptFlds> {
      */
     public CmsLcbOptFlds(long value) {
         super("CmsLcbOptFlds", value, 1);
+    }
+
+    private static final CmsLcbOptFlds SHARED = new CmsLcbOptFlds();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsLcbOptFlds read(PerInputStream pis) throws Exception {
+        return new CmsLcbOptFlds().decode(pis);
     }
 }

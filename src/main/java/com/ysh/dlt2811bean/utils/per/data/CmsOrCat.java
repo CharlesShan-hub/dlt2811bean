@@ -49,6 +49,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with fixed enumeration values.
  * The size is fixed to 9 (values 0..8).
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
 
     public static final int NOT_SUPPORTED = 0;
@@ -70,5 +73,18 @@ public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
 
     public CmsOrCat(int value) {
         super("CmsOrCat", value, 9);
+    }
+
+    private static final CmsOrCat SHARED = new CmsOrCat();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsOrCat read(PerInputStream pis) throws Exception {
+        return new CmsOrCat().decode(pis);
     }
 }

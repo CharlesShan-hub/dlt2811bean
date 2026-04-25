@@ -51,6 +51,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 8-bit CODED ENUM layout.
  * Bits 0~2 are flags; bits 3~7 form a 5-bit sub-second precision field.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsTimeQuality extends AbstractCmsCodedEnum<CmsTimeQuality> {
 
     // ==================== Single-bit flags ====================
@@ -82,6 +85,19 @@ public class CmsTimeQuality extends AbstractCmsCodedEnum<CmsTimeQuality> {
      */
     public CmsTimeQuality(long value) {
         super("CmsTimeQuality", value, 8);
+    }
+
+    private static final CmsTimeQuality SHARED = new CmsTimeQuality();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsTimeQuality read(PerInputStream pis) throws Exception {
+        return new CmsTimeQuality().decode(pis);
     }
 
     // ==================== Convenience methods ====================

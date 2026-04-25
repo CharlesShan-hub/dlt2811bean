@@ -27,4 +27,14 @@ class CmsOrCatTest {
         assertEquals(CmsOrCat.BAY_CONTROL, decoded.get());
         assertTrue(decoded.is(CmsOrCat.BAY_CONTROL));
     }
+
+    @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsOrCat.write(pos, CmsOrCat.REMOTE_CONTROL);
+
+        CmsOrCat decoded = CmsOrCat.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.is(CmsOrCat.REMOTE_CONTROL));
+    }
 }

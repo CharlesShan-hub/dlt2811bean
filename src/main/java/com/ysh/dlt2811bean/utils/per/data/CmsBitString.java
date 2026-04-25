@@ -122,11 +122,6 @@ public class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
         }
     }
 
-    /** Static write with instance (null encodes default empty). */
-    public static void write(PerOutputStream pos, CmsBitString obj) {
-        Objects.requireNonNullElseGet(obj, CmsBitString::new).encode(pos);
-    }
-
     /** Static decode with explicit mode. */
     public static CmsBitString read(PerInputStream pis, Mode mode, int length) throws Exception {
         CmsBitString result = new CmsBitString();

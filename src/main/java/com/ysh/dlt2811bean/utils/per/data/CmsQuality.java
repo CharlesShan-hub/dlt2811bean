@@ -61,6 +61,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 13-bit CODED ENUM layout.
  * Bits 0~1 form a 2-bit validity field; bits 2~12 are individual flags.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
 
     // ==================== Validity values (2-bit, bits 0~1) ====================
@@ -114,6 +117,19 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
      */
     public CmsQuality(long value) {
         super("CmsQuality", value, 13);
+    }
+
+    private static final CmsQuality SHARED = new CmsQuality();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsQuality read(PerInputStream pis) throws Exception {
+        return new CmsQuality().decode(pis);
     }
 
     // ==================== Convenience methods ====================

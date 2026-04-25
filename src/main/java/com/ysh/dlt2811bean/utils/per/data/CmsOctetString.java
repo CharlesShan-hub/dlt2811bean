@@ -86,15 +86,6 @@ public class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
         }
     }
 
-    /** Static write with instance (null encodes default empty). */
-    public static void write(PerOutputStream pos, CmsOctetString obj) {
-        if (obj == null) {
-            new CmsOctetString().encode(pos);
-        } else {
-            obj.encode(pos);
-        }
-    }
-
     /** Static decode with explicit mode. */
     public static CmsOctetString read(PerInputStream pis, Mode mode, int length) throws Exception {
         CmsOctetString result = new CmsOctetString();

@@ -165,6 +165,16 @@ class CmsDbposTest {
     }
 
     @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsDbpos.write(pos, CmsDbpos.ON);
+
+        CmsDbpos decoded = CmsDbpos.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.is(CmsDbpos.ON));
+    }
+
+    @Test
     @DisplayName("chain usage")
     void chainUsage() throws Exception {
         CmsDbpos dbpos = new CmsDbpos()

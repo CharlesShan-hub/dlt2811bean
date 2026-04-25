@@ -27,4 +27,14 @@ class CmsServiceErrorTest {
         assertEquals(CmsServiceError.ACCESS_VIOLATION, decoded.get());
         assertTrue(decoded.is(CmsServiceError.ACCESS_VIOLATION));
     }
+
+    @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsServiceError.write(pos, CmsServiceError.INSTANCE_IN_USE);
+
+        CmsServiceError decoded = CmsServiceError.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.is(CmsServiceError.INSTANCE_IN_USE));
+    }
 }

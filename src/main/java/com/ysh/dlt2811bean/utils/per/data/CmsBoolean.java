@@ -51,14 +51,12 @@ public final class CmsBoolean extends AbstractCmsNumeric<CmsBoolean, Boolean> {
         return PerInteger.decode(pis, 0L, 1L) == 1L;
     }
 
+    private static final CmsBoolean SHARED = new CmsBoolean();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, boolean value) {
-        new CmsBoolean(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default false). */
-    public static void write(PerOutputStream pos, CmsBoolean obj) {
-        new CmsBoolean(obj != null && obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

@@ -121,6 +121,19 @@ class CmsTimeQualityTest {
     }
 
     @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsTimeQuality.write(pos, 0xC3L); // bit0, bit1, bits3~7=24
+
+        CmsTimeQuality decoded = CmsTimeQuality.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.testBit(LEAP_SECOND_KNOWN));
+        assertTrue(decoded.testBit(CLOCK_FAULT));
+        assertFalse(decoded.testBit(CLOCK_NOT_SYNCED));
+        assertEquals(24, decoded.getSubSecondPrecision());
+    }
+
+    @Test
     @DisplayName("raw value roundtrip")
     void raw_roundtrip() {
         CmsTimeQuality tq = new CmsTimeQuality();

@@ -54,14 +54,12 @@ public final class CmsInt32U extends AbstractCmsNumeric<CmsInt32U, Long> {
         return PerInteger.decode(pis, MIN, MAX);
     }
 
+    private static final CmsInt32U SHARED = new CmsInt32U();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, long value) {
-        new CmsInt32U(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt32U obj) {
-        new CmsInt32U(obj == null ? 0L : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

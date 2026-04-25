@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 double-point position type (§7.3.5, Table 8).
  *
@@ -64,5 +67,18 @@ public class CmsDbpos extends AbstractCmsEnumerated<CmsDbpos> {
 
     public CmsDbpos(int value) {
         super("CmsDbpos", value, 4);
+    }
+
+    private static final CmsDbpos SHARED = new CmsDbpos();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsDbpos read(PerInputStream pis) throws Exception {
+        return new CmsDbpos().decode(pis);
     }
 }

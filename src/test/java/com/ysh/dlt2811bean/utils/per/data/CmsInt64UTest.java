@@ -118,20 +118,10 @@ class CmsInt64UTest {
         CmsInt64U val = new CmsInt64U(new BigInteger("5000000000000000000"));
 
         PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.write(pos, val);
+        val.encode(pos);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
         assertEquals(new BigInteger("5000000000000000000"), CmsInt64U.read(pis).get());
-    }
-
-    @Test
-    @DisplayName("static write with null object")
-    void staticWriteNullObject() throws Exception {
-        PerOutputStream pos = new PerOutputStream();
-        CmsInt64U.write(pos, (CmsInt64U) null);
-
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        assertEquals(BigInteger.ZERO, CmsInt64U.read(pis).get());
     }
 
     @Test

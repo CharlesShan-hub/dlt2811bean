@@ -49,6 +49,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 10-bit CODED ENUM layout.
  * Bit 0 is reserved; bits 1~9 are optional field flags.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsRcbOptFlds extends AbstractCmsCodedEnum<CmsRcbOptFlds> {
 
     // ==================== Bit position constants ====================
@@ -88,6 +91,19 @@ public class CmsRcbOptFlds extends AbstractCmsCodedEnum<CmsRcbOptFlds> {
      */
     public CmsRcbOptFlds(long value) {
         super("CmsRcbOptFlds", value, 10);
+    }
+
+    private static final CmsRcbOptFlds SHARED = new CmsRcbOptFlds();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsRcbOptFlds read(PerInputStream pis) throws Exception {
+        return new CmsRcbOptFlds().decode(pis);
     }
 
     /** Clears buffer-overflow bit for URCB usage. */

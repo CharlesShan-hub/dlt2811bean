@@ -68,6 +68,19 @@ class CmsReasonCodeTest {
     }
 
     @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsReasonCode.write(pos, 0x52L); // bits 1,4,6
+
+        CmsReasonCode decoded = CmsReasonCode.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.testBit(CmsReasonCode.DATA_CHANGE));
+        assertTrue(decoded.testBit(CmsReasonCode.INTEGRITY));
+        assertTrue(decoded.testBit(CmsReasonCode.APPLICATION_TRIGGER));
+        assertFalse(decoded.testBit(CmsReasonCode.QUALITY_CHANGE));
+    }
+
+    @Test
     @DisplayName("encode and decode")
     void encodeDecode() throws Exception {
         CmsReasonCode rc = new CmsReasonCode();

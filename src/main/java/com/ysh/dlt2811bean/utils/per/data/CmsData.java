@@ -133,7 +133,7 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsScalar<CmsData<T>,
         }
     }
 
-    @Override
+        @Override
     public String toString() {
         if (value == null) {
             return "Data[unset]";

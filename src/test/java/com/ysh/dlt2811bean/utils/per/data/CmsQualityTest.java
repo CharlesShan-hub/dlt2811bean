@@ -30,4 +30,16 @@ class CmsQualityTest {
         assertTrue(decoded.testBit(CmsQuality.TEST));
         assertFalse(decoded.testBit(CmsQuality.FAILURE));
     }
+
+    @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsQuality.write(pos, 0x14L); // bits 2,4 (OVERFLOW, BAD_REFERENCE)
+
+        CmsQuality decoded = CmsQuality.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.testBit(CmsQuality.OVERFLOW));
+        assertTrue(decoded.testBit(CmsQuality.BAD_REFERENCE));
+        assertFalse(decoded.testBit(CmsQuality.FAILURE));
+    }
 }

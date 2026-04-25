@@ -27,4 +27,14 @@ class CmsTcmdTest {
         assertEquals(CmsTcmd.HIGHER, decoded.get());
         assertTrue(decoded.is(CmsTcmd.HIGHER));
     }
+
+    @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsTcmd.write(pos, CmsTcmd.LOWER);
+
+        CmsTcmd decoded = CmsTcmd.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.is(CmsTcmd.LOWER));
+    }
 }

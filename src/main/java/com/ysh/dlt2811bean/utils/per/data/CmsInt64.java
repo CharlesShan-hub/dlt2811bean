@@ -59,14 +59,12 @@ public final class CmsInt64 extends AbstractCmsNumeric<CmsInt64, Long> {
         return result;
     }
 
+    private static final CmsInt64 SHARED = new CmsInt64();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, long value) {
-        new CmsInt64(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt64 obj) {
-        new CmsInt64(obj == null ? 0L : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

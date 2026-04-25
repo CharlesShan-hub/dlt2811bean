@@ -39,6 +39,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 2-bit CODED ENUM layout.
  * Bit 0 is synchrocheck; bit 1 is interlock-check.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
 
     // ==================== Bit positions ====================
@@ -59,5 +62,18 @@ public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
      */
     public CmsCheck(long value) {
         super("CmsCheck", value, 2);
+    }
+
+    private static final CmsCheck SHARED = new CmsCheck();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsCheck read(PerInputStream pis) throws Exception {
+        return new CmsCheck().decode(pis);
     }
 }

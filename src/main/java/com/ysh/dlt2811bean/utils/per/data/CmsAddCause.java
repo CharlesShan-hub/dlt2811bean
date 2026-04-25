@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 additional cause for control operations (§7.5.4, Table 15).
  *
@@ -108,5 +111,18 @@ public class CmsAddCause extends AbstractCmsEnumerated<CmsAddCause> {
 
     public CmsAddCause(int value) {
         super("CmsAddCause", value, 28);
+    }
+
+    private static final CmsAddCause SHARED = new CmsAddCause();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsAddCause read(PerInputStream pis) throws Exception {
+        return new CmsAddCause().decode(pis);
     }
 }

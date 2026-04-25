@@ -43,6 +43,9 @@ package com.ysh.dlt2811bean.utils.per.data;
  * <p>This is a concrete application type with a fixed 6-bit CODED ENUM layout.
  * Bit 0 is reserved; bits 1~5 are trigger conditions.
  */
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditions> {
 
     // ==================== Bit positions ====================
@@ -73,5 +76,18 @@ public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditi
      */
     public CmsTriggerConditions(long value) {
         super("CmsTriggerConditions", value, 6);
+    }
+
+    private static final CmsTriggerConditions SHARED = new CmsTriggerConditions();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, long value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsTriggerConditions read(PerInputStream pis) throws Exception {
+        return new CmsTriggerConditions().decode(pis);
     }
 }

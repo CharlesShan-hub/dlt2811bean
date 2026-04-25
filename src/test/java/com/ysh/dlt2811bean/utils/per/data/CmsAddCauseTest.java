@@ -27,4 +27,14 @@ class CmsAddCauseTest {
         assertEquals(CmsAddCause.BLOCKED_BY_INTERLOCKING, decoded.get());
         assertTrue(decoded.is(CmsAddCause.BLOCKED_BY_INTERLOCKING));
     }
+
+    @Test
+    @DisplayName("static write and read")
+    void staticWriteRead() throws Exception {
+        PerOutputStream pos = new PerOutputStream();
+        CmsAddCause.write(pos, CmsAddCause.NONE);
+
+        CmsAddCause decoded = CmsAddCause.read(new PerInputStream(pos.toByteArray()));
+        assertTrue(decoded.is(CmsAddCause.NONE));
+    }
 }

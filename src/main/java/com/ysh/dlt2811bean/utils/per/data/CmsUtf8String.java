@@ -127,15 +127,6 @@ public class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
         temp.encode(pos);
     }
 
-    /** Static write with instance (null encodes default empty). */
-    public static void write(PerOutputStream pos, CmsUtf8String obj) {
-        if (obj == null) {
-            new CmsUtf8String().encode(pos);
-        } else {
-            obj.encode(pos);
-        }
-    }
-
     /** Static decode with explicit mode (UTF-8). */
     public static CmsUtf8String read(PerInputStream pis, Mode mode, int length) throws Exception {
         return read(pis, mode, length, false);

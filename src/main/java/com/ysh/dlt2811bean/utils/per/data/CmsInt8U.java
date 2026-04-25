@@ -58,14 +58,12 @@ public final class CmsInt8U extends AbstractCmsNumeric<CmsInt8U, Integer> {
         return (int)PerInteger.decode(pis, MIN, MAX);
     }
 
+    private static final CmsInt8U SHARED = new CmsInt8U();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, int value) {
-        new CmsInt8U(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt8U obj) {
-        new CmsInt8U(obj == null ? 0 : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

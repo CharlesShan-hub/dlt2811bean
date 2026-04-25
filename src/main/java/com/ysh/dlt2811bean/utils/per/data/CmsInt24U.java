@@ -54,14 +54,12 @@ public final class CmsInt24U extends AbstractCmsNumeric<CmsInt24U, Integer> {
         return (int) PerInteger.decode(pis, MIN, MAX);
     }
 
+    private static final CmsInt24U SHARED = new CmsInt24U();
+
     /** Static write with raw value. */
     public static void write(PerOutputStream pos, int value) {
-        new CmsInt24U(value).encode(pos);
-    }
-
-    /** Static write with instance (null encodes default 0). */
-    public static void write(PerOutputStream pos, CmsInt24U obj) {
-        new CmsInt24U(obj == null ? 0 : obj.get()).encode(pos);
+        SHARED.set(value);
+        SHARED.encode(pos);
     }
 
     /** Static decode: creates a new instance, decodes, and returns it. */

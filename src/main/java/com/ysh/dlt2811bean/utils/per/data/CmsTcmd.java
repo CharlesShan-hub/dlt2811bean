@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 tap command type (§7.3.7, Table 10).
  *
@@ -64,5 +67,18 @@ public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {
 
     public CmsTcmd(int value) {
         super("CmsTcmd", value, 4);
+    }
+
+    private static final CmsTcmd SHARED = new CmsTcmd();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsTcmd read(PerInputStream pis) throws Exception {
+        return new CmsTcmd().decode(pis);
     }
 }

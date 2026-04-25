@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 sampling mode for MSVCB (§7.6.7, Table 18).
  *
@@ -50,5 +53,18 @@ public class CmsSmpMod extends AbstractCmsEnumerated<CmsSmpMod> {
 
     public CmsSmpMod(int value) {
         super("CmsSmpMod", value, 3); // size = 3: values 0..2
+    }
+
+    private static final CmsSmpMod SHARED = new CmsSmpMod();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsSmpMod read(PerInputStream pis) throws Exception {
+        return new CmsSmpMod().decode(pis);
     }
 }

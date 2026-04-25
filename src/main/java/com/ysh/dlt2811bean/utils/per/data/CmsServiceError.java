@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.utils.per.data;
 
+import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+
 /**
  * DL/T 2811 service error type (§7.3.11, Table 12).
  *
@@ -78,5 +81,18 @@ public class CmsServiceError extends AbstractCmsEnumerated<CmsServiceError> {
 
     public CmsServiceError(int value) {
         super("CmsServiceError", value, 13);
+    }
+
+    private static final CmsServiceError SHARED = new CmsServiceError();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, int value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsServiceError read(PerInputStream pis) throws Exception {
+        return new CmsServiceError().decode(pis);
     }
 }
