@@ -53,6 +53,11 @@ public class CmsObjectName extends CmsVisibleString {
     }
 
     @Override
+    public CmsObjectName copy() {
+        return new CmsObjectName(get());
+    }
+
+    @Override
     public CmsObjectName decode(PerInputStream pis) throws Exception {
         return (CmsObjectName) super.decode(pis);
     }

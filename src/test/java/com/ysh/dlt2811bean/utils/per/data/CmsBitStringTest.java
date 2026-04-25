@@ -232,6 +232,26 @@ class CmsBitStringTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsBitString original = new CmsBitString(0b10101010L, 8).max(32);
+        CmsBitString cloned = original.copy();
+        assertArrayEquals(original.get(), cloned.get());
+        assertEquals(original.getBitLength(), cloned.getBitLength());
+        assertEquals(original.max, cloned.max);
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsBitString original = new CmsBitString(0b10101010L, 8).max(32);
+        CmsBitString cloned = original.copy();
+        cloned.get()[0] = (byte) 0xFF;
+        assertArrayEquals(new byte[]{(byte) 0b10101010}, original.get());
+    }
+
+    @Test
     @DisplayName("static read method with variable size")
     void staticReadVariableSize() throws Exception {
         CmsBitString str = new CmsBitString(0b10101010L, 8);

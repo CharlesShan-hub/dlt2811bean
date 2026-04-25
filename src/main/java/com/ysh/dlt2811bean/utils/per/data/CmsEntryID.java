@@ -51,6 +51,11 @@ public class CmsEntryID extends CmsOctetString {
     }
 
     @Override
+    public CmsEntryID copy() {
+        return new CmsEntryID(get().clone());
+    }
+
+    @Override
     public CmsEntryID decode(PerInputStream pis) throws Exception {
         return (CmsEntryID) super.decode(pis);
     }

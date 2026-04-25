@@ -94,6 +94,25 @@ class CmsInt32Test {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsInt32 original = new CmsInt32(1000000);
+        CmsInt32 cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsInt32 original = new CmsInt32(1000000);
+        CmsInt32 cloned = original.copy();
+        cloned.set(2000000);
+        assertEquals(1000000, (int) original.get());
+        assertEquals(2000000, (int) cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         assertEquals("INT32: 1000000", new CmsInt32(1000000).toString());

@@ -34,7 +34,7 @@ public class CmsTimeStamp extends CmsUtcTime {
      * @deprecated Use {@link CmsUtcTime} directly instead.
      * CmsTimeStamp is an alias kept for backward compatibility.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.0")
     public CmsTimeStamp(long secondsSinceEpoch, int fractionOfSecond, long timeQualityValue) {
         super(secondsSinceEpoch, fractionOfSecond, timeQualityValue);
     }

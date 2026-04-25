@@ -60,6 +60,16 @@ public class CmsArray<T extends CmsType<?>> extends AbstractCmsCollection<CmsArr
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public CmsArray<T> copy() {
+        CmsArray<T> clone = new CmsArray<>(elementType).capacity(capacity);
+        for (T item : value) {
+            clone.add((T) item.copy());
+        }
+        return clone;
+    }
+
+    @Override
     public void encode(PerOutputStream pos) {
         encodeLengthPrefix(pos);
         for (T item : value) {

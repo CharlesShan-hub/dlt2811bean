@@ -125,10 +125,29 @@ class CmsObjectNameTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsObjectName original = new CmsObjectName("LD1/LN1.DO1");
+        CmsObjectName cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsObjectName original = new CmsObjectName("LD1/LN1.DO1");
+        CmsObjectName cloned = original.copy();
+        cloned.set("LD2/LN2.DO2");
+        assertEquals("LD1/LN1.DO1", original.get());
+        assertEquals("LD2/LN2.DO2", cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
-        CmsObjectName name = new CmsObjectName("LD1");
-        assertEquals("ObjectName: LD1", name.toString());
+        CmsObjectName name = new CmsObjectName("LD1/LN1.DO1");
+        assertEquals("ObjectName: LD1/LN1.DO1", name.toString());
     }
 
     @Test

@@ -25,6 +25,18 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public T copy() {
+        try {
+            T clone = (T) getClass().getDeclaredConstructor().newInstance();
+            clone.set(this.value);
+            return clone;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to copy " + typeName, e);
+        }
+    }
+
+    @Override
     public String toString() {
         return typeName + ": " + value;
     }

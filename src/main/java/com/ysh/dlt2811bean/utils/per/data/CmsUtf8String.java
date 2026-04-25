@@ -56,6 +56,15 @@ public class CmsUtf8String extends AbstractCmsString<CmsUtf8String, String> {
         super(typeName, value != null ? value : "");
     }
 
+    @Override
+    public CmsUtf8String copy() {
+        CmsUtf8String clone = new CmsUtf8String(get());
+        clone.bmp = this.bmp;
+        if (size != null) clone.size(size);
+        if (max != null) clone.max(max);
+        return clone;
+    }
+
     /** Enable BMP mode (UCS-2, 2 bytes per character). */
     public CmsUtf8String bmp(boolean bmp) {
         this.bmp = bmp;

@@ -46,6 +46,16 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsScalar<CmsData<T>,
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public CmsData<T> copy() {
+        CmsData<T> clone = new CmsData<>();
+        if (value != null) {
+            clone.setValue((T) ((CmsType<?>) value).copy());
+        }
+        return clone;
+    }
+
+    @Override
     public void encode(PerOutputStream pos) {
         if (value == null) {
             throw new IllegalStateException("value must be set before encode");

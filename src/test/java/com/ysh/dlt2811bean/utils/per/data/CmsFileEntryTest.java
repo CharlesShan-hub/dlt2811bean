@@ -28,6 +28,29 @@ class CmsFileEntryTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsUtcTime utc = new CmsUtcTime(1715000000L, 1234567, 0x20L);
+        CmsFileEntry original = new CmsFileEntry("report.txt", 1024, utc, 0xAABBCCDDL);
+        CmsFileEntry cloned = original.copy();
+        assertEquals(original.fileName.get(), cloned.fileName.get());
+        assertEquals(original.fileSize.get(), cloned.fileSize.get());
+        assertEquals(original.lastModified.secondsSinceEpoch.get(), cloned.lastModified.secondsSinceEpoch.get());
+        assertEquals(original.checkSum.get(), cloned.checkSum.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsUtcTime utc = new CmsUtcTime(1715000000L, 1234567, 0x20L);
+        CmsFileEntry original = new CmsFileEntry("report.txt", 1024, utc, 0xAABBCCDDL);
+        CmsFileEntry cloned = original.copy();
+        cloned.fileName.set("modified.txt");
+        assertEquals("report.txt", original.fileName.get());
+    }
+
+    @Test
     @DisplayName("chain setters via Lombok fluent setters")
     void setters_fluent() {
         CmsUtcTime utc = new CmsUtcTime(1715000000L, 0, 0L);

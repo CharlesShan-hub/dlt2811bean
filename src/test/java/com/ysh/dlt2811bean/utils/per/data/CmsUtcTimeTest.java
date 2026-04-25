@@ -56,6 +56,26 @@ class CmsUtcTimeTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsUtcTime original = new CmsUtcTime(1715000000L, 1234567, 0xC3L);
+        CmsUtcTime cloned = original.copy();
+        assertEquals(original.secondsSinceEpoch.get(), cloned.secondsSinceEpoch.get());
+        assertEquals(original.fractionOfSecond.get(), cloned.fractionOfSecond.get());
+        assertEquals(original.timeQuality.get(), cloned.timeQuality.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsUtcTime original = new CmsUtcTime(1715000000L, 1234567, 0xC3L);
+        CmsUtcTime cloned = original.copy();
+        cloned.secondsSinceEpoch.set(999L);
+        assertEquals(1715000000L, original.secondsSinceEpoch.get());
+    }
+
+    @Test
     @DisplayName("encode and decode max values")
     void encodeDecode_maxValues() throws Exception {
         CmsUtcTime utc = new CmsUtcTime(0xFFFFFFFFL, 0xFFFFFF, 0xFFL);

@@ -25,6 +25,25 @@ class CmsBinaryTimeTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsBinaryTime original = new CmsBinaryTime(43200000L, 15000);
+        CmsBinaryTime cloned = original.copy();
+        assertEquals(original.msOfDay.get(), cloned.msOfDay.get());
+        assertEquals(original.daysSince1984.get(), cloned.daysSince1984.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsBinaryTime original = new CmsBinaryTime(43200000L, 15000);
+        CmsBinaryTime cloned = original.copy();
+        cloned.msOfDay.set(999L);
+        assertEquals(43200000L, original.msOfDay.get());
+    }
+
+    @Test
     @DisplayName("chain setters via Lombok fluent setters")
     void setters_fluent() {
         CmsBinaryTime t = new CmsBinaryTime()

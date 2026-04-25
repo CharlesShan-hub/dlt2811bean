@@ -209,6 +209,27 @@ class CmsOctetStringTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        byte[] data = {0x01, 0x02, 0x03};
+        CmsOctetString original = new CmsOctetString(data).max(100);
+        CmsOctetString cloned = original.copy();
+        assertArrayEquals(original.get(), cloned.get());
+        assertEquals(original.max, cloned.max);
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        byte[] data = {0x01, 0x02, 0x03};
+        CmsOctetString original = new CmsOctetString(data).max(100);
+        CmsOctetString cloned = original.copy();
+        cloned.get()[0] = (byte) 0xFF;
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, original.get());
+    }
+
+    @Test
     @DisplayName("encode/decode with exact size match")
     void encodeDecodeWithExactSizeMatch() throws Exception {
         byte[] data = {0x01, 0x02, 0x03};

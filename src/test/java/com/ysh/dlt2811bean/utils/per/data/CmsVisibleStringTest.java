@@ -185,4 +185,36 @@ class CmsVisibleStringTest {
             AbstractCmsString.Mode.VARIABLE, 100);
         assertEquals("test", decoded.get());
     }
+
+    @Test
+    @DisplayName("copy preserves value and constraints")
+    void copyPreservesValueAndConstraints() {
+        CmsVisibleString original = new CmsVisibleString("test").max(100);
+        CmsVisibleString cloned = original.copy();
+        assertNotSame(original, cloned);
+        assertEquals(original.get(), cloned.get());
+        assertEquals(original.max, cloned.max);
+        assertNull(cloned.size);
+    }
+
+    @Test
+    @DisplayName("copy with fixed size")
+    void copyWithFixedSize() {
+        CmsVisibleString original = new CmsVisibleString("hello").size(10);
+        CmsVisibleString cloned = original.copy();
+        assertNotSame(original, cloned);
+        assertEquals(original.get(), cloned.get());
+        assertEquals(original.size, cloned.size);
+        assertNull(cloned.max);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsVisibleString original = new CmsVisibleString("original").max(100);
+        CmsVisibleString cloned = original.copy();
+        cloned.set("modified");
+        assertEquals("original", original.get());
+        assertEquals("modified", cloned.get());
+    }
 }

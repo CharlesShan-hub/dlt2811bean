@@ -39,7 +39,7 @@ class CmsDataTest {
 
         CmsServiceError res = new CmsServiceError();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, (int) res.get());
+        assertEquals(CmsServiceError.ACCESS_VIOLATION, res.get());
     }
 
     @Test
@@ -59,9 +59,9 @@ class CmsDataTest {
             .decode(new PerInputStream(pos.toByteArray()))
             .get();
         assertEquals(3, decodedArr.size());
-        assertEquals(100, (int) ((CmsInt32) decodedArr.get(0)).get());
-        assertEquals(200, (int) ((CmsInt32) decodedArr.get(1)).get());
-        assertEquals(300, (int) ((CmsInt32) decodedArr.get(2)).get());
+        assertEquals(100, decodedArr.get(0).get());
+        assertEquals(200, decodedArr.get(1).get());
+        assertEquals(300, decodedArr.get(2).get());
     }
 
     @Test
@@ -76,9 +76,9 @@ class CmsDataTest {
         CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32.class).capacity(10);
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
         assertEquals(3, template.size());
-        assertEquals(100, (int) ((CmsInt32) template.get(0)).get());
-        assertEquals(200, (int) ((CmsInt32) template.get(1)).get());
-        assertEquals(300, (int) ((CmsInt32) template.get(2)).get());
+        assertEquals(100, template.get(0).get());
+        assertEquals(200, template.get(1).get());
+        assertEquals(300, template.get(2).get());
     }
 
     @Test
@@ -121,7 +121,7 @@ class CmsDataTest {
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
 
         assertEquals(2, template.size());
-        assertEquals(42, (int) ((CmsInt32) ((CmsData<?>) template.get(0)).get()).get());
+        assertEquals(42, ((CmsInt32) ((CmsData<?>) template.get(0)).get()).get());
         assertEquals("hello", ((CmsVisibleString) ((CmsData<?>) template.get(1)).get()).get());
     }
 
@@ -168,7 +168,7 @@ class CmsDataTest {
 
         CmsInt8 res = new CmsInt8();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(-42, (int) res.get());
+        assertEquals(-42, res.get());
     }
 
     @Test
@@ -191,7 +191,7 @@ class CmsDataTest {
 
         CmsInt16 res = new CmsInt16();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(-1000, (int) res.get());
+        assertEquals(-1000, res.get());
     }
 
     @Test
@@ -214,7 +214,7 @@ class CmsDataTest {
 
         CmsInt32 res = new CmsInt32();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(100000, (int) res.get());
+        assertEquals(100000, res.get());
     }
 
     @Test
@@ -237,7 +237,7 @@ class CmsDataTest {
 
         CmsInt64 res = new CmsInt64();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(1000000000000L, (long) res.get());
+        assertEquals(1000000000000L, res.get());
     }
 
     @Test
@@ -260,7 +260,7 @@ class CmsDataTest {
 
         CmsInt8U res = new CmsInt8U();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(200, (int) res.get());
+        assertEquals(200, res.get());
     }
 
     @Test
@@ -283,7 +283,7 @@ class CmsDataTest {
 
         CmsInt16U res = new CmsInt16U();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(50000, (int) res.get());
+        assertEquals(50000, res.get());
     }
 
     @Test
@@ -306,7 +306,7 @@ class CmsDataTest {
 
         CmsInt32U res = new CmsInt32U();
         CmsData.read(new PerInputStream(pos.toByteArray()), res);
-        assertEquals(3000000000L, (long) res.get());
+        assertEquals(3000000000L, res.get());
     }
 
     @Test
@@ -676,5 +676,35 @@ class CmsDataTest {
         CmsData<CmsInt32> data = new CmsData<CmsInt32>()
                 .set(new CmsInt32(100));
         assertEquals("Data[6]=INT32: 100", data.toString());
+    }
+
+    @Test
+    @DisplayName("copy with value")
+    void copyWithValue() {
+        CmsData<CmsInt32> original = new CmsData<CmsInt32>()
+                .set(new CmsInt32(100));
+        CmsData<CmsInt32> cloned = original.copy();
+        assertEquals(100, (int) cloned.get().get());
+        assertNotSame(original, cloned);
+        assertNotSame(original.get(), cloned.get());
+    }
+
+    @Test
+    @DisplayName("copy with null value")
+    void copyWithNullValue() {
+        CmsData<?> original = new CmsData<>();
+        CmsData<?> cloned = original.copy();
+        assertNull(cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsData<CmsInt32> original = new CmsData<CmsInt32>()
+                .set(new CmsInt32(100));
+        CmsData<CmsInt32> cloned = original.copy();
+        cloned.get().set(999);
+        assertEquals(100, (int) original.get().get());
     }
 }

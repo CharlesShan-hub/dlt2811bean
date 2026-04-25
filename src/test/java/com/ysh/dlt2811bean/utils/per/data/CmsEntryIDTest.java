@@ -79,6 +79,26 @@ class CmsEntryIDTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8};
+        CmsEntryID original = new CmsEntryID(value);
+        CmsEntryID cloned = original.copy();
+        assertArrayEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        byte[] value = new byte[]{1, 2, 3, 4, 5, 6, 7, 8};
+        CmsEntryID original = new CmsEntryID(value);
+        CmsEntryID cloned = original.copy();
+        cloned.get()[0] = (byte) 0xFF;
+        assertArrayEquals(value, original.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         CmsEntryID id = new CmsEntryID();

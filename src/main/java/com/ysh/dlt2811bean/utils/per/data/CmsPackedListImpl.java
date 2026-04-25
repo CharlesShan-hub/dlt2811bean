@@ -39,6 +39,11 @@ public class CmsPackedListImpl extends AbstractCmsPackedList<CmsPackedListImpl> 
     }
 
     @Override
+    public CmsPackedListImpl copy() {
+        return new CmsPackedListImpl(get(), getBitLength(), getMax());
+    }
+
+    @Override
     public CmsPackedListImpl decode(PerInputStream pis) throws PerDecodeException {
         return (CmsPackedListImpl) super.decode(pis);
     }

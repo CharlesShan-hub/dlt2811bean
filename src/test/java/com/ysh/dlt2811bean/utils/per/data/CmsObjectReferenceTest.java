@@ -127,6 +127,25 @@ class CmsObjectReferenceTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsObjectReference original = new CmsObjectReference("LD1/LN1.DO1");
+        CmsObjectReference cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsObjectReference original = new CmsObjectReference("LD1/LN1.DO1");
+        CmsObjectReference cloned = original.copy();
+        cloned.set("LD2/LN2.DO2");
+        assertEquals("LD1/LN1.DO1", original.get());
+        assertEquals("LD2/LN2.DO2", cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         CmsObjectReference ref = new CmsObjectReference("LD1/LN1.DO1");

@@ -106,6 +106,25 @@ class CmsSubReferenceTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsSubReference original = new CmsSubReference("LN.DO.DA");
+        CmsSubReference cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsSubReference original = new CmsSubReference("LN.DO.DA");
+        CmsSubReference cloned = original.copy();
+        cloned.set("LN2.DO2.DA2");
+        assertEquals("LN.DO.DA", original.get());
+        assertEquals("LN2.DO2.DA2", cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         CmsSubReference ref = new CmsSubReference("LN.DO.DA");

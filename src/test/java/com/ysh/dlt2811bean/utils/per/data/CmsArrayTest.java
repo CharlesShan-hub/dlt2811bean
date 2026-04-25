@@ -135,6 +135,32 @@ class CmsArrayTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsArray<CmsInt32> original = new CmsArray<>(CmsInt32.class).capacity(10);
+        original.add(new CmsInt32(100)).add(new CmsInt32(200)).add(new CmsInt32(300));
+
+        CmsArray<CmsInt32> cloned = original.copy();
+        assertEquals(original.size(), cloned.size());
+        assertEquals(original.getCapacity(), cloned.getCapacity());
+        assertEquals(100, (int) cloned.get(0).get());
+        assertEquals(200, (int) cloned.get(1).get());
+        assertEquals(300, (int) cloned.get(2).get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsArray<CmsInt32> original = new CmsArray<>(CmsInt32.class).capacity(10);
+        original.add(new CmsInt32(100)).add(new CmsInt32(200));
+
+        CmsArray<CmsInt32> cloned = original.copy();
+        cloned.get(0).set(999);
+        assertEquals(100, (int) original.get(0).get());
+    }
+
+    @Test
     @DisplayName("encode and decode with CmsInt8U elements")
     void withCmsInt8U() throws Exception {
         CmsArray<CmsInt8U> array = new CmsArray<>(CmsInt8U.class).capacity(5);

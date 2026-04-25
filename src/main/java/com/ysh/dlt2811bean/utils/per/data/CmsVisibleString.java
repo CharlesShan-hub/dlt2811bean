@@ -90,6 +90,14 @@ public class CmsVisibleString extends AbstractCmsString<CmsVisibleString, String
         }
     }
 
+    @Override
+    public CmsVisibleString copy() {
+        CmsVisibleString clone = new CmsVisibleString(get());
+        if (size != null) clone.size(size);
+        if (max != null) clone.max(max);
+        return clone;
+    }
+
     /** Static decode with explicit mode. */
     public static CmsVisibleString read(PerInputStream pis, Mode mode, int length) throws Exception {
         CmsVisibleString result = new CmsVisibleString();

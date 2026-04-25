@@ -107,6 +107,14 @@ public class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
     }
 
     @Override
+    public CmsOctetString copy() {
+        CmsOctetString clone = new CmsOctetString(get().clone());
+        if (size != null) clone.size(size);
+        if (max != null) clone.max(max);
+        return clone;
+    }
+
+    @Override
     public String toString() {
         if (get() == null || get().length == 0) return "OCTET STRING: []";
         StringBuilder sb = new StringBuilder("OCTET STRING: [");

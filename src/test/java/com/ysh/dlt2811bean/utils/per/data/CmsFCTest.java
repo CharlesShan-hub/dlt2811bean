@@ -124,6 +124,25 @@ class CmsFCTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsFC original = new CmsFC("MX");
+        CmsFC cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsFC original = new CmsFC("MX");
+        CmsFC cloned = original.copy();
+        cloned.set("SV");
+        assertEquals("MX", original.get());
+        assertEquals("SV", cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         CmsFC fc = new CmsFC("ST");

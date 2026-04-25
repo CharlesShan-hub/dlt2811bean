@@ -14,6 +14,8 @@ public interface CmsType<T extends CmsType<T>> {
 
     T decode(PerInputStream pis) throws Exception;
 
+    T copy();
+
     @Override
     String toString();
 }

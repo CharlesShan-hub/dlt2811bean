@@ -237,6 +237,26 @@ class CmsUtf8StringTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsUtf8String original = new CmsUtf8String("test").max(100).bmp(true);
+        CmsUtf8String cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertEquals(original.max, cloned.max);
+        assertTrue(cloned.isBmp());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy without bmp")
+    void copyWithoutBmp() {
+        CmsUtf8String original = new CmsUtf8String("test").max(100);
+        CmsUtf8String cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertFalse(cloned.isBmp());
+    }
+
+    @Test
     @DisplayName("static read method with bmp mode")
     void staticReadMethodWithBmpMode() throws Exception {
         CmsUtf8String str = new CmsUtf8String("test");

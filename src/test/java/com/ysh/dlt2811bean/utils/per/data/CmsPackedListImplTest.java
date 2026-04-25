@@ -120,6 +120,27 @@ class CmsPackedListImplTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsPackedListImpl original = new CmsPackedListImpl(0b00000101L, 3, 8);
+        CmsPackedListImpl cloned = original.copy();
+        assertEquals(original.get(), cloned.get());
+        assertEquals(original.getBitLength(), cloned.getBitLength());
+        assertEquals(original.getMax(), cloned.getMax());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is independent")
+    void copyIsIndependent() {
+        CmsPackedListImpl original = new CmsPackedListImpl(0b00000101L, 3, 8);
+        CmsPackedListImpl cloned = original.copy();
+        cloned.set(0b00000011L);
+        assertEquals(0b00000101L, original.get());
+        assertEquals(0b00000011L, cloned.get());
+    }
+
+    @Test
     @DisplayName("toString")
     void toStringTest() {
         CmsPackedListImpl list = new CmsPackedListImpl(0b00000101L, 3, 8);

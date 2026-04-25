@@ -46,6 +46,16 @@ public class CmsStructure extends AbstractCmsCollection<CmsStructure, CmsData<?>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public CmsStructure copy() {
+        CmsStructure clone = new CmsStructure().capacity(capacity);
+        for (CmsData<?> item : value) {
+            clone.add((CmsType<?>) item.copy());
+        }
+        return clone;
+    }
+
+    @Override
     public void encode(PerOutputStream pos) {
         encodeLengthPrefix(pos);
         for (CmsData<?> item : value) {

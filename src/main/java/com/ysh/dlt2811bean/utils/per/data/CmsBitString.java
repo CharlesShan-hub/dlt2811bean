@@ -144,6 +144,14 @@ public class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
     }
 
     @Override
+    public CmsBitString copy() {
+        CmsBitString clone = new CmsBitString(get().clone(), bitLength);
+        if (size != null && size != 0) clone.size(size);
+        if (max != null && max != 0) clone.max(max);
+        return clone;
+    }
+
+    @Override
     public String toString() {
         if (bitLength <= 64) {
             return String.format("BIT STRING: 0b%s (%d bits)", Long.toBinaryString(bytesToLong(get(), bitLength)), bitLength);

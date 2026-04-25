@@ -60,6 +60,11 @@ public class CmsFC extends CmsVisibleString {
     }
 
     @Override
+    public CmsFC copy() {
+        return new CmsFC(get());
+    }
+
+    @Override
     public CmsFC decode(PerInputStream pis) throws Exception {
         return (CmsFC) super.decode(pis);
     }

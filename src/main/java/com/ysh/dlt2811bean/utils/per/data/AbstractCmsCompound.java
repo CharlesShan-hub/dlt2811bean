@@ -53,6 +53,23 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public T copy() {
+        try {
+            T clone = (T) getClass().getDeclaredConstructor().newInstance();
+            for (String name : fieldNames) {
+                AbstractCmsType<?> field = getField(name);
+                AbstractCmsType<?> clonedField = (AbstractCmsType<?>) field.copy();
+                Field f = getClass().getField(name);
+                f.set(clone, clonedField);
+            }
+            return clone;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to copy " + typeName, e);
+        }
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(typeName).append("[");
         boolean first = true;

@@ -33,7 +33,7 @@ public class CmsEntryTime extends CmsBinaryTime {
      * @deprecated Use {@link CmsBinaryTime} directly instead.
      * CmsEntryTime is an alias kept for backward compatibility.
      */
-    @Deprecated(forRemoval = true)
+    @Deprecated(since = "1.0")
     public CmsEntryTime(long msOfDay, int daysSince1984) {
         super(msOfDay, daysSince1984);
     }

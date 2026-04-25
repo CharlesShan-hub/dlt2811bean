@@ -25,6 +25,25 @@ class CmsOriginatorTest {
     }
 
     @Test
+    @DisplayName("copy")
+    void copy() {
+        CmsOriginator original = new CmsOriginator(CmsOrCat.BAY_CONTROL, new byte[]{0x01, 0x02});
+        CmsOriginator cloned = original.copy();
+        assertEquals(original.orCat.get(), cloned.orCat.get());
+        assertArrayEquals(original.orIdent.get(), cloned.orIdent.get());
+        assertNotSame(original, cloned);
+    }
+
+    @Test
+    @DisplayName("copy is deep")
+    void copyIsDeep() {
+        CmsOriginator original = new CmsOriginator(CmsOrCat.BAY_CONTROL, new byte[]{0x01, 0x02});
+        CmsOriginator cloned = original.copy();
+        cloned.orCat.set(CmsOrCat.STATION_CONTROL);
+        assertEquals(CmsOrCat.BAY_CONTROL, original.orCat.get());
+    }
+
+    @Test
     @DisplayName("chain setters via Lombok fluent setters")
     void setters_fluent() {
         CmsOriginator orig = new CmsOriginator()
