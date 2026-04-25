@@ -3,11 +3,12 @@ package com.ysh.dlt2811bean.service.association;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerEnumerated;
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.per.types.PerEnumerated;
 import com.ysh.dlt2811bean.service.CmsService;
+import com.ysh.dlt2811bean.service.ServiceCode;
 
 /**
  * CMS Service Code 02 — Abort.
@@ -39,7 +40,7 @@ public class CmsAbort extends CmsService {
     static final int REASON_MAX = 4;
 
     public CmsAbort() {
-        super(2);
+        super(ServiceCode.ABORT);
     }
 
     // ==================== Constants ====================

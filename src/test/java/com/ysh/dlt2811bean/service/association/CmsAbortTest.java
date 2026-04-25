@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

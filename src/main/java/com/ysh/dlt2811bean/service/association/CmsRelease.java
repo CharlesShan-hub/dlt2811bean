@@ -3,11 +3,12 @@ package com.ysh.dlt2811bean.service.association;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerOctetString;
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.per.types.PerOctetString;
 import com.ysh.dlt2811bean.service.CmsService;
+import com.ysh.dlt2811bean.service.ServiceCode;
 
 /**
  * CMS Service Code 03 — Release (release association).
@@ -30,7 +31,7 @@ public class CmsRelease extends CmsService {
     private static final int ASSOC_ID_SIZE = 64;
 
     public CmsRelease() {
-        super(3);
+        super(ServiceCode.RELEASE);
     }
 
     // ==================== Fields ====================

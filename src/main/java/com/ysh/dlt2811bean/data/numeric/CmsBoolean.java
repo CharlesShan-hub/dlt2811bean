@@ -1,0 +1,67 @@
+package com.ysh.dlt2811bean.data.numeric;
+
+import com.ysh.dlt2811bean.data.type.AbstractCmsNumeric;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.per.types.PerInteger;
+
+/**
+ * DL/T 2811 boolean type (§7.1.1).
+ *
+ * <pre>
+ * ┌──────────┬─────────────────┬──────┬───────────┐
+ * │ 2811     │ Range           │ Bits │ Java type │
+ * ├──────────┼─────────────────┼──────┼───────────┤
+ * │ BOOLEAN  │ FALSE | TRUE    │ 1    │ boolean   │
+ * └──────────┴─────────────────┴──────┴───────────┘
+ * </pre>
+ *
+ * <p>Encoding: single bit, FALSE=0, TRUE=1.
+ *
+ * <pre>
+ * // Bean usage
+ * CmsBoolean val = new CmsBoolean(true);
+ * val.set(false);
+ * val.encode(pos);
+ *
+ * // Chain usage
+ * CmsBoolean val2 = new CmsBoolean().set(true).encode(pos);
+ *
+ * // Decode (returns self for chaining)
+ * CmsBoolean r = new CmsBoolean().decode(pis);
+ * boolean b = r.get();
+ * </pre>
+ */
+public final class CmsBoolean extends AbstractCmsNumeric<CmsBoolean, Boolean> {
+
+    public CmsBoolean(boolean value) {
+        super("BOOLEAN", 0, 1, value);
+    }
+
+    public CmsBoolean() {
+        this(false);
+    }
+
+    @Override
+    public void encode(PerOutputStream pos) {
+        PerInteger.encode(pos, get() ? 1L : 0L, 0L, 1L);
+    }
+
+    @Override
+    protected Boolean decodeValue(PerInputStream pis) throws Exception {
+        return PerInteger.decode(pis, 0L, 1L) == 1L;
+    }
+
+    private static final CmsBoolean SHARED = new CmsBoolean();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, boolean value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsBoolean read(PerInputStream pis) throws Exception {
+        return new CmsBoolean().decode(pis);
+    }
+}

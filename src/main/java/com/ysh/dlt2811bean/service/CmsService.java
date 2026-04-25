@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.service;
 
 import lombok.Getter;
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
 
 /**
  * Base class for all CMS services (Request / Response).
@@ -46,9 +46,9 @@ public abstract class CmsService {
     /** APCH header length: 5 bytes */
     protected static final int APCH_SIZE = 5;
 
-    /** Service code (1 byte) */
+    /** Service code */
     @Getter
-    private final int serviceCode;
+    private final ServiceCode serviceCode;
 
     /** Request/response flag */
     @Getter
@@ -60,7 +60,7 @@ public abstract class CmsService {
     @Getter
     private boolean fragmented;
 
-    protected CmsService(int serviceCode) {
+    protected CmsService(ServiceCode serviceCode) {
         this.serviceCode = serviceCode;
     }
 
@@ -84,7 +84,7 @@ public abstract class CmsService {
         byte[] frame = new byte[APCH_SIZE + fl];
         // APCH
         frame[0] = PI;
-        frame[1] = (byte) serviceCode;
+        frame[1] = serviceCode.getCode();
         frame[2] = encodeFlags();
         frame[3] = (byte) ((fl >> 8) & 0xFF);
         frame[4] = (byte) (fl & 0xFF);
@@ -108,9 +108,9 @@ public abstract class CmsService {
             throw new PerDecodeException("Invalid PI: 0x" + String.format("%02X", frame[0]));
         }
         // verify service code
-        if ((frame[1] & 0xFF) != serviceCode) {
+        if ((frame[1] & 0xFF) != serviceCode.getCode()) {
             throw new PerDecodeException(
-                "Service code mismatch: expected " + serviceCode + ", got " + (frame[1] & 0xFF));
+                "Service code mismatch: expected " + serviceCode.getCode() + ", got " + (frame[1] & 0xFF));
         }
         // parse Flags
         decodeFlags(frame[2]);

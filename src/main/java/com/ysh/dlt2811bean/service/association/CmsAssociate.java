@@ -1,16 +1,17 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.utils.per.data.CmsInt16U;
-import com.ysh.dlt2811bean.utils.per.data.CmsInt8U;
-import com.ysh.dlt2811bean.utils.per.data.CmsOctetString;
-import com.ysh.dlt2811bean.utils.per.data.CmsVisibleString;
+import com.ysh.dlt2811bean.data.numeric.CmsInt16U;
+import com.ysh.dlt2811bean.data.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.data.string.CmsOctetString;
+import com.ysh.dlt2811bean.data.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.utils.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
-import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.CmsService;
+import com.ysh.dlt2811bean.service.ServiceCode;
 
 /**
  * CMS Service Code 01 — Associate (association request).
@@ -34,7 +35,7 @@ import com.ysh.dlt2811bean.service.CmsService;
 public class CmsAssociate extends CmsService {
 
     public CmsAssociate() {
-        super(1);
+        super(ServiceCode.ASSOCIATE);
     }
 
     // ==================== Fields ====================
