@@ -2,11 +2,6 @@ package com.ysh.dlt2811bean.utils.per.data;
 
 import com.ysh.dlt2811bean.utils.per.io.PerInputStream;
 import com.ysh.dlt2811bean.utils.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.utils.per.types.PerInteger;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 /**
@@ -31,34 +26,17 @@ import java.util.Objects;
  * int val = ((CmsInt32) ((CmsData<?>) template.get(0)).get()).get();
  * }</pre>
  */
-public class CmsStructure extends AbstractCmsScalar<CmsStructure, List<CmsData<?>>> implements Iterable<CmsData<?>> {
-
-    private int max;
+public class CmsStructure extends AbstractCmsCollection<CmsStructure, CmsData<?>> {
 
     public CmsStructure() {
-        super("SEQUENCE OF", new ArrayList<>());
+        super("SEQUENCE OF");
     }
-
-    public CmsStructure max(int max) {
-        this.max = max;
-        return this;
-    }
-
-    public int getMax() {
-        return max;
-    }
-
-    // public CmsStructure add(CmsData<?> item) {
-    //     Objects.requireNonNull(item, "item cannot be null");
-    //     value.add(item);
-    //     return this;
-    // }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsStructure add(CmsType<?> item) {
         Objects.requireNonNull(item, "item cannot be null");
         CmsData data = new CmsData();
-        data.value = (CmsType) item;
+        data.setValue((CmsType) item);
         value.add(data);
         return this;
     }
@@ -67,25 +45,9 @@ public class CmsStructure extends AbstractCmsScalar<CmsStructure, List<CmsData<?
         return value.get(index);
     }
 
-    public int size() {
-        return value.size();
-    }
-
-    public boolean isEmpty() {
-        return value.isEmpty();
-    }
-
-    @Override
-    public Iterator<CmsData<?>> iterator() {
-        return value.iterator();
-    }
-
     @Override
     public void encode(PerOutputStream pos) {
-        if (max <= 0) {
-            throw new IllegalStateException("max must be set before encode");
-        }
-        PerInteger.encodeLength(pos, value.size());
+        encodeLengthPrefix(pos);
         for (CmsData<?> item : value) {
             item.encode(pos);
         }
@@ -93,7 +55,7 @@ public class CmsStructure extends AbstractCmsScalar<CmsStructure, List<CmsData<?
 
     @Override
     public CmsStructure decode(PerInputStream pis) throws Exception {
-        int count = PerInteger.decodeLength(pis);
+        int count = decodeLengthPrefix(pis);
         for (int i = 0; i < count; i++) {
             CmsData<?> item;
             if (i < value.size()) {

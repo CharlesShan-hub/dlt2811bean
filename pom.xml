@@ -13,7 +13,7 @@
     <description>DL/T 2811-2024 CMS 协议 Java 实现 — 新国标变电站二次系统通信</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>21</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

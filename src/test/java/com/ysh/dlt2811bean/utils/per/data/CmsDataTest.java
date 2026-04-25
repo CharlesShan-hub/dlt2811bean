@@ -46,7 +46,7 @@ class CmsDataTest {
     @DisplayName("array entity [1]")
     void arrayEntity() throws Exception {
         CmsData<CmsArray<CmsInt32>> data = new CmsData<CmsArray<CmsInt32>>()
-            .set(new CmsArray<>(CmsInt32.class).max(10)
+            .set(new CmsArray<>(CmsInt32.class).capacity(10)
                 .add(new CmsInt32(100))
                 .add(new CmsInt32(200))
                 .add(new CmsInt32(300))
@@ -55,7 +55,7 @@ class CmsDataTest {
         data.encode(pos);
 
         CmsArray<CmsInt32> decodedArr = new CmsData<CmsArray<CmsInt32>>()
-            .set(new CmsArray<>(CmsInt32.class).max(10))
+            .set(new CmsArray<>(CmsInt32.class).capacity(10))
             .decode(new PerInputStream(pos.toByteArray()))
             .get();
         assertEquals(3, decodedArr.size());
@@ -68,12 +68,12 @@ class CmsDataTest {
     @DisplayName("array static [1]")
     void arrayStatic() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsData.write(pos, new CmsArray<>(CmsInt32.class).max(10)
+        CmsData.write(pos, new CmsArray<>(CmsInt32.class).capacity(10)
             .add(new CmsInt32(100))
             .add(new CmsInt32(200))
             .add(new CmsInt32(300)));
 
-        CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32.class).capacity(10);
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
         assertEquals(3, template.size());
         assertEquals(100, (int) ((CmsInt32) template.get(0)).get());
@@ -86,14 +86,14 @@ class CmsDataTest {
     void structureEntity() throws Exception {
         CmsData<CmsStructure> data = new CmsData<CmsStructure>()
             .set(new CmsStructure()
-                .max(10)
+                .capacity(10)
                 .add(new CmsInt32(42))
                 .add(new CmsVisibleString("hello").max(10))
             );
         PerOutputStream pos = new PerOutputStream();
         data.encode(pos);
 
-        CmsStructure template = new CmsStructure().max(10)
+        CmsStructure template = new CmsStructure().capacity(10)
             .add(new CmsInt32())
             .add(new CmsVisibleString("").max(10));
 
@@ -111,11 +111,11 @@ class CmsDataTest {
     @DisplayName("structure static [2]")
     void structureStatic() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsData.write(pos, new CmsStructure().max(10)
+        CmsData.write(pos, new CmsStructure().capacity(10)
                 .add(new CmsInt32(42))
                 .add(new CmsVisibleString("hello").max(10)));
 
-        CmsStructure template = new CmsStructure().max(10)
+        CmsStructure template = new CmsStructure().capacity(10)
                 .add(new CmsInt32())
                 .add(new CmsVisibleString("").max(10));
         CmsData.read(new PerInputStream(pos.toByteArray()), template);

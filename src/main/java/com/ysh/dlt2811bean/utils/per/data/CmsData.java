@@ -40,6 +40,11 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsScalar<CmsData<T>,
         this.value = value;
     }
 
+    @SuppressWarnings("unchecked")
+    void setValue(T value) {
+        this.value = value;
+    }
+
     @Override
     public void encode(PerOutputStream pos) {
         if (value == null) {
@@ -130,7 +135,7 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsScalar<CmsData<T>,
     public static void read(PerInputStream pis, CmsType<?> value) throws Exception {
         int idx = choiceIndex(value.getClass());
         CmsData data = new CmsData();
-        data.value = (CmsType) value;
+        data.setValue((CmsType) value);
         data.decode(pis);
     }
 
@@ -138,7 +143,7 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsScalar<CmsData<T>,
     public static void write(PerOutputStream pos, CmsType<?> value) {
         int idx = choiceIndex(value.getClass());
         CmsData data = new CmsData();
-        data.value = (CmsType) value;
+        data.setValue((CmsType) value);
         data.encode(pos);
     }
 }

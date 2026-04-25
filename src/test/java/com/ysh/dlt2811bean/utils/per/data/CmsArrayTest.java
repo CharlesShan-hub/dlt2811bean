@@ -13,13 +13,13 @@ class CmsArrayTest {
     @Test
     @DisplayName("encode and decode with multiple elements")
     void encodeDecode() throws Exception {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(100)).add(new CmsInt32(200)).add(new CmsInt32(300));
 
         PerOutputStream pos = new PerOutputStream();
         array.encode(pos);
 
-        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).max(10)
+        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).capacity(10)
             .decode(new PerInputStream(pos.toByteArray()));
 
         assertEquals(3, decoded.size());
@@ -31,12 +31,12 @@ class CmsArrayTest {
     @Test
     @DisplayName("empty array")
     void empty() throws Exception {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
 
         PerOutputStream pos = new PerOutputStream();
         array.encode(pos);
 
-        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).max(10)
+        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).capacity(10)
             .decode(new PerInputStream(pos.toByteArray()));
 
         assertTrue(decoded.isEmpty());
@@ -46,13 +46,13 @@ class CmsArrayTest {
     @Test
     @DisplayName("single element")
     void single() throws Exception {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(42));
 
         PerOutputStream pos = new PerOutputStream();
         array.encode(pos);
 
-        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).max(10)
+        CmsArray<CmsInt32> decoded = new CmsArray<>(CmsInt32.class).capacity(10)
             .decode(new PerInputStream(pos.toByteArray()));
 
         assertEquals(1, decoded.size());
@@ -62,7 +62,7 @@ class CmsArrayTest {
     @Test
     @DisplayName("add and iterate")
     void iteration() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(1)).add(new CmsInt32(2)).add(new CmsInt32(3));
 
         int sum = 0;
@@ -75,7 +75,7 @@ class CmsArrayTest {
     @Test
     @DisplayName("toList returns copy")
     void toList() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(10)).add(new CmsInt32(20));
 
         var list = array.toList();
@@ -87,7 +87,7 @@ class CmsArrayTest {
     @Test
     @DisplayName("stream support")
     void stream() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(1)).add(new CmsInt32(2)).add(new CmsInt32(3)).add(new CmsInt32(4)).add(new CmsInt32(5));
 
         long sum = array.stream().mapToInt(CmsInt32::get).sum();
@@ -95,8 +95,8 @@ class CmsArrayTest {
     }
 
     @Test
-    @DisplayName("encode without max throws exception")
-    void encodeWithoutMax() {
+    @DisplayName("encode without capacity throws exception")
+    void encodeWithoutCapacity() {
         CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class);
         array.add(new CmsInt32(1));
 
@@ -105,8 +105,8 @@ class CmsArrayTest {
     }
 
     @Test
-    @DisplayName("decode without max throws exception")
-    void decodeWithoutMax() {
+    @DisplayName("decode without capacity throws exception")
+    void decodeWithoutCapacity() {
         CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class);
         PerInputStream pis = new PerInputStream(new byte[0]);
         assertThrows(IllegalStateException.class, () -> array.decode(pis));
@@ -115,14 +115,14 @@ class CmsArrayTest {
     @Test
     @DisplayName("add null throws exception")
     void addNull() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         assertThrows(NullPointerException.class, () -> array.add(null));
     }
 
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(100)).add(new CmsInt32(200));
         assertEquals("SEQUENCE OF[INT32: 100, INT32: 200]", array.toString());
     }
@@ -130,20 +130,20 @@ class CmsArrayTest {
     @Test
     @DisplayName("toString empty")
     void toStringEmpty() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).max(10);
+        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         assertEquals("SEQUENCE OF[]", array.toString());
     }
 
     @Test
     @DisplayName("encode and decode with CmsInt8U elements")
     void withCmsInt8U() throws Exception {
-        CmsArray<CmsInt8U> array = new CmsArray<>(CmsInt8U.class).max(5);
+        CmsArray<CmsInt8U> array = new CmsArray<>(CmsInt8U.class).capacity(5);
         array.add(new CmsInt8U(10)).add(new CmsInt8U(20)).add(new CmsInt8U(30));
 
         PerOutputStream pos = new PerOutputStream();
         array.encode(pos);
 
-        CmsArray<CmsInt8U> decoded = new CmsArray<>(CmsInt8U.class).max(5)
+        CmsArray<CmsInt8U> decoded = new CmsArray<>(CmsInt8U.class).capacity(5)
             .decode(new PerInputStream(pos.toByteArray()));
 
         assertEquals(3, decoded.size());
