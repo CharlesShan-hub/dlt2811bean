@@ -65,7 +65,14 @@ public abstract class CmsService {
 
     // ==================== Header Setters ====================
 
-    public void setMessageType(MessageType messageType) { this.messageType = messageType; }
+    public void setMessageType(MessageType messageType) {
+        if (messageType != MessageType.REQUEST && messageType != MessageType.RESPONSE) {
+            System.err.println(
+                "[WARN] Use REQUEST or RESPONSE, not " + messageType
+                + " — this constructor is for testing only");
+        }
+        this.messageType = messageType;
+    }
     public void setFragmented(boolean fragmented) { this.fragmented = fragmented; }
 
     // ==================== Encode/Decode ====================
@@ -76,6 +83,9 @@ public abstract class CmsService {
      * @return the complete byte frame
      */
     public final byte[] encode() {
+        if (messageType != MessageType.REQUEST) {
+            messageType = resolveResponseType();
+        }
         byte[] asdu = encodeAsdu();
         int fl = asdu.length;
 
@@ -89,6 +99,18 @@ public abstract class CmsService {
         // ASDU
         System.arraycopy(asdu, 0, frame, APCH_SIZE, fl);
         return frame;
+    }
+
+    /**
+     * Resolve an ambiguous RESPONSE type to RESPONSE_POSITIVE or RESPONSE_NEGATIVE.
+     * Called automatically during {@link #encode()} when messageType is {@link MessageType#RESPONSE}.
+     * <p>Subclasses with response-specific fields should override this to inspect
+     * their own state (e.g., whether a serviceError field is set).
+     *
+     * @return RESPONSE_POSITIVE or RESPONSE_NEGATIVE
+     */
+    protected MessageType resolveResponseType() {
+        return MessageType.RESPONSE_POSITIVE;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.data.type;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import lombok.Getter;
 
 /**
  * Abstract base class for all CMS string types.
@@ -16,6 +17,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * @param <T> the concrete string type
  * @param <V> the value type (String, byte[], etc.)
  */
+@Getter
 public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> extends AbstractCmsScalar<T, V> implements CmsString<T, V> {
 
     /** Encoding mode: FIXED for SIZE(n), VARIABLE for SIZE(0..max). */
@@ -51,26 +53,12 @@ public abstract class AbstractCmsString<T extends AbstractCmsString<T, V>, V> ex
     }
 
     /**
-     * Get fixed size, or null if not set.
-     */
-    public Integer getSize() {
-        return size;
-    }
-
-    /**
      * Set maximum size (SIZE(0..max)). Clears size.
      */
     public T max(int max) {
         this.max = max;
         this.size = null;
         return self();
-    }
-
-    /**
-     * Get maximum size, or null if not set.
-     */
-    public Integer getMax() {
-        return max;
     }
 
     @Override

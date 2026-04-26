@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.data.string.CmsVisibleString;
 import com.ysh.dlt2811bean.data.string.CmsOctetString;
 import com.ysh.dlt2811bean.data.enumerated.CmsServiceError;
 import lombok.Getter;
@@ -72,10 +71,10 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
 
     // --- Request parameters ---
     // serverAccessPointReference [0..1] VisibleString129
-    private CmsVisibleString serverAccessPointReference = new CmsVisibleString().max(129);
+    private ServerAccessPointReference serverAccessPointReference = new ServerAccessPointReference();
 
-    // authenticationParameter [0..1] OCTET STRING
-    private CmsOctetString authenticationParameter = new CmsOctetString().max(65535);
+    // authenticationParameter [0..1] AuthenticationParameter (optional)
+    private AuthenticationParameter authenticationParameter = new AuthenticationParameter();
 
     // --- Response+ parameters ---
     // associationId OCTET STRING (SIZE(64))
@@ -83,9 +82,6 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
 
     // result ServiceError = no-error
     private CmsServiceError result = new CmsServiceError(CmsServiceError.NO_ERROR);
-
-    // authenticationParameter OCTET STRING (Response also has this parameter)
-    private CmsOctetString responseAuthenticationParameter = new CmsOctetString().max(65535);
 
     // --- Response- parameters ---
     // serviceError ServiceError
@@ -109,7 +105,7 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
         } else if (type == MessageType.RESPONSE_POSITIVE) {
             associationId.encode(pos);
             result.encode(pos);
-            responseAuthenticationParameter.encode(pos);
+            authenticationParameter.encode(pos);
         } else if (type == MessageType.RESPONSE_NEGATIVE) {
             serviceError.encode(pos);
         }
@@ -135,13 +131,20 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
             } else if (type == MessageType.RESPONSE_POSITIVE) {
                 associationId.decode(pis);
                 result.decode(pis);
-                responseAuthenticationParameter.decode(pis);
+                authenticationParameter.decode(pis);
             } else if (type == MessageType.RESPONSE_NEGATIVE) {
                 serviceError.decode(pis);
             }
         } catch (Exception e) {
             throw new PerDecodeException("CmsAssociate decode failed", e);
         }
+    }
+
+    @Override
+    protected MessageType resolveResponseType() {
+        return serviceError.get() != CmsServiceError.NO_ERROR
+            ? MessageType.RESPONSE_NEGATIVE
+            : MessageType.RESPONSE_POSITIVE;
     }
 
     // ==================== Object methods ====================
@@ -163,7 +166,7 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
         } else if (getMessageType() == MessageType.RESPONSE_POSITIVE) {
             sb.append(", associationId=").append(associationId);
             sb.append(", result=").append(result);
-            sb.append(", respAuthParam=").append(responseAuthenticationParameter);
+            sb.append(", authParam=").append(authenticationParameter);
         } else {
             sb.append(", serviceError=").append(serviceError);
         }

@@ -8,11 +8,18 @@ package com.ysh.dlt2811bean.service.enums;
  *   <li><b>Resp</b> (bit7): 0 = Request, 1 = Response</li>
  *   <li><b>Err</b> (bit6): 0 = Positive, 1 = Negative (only meaningful for Response)</li>
  * </ul>
+ *
+ * <p>Use {@link #RESPONSE} when decoding a response frame without knowing
+ * whether it is positive or negative. After decoding, the actual type
+ * ({@link #RESPONSE_POSITIVE} or {@link #RESPONSE_NEGATIVE}) will be
+ * resolved from the APCH Err flag.
  */
 public enum MessageType {
 
     /** Request-ASDU (Resp=0, Err=0) */
     REQUEST(false, false),
+    /** Unknown response type — resolved to POSITIVE or NEGATIVE during decode */
+    RESPONSE(true, false),
     /** Positive Response-ASDU (Resp=1, Err=0) */
     RESPONSE_POSITIVE(true, false),
     /** Negative Response-ASDU (Resp=1, Err=1) */

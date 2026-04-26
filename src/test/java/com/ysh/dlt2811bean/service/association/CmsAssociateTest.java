@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.data.string.CmsVisibleString;
 import com.ysh.dlt2811bean.data.string.CmsOctetString;
 import com.ysh.dlt2811bean.data.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.service.enums.MessageType;
@@ -17,8 +16,10 @@ class CmsAssociateTest {
     void request() throws Exception {
         CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
         req.setReqId(new byte[]{0x00, 0x01});
-        req.setServerAccessPointReference(new CmsVisibleString("MyServer").max(129));
-        req.setAuthenticationParameter(new CmsOctetString(new byte[]{0x01, 0x02, 0x03}).max(65535));
+        req.setServerAccessPointReference(new ServerAccessPointReference("MyServer", "AP1"));
+        AuthenticationParameter authParam = new AuthenticationParameter();
+        authParam.signatureCertificate().set(new byte[]{0x01, 0x02, 0x03});
+        req.setAuthenticationParameter(authParam);
 
         byte[] frame = req.encode();
 
@@ -27,8 +28,8 @@ class CmsAssociateTest {
 
         assertEquals(MessageType.REQUEST, decoded.getMessageType());
         assertArrayEquals(new byte[]{0x00, 0x01}, decoded.getReqId().get());
-        assertEquals("MyServer", decoded.getServerAccessPointReference().get());
-        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, decoded.getAuthenticationParameter().get());
+        assertEquals("MyServer.AP1", decoded.getServerAccessPointReference().get());
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, decoded.getAuthenticationParameter().signatureCertificate().get());
     }
 
     @Test
@@ -38,7 +39,6 @@ class CmsAssociateTest {
         resp.getReqId().set(new byte[]{0x00, 0x01});
         resp.setAssociationId(new CmsOctetString(new byte[64]).size(64));
         resp.setResult(new CmsServiceError(CmsServiceError.NO_ERROR));
-        resp.setResponseAuthenticationParameter(new CmsOctetString(new byte[]{0x05}).max(65535));
 
         byte[] frame = resp.encode();
 
@@ -48,7 +48,6 @@ class CmsAssociateTest {
         assertEquals(MessageType.RESPONSE_POSITIVE, decoded.getMessageType());
         assertArrayEquals(new byte[]{0x00, 0x01}, decoded.getReqId().get());
         assertEquals(CmsServiceError.NO_ERROR, decoded.getResult().get());
-        assertArrayEquals(new byte[]{0x05}, decoded.getResponseAuthenticationParameter().get());
     }
 
     @Test
@@ -73,7 +72,7 @@ class CmsAssociateTest {
     void apchFlags() throws Exception {
         CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
         req.setReqId(new byte[]{0x00, 0x01});
-        req.setServerAccessPointReference(new CmsVisibleString("test").max(129));
+        req.setServerAccessPointReference(new ServerAccessPointReference("test", "AP"));
         byte[] reqFrame = req.encode();
         assertEquals(MessageType.REQUEST, req.getMessageType());
         assertFalse((reqFrame[2] & 0x80) != 0, "Request should have Resp=0");
@@ -99,10 +98,10 @@ class CmsAssociateTest {
     void toStringFormat() {
         CmsAssociate req = new CmsAssociate(MessageType.REQUEST);
         req.getReqId().set(new byte[]{0x00, 0x01});
-        req.setServerAccessPointReference(new CmsVisibleString("MyServer").max(129));
+        req.setServerAccessPointReference(new ServerAccessPointReference("MyServer", "AP1"));
         String reqStr = req.toString();
         assertTrue(reqStr.contains("serverAccessPointReference"));
-        assertTrue(reqStr.contains("MyServer"));
+        assertTrue(reqStr.contains("MyServer.AP1"));
 
         CmsAssociate neg = new CmsAssociate(MessageType.RESPONSE_NEGATIVE);
         neg.getReqId().set(new byte[]{0x00, 0x01});
