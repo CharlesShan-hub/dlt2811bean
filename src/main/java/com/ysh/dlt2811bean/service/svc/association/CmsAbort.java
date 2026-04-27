@@ -7,7 +7,7 @@ import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerEnumerated;
 import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsI;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
 /**
@@ -67,8 +67,20 @@ public class CmsAbort extends AbstractCmsI {
         this.reason = PerEnumerated.decode(pis, REASON_MAX);
     }
 
+    // ==================== Static Convenience Methods ====================
+
+    /**
+     * Read an Abort APDU from a PER input stream.
+     *
+     * @param pis PER input stream
+     * @return decoded Abort service
+     */
+    public static CmsAbort read(PerInputStream pis) throws Exception {
+        return (CmsAbort) new CmsAbort().decode(pis);
+    }
+
     @Override
-    public CmsAsdu copy() {
+    public CmsApdu copy() {
         CmsAbort copy = new CmsAbort();
         copy.reason = this.reason;
         return copy;

@@ -8,7 +8,7 @@ import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerOctetString;
 import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsRR;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
@@ -28,7 +28,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsRelease extends AbstractCmsRR {
+public class CmsRelease extends AbstractCmsRR<CmsRelease> {
 
     /** Fixed association identifier length: 64 bytes */
     private static final int ASSOC_ID_SIZE = 64;
@@ -47,6 +47,11 @@ public class CmsRelease extends AbstractCmsRR {
     private int serviceError;
 
     // ==================== AbstractCmsRR Hooks ====================
+
+    @Override
+    protected MessageType resolveResponseType() {
+        return serviceError != 0 ? MessageType.RESPONSE_NEGATIVE : MessageType.RESPONSE_POSITIVE;
+    }
 
     @Override
     protected void encodeRequest(PerOutputStream pos) {
@@ -78,8 +83,21 @@ public class CmsRelease extends AbstractCmsRR {
         // TODO: decode serviceError
     }
 
+    // ==================== Static Convenience Methods ====================
+
+    /**
+     * Read a Release APDU from a PER input stream.
+     *
+     * @param pis         PER input stream
+     * @param messageType the message type (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE)
+     * @return decoded Release service
+     */
+    public static CmsRelease read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsRelease) new CmsRelease(messageType).decode(pis);
+    }
+
     @Override
-    public CmsAsdu copy() {
+    public CmsApdu copy() {
         CmsRelease copy = new CmsRelease();
         copy.associationId = this.associationId != null ? this.associationId.clone() : null;
         return copy;

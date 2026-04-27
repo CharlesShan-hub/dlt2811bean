@@ -1,67 +1,76 @@
 package com.ysh.dlt2811bean.service.protocol.types;
 
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import lombok.Getter;
 
 /**
- * APDU (Application Protocol Data Unit) — the complete frame.
+ * APDU (Application Protocol Data Unit) — the complete application-layer frame.
  *
- * <p>APDU = APCH (5 bytes) + ASDU (ReqID + Service Data)
+ * <p>Each service class is itself an APDU: it holds its own {@link CmsApch}
+ * and encodes/decodes as a complete frame (APCH + ASDU).
  *
- * <p>Encoding order:
- * <ol>
- *   <li>Encode ASDU to temporary buffer to calculate FL</li>
- *   <li>Set APCH.FL = ASDU length</li>
- *   <li>Write APCH</li>
- *   <li>Write ASDU</li>
- * </ol>
+ * <p>Usage:
+ * <pre>{@code
+ * // Encode
+ * CmsAssociate service = new CmsAssociate(MessageType.REQUEST)
+ *     .serverAccessPointReference("IED1", "AP1");
+ * byte[] frame = service.encode();
  *
- * <p>Decoding order:
- * <ol>
- *   <li>Read APCH</li>
- *   <li>Read ASDU bytes (length = APCH.FL)</li>
- *   <li>Parse ASDU</li>
- * </ol>
- *
- * @param <T> concrete ASDU type (e.g. CmsAssociate)
+ * // Decode
+ * CmsAssociate service = new CmsAssociate(MessageType.REQUEST).decode(frame);
+ * }</pre>
  */
-@Getter
-public class CmsApdu<T extends CmsAsdu> implements CmsType<CmsApdu<T>> {
+public abstract class CmsApdu implements CmsType<CmsApdu> {
 
     private final CmsApch apch = new CmsApch();
-    private final T asdu;
 
-    public CmsApdu(T asdu) {
-        this.asdu = asdu;
-    }
-
-    // ==================== Fluent Setters ====================
-
-    public CmsApdu<T> withServiceCode(ServiceCode serviceCode) {
+    protected CmsApdu(ServiceCode serviceCode, MessageType messageType) {
         apch.withServiceCode(serviceCode);
-        return this;
-    }
-
-    public CmsApdu<T> withMessageType(MessageType messageType) {
         apch.withMessageType(messageType);
-        return this;
     }
 
-    public CmsApdu<T> withFragmented(boolean fragmented) {
-        apch.withFragmented(fragmented);
-        return this;
+    // ==================== Service Info ====================
+
+    /**
+     * Get the service code identifying this service type.
+     */
+    public abstract ServiceCode getServiceCode();
+
+    /**
+     * Get the message type of this service instance.
+     */
+    public abstract MessageType messageType();
+
+    /**
+     * Set the message type of this service instance.
+     *
+     * @return this instance for chaining
+     */
+    public abstract CmsApdu messageType(MessageType messageType);
+
+    /**
+     * Get the APCH (Application Protocol Control Header).
+     */
+    public CmsApch apch() {
+        return apch;
     }
 
-    // ==================== CmsType ====================
+    // ==================== APDU-level encode/decode ====================
 
+    /**
+     * Encode this service as a complete APDU frame (APCH + ASDU).
+     */
     @Override
     public void encode(PerOutputStream pos) {
+        MessageType mt = resolveMessageType();
+        apch.withServiceCode(getServiceCode());
+        apch.withMessageType(mt);
+
         PerOutputStream asduBuf = new PerOutputStream();
-        asdu.encode(asduBuf);
+        encodeServiceData(asduBuf);
         byte[] asduBytes = asduBuf.toByteArray();
 
         apch.withFrameLength(asduBytes.length);
@@ -69,31 +78,54 @@ public class CmsApdu<T extends CmsAsdu> implements CmsType<CmsApdu<T>> {
         pos.writeBytes(asduBytes);
     }
 
+    /**
+     * Decode a complete APDU frame (APCH + ASDU) into this service.
+     */
     @Override
-    public CmsApdu<T> decode(PerInputStream pis) throws Exception {
+    public CmsApdu decode(PerInputStream pis) throws Exception {
         apch.decode(pis);
 
         int fl = apch.getFrameLength();
         byte[] asduBytes = pis.readBytes(fl);
 
-        asdu.decode(new PerInputStream(asduBytes));
+        messageType(apch.getMessageType());
+        decodeServiceData(new PerInputStream(asduBytes));
 
         return this;
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public CmsApdu<T> copy() {
-        CmsApdu<T> copy = new CmsApdu<>((T) asdu.copy());
-        copy.apch.pi.set(this.apch.pi.get());
-        copy.apch.sc.set(this.apch.sc.get());
-        copy.apch.flags.set(this.apch.flags.get());
-        copy.apch.fl.set(this.apch.fl.get());
-        return copy;
+    // ==================== Static Convenience Methods ====================
+
+    /**
+     * Write an APDU to a PER output stream.
+     *
+     * @param pos  PER output stream
+     * @param apdu APDU to encode
+     */
+    public static void write(PerOutputStream pos, CmsApdu apdu) {
+        apdu.encode(pos);
     }
 
-    @Override
-    public String toString() {
-        return "CmsApdu{apch=" + apch + ", asdu=" + asdu + "}";
+    // ==================== Subclass Hooks ====================
+
+    /**
+     * Resolve the message type before encoding.
+     * <p>Subclasses may override this to resolve ambiguous types
+     * (e.g. {@link MessageType#RESPONSE} → {@link MessageType#RESPONSE_POSITIVE}
+     * or {@link MessageType#RESPONSE_NEGATIVE}) based on their field state.
+     * <p>The default implementation returns the current message type as-is.
+     */
+    protected MessageType resolveMessageType() {
+        return messageType();
     }
+
+    /**
+     * Encode service-specific fields (the ASDU payload).
+     */
+    protected abstract void encodeServiceData(PerOutputStream pos);
+
+    /**
+     * Decode service-specific fields (the ASDU payload).
+     */
+    protected abstract void decodeServiceData(PerInputStream pis) throws Exception;
 }

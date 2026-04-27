@@ -11,7 +11,7 @@ import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsRR;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
@@ -62,7 +62,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsAssociate extends AbstractCmsRR {
+public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
 
     /**
      * Constructs a CmsAssociate message with the specified message type.
@@ -118,6 +118,17 @@ public class CmsAssociate extends AbstractCmsRR {
         return this;
     }
 
+    /**
+     * Convenience method: set serviceError from raw error code.
+     *
+     * @param errorCode the service error code (e.g. {@link CmsServiceError#INSTANCE_NOT_AVAILABLE})
+     * @return this
+     */
+    public CmsAssociate serviceError(int errorCode) {
+        this.serviceError = new CmsServiceError(errorCode);
+        return this;
+    }
+
     // ==================== AbstractCmsRR Hooks ====================
 
     @Override
@@ -139,7 +150,7 @@ public class CmsAssociate extends AbstractCmsRR {
     @Override
     protected void encodeResponsePositive(PerOutputStream pos) {
         associationId.encode(pos);
-        result.encode(pos);
+        new CmsServiceError(CmsServiceError.NO_ERROR).encode(pos);
         authenticationParameter.encode(pos);
     }
 
@@ -169,14 +180,7 @@ public class CmsAssociate extends AbstractCmsRR {
     }
 
     @Override
-    protected MessageType resolveResponseType() {
-        return serviceError.get() != CmsServiceError.NO_ERROR
-            ? MessageType.RESPONSE_NEGATIVE
-            : MessageType.RESPONSE_POSITIVE;
-    }
-
-    @Override
-    public CmsAsdu copy() {
+    public CmsApdu copy() {
         CmsAssociate copy = new CmsAssociate(messageType());
         copy.reqId(reqId());
         copy.serverAccessPointReference = this.serverAccessPointReference.copy();
@@ -185,6 +189,19 @@ public class CmsAssociate extends AbstractCmsRR {
         copy.result = this.result.copy();
         copy.serviceError = this.serviceError.copy();
         return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    /**
+     * Read an Associate APDU from a PER input stream.
+     *
+     * @param pis         PER input stream
+     * @param messageType the message type (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE)
+     * @return decoded Associate service
+     */
+    public static CmsAssociate read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsAssociate) new CmsAssociate(messageType).decode(pis);
     }
 
     // ==================== Object methods ====================

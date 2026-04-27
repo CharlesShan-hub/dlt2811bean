@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.datatypes.compound;
 
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import org.junit.jupiter.api.DisplayName;
@@ -71,8 +70,7 @@ class CmsFileEntryTest {
     void setters_convenience() {
         CmsUtcTime utc = new CmsUtcTime(1715000000L, 0, 0L);
         CmsFileEntry entry = new CmsFileEntry()
-            //.fileName("data.bin")
-            .fileName(new CmsVisibleString("data.bin").max(129))
+            .fileName("data.bin")
             .fileSize(2048)
             .lastModified(utc)
             .checkSum(0x12345678L);

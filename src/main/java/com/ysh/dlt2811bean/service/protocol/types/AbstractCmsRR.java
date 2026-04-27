@@ -26,32 +26,52 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public abstract class AbstractCmsRR extends CmsAsdu implements CmsService {
+public abstract class AbstractCmsRR<T extends AbstractCmsRR<T>> extends CmsApdu {
 
     private final ServiceCode serviceCode;
     private MessageType messageType = MessageType.REQUEST;
     private int reqId;
 
+    @SuppressWarnings("unchecked")
+    public T reqId(int reqId) {
+        this.reqId = reqId;
+        return (T) this;
+    }
+
     protected AbstractCmsRR(ServiceCode serviceCode, MessageType messageType) {
+        super(serviceCode, messageType);
         this.serviceCode = serviceCode;
         this.messageType = messageType;
     }
 
-    // ==================== CmsService ====================
+    // ==================== CmsApdu ====================
 
     @Override
     public ServiceCode getServiceCode() {
         return serviceCode();
     }
 
-    // ==================== CmsAsdu Hooks ====================
+    // ==================== CmsApdu Hooks ====================
+    
+    /**
+     * Resolve an ambiguous RESPONSE type to RESPONSE_POSITIVE or RESPONSE_NEGATIVE.
+     * <p>Default implementation checks the {@link #serviceError} field:
+     * non-zero means NEGATIVE, zero means POSITIVE.
+     */
+    protected MessageType resolveResponseType() {
+        if (messageType == MessageType.RESPONSE) {
+            messageType = resolveResponseType();
+        }
+        return messageType;
+    }
 
     @Override
     protected final void encodeServiceData(PerOutputStream pos) {
-        if (messageType != MessageType.REQUEST) {
-            messageType = resolveResponseType();
-        }
         new CmsInt16U(reqId).encode(pos);
+        if (messageType == MessageType.REQUEST) {
+            messageType = resolveMessageType();
+        }
+        messageType = resolveMessageType();
         switch (messageType) {
             case REQUEST:
                 encodeRequest(pos);
@@ -117,16 +137,4 @@ public abstract class AbstractCmsRR extends CmsAsdu implements CmsService {
      */
     protected abstract void decodeResponseNegative(PerInputStream pis) throws PerDecodeException;
 
-    /**
-     * Resolve an ambiguous RESPONSE type to RESPONSE_POSITIVE or RESPONSE_NEGATIVE.
-     * Called automatically during {@link #encodeServiceData(PerOutputStream)} when
-     * messageType is {@link MessageType#RESPONSE}.
-     * <p>Subclasses with response-specific fields should override this to inspect
-     * their own state (e.g., whether a serviceError field is set).
-     *
-     * @return RESPONSE_POSITIVE or RESPONSE_NEGATIVE
-     */
-    protected MessageType resolveResponseType() {
-        return MessageType.RESPONSE_POSITIVE;
-    }
 }

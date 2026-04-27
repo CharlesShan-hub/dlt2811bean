@@ -23,23 +23,24 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public abstract class AbstractCmsI extends CmsAsdu implements CmsService {
+public abstract class AbstractCmsI extends CmsApdu {
 
     private final ServiceCode serviceCode;
     private MessageType messageType = MessageType.INDICATION;
 
     protected AbstractCmsI(ServiceCode serviceCode) {
+        super(serviceCode, MessageType.INDICATION);
         this.serviceCode = serviceCode;
     }
 
-    // ==================== CmsService ====================
+    // ==================== CmsApdu ====================
 
     @Override
     public ServiceCode getServiceCode() {
         return serviceCode();
     }
 
-    // ==================== CmsAsdu Hooks ====================
+    // ==================== CmsApdu Hooks ====================
 
     @Override
     protected final void encodeServiceData(PerOutputStream pos) {

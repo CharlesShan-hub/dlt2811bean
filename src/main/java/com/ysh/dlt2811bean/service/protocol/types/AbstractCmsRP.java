@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
@@ -24,24 +25,30 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  */
 @Getter
 @Setter
-public abstract class AbstractCmsRP extends CmsAsdu implements CmsService {
+@Accessors(fluent = true)
+public abstract class AbstractCmsRP extends CmsApdu {
 
     private final ServiceCode serviceCode;
     private MessageType messageType = MessageType.REQUEST_PLUS;
     private int reqId;
 
     protected AbstractCmsRP(ServiceCode serviceCode, MessageType messageType) {
+        super(serviceCode, messageType);
         this.serviceCode = serviceCode;
         this.messageType = messageType;
     }
 
-    // ==================== CmsAsdu Hooks ====================
+    // ==================== CmsApdu ====================
+
+    @Override
+    public ServiceCode getServiceCode() {
+        return serviceCode();
+    }
+
+    // ==================== CmsApdu Hooks ====================
 
     @Override
     protected final void encodeServiceData(PerOutputStream pos) {
-        if (messageType != MessageType.REQUEST_PLUS) {
-            messageType = resolveResponseType();
-        }
         new CmsInt16U(reqId).encode(pos);
         encodeBody(pos);
     }
@@ -55,23 +62,12 @@ public abstract class AbstractCmsRP extends CmsAsdu implements CmsService {
     // ==================== Subclass Hooks ====================
 
     /**
-     * Encode service-specific fields (after ReqID) into the PER stream.
+     * Encode service-specific fields into the PER stream.
      */
     protected abstract void encodeBody(PerOutputStream pos);
 
     /**
-     * Decode service-specific fields (after ReqID) from the PER stream.
+     * Decode service-specific fields from the PER stream.
      */
-    protected abstract void decodeBody(PerInputStream pis) throws PerDecodeException;
-
-    /**
-     * Resolve an ambiguous RESPONSE type to RESPONSE_POSITIVE or RESPONSE_NEGATIVE.
-     * Called automatically during {@link #encodeServiceData(PerOutputStream)} when
-     * messageType is {@link MessageType#RESPONSE}.
-     *
-     * @return RESPONSE_POSITIVE or RESPONSE_NEGATIVE
-     */
-    protected MessageType resolveResponseType() {
-        return MessageType.RESPONSE_POSITIVE;
-    }
+    protected abstract void decodeBody(PerInputStream pis) throws Exception;
 }
