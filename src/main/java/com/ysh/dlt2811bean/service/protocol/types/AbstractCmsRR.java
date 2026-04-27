@@ -28,8 +28,6 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 @Accessors(fluent = true)
 public abstract class AbstractCmsRR<T extends AbstractCmsRR<T>> extends CmsApdu {
 
-    private final ServiceCode serviceCode;
-    private MessageType messageType = MessageType.REQUEST;
     private int reqId;
 
     @SuppressWarnings("unchecked")
@@ -40,38 +38,13 @@ public abstract class AbstractCmsRR<T extends AbstractCmsRR<T>> extends CmsApdu 
 
     protected AbstractCmsRR(ServiceCode serviceCode, MessageType messageType) {
         super(serviceCode, messageType);
-        this.serviceCode = serviceCode;
-        this.messageType = messageType;
-    }
-
-    // ==================== CmsApdu ====================
-
-    @Override
-    public ServiceCode getServiceCode() {
-        return serviceCode();
     }
 
     // ==================== CmsApdu Hooks ====================
-    
-    /**
-     * Resolve an ambiguous RESPONSE type to RESPONSE_POSITIVE or RESPONSE_NEGATIVE.
-     * <p>Default implementation checks the {@link #serviceError} field:
-     * non-zero means NEGATIVE, zero means POSITIVE.
-     */
-    protected MessageType resolveResponseType() {
-        if (messageType == MessageType.RESPONSE) {
-            messageType = resolveResponseType();
-        }
-        return messageType;
-    }
 
     @Override
     protected final void encodeServiceData(PerOutputStream pos) {
         new CmsInt16U(reqId).encode(pos);
-        if (messageType == MessageType.REQUEST) {
-            messageType = resolveMessageType();
-        }
-        messageType = resolveMessageType();
         switch (messageType) {
             case REQUEST:
                 encodeRequest(pos);

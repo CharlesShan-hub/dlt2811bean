@@ -39,7 +39,7 @@ class CmsAssociateTest {
     @Test
     @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip")
     void positiveResponseRoundTrip() throws Exception {
-        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE)
+        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE_POSITIVE)
             .associationId(new byte[]{
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -66,12 +66,13 @@ class CmsAssociateTest {
         assertEquals(CmsServiceError.NO_ERROR, result.result().get());
         assertArrayEquals(new byte[]{0x10, 0x20},
             result.authenticationParameter().signatureCertificate.get());
+        assertEquals(MessageType.RESPONSE_POSITIVE, result.messageType());
     }
 
     @Test
     @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip")
     void negativeResponseRoundTrip() throws Exception {
-        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE)
+        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE_NEGATIVE)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(1);
 
@@ -83,5 +84,6 @@ class CmsAssociateTest {
 
         assertEquals(1, result.reqId());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
+        assertEquals(MessageType.RESPONSE_NEGATIVE, result.messageType());
     }
 }

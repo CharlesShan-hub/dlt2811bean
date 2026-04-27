@@ -64,11 +64,8 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 @Accessors(fluent = true)
 public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
 
-    /**
-     * Constructs a CmsAssociate message with the specified message type.
-     *
-     * @param messageType the type of message (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE)
-     */
+    public static final int ASSOC_ID_SIZE = 64;
+    
     public CmsAssociate(MessageType messageType) {
         super(ServiceCode.ASSOCIATE, messageType);
     }
@@ -84,7 +81,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
 
     // --- Response+ parameters ---
     // associationId OCTET STRING (SIZE(64))
-    private CmsOctetString associationId = new CmsOctetString().size(64);
+    private CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
     // result ServiceError = no-error
     private CmsServiceError result = new CmsServiceError(CmsServiceError.NO_ERROR);
@@ -93,37 +90,19 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
     // serviceError ServiceError
     private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
+
     // ==================== Convenience Setters ====================
 
-    /**
-     * Convenience method: set serverAccessPointReference from IED name and access point.
-     *
-     * @param iedName the IED name
-     * @param accessPoint the access point name
-     * @return this
-     */
     public CmsAssociate serverAccessPointReference(String iedName, String accessPoint) {
         this.serverAccessPointReference = new ServerAccessPointReference(iedName, accessPoint);
         return this;
     }
 
-    /**
-     * Convenience method: set associationId from raw bytes.
-     *
-     * @param bytes the 64-byte association identifier
-     * @return this
-     */
     public CmsAssociate associationId(byte[] bytes) {
-        this.associationId = new CmsOctetString(bytes).size(64);
+        this.associationId = new CmsOctetString(bytes).size(ASSOC_ID_SIZE);
         return this;
     }
 
-    /**
-     * Convenience method: set serviceError from raw error code.
-     *
-     * @param errorCode the service error code (e.g. {@link CmsServiceError#INSTANCE_NOT_AVAILABLE})
-     * @return this
-     */
     public CmsAssociate serviceError(int errorCode) {
         this.serviceError = new CmsServiceError(errorCode);
         return this;
@@ -191,21 +170,6 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
         return copy;
     }
 
-    // ==================== Static Convenience Methods ====================
-
-    /**
-     * Read an Associate APDU from a PER input stream.
-     *
-     * @param pis         PER input stream
-     * @param messageType the message type (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE)
-     * @return decoded Associate service
-     */
-    public static CmsAssociate read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsAssociate) new CmsAssociate(messageType).decode(pis);
-    }
-
-    // ==================== Object methods ====================
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CmsAssociate{");
@@ -223,5 +187,15 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
         }
 
         return sb.append("}").toString();
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    public static CmsAssociate read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsAssociate) new CmsAssociate(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsAssociate associate) {
+        associate.encode(pos);
     }
 }

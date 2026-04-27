@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.service.protocol.types;
 
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 import lombok.Getter;
@@ -25,30 +26,33 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 @Accessors(fluent = true)
 public abstract class AbstractCmsI extends CmsApdu {
 
-    private final ServiceCode serviceCode;
-    private MessageType messageType = MessageType.INDICATION;
+    private int reqId;
 
-    protected AbstractCmsI(ServiceCode serviceCode) {
-        super(serviceCode, MessageType.INDICATION);
-        this.serviceCode = serviceCode;
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractCmsI> T reqId(int reqId) {
+        this.reqId = reqId;
+        return (T) this;
     }
 
-    // ==================== CmsApdu ====================
-
-    @Override
-    public ServiceCode getServiceCode() {
-        return serviceCode();
+    protected AbstractCmsI(ServiceCode serviceCode, MessageType messageType) {
+        super(serviceCode, messageType);
     }
 
     // ==================== CmsApdu Hooks ====================
 
     @Override
     protected final void encodeServiceData(PerOutputStream pos) {
+        if (messageType == MessageType.REQUEST) {
+            new CmsInt16U(reqId).encode(pos);
+        }
         encodeBody(pos);
     }
 
     @Override
     protected final void decodeServiceData(PerInputStream pis) throws Exception {
+        if (messageType == MessageType.REQUEST) {
+            this.reqId = new CmsInt16U().decode(pis).get();
+        }
         decodeBody(pis);
     }
 

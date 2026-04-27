@@ -26,10 +26,14 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 public abstract class CmsApdu implements CmsType<CmsApdu> {
 
     private final CmsApch apch = new CmsApch();
+    protected final ServiceCode serviceCode;
+    protected MessageType messageType;
 
     protected CmsApdu(ServiceCode serviceCode, MessageType messageType) {
         apch.withServiceCode(serviceCode);
         apch.withMessageType(messageType);
+        this.serviceCode = serviceCode;
+        this.messageType = messageType;
     }
 
     // ==================== Service Info ====================
@@ -37,19 +41,26 @@ public abstract class CmsApdu implements CmsType<CmsApdu> {
     /**
      * Get the service code identifying this service type.
      */
-    public abstract ServiceCode getServiceCode();
+    public ServiceCode getServiceCode() {
+        return serviceCode;
+    }
 
     /**
      * Get the message type of this service instance.
      */
-    public abstract MessageType messageType();
+    public MessageType messageType() {
+        return messageType;
+    }
 
     /**
      * Set the message type of this service instance.
      *
      * @return this instance for chaining
      */
-    public abstract CmsApdu messageType(MessageType messageType);
+    public CmsApdu messageType(MessageType messageType) {
+        this.messageType = messageType;
+        return this;
+    }
 
     /**
      * Get the APCH (Application Protocol Control Header).

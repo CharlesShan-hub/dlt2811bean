@@ -28,21 +28,10 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 @Accessors(fluent = true)
 public abstract class AbstractCmsRP extends CmsApdu {
 
-    private final ServiceCode serviceCode;
-    private MessageType messageType = MessageType.REQUEST_PLUS;
     private int reqId;
 
     protected AbstractCmsRP(ServiceCode serviceCode, MessageType messageType) {
         super(serviceCode, messageType);
-        this.serviceCode = serviceCode;
-        this.messageType = messageType;
-    }
-
-    // ==================== CmsApdu ====================
-
-    @Override
-    public ServiceCode getServiceCode() {
-        return serviceCode();
     }
 
     // ==================== CmsApdu Hooks ====================
