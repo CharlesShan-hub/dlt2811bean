@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.string;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 /**
  * DL/T 2811 SubReference type (§7.3.3).
@@ -60,6 +61,19 @@ public class CmsSubReference extends CmsVisibleString {
     @Override
     public CmsSubReference decode(PerInputStream pis) throws Exception {
         return (CmsSubReference) super.decode(pis);
+    }
+
+    private static final CmsSubReference SHARED = new CmsSubReference();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, String value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsSubReference read(PerInputStream pis) throws Exception {
+        return new CmsSubReference().decode(pis);
     }
 
     /** Validate sub-reference constraints: no '/' allowed. */

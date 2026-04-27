@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.string;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 /**
  * DL/T 2811 EntryID type (§7.3.8).
@@ -58,6 +59,19 @@ public class CmsEntryID extends CmsOctetString {
     @Override
     public CmsEntryID decode(PerInputStream pis) throws Exception {
         return (CmsEntryID) super.decode(pis);
+    }
+
+    private static final CmsEntryID SHARED = new CmsEntryID();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, byte[] value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsEntryID read(PerInputStream pis) throws Exception {
+        return new CmsEntryID().decode(pis);
     }
 
     @Override

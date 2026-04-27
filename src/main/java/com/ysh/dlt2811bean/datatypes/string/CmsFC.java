@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.string;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 import java.util.Set;
 
@@ -67,6 +68,19 @@ public class CmsFC extends CmsVisibleString {
     @Override
     public CmsFC decode(PerInputStream pis) throws Exception {
         return (CmsFC) super.decode(pis);
+    }
+
+    private static final CmsFC SHARED = new CmsFC();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, String value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsFC read(PerInputStream pis) throws Exception {
+        return new CmsFC().decode(pis);
     }
 
     /** Check if the given string is a valid functional constraint. */

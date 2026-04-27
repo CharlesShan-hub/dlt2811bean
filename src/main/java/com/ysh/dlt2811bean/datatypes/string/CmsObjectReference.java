@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.string;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 /**
  * DL/T 2811 ObjectReference type (§7.3.2).
@@ -65,6 +66,19 @@ public class CmsObjectReference extends CmsVisibleString {
     @Override
     public CmsObjectReference decode(PerInputStream pis) throws Exception {
         return (CmsObjectReference) super.decode(pis);
+    }
+
+    private static final CmsObjectReference SHARED = new CmsObjectReference();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, String value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsObjectReference read(PerInputStream pis) throws Exception {
+        return new CmsObjectReference().decode(pis);
     }
 
     /** Validate object reference constraints. */

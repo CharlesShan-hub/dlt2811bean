@@ -3,7 +3,7 @@ package com.ysh.dlt2811bean.datatypes.data;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectName;
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsType;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsDataUnit;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerBoolean;
@@ -72,35 +72,7 @@ import com.ysh.dlt2811bean.per.types.PerNull;
  * CmsDataDefinition r = new CmsDataDefinition().decode(pis);
  * </pre>
  */
-public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
-
-    // CHOICE indices (same layout as CmsData)
-    public static final int ERROR          = 0;
-    public static final int ARRAY          = 1;
-    public static final int STRUCTURE      = 2;
-    public static final int BOOLEAN        = 3;
-    public static final int INT8           = 4;
-    public static final int INT16          = 5;
-    public static final int INT32          = 6;
-    public static final int INT64          = 7;
-    public static final int INT8U          = 8;
-    public static final int INT16U         = 9;
-    public static final int INT32U         = 10;
-    public static final int INT64U         = 11;
-    public static final int FLOAT32        = 12;
-    public static final int FLOAT64        = 13;
-    public static final int BIT_STRING     = 14;
-    public static final int OCTET_STRING   = 15;
-    public static final int VISIBLE_STRING = 16;
-    public static final int UNICODE_STRING = 17;
-    public static final int UTC_TIME       = 18;
-    public static final int BINARY_TIME    = 19;
-    public static final int QUALITY        = 20;
-    public static final int DBPOS          = 21;
-    public static final int TCMD           = 22;
-    public static final int CHECK          = 23;
-
-    private int choiceIndex = -1;
+public class CmsDataDefinition extends AbstractCmsDataUnit<CmsDataDefinition, Integer> {
 
     /** For string types: length (positive=fixed, negative=variable max, 0=unbounded). */
     private int stringLength = 0;
@@ -113,7 +85,7 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
     private java.util.List<StructureEntry> structureEntries = null;
 
     public CmsDataDefinition() {
-        super("DataDefinition");
+        super("DataDefinition", -1);
     }
 
     // -------------------------------------------------------------------------
@@ -169,7 +141,7 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
 
     public static CmsDataDefinition ofArray(int numberOfElement, CmsDataDefinition elementType) {
         CmsDataDefinition d = new CmsDataDefinition();
-        d.choiceIndex = ARRAY;
+        d.set(ARRAY);
         d.arrayNumberOfElement = numberOfElement;
         d.arrayElementType = elementType;
         return d;
@@ -177,20 +149,20 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
 
     public static CmsDataDefinition ofStructure(java.util.List<StructureEntry> entries) {
         CmsDataDefinition d = new CmsDataDefinition();
-        d.choiceIndex = STRUCTURE;
+        d.set(STRUCTURE);
         d.structureEntries = new java.util.ArrayList<>(entries);
         return d;
     }
 
     private static CmsDataDefinition ofNull(int index) {
         CmsDataDefinition d = new CmsDataDefinition();
-        d.choiceIndex = index;
+        d.set(index);
         return d;
     }
 
     private static CmsDataDefinition ofString(int index, int length) {
         CmsDataDefinition d = new CmsDataDefinition();
-        d.choiceIndex = index;
+        d.set(index);
         d.stringLength = length;
         return d;
     }
@@ -199,7 +171,7 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
     // Accessors
     // -------------------------------------------------------------------------
 
-    public int getChoiceIndex() { return choiceIndex; }
+    public int getChoiceIndex() { return get(); }
     public int getStringLength() { return stringLength; }
     public int getArrayNumberOfElement() { return arrayNumberOfElement; }
     public CmsDataDefinition getArrayElementType() { return arrayElementType; }
@@ -211,12 +183,13 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
 
     @Override
     public void encode(PerOutputStream pos) {
-        if (choiceIndex < 0) {
+        int idx = get();
+        if (idx < 0) {
             throw new IllegalStateException("DataDefinition: choiceIndex not set");
         }
-        PerChoice.encode(pos, choiceIndex);
+        PerChoice.encode(pos, idx);
 
-        switch (choiceIndex) {
+        switch (idx) {
             case ARRAY:
                 CmsInt32.write(pos, arrayNumberOfElement);
                 arrayElementType.encode(pos);
@@ -248,9 +221,10 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
 
     @Override
     public CmsDataDefinition decode(PerInputStream pis) throws Exception {
-        choiceIndex = PerChoice.decode(pis);
+        int idx = PerChoice.decode(pis);
+        set(idx);
 
-        switch (choiceIndex) {
+        switch (idx) {
             case ARRAY:
                 arrayNumberOfElement = (int) PerInteger.decode(pis, Integer.MIN_VALUE, Integer.MAX_VALUE);
                 arrayElementType = new CmsDataDefinition().decode(pis);
@@ -281,7 +255,8 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
 
     @Override
     public CmsDataDefinition copy() {
-        switch (choiceIndex) {
+        int idx = get();
+        switch (idx) {
             case ARRAY:
                 return ofArray(arrayNumberOfElement, arrayElementType.copy());
             case STRUCTURE: {
@@ -297,15 +272,16 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
             case OCTET_STRING:
             case VISIBLE_STRING:
             case UNICODE_STRING:
-                return ofString(choiceIndex, stringLength);
+                return ofString(idx, stringLength);
             default:
-                return ofNull(choiceIndex);
+                return ofNull(idx);
         }
     }
 
     @Override
     public String toString() {
-        switch (choiceIndex) {
+        int idx = get();
+        switch (idx) {
             case -1:           return "DataDefinition[unset]";
             case ARRAY:        return "DataDefinition[array, n=" + arrayNumberOfElement + ", elem=" + arrayElementType + "]";
             case STRUCTURE: {
@@ -324,7 +300,7 @@ public class CmsDataDefinition extends AbstractCmsType<CmsDataDefinition> {
             case OCTET_STRING:   return "DataDefinition[octet-string, len=" + stringLength + "]";
             case VISIBLE_STRING: return "DataDefinition[visible-string, len=" + stringLength + "]";
             case UNICODE_STRING: return "DataDefinition[unicode-string, len=" + stringLength + "]";
-            default:             return "DataDefinition[" + choiceIndex + "]";
+            default:             return "DataDefinition[" + idx + "]";
         }
     }
 }

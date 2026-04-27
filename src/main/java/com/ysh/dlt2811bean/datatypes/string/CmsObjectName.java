@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.string;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 /**
  * DL/T 2811 ObjectName type (§7.3.1).
@@ -60,5 +61,18 @@ public class CmsObjectName extends CmsVisibleString {
     @Override
     public CmsObjectName decode(PerInputStream pis) throws Exception {
         return (CmsObjectName) super.decode(pis);
+    }
+
+    private static final CmsObjectName SHARED = new CmsObjectName();
+
+    /** Static write with raw value. */
+    public static void write(PerOutputStream pos, String value) {
+        SHARED.set(value);
+        SHARED.encode(pos);
+    }
+
+    /** Static decode: creates a new instance, decodes, and returns it. */
+    public static CmsObjectName read(PerInputStream pis) throws Exception {
+        return new CmsObjectName().decode(pis);
     }
 }
