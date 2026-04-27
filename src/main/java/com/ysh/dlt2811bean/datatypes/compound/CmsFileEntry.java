@@ -26,10 +26,10 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Chain usage
  * CmsFileEntry entry = new CmsFileEntry()
- *     .fileName(new CmsVisibleString("report.txt").max(129))
- *     .fileSize(new CmsInt32U(1024))
+ *     .fileName("report.txt")
+ *     .fileSize(1024)
  *     .lastModified(new CmsUtcTime(1715000000L, 0, 0L))
- *     .checkSum(new CmsInt32U(0xAABBCCDDL));
+ *     .checkSum(0xAABBCCDDL);
  *
  * // Quick mode
  * CmsFileEntry entry = new CmsFileEntry("report.txt", 1024, utcTime, 0xAABBCCDDL);
@@ -43,7 +43,9 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsFileEntry extends AbstractCmsCompound<CmsFileEntry> {
 
-    public CmsVisibleString fileName = new CmsVisibleString().max(129);
+    public static final int FILE_NAME_MAX = 129;
+
+    public CmsVisibleString fileName = new CmsVisibleString().max(FILE_NAME_MAX);
     public CmsInt32U fileSize = new CmsInt32U(0L);
     public CmsUtcTime lastModified = new CmsUtcTime();
     public CmsInt32U checkSum = new CmsInt32U(0L);
@@ -62,5 +64,22 @@ public class CmsFileEntry extends AbstractCmsCompound<CmsFileEntry> {
         this.fileSize.set(fileSize);
         this.lastModified = lastModified;
         this.checkSum.set(checkSum);
+    }
+
+    // ==================== Convenience Setters ====================
+
+    public CmsFileEntry fileName(String value) {
+        this.fileName.set(value);
+        return this;
+    }
+
+    public CmsFileEntry fileSize(long value) {
+        this.fileSize.set(value);
+        return this;
+    }
+
+    public CmsFileEntry checkSum(long value) {
+        this.checkSum.set(value);
+        return this;
     }
 }

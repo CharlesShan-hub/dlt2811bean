@@ -1,16 +1,19 @@
-package com.ysh.dlt2811bean.service.association;
+package com.ysh.dlt2811bean.service.svc.association;
 
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.types.AbstractCmsRequestResponse;
-import com.ysh.dlt2811bean.service.enums.MessageType;
-import com.ysh.dlt2811bean.service.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsRR;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
 /**
  * CMS Service Code 01 — Associate (association service).
@@ -36,12 +39,14 @@ import com.ysh.dlt2811bean.service.enums.ServiceCode;
  * <pre>
  * Request ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                   │
  * │ serverAccessPointReference   VisibleString (SIZE(0..129))    │
  * │ authenticationParameter      OCTET STRING (OPTIONAL)         │
  * └──────────────────────────────────────────────────────────────┘
  * 
  * Response+ ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                   │
  * │ associationId                OCTET STRING (SIZE(64))         │
  * │ result                       ServiceError (no-error)         │
  * │ authenticationParameter      OCTET STRING                    │
@@ -49,14 +54,15 @@ import com.ysh.dlt2811bean.service.enums.ServiceCode;
  * 
  * Response- ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                   │
  * │ serviceError                 ServiceError                    │
  * └──────────────────────────────────────────────────────────────┘
  * </pre>
  */
 @Getter
 @Setter
-@Accessors(chain = true)
-public class CmsAssociate extends AbstractCmsRequestResponse {
+@Accessors(fluent = true)
+public class CmsAssociate extends AbstractCmsRR {
 
     /**
      * Constructs a CmsAssociate message with the specified message type.
@@ -87,56 +93,78 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
     // serviceError ServiceError
     private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
-    // ==================== Encode ====================
+    // ==================== Convenience Setters ====================
 
     /**
-     * Encodes the service body to the specified PER output stream.
-     * The encoding format depends on the message type.
+     * Convenience method: set serverAccessPointReference from IED name and access point.
      *
-     * @param pos the PER output stream to write to
+     * @param iedName the IED name
+     * @param accessPoint the access point name
+     * @return this
      */
-    @Override
-    protected void encodeBody(PerOutputStream pos) {
-        MessageType type = getMessageType();
+    public CmsAssociate serverAccessPointReference(String iedName, String accessPoint) {
+        this.serverAccessPointReference = new ServerAccessPointReference(iedName, accessPoint);
+        return this;
+    }
 
-        if (type == MessageType.REQUEST) {
-            serverAccessPointReference.encode(pos);
-            authenticationParameter.encode(pos);
-        } else if (type == MessageType.RESPONSE_POSITIVE) {
-            associationId.encode(pos);
-            result.encode(pos);
-            authenticationParameter.encode(pos);
-        } else if (type == MessageType.RESPONSE_NEGATIVE) {
-            serviceError.encode(pos);
+    /**
+     * Convenience method: set associationId from raw bytes.
+     *
+     * @param bytes the 64-byte association identifier
+     * @return this
+     */
+    public CmsAssociate associationId(byte[] bytes) {
+        this.associationId = new CmsOctetString(bytes).size(64);
+        return this;
+    }
+
+    // ==================== AbstractCmsRR Hooks ====================
+
+    @Override
+    protected void encodeRequest(PerOutputStream pos) {
+        serverAccessPointReference.encode(pos);
+        authenticationParameter.encode(pos);
+    }
+
+    @Override
+    protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
+        try {
+            serverAccessPointReference.decode(pis);
+            authenticationParameter.decode(pis);
+        } catch (Exception e) {
+            throw new PerDecodeException("CmsAssociate REQUEST decode failed", e);
         }
     }
 
-    // ==================== Decode ====================
-
-    /**
-     * Decodes the service body from the specified PER input stream.
-     * The decoding format depends on the message type.
-     *
-     * @param pis the PER input stream to read from
-     * @throws PerDecodeException if decoding fails
-     */
     @Override
-    protected void decodeBody(PerInputStream pis) throws PerDecodeException {
-        try {
-            MessageType type = getMessageType();
+    protected void encodeResponsePositive(PerOutputStream pos) {
+        associationId.encode(pos);
+        result.encode(pos);
+        authenticationParameter.encode(pos);
+    }
 
-            if (type == MessageType.REQUEST) {
-                serverAccessPointReference.decode(pis);
-                authenticationParameter.decode(pis);
-            } else if (type == MessageType.RESPONSE_POSITIVE) {
-                associationId.decode(pis);
-                result.decode(pis);
-                authenticationParameter.decode(pis);
-            } else if (type == MessageType.RESPONSE_NEGATIVE) {
-                serviceError.decode(pis);
-            }
+    @Override
+    protected void decodeResponsePositive(PerInputStream pis) throws PerDecodeException {
+        try {
+            associationId.decode(pis);
+            result.decode(pis);
+            authenticationParameter.decode(pis);
         } catch (Exception e) {
-            throw new PerDecodeException("CmsAssociate decode failed", e);
+            throw new PerDecodeException("CmsAssociate RESPONSE_POSITIVE decode failed", e);
+        }
+    }
+
+    @Override
+    protected void encodeResponseNegative(PerOutputStream pos) {
+        serviceError.encode(pos);
+    }
+
+    @Override
+    protected void decodeResponseNegative(PerInputStream pis) throws PerDecodeException {
+        try {
+            serviceError.decode(pis);
+        } catch (Exception e) {
+            throw new PerDecodeException("CmsAssociate RESPONSE_NEGATIVE decode failed", e);
         }
     }
 
@@ -147,23 +175,29 @@ public class CmsAssociate extends AbstractCmsRequestResponse {
             : MessageType.RESPONSE_POSITIVE;
     }
 
+    @Override
+    public CmsAsdu copy() {
+        CmsAssociate copy = new CmsAssociate(messageType());
+        copy.reqId(reqId());
+        copy.serverAccessPointReference = this.serverAccessPointReference.copy();
+        copy.authenticationParameter = this.authenticationParameter.copy();
+        copy.associationId = this.associationId.copy();
+        copy.result = this.result.copy();
+        copy.serviceError = this.serviceError.copy();
+        return copy;
+    }
+
     // ==================== Object methods ====================
 
-    /**
-     * Returns a string representation of this CmsAssociate object.
-     * The string format depends on the message type.
-     *
-     * @return a string representation of this object
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CmsAssociate{");
-        sb.append("reqId=").append(getReqId());
+        sb.append("reqId=").append(reqId());
 
-        if (getMessageType() == MessageType.REQUEST) {
+        if (messageType() == MessageType.REQUEST) {
             sb.append(", serverAccessPointReference=").append(serverAccessPointReference);
             sb.append(", authParam=").append(authenticationParameter);
-        } else if (getMessageType() == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType() == MessageType.RESPONSE_POSITIVE) {
             sb.append(", associationId=").append(associationId);
             sb.append(", result=").append(result);
             sb.append(", authParam=").append(authenticationParameter);

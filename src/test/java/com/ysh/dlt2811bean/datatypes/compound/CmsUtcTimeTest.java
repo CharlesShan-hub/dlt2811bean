@@ -89,4 +89,14 @@ class CmsUtcTimeTest {
         assertEquals(0xFFFFFF, result.fractionOfSecond.get());
         assertEquals(0xFFL, result.timeQuality.get());
     }
+
+    @Test
+    @DisplayName("convenience setters with raw values")
+    void setters_convenience() {
+        CmsUtcTime utc = new CmsUtcTime()
+            .secondsSinceEpoch(1715000000L)
+            .fractionOfSecond(1234567);
+        assertEquals(1715000000L, utc.secondsSinceEpoch.get());
+        assertEquals(1234567, utc.fractionOfSecond.get());
+    }
 }

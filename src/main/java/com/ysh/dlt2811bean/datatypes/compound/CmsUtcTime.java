@@ -26,8 +26,8 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Chain usage
  * CmsUtcTime t = new CmsUtcTime()
- *     .secondsSinceEpoch(new CmsInt32U(1715000000L))
- *     .fractionOfSecond(new CmsInt24U(1234567))
+ *     .secondsSinceEpoch(1715000000L)
+ *     .fractionOfSecond(1234567)
  *     .timeQuality(new CmsTimeQuality(0x20));
  *
  * // Quick mode
@@ -66,5 +66,17 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
         this.secondsSinceEpoch.set(secondsSinceEpoch);
         this.fractionOfSecond.set(fractionOfSecond);
         this.timeQuality.set(timeQualityValue);
+    }
+
+    // ==================== Convenience Setters ====================
+
+    public CmsUtcTime secondsSinceEpoch(long value) {
+        this.secondsSinceEpoch.set(value);
+        return this;
+    }
+
+    public CmsUtcTime fractionOfSecond(int value) {
+        this.fractionOfSecond.set(value);
+        return this;
     }
 }

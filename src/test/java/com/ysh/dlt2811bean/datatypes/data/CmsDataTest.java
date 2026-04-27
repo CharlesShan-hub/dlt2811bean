@@ -490,8 +490,8 @@ class CmsDataTest {
     void utcTimeEntity() throws Exception {
         CmsData<CmsUtcTime> data = new CmsData<CmsUtcTime>()
                 .set(new CmsUtcTime()
-                        .secondsSinceEpoch(new CmsInt32U(1715000000L))
-                        .fractionOfSecond(new CmsInt24U(1234567))
+                        .secondsSinceEpoch(1715000000L)
+                        .fractionOfSecond(1234567)
                         .timeQuality(new CmsTimeQuality(0x20)));
         PerOutputStream pos = new PerOutputStream();
         data.encode(pos);
@@ -509,8 +509,8 @@ class CmsDataTest {
     void utcTimeStatic() throws Exception {
         PerOutputStream pos = new PerOutputStream();
         CmsData.write(pos, new CmsUtcTime()
-                .secondsSinceEpoch(new CmsInt32U(1715000000L))
-                .fractionOfSecond(new CmsInt24U(1234567))
+                .secondsSinceEpoch(1715000000L)
+                .fractionOfSecond(1234567)
                 .timeQuality(new CmsTimeQuality(0x20)));
 
         CmsUtcTime template = new CmsUtcTime();
@@ -525,8 +525,8 @@ class CmsDataTest {
     void binaryTimeEntity() throws Exception {
         CmsData<CmsBinaryTime> data = new CmsData<CmsBinaryTime>()
                 .set(new CmsBinaryTime()
-                        .msOfDay(new CmsInt32U(43200000L))
-                        .daysSince1984(new CmsInt16U(15000)));
+                        .msOfDay(43200000L)
+                        .daysSince1984(15000));
         PerOutputStream pos = new PerOutputStream();
         data.encode(pos);
 
@@ -542,8 +542,8 @@ class CmsDataTest {
     void binaryTimeStatic() throws Exception {
         PerOutputStream pos = new PerOutputStream();
         CmsData.write(pos, new CmsBinaryTime()
-                .msOfDay(new CmsInt32U(43200000L))
-                .daysSince1984(new CmsInt16U(15000)));
+                .msOfDay(43200000L)
+                .daysSince1984(15000));
 
         CmsBinaryTime template = new CmsBinaryTime();
         CmsData.read(new PerInputStream(pos.toByteArray()), template);

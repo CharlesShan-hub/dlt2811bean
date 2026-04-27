@@ -53,14 +53,29 @@ class CmsFileEntryTest {
     }
 
     @Test
-    @DisplayName("chain setters via Lombok fluent setters")
-    void setters_fluent() {
+    @DisplayName("chain setters via public fields")
+    void setters_fields() {
+        CmsUtcTime utc = new CmsUtcTime(1715000000L, 0, 0L);
+        CmsFileEntry entry = new CmsFileEntry();
+        entry.fileName.set("data.bin");
+        entry.fileSize.set(2048L);
+        entry.lastModified = utc;
+        entry.checkSum.set(0x12345678L);
+        assertEquals("data.bin", entry.fileName.get());
+        assertEquals(2048, entry.fileSize.get());
+        assertEquals(0x12345678L, entry.checkSum.get());
+    }
+
+    @Test
+    @DisplayName("convenience setters with raw values")
+    void setters_convenience() {
         CmsUtcTime utc = new CmsUtcTime(1715000000L, 0, 0L);
         CmsFileEntry entry = new CmsFileEntry()
+            //.fileName("data.bin")
             .fileName(new CmsVisibleString("data.bin").max(129))
-            .fileSize(new CmsInt32U(2048))
+            .fileSize(2048)
             .lastModified(utc)
-            .checkSum(new CmsInt32U(0x12345678L));
+            .checkSum(0x12345678L);
         assertEquals("data.bin", entry.fileName.get());
         assertEquals(2048, entry.fileSize.get());
         assertEquals(0x12345678L, entry.checkSum.get());

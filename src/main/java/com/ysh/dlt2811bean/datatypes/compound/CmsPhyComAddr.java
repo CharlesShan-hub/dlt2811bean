@@ -24,10 +24,10 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Chain usage
  * CmsPhyComAddr addr = new CmsPhyComAddr()
- *     .addr(new CmsOctetString().size(6).set(mac))
- *     .priority(new CmsInt8U().set(4))
- *     .vid(new CmsInt16U().set(100))
- *     .appid(new CmsInt16U().set(0x0001));
+ *     .addr(mac)
+ *     .priority(4)
+ *     .vid(100)
+ *     .appid(0x0001);
  *
  * // Quick mode
  * CmsPhyComAddr addr = new CmsPhyComAddr(new byte[6], 4, 100, 0x0001);
@@ -41,7 +41,9 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsPhyComAddr extends AbstractCmsCompound<CmsPhyComAddr> {
 
-    public CmsOctetString addr = new CmsOctetString().size(6);
+    public static final int ADDR_SIZE = 6;
+
+    public CmsOctetString addr = new CmsOctetString().size(ADDR_SIZE);
     public CmsInt8U priority = new CmsInt8U();
     public CmsInt16U vid = new CmsInt16U();
     public CmsInt16U appid = new CmsInt16U();
@@ -60,5 +62,27 @@ public class CmsPhyComAddr extends AbstractCmsCompound<CmsPhyComAddr> {
         this.priority.set(priority);
         this.vid.set(vid);
         this.appid.set(appid);
+    }
+
+    // ==================== Convenience Setters ====================
+
+    public CmsPhyComAddr addr(byte[] value) {
+        this.addr.set(value);
+        return this;
+    }
+
+    public CmsPhyComAddr priority(int value) {
+        this.priority.set(value);
+        return this;
+    }
+
+    public CmsPhyComAddr vid(int value) {
+        this.vid.set(value);
+        return this;
+    }
+
+    public CmsPhyComAddr appid(int value) {
+        this.appid.set(value);
+        return this;
     }
 }

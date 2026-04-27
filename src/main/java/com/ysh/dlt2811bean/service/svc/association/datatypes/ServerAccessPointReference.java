@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service.association;
+package com.ysh.dlt2811bean.service.svc.association.datatypes;
 
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 

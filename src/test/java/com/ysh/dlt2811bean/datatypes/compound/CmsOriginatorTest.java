@@ -46,10 +46,20 @@ class CmsOriginatorTest {
     }
 
     @Test
-    @DisplayName("chain setters via Lombok fluent setters")
-    void setters_fluent() {
+    @DisplayName("chain setters via public fields")
+    void setters_fields() {
+        CmsOriginator orig = new CmsOriginator();
+        orig.orCat.set(CmsOrCat.STATION_CONTROL);
+        orig.orIdent.set(new byte[]{0x0A, 0x0B, 0x0C});
+        assertEquals(CmsOrCat.STATION_CONTROL, orig.orCat.get());
+        assertArrayEquals(new byte[]{0x0A, 0x0B, 0x0C}, orig.orIdent.get());
+    }
+
+    @Test
+    @DisplayName("convenience setter with raw int value")
+    void setters_convenience() {
         CmsOriginator orig = new CmsOriginator()
-            .orCat(new CmsOrCat(CmsOrCat.STATION_CONTROL))
+            .orCat(CmsOrCat.STATION_CONTROL)
             .orIdent(new CmsOctetString(new byte[]{0x0A, 0x0B, 0x0C}).max(64));
         assertEquals(CmsOrCat.STATION_CONTROL, orig.orCat.get());
         assertArrayEquals(new byte[]{0x0A, 0x0B, 0x0C}, orig.orIdent.get());

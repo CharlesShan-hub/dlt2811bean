@@ -46,11 +46,21 @@ class CmsBinaryTimeTest {
     }
 
     @Test
-    @DisplayName("chain setters via Lombok fluent setters")
-    void setters_fluent() {
+    @DisplayName("chain setters via public fields")
+    void setters_fields() {
+        CmsBinaryTime t = new CmsBinaryTime();
+        t.msOfDay.set(43200000L);
+        t.daysSince1984.set(15000);
+        assertEquals(43200000L, t.msOfDay.get());
+        assertEquals(15000, t.daysSince1984.get());
+    }
+
+    @Test
+    @DisplayName("convenience setters with raw values")
+    void setters_convenience() {
         CmsBinaryTime t = new CmsBinaryTime()
-            .msOfDay(new CmsInt32U(43200000L))
-            .daysSince1984(new CmsInt16U(15000));
+            .msOfDay(43200000L)
+            .daysSince1984(15000);
         assertEquals(43200000L, t.msOfDay.get());
         assertEquals(15000, t.daysSince1984.get());
     }

@@ -24,8 +24,8 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Chain usage
  * CmsBinaryTime t = new CmsBinaryTime()
- *     .msOfDay(new CmsInt32U(43200000L))
- *     .daysSince1984(new CmsInt16U(15000));
+ *     .msOfDay(43200000L)
+ *     .daysSince1984(15000);
  *
  * // Quick mode
  * CmsBinaryTime t = new CmsBinaryTime(43200000L, 15000);
@@ -61,5 +61,17 @@ public class CmsBinaryTime extends AbstractCmsCompound<CmsBinaryTime> {
             throw new IllegalArgumentException("msOfDay out of range (0..86399999): " + ms);
         }
         // daysSince1984 is validated by CmsInt16U itself (0..65535)
+    }
+
+    // ==================== Convenience Setters ====================
+
+    public CmsBinaryTime msOfDay(long value) {
+        this.msOfDay.set(value);
+        return this;
+    }
+
+    public CmsBinaryTime daysSince1984(int value) {
+        this.daysSince1984.set(value);
+        return this;
     }
 }

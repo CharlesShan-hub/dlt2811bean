@@ -1,14 +1,14 @@
-package com.ysh.dlt2811bean.service.association;
+package com.ysh.dlt2811bean.service.svc.association;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerEnumerated;
-import com.ysh.dlt2811bean.service.types.CmsService;
-import com.ysh.dlt2811bean.service.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsI;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
 /**
  * CMS Service Code 02 — Abort.
@@ -16,7 +16,7 @@ import com.ysh.dlt2811bean.service.enums.ServiceCode;
  * <p>ASDU field layout (PER encoded, in order):
  * <pre>
  * ┌─────────────────────────────────────────────────┐
- * │ Reason          ENUMERATED (0..4)               │  abort reason
+ * │ Reason       ENUMERATED (0..4)                  │  abort reason
  * └─────────────────────────────────────────────────┘
  * </pre>
  *
@@ -33,8 +33,8 @@ import com.ysh.dlt2811bean.service.enums.ServiceCode;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
-public class CmsAbort extends CmsService {
+@Accessors(fluent = true)
+public class CmsAbort extends AbstractCmsI {
 
     /** Max enum index for abort reason (0..4, 5 values) */
     static final int REASON_MAX = 4;
@@ -55,20 +55,23 @@ public class CmsAbort extends CmsService {
 
     private int reason;
 
-    // ==================== Encode ====================
+    // ==================== AbstractCmsI Hooks ====================
 
     @Override
-    protected byte[] encodeAsdu() {
-        PerOutputStream pos = new PerOutputStream();
+    protected void encodeBody(PerOutputStream pos) {
         PerEnumerated.encode(pos, reason, REASON_MAX);
-        return pos.toByteArray();
     }
 
-    // ==================== Decode ====================
+    @Override
+    protected void decodeBody(PerInputStream pis) throws Exception {
+        this.reason = PerEnumerated.decode(pis, REASON_MAX);
+    }
 
     @Override
-    protected void decodeAsdu(PerInputStream pis) throws PerDecodeException {
-        this.reason = PerEnumerated.decode(pis, REASON_MAX);
+    public CmsAsdu copy() {
+        CmsAbort copy = new CmsAbort();
+        copy.reason = this.reason;
+        return copy;
     }
 
     @Override

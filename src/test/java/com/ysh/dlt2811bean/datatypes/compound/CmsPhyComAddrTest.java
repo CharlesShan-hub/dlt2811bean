@@ -50,29 +50,14 @@ class CmsPhyComAddrTest {
     }
 
     @Test
-    @DisplayName("chain setters via Lombok fluent setters")
-    void setters_chain2() {
+    @DisplayName("chain setters via public fields")
+    void setters_fields() {
         byte[] mac = {(byte) 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-        CmsPhyComAddr addr = new CmsPhyComAddr()
-                .addr(new CmsOctetString().size(6).set(mac))
-                .priority(new CmsInt8U().set(4))
-                .vid(new CmsInt16U().set(100))
-                .appid(new CmsInt16U().set(0x0001));
-        assertArrayEquals(mac, addr.addr.get());
-        assertEquals(4, addr.priority.get());
-        assertEquals(100, addr.vid.get());
-        assertEquals(0x0001, addr.appid.get());
-    }
-
-    @Test
-    @DisplayName("chain setters via Lombok fluent setters")
-    void setters_chain3() {
-        byte[] mac = {(byte) 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
-        CmsPhyComAddr addr = new CmsPhyComAddr()
-                .addr(new CmsOctetString(mac).size(6))
-                .priority(new CmsInt8U(4))
-                .vid(new CmsInt16U(100))
-                .appid(new CmsInt16U(0x0001));
+        CmsPhyComAddr addr = new CmsPhyComAddr();
+        addr.addr.set(mac);
+        addr.priority.set(4);
+        addr.vid.set(100);
+        addr.appid.set(0x0001);
         assertArrayEquals(mac, addr.addr.get());
         assertEquals(4, addr.priority.get());
         assertEquals(100, addr.vid.get());
@@ -167,5 +152,20 @@ class CmsPhyComAddrTest {
         assertTrue(str.contains("priority="));
         assertTrue(str.contains("vid="));
         assertTrue(str.contains("appid="));
+    }
+
+    @Test
+    @DisplayName("convenience setters with raw values")
+    void setters_convenience() {
+        byte[] mac = {(byte) 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
+        CmsPhyComAddr addr = new CmsPhyComAddr()
+                .addr(mac)
+                .priority(4)
+                .vid(100)
+                .appid(0x0001);
+        assertArrayEquals(mac, addr.addr.get());
+        assertEquals(4, addr.priority.get());
+        assertEquals(100, addr.vid.get());
+        assertEquals(0x0001, addr.appid.get());
     }
 }

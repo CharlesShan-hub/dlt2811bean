@@ -29,7 +29,7 @@ import lombok.experimental.Accessors;
  * <pre>
  * // Chain usage
  * CmsOriginator orig = new CmsOriginator()
- *     .orCat(new CmsOrCat(CmsOrCat.BAY_CONTROL))
+ *     .orCat(CmsOrCat.BAY_CONTROL)
  *     .orIdent(new CmsOctetString(new byte[]{0x01, 0x02}).max(64));
  *
  * // Quick mode
@@ -57,5 +57,12 @@ public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {
         this();
         this.orCat.set(orCat);
         this.orIdent.set(orIdent);
+    }
+
+    // ==================== Convenience Setters ====================
+
+    public CmsOriginator orCat(int value) {
+        this.orCat.set(value);
+        return this;
     }
 }
