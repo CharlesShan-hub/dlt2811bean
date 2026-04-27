@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.service.types;
 
-import com.ysh.dlt2811bean.data.string.CmsOctetString;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import lombok.Getter;
 import lombok.Setter;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;

@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.data.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 
 /**
  * Server Access Point Reference — IEDName.AccessPoint.

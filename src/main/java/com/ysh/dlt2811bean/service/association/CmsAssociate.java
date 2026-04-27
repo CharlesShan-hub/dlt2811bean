@@ -1,7 +1,7 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.data.string.CmsOctetString;
-import com.ysh.dlt2811bean.data.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

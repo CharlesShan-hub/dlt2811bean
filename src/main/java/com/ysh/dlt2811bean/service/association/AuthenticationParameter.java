@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.service.association;
 
-import com.ysh.dlt2811bean.data.compound.CmsUtcTime;
-import com.ysh.dlt2811bean.data.string.CmsOctetString;
-import com.ysh.dlt2811bean.data.type.AbstractCmsCompound;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
