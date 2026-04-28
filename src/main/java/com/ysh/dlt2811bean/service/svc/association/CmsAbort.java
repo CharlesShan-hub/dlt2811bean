@@ -42,6 +42,10 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 @Accessors(fluent = true)
 public class CmsAbort extends CmsAsdu<CmsAbort> {
 
+    // ==================== Fields based on Table 21 ====================
+
+    public AbortReason reason = new AbortReason();
+
     public CmsAbort(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
@@ -53,17 +57,13 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     }
 
     public CmsAbort(boolean isResp, boolean isErr) {
-        super(fromFlags(isResp, isErr));
+        this(fromFlags(isResp, isErr));
     }
 
     private static MessageType fromFlags(boolean resp, boolean err) {
         if (!resp && !err) return MessageType.REQUEST;
         throw new IllegalArgumentException("Abort does not support err=true");
     }
-
-    // ==================== Fields based on Table 21 ====================
-
-    public AbortReason reason = new AbortReason();
 
     // ==================== Convenience Setters ====================
 

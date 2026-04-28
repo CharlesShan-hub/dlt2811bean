@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsData")
 class CmsDataTest {
-
     @Test
     @DisplayName("error entity [0]")
     void errorEntity() throws Exception {
@@ -53,7 +52,7 @@ class CmsDataTest {
     @DisplayName("array entity [1]")
     void arrayEntity() throws Exception {
         CmsData<CmsArray<CmsInt32>> data = new CmsData<CmsArray<CmsInt32>>()
-            .set(new CmsArray<>(CmsInt32.class).capacity(10)
+            .set(new CmsArray<>(CmsInt32::new).capacity(10)
                 .add(new CmsInt32(100))
                 .add(new CmsInt32(200))
                 .add(new CmsInt32(300))
@@ -62,7 +61,7 @@ class CmsDataTest {
         data.encode(pos);
 
         CmsArray<CmsInt32> decodedArr = new CmsData<CmsArray<CmsInt32>>()
-            .set(new CmsArray<>(CmsInt32.class).capacity(10))
+            .set(new CmsArray<>(CmsInt32::new).capacity(10))
             .decode(new PerInputStream(pos.toByteArray()))
             .get();
         assertEquals(3, decodedArr.size());
@@ -75,12 +74,12 @@ class CmsDataTest {
     @DisplayName("array static [1]")
     void arrayStatic() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsData.write(pos, new CmsArray<>(CmsInt32.class).capacity(10)
+        CmsData.write(pos, new CmsArray<>(CmsInt32::new).capacity(10)
             .add(new CmsInt32(100))
             .add(new CmsInt32(200))
             .add(new CmsInt32(300)));
 
-        CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32.class).capacity(10);
+        CmsArray<CmsInt32> template = new CmsArray<>(CmsInt32::new).capacity(10);
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
         assertEquals(3, template.size());
         assertEquals(100, template.get(0).get());

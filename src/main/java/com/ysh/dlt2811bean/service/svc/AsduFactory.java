@@ -6,6 +6,8 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 
 public class AsduFactory {
 
@@ -17,6 +19,10 @@ public class AsduFactory {
                 return new CmsAbort(isResp, isErr);
             case RELEASE:
                 return new CmsRelease(isResp, isErr);
+            case GET_SERVER_DIRECTORY:
+                return new CmsGetServerDirectory(isResp, isErr);
+            case GET_LOGIC_DEVICE_DIRECTORY:
+                return new CmsGetLogicalDeviceDirectory(isResp, isErr);
             default:
                 throw new IllegalArgumentException("Unknown service code: " + serviceCode);
         }

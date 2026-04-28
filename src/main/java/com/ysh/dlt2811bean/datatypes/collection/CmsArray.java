@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -29,11 +30,11 @@ import java.util.stream.Stream;
  */
 public class CmsArray<T extends CmsType<?>> extends AbstractCmsCollection<CmsArray<T>, T> {
 
-    private final Class<T> elementType;
+    private final Supplier<T> factory;
 
-    public CmsArray(Class<T> elementType) {
+    public CmsArray(Supplier<T> factory) {
         super("SEQUENCE OF");
-        this.elementType = Objects.requireNonNull(elementType, "elementType cannot be null");
+        this.factory = Objects.requireNonNull(factory, "factory cannot be null");
     }
 
     public CmsArray<T> add(T item) {
@@ -64,7 +65,7 @@ public class CmsArray<T extends CmsType<?>> extends AbstractCmsCollection<CmsArr
     @Override
     @SuppressWarnings("unchecked")
     public CmsArray<T> copy() {
-        CmsArray<T> clone = new CmsArray<>(elementType).capacity(capacity);
+        CmsArray<T> clone = new CmsArray<>(factory).capacity(capacity);
         for (T item : value) {
             clone.add((T) item.copy());
         }
@@ -84,7 +85,7 @@ public class CmsArray<T extends CmsType<?>> extends AbstractCmsCollection<CmsArr
         value.clear();
         int count = decodeLengthPrefix(pis);
         for (int i = 0; i < count; i++) {
-            T item = elementType.getDeclaredConstructor().newInstance();
+            T item = factory.get();
             item.decode(pis);
             value.add(item);
         }
@@ -93,7 +94,7 @@ public class CmsArray<T extends CmsType<?>> extends AbstractCmsCollection<CmsArr
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(typeName).append("[");
+        StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") [");
         for (int i = 0; i < value.size(); i++) {
             if (i > 0) sb.append(", ");
             sb.append(value.get(i));

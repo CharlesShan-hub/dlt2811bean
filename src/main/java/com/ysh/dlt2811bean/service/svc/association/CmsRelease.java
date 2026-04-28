@@ -73,7 +73,7 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     }
 
     public CmsRelease(boolean isResp, boolean isErr) {
-        super(fromFlags(isResp, isErr));
+        this(fromFlags(isResp, isErr));
     }
 
     private static MessageType fromFlags(boolean resp, boolean err) {
