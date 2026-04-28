@@ -156,7 +156,7 @@ class CmsVisibleStringTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsVisibleString str = new CmsVisibleString("test");
-        assertEquals("VISIBLE STRING: test", str.toString());
+        assertEquals("(CmsVisibleString) test", str.toString());
     }
 
     @Test

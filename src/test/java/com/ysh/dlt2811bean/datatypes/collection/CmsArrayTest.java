@@ -126,7 +126,7 @@ class CmsArrayTest {
     void toStringTest() {
         CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32.class).capacity(10);
         array.add(new CmsInt32(100)).add(new CmsInt32(200));
-        assertEquals("SEQUENCE OF[INT32: 100, INT32: 200]", array.toString());
+        assertEquals("SEQUENCE OF[(CmsInt32) 100, (CmsInt32) 200]", array.toString());
     }
 
     @Test

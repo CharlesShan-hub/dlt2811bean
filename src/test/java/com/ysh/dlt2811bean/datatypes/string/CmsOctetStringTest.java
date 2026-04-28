@@ -167,14 +167,14 @@ class CmsOctetStringTest {
     void toStringTest() {
         byte[] data = {0x01, 0x02, 0x03};
         CmsOctetString str = new CmsOctetString(data);
-        assertEquals("OCTET STRING: [01 02 03]", str.toString());
+        assertEquals("(CmsOctetString) [01 02 03]", str.toString());
     }
 
     @Test
     @DisplayName("toString with empty array")
     void toStringWithEmptyArray() {
         CmsOctetString str = new CmsOctetString(new byte[0]);
-        assertEquals("OCTET STRING: []", str.toString());
+        assertEquals("(CmsOctetString) []", str.toString());
     }
 
     @Test

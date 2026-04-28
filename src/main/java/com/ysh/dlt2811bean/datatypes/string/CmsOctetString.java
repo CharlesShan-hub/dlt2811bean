@@ -108,8 +108,8 @@ public class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
 
     @Override
     public String toString() {
-        if (get() == null || get().length == 0) return "OCTET STRING: []";
-        StringBuilder sb = new StringBuilder("OCTET STRING: [");
+        if (get() == null || get().length == 0) return "(CmsOctetString) []";
+        StringBuilder sb = new StringBuilder("(CmsOctetString) [");
         for (int i = 0; i < get().length; i++) {
             if (i > 0) sb.append(' ');
             sb.append(String.format("%02X", get()[i] & 0xFF));

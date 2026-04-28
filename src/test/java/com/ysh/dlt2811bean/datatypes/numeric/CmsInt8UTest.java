@@ -126,9 +126,9 @@ class CmsInt8UTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsInt8U val = new CmsInt8U(200);
-        assertEquals("INT8U: 200", val.toString());
+        assertEquals("(CmsInt8U) 200", val.toString());
 
         CmsInt8U val2 = new CmsInt8U(0);
-        assertEquals("INT8U: 0", val2.toString());
+        assertEquals("(CmsInt8U) 0", val2.toString());
     }
 }

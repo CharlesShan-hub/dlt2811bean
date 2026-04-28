@@ -115,7 +115,7 @@ class CmsInt32Test {
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        assertEquals("INT32: 1000000", new CmsInt32(1000000).toString());
-        assertEquals("INT32: 0", new CmsInt32(0).toString());
+        assertEquals("(CmsInt32) 1000000", new CmsInt32(1000000).toString());
+        assertEquals("(CmsInt32) 0", new CmsInt32(0).toString());
     }
 }

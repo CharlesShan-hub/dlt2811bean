@@ -69,14 +69,25 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(typeName).append("[");
-        boolean first = true;
+        return toString(0);
+    }
+
+    private String toString(int depth) {
+        String indent = "    ".repeat(depth + 1);
+        String bracketIndent = "    ".repeat(depth);
+        StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") {\n");
         for (String name : fieldNames) {
-            if (!first) sb.append(", ");
-            sb.append(name).append("=").append(getField(name));
-            first = false;
+            AbstractCmsType<?> field = getField(name);
+            String fieldStr = field instanceof AbstractCmsCompound
+                ? ((AbstractCmsCompound<?>) field).toString(depth + 1)
+                : field.toString();
+            sb.append(indent).append(name).append(": ").append(fieldStr).append(",\n");
         }
-        sb.append("]");
+        if (!fieldNames.isEmpty()) {
+            sb.setLength(sb.length() - 2);
+            sb.append("\n");
+        }
+        sb.append(bracketIndent).append("}");
         return sb.toString();
     }
 }

@@ -126,9 +126,9 @@ class CmsInt32UTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsInt32U val = new CmsInt32U(3000000000L);
-        assertEquals("INT32U: 3000000000", val.toString());
+        assertEquals("(CmsInt32U) 3000000000", val.toString());
 
         CmsInt32U val2 = new CmsInt32U(0L);
-        assertEquals("INT32U: 0", val2.toString());
+        assertEquals("(CmsInt32U) 0", val2.toString());
     }
 }

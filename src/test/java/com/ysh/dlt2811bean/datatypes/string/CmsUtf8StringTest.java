@@ -197,14 +197,14 @@ class CmsUtf8StringTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsUtf8String str = new CmsUtf8String("test");
-        assertEquals("UTF8String: test", str.toString());
+        assertEquals("(CmsUtf8String) test", str.toString());
     }
 
     @Test
     @DisplayName("toString with unicode")
     void toStringWithUnicode() {
         CmsUtf8String str = new CmsUtf8String("设备名称");
-        assertEquals("UTF8String: 设备名称", str.toString());
+        assertEquals("(CmsUtf8String) 设备名称", str.toString());
     }
 
     @Test

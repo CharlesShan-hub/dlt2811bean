@@ -7,10 +7,9 @@ import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointRe
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.per.exception.PerDecodeException;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
@@ -64,13 +63,42 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 public class CmsAssociate extends CmsAsdu<CmsAssociate> {
 
     public static final int ASSOC_ID_SIZE = 64;
+
+    // ==================== Fields based on Table 19 ====================
+
+    // --- Request parameters ---
+    // serverAccessPointReference [0..1] VisibleString129
+    public ServerAccessPointReference serverAccessPointReference = new ServerAccessPointReference();
+
+    // authenticationParameter [0..1] AuthenticationParameter (optional)
+    public AuthenticationParameter authenticationParameter = new AuthenticationParameter();
+
+    // --- Response+ parameters ---
+    // associationId OCTET STRING (SIZE(64))
+    public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
+
+    // serviceError (result in Response+, serviceError in Response-)
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
+
     
     public CmsAssociate(MessageType messageType) {
         super(messageType);
+        if (messageType == MessageType.REQUEST) {
+            registerField("serverAccessPointReference");
+            registerField("authenticationParameter");
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("associationId");
+            registerField("serviceError");
+            registerField("authenticationParameter");
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
+        } else {
+            throw new IllegalArgumentException("Associate does not support " + messageType);
+        }
     }
 
     public CmsAssociate(boolean isResp, boolean isErr) {
-        super(fromFlags(isResp, isErr));
+        this(fromFlags(isResp, isErr));
     }
 
     private static MessageType fromFlags(boolean resp, boolean err) {
@@ -79,23 +107,6 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
         if (resp) return MessageType.RESPONSE_NEGATIVE;
         throw new IllegalArgumentException("RR mode does not support !resp && err");
     }
-
-    // ==================== Fields based on Table 19 ====================
-
-    // --- Request parameters ---
-    // serverAccessPointReference [0..1] VisibleString129
-    private ServerAccessPointReference serverAccessPointReference = new ServerAccessPointReference();
-
-    // authenticationParameter [0..1] AuthenticationParameter (optional)
-    private AuthenticationParameter authenticationParameter = new AuthenticationParameter();
-
-    // --- Response+ parameters ---
-    // associationId OCTET STRING (SIZE(64))
-    private CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
-
-    // serviceError (result in Response+, serviceError in Response-)
-    private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
-
 
     // ==================== Convenience Setters ====================
 
@@ -114,56 +125,6 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
         return this;
     }
 
-    // ==================== AbstractCmsRR Hooks ====================
-
-    @Override
-    protected void encodeRequest(PerOutputStream pos) {
-        serverAccessPointReference.encode(pos);
-        authenticationParameter.encode(pos);
-    }
-
-    @Override
-    protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
-        try {
-            serverAccessPointReference.decode(pis);
-            authenticationParameter.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsAssociate REQUEST decode failed", e);
-        }
-    }
-
-    @Override
-    protected void encodeResponsePositive(PerOutputStream pos) {
-        associationId.encode(pos);
-        serviceError.set(CmsServiceError.NO_ERROR).encode(pos);
-        authenticationParameter.encode(pos);
-    }
-
-    @Override
-    protected void decodeResponsePositive(PerInputStream pis) throws PerDecodeException {
-        try {
-            associationId.decode(pis);
-            serviceError.decode(pis);
-            authenticationParameter.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsAssociate RESPONSE_POSITIVE decode failed", e);
-        }
-    }
-
-    @Override
-    protected void encodeResponseNegative(PerOutputStream pos) {
-        serviceError.encode(pos);
-    }
-
-    @Override
-    protected void decodeResponseNegative(PerInputStream pis) throws PerDecodeException {
-        try {
-            serviceError.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsAssociate RESPONSE_NEGATIVE decode failed", e);
-        }
-    }
-
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
@@ -174,34 +135,14 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     // ==================== CmsType Implementation ====================
 
     @Override
-    @SuppressWarnings("unchecked")
-    public CmsAsdu<?> copy() {
+    public CmsAssociate copy() {
         CmsAssociate copy = new CmsAssociate(messageType());
-        copy.reqId().set(reqId().get());
-        copy.serverAccessPointReference = this.serverAccessPointReference.copy();
-        copy.authenticationParameter = this.authenticationParameter.copy();
-        copy.associationId = this.associationId.copy();
-        copy.serviceError = this.serviceError.copy();
+        copy.reqId.set(reqId.get());
+        copy.serverAccessPointReference = serverAccessPointReference.copy();
+        copy.authenticationParameter = authenticationParameter.copy();
+        copy.associationId = associationId.copy();
+        copy.serviceError = serviceError.copy();
         return copy;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("CmsAssociate{");
-        sb.append("reqId=").append(reqId());
-
-        if (messageType() == MessageType.REQUEST) {
-            sb.append(", serverAccessPointReference=").append(serverAccessPointReference);
-            sb.append(", authParam=").append(authenticationParameter);
-        } else if (messageType() == MessageType.RESPONSE_POSITIVE) {
-            sb.append(", associationId=").append(associationId);
-            sb.append(", serviceError=").append(serviceError);
-            sb.append(", authParam=").append(authenticationParameter);
-        } else {
-            sb.append(", serviceError=").append(serviceError);
-        }
-
-        return sb.append("}").toString();
     }
 
     // ==================== Static Convenience Methods ====================

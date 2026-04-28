@@ -147,13 +147,13 @@ class CmsObjectNameTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsObjectName name = new CmsObjectName("LD1/LN1.DO1");
-        assertEquals("ObjectName: LD1/LN1.DO1", name.toString());
+        assertEquals("(CmsObjectName) LD1/LN1.DO1", name.toString());
     }
 
     @Test
     @DisplayName("toString empty")
     void toStringEmpty() {
         CmsObjectName name = new CmsObjectName();
-        assertEquals("ObjectName: ", name.toString());
+        assertEquals("(CmsObjectName) ", name.toString());
     }
 }

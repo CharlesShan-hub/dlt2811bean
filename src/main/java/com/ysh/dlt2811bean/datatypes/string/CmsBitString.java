@@ -148,9 +148,9 @@ public class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
     @Override
     public String toString() {
         if (bitLength <= 64) {
-            return String.format("BIT STRING: 0b%s (%d bits)", Long.toBinaryString(bytesToLong(get(), bitLength)), bitLength);
+            return String.format("(CmsBitString) 0b%s (%d bits)", Long.toBinaryString(bytesToLong(get(), bitLength)), bitLength);
         }
-        return String.format("BIT STRING: [%d bits]", bitLength);
+        return String.format("(CmsBitString) [%d bits]", bitLength);
     }
 
     // ==================== Internal ====================

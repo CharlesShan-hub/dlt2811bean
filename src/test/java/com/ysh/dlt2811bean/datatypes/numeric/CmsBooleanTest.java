@@ -71,7 +71,7 @@ class CmsBooleanTest {
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        assertEquals("BOOLEAN: true", new CmsBoolean(true).toString());
-        assertEquals("BOOLEAN: false", new CmsBoolean(false).toString());
+        assertEquals("(CmsBoolean) true", new CmsBoolean(true).toString());
+        assertEquals("(CmsBoolean) false", new CmsBoolean(false).toString());
     }
 }

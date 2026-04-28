@@ -148,10 +148,10 @@ class CmsPhyComAddrTest {
         byte[] mac = {(byte) 0x01, 0x02, 0x03, 0x04, 0x05, 0x06};
         CmsPhyComAddr addr = new CmsPhyComAddr(mac, 4, 100, 0x0001);
         String str = addr.toString();
-        assertTrue(str.contains("addr="));
-        assertTrue(str.contains("priority="));
-        assertTrue(str.contains("vid="));
-        assertTrue(str.contains("appid="));
+        assertTrue(str.contains("addr:"));
+        assertTrue(str.contains("priority:"));
+        assertTrue(str.contains("vid:"));
+        assertTrue(str.contains("appid:"));
     }
 
     @Test

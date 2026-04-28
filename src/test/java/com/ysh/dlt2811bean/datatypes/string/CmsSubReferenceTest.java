@@ -128,6 +128,6 @@ class CmsSubReferenceTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsSubReference ref = new CmsSubReference("LN.DO.DA");
-        assertEquals("SubReference: LN.DO.DA", ref.toString());
+        assertEquals("(CmsSubReference) LN.DO.DA", ref.toString());
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.service.protocol.types;
 
-import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
@@ -28,13 +28,15 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public abstract class CmsAsdu<T extends CmsAsdu<T>> implements CmsType<CmsAsdu<?>> {
+public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<T> {
 
-    protected MessageType messageType;
-    protected CmsInt16U reqId = new CmsInt16U(0);
+    public MessageType messageType;
+    public CmsInt16U reqId = new CmsInt16U(0);
 
     protected CmsAsdu(MessageType messageType) {
+        super("ASDU");
         this.messageType = messageType;
+        registerField("reqId");
     }
 
     public abstract ServiceCode getServiceCode();
@@ -45,74 +47,4 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> implements CmsType<CmsAsdu<?
         return (T) this;
     }
 
-    // ==================== APDU-level encode/decode ====================
-
-    /**
-     * Encode this service as a complete ASDU frame (ReqID + ASDU).
-     */
-    @Override
-    public void encode(PerOutputStream pos) {
-        reqId.encode(pos);
-        switch (messageType) {
-            case REQUEST_PLUS:
-                encodeRequestPlus(pos);
-                break;
-            case REQUEST_NEGATIVE:
-                encodeRequestNegative(pos);
-                break;
-            case REQUEST:
-                encodeRequest(pos);
-                break;
-            case RESPONSE_POSITIVE:
-                encodeResponsePositive(pos);
-                break;
-            case RESPONSE_NEGATIVE:
-                encodeResponseNegative(pos);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected message type: " + messageType);
-        }
-    }
-
-    /**
-     * Decode a complete ASDU frame (ReqID + ASDU) into this service.
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public CmsAsdu<?> decode(PerInputStream pis) throws Exception {
-        reqId.decode(pis);
-        switch (messageType) {
-            case REQUEST_PLUS:
-                decodeRequestPlus(pis);
-                break;
-            case REQUEST_NEGATIVE:
-                decodeRequestNegative(pis); 
-                break;
-            case REQUEST:
-                decodeRequest(pis);
-                break;
-            case RESPONSE_POSITIVE:
-                decodeResponsePositive(pis);
-                break;
-            case RESPONSE_NEGATIVE:
-                decodeResponseNegative(pis);
-                break;
-            default:
-                throw new IllegalStateException("Unexpected message type: " + messageType);
-        }
-        return this;
-    }
-
-    // ==================== Subclass Hooks ====================
-
-    protected void encodeRequestPlus(PerOutputStream pos){}
-    protected void encodeRequestNegative(PerOutputStream pos){}
-    protected void encodeRequest(PerOutputStream pos){}
-    protected void encodeResponsePositive(PerOutputStream pos){}
-    protected void encodeResponseNegative(PerOutputStream pos){}
-    protected void decodeRequestPlus(PerInputStream pis) throws Exception{}
-    protected void decodeRequestNegative(PerInputStream pis) throws Exception{}
-    protected void decodeRequest(PerInputStream pis) throws Exception{}
-    protected void decodeResponsePositive(PerInputStream pis) throws Exception{}
-    protected void decodeResponseNegative(PerInputStream pis) throws Exception{}
 }

@@ -682,7 +682,7 @@ class CmsDataTest {
     void toStringWithValue() {
         CmsData<CmsInt32> data = new CmsData<CmsInt32>()
                 .set(new CmsInt32(100));
-        assertEquals("Data[6]=INT32: 100", data.toString());
+        assertEquals("Data[6]=(CmsInt32) 100", data.toString());
     }
 
     @Test

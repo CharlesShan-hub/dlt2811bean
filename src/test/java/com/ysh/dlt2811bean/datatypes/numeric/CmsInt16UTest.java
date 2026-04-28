@@ -126,9 +126,9 @@ class CmsInt16UTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsInt16U val = new CmsInt16U(50000);
-        assertEquals("INT16U: 50000", val.toString());
+        assertEquals("(CmsInt16U) 50000", val.toString());
 
         CmsInt16U val2 = new CmsInt16U(0);
-        assertEquals("INT16U: 0", val2.toString());
+        assertEquals("(CmsInt16U) 0", val2.toString());
     }
 }

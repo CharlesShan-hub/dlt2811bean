@@ -1,12 +1,11 @@
 package com.ysh.dlt2811bean.service.svc.association;
 
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
@@ -45,6 +44,12 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     public CmsAbort(MessageType messageType) {
         super(messageType);
+        if (messageType == MessageType.REQUEST) {
+            registerField("reason");
+        }else{
+            throw new IllegalArgumentException("Abort does not support " + messageType);
+        }
+
     }
 
     public CmsAbort(boolean isResp, boolean isErr) {
@@ -58,29 +63,13 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     // ==================== Fields based on Table 21 ====================
 
-    private AbortReason reason = new AbortReason();
+    public AbortReason reason = new AbortReason();
 
     // ==================== Convenience Setters ====================
 
     public CmsAbort reason(int reasonCode) {
         this.reason.set(reasonCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Hooks ====================
-
-    @Override
-    protected void encodeRequest(PerOutputStream pos) {
-        reason.encode(pos);
-    }
-
-    @Override
-    protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
-        try {
-            reason.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsAbort REQUEST decode failed", e);
-        }
     }
 
     // ==================== CmsAsdu Abstract Methods ====================
@@ -93,20 +82,11 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     // ==================== CmsType Implementation ====================
 
     @Override
-    @SuppressWarnings("unchecked")
-    public CmsAsdu<?> copy() {
+    public CmsAbort copy() {
         CmsAbort copy = new CmsAbort(messageType());
-        copy.reqId().set(reqId().get());
+        copy.reqId.set(reqId.get());
         copy.reason = this.reason.copy();
         return copy;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("CmsAbort{");
-        sb.append("reqId=").append(reqId());
-        sb.append(", reason=").append(reason);
-        return sb.append("}").toString();
     }
 
     // ==================== Static Convenience Methods ====================

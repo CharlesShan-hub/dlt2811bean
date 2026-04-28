@@ -149,6 +149,6 @@ class CmsObjectReferenceTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsObjectReference ref = new CmsObjectReference("LD1/LN1.DO1");
-        assertEquals("ObjectReference: LD1/LN1.DO1", ref.toString());
+        assertEquals("(CmsObjectReference) LD1/LN1.DO1", ref.toString());
     }
 }

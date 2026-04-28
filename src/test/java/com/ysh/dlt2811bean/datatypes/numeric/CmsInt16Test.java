@@ -116,7 +116,7 @@ class CmsInt16Test {
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        assertEquals("INT16: 1000", new CmsInt16(1000).toString());
-        assertEquals("INT16: 0", new CmsInt16(0).toString());
+        assertEquals("(CmsInt16) 1000", new CmsInt16(1000).toString());
+        assertEquals("(CmsInt16) 0", new CmsInt16(0).toString());
     }
 }

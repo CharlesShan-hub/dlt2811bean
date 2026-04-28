@@ -206,14 +206,14 @@ class CmsBitStringTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsBitString str = new CmsBitString(0b10101010L, 8);
-        assertEquals("BIT STRING: 0b10101010 (8 bits)", str.toString());
+        assertEquals("(CmsBitString) 0b10101010 (8 bits)", str.toString());
     }
 
     @Test
     @DisplayName("toString with empty bits")
     void toStringWithEmptyBits() {
         CmsBitString str = new CmsBitString();
-        assertEquals("BIT STRING: 0b0 (0 bits)", str.toString());
+        assertEquals("(CmsBitString) 0b0 (0 bits)", str.toString());
     }
 
     @Test

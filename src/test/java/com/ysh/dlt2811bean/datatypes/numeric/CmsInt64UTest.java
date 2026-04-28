@@ -128,9 +128,9 @@ class CmsInt64UTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsInt64U val = new CmsInt64U(new BigInteger("12345678901234567890"));
-        assertEquals("INT64U: 12345678901234567890", val.toString());
+        assertEquals("(CmsInt64U) 12345678901234567890", val.toString());
 
         CmsInt64U val2 = new CmsInt64U(BigInteger.ZERO);
-        assertEquals("INT64U: 0", val2.toString());
+        assertEquals("(CmsInt64U) 0", val2.toString());
     }
 }

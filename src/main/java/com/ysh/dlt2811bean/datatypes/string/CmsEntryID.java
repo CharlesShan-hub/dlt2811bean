@@ -77,8 +77,8 @@ public class CmsEntryID extends CmsOctetString {
     @Override
     public String toString() {
         byte[] data = get();
-        if (data == null || data.length == 0) return "EntryID: []";
-        StringBuilder sb = new StringBuilder("EntryID: [");
+        if (data == null || data.length == 0) return "(CmsEntryID) []";
+        StringBuilder sb = new StringBuilder("(CmsEntryID) [");
         for (int i = 0; i < data.length; i++) {
             if (i > 0) sb.append(' ');
             sb.append(String.format("%02X", data[i] & 0xFF));

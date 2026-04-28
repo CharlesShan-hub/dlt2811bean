@@ -102,6 +102,6 @@ class CmsEntryIDTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsEntryID id = new CmsEntryID();
-        assertEquals("EntryID: [00 00 00 00 00 00 00 00]", id.toString());
+        assertEquals("(CmsEntryID) [00 00 00 00 00 00 00 00]", id.toString());
     }
 }

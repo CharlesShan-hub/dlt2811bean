@@ -38,6 +38,6 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
 
     @Override
     public String toString() {
-        return typeName + ": " + value;
+        return "(" + getClass().getSimpleName() + ") " + value;
     }
 }

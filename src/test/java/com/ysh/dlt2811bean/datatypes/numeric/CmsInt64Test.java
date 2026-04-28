@@ -96,7 +96,7 @@ class CmsInt64Test {
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        assertEquals("INT64: 1000000000000", new CmsInt64(1000000000000L).toString());
-        assertEquals("INT64: 0", new CmsInt64(0L).toString());
+        assertEquals("(CmsInt64) 1000000000000", new CmsInt64(1000000000000L).toString());
+        assertEquals("(CmsInt64) 0", new CmsInt64(0L).toString());
     }
 }

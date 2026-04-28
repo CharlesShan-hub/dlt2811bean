@@ -116,7 +116,7 @@ class CmsInt8Test {
     @Test
     @DisplayName("toString")
     void toStringTest() {
-        assertEquals("INT8: 42", new CmsInt8(42).toString());
-        assertEquals("INT8: 0", new CmsInt8(0).toString());
+        assertEquals("(CmsInt8) 42", new CmsInt8(42).toString());
+        assertEquals("(CmsInt8) 0", new CmsInt8(0).toString());
     }
 }

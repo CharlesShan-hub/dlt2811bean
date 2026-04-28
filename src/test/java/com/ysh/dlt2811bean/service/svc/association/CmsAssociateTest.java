@@ -38,6 +38,7 @@ class CmsAssociateTest {
         assertEquals("IED1.AP1", result.serverAccessPointReference().get());
         assertArrayEquals(new byte[]{0x01, 0x02, 0x03},
             result.authenticationParameter().signatureCertificate.get());
+        System.out.println(result);
     }
 
     @Test
@@ -109,7 +110,6 @@ class CmsAssociateTest {
         assertEquals("IED2.AP2", result.serverAccessPointReference().get());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @DisplayName("copy produces independent instance")
     void copy() {
@@ -117,7 +117,7 @@ class CmsAssociateTest {
             .serverAccessPointReference("IED1", "AP1")
             .reqId(10);
 
-        CmsAssociate copy = (CmsAssociate) original.copy();
+        CmsAssociate copy = original.copy();
 
         assertEquals(original.reqId().get(), copy.reqId().get());
         assertEquals(original.serverAccessPointReference().get(), copy.serverAccessPointReference().get());

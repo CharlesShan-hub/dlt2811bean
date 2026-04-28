@@ -146,6 +146,6 @@ class CmsFCTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsFC fc = new CmsFC("ST");
-        assertEquals("FC: ST", fc.toString());
+        assertEquals("(CmsFC) ST", fc.toString());
     }
 }

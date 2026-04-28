@@ -144,6 +144,6 @@ class CmsPackedListImplTest {
     @DisplayName("toString")
     void toStringTest() {
         CmsPackedListImpl list = new CmsPackedListImpl(0b00000101L, 3, 8);
-        assertTrue(list.toString().contains("PACKED LIST"));
+        assertTrue(list.toString().contains("CmsPackedListImpl"));
     }
 }

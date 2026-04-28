@@ -2,12 +2,11 @@ package com.ysh.dlt2811bean.service.svc.association;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.per.exception.PerDecodeException;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
@@ -61,6 +60,16 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
 
     public CmsRelease(MessageType messageType) {
         super(messageType);
+        if (messageType == MessageType.REQUEST) {
+            registerField("associationId");
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("associationId");
+            registerField("serviceError");
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
+        } else {
+            throw new IllegalArgumentException("Release does not support " + messageType);
+        }
     }
 
     public CmsRelease(boolean isResp, boolean isErr) {
@@ -76,9 +85,9 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
 
     // ==================== Fields based on Table 20 ====================
 
-    private CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
+    public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ==================== Convenience Setters ====================
 
@@ -92,52 +101,6 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
         return this;
     }
 
-    // ==================== CmsAsdu Hooks ====================
-
-    @Override
-    protected void encodeRequest(PerOutputStream pos) {
-        associationId.encode(pos);
-    }
-
-    @Override
-    protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
-        try {
-            associationId.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsRelease REQUEST decode failed", e);
-        }
-    }
-
-    @Override
-    protected void encodeResponsePositive(PerOutputStream pos) {
-        associationId.encode(pos);
-        new CmsServiceError(CmsServiceError.NO_ERROR).encode(pos);
-    }
-
-    @Override
-    protected void decodeResponsePositive(PerInputStream pis) throws PerDecodeException {
-        try {
-            associationId.decode(pis);
-            serviceError.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsRelease RESPONSE_POSITIVE decode failed", e);
-        }
-    }
-
-    @Override
-    protected void encodeResponseNegative(PerOutputStream pos) {
-        serviceError.encode(pos);
-    }
-
-    @Override
-    protected void decodeResponseNegative(PerInputStream pis) throws PerDecodeException {
-        try {
-            serviceError.decode(pis);
-        } catch (Exception e) {
-            throw new PerDecodeException("CmsRelease RESPONSE_NEGATIVE decode failed", e);
-        }
-    }
-
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
@@ -148,30 +111,12 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     // ==================== CmsType Implementation ====================
 
     @Override
-    @SuppressWarnings("unchecked")
-    public CmsAsdu<?> copy() {
+    public CmsRelease copy() {
         CmsRelease copy = new CmsRelease(messageType());
-        copy.reqId().set(reqId().get());
+        copy.reqId.set(reqId.get());
         copy.associationId = this.associationId.copy();
         copy.serviceError = this.serviceError.copy();
         return copy;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("CmsRelease{");
-        sb.append("reqId=").append(reqId());
-
-        if (messageType() == MessageType.REQUEST) {
-            sb.append(", associationId=").append(associationId);
-        } else if (messageType() == MessageType.RESPONSE_POSITIVE) {
-            sb.append(", associationId=").append(associationId);
-            sb.append(", serviceError=").append(serviceError);
-        } else {
-            sb.append(", serviceError=").append(serviceError);
-        }
-
-        return sb.append("}").toString();
     }
 
     // ==================== Static Convenience Methods ====================
