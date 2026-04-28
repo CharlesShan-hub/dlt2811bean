@@ -10,8 +10,7 @@ import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsRR;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
@@ -62,12 +61,23 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
+public class CmsAssociate extends CmsAsdu<CmsAssociate> {
 
     public static final int ASSOC_ID_SIZE = 64;
     
     public CmsAssociate(MessageType messageType) {
-        super(ServiceCode.ASSOCIATE, messageType);
+        super(messageType);
+    }
+
+    public CmsAssociate(boolean isResp, boolean isErr) {
+        super(fromFlags(isResp, isErr));
+    }
+
+    private static MessageType fromFlags(boolean resp, boolean err) {
+        if (!resp && !err) return MessageType.REQUEST;
+        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
+        if (resp) return MessageType.RESPONSE_NEGATIVE;
+        throw new IllegalArgumentException("RR mode does not support !resp && err");
     }
 
     // ==================== Fields based on Table 19 ====================
@@ -83,11 +93,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
     // associationId OCTET STRING (SIZE(64))
     private CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    // result ServiceError = no-error
-    private CmsServiceError result = new CmsServiceError(CmsServiceError.NO_ERROR);
-
-    // --- Response- parameters ---
-    // serviceError ServiceError
+    // serviceError (result in Response+, serviceError in Response-)
     private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
 
@@ -129,7 +135,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
     @Override
     protected void encodeResponsePositive(PerOutputStream pos) {
         associationId.encode(pos);
-        new CmsServiceError(CmsServiceError.NO_ERROR).encode(pos);
+        serviceError.set(CmsServiceError.NO_ERROR).encode(pos);
         authenticationParameter.encode(pos);
     }
 
@@ -137,7 +143,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
     protected void decodeResponsePositive(PerInputStream pis) throws PerDecodeException {
         try {
             associationId.decode(pis);
-            result.decode(pis);
+            serviceError.decode(pis);
             authenticationParameter.decode(pis);
         } catch (Exception e) {
             throw new PerDecodeException("CmsAssociate RESPONSE_POSITIVE decode failed", e);
@@ -158,14 +164,23 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
         }
     }
 
+    // ==================== CmsAsdu Abstract Methods ====================
+
     @Override
-    public CmsApdu copy() {
+    public ServiceCode getServiceCode() {
+        return ServiceCode.ASSOCIATE;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CmsAsdu<?> copy() {
         CmsAssociate copy = new CmsAssociate(messageType());
-        copy.reqId(reqId());
+        copy.reqId().set(reqId().get());
         copy.serverAccessPointReference = this.serverAccessPointReference.copy();
         copy.authenticationParameter = this.authenticationParameter.copy();
         copy.associationId = this.associationId.copy();
-        copy.result = this.result.copy();
         copy.serviceError = this.serviceError.copy();
         return copy;
     }
@@ -180,7 +195,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
             sb.append(", authParam=").append(authenticationParameter);
         } else if (messageType() == MessageType.RESPONSE_POSITIVE) {
             sb.append(", associationId=").append(associationId);
-            sb.append(", result=").append(result);
+            sb.append(", serviceError=").append(serviceError);
             sb.append(", authParam=").append(authenticationParameter);
         } else {
             sb.append(", serviceError=").append(serviceError);
@@ -191,6 +206,7 @@ public class CmsAssociate extends AbstractCmsRR<CmsAssociate> {
 
     // ==================== Static Convenience Methods ====================
 
+    @SuppressWarnings("unchecked")
     public static CmsAssociate read(PerInputStream pis, MessageType messageType) throws Exception {
         return (CmsAssociate) new CmsAssociate(messageType).decode(pis);
     }

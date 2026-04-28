@@ -4,6 +4,8 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +16,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsAssociateTest {
 
     @Test
-    @DisplayName("REQUEST: encode and decode round-trip")
+    @DisplayName("REQUEST: encode and decode round-trip via APDU")
     void requestRoundTrip() throws Exception {
-        CmsAssociate service = new CmsAssociate(MessageType.REQUEST)
+        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
             .serverAccessPointReference("IED1", "AP1")
             .authenticationParameter(new AuthenticationParameter()
                 .signatureCertificate(new byte[]{0x01, 0x02, 0x03})
@@ -24,22 +26,24 @@ class CmsAssociateTest {
                 .signedValue(new byte[]{0x0A, 0x0B}))
             .reqId(1);
 
+        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+
         PerOutputStream pos = new PerOutputStream();
-        CmsAssociate.write(pos, service);
+        apdu.encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        CmsAssociate result = CmsAssociate.read(pis, MessageType.REQUEST);
+        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
 
-        assertEquals(1, result.reqId());
+        CmsAssociate result = (CmsAssociate) decoded.getAsdu();
+        assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1", result.serverAccessPointReference().get());
         assertArrayEquals(new byte[]{0x01, 0x02, 0x03},
             result.authenticationParameter().signatureCertificate.get());
     }
 
     @Test
-    @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip")
+    @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip via APDU")
     void positiveResponseRoundTrip() throws Exception {
-        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE_POSITIVE)
+        CmsAssociate asdu = new CmsAssociate(MessageType.RESPONSE_POSITIVE)
             .associationId(new byte[]{
                 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
                 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
@@ -56,34 +60,90 @@ class CmsAssociateTest {
                 .signedValue(new byte[]{0x30, 0x40}))
             .reqId(1);
 
+        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+
         PerOutputStream pos = new PerOutputStream();
-        CmsAssociate.write(pos, service);
+        apdu.encode(pos);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        CmsAssociate result = CmsAssociate.read(pis, MessageType.RESPONSE);
+        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
 
-        assertEquals(1, result.reqId());
-        assertEquals(CmsServiceError.NO_ERROR, result.result().get());
+        CmsAssociate result = (CmsAssociate) decoded.getAsdu();
+        assertEquals(1, result.reqId().get());
+        assertEquals(CmsServiceError.NO_ERROR, result.serviceError().get());
         assertArrayEquals(new byte[]{0x10, 0x20},
             result.authenticationParameter().signatureCertificate.get());
-        assertEquals(MessageType.RESPONSE_POSITIVE, result.messageType());
     }
 
     @Test
-    @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip")
+    @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip via APDU")
     void negativeResponseRoundTrip() throws Exception {
-        CmsAssociate service = new CmsAssociate(MessageType.RESPONSE_NEGATIVE)
+        CmsAssociate asdu = new CmsAssociate(MessageType.RESPONSE_NEGATIVE)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(1);
+
+        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+
+        PerOutputStream pos = new PerOutputStream();
+        apdu.encode(pos);
+
+        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
+
+        CmsAssociate result = (CmsAssociate) decoded.getAsdu();
+        assertEquals(1, result.reqId().get());
+        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
+    }
+
+    @Test
+    @DisplayName("REQUEST: encode and decode round-trip via ASDU static methods")
+    void requestRoundTripAsduOnly() throws Exception {
+        CmsAssociate service = new CmsAssociate(MessageType.REQUEST)
+            .serverAccessPointReference("IED2", "AP2")
+            .reqId(5);
 
         PerOutputStream pos = new PerOutputStream();
         CmsAssociate.write(pos, service);
 
-        PerInputStream pis = new PerInputStream(pos.toByteArray());
-        CmsAssociate result = CmsAssociate.read(pis, MessageType.RESPONSE);
+        CmsAssociate result = CmsAssociate.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
 
-        assertEquals(1, result.reqId());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
-        assertEquals(MessageType.RESPONSE_NEGATIVE, result.messageType());
+        assertEquals(5, result.reqId().get());
+        assertEquals("IED2.AP2", result.serverAccessPointReference().get());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    @DisplayName("copy produces independent instance")
+    void copy() {
+        CmsAssociate original = new CmsAssociate(MessageType.REQUEST)
+            .serverAccessPointReference("IED1", "AP1")
+            .reqId(10);
+
+        CmsAssociate copy = (CmsAssociate) original.copy();
+
+        assertEquals(original.reqId().get(), copy.reqId().get());
+        assertEquals(original.serverAccessPointReference().get(), copy.serverAccessPointReference().get());
+
+        copy.reqId(20);
+        assertNotEquals(original.reqId(), copy.reqId());
+    }
+
+    @Test
+    @DisplayName("fromFlags constructor: REQUEST")
+    void fromFlagsRequest() {
+        CmsAssociate asdu = new CmsAssociate(false, false);
+        assertEquals(MessageType.REQUEST, asdu.messageType());
+    }
+
+    @Test
+    @DisplayName("fromFlags constructor: RESPONSE_POSITIVE")
+    void fromFlagsPositive() {
+        CmsAssociate asdu = new CmsAssociate(true, false);
+        assertEquals(MessageType.RESPONSE_POSITIVE, asdu.messageType());
+    }
+
+    @Test
+    @DisplayName("fromFlags constructor: RESPONSE_NEGATIVE")
+    void fromFlagsNegative() {
+        CmsAssociate asdu = new CmsAssociate(true, true);
+        assertEquals(MessageType.RESPONSE_NEGATIVE, asdu.messageType());
     }
 }

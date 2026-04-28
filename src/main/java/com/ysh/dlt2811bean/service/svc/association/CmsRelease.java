@@ -1,72 +1,88 @@
 package com.ysh.dlt2811bean.service.svc.association;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsRR;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
 /**
  * CMS Service Code 03 — Release (release association).
  *
+ * <p>Corresponds to Table 20 in GB/T 45906.3-2025: Release service parameters.
+ *
+ * <p>Service code: 0x03 (3)
+ * Service interface: Release
+ * Category: Association service
+ *
+ * <p>The Release service is used to gracefully release an association.
+ *
+ * <p>This class supports three message types:
+ * <ul>
+ *   <li>REQUEST - Client release request</li>
+ *   <li>RESPONSE_POSITIVE - Server positive release response</li>
+ *   <li>RESPONSE_NEGATIVE - Server negative release response</li>
+ * </ul>
+ *
  * <p>ASDU field layout (PER encoded, in order):
  * <pre>
- * Request:
+ * Request ASDU:
  * ┌─────────────────────────────────────────────────┐
- * │ ReqID (2B)                                     │
- * │ associationId   OCTET STRING (SIZE(64))        │
+ * │ ReqID (2B)                                      │
+ * │ associationId   OCTET STRING (SIZE(64))         │
  * └─────────────────────────────────────────────────┘
- * 
- * Response+:
+ *
+ * Response+ ASDU:
  * ┌─────────────────────────────────────────────────┐
- * │ ReqID (2B)                                     │
- * │ associationId   OCTET STRING (SIZE(64))        │
- * │ result           ServiceError (no-error)       │
+ * │ ReqID (2B)                                      │
+ * │ associationId   OCTET STRING (SIZE(64))         │
+ * │ result           ServiceError (no-error)        │
  * └─────────────────────────────────────────────────┘
- * 
- * Response-:
+ *
+ * Response- ASDU:
  * ┌─────────────────────────────────────────────────┐
- * │ ReqID (2B)                                     │
- * │ serviceError     ServiceError                  │
+ * │ ReqID (2B)                                      │
+ * │ serviceError     ServiceError                   │
  * └─────────────────────────────────────────────────┘
  * </pre>
- *
- * <p>Reference: GB/T 45906.3 Table 19 / corresponds to ACSE A-RELEASE
  */
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsRelease extends AbstractCmsRR<CmsRelease> {
+public class CmsRelease extends CmsAsdu<CmsRelease> {
 
-    private static final int ASSOC_ID_SIZE = 64;
-
-    public CmsRelease() {
-        super(ServiceCode.RELEASE, MessageType.REQUEST);
-    }
+    public static final int ASSOC_ID_SIZE = 64;
 
     public CmsRelease(MessageType messageType) {
-        super(ServiceCode.RELEASE, messageType);
+        super(messageType);
+    }
+
+    public CmsRelease(boolean isResp, boolean isErr) {
+        super(fromFlags(isResp, isErr));
+    }
+
+    private static MessageType fromFlags(boolean resp, boolean err) {
+        if (!resp && !err) return MessageType.REQUEST;
+        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
+        if (resp) return MessageType.RESPONSE_NEGATIVE;
+        throw new IllegalArgumentException("RR mode does not support !resp && err");
     }
 
     // ==================== Fields based on Table 20 ====================
 
-    // serverAccessPointReference [0..1] OCTETSTRING
     private CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    // IMPLICIT ServiceError (no-error) ｜ ServiceError
     private CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ==================== Convenience Setters ====================
 
-    public CmsRelease setAssociationId(byte[] bytes) {
+    public CmsRelease associationId(byte[] bytes) {
         this.associationId = new CmsOctetString(bytes).size(ASSOC_ID_SIZE);
         return this;
     }
@@ -76,7 +92,7 @@ public class CmsRelease extends AbstractCmsRR<CmsRelease> {
         return this;
     }
 
-    // ==================== AbstractCmsRR Hooks ====================
+    // ==================== CmsAsdu Hooks ====================
 
     @Override
     protected void encodeRequest(PerOutputStream pos) {
@@ -85,9 +101,9 @@ public class CmsRelease extends AbstractCmsRR<CmsRelease> {
 
     @Override
     protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
-        try{
+        try {
             associationId.decode(pis);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new PerDecodeException("CmsRelease REQUEST decode failed", e);
         }
     }
@@ -100,10 +116,10 @@ public class CmsRelease extends AbstractCmsRR<CmsRelease> {
 
     @Override
     protected void decodeResponsePositive(PerInputStream pis) throws PerDecodeException {
-        try{
+        try {
             associationId.decode(pis);
             serviceError.decode(pis);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new PerDecodeException("CmsRelease RESPONSE_POSITIVE decode failed", e);
         }
     }
@@ -115,23 +131,27 @@ public class CmsRelease extends AbstractCmsRR<CmsRelease> {
 
     @Override
     protected void decodeResponseNegative(PerInputStream pis) throws PerDecodeException {
-        try{
+        try {
             serviceError.decode(pis);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new PerDecodeException("CmsRelease RESPONSE_NEGATIVE decode failed", e);
         }
     }
 
-    // ==================== Static Convenience Methods ====================
-
-    public static CmsRelease read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsRelease) new CmsRelease(messageType).decode(pis);
-    }
+    // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public CmsApdu copy() {
+    public ServiceCode getServiceCode() {
+        return ServiceCode.RELEASE;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CmsAsdu<?> copy() {
         CmsRelease copy = new CmsRelease(messageType());
-        copy.reqId(reqId());
+        copy.reqId().set(reqId().get());
         copy.associationId = this.associationId.copy();
         copy.serviceError = this.serviceError.copy();
         return copy;
@@ -146,11 +166,22 @@ public class CmsRelease extends AbstractCmsRR<CmsRelease> {
             sb.append(", associationId=").append(associationId);
         } else if (messageType() == MessageType.RESPONSE_POSITIVE) {
             sb.append(", associationId=").append(associationId);
-            sb.append(", result=").append(serviceError);
+            sb.append(", serviceError=").append(serviceError);
         } else {
             sb.append(", serviceError=").append(serviceError);
         }
 
         return sb.append("}").toString();
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsRelease read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsRelease) new CmsRelease(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsRelease release) {
+        release.encode(pos);
     }
 }

@@ -1,46 +1,64 @@
 package com.ysh.dlt2811bean.service.svc.association;
 
+import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
+import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
-import com.ysh.dlt2811bean.service.protocol.types.AbstractCmsI;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 
 /**
  * CMS Service Code 02 — Abort (abort association).
  *
+ * <p>Corresponds to Table 21 in GB/T 45906.3-2025: Abort service parameters.
+ *
+ * <p>Service code: 0x02 (2)
+ * Service interface: Abort
+ * Category: Association service
+ *
+ * <p>The Abort service is used to abort an association. It can be initiated
+ * by either the client (REQUEST) or the server (REQUEST_PLUS, indication).
+ *
+ * <p>This class supports two message types:
+ * <ul>
+ *   <li>REQUEST - Client-initiated abort (with ReqID)</li>
+ *   <li>REQUEST_PLUS - Server-initiated abort indication (ReqID=0)</li>
+ * </ul>
+ *
  * <p>ASDU field layout (PER encoded, in order):
  * <pre>
- * Request:
+ * Request / Indication ASDU:
  * ┌─────────────────────────────────────────────────┐
- * │ ReqID (2B)                                     │
- * │ reason          AbortReason                    │
- * └─────────────────────────────────────────────────┘
- *
- * Indication:
- * ┌─────────────────────────────────────────────────┐
- * │ reason          AbortReason                    │
+ * │ ReqID (2B)                                      │
+ * │ reason          AbortReason                     │
  * └─────────────────────────────────────────────────┘
  * </pre>
- *
- * <p>Reference: GB/T 45906.3 §8.2.3, Table 21
  */
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsAbort extends AbstractCmsI {
-
-    private AbortReason reason = new AbortReason();
+public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     public CmsAbort(MessageType messageType) {
-        super(ServiceCode.ABORT, messageType);
+        super(messageType);
     }
+
+    public CmsAbort(boolean isResp, boolean isErr) {
+        super(fromFlags(isResp, isErr));
+    }
+
+    private static MessageType fromFlags(boolean resp, boolean err) {
+        if (!resp && !err) return MessageType.REQUEST;
+        throw new IllegalArgumentException("Abort does not support err=true");
+    }
+
+    // ==================== Fields based on Table 21 ====================
+
+    private AbortReason reason = new AbortReason();
 
     // ==================== Convenience Setters ====================
 
@@ -49,57 +67,36 @@ public class CmsAbort extends AbstractCmsI {
         return this;
     }
 
-    @Override
-    public CmsAbort reqId(int reqId) {
-        super.reqId(reqId);
-        return this;
-    }
-
-    // ==================== AbstractCmsI Hooks ====================
+    // ==================== CmsAsdu Hooks ====================
 
     @Override
-    protected void encodeBody(PerOutputStream pos) {
+    protected void encodeRequest(PerOutputStream pos) {
         reason.encode(pos);
     }
 
     @Override
-    protected void decodeBody(PerInputStream pis) throws Exception {
-        reason.decode(pis);
+    protected void decodeRequest(PerInputStream pis) throws PerDecodeException {
+        try {
+            reason.decode(pis);
+        } catch (Exception e) {
+            throw new PerDecodeException("CmsAbort REQUEST decode failed", e);
+        }
     }
 
-    // ==================== CmsApdu Override ====================
-
-    /**
-     * Decode a complete APDU frame.
-     *
-     * <p>Unlike the base class, this does <b>not</b> overwrite the message type
-     * from the APCH flags, because {@link MessageType#REQUEST} and
-     * {@link MessageType#INDICATION} share the same APCH flag encoding
-     * (Resp=0, Err=0). The message type is determined by the caller at
-     * construction time.
-     */
-    @Override
-    public CmsApdu decode(PerInputStream pis) throws Exception {
-        apch().decode(pis);
-
-        int fl = apch().getFrameLength();
-        byte[] asduBytes = pis.readBytes(fl);
-
-        decodeServiceData(new PerInputStream(asduBytes));
-
-        return this;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    public static CmsAbort read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsAbort) new CmsAbort(messageType).decode(pis);
-    }
+    // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public CmsApdu copy() {
+    public ServiceCode getServiceCode() {
+        return ServiceCode.ABORT;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CmsAsdu<?> copy() {
         CmsAbort copy = new CmsAbort(messageType());
-        copy.reqId(reqId());
+        copy.reqId().set(reqId().get());
         copy.reason = this.reason.copy();
         return copy;
     }
@@ -107,13 +104,19 @@ public class CmsAbort extends AbstractCmsI {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("CmsAbort{");
-
-        if (messageType() == MessageType.REQUEST) {
-            sb.append("reqId=").append(reqId());
-            sb.append(", ");
-        }
-
-        sb.append("reason=").append(reason);
+        sb.append("reqId=").append(reqId());
+        sb.append(", reason=").append(reason);
         return sb.append("}").toString();
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsAbort read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsAbort) new CmsAbort(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsAbort abort) {
+        abort.encode(pos);
     }
 }
