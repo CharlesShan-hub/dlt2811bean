@@ -17,22 +17,22 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 /**
  * CMS Service Code 0x50 — GetServerDirectory (read server directory).
  *
- * <p>Corresponds to Table 22 in GB/T 45906.3-2025: GetServerDirectory service parameters.
+ * Corresponds to Table 22 in GB/T 45906.3-2025: GetServerDirectory service parameters.
  *
- * <p>Service code: 0x50 (80)
+ * Service code: 0x50 (80)
  * Service interface: GetServerDirectory
  * Category: Directory service
  *
- * <p>The GetServerDirectory service is used to retrieve all logical device names.
+ * The GetServerDirectory service is used to retrieve all logical device names.
  *
- * <p>This class supports three message types:
+ * This class supports three message types:
  * <ul>
  *   <li>REQUEST - Get server directory request</li>
  *   <li>RESPONSE_POSITIVE - Server positive response with directory entries</li>
  *   <li>RESPONSE_NEGATIVE - Server negative response</li>
  * </ul>
  *
- * <p>ASDU field layout (PER encoded, in order):
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
@@ -48,11 +48,30 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
  * │ moreFollows[0..1]            BOOLEAN (OPTIONAL)              │
  * └──────────────────────────────────────────────────────────────┘
  *
- * Response- ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
+ * Response- ASD:
+ * ┌───U───────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
  * │ serviceError                 ServiceError                    │
  * └──────────────────────────────────────────────────────────────┘
+ * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * GetServerDirectory-RequestPDU:: = SEQUENCE {
+ *   objectClass        [0] IMPLICIT INTEGER {
+ *     reserved         (0),
+ *     logical-device   (1),
+ *     file-system      (2)
+ *   } (0..2),
+ *   referenceAfter     [1] IMPLICIT ObjectReference OPTIONAL
+ * }
+ *
+ * GetServerDirectory-ResponsePDU:: = SEQUENCE {
+ *   reference          [0] IMPLICIT SEQUENCE OF ObjectReference,
+ *   moreFollows        [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * }
+ *
+ * GetServerDirectory-ErrorPDU:: = ServiceError
  * </pre>
  */
 @Getter
@@ -96,14 +115,7 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     }
 
     public CmsGetServerDirectory(boolean isResp, boolean isErr) {
-        this(fromFlags(isResp, isErr));
-    }
-
-    private static MessageType fromFlags(boolean resp, boolean err) {
-        if (!resp && !err) return MessageType.REQUEST;
-        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
-        if (resp) return MessageType.RESPONSE_NEGATIVE;
-        throw new IllegalArgumentException("RR mode does not support !resp && err");
+        this(getRRMessageType(isResp, isErr));
     }
 
     // ==================== Convenience Setters ====================
@@ -131,11 +143,11 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     public CmsGetServerDirectory copy() {
         CmsGetServerDirectory copy = new CmsGetServerDirectory(messageType());
         copy.reqId.set(reqId.get());
-        copy.objectClass = objectClass.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.reference = reference.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
+        copy.objectClass = this.objectClass.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.reference = this.reference.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 
@@ -146,7 +158,7 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
         return (CmsGetServerDirectory) new CmsGetServerDirectory(messageType).decode(pis);
     }
 
-    public static void write(PerOutputStream pos, CmsGetServerDirectory service) {
-        service.encode(pos);
+    public static void write(PerOutputStream pos, CmsGetServerDirectory getServerDirectory) {
+        getServerDirectory.encode(pos);
     }
 }

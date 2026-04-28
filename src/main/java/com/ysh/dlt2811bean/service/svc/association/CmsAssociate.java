@@ -15,25 +15,25 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 
 /**
  * CMS Service Code 01 — Associate (association service).
- * 
- * <p>Corresponds to Table 19 in GB/T 45906.3-2025: Associate service parameters.
- * 
- * <p>Service code: 0x01 (1)
+ *
+ * Corresponds to Table 19 in GB/T 45906.3-2025: Associate service parameters.
+ *
+ * Service code: 0x01 (1)
  * Service interface: Associate
  * Category: Association service
- * 
- * <p>The Associate service is used for connection authentication between
+ *
+ * The Associate service is used for connection authentication between
  * client and server. The service includes optional security authentication
  * parameters for secure communication scenarios.
- * 
- * <p>This class supports all three message types:
+ *
+ * This class supports all three message types:
  * <ul>
  *   <li>REQUEST - Client association request</li>
  *   <li>RESPONSE_POSITIVE - Server positive association response</li>
  *   <li>RESPONSE_NEGATIVE - Server negative association response</li>
  * </ul>
- * 
- * <p>ASDU field layout (PER encoded, in order):
+ *
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
@@ -41,7 +41,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
  * │ serverAccessPointReference   VisibleString (SIZE(0..129))    │
  * │ authenticationParameter      OCTET STRING (OPTIONAL)         │
  * └──────────────────────────────────────────────────────────────┘
- * 
+ *
  * Response+ ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
@@ -49,12 +49,36 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
  * │ result                       ServiceError (no-error)         │
  * │ authenticationParameter      OCTET STRING                    │
  * └──────────────────────────────────────────────────────────────┘
- * 
+ *
  * Response- ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
  * │ serviceError                 ServiceError                    │
  * └──────────────────────────────────────────────────────────────┘
+ * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * Associate-RequestPDU:: = SEQUENCE {
+ *   serverAccessPointReference    [0] IMPLICIT VisibleString129 OPTIONAL,
+ *   authenticationParameter       [1] IMPLICIT SEQUENCE {
+ *     signatureCertificate        [0] IMPLICIT OCTET STRING,
+ *     signedTime                  [1] IMPLICIT UtcTime,
+ *     signedValue                 [2] IMPLICIT OCTET STRING
+ *   } OPTIONAL
+ * }
+ *
+ * Associate-ResponsePDU:: = SEQUENCE {
+ *   associationId                 [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *   serviceError                  [1] IMPLICIT ServiceError,
+ *   authenticationParameter       [2] IMPLICIT SEQUENCE {
+ *     signaturetificate           [0] IMPLICIT OCTET STRING,
+ *     signedTime                  [1] IMPLICIT UtcTime,
+ *     signedValue                 [2] IMPLICIT OCTET STRING
+ *   } OPTIONAL
+ * }
+ *
+ * Associate-ErrorPDU:: = ServiceError
  * </pre>
  */
 @Getter
@@ -77,10 +101,11 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     // associationId OCTET STRING (SIZE(64))
     public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    // serviceError (result in Response+, serviceError in Response-)
+    // result (in Response+), serviceError (in Response-)
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
-    
+    // ==================== Constructor ====================
+
     public CmsAssociate(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
@@ -98,14 +123,7 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     }
 
     public CmsAssociate(boolean isResp, boolean isErr) {
-        this(fromFlags(isResp, isErr));
-    }
-
-    private static MessageType fromFlags(boolean resp, boolean err) {
-        if (!resp && !err) return MessageType.REQUEST;
-        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
-        if (resp) return MessageType.RESPONSE_NEGATIVE;
-        throw new IllegalArgumentException("RR mode does not support !resp && err");
+        this(getRRMessageType(isResp, isErr));
     }
 
     // ==================== Convenience Setters ====================

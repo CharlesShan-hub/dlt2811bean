@@ -98,15 +98,9 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     }
 
     public CmsGetLogicalDeviceDirectory(boolean isResp, boolean isErr) {
-        this(fromFlags(isResp, isErr));
+        this(getRRMessageType(isResp, isErr));
     }
 
-    private static MessageType fromFlags(boolean resp, boolean err) {
-        if (!resp && !err) return MessageType.REQUEST;
-        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
-        if (resp) return MessageType.RESPONSE_NEGATIVE;
-        throw new IllegalArgumentException("RR mode does not support !resp && err");
-    }
 
     // ==================== Convenience Setters ====================
 

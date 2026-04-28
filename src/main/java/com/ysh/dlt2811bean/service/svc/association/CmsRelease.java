@@ -14,22 +14,22 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 /**
  * CMS Service Code 03 — Release (release association).
  *
- * <p>Corresponds to Table 20 in GB/T 45906.3-2025: Release service parameters.
+ * Corresponds to Table 20 in GB/T 45906.3-2025: Release service parameters.
  *
- * <p>Service code: 0x03 (3)
+ * Service code: 0x03 (3)
  * Service interface: Release
  * Category: Association service
  *
- * <p>The Release service is used to gracefully release an association.
+ * The Release service is used to gracefully release an association.
  *
- * <p>This class supports three message types:
+ * This class supports three message types:
  * <ul>
  *   <li>REQUEST - Client release request</li>
  *   <li>RESPONSE_POSITIVE - Server positive release response</li>
  *   <li>RESPONSE_NEGATIVE - Server negative release response</li>
  * </ul>
  *
- * <p>ASDU field layout (PER encoded, in order):
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request ASDU:
  * ┌─────────────────────────────────────────────────┐
@@ -50,6 +50,20 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
  * │ serviceError     ServiceError                   │
  * └─────────────────────────────────────────────────┘
  * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * Release-RequestPDU:: = SEQUENCE {
+ *   associationId       [0] IMPLICIT OCTET STRING (SIZE (0..64))
+ * }
+ *
+ * Release-ResponsePDU:: = SEQUENCE {
+ *   associationId       [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *   serviceError        [1] IMPLICIT ServiceError
+ * }
+ *
+ * Release-ErrorPDU:: = ServiceError
+ * </pre>
  */
 @Getter
 @Setter
@@ -57,6 +71,14 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 public class CmsRelease extends CmsAsdu<CmsRelease> {
 
     public static final int ASSOC_ID_SIZE = 64;
+
+    // ==================== Fields based on Table 20 ====================
+
+    public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
+
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
+
+    // ============================ Constructor =========================
 
     public CmsRelease(MessageType messageType) {
         super(messageType);
@@ -73,21 +95,8 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     }
 
     public CmsRelease(boolean isResp, boolean isErr) {
-        this(fromFlags(isResp, isErr));
+        this(getRRMessageType(isResp, isErr));
     }
-
-    private static MessageType fromFlags(boolean resp, boolean err) {
-        if (!resp && !err) return MessageType.REQUEST;
-        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
-        if (resp) return MessageType.RESPONSE_NEGATIVE;
-        throw new IllegalArgumentException("RR mode does not support !resp && err");
-    }
-
-    // ==================== Fields based on Table 20 ====================
-
-    public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
-
-    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ==================== Convenience Setters ====================
 
@@ -108,7 +117,7 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
         return ServiceCode.RELEASE;
     }
 
-    // ==================== CmsType Implementation ====================
+    // ================= CmsType Implementation ========================
 
     @Override
     public CmsRelease copy() {

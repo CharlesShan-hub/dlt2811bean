@@ -13,28 +13,43 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 /**
  * CMS Service Code 02 — Abort (abort association).
  *
- * <p>Corresponds to Table 21 in GB/T 45906.3-2025: Abort service parameters.
+ * Corresponds to Table 21 in GB/T 45906.3-2025: Abort service parameters.
  *
- * <p>Service code: 0x02 (2)
+ * Service code: 0x02 (2)
  * Service interface: Abort
  * Category: Association service
  *
- * <p>The Abort service is used to abort an association. It can be initiated
+ * The Abort service is used to abort an association. It can be initiated
  * by either the client (REQUEST) or the server (REQUEST_PLUS, indication).
  *
- * <p>This class supports two message types:
+ * This class supports two message types:
  * <ul>
  *   <li>REQUEST - Client-initiated abort (with ReqID)</li>
  *   <li>REQUEST_PLUS - Server-initiated abort indication (ReqID=0)</li>
  * </ul>
  *
- * <p>ASDU field layout (PER encoded, in order):
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request / Indication ASDU:
  * ┌─────────────────────────────────────────────────┐
  * │ ReqID (2B)                                      │
  * │ reason          AbortReason                     │
  * └─────────────────────────────────────────────────┘
+ * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * Abort-RequestPDU:: = SEQUENCE {
+ *   associationId    [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *   reason           [1] IMPLICIT INTEGER {
+ *     other                     (0),
+ *     unrecognized-service      (1),
+ *     invalid-reqID             (2),
+ *     invalid-argument          (3),
+ *     invalid-result            (4),
+ *     max-serv-outstanding-exceed (5)
+ *ed   } (0..5)
+ * }
  * </pre>
  */
 @Getter
@@ -44,25 +59,22 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     // ==================== Fields based on Table 21 ====================
 
+    // reason AbortReason
     public AbortReason reason = new AbortReason();
+
+    // ==================== Constructor ====================
 
     public CmsAbort(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
+        if (messageType == MessageType.REQUEST || messageType == MessageType.REQUEST_PLUS) {
             registerField("reason");
-        }else{
+        } else {
             throw new IllegalArgumentException("Abort does not support " + messageType);
         }
-
     }
 
     public CmsAbort(boolean isResp, boolean isErr) {
-        this(fromFlags(isResp, isErr));
-    }
-
-    private static MessageType fromFlags(boolean resp, boolean err) {
-        if (!resp && !err) return MessageType.REQUEST;
-        throw new IllegalArgumentException("Abort does not support err=true");
+        this(getReqMessageType(isResp, isErr));
     }
 
     // ==================== Convenience Setters ====================
