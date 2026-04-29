@@ -43,12 +43,26 @@ public class CmsServer {
     protected void handleIncoming(CmsConnection conn, CmsApdu apdu) {
         ServiceName svc = apdu.getAsdu().getServiceName();
         switch (svc) {
+            case ASSOCIATE:
+                onAssociateReceived(conn, apdu);
+                break;
             case TEST:
                 onTestReceived(conn, apdu);
                 break;
             default:
                 onServiceReceived(conn, apdu, svc);
                 break;
+        }
+    }
+
+    protected void onAssociateReceived(CmsConnection conn, CmsApdu apdu) {
+        try {
+            CmsTest resp = new CmsTest();
+            CmsApdu response = new CmsApdu(resp, MessageType.RESPONSE_POSITIVE);
+            conn.send(response);
+            System.out.println("[Server] Replied: " + resp);
+        } catch (Exception e) {
+            System.err.println("[Server] Reply error: " + e.getMessage());
         }
     }
 
