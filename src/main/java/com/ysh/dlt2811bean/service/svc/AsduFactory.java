@@ -9,6 +9,7 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
+import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 
 public class AsduFactory {
 
@@ -98,7 +99,7 @@ public class AsduFactory {
             // case RPC_CALL
 
             // 8.14 Test Services
-            // case TEST
+            case TEST: return new CmsTest();
 
             // 8.15 Association Negotiation
             // case ASSOCIATE_NEGOTIATE

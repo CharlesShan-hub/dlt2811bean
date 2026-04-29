@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.test;
+
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 /**
  * CMS Service Code 0x99 — Test (test service).
  *
@@ -44,3 +55,32 @@
  * └──────────────────────────────────────────────────────────────┘
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsTest extends CmsAsdu<CmsTest> {
+
+    public CmsTest(){
+        super(MessageType.REQUEST); // MessageType is not used
+        removeField("reqId"); // test api there is no "reqId"
+    }
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.TEST;
+    }
+
+    @Override
+    public CmsTest copy() {
+        return new CmsTest();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static CmsTest read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsTest) new CmsTest().decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsTest test) {
+        test.encode(pos);
+    }
+}

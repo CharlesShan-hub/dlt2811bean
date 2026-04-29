@@ -20,6 +20,10 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         fieldNames.add(name);
     }
 
+    protected final void removeField(String name) {
+        fieldNames.remove(name);
+    }
+
     private AbstractCmsType<?> getField(String name) {
         try {
             Field f = getClass().getField(name);
