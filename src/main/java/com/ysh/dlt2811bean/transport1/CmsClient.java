@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.transport;
+package com.ysh.dlt2811bean.transport1;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
-import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;

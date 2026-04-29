@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.transport;
+package com.ysh.dlt2811bean.transport1;
 
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 
