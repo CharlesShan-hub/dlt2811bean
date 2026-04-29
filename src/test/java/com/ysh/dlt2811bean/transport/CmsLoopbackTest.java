@@ -33,7 +33,23 @@ class CmsLoopbackTest {
     }
 
     @Test
+    void testAssociate() throws Exception {
+        byte[] assocId = client.associate("IED1.AP1");
+        System.out.println("[Test] Associate OK, associationId length=" + assocId.length);
+        assert assocId.length == 64 : "associationId should be 64 bytes";
+    }
+
+    @Test
+    void testRelease() throws Exception {
+        client.associate("IED1.AP1");
+        client.release();
+        System.out.println("[Test] Release OK");
+    }
+
+    @Test
     void testLoopback() throws Exception {
+        client.associate("IED1.AP1");
+
         CmsTest test = new CmsTest();
         CmsApdu request = new CmsApdu(test, MessageType.REQUEST);
         System.out.println("[Client] Sending: " + test);

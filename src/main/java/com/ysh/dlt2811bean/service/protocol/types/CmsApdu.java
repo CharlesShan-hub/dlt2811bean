@@ -39,6 +39,10 @@ public class CmsApdu implements CmsType<CmsApdu> {
         return asdu;
     }
 
+    public MessageType getMessageType() {
+        return messageType;
+    }
+
     @Override
     public void encode(PerOutputStream pos) {
         apch.fromMessageType(messageType);

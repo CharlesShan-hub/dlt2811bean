@@ -1,3 +1,13 @@
+package com.ysh.dlt2811bean.service.svc.control;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 /**
  * CMS Service Code 0x48 — Cancel (cancel service).
  *
@@ -53,3 +63,56 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsCancel extends CmsAsdu<CmsCancel> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsCancel(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("Associate does not support " + messageType);
+        }
+    }
+
+    public CmsCancel(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.CANCEL;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsCancel copy() {
+        CmsCancel copy = new CmsCancel(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsCancel read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsCancel) new CmsCancel(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsCancel cancel) {
+        cancel.encode(pos);
+    }
+
+}
