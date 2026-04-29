@@ -24,29 +24,57 @@ package com.ysh.dlt2811bean.service.protocol.enums;
  * @since 1.0
  */
 public enum ServiceCode {
-    // ==================== 关联服务 ====================
+    // ==================== 8.2 关联服务 ====================
     ASSOCIATE(0x01, "Associate"),
     ABORT(0x02, "Abort"),
     RELEASE(0x03, "Release"),
 
-    // ==================== 模型和数据服务 ====================
+    // ==================== 8.3 服务器、逻辑设备、逻辑节点类服务 ====================
     GET_SERVER_DIRECTORY(0x50, "GetServerDirectory"),
     GET_LOGIC_DEVICE_DIRECTORY(0x51, "GetLogicDeviceDirectory"),
     GET_LOGIC_NODE_DIRECTORY(0x52, "GetLogicNodeDirectory"),
     GET_ALL_DATA_VALUES(0x53, "GetAllDataValues"),
     GET_ALL_DATA_DEFINITION(0x9B, "GetAllDataDefinition"),
     GET_ALL_CB_VALUES(0x9C, "GetAllCBValues"),
+
+    // ==================== 8.4 数据类服务 ====================
     GET_DATA_VALUES(0x30, "GetDataValues"),
     SET_DATA_VALUES(0x31, "SetDataValues"),
     GET_DATA_DIRECTORY(0x32, "GetDataDirectory"),
     GET_DATA_DEFINITION(0x33, "GetDataDefinition"),
 
-    // ==================== 数据集服务 ====================
+    // ==================== 8.5 数据集服务 ====================
+    GET_DATA_SET_VALUES(0x3A, "GetDataSetValues"),
+    SET_DATA_SET_VALUES(0x3B, "SetDataSetValues"),
     CREATE_DATA_SET(0x36, "CreateDataSet"),
     DELETE_DATA_SET(0x37, "DeleteDataSet"),
     GET_DATA_SET_DIRECTORY(0x39, "GetDataSetDirectory"),
-    GET_DATA_SET_VALUES(0x3A, "GetDataSetValues"),
-    SET_DATA_SET_VALUES(0x3B, "SetDataSetValues"),
+
+    // ==================== 8.6 定值组服务 ====================
+    SELECT_ACTIVE_SG(0x54, "SelectActiveSG"),
+    SELECT_EDIT_SG(0x55, "SelectEditSG"),
+    SET_EDIT_SG_VALUE(0x56, "SetEditSGValue"),
+    CONFIRM_EDIT_SG_VALUES(0x57, "ConfirmEditSGValues"),
+    GET_EDIT_SG_VALUE(0x58, "GetEditSGValue"),
+    GET_SGCBVALUES(0x59, "GetSGCBValues"),
+
+    // ==================== 8.7 报告服务 ====================
+    REPORT(0x5A, "Report"),
+    GET_BRCBVALUES(0x5B, "GetBRCBValues"),
+    SET_BRCBVALUES(0x5C, "SetBRCBValues"),
+    GET_URCBVALUES(0x5D, "GetURCBValues"),
+    SET_URCBVALUES(0x5E, "SetURCBValues"),
+
+    // ==================== 8.8 日志服务 ====================
+    GET_LCBVALUES(0x5F, "GetLCBValues"),
+    SET_LCBVALUES(0x60, "SetLCBValues"),
+    QUERY_LOG_BY_TIME(0x61, "QueryLogByTime"),
+    QUERY_LOG_AFTER(0x62, "QueryLogAfter"),
+    GET_LOG_STATUS_VALUES(0x63, "GetLogStatusValues"),
+
+    // ==================== 8.9 通用变电站事件类服务 ====================
+    GET_GOCBVALUES(0x66, "GetGoCBValues"),
+    SET_GOCBVALUES(0x67, "SetGoCBValues"),
 
     // ==================== 控制服务 ====================
     SELECT(0x44, "Select"),
@@ -56,32 +84,6 @@ public enum ServiceCode {
     COMMAND_TERMINATION(0x48, "CommandTermination"),
     TIME_ACTIVATED_OPERATE(0x49, "TimeActivatedOperate"),
     TIME_ACTIVATED_OPERATE_TERMINATION(0x4A, "TimeActivatedOperateTermination"),
-
-    // ==================== 定值组服务 ====================
-    SELECT_ACTIVE_SG(0x54, "SelectActiveSG"),
-    SELECT_EDIT_SG(0x55, "SelectEditSG"),
-    SET_EDIT_SG_VALUE(0x56, "SetEditSGValue"),
-    CONFIRM_EDIT_SG_VALUES(0x57, "ConfirmEditSGValues"),
-    GET_EDIT_SG_VALUE(0x58, "GetEditSGValue"),
-    GET_SGCBVALUES(0x59, "GetSGCBValues"),
-
-    // ==================== 报告服务 ====================
-    REPORT(0x5A, "Report"),
-    GET_BRCBVALUES(0x5B, "GetBRCBValues"),
-    SET_BRCBVALUES(0x5C, "SetBRCBValues"),
-    GET_URCBVALUES(0x5D, "GetURCBValues"),
-    SET_URCBVALUES(0x5E, "SetURCBValues"),
-    GET_LCBVALUES(0x5F, "GetLCBValues"),
-    SET_LCBVALUES(0x60, "SetLCBValues"),
-
-    // ==================== 日志服务 ====================
-    QUERY_LOG_BY_TIME(0x61, "QueryLogByTime"),
-    QUERY_LOG_AFTER(0x62, "QueryLogAfter"),
-    GET_LOG_STATUS_VALUES(0x63, "GetLogStatusValues"),
-
-    // ==================== GOOSE 控制块服务 ====================
-    GET_GOCBVALUES(0x66, "GetGoCBValues"),
-    SET_GOCBVALUES(0x67, "SetGoCBValues"),
 
     // ==================== MSV 控制块服务 ====================
     GET_MSVCBVALUES(0x69, "GetMSVCBValues"),

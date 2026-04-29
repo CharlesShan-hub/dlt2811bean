@@ -18,43 +18,59 @@ import lombok.experimental.Accessors;
 /**
  * CMS Service Code 0x51 — GetLogicalDeviceDirectory (read logical device directory).
  *
- * <p>Corresponds to Table 24 in GB/T 45906.3-2025: GetLogicalDeviceDirectory service parameters.
+ * Corresponds to Table 24 in GB/T 45906.3-2025: GetLogicalDeviceDirectory service parameters.
  *
- * <p>Service code: 0x51 (81)
+ * Service code: 0x51 (81)
  * Service interface: GetLogicalDeviceDirectory
  * Category: Directory service
  *
- * <p>The GetLogicalDeviceDirectory service is used to retrieve logical nodes
- * of a specified logical device.
+ * The GetLogicalDeviceDirectory service is used to retrieve the logical nodes
+ * of a specified logical device. The referenceAfter parameter is used for
+ * requesting information after a specified reference.
  *
- * <p>This class supports three message types:
+ * This class supports three message types:
  * <ul>
  *   <li>REQUEST - Get logical device directory request</li>
  *   <li>RESPONSE_POSITIVE - Server positive response with logical node references</li>
  *   <li>RESPONSE_NEGATIVE - Server negative response</li>
  * </ul>
  *
- * <p>ASDU field layout (PER encoded, in order):
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ ldName[0..1]              ObjectName (OPTIONAL)              │
- * │ referenceAfter[0..1]      ObjectReference (OPTIONAL)         │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ ldName[0..1]              ObjectName (OPTIONAL)             │
+ * │ referenceAfter[0..1]      ObjectReference (OPTIONAL)        │
+ * └─────────────────────────────────────────────────────────────┘
  *
  * Response+ ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ lnReference[0..n]          SEQUENCE OF SubReference          │
- * │ moreFollows[0..1]          BOOLEAN (OPTIONAL)                │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ lnReference[0..n]         SEQUENCE OF SubReference          │
+ * │ moreFollows[0..1]         BOOLEAN (OPTIONAL)                │
+ * └─────────────────────────────────────────────────────────────┘
  *
  * Response- ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ serviceError               ServiceError                      │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ serviceError               ServiceError                     │
+ * └─────────────────────────────────────────────────────────────┘
+ * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * GetLogicalDeviceDirectory-RequestPDU::= SEQUENCE {
+ *   ldName            [0] IMPLICIT ObjectName OPTIONAL,
+ *   referenceAfter    [1] IMPLICIT ObjectReference OPTIONAL
+ * }
+ *
+ * GetLogicalDeviceDirectory-ResponsePDU::= SEQUENCE {
+ *   lnReference       [0] IMPLICIT SEQUENCE OF SubReference,
+ *   moreFollows       [1] IMPLICIT BOOLEAN OPTIONAL
+ * }
+ *
+ * GetLogicalDeviceDirectory-ErrorPDU::= ServiceError
  * </pre>
  */
 @Getter

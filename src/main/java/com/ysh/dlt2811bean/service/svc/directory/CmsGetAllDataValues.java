@@ -22,72 +22,70 @@ import lombok.experimental.Accessors;
 /**
  * CMS Service Code 0x53 — GetAllDataValues (read all data values).
  *
- * <p>Corresponds to Table 27 in GB/T 45906.3-2025: GetAllDataValues service parameters.
+ * Corresponds to Table 27 in GB/T 45906.3-2025: GetAllDataValues service parameters.
  *
- * <p>Service code: 0x53 (83)
+ * Service code: 0x53 (83)
  * Service interface: GetAllDataValues
- * Category: Directory service
+ * Category: Data access service
  *
- * <p>The GetAllDataValues service is used to retrieve the values of all data objects
- * within a specified logical device or logical node.
+ * The GetAllDataValues service is used to retrieve the values of all data objects
+ * under a specified logical device or logical node. The fc parameter is used to
+ * filter specific functional constraint attributes.
  *
- * <p>This class supports three message types:
+ * This class supports three message types:
  * <ul>
  *   <li>REQUEST - Get all data values request</li>
- *   <li>RESPONSE_POSITIVE - Server positive response with data entries</li>
+ *   <li>RESPONSE_POSITIVE - Server positive response with data values</li>
  *   <li>RESPONSE_NEGATIVE - Server negative response</li>
  * </ul>
  *
- * <p>ASDU field layout (PER encoded, in order):
+ * ASDU field layout (PER encoded, in order):
  * <pre>
  * Request ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ reference          CHOICE {                                  │
- * │   ldName        [0] IMPLICIT ObjectName,                     │
- * │   lnReference   [1] IMPLICIT ObjectReference                 │
- * │ }                                                            │
- * │ fc[0..1]            FunctionalConstraint (OPTIONAL)          │
- * │ referenceAfter[0..1] ObjectReference (OPTIONAL)              │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ reference                  ObjectName / ObjectReference     │
+ * │ fc                         FunctionalConstraint (OPTIONAL)  │
+ * │ referenceAfter             ObjectReference (OPTIONAL)       │
+ * └─────────────────────────────────────────────────────────────┘
  *
  * Response+ ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ data[0..n]          SEQUENCE OF SEQUENCE {                   │
- * │   reference       [0] IMPLICIT SubReference,                 │
- * │   value           [1] IMPLICIT Data                          │
- * │ }                                                            │
- * │ moreFollows[0..1]    BOOLEAN DEFAULT TRUE                    │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ data[0..n]                 SEQUENCE OF SEQUENCE {           │
+ * │   reference                SubReference                     │
+ * │   value                   Data                              │
+ * │ }                                                           │
+ * │ moreFollows                BOOLEAN (OPTIONAL)               │
+ * └─────────────────────────────────────────────────────────────┘
  *
  * Response- ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ serviceError         ServiceError                            │
- * └──────────────────────────────────────────────────────────────┘
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ serviceError               ServiceError                     │
+ * └─────────────────────────────────────────────────────────────┘
  * </pre>
  *
- * <p>ASN.1 definitions:
+ * ASN.1 Definition (from standard document):
  * <pre>
- * GetAllDataValues-RequestPDU ::= SEQUENCE {
- *     reference        [0] IMPLICIT CHOICE{
- *         ldName          [0] IMPLICIT ObjectName,
- *         lnReference     [1] IMPLICIT ObjectReference
- *     },
- *     fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
- *     referenceAfter   [2] IMPLICIT ObjectReference OPTIONAL
+ * GetAllDataValues-RequestPDU::= SEQUENCE {
+ *   reference          [0] IMPLICIT CHOICE {
+ *     ldName            [0] IMPLICIT ObjectName,
+ *     lnReference       [1] IMPLICIT ObjectReference
+ *   },
+ *   fc                 [1] IMPLIC FunctionalConstrITaint OPTIONAL,
+ *   referenceAfter     [2] IMPLICIT ObjectReference OPTIONAL
  * }
  *
- * GetAllDataValues-ResponsePDU ::= SEQUENCE {
- *     data             [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference       [0] IMPLICIT SubReference,
- *         value           [1] IMPLICIT Data
- *     },
- *     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * GetAllDataValues-ResponsePDU::= SEQUENCE {
+ *   data               [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *     reference         [0] IMPLICIT SubReference,
+ *     value             [1] IMPLICIT Data
+ *   },
+ *   moreFollows        [1] IMPLICIT BOOLEAN DEFAULT TRUE
  * }
  *
- * GetAllDataValues-ErrorPDU ::= ServiceError
+ * GetAllDataValues-ErrorPDU::= ServiceError
  * </pre>
  */
 @Getter
