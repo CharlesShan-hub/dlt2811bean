@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.data;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x58 — GetDataDirectory (read data directory).
  *
@@ -62,3 +73,56 @@
  * GetDataDirectory-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetDataDirectory(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetDataDirectory does not support " + messageType);
+        }
+    }
+
+    public CmsGetDataDirectory(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_DATA_DIRECTORY;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetDataDirectory copy() {
+        CmsGetDataDirectory copy = new CmsGetDataDirectory(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetDataDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetDataDirectory) new CmsGetDataDirectory(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetDataDirectory getDataDirectory) {
+        getDataDirectory.encode(pos);
+    }
+
+}

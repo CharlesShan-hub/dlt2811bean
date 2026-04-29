@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.directory;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x55 — GetAllCBValues (read all control block values).
  *
@@ -67,7 +78,7 @@
  * GetAllCBValues-ResponsePDU::= SEQUENCE {
  *   cbValue            [0] IMPLICIT SEQUENCE OF SEQUENCE {
  *     reference        [0] IMPLICIT SubReference
- *     value      ,      [1] IMPLICIT CHOICE {
+ *     value            [1] IMPLICIT CHOICE {
  *       brcb           [0] IMPLICIT BRCB,
  *       urcb           [1] IMPLICIT URCB,
  *       lcb            [2] IMPLICIT LCB,
@@ -82,3 +93,56 @@
  * GetAllCBValues-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetAllCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetAllCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetAllCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_ALL_CB_VALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetAllCBValues copy() {
+        CmsGetAllCBValues copy = new CmsGetAllCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetAllCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetAllCBValues) new CmsGetAllCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetAllCBValues getAllCBValues) {
+        getAllCBValues.encode(pos);
+    }
+
+}

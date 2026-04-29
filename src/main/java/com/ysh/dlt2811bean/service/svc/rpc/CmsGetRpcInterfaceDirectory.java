@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.rpc;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x6E — GetRpcInterfaceDirectory (get RPC interface directory service).
  *
@@ -44,7 +55,7 @@
  *
  * ASN.1 Definition (from standard document):
  * <pre>
- * GetRpcerfaceIntDirectory-RequestPDU:: = SEQUENCE {
+ * GetRpcInterfaceDirectory-RequestPDU:: = SEQUENCE {
  *   referenceAfter  [0] IMPLICIT VisibleString OPTIONAL
  * }
  * GetRpcInterfaceDirectory-ResponsePDU:: = SEQUENCE {
@@ -54,3 +65,56 @@
  * GetRpcInterfaceDirectory-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetRpcInterfaceDirectory extends CmsAsdu<CmsGetRpcInterfaceDirectory> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetRpcInterfaceDirectory(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetRpcInterfaceDirectory does not support " + messageType);
+        }
+    }
+
+    public CmsGetRpcInterfaceDirectory(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_RPC_INTERFACE_DIRECTORY;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetRpcInterfaceDirectory copy() {
+        CmsGetRpcInterfaceDirectory copy = new CmsGetRpcInterfaceDirectory(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetRpcInterfaceDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetRpcInterfaceDirectory) new CmsGetRpcInterfaceDirectory(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetRpcInterfaceDirectory getRpcInterfaceDirectory) {
+        getRpcInterfaceDirectory.encode(pos);
+    }
+
+}

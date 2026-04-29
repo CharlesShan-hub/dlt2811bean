@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.setting;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x3A — SetEditSGValue (set edit setting group values).
  *
@@ -61,3 +72,56 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsSetEditSGValue(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("SetEditSGValue does not support " + messageType);
+        }
+    }
+
+    public CmsSetEditSGValue(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.SET_EDIT_SG_VALUE;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsSetEditSGValue copy() {
+        CmsSetEditSGValue copy = new CmsSetEditSGValue(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsSetEditSGValue read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSetEditSGValue) new CmsSetEditSGValue(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsSetEditSGValue setEditSGValue) {
+        setEditSGValue.encode(pos);
+    }
+
+}

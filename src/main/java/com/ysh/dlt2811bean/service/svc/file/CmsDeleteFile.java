@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.file;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x82 — DeleteFile (delete file service).
  *
@@ -49,3 +60,56 @@
  * DeleteFile-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsDeleteFile(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("DeleteFile does not support " + messageType);
+        }
+    }
+
+    public CmsDeleteFile(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.DELETE_FILE;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsDeleteFile copy() {
+        CmsDeleteFile copy = new CmsDeleteFile(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsDeleteFile read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsDeleteFile) new CmsDeleteFile(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsDeleteFile deleteFile) {
+        deleteFile.encode(pos);
+    }
+
+}

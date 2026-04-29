@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.goose;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * 8.9.2 读 GOOSE 引用服务 (GetGoReference)
  *
@@ -64,3 +75,56 @@
  * GetGoReference-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class GetGoReference extends CmsAsdu<GetGoReference> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public GetGoReference(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetGoReference does not support " + messageType);
+        }
+    }
+
+    public GetGoReference(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.Get_Go_Reference;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public GetGoReference copy() {
+        GetGoReference copy = new GetGoReference(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static GetGoReference read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (GetGoReference) new GetGoReference(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, GetGoReference getGoReference) {
+        getGoReference.encode(pos);
+    }
+
+}

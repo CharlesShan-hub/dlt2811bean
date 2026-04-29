@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.report;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x5A — Report (report service).
  *
@@ -65,3 +76,54 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsReport extends CmsAsdu<CmsReport> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsReport(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else {
+            throw new IllegalArgumentException("Report does not support " + messageType);
+        }
+    }
+
+    public CmsReport(boolean isResp, boolean isErr) {
+        this(MessageType.RESPONSE_POSITIVE);
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.REPORT;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsReport copy() {
+        CmsReport copy = new CmsReport(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsReport read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsReport) new CmsReport(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsReport report) {
+        report.encode(pos);
+    }
+
+}

@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.rpc;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x71 — GetRpcMethodDefinition (get RPC method definition service).
  *
@@ -72,3 +83,56 @@
  * GetRpcMethodDefinition-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetRpcMethodDefinition(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetRpcMethodDefinition does not support " + messageType);
+        }
+    }
+
+    public CmsGetRpcMethodDefinition(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_RPC_METHOD_DEFINITION;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetRpcMethodDefinition copy() {
+        CmsGetRpcMethodDefinition copy = new CmsGetRpcMethodDefinition(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetRpcMethodDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetRpcMethodDefinition) new CmsGetRpcMethodDefinition(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetRpcMethodDefinition getRpcMethodDefinition) {
+        getRpcMethodDefinition.encode(pos);
+    }
+
+}

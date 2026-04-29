@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.data;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x56 — GetDataValues (read data values).
  *
@@ -60,3 +71,56 @@
  * GetDataValues-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetDataValues extends CmsAsdu<CmsGetDataValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetDataValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetDataValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetDataValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_DATA_VALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetDataValues copy() {
+        CmsGetDataValues copy = new CmsGetDataValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetDataValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetDataValues) new CmsGetDataValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetDataValues getDataValues) {
+        getDataValues.encode(pos);
+    }
+
+}

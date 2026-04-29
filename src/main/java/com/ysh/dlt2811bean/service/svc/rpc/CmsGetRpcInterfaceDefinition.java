@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.rpc;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x70 — GetRpcInterfaceDefinition (get RPC interface definition service).
  *
@@ -71,3 +82,56 @@
  * GetRpcInterfaceDefinition-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefinition> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetRpcInterfaceDefinition(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetRpcInterfaceDefinition does not support " + messageType);
+        }
+    }
+
+    public CmsGetRpcInterfaceDefinition(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_RPC_INTERFACE_DEFINITION;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetRpcInterfaceDefinition copy() {
+        CmsGetRpcInterfaceDefinition copy = new CmsGetRpcInterfaceDefinition(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetRpcInterfaceDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetRpcInterfaceDefinition) new CmsGetRpcInterfaceDefinition(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetRpcInterfaceDefinition getRpcInterfaceDefinition) {
+        getRpcInterfaceDefinition.encode(pos);
+    }
+
+}

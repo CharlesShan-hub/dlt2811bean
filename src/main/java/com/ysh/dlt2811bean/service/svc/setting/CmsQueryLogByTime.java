@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.setting;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x61 — QueryLogByTime (query log by time).
  *
@@ -65,3 +76,56 @@
  * QueryLogByTime-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsQueryLogByTime extends CmsAsdu<CmsQueryLogByTime> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsQueryLogByTime(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("QueryLogByTime does not support " + messageType);
+        }
+    }
+
+    public CmsQueryLogByTime(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.QUERY_LOG_BY_TIME;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsQueryLogByTime copy() {
+        CmsQueryLogByTime copy = new CmsQueryLogByTime(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsQueryLogByTime read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsQueryLogByTime) new CmsQueryLogByTime(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsQueryLogByTime queryLogByTime) {
+        queryLogByTime.encode(pos);
+    }
+
+}

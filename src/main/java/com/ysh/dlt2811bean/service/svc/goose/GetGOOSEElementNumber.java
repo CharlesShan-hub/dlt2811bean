@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.goose;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * 8.9.3 (GetGOOSEElementNumber)
  *
@@ -50,18 +61,71 @@
  * GetGOOSEElementNumber-RequestPDU::= SEQUENCE {
  *   gocbReference    [0] IMPLICIT ObjectReference,
  *   memberData       [1] IMPLICIT SEQUENCE OF SEQUENCE {
- *     reference       [0] IMPLIC ObjectReference,
- *    IT fc              [1] IMPLICIT FunctionalConstraint
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     fc              [1] IMPLICIT FunctionalConstraint
  *   }
  * }
  *
  * GetGOOSEElementNumber-ResponsePDU::= SEQUENCE {
  *   gocbReference    [0] IMPLICIT ObjectReference,
  *   confRev          [1] IMPLICIT INT32U,
- *   datSet           [2] IMPLICITjectReference, Ob
+ *   datSet           [2] IMPLICIT ObjectReference,
  *   memberOffset     [3] IMPLICIT SEQUENCE OF INT16U
  * }
  *
  * GetGOOSEElementNumber-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class GetGOOSEElementNumber extends CmsAsdu<GetGOOSEElementNumber> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public GetGOOSEElementNumber(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetGOOSEElementNumber does not support " + messageType);
+        }
+    }
+
+    public GetGOOSEElementNumber(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.Get_GOOSE_ElementNumber;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public GetGOOSEElementNumber copy() {
+        GetGOOSEElementNumber copy = new GetGOOSEElementNumber(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static GetGOOSEElementNumber read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (GetGOOSEElementNumber) new GetGOOSEElementNumber(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, GetGOOSEElementNumber getGOOSEElementNumber) {
+        getGOOSEElementNumber.encode(pos);
+    }
+
+}

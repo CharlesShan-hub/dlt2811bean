@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.report;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x5D — GetURCBValues (get unbuffered report control block values).
  *
@@ -74,3 +85,56 @@
  * GetURCBValues-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetURCBValues extends CmsAsdu<CmsGetURCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetURCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetURCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetURCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_URCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetURCBValues copy() {
+        CmsGetURCBValues copy = new CmsGetURCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetURCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetURCBValues) new CmsGetURCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetURCBValues getURCBValues) {
+        getURCBValues.encode(pos);
+    }
+
+}

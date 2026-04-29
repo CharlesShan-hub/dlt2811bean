@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.setting;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x5F — GetLCBValues (get log control block values).
  *
@@ -67,3 +78,56 @@
  * GetLCBValues-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetLCBValues extends CmsAsdu<CmsGetLCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetLCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetLCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetLCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_LCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetLCBValues copy() {
+        CmsGetLCBValues copy = new CmsGetLCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetLCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetLCBValues) new CmsGetLCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetLCBValues getLCBValues) {
+        getLCBValues.encode(pos);
+    }
+
+}

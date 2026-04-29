@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.sv;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * MSV Service — SendMSVMessage (send multicast sampling value message).
  *
@@ -51,3 +62,55 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsSendMSVMessage(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else {
+            throw new IllegalArgumentException("SendMSVMessage does not support " + messageType);
+        }
+    }
+
+    public CmsSendMSVMessage(boolean isResp, boolean isErr) {
+        this(MessageType.REQUEST);
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.Send_MSVMessage;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsSendMSVMessage copy() {
+        CmsSendMSVMessage copy = new CmsSendMSVMessage(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsSendMSVMessage read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSendMSVMessage) new CmsSendMSVMessage(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsSendMSVMessage sendMSVMessage) {
+        sendMSVMessage.encode(pos);
+    }
+
+}

@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.rpc;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x6F — GetRpcMethodDirectory (get RPC method directory service).
  *
@@ -55,3 +66,56 @@
  * GetRpcMethodDirectory-ErrorPDU:: = ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetRpcMethodDirectory(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetRpcMethodDirectory does not support " + messageType);
+        }
+    }
+
+    public CmsGetRpcMethodDirectory(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_RPC_METHOD_DIRECTORY;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetRpcMethodDirectory copy() {
+        CmsGetRpcMethodDirectory copy = new CmsGetRpcMethodDirectory(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetRpcMethodDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetRpcMethodDirectory) new CmsGetRpcMethodDirectory(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetRpcMethodDirectory getRpcMethodDirectory) {
+        getRpcMethodDirectory.encode(pos);
+    }
+
+}

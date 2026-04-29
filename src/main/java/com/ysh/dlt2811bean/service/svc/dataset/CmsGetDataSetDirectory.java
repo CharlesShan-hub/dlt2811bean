@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.dataset;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x39 — GetDataSetDirectory (read data set directory).
  *
@@ -63,3 +74,56 @@
  * GetDataSetDirectory-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetDataSetDirectory extends CmsAsdu<CmsGetDataSetDirectory> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetDataSetDirectory(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetDataSetDirectory does not support " + messageType);
+        }
+    }
+
+    public CmsGetDataSetDirectory(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_DATA_SET_DIRECTORY;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetDataSetDirectory copy() {
+        CmsGetDataSetDirectory copy = new CmsGetDataSetDirectory(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetDataSetDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetDataSetDirectory) new CmsGetDataSetDirectory(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetDataSetDirectory getDataSetDirectory) {
+        getDataSetDirectory.encode(pos);
+    }
+
+}

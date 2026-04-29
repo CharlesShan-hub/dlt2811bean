@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.sv;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x6A — SetMSVCBValues (set multicast sampling value control block values).
  *
@@ -52,8 +63,8 @@
  * ASN.1 Definition (from standard document):
  * <pre>
  * SetMSVCBValues-RequestPDU:: = SEQUENCE {
- *   msvcb    [0] IMPLICIT SEQUENCE SEQUENCE {
- *     refer OFence [0] IMPLICIT ObjectReference,
+ *   msvcb    [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *     reference [0] IMPLICIT ObjectReference,
  *     svEna     [1] IMPLICIT BOOLEAN OPTIONAL,
  *     msvID     [2] IMPLICIT VisibleString129 OPTIONAL,
  *     datSet    [3] IMPLICIT ObjectReference OPTIONAL,
@@ -78,3 +89,56 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsSetMSVCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("SetMSVCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsSetMSVCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.SET_MSVCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsSetMSVCBValues copy() {
+        CmsSetMSVCBValues copy = new CmsSetMSVCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsSetMSVCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSetMSVCBValues) new CmsSetMSVCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsSetMSVCBValues setMSVCBValues) {
+        setMSVCBValues.encode(pos);
+    }
+
+}

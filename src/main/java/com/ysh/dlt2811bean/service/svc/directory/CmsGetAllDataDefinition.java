@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.directory;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x54 — GetAllDataDefinition (read all data definition).
  *
@@ -48,8 +59,8 @@
  *
  * ASN.1 Definition (from standard document):
  * <pre>
- * GetAllDataDefinition-RequestPDU::= SEQUENCE {   reference
- *       [0] IMPLICIT CHOICE{
+ * GetAllDataDefinition-RequestPDU::= SEQUENCE {
+ *   reference          [0] IMPLICIT CHOICE {
  *     ldName            [0] IMPLICIT ObjectName,
  *     lnReference       [1] IMPLICIT ObjectReference
  *   },
@@ -69,3 +80,56 @@
  * GetAllDataDefinition-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetAllDataDefinition(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetAllDataDefinition does not support " + messageType);
+        }
+    }
+
+    public CmsGetAllDataDefinition(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_ALL_DATA_DEFINITION;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetAllDataDefinition copy() {
+        CmsGetAllDataDefinition copy = new CmsGetAllDataDefinition(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetAllDataDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetAllDataDefinition) new CmsGetAllDataDefinition(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetAllDataDefinition getAllDataDefinition) {
+        getAllDataDefinition.encode(pos);
+    }
+
+}

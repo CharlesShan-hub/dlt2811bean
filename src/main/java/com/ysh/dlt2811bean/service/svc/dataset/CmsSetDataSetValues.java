@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.dataset;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x3B — SetDataSetValues (set data set values).
  *
@@ -45,3 +56,56 @@
  * └─────────────────────────────────────────────────────────────┘
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsSetDataSetValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("SetDataSetValues does not support " + messageType);
+        }
+    }
+
+    public CmsSetDataSetValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.SET_DATA_SET_VALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsSetDataSetValues copy() {
+        CmsSetDataSetValues copy = new CmsSetDataSetValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsSetDataSetValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSetDataSetValues) new CmsSetDataSetValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsSetDataSetValues setDataSetValues) {
+        setDataSetValues.encode(pos);
+    }
+
+}

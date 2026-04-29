@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.sv;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x69 — GetMSVCBValues (get multicast sampling value control block values).
  *
@@ -59,3 +70,56 @@
  * GetMSVCBValues-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetMSVCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetMSVCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetMSVCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_MSVCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetMSVCBValues copy() {
+        CmsGetMSVCBValues copy = new CmsGetMSVCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetMSVCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetMSVCBValues) new CmsGetMSVCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetMSVCBValues getMSVCBValues) {
+        getMSVCBValues.encode(pos);
+    }
+
+}

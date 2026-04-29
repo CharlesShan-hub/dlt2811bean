@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.setting;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x60 — SetLCBValues (set log control block values).
  *
@@ -80,3 +91,56 @@
  * }
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsSetLCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("SetLCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsSetLCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.SET_LCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsSetLCBValues copy() {
+        CmsSetLCBValues copy = new CmsSetLCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsSetLCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSetLCBValues) new CmsSetLCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsSetLCBValues setLCBValues) {
+        setLCBValues.encode(pos);
+    }
+
+}

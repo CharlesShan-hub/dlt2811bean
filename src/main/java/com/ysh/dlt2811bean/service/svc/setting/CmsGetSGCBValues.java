@@ -1,3 +1,14 @@
+package com.ysh.dlt2811bean.service.svc.setting;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.per.io.PerInputStream;
+import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+
 /**
  * CMS Service Code 0x3D — GetSGCBValues (get setting group control block values).
  *
@@ -57,3 +68,56 @@
  * GetSGCBValues-ErrorPDU::= ServiceError
  * </pre>
  */
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
+
+    // ==================== Fields based on Table XX ====================
+
+    // ========================= Constructor ============================
+
+    public CmsGetSGCBValues(MessageType messageType) {
+        super(messageType);
+        if (messageType == MessageType.REQUEST) {
+        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+        } else {
+            throw new IllegalArgumentException("GetSGCBValues does not support " + messageType);
+        }
+    }
+
+    public CmsGetSGCBValues(boolean isResp, boolean isErr) {
+        this(getRRMessageType(isResp, isErr));
+    }
+
+    // ====================== Convenience Setters =======================
+
+    // ==================== CmsAsdu Abstract Methods ====================
+
+    @Override
+    public ServiceName getServiceName() {
+        return ServiceName.GET_SGCBVALUES;
+    }
+
+    // ==================== CmsType Implementation ====================
+
+    @Override
+    public CmsGetSGCBValues copy() {
+        CmsGetSGCBValues copy = new CmsGetSGCBValues(messageType());
+        // todo
+        return copy;
+    }
+
+    // ==================== Static Convenience Methods ====================
+
+    @SuppressWarnings("unchecked")
+    public static CmsGetSGCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetSGCBValues) new CmsGetSGCBValues(messageType).decode(pis);
+    }
+
+    public static void write(PerOutputStream pos, CmsGetSGCBValues getSGCBValues) {
+        getSGCBValues.encode(pos);
+    }
+
+}
