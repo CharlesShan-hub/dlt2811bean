@@ -75,6 +75,11 @@ public class CmsTest extends CmsAsdu<CmsTest> {
         return new CmsTest();
     }
 
+    @Override
+    public String toString() {
+        return "(CmsTest) {}"; // no fields and no new line
+    }
+
     @SuppressWarnings("unchecked")
     public static CmsTest read(PerInputStream pis, MessageType messageType) throws Exception {
         return (CmsTest) new CmsTest().decode(pis);
