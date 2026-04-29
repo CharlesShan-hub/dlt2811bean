@@ -42,7 +42,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
     @Override
     public void encode(PerOutputStream pos) {
         apch.fromMessageType(messageType);
-        apch.serviceCode(asdu.getServiceCode());
+        apch.serviceCode(asdu.getServiceName());
         // TODO 报文分段的逻辑以后实现
         apch.next(false);
 

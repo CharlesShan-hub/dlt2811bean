@@ -2,9 +2,7 @@ package com.ysh.dlt2811bean.service.protocol.types;
 
 import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,7 +37,7 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
         registerField("reqId");
     }
 
-    public abstract ServiceCode getServiceCode();
+    public abstract ServiceName getServiceName();
 
     @SuppressWarnings("unchecked")
     public T reqId(int value) {
@@ -59,5 +57,4 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
         if (resp) return MessageType.RESPONSE_NEGATIVE;
         throw new IllegalArgumentException("RR mode does not support !resp && err");
     }
-
 }

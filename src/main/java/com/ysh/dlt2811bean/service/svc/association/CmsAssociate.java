@@ -11,7 +11,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
  * CMS Service Code 01 — Associate (association service).
@@ -146,8 +146,8 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public ServiceCode getServiceCode() {
-        return ServiceCode.ASSOCIATE;
+    public ServiceName getServiceName() {
+        return ServiceName.ASSOCIATE;
     }
 
     // ==================== CmsType Implementation ====================

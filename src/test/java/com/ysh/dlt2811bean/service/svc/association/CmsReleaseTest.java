@@ -4,7 +4,7 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -137,7 +137,7 @@ class CmsReleaseTest {
     @DisplayName("getServiceCode returns RELEASE")
     void serviceCode() {
         CmsRelease asdu = new CmsRelease(MessageType.REQUEST);
-        assertEquals(ServiceCode.RELEASE, asdu.getServiceCode());
+        assertEquals(ServiceName.RELEASE, asdu.getServiceName());
     }
 
     @Test

@@ -6,7 +6,7 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues.CmsDataEntry;
 import org.junit.jupiter.api.DisplayName;
@@ -217,7 +217,7 @@ class CmsGetAllDataValuesTest {
     @DisplayName("getServiceCode returns GET_ALL_DATA_VALUES")
     void serviceCode() {
         CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST);
-        assertEquals(ServiceCode.GET_ALL_DATA_VALUES, asdu.getServiceCode());
+        assertEquals(ServiceName.GET_ALL_DATA_VALUES, asdu.getServiceName());
     }
 
     @Test

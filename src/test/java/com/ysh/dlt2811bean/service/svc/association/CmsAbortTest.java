@@ -3,7 +3,7 @@ package com.ysh.dlt2811bean.service.svc.association;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 import org.junit.jupiter.api.DisplayName;
@@ -98,7 +98,7 @@ class CmsAbortTest {
     @DisplayName("getServiceCode returns ABORT")
     void serviceCode() {
         CmsAbort asdu = new CmsAbort(MessageType.REQUEST);
-        assertEquals(ServiceCode.ABORT, asdu.getServiceCode());
+        assertEquals(ServiceName.ABORT, asdu.getServiceName());
     }
 
     @Test

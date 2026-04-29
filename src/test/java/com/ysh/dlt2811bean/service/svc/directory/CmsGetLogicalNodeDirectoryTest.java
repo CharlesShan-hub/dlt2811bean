@@ -1,12 +1,11 @@
 package com.ysh.dlt2811bean.service.svc.directory;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import org.junit.jupiter.api.DisplayName;
@@ -213,7 +212,7 @@ class CmsGetLogicalNodeDirectoryTest {
     @DisplayName("getServiceCode returns GET_LOGIC_NODE_DIRECTORY")
     void serviceCode() {
         CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST);
-        assertEquals(ServiceCode.GET_LOGIC_NODE_DIRECTORY, asdu.getServiceCode());
+        assertEquals(ServiceName.GET_LOGIC_NODE_DIRECTORY, asdu.getServiceName());
     }
 
     @Test

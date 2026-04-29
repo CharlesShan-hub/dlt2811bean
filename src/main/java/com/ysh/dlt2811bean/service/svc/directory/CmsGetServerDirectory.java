@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
  * CMS Service Code 0x50 — GetServerDirectory (read server directory).
@@ -133,8 +133,8 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public ServiceCode getServiceCode() {
-        return ServiceCode.GET_SERVER_DIRECTORY;
+    public ServiceName getServiceName() {
+        return ServiceName.GET_SERVER_DIRECTORY;
     }
 
     // ==================== CmsType Implementation ====================

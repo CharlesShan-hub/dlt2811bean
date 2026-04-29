@@ -8,7 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
  * CMS Service Code 02 — Abort (abort association).
@@ -87,8 +87,8 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public ServiceCode getServiceCode() {
-        return ServiceCode.ABORT;
+    public ServiceName getServiceName() {
+        return ServiceName.ABORT;
     }
 
     // ==================== CmsType Implementation ====================

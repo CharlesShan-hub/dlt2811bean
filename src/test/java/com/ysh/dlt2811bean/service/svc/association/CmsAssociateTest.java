@@ -4,7 +4,6 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import org.junit.jupiter.api.DisplayName;

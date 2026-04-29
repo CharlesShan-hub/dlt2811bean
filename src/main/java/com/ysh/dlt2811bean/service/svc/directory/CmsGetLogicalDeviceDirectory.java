@@ -9,7 +9,7 @@ import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import lombok.Getter;
 import lombok.Setter;
@@ -138,8 +138,8 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
-    public ServiceCode getServiceCode() {
-        return ServiceCode.GET_LOGIC_DEVICE_DIRECTORY;
+    public ServiceName getServiceName() {
+        return ServiceName.GET_LOGIC_DEVICE_DIRECTORY;
     }
 
     // ==================== CmsType Implementation ====================

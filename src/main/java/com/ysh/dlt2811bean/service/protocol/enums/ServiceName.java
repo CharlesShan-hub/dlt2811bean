@@ -23,7 +23,7 @@ package com.ysh.dlt2811bean.service.protocol.enums;
  * </pre>
  * @since 1.0
  */
-public enum ServiceCode {
+public enum ServiceName {
     // ==================== 8.2 关联服务 ====================
     ASSOCIATE(0x01, "Associate"),
     ABORT(0x02, "Abort"),
@@ -73,44 +73,50 @@ public enum ServiceCode {
     GET_LOG_STATUS_VALUES(0x63, "GetLogStatusValues"),
 
     // ==================== 8.9 通用变电站事件类服务 ====================
+    Send_GOOSE_Message(0x00, "SendGOOSEMessage"), // goose service, no service code
+    Get_Go_Reference(0x00, "GetGoReference"), // goose service, no service code
+    Get_GOOSE_ElementNumber(0x00, "GetGOOSEElementNumber"), // goose service, no service code
     GET_GOCBVALUES(0x66, "GetGoCBValues"),
     SET_GOCBVALUES(0x67, "SetGoCBValues"),
 
-    // ==================== 控制服务 ====================
+    // ==================== 8.10 多播采样值类服务 ====================
+    Send_MSVMessage(0x00, "SendMSVMessage"), // msv service, no service code
+    GET_MSVCBVALUES(0x69, "GetMSVCBValues"),
+    SET_MSVCBVALUES(0x6A, "SetMSVCBValues"),
+
+    // ==================== 8.11 控制服务 ====================
     SELECT(0x44, "Select"),
     SELECT_WITH_VALUE(0x45, "SelectWithValue"),
-    CANCEL(0x46, "Cancel"),
     OPERATE(0x47, "Operate"),
+    CANCEL(0x46, "Cancel"),
     COMMAND_TERMINATION(0x48, "CommandTermination"),
     TIME_ACTIVATED_OPERATE(0x49, "TimeActivatedOperate"),
     TIME_ACTIVATED_OPERATE_TERMINATION(0x4A, "TimeActivatedOperateTermination"),
 
-    // ==================== MSV 控制块服务 ====================
-    GET_MSVCBVALUES(0x69, "GetMSVCBValues"),
-    SET_MSVCBVALUES(0x6A, "SetMSVCBValues"),
-
-    // ==================== 文件服务 ====================
+    // ==================== 8.12 文件服务 ====================
     GET_FILE(0x80, "GetFile"),
     SET_FILE(0x81, "SetFile"),
     DELETE_FILE(0x82, "DeleteFile"),
     GET_FILE_ATTRIBUTEVALUES(0x83, "GetFileAttributeValues"),
     GET_FILE_DIRECTORY(0x84, "GetFileDirectory"),
 
-    // ==================== 远程过程调用 ====================
+    // ==================== 8.13 远程过程调用 ====================
     GET_RPC_INTERFACE_DIRECTORY(0x6E, "GetRpcInterfaceDirectory"),
     GET_RPC_METHOD_DIRECTORY(0x6F, "GetRpcMethodDirectory"),
     GET_RPC_INTERFACE_DEFINITION(0x70, "GetRpcInterfaceDefinition"),
     GET_RPC_METHOD_DEFINITION(0x71, "GetRpcMethodDefinition"),
     RPC_CALL(0x72, "RpcCall"),
 
-    // ==================== 其他服务 ====================
+    // ==================== 8.14 测试服务 ====================
     TEST(0x99, "Test"),
+
+    // ==================== 8.15 协商服务 ====================
     ASSOCIATE_NEGOTIATE(0x9A, "AssociateNegotiate");
 
     private final int code;
     private final String interfaceName;
 
-    ServiceCode(int code, String interfaceName) {
+    ServiceName(int code, String interfaceName) {
         this.code = code;
         this.interfaceName = interfaceName;
     }
@@ -127,8 +133,8 @@ public enum ServiceCode {
         return (byte) code;
     }
 
-    public static ServiceCode fromInt(int code) {
-        for (ServiceCode sc : values()) {
+    public static ServiceName fromInt(int code) {
+        for (ServiceName sc : values()) {
             if (sc.code == code) {
                 return sc;
             }
@@ -136,7 +142,7 @@ public enum ServiceCode {
         return null;
     }
 
-    public static ServiceCode fromByte(byte code) {
+    public static ServiceName fromByte(byte code) {
         return fromInt(code & 0xFF);
     }
 }

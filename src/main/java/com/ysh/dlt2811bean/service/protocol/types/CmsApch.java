@@ -6,9 +6,8 @@ import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import lombok.Getter;
-import com.ysh.dlt2811bean.service.protocol.types.CmsControlCode;
 
 /**
  * APCH (Application Protocol Control Header) — 4-byte frame header.
@@ -90,9 +89,9 @@ public class CmsApch extends AbstractCmsCompound<CmsApch> {
         return this;
     }
 
-    public CmsApch serviceCode(ServiceCode serviceCode) {
+    public CmsApch serviceCode(ServiceName serviceName) {
         flags[3] = true;
-        this.sc.set(serviceCode.getCode());
+        this.sc.set(serviceName.getCode());
         return this;
     }
 
@@ -112,8 +111,8 @@ public class CmsApch extends AbstractCmsCompound<CmsApch> {
         return fl.get();
     }
 
-    public ServiceCode getServiceCode() {
-        return ServiceCode.fromByte(sc.get().byteValue());
+    public ServiceName getServiceCode() {
+        return ServiceName.fromByte(sc.get().byteValue());
     }
 
     public boolean isNext() {

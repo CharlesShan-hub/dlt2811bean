@@ -5,7 +5,7 @@ import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceCode;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import org.junit.jupiter.api.DisplayName;
@@ -182,7 +182,7 @@ class CmsGetServerDirectoryTest {
     @DisplayName("getServiceCode returns GET_SERVER_DIRECTORY")
     void serviceCode() {
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST);
-        assertEquals(ServiceCode.GET_SERVER_DIRECTORY, asdu.getServiceCode());
+        assertEquals(ServiceName.GET_SERVER_DIRECTORY, asdu.getServiceName());
     }
 
     @Test
