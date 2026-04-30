@@ -48,8 +48,8 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  * │ moreFollows[0..1]            BOOLEAN (OPTIONAL)              │
  * └──────────────────────────────────────────────────────────────┘
  *
- * Response- ASD:
- * ┌───U───────────────────────────────────────────────────────────┐
+ * Response- ASDU:
+ * ┌──────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
  * │ serviceError                 ServiceError                    │
  * └──────────────────────────────────────────────────────────────┘
@@ -103,10 +103,10 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
             registerField("objectClass");
-            registerField("referenceAfter");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
             registerField("reference");
-            registerField("moreFollows");
+            registerOptionalField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
             registerField("serviceError");
         } else {

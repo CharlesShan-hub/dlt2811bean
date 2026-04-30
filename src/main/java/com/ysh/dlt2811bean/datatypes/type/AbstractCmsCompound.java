@@ -5,12 +5,16 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         extends AbstractCmsType<T> implements CmsCompound<T> {
 
     private final List<String> fieldNames = new ArrayList<>();
+    private final List<Boolean> fieldOptional = new ArrayList<>();
+    private final Set<String> presentFields = new HashSet<>();
 
     protected AbstractCmsCompound(String typeName) {
         super(typeName);
@@ -18,10 +22,24 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     protected final void registerField(String name) {
         fieldNames.add(name);
+        fieldOptional.add(false);
+    }
+
+    protected final void registerOptionalField(String name) {
+        fieldNames.add(name);
+        fieldOptional.add(true);
     }
 
     protected final void removeField(String name) {
-        fieldNames.remove(name);
+        int idx = fieldNames.indexOf(name);
+        if (idx >= 0) {
+            fieldNames.remove(idx);
+            fieldOptional.remove(idx);
+        }
+    }
+
+    public boolean isFieldPresent(String name) {
+        return presentFields.contains(name);
     }
 
     private AbstractCmsType<?> getField(String name) {
@@ -39,7 +57,16 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     @Override
     public void encode(PerOutputStream pos) {
         validate();
-        for (String name : fieldNames) {
+        for (int i = 0; i < fieldNames.size(); i++) {
+            if (fieldOptional.get(i)) {
+                pos.writeBit(!getField(fieldNames.get(i)).isDefault());
+            }
+        }
+        for (int i = 0; i < fieldNames.size(); i++) {
+            String name = fieldNames.get(i);
+            if (fieldOptional.get(i) && getField(name).isDefault()) {
+                continue;
+            }
             getField(name).encode(pos);
         }
     }
@@ -47,8 +74,17 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     @Override
     @SuppressWarnings("unchecked")
     public T decode(PerInputStream pis) throws Exception {
-        for (String name : fieldNames) {
-            getField(name).decode(pis);
+        presentFields.clear();
+        for (int i = 0; i < fieldNames.size(); i++) {
+            if (fieldOptional.get(i) && pis.readBit()) {
+                presentFields.add(fieldNames.get(i));
+            }
+        }
+        for (int i = 0; i < fieldNames.size(); i++) {
+            if (fieldOptional.get(i) && !presentFields.contains(fieldNames.get(i))) {
+                continue;
+            }
+            getField(fieldNames.get(i)).decode(pis);
         }
         validate();
         return (T) this;
@@ -65,6 +101,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
                 Field f = getClass().getField(name);
                 f.set(clone, clonedField);
             }
+            ((AbstractCmsCompound<?>) clone).presentFields.addAll(this.presentFields);
             return clone;
         } catch (Exception e) {
             throw new RuntimeException("Failed to copy " + typeName, e);

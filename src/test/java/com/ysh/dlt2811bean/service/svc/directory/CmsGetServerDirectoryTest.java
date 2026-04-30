@@ -35,6 +35,7 @@ class CmsGetServerDirectoryTest {
         assertEquals(1, result.reqId().get());
         assertEquals(CmsObjectClass.LOGICAL_DEVICE, result.objectClass().get());
         assertEquals("IED1.AP1.LD1", result.referenceAfter().get());
+        assertTrue(result.isFieldPresent("referenceAfter"));
         System.out.println(result);
     }
 
@@ -55,6 +56,7 @@ class CmsGetServerDirectoryTest {
         CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(2, result.reqId().get());
         assertEquals(CmsObjectClass.LOGICAL_DEVICE, result.objectClass().get());
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
@@ -79,6 +81,7 @@ class CmsGetServerDirectoryTest {
         assertEquals(2, result.reference().size());
         assertEquals("IED1.AP1.LD1", result.reference().get(0).get());
         assertEquals("IED1.AP1.LD2", result.reference().get(1).get());
+        assertTrue(result.isFieldPresent("moreFollows"));
         assertTrue(result.moreFollows().get());
     }
 
@@ -99,6 +102,7 @@ class CmsGetServerDirectoryTest {
         CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(4, result.reqId().get());
         assertTrue(result.reference().isEmpty());
+        assertFalse(result.isFieldPresent("moreFollows"));
         assertFalse(result.moreFollows().get());
     }
 

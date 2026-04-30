@@ -18,6 +18,10 @@ public abstract class AbstractCmsType<T extends AbstractCmsType<T>> implements C
         return (T) this;
     }
 
+    public boolean isDefault() {
+        return false;
+    }
+
     protected static <T> T requireNotNull(T obj) {
         if (obj == null) {
             throw new IllegalArgumentException("Argument must not be null");

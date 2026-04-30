@@ -40,4 +40,13 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
     public String toString() {
         return "(" + getClass().getSimpleName() + ") " + value;
     }
+
+    @Override
+    public boolean isDefault() {
+        if (value instanceof String s) return s.isEmpty();
+        if (value instanceof byte[] b) return b.length == 0;
+        if (value instanceof Boolean b) return !b;
+        if (value instanceof Number n) return n.longValue() == 0;
+        return false;
+    }
 }

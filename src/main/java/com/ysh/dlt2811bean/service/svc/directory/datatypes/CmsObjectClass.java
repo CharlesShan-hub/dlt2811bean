@@ -7,7 +7,12 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 /**
  * Object class for the GetServerDirectory service (Table 23).
  *
- * <p>Encoded as ENUMERATED (0..1).
+ * <p>Encoded as a constrained integer 0..2:
+ * <ul>
+ *   <li>0 = reserved</li>
+ *   <li>1 = logical-device (list logical devices)</li>
+ *   <li>2 = file-system (list file system roots)</li>
+ * </ul>
  *
  * <pre>
  * ┌──────┬──────────────────────────────────────┐
@@ -15,6 +20,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * ├──────┼──────────────────────────────────────┤
  * │   0  │ reserved                             │
  * │   1  │ logical-device                       │
+ * │   2  │ file-system                          │
  * └──────┴──────────────────────────────────────┘
  * </pre>
  */
@@ -22,13 +28,14 @@ public class CmsObjectClass extends AbstractCmsEnumerated<CmsObjectClass> {
 
     public static final int RESERVED = 0;
     public static final int LOGICAL_DEVICE = 1;
+    public static final int FILE_SYSTEM = 2;
 
     public CmsObjectClass() {
-        this(RESERVED);
+        this(LOGICAL_DEVICE);
     }
 
     public CmsObjectClass(int value) {
-        super("ObjectClass", value, 2);
+        super("ObjectClass", value, 3);
     }
 
     private static final CmsObjectClass SHARED = new CmsObjectClass();
