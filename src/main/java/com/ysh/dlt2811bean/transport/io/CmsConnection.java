@@ -10,6 +10,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A single TCP connection for CMS protocol.
@@ -27,13 +31,20 @@ public class CmsConnection {
     private final DataOutputStream dos;
     private final CmsTransportListener listener;
 
+    /**
+     * Tracks in-flight segmented frames by ReqID.
+     * Key: ReqID (from first 2 bytes of ASDU)
+     * Value: accumulated segments (all with isNext=true except the last)
+     */
+    private final Map<Integer, List<CmsApdu>> pending = new HashMap<>();
+
     private volatile boolean running;
 
     /**
      * Creates a connection over an existing socket.
      *
-     * @param socket    the socket
-     * @param listener  event listener
+     * @param socket   the socket
+     * @param listener event listener
      * @throws IOException if streams cannot be obtained
      */
     public CmsConnection(Socket socket, CmsTransportListener listener) throws IOException {
@@ -47,36 +58,89 @@ public class CmsConnection {
     /**
      * Sends an APDU over the connection.
      *
-     * <p>The APDU is encoded and prefixed with a 4-byte length field (big-endian).
+     * <p>If the ASDU exceeds MAX_ASDU_SIZE, the APDU is automatically split
+     * into multiple frames (Next flag set on all but the last).
      *
      * @param apdu the APDU to send
      * @throws IOException if the send fails
      */
     public void send(CmsApdu apdu) throws IOException {
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-        byte[] bytes = pos.toByteArray();
+        List<CmsApdu> segments = apdu.split();
         synchronized (dos) {
-            dos.writeInt(bytes.length);
-            dos.write(bytes);
-            dos.flush();
+            for (CmsApdu seg : segments) {
+                sendOne(seg);
+            }
         }
     }
 
     /**
-     * Receives an APDU from the connection (blocking).
+     * Sends a single (already-segmented) APDU frame.
+     */
+    private void sendOne(CmsApdu apdu) throws IOException {
+        PerOutputStream pos = new PerOutputStream();
+        apdu.encode(pos);
+        byte[] bytes = pos.toByteArray();
+        dos.writeInt(bytes.length);
+        dos.write(bytes);
+        dos.flush();
+    }
+
+    /**
+     * Reads the next complete APDU from the connection (blocking).
      *
-     * @return the received APDU
+     * <p>Handles segmented frames by accumulating all segments with the same
+     * ReqID before returning. Multiple concurrent requests are supported
+     * (interleaved frames are reassembled independently by ReqID).
+     *
+     * <p>When a new frame arrives with a ReqID that already has pending segments,
+     * the pending group is cleared (protocol violation: ReqID reused before completion).
+     *
+     * @return the complete APDU (merged if segmented)
      * @throws Exception if receive fails or connection is closed
      */
     public CmsApdu receive() throws Exception {
+        CmsApdu seg = loadSegment();
+        int reqId = seg.getReqId();
+
+        // Protocol violation: ReqID reused before completion
+        if (pending.containsKey(reqId)) {
+            pending.remove(reqId);
+            throw new IllegalStateException("ReqID " + reqId + " reused before previous transfer completed");
+        }
+
+        List<CmsApdu> segments = new ArrayList<>();
+        segments.add(seg);
+
+        // Keep reading while More flag is set
+        while (seg.getApch().isNext()) {
+            seg = loadSegment();
+            if (seg.getReqId() != reqId) {
+                // Clear the pending group for this ReqID
+                pending.remove(reqId);
+                throw new IllegalStateException(
+                    "Segment ReqID mismatch: expected " + reqId + ", got " + seg.getReqId());
+            }
+            segments.add(seg);
+        }
+
+        // Merge if segmented, otherwise decode ASDU directly
+        if (segments.size() > 1) {
+            CmsApdu last = segments.removeLast();
+            last.merge(segments);
+        } else {
+            segments.getFirst().decodeAsdu();
+        }
+        return segments.getFirst();
+    }
+
+    private CmsApdu loadSegment() throws Exception {
         int length = dis.readInt();
         if (length < 0) {
             throw new EOFException("Connection closed by peer");
         }
         byte[] buf = new byte[length];
         dis.readFully(buf);
-        return new CmsApdu().decode(new PerInputStream(buf));
+        return new CmsApdu().load(new PerInputStream(buf));
     }
 
     /**

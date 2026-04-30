@@ -69,6 +69,20 @@ public class CmsServerTransport {
         return running;
     }
 
+    /**
+     * @return the port this server is listening on
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * @return true if the server socket is bound and listening
+     */
+    public boolean isBound() {
+        return serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed();
+    }
+
     private void acceptLoop() {
         while (running) {
             try {

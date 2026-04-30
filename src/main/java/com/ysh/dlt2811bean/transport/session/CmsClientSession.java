@@ -1,7 +1,10 @@
 package com.ysh.dlt2811bean.transport.session;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,9 +99,17 @@ public class CmsClientSession extends CmsSession {
      * @param apdu the received APDU
      */
     public void dispatchResponse(CmsApdu apdu) {
-        int reqId = apdu.getAsdu().reqId().get();
+        int reqId = apdu.getReqId();
         PendingRequest pending = pendingRequests.remove(reqId);
         if (pending != null) {
+            // Extract associationId from Associate response
+            CmsAsdu<?> asdu = apdu.getAsdu();
+            if (asdu != null && asdu.getServiceName() == ServiceName.ASSOCIATE) {
+                CmsAssociate assocResp = (CmsAssociate) asdu;
+                if (assocResp.associationId() != null && assocResp.associationId().get() != null) {
+                    setAssociationId(assocResp.associationId().get());
+                }
+            }
             pending.setResult(apdu);
         }
     }

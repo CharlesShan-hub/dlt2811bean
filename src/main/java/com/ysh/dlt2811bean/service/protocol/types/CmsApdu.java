@@ -33,11 +33,13 @@ public class CmsApdu implements CmsType<CmsApdu> {
     private byte[] asduBytes;
     private boolean segmented;
     private int actualAsduSize;
+    private int reqId;
 
     // for encode
     public CmsApdu(CmsAsdu<?> asdu) {
         this.asdu = asdu;
         this.messageType = asdu.messageType();
+        this.reqId = asdu.reqId().get();
         if (this.messageType == MessageType.UNKNOWN) {
             throw new IllegalArgumentException("Miss MessageType");
         }
@@ -58,6 +60,10 @@ public class CmsApdu implements CmsType<CmsApdu> {
 
     public MessageType getMessageType() {
         return messageType;
+    }
+
+    public int getReqId() {
+        return reqId;
     }
 
     private void computeFrameLength() {
@@ -93,6 +99,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
         asdu = AsduFactory.create(apch.getServiceCode(), apch.isResp(), apch.isErr());
         asdu.decode(new PerInputStream(asduBytes));
         messageType = asdu.messageType();
+        reqId = asdu.reqId().get();
         return this;
     }
 
@@ -101,10 +108,30 @@ public class CmsApdu implements CmsType<CmsApdu> {
         return merge(previous);
     }
 
+    /**
+     * Decodes only the ASDU from already-loaded bytes (no APCH).
+     * Used after {@link #load(PerInputStream)} when APCH has already been consumed.
+     *
+     * <p>Requires {@link #asduBytes} to be populated (done by {@link #load}).
+     */
+    public CmsApdu decodeAsdu() throws Exception {
+        if (asduBytes == null) {
+            throw new IllegalStateException("asduBytes not loaded");
+        }
+        asdu = AsduFactory.create(apch.getServiceCode(), apch.isResp(), apch.isErr());
+        asdu.decode(new PerInputStream(asduBytes));
+        messageType = asdu.messageType();
+        reqId = asdu.reqId().get();
+        return this;
+    }
+
     public CmsApdu load(PerInputStream pis) throws Exception {
         apch.decode(pis);
         int len = apch.getFrameLength();
         asduBytes = pis.readBytes(len);
+        if (asduBytes.length >= 2) {
+            reqId = ((asduBytes[0] & 0xFF) << 8) | (asduBytes[1] & 0xFF);
+        }
         return this;
     }
 
@@ -133,6 +160,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
         this.segmented = false;
         this.asdu = AsduFactory.create(apch.getServiceCode(), apch.isResp(), apch.isErr());
         this.asdu.decode(new PerInputStream(merged));
+        reqId = asdu.reqId().get();
         return this;
     }
 
@@ -161,6 +189,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
             segment.asduBytes = chunk;
             segment.segmented = true;
             segment.actualAsduSize = chunkSize;
+            segment.reqId = this.reqId;
             segment.apch.fromMessageType(this.messageType);
             segment.apch.serviceCode(asdu.getServiceName());
             segment.apch.next(!isLast);
@@ -180,6 +209,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
         copy.messageType = this.messageType;
         copy.asduBytes = this.asduBytes != null ? this.asduBytes.clone() : null;
         copy.actualAsduSize = this.actualAsduSize;
+        copy.reqId = this.reqId;
         return copy;
     }
 
@@ -196,6 +226,7 @@ public class CmsApdu implements CmsType<CmsApdu> {
             .append(") {\n");
 
         sb.append(indent).append("messageType: ").append(messageType).append(",\n");
+        sb.append(indent).append("reqId: ").append(reqId).append(",\n");
 
         sb.append(indent).append("apch: ");
         sb.append(apch instanceof AbstractCmsCompound
