@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -67,7 +68,7 @@ import lombok.experimental.Accessors;
  *                          ldName    [0] IMPLICIT ObjectName,
  *                          lnReference [1] IMPLICIT ObjectReference
  *                       },
- *   acsiss             [1] IMClaPLICIT ACSICLass,
+ *   acsiClass          [1] IMPLICIT ACSIClass,
  *   referenceAfter     [2] IMPLICIT ObjectReference OPTIONAL
  * }
  *
@@ -90,9 +91,8 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     // ==================== Fields based on Table 25 ====================
 
     // --- Request parameters ---
-    // ldName/lnReference ObjectName/ObjectReference
-    public CmsObjectName ldName = new CmsObjectName();
-    public CmsObjectReference lnReference = new CmsObjectReference();
+    // reference CHOICE { ldName ObjectName, lnReference ObjectReference }
+    public CmsReference referenceRequest = new CmsReference();
 
     // acsiClass ACSIClass
     public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
@@ -102,7 +102,7 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
 
     // --- Response+ parameters ---
     // reference [0..n] SEQUENCE OF SubReference
-    public CmsArray<CmsSubReference> reference = new CmsArray<>(CmsSubReference::new).capacity(100);
+    public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new).capacity(100);
 
     // moreFollows [0..1] BOOLEAN (optional)
     public CmsBoolean moreFollows = new CmsBoolean();
@@ -111,15 +111,16 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     // serviceError ServiceError
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
+    // ========================= Constructor ============================
+    
     public CmsGetLogicalNodeDirectory(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
-            registerField("ldName");
-            registerField("lnReference");
+            registerField("referenceRequest");
             registerField("acsiClass");
-            registerField("referenceAfter");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
+            registerField("referenceResponse");
             registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
             registerField("serviceError");
@@ -136,12 +137,12 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     // ==================== Convenience Setters ====================
 
     public CmsGetLogicalNodeDirectory ldName(String name) {
-        this.ldName = new CmsObjectName(name);
+        this.referenceRequest.ldName(name);
         return this;
     }
 
     public CmsGetLogicalNodeDirectory lnReference(String ref) {
-        this.lnReference = new CmsObjectReference(ref);
+        this.referenceRequest.lnReference(ref);
         return this;
     }
 
@@ -168,11 +169,10 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     public CmsGetLogicalNodeDirectory copy() {
         CmsGetLogicalNodeDirectory copy = new CmsGetLogicalNodeDirectory(messageType());
         copy.reqId.set(reqId.get());
-        copy.ldName = ldName.copy();
-        copy.lnReference = lnReference.copy();
+        copy.referenceRequest = referenceRequest.copy();
         copy.acsiClass = acsiClass.copy();
         copy.referenceAfter = referenceAfter.copy();
-        copy.reference = reference.copy();
+        copy.referenceResponse = referenceResponse.copy();
         copy.moreFollows = moreFollows.copy();
         copy.serviceError = serviceError.copy();
         return copy;

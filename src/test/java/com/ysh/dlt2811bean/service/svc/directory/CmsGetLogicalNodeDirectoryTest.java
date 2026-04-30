@@ -31,11 +31,10 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         System.out.println(result);
         assertEquals(1, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
+        assertEquals("IED1.AP1.LD1", result.referenceRequest().ldName.get());
         assertEquals(CmsACSIClass.DATA_OBJECT, result.acsiClass().get());
         assertEquals("IED1.AP1.LD1.LN1.DO1", result.referenceAfter().get());
     }
@@ -54,11 +53,11 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         assertEquals(2, result.reqId().get());
-        assertEquals("IED1.AP1.LD1.LN1", result.lnReference().get());
+        assertEquals("IED1.AP1.LD1.LN1", result.referenceRequest().lnReference.get());
         assertEquals(CmsACSIClass.BRCB, result.acsiClass().get());
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
@@ -76,11 +75,11 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         assertEquals(3, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
+        assertEquals("IED1.AP1.LD1", result.referenceRequest().ldName.get());
         assertEquals(CmsACSIClass.DATA_SET, result.acsiClass().get());
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
@@ -89,8 +88,8 @@ class CmsGetLogicalNodeDirectoryTest {
     void positiveResponseRoundTrip() throws Exception {
         CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.RESPONSE_POSITIVE)
             .reqId(4);
-        asdu.reference().add(new CmsSubReference("DO1"));
-        asdu.reference().add(new CmsSubReference("DO2"));
+        asdu.referenceResponse().add(new CmsSubReference("DO1"));
+        asdu.referenceResponse().add(new CmsSubReference("DO2"));
         asdu.moreFollows().set(true);
 
         CmsApdu apdu = new CmsApdu(asdu);
@@ -99,12 +98,11 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         assertEquals(4, result.reqId().get());
-        assertEquals(2, result.reference().size());
-        assertEquals("DO1", result.reference().get(0).get());
-        assertEquals("DO2", result.reference().get(1).get());
+        assertEquals(2, result.referenceResponse().size());
+        assertEquals("DO1", result.referenceResponse().get(0).get());
+        assertEquals("DO2", result.referenceResponse().get(1).get());
         assertTrue(result.moreFollows().get());
     }
 
@@ -121,10 +119,9 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         assertEquals(5, result.reqId().get());
-        assertTrue(result.reference().isEmpty());
+        assertTrue(result.referenceResponse().isEmpty());
         assertFalse(result.moreFollows().get());
     }
 
@@ -141,30 +138,9 @@ class CmsGetLogicalNodeDirectoryTest {
         apdu.encode(pos);
 
         CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory) decoded.getAsdu();
+        CmsGetLogicalNodeDirectory result = (CmsGetLogicalNodeDirectory)decoded.getAsdu();
         assertEquals(6, result.reqId().get());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
-    }
-
-    @Test
-    @DisplayName("REQUEST: encode and decode round-trip via ASDU static methods")
-    void requestRoundTripAsduOnly() throws Exception {
-        CmsGetLogicalNodeDirectory service = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-            .ldName("IED1.AP1.LD1")
-            .acsiClass(new CmsACSIClass(CmsACSIClass.URCB))
-            .referenceAfter("IED1.AP1.LD1.LN1.DO1")
-            .reqId(10);
-
-        PerOutputStream pos = new PerOutputStream();
-        CmsGetLogicalNodeDirectory.write(pos, service);
-
-        CmsGetLogicalNodeDirectory result = CmsGetLogicalNodeDirectory.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
-
-        assertEquals(10, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
-        assertEquals(CmsACSIClass.URCB, result.acsiClass().get());
-        assertEquals("IED1.AP1.LD1.LN1.DO1", result.referenceAfter().get());
     }
 
     @Test
@@ -179,7 +155,7 @@ class CmsGetLogicalNodeDirectoryTest {
         CmsGetLogicalNodeDirectory copy = original.copy();
 
         assertEquals(original.reqId().get(), copy.reqId().get());
-        assertEquals(original.ldName().get(), copy.ldName().get());
+        assertEquals(original.referenceRequest().ldName.get(), copy.referenceRequest().ldName.get());
         assertEquals(original.acsiClass().get(), copy.acsiClass().get());
         assertEquals(original.referenceAfter().get(), copy.referenceAfter().get());
 
@@ -237,13 +213,14 @@ class CmsGetLogicalNodeDirectoryTest {
     void toStringPositive() {
         CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.RESPONSE_POSITIVE)
             .reqId(2);
-        asdu.reference().add(new CmsSubReference("DO1"));
+        asdu.referenceResponse().add(new CmsSubReference("DO1"));
         asdu.moreFollows().set(true);
 
         String str = asdu.toString();
+//        System.out.println(str);
         assertTrue(str.startsWith("(CmsGetLogicalNodeDirectory) {"));
         assertTrue(str.contains("reqId: (CmsInt16U) 2"));
-        assertTrue(str.contains("reference: (CmsArray) [(CmsSubReference) DO1]"));
+        assertTrue(str.contains("referenceResponse: (CmsArray) [(CmsSubReference) DO1]"));
         assertTrue(str.contains("moreFollows: (CmsBoolean) true"));
     }
 

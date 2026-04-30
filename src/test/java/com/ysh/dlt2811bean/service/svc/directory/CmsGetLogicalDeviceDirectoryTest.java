@@ -34,6 +34,8 @@ class CmsGetLogicalDeviceDirectoryTest {
         assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1.LD1", result.ldName().get());
         assertEquals("IED1.AP1.LD1.LN1", result.referenceAfter().get());
+        assertTrue(result.isFieldPresent("ldName"));
+        assertTrue(result.isFieldPresent("referenceAfter"));
 
         System.out.println(result);
     }
@@ -53,6 +55,8 @@ class CmsGetLogicalDeviceDirectoryTest {
 
         CmsGetLogicalDeviceDirectory result = (CmsGetLogicalDeviceDirectory) decoded.getAsdu();
         assertEquals(2, result.reqId().get());
+        assertFalse(result.isFieldPresent("ldName"));
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.ldName().get().isEmpty());
         assertTrue(result.referenceAfter().get().isEmpty());
     }
@@ -74,6 +78,8 @@ class CmsGetLogicalDeviceDirectoryTest {
         CmsGetLogicalDeviceDirectory result = (CmsGetLogicalDeviceDirectory) decoded.getAsdu();
         assertEquals(3, result.reqId().get());
         assertEquals("IED1.AP1.LD2", result.ldName().get());
+        assertTrue(result.isFieldPresent("ldName"));
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 

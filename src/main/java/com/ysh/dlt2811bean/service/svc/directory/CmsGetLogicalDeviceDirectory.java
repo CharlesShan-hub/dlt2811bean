@@ -67,7 +67,7 @@ import lombok.experimental.Accessors;
  *
  * GetLogicalDeviceDirectory-ResponsePDU::= SEQUENCE {
  *   lnReference       [0] IMPLICIT SEQUENCE OF SubReference,
- *   moreFollows       [1] IMPLICIT BOOLEAN OPTIONAL
+ *   moreFollows        [1] IMPLICIT BOOLEAN DEFAULT TRUE
  * }
  *
  * GetLogicalDeviceDirectory-ErrorPDU::= ServiceError
@@ -91,18 +91,20 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     // lnReference [0..n] SEQUENCE OF SubReference
     public CmsArray<CmsSubReference> lnReference = new CmsArray<>(CmsSubReference::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN (optional)
-    public CmsBoolean moreFollows = new CmsBoolean();
+    // moreFollows [0..1] BOOLEAN DEFAULT TRUE
+    public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
     // serviceError ServiceError
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
+    // ========================= Constructor ============================
+    
     public CmsGetLogicalDeviceDirectory(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
-            registerField("ldName");
-            registerField("referenceAfter");
+            registerOptionalField("ldName");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
             registerField("lnReference");
             registerField("moreFollows");

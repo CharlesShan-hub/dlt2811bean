@@ -161,6 +161,8 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     // serviceError ServiceError
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
+    // ========================= Constructor ============================
+    
     public CmsGetAllDataValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {

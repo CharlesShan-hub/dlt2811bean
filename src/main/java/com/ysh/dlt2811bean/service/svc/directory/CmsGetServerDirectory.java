@@ -61,7 +61,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *   objectClass        [0] IMPLICIT INTEGER {
  *     reserved         (0),
  *     logical-device   (1),
- *     file-system      (2)
+ *     file-system      (2)  <- not supported
  *   } (0..2),
  *   referenceAfter     [1] IMPLICIT ObjectReference OPTIONAL
  * }
@@ -92,13 +92,15 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     // reference [0..n] SEQUENCE OF ObjectReference
     public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN (optional)
-    public CmsBoolean moreFollows = new CmsBoolean();
+    // moreFollows [0..1] BOOLEAN DEFAULT TRUE
+    public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
     // serviceError ServiceError
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
+    // ========================= Constructor ============================
+    
     public CmsGetServerDirectory(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
@@ -106,7 +108,7 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
             registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
             registerField("reference");
-            registerOptionalField("moreFollows");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
             registerField("serviceError");
         } else {
@@ -121,12 +123,17 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     // ==================== Convenience Setters ====================
 
     public CmsGetServerDirectory referenceAfter(String ref) {
-        this.referenceAfter = new CmsObjectReference(ref);
+        this.referenceAfter.set(ref);
         return this;
     }
 
     public CmsGetServerDirectory serviceError(int errorCode) {
-        this.serviceError = new CmsServiceError(errorCode);
+        this.serviceError.set(errorCode);
+        return this;
+    }
+
+    public CmsGetServerDirectory moreFollows(boolean moreFollows) {
+        this.moreFollows.set(moreFollows);
         return this;
     }
 

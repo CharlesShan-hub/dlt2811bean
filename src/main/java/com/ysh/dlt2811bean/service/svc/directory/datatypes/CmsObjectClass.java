@@ -19,8 +19,8 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * │ Code │ Meaning                              │
  * ├──────┼──────────────────────────────────────┤
  * │   0  │ reserved                             │
- * │   1  │ logical-device                       │
- * │   2  │ file-system                          │
+ * │   1  │ logical-device [only can use this]   │
+ * │   2  │ file-system  (only for markup)       │
  * └──────┴──────────────────────────────────────┘
  * </pre>
  */
@@ -35,7 +35,16 @@ public class CmsObjectClass extends AbstractCmsEnumerated<CmsObjectClass> {
     }
 
     public CmsObjectClass(int value) {
-        super("ObjectClass", value, 3);
+        super("ObjectClass", value, 2); // file-system is not supportted any more
+        if (value != LOGICAL_DEVICE) {
+            if (value == FILE_SYSTEM) {
+                throw new IllegalArgumentException(
+                    "ObjectClass value 2 (file-system) is not supported by GetServerDirectory, use GetFileDirectory service instead");
+            }else if(value == RESERVED){
+                throw new IllegalArgumentException(
+                "ObjectClass value " + value + " is reserved, only logical-device(1) is allowed");
+            }
+        }
     }
 
     private static final CmsObjectClass SHARED = new CmsObjectClass();

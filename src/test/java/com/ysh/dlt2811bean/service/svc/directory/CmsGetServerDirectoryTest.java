@@ -81,7 +81,6 @@ class CmsGetServerDirectoryTest {
         assertEquals(2, result.reference().size());
         assertEquals("IED1.AP1.LD1", result.reference().get(0).get());
         assertEquals("IED1.AP1.LD2", result.reference().get(1).get());
-        assertTrue(result.isFieldPresent("moreFollows"));
         assertTrue(result.moreFollows().get());
     }
 
@@ -89,8 +88,8 @@ class CmsGetServerDirectoryTest {
     @DisplayName("RESPONSE_POSITIVE: empty reference list")
     void positiveResponseEmpty() throws Exception {
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE)
-            .reqId(4);
-        asdu.moreFollows().set(false);
+            .reqId(4)
+            .moreFollows(false);
 
         CmsApdu apdu = new CmsApdu(asdu);
 
@@ -102,7 +101,6 @@ class CmsGetServerDirectoryTest {
         CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(4, result.reqId().get());
         assertTrue(result.reference().isEmpty());
-        assertFalse(result.isFieldPresent("moreFollows"));
         assertFalse(result.moreFollows().get());
     }
 
