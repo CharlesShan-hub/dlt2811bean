@@ -68,7 +68,7 @@ public class CmsBRCB extends AbstractCmsCompound<CmsBRCB> {
     public CmsBoolean gi = new CmsBoolean();
     public CmsBoolean purgeBuf = new CmsBoolean();
     public CmsEntryID entryID = new CmsEntryID();
-    public CmsEntryTime timeOfEntry = new CmsEntryTime();
+    public CmsBinaryTime timeOfEntry = new CmsBinaryTime();
     public CmsInt16 resvTms = new CmsInt16();
     public CmsOctetString owner = new CmsOctetString().size(64);
 

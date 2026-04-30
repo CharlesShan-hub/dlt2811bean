@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.datatypes.type.AbstractCmsChoice;
 
 public class CmsCBValue extends AbstractCmsChoice<CmsCBValue> {
 
-    // TODO: replace with actual LCB, GoCB, MSVCB types
     public CmsBRCB brcb = new CmsBRCB();
     public CmsURCB urcb = new CmsURCB();
     public CmsLCB lcb = new CmsLCB();

@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.datatypes.compound;
 
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
@@ -36,7 +37,7 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
     public CmsInt8U actSG = new CmsInt8U();
     public CmsInt8U editSG = new CmsInt8U();
     public CmsBoolean cnfEdit = new CmsBoolean();
-    public CmsTimeStamp lActTm = new CmsTimeStamp();
+    public CmsUtcTime lActTm = new CmsUtcTime();
     public CmsInt16U resvTms = new CmsInt16U();
 
     public CmsSGCB() {
