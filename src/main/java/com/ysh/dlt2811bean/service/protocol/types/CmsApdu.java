@@ -129,9 +129,12 @@ public class CmsApdu implements CmsType<CmsApdu> {
         apch.decode(pis);
         int len = apch.getFrameLength();
         asduBytes = pis.readBytes(len);
+        // ReqID is the first 2 bytes of ASDU (after APCH).
+        // For FL=0 (Test service, no ASDU), reqId stays 0 (not applicable).
         if (asduBytes.length >= 2) {
             reqId = ((asduBytes[0] & 0xFF) << 8) | (asduBytes[1] & 0xFF);
         }
+        // else: FL=0 (e.g. Test), reqId = 0 — caller must not rely on it.
         return this;
     }
 

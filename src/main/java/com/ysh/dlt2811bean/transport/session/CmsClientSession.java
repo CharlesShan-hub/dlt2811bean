@@ -96,9 +96,19 @@ public class CmsClientSession extends CmsSession {
      * <p>If the APDU matches a pending request, the result is set and the waiting thread
      * is woken up. If no pending request matches, the APDU is silently ignored.
      *
+     * <p>Test service (SC=0x99, FL=0) has no ReqID and no ASDU — it is not matched
+     * against pending requests. It is simply ignored here; the caller (CmsClient.send)
+     * detects the Test service and handles it directly.
+     *
      * @param apdu the received APDU
      */
     public void dispatchResponse(CmsApdu apdu) {
+        // Test service (SC=0x99) has no ReqID and no ASDU — skip matching.
+        if (apdu.getApch().getServiceCode() == ServiceName.TEST) {
+            log.debug("Received Test response, ignoring (no ReqID to match)");
+            return;
+        }
+
         int reqId = apdu.getReqId();
         PendingRequest pending = pendingRequests.remove(reqId);
         if (pending != null) {

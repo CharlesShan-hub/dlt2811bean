@@ -117,6 +117,13 @@ public class CmsServerSession extends CmsSession {
 
     // ==================== Lifecycle ====================
 
+    /**
+     * Closes the connection to the client.
+     */
+    public void close() {
+        getConnection().close();
+    }
+
     @Override
     public void onDisconnected() {
         super.onDisconnected();

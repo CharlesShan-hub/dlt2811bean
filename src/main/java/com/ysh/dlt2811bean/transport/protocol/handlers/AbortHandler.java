@@ -27,7 +27,8 @@ public class AbortHandler implements CmsServiceHandler {
         session.clearAssociationId();
 
         System.out.println("[Server] Association aborted, reason=" + asdu.reason().get());
-        // No response - Abort is one-way
+        // No response — Abort is one-way, close the connection
+        session.close();
         return null;
     }
 }

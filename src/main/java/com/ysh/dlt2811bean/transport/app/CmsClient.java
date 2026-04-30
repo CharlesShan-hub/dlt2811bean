@@ -1,8 +1,11 @@
 package com.ysh.dlt2811bean.transport.app;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.svc.test.CmsTest;
+import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
@@ -97,19 +100,94 @@ public class CmsClient {
         return response;
     }
 
+    // ==================== One-way services (no response expected) ====================
+
+    /**
+     * Sends an Abort request without waiting for a response.
+     * Abort is one-way: the server does not reply.
+     *
+     * @param asdu the Abort ASDU (messageType must be REQUEST)
+     */
+    public void abort(CmsAbort asdu) throws Exception {
+        if (session == null || !session.isConnected()) {
+            throw new IllegalStateException("Not connected");
+        }
+        asdu.messageType(MessageType.REQUEST);
+        int reqId = session.nextReqId();
+        asdu.reqId(reqId);
+        CmsApdu request = new CmsApdu(asdu);
+        session.send(request);
+        log.debug("[ReqID={}] Sent ABORT (one-way, no response)", reqId);
+        // Close immediately — client initiates abort, server mirrors
+        close();
+    }
+
+    // ==================== Test service (echo) ====================
+
+    /**
+     * Sends a Test request and waits for the server echo response.
+     *
+     * <p>Test has no ReqID and no ASDU — the server echoes an identical frame.
+     * Since there is no ReqID to match, the response is collected via
+     * {@link ClientListener#onApduReceived} after the request is sent.
+     *
+     * @param request the Test request
+     * @return the echoed response APDU, or null if no response within timeout
+     */
+    public CmsApdu test(CmsTest request) throws Exception {
+        if (session == null || !session.isConnected()) {
+            throw new IllegalStateException("Not connected");
+        }
+
+        // Register pending request for Test echo
+        PendingRequest pending = session.addPendingRequest(0);  // ReqID=0 for Test
+        request.messageType(MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(request);
+        session.send(apdu);
+        log.debug("Sent TEST, waiting for echo...");
+
+        // Wait for echo — will be completed by ClientListener.onApduReceived
+        CmsApdu response = (CmsApdu) pending.await(session.getDefaultTimeoutMs());
+        if (response == null) {
+            session.removePendingRequest(0);
+        }
+        return response;
+    }
+
+    // ==================== Request/Response services ====================
+
     /**
      * Sends a service request and waits for the response.
      *
      * <p>The ReqID is automatically assigned from the session.
      * The response is matched by ReqID.
      *
+     * <p>Special services:
+     * <ul>
+     *   <li>Abort — server does not reply, client closes connection</li>
+     *   <li>Test  — server echoes the frame, wait for echo via {@link #test(CmsTest)}</li>
+     * </ul>
+     *
      * @param asdu the request ASDU (messageType must be REQUEST)
-     * @return the response APDU, or null if timed out
-     * @throws Exception if not connected
+     * @return the response APDU, or null for Test
+     * @throws Exception if not connected or timeout
      */
     public CmsApdu send(CmsAsdu<?> asdu) throws Exception {
         if (session == null || !session.isConnected()) {
             throw new IllegalStateException("Not connected");
+        }
+
+        ServiceName svc = asdu.getServiceName();
+
+        // One-way: Abort has no response, send without pending request
+        if (svc == ServiceName.ABORT) {
+            abort((CmsAbort) asdu);
+            return null;
+        }
+
+        // Test: server echoes the frame — delegate to test()
+        if (svc == ServiceName.TEST) {
+            return test((CmsTest) asdu);
         }
 
         int reqId = session.nextReqId();
@@ -163,9 +241,21 @@ public class CmsClient {
 
         @Override
         public void onApduReceived(CmsConnection conn, CmsApdu apdu) {
-            if (session != null) {
-                session.dispatchResponse(apdu);
+            if (session == null) {
+                return;
             }
+
+            // Test echo: complete the pending request registered with ReqID=0
+            if (apdu.getReqId() == 0 && apdu.getApch().getServiceCode() == ServiceName.TEST) {
+                PendingRequest pending = session.removePendingRequest(0);
+                if (pending != null) {
+                    pending.setResult(apdu);
+                    log.debug("Received Test echo, response delivered");
+                    return;
+                }
+            }
+
+            session.dispatchResponse(apdu);
         }
 
         @Override
