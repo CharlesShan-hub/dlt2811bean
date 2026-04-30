@@ -1,15 +1,12 @@
 package com.ysh.dlt2811bean.service.svc.directory;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
-import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectName;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
-import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsReference;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
@@ -56,7 +53,7 @@ import lombok.experimental.Accessors;
  * │   reference                SubReference                     │
  * │   value                   Data                              │
  * │ }                                                           │
- * │ moreFollows                BOOLEAN (OPTIONAL)               │
+ * │ moreFollows                BOOLEAN DEFAULT TRUE             │
  * └─────────────────────────────────────────────────────────────┘
  *
  * Response- ASDU:
@@ -93,56 +90,11 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
 
-    // ==================== Inner type: DataEntry ====================
-
-    /**
-     * Represents a single entry in the data SEQUENCE.
-     *
-     * <p>ASN.1: SEQUENCE { reference [0] IMPLICIT SubReference, value [1] IMPLICIT Data }
-     *
-     * <p>In PER, IMPLICIT tags are not encoded; the inner types are encoded directly
-     * in sequence order: first SubReference, then Data.
-     */
-    @Getter
-    @Setter
-    @Accessors(fluent = true)
-    @SuppressWarnings("rawtypes")
-    public static class CmsDataEntry extends AbstractCmsCompound<CmsDataEntry> {
-
-        public CmsSubReference reference = new CmsSubReference();
-        public CmsData value = new CmsData<>();
-
-        public CmsDataEntry() {
-            super("DataEntry");
-            registerField("reference");
-            registerField("value");
-        }
-
-        public CmsDataEntry reference(String ref) {
-            this.reference = new CmsSubReference(ref);
-            return this;
-        }
-
-        public CmsDataEntry value(CmsType<?> val) {
-            this.value.set(val);
-            return this;
-        }
-
-        @Override
-        public CmsDataEntry copy() {
-            CmsDataEntry copy = new CmsDataEntry();
-            copy.reference = reference.copy();
-            copy.value = value.copy();
-            return copy;
-        }
-    }
-
     // ==================== Fields based on Table 27 ====================
 
     // --- Request parameters ---
     // reference CHOICE { ldName [0] IMPLICIT ObjectName, lnReference [1] IMPLICIT ObjectReference }
-    public CmsObjectName ldName = new CmsObjectName();
-    public CmsObjectReference lnReference = new CmsObjectReference();
+    public CmsReference reference = new CmsReference();
 
     // fc [0..1] FunctionalConstraint (optional)
     public CmsFC fc = new CmsFC();
@@ -155,7 +107,7 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     public CmsArray<CmsDataEntry> data = new CmsArray<>(CmsDataEntry::new).capacity(100);
 
     // moreFollows [0..1] BOOLEAN DEFAULT TRUE
-    public CmsBoolean moreFollows = new CmsBoolean();
+    public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
     // serviceError ServiceError
@@ -166,10 +118,9 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     public CmsGetAllDataValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
-            registerField("ldName");
-            registerField("lnReference");
-            registerField("fc");
-            registerField("referenceAfter");
+            registerField("reference");
+            registerOptionalField("fc");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
             registerField("data");
             registerField("moreFollows");
@@ -188,12 +139,12 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     // ==================== Convenience Setters ====================
 
     public CmsGetAllDataValues ldName(String name) {
-        this.ldName = new CmsObjectName(name);
+        this.reference.ldName(name);
         return this;
     }
 
     public CmsGetAllDataValues lnReference(String ref) {
-        this.lnReference = new CmsObjectReference(ref);
+        this.reference.lnReference(ref);
         return this;
     }
 
@@ -225,8 +176,7 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     public CmsGetAllDataValues copy() {
         CmsGetAllDataValues copy = new CmsGetAllDataValues(messageType());
         copy.reqId.set(reqId.get());
-        copy.ldName = ldName.copy();
-        copy.lnReference = lnReference.copy();
+        copy.reference = reference.copy();
         copy.fc = fc.copy();
         copy.referenceAfter = referenceAfter.copy();
         copy.data = data.copy();

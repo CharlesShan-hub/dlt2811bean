@@ -1,13 +1,20 @@
 package com.ysh.dlt2811bean.service.svc.directory;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsReference;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
 /**
  * CMS Service Code 0x55 — GetAllCBValues (read all control block values).
@@ -98,15 +105,33 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 30 ====================
+
+    // --- Request parameters ---
+    public CmsReference reference = new CmsReference();
+    public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
+    public CmsObjectReference referenceAfter = new CmsObjectReference();
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsCBValueEntry> cbValue = new CmsArray<>(CmsCBValueEntry::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetAllCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
+            registerField("acsiClass");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("cbValue");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetAllCBValues does not support " + messageType);
         }
@@ -117,6 +142,26 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetAllCBValues ldName(String name) {
+        this.reference.ldName(name);
+        return this;
+    }
+
+    public CmsGetAllCBValues lnReference(String ref) {
+        this.reference.lnReference(ref);
+        return this;
+    }
+
+    public CmsGetAllCBValues referenceAfter(String ref) {
+        this.referenceAfter = new CmsObjectReference(ref);
+        return this;
+    }
+
+    public CmsGetAllCBValues serviceError(int errorCode) {
+        this.serviceError = new CmsServiceError(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -130,7 +175,13 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     @Override
     public CmsGetAllCBValues copy() {
         CmsGetAllCBValues copy = new CmsGetAllCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = reference.copy();
+        copy.acsiClass = acsiClass.copy();
+        copy.referenceAfter = referenceAfter.copy();
+        copy.cbValue = cbValue.copy();
+        copy.moreFollows = moreFollows.copy();
+        copy.serviceError = serviceError.copy();
         return copy;
     }
 

@@ -8,7 +8,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues.CmsDataEntry;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,8 +35,10 @@ class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValues result = (CmsGetAllDataValues) decoded.getAsdu();
         assertEquals(1, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
+        assertEquals("IED1.AP1.LD1", result.reference().ldName.get());
+        assertTrue(result.isFieldPresent("fc"));
         assertEquals("ST", result.fc().get());
+        assertTrue(result.isFieldPresent("referenceAfter"));
         assertEquals("IED1.AP1.LD1.LN1.DO1", result.referenceAfter().get());
     }
 
@@ -57,8 +59,10 @@ class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValues result = (CmsGetAllDataValues) decoded.getAsdu();
         assertEquals(2, result.reqId().get());
-        assertEquals("IED1.AP1.LD1.LN1", result.lnReference().get());
+        assertEquals("IED1.AP1.LD1.LN1", result.reference().lnReference.get());
+        assertTrue(result.isFieldPresent("fc"));
         assertEquals("MX", result.fc().get());
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
@@ -78,7 +82,9 @@ class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValues result = (CmsGetAllDataValues) decoded.getAsdu();
         assertEquals(3, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
+        assertEquals("IED1.AP1.LD1", result.reference().ldName.get());
+        assertFalse(result.isFieldPresent("fc"));
+        assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
@@ -167,8 +173,10 @@ class CmsGetAllDataValuesTest {
         CmsGetAllDataValues result = CmsGetAllDataValues.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
 
         assertEquals(10, result.reqId().get());
-        assertEquals("IED1.AP1.LD1", result.ldName().get());
+        assertEquals("IED1.AP1.LD1", result.reference().ldName.get());
+        assertTrue(result.isFieldPresent("fc"));
         assertEquals("ST", result.fc().get());
+        assertTrue(result.isFieldPresent("referenceAfter"));
         assertEquals("IED1.AP1.LD1.LN1.DO1", result.referenceAfter().get());
     }
 
@@ -184,7 +192,7 @@ class CmsGetAllDataValuesTest {
         CmsGetAllDataValues copy = original.copy();
 
         assertEquals(original.reqId().get(), copy.reqId().get());
-        assertEquals(original.ldName().get(), copy.ldName().get());
+        assertEquals(original.reference().ldName.get(), copy.reference().ldName.get());
         assertEquals(original.fc().get(), copy.fc().get());
         assertEquals(original.referenceAfter().get(), copy.referenceAfter().get());
 
@@ -232,7 +240,7 @@ class CmsGetAllDataValuesTest {
         String str = asdu.toString();
         assertTrue(str.startsWith("(CmsGetAllDataValues) {"));
         assertTrue(str.contains("reqId: (CmsInt16U) 1"));
-        assertTrue(str.contains("ldName: (CmsObjectName) IED1.AP1.LD1"));
+        assertTrue(str.contains("reference: (CmsReference) ldName: (CmsObjectName) IED1.AP1.LD1"));
         assertTrue(str.contains("fc: (CmsFC) ST"));
         assertTrue(str.contains("referenceAfter: (CmsObjectReference) IED1.AP1.LD1.LN1.DO1"));
     }

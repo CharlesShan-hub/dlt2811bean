@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsFCTest {
 
     @Test
-    @DisplayName("default constructor defaults to ST")
+    @DisplayName("default constructor defaults to empty")
     void defaultConstructor() {
         CmsFC fc = new CmsFC();
-        assertEquals("ST", fc.get());
+        assertEquals("", fc.get());
     }
 
     @Test
@@ -25,9 +25,10 @@ class CmsFCTest {
     }
 
     @Test
-    @DisplayName("constructor with null value throws")
+    @DisplayName("constructor with null value defaults to empty")
     void constructorWithNullValue() {
-        assertThrows(IllegalArgumentException.class, () -> new CmsFC(null));
+        CmsFC fc = new CmsFC(null);
+        assertEquals("", fc.get());
     }
 
     @Test
@@ -98,15 +99,13 @@ class CmsFCTest {
     }
 
     @Test
-    @DisplayName("encode/decode default value")
+    @DisplayName("encode/decode default (empty)")
     void encodeDecodeDefault() throws Exception {
         CmsFC fc = new CmsFC();
+        assertTrue(fc.isDefault());
 
-        PerOutputStream pos = new PerOutputStream();
-        fc.encode(pos);
-
-        CmsFC decoded = new CmsFC().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals("ST", decoded.get());
+        // encoding empty FC directly is invalid for fixed-size 2
+        // should only be used as optional field in a compound
     }
 
     @Test

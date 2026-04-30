@@ -41,7 +41,6 @@ public class CmsFC extends CmsVisibleString {
     public CmsFC() {
         super("FC", "");
         size(SIZE);
-        set("ST");
     }
 
     public CmsFC(String value) {
@@ -52,6 +51,10 @@ public class CmsFC extends CmsVisibleString {
 
     @Override
     public CmsFC set(String value) {
+        if (value == null || value.isEmpty()) {
+            super.set(value == null ? "" : value);
+            return this;
+        }
         super.set(value);
         if (!isValid(value)) {
             throw new IllegalArgumentException("Invalid FunctionalConstraint: '" + value
