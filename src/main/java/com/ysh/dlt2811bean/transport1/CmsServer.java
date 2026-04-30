@@ -83,7 +83,7 @@ public class CmsServer {
                 .serviceError(CmsServiceError.NO_ERROR);
 
         try {
-            conn.send(new CmsApdu(response, MessageType.RESPONSE_POSITIVE));
+            conn.send(new CmsApdu(response));
             System.out.println("[Server] Association accepted, associationId=" + hex(assocId));
         } catch (Exception e) {
             System.err.println("[Server] Failed to send Associate response: " + e.getMessage());
@@ -103,7 +103,7 @@ public class CmsServer {
                 .serviceError(CmsServiceError.NO_ERROR);
 
         try {
-            conn.send(new CmsApdu(response, MessageType.RESPONSE_POSITIVE));
+            conn.send(new CmsApdu(response));
             associationMap.remove(conn);
             System.out.println("[Server] Association released");
         } catch (Exception e) {
@@ -125,7 +125,7 @@ public class CmsServer {
     protected void onTestReceived(CmsConnection conn, CmsApdu apdu) {
         try {
             CmsTest resp = new CmsTest();
-            CmsApdu response = new CmsApdu(resp, MessageType.RESPONSE_POSITIVE);
+            CmsApdu response = new CmsApdu(resp);
             conn.send(response);
             System.out.println("[Server] Test replied");
         } catch (Exception e) {

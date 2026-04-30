@@ -9,6 +9,9 @@ import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParam
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsAssociate")
@@ -25,7 +28,7 @@ class CmsAssociateTest {
                 .signedValue(new byte[]{0x0A, 0x0B}))
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -60,7 +63,7 @@ class CmsAssociateTest {
                 .signedValue(new byte[]{0x30, 0x40}))
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -81,7 +84,7 @@ class CmsAssociateTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -144,5 +147,54 @@ class CmsAssociateTest {
     void fromFlagsNegative() {
         CmsAssociate asdu = new CmsAssociate(true, true);
         assertEquals(MessageType.RESPONSE_NEGATIVE, asdu.messageType());
+    }
+
+    @Test
+    @DisplayName("split and merge large Associate REQUEST")
+    void splitAndMergeLargeAssociate() throws Exception {
+        byte[] largeCert = new byte[40000];
+        byte[] largeSign = new byte[30000];
+        for (int i = 0; i < largeCert.length; i++) largeCert[i] = (byte) (i & 0xFF);
+        for (int i = 0; i < largeSign.length; i++) largeSign[i] = (byte) ((i * 7) & 0xFF);
+
+        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
+            .serverAccessPointReference("IED1", "AP1")
+            .authenticationParameter(new AuthenticationParameter()
+                .signatureCertificate(largeCert)
+                .signedTime(1715000000L, 1234567, 4)
+                .signedValue(largeSign))
+            .reqId(1);
+
+        CmsApdu apdu = new CmsApdu(asdu);
+
+        List<CmsApdu> segments = apdu.split();
+
+        System.out.println("Segments: " + segments.size());
+        System.out.println(segments.get(0));
+
+        assertTrue(segments.size() >= 2, "Should produce at least 2 segments");
+
+        PerOutputStream pos = new PerOutputStream();
+        for (CmsApdu seg : segments) {
+            seg.encode(pos);
+        }
+        byte[] encoded = pos.toByteArray();
+
+        PerInputStream pis = new PerInputStream(encoded);
+        List<CmsApdu> loaded = new ArrayList<>();
+        CmsApdu seg;
+        do {
+            seg = new CmsApdu().load(pis);
+            loaded.add(seg);
+        } while (seg.getApch().isNext());
+
+        CmsApdu last = loaded.removeLast();
+        last.merge(loaded);
+
+        CmsAssociate result = (CmsAssociate) last.getAsdu();
+        assertEquals(1, result.reqId().get());
+        assertEquals("IED1.AP1", result.serverAccessPointReference().get());
+        assertArrayEquals(largeCert, result.authenticationParameter().signatureCertificate.get());
+        assertArrayEquals(largeSign, result.authenticationParameter().signedValue.get());
     }
 }

@@ -21,7 +21,7 @@ class CmsAbortTest {
             .reason(AbortReason.UNRECOGNIZED_SERVICE)
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -42,7 +42,7 @@ class CmsAbortTest {
             .reason(AbortReason.INVALID_ARGUMENT)
             .reqId(2);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

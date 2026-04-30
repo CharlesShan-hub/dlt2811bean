@@ -76,7 +76,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         return toString(0);
     }
 
-    private String toString(int depth) {
+    public String toString(int depth) {
         String indent = "    ".repeat(depth + 1);
         String bracketIndent = "    ".repeat(depth);
         StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") {\n");

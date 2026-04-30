@@ -24,7 +24,9 @@ public enum MessageType {
     /** Positive Response-ASDU (Resp=1, Err=0) */
     RESPONSE_POSITIVE(true, false),
     /** Negative Response-ASDU (Resp=1, Err=1) */
-    RESPONSE_NEGATIVE(true, true);
+    RESPONSE_NEGATIVE(true, true),
+    /** Unknown message type */
+    UNKNOWN(false, false); // Just to be a placeholder
 
     private final boolean response;
     private final boolean error;

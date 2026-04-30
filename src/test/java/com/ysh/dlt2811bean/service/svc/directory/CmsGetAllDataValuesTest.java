@@ -26,7 +26,7 @@ class CmsGetAllDataValuesTest {
             .referenceAfter("IED1.AP1.LD1.LN1.DO1")
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -48,7 +48,7 @@ class CmsGetAllDataValuesTest {
             .fc("MX")
             .reqId(2);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -69,7 +69,7 @@ class CmsGetAllDataValuesTest {
             .ldName("IED1.AP1.LD1")
             .reqId(3);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -98,7 +98,7 @@ class CmsGetAllDataValuesTest {
         asdu.data().add(entry2);
         asdu.moreFollows().set(true);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -120,7 +120,7 @@ class CmsGetAllDataValuesTest {
             .reqId(5);
         asdu.moreFollows().set(false);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -140,7 +140,7 @@ class CmsGetAllDataValuesTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(6);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

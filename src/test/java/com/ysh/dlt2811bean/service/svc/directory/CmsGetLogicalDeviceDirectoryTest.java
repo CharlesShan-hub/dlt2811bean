@@ -23,7 +23,7 @@ class CmsGetLogicalDeviceDirectoryTest {
             .referenceAfter("IED1.AP1.LD1.LN1")
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -44,7 +44,7 @@ class CmsGetLogicalDeviceDirectoryTest {
         CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST)
             .reqId(2);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -64,7 +64,7 @@ class CmsGetLogicalDeviceDirectoryTest {
             .ldName("IED1.AP1.LD2")
             .reqId(3);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -86,7 +86,7 @@ class CmsGetLogicalDeviceDirectoryTest {
         asdu.lnReference().add(new CmsSubReference("LN2"));
         asdu.moreFollows().set(true);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -108,7 +108,7 @@ class CmsGetLogicalDeviceDirectoryTest {
             .reqId(5);
         asdu.moreFollows().set(false);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -128,7 +128,7 @@ class CmsGetLogicalDeviceDirectoryTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(6);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

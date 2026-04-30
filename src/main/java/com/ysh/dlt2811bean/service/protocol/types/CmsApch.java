@@ -37,14 +37,14 @@ import lombok.Getter;
  *     .next(false)
  *     .resp(false)
  *     .err(false)
- *     .serviceCode(ServiceCode.ASSOCIATE)
+ *     .serviceCode(ServiceName.ASSOCIATE)
  *     .frameLength(100);
  * PerOutputStream pos = new PerOutputStream();
  * apch.encode(pos);
  *
  * // Decode
  * CmsApch decoded = CmsApch.read(new PerInputStream(encoded));
- * ServiceCode sc = decoded.getServiceCode();
+ * ServiceName sn = decoded.getServiceCode();
  * int fl = decoded.getFrameLength();
  * }</pre>
  */

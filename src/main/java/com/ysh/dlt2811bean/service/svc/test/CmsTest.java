@@ -65,6 +65,11 @@ public class CmsTest extends CmsAsdu<CmsTest> {
         removeField("reqId"); // test api there is no "reqId"
     }
 
+    public CmsTest(MessageType messageType){
+        super(messageType); // MessageType is not used
+        removeField("reqId"); // test api there is no "reqId"
+    }
+
     @Override
     public ServiceName getServiceName() {
         return ServiceName.TEST;

@@ -1,24 +1,24 @@
 package com.ysh.dlt2811bean.service.protocol.enums;
 
 /**
- * Service Code enumeration for DL/T 2811 (GB/T 45906.3-2025) communication protocol.
+ * Service Name enumeration for DL/T 2811 (GB/T 45906.3-2025) communication protocol.
  *
- * <p>This enumeration defines all service codes used in DL/T 2811 communication protocol
- * for substation secondary systems. Each service code corresponds to a specific
+ * <p>This enumeration defines all service names used in DL/T 2811 communication protocol
+ * for substation secondary systems. Each service name corresponds to a specific
  * communication function between clients and servers.</p>
  *
  * <pre>
  * {@code
  * // Get service code as integer
- * ServiceCode sc = ServiceCode.GET_SERVER_DIRECTORY;
- * int codeValue = sc.getCode();  // Returns 0x50
+ * ServiceName sn = ServiceName.GET_SERVER_DIRECTORY;
+ * int codeValue = sn.getCode();  // Returns 0x50
  * String hexString = String.format("0x%02X", codeValue);  // "0x50"
  *
  * // Get service interface name
- * String interfaceName = sc.getInterfaceName();  // "GetServerDirectory"
+ * String interfaceName = sn.getInterfaceName();  // "GetServerDirectory"
  *
  * // Convert to byte for network transmission
- * byte networkByte = sc.getByteCode();  // (byte)0x50
+ * byte networkByte = sn.getByteCode();  // (byte)0x50
  * }
  * </pre>
  * @since 1.0

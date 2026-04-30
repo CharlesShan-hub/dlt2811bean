@@ -32,9 +32,12 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class AuthenticationParameter extends AbstractCmsCompound<AuthenticationParameter> {
 
-    public CmsOctetString signatureCertificate = new CmsOctetString().max(65535);
+    public static final int MAX_CERTIFICATE_SIZE = 65535;
+    public static final int MAX_SIGNATURE_SIZE = 65535;
+
+    public CmsOctetString signatureCertificate = new CmsOctetString().max(MAX_CERTIFICATE_SIZE);
     public CmsUtcTime signedTime = new CmsUtcTime();
-    public CmsOctetString signedValue = new CmsOctetString().max(65535);
+    public CmsOctetString signedValue = new CmsOctetString().max(MAX_SIGNATURE_SIZE);
 
     public AuthenticationParameter() {
         super("AuthenticationParameter");
@@ -53,11 +56,11 @@ public class AuthenticationParameter extends AbstractCmsCompound<AuthenticationP
      * @throws IllegalArgumentException if bytes length exceeds 65535
      */
     public AuthenticationParameter signatureCertificate(byte[] bytes) {
-        if (bytes.length > 65535) {
+        if (bytes.length > MAX_CERTIFICATE_SIZE) {
             throw new IllegalArgumentException(
-                "signatureCertificate length " + bytes.length + " exceeds maximum 65535");
+                "signatureCertificate length " + bytes.length + " exceeds maximum " + MAX_CERTIFICATE_SIZE);
         }
-        this.signatureCertificate = new CmsOctetString(bytes).max(65535);
+        this.signatureCertificate = new CmsOctetString(bytes).max(MAX_CERTIFICATE_SIZE);
         return this;
     }
 
@@ -94,11 +97,11 @@ public class AuthenticationParameter extends AbstractCmsCompound<AuthenticationP
      * @throws IllegalArgumentException if bytes length exceeds 65535
      */
     public AuthenticationParameter signedValue(byte[] bytes) {
-        if (bytes.length > 65535) {
+        if (bytes.length > MAX_SIGNATURE_SIZE) {
             throw new IllegalArgumentException(
-                "signedValue length " + bytes.length + " exceeds maximum 65535");
+                "signedValue length " + bytes.length + " exceeds maximum " + MAX_SIGNATURE_SIZE);
         }
-        this.signedValue = new CmsOctetString(bytes).max(65535);
+        this.signedValue = new CmsOctetString(bytes).max(MAX_SIGNATURE_SIZE);
         return this;
     }
 

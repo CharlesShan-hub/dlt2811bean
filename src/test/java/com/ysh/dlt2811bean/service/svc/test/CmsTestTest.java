@@ -18,7 +18,7 @@ class CmsTestTest {
     void requestRoundTrip() throws Exception {
         CmsTest asdu = new CmsTest();
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

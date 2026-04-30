@@ -24,7 +24,7 @@ class CmsGetServerDirectoryTest {
             .referenceAfter("IED1.AP1.LD1")
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -45,7 +45,7 @@ class CmsGetServerDirectoryTest {
             .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
             .reqId(2);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -67,7 +67,7 @@ class CmsGetServerDirectoryTest {
         asdu.reference().add(new CmsObjectReference("IED1.AP1.LD2"));
         asdu.moreFollows().set(true);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -89,7 +89,7 @@ class CmsGetServerDirectoryTest {
             .reqId(4);
         asdu.moreFollows().set(false);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -109,7 +109,7 @@ class CmsGetServerDirectoryTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(5);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

@@ -112,7 +112,7 @@ public class CmsClient {
         AssociateResult result = new AssociateResult();
         pendingRequests.put(reqId, new PendingRequest(latch, result));
 
-        CmsApdu request = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu request = new CmsApdu(asdu);
         connection.send(request);
         System.out.println("[Client] Associate request sent: " + serverAccessPoint);
 
@@ -149,7 +149,7 @@ public class CmsClient {
         ReleaseResult result = new ReleaseResult();
         pendingRequests.put(reqId, new PendingRequest(latch, result));
 
-        connection.send(new CmsApdu(asdu, MessageType.REQUEST));
+        connection.send(new CmsApdu(asdu));
         System.out.println("[Client] Release request sent");
 
         boolean ok = latch.await(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -182,7 +182,7 @@ public class CmsClient {
         CountDownLatch latch = new CountDownLatch(1);
         pendingRequests.put(reqId, new PendingRequest(latch, null));
 
-        connection.send(new CmsApdu(asdu, MessageType.REQUEST));
+        connection.send(new CmsApdu(asdu));
         System.out.println("[Client] Abort request sent: " + reasonCode);
 
         boolean ok = latch.await(DEFAULT_TIMEOUT_MS, TimeUnit.MILLISECONDS);

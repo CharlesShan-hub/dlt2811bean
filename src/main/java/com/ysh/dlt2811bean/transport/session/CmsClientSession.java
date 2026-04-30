@@ -1,0 +1,127 @@
+package com.ysh.dlt2811bean.transport.session;
+
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.transport.io.CmsConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+
+/**
+ * Client-side session.
+ *
+ * <p>Manages the pending request table and response dispatch.
+ * Responses are matched to requests by ReqID and wake up the waiting thread.
+ */
+public class CmsClientSession extends CmsSession {
+
+    private static final Logger log = LoggerFactory.getLogger(CmsClientSession.class);
+
+    /** Default request timeout in milliseconds. */
+    public static final long DEFAULT_TIMEOUT_MS = 5000;
+
+    private final AtomicInteger nextReqId = new AtomicInteger(1);
+    private final ConcurrentHashMap<Integer, PendingRequest> pendingRequests = new ConcurrentHashMap<>();
+
+    private long defaultTimeoutMs = DEFAULT_TIMEOUT_MS;
+
+    public CmsClientSession(CmsConnection connection) {
+        super("cli-" + connection.getSocket().getPort(), connection);
+    }
+
+    // ==================== ReqID ====================
+
+    /**
+     * Returns the next ReqID (wraps at 65535).
+     * A ReqID of 0 is reserved for non-request services (e.g., Report).
+     */
+    public int nextReqId() {
+        int id = nextReqId.getAndIncrement();
+        if (id > 65535) {
+            id = 1;
+            nextReqId.set(2);
+        }
+        return id;
+    }
+
+    // ==================== Pending Requests ====================
+
+    /**
+     * Registers a pending request.
+     *
+     * @param reqId   the request ID
+     * @param timeoutMs timeout in milliseconds
+     * @return the PendingRequest
+     */
+    public PendingRequest addPendingRequest(int reqId, long timeoutMs) {
+        PendingRequest pr = new PendingRequest(reqId, timeoutMs);
+        pendingRequests.put(reqId, pr);
+        return pr;
+    }
+
+    /**
+     * Registers a pending request with the default timeout.
+     */
+    public PendingRequest addPendingRequest(int reqId) {
+        return addPendingRequest(reqId, defaultTimeoutMs);
+    }
+
+    /**
+     * Finds and removes a pending request by ReqID.
+     *
+     * @param reqId the request ID
+     * @return the PendingRequest, or null if not found
+     */
+    public PendingRequest removePendingRequest(int reqId) {
+        return pendingRequests.remove(reqId);
+    }
+
+    /**
+     * Looks up a pending request without removing it.
+     */
+    public PendingRequest getPendingRequest(int reqId) {
+        return pendingRequests.get(reqId);
+    }
+
+    // ==================== Dispatch ====================
+
+    /**
+     * Dispatches a received APDU to its matching pending request (if any).
+     *
+     * <p>If the APDU matches a pending request, the result is set and the waiting thread
+     * is woken up. If no pending request matches, the APDU is silently ignored.
+     *
+     * @param apdu the received APDU
+     */
+    public void dispatchResponse(CmsApdu apdu) {
+        int reqId = apdu.getAsdu().reqId().get();
+        PendingRequest pending = pendingRequests.remove(reqId);
+        if (pending != null) {
+            pending.setResult(apdu);
+        }
+    }
+
+    // ==================== Timeout ====================
+
+    public long getDefaultTimeoutMs() {
+        return defaultTimeoutMs;
+    }
+
+    public void setDefaultTimeoutMs(long defaultTimeoutMs) {
+        this.defaultTimeoutMs = defaultTimeoutMs;
+    }
+
+    // ==================== Lifecycle ====================
+
+    @Override
+    public void onDisconnected() {
+        super.onDisconnected();
+        // Cancel all pending requests
+        for (PendingRequest pr : pendingRequests.values()) {
+            pr.setResult(null);  // null = disconnected
+        }
+        pendingRequests.clear();
+    }
+}

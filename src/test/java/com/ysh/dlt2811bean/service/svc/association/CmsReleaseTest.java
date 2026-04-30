@@ -29,7 +29,7 @@ class CmsReleaseTest {
             .associationId(assocId())
             .reqId(1);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.REQUEST);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -48,7 +48,7 @@ class CmsReleaseTest {
             .associationId(assocId())
             .reqId(2);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_POSITIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
@@ -68,7 +68,7 @@ class CmsReleaseTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(3);
 
-        CmsApdu apdu = new CmsApdu(asdu, MessageType.RESPONSE_NEGATIVE);
+        CmsApdu apdu = new CmsApdu(asdu);
 
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);

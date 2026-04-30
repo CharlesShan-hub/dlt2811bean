@@ -28,7 +28,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<T> {
 
-    public MessageType messageType;
+    public MessageType messageType = MessageType.UNKNOWN;
     public CmsInt16U reqId = new CmsInt16U(0);
 
     protected CmsAsdu(MessageType messageType) {
