@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetEditSGValueEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -77,15 +82,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 42 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetEditSGValueEntry> data = new CmsArray<>(CmsSetEditSGValueEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetEditSGValue(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("data");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetEditSGValue does not support " + messageType);
         }
@@ -96,6 +110,18 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetEditSGValue addData(String reference, CmsType<?> value) {
+        this.data.add(new CmsSetEditSGValueEntry()
+            .reference(reference)
+            .value(value));
+        return this;
+    }
+
+    public CmsSetEditSGValue addResult(int errorCode) {
+        this.result.add(new CmsServiceError(errorCode));
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -109,7 +135,9 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
     @Override
     public CmsSetEditSGValue copy() {
         CmsSetEditSGValue copy = new CmsSetEditSGValue(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.data = this.data.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

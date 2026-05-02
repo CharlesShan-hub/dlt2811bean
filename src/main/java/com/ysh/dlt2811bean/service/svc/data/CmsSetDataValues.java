@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.data;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -61,15 +64,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 32====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetDataValuesEntry> data = new CmsArray<>(CmsSetDataValuesEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetDataValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("data");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetDataValues does not support " + messageType);
         }
@@ -80,6 +92,15 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetDataValues addData(String reference, String fc, com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
+        CmsSetDataValuesEntry entry = new CmsSetDataValuesEntry()
+            .reference(reference)
+            .fc(fc)
+            .value(value);
+        this.data.add(entry);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -93,7 +114,9 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
     @Override
     public CmsSetDataValues copy() {
         CmsSetDataValues copy = new CmsSetDataValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.data = this.data.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

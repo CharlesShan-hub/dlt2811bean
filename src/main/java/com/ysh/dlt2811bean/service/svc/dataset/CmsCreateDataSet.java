@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.service.svc.dataset;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -79,15 +83,28 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 37 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference datasetReference = new CmsObjectReference();
+    public CmsObjectReference referenceAfter = new CmsObjectReference();
+    public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsCreateDataSet(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("datasetReference");
+            registerOptionalField("referenceAfter");
+            registerField("memberData");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("CreateDataSet does not support " + messageType);
         }
@@ -98,6 +115,28 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsCreateDataSet datasetReference(String ref) {
+        this.datasetReference.set(ref);
+        return this;
+    }
+
+    public CmsCreateDataSet referenceAfter(String ref) {
+        this.referenceAfter.set(ref);
+        return this;
+    }
+
+    public CmsCreateDataSet addMemberData(String reference, String fc) {
+        this.memberData.add(new CmsCreateDataSetEntry()
+            .reference(reference)
+            .fc(fc));
+        return this;
+    }
+
+    public CmsCreateDataSet serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -111,7 +150,11 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
     @Override
     public CmsCreateDataSet copy() {
         CmsCreateDataSet copy = new CmsCreateDataSet(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.datasetReference = this.datasetReference.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.memberData = this.memberData.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

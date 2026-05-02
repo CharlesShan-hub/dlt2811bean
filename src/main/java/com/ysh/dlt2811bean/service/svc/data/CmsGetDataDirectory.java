@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.data;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDirectoryEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -78,15 +83,31 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 33 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference dataReference = new CmsObjectReference();
+    public CmsObjectReference referenceAfter = new CmsObjectReference();
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsGetDataDirectoryEntry> dataAttribute = new CmsArray<>(CmsGetDataDirectoryEntry::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetDataDirectory(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("dataReference");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("dataAttribute");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetDataDirectory does not support " + messageType);
         }
@@ -97,6 +118,26 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetDataDirectory dataReference(String ref) {
+        this.dataReference.set(ref);
+        return this;
+    }
+
+    public CmsGetDataDirectory referenceAfter(String ref) {
+        this.referenceAfter.set(ref);
+        return this;
+    }
+
+    public CmsGetDataDirectory serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
+
+    public CmsGetDataDirectory moreFollows(boolean moreFollows) {
+        this.moreFollows.set(moreFollows);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -110,7 +151,12 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     @Override
     public CmsGetDataDirectory copy() {
         CmsGetDataDirectory copy = new CmsGetDataDirectory(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.dataReference = this.dataReference.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.dataAttribute = this.dataAttribute.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

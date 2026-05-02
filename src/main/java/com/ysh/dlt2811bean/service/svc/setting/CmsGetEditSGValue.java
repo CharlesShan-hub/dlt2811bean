@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -77,15 +82,29 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 44 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsCreateDataSetEntry> data = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsStructure value = new CmsStructure().capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetEditSGValue(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("data");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("value");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetEditSGValue does not support " + messageType);
         }
@@ -96,6 +115,18 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetEditSGValue addData(String reference, String fc) {
+        this.data.add(new CmsCreateDataSetEntry()
+            .reference(reference)
+            .fc(fc));
+        return this;
+    }
+
+    public CmsGetEditSGValue serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -109,7 +140,11 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     @Override
     public CmsGetEditSGValue copy() {
         CmsGetEditSGValue copy = new CmsGetEditSGValue(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.data = this.data.copy();
+        copy.value = this.value.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.service.svc.dataset;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -61,15 +65,28 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 36 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference datasetReference = new CmsObjectReference();
+    public CmsObjectReference referenceAfter = new CmsObjectReference();
+    public CmsStructure memberValue = new CmsStructure().capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetDataSetValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("datasetReference");
+            registerOptionalField("referenceAfter");
+            registerField("memberValue");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetDataSetValues does not support " + messageType);
         }
@@ -80,6 +97,26 @@ public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetDataSetValues datasetReference(String ref) {
+        this.datasetReference.set(ref);
+        return this;
+    }
+
+    public CmsSetDataSetValues referenceAfter(String ref) {
+        this.referenceAfter.set(ref);
+        return this;
+    }
+
+    public CmsSetDataSetValues addMemberValue(com.ysh.dlt2811bean.datatypes.type.CmsType<?> val) {
+        this.memberValue.add(val);
+        return this;
+    }
+
+    public CmsSetDataSetValues addResult(int errorCode) {
+        this.result.add(new CmsServiceError(errorCode));
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -93,7 +130,11 @@ public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
     @Override
     public CmsSetDataSetValues copy() {
         CmsSetDataSetValues copy = new CmsSetDataSetValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.datasetReference = this.datasetReference.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.memberValue = this.memberValue.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

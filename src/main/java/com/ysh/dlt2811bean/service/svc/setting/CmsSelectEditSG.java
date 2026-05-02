@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -67,15 +70,26 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 41 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference sgcbReference = new CmsObjectReference();
+    public CmsInt8U settingGroupNumber = new CmsInt8U(1);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsSelectEditSG(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("sgcbReference");
+            registerField("settingGroupNumber");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("SelectEditSG does not support " + messageType);
         }
@@ -86,6 +100,21 @@ public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSelectEditSG sgcbReference(String ref) {
+        this.sgcbReference.set(ref);
+        return this;
+    }
+
+    public CmsSelectEditSG settingGroupNumber(int num) {
+        this.settingGroupNumber.set(num);
+        return this;
+    }
+
+    public CmsSelectEditSG serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -99,7 +128,10 @@ public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
     @Override
     public CmsSelectEditSG copy() {
         CmsSelectEditSG copy = new CmsSelectEditSG(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.sgcbReference = this.sgcbReference.copy();
+        copy.settingGroupNumber = this.settingGroupNumber.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

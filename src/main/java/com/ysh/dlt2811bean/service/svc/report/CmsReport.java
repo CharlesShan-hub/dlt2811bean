@@ -1,5 +1,12 @@
 package com.ysh.dlt2811bean.service.svc.report;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsRcbOptFlds;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsReportEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -81,13 +88,33 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsReport extends CmsAsdu<CmsReport> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 46 ====================
+
+    // --- Response+ parameters ---
+    public CmsVisibleString rptID = new CmsVisibleString().size(129);
+    public CmsRcbOptFlds optFlds = new CmsRcbOptFlds();
+    public CmsInt16U sqNum = new CmsInt16U();
+    public CmsInt16U subSqNum = new CmsInt16U();
+    public CmsBoolean moreSegmentsFollow = new CmsBoolean();
+    public CmsObjectReference datSet = new CmsObjectReference();
+    public CmsBoolean bufOvfl = new CmsBoolean();
+    public CmsInt32U confRev = new CmsInt32U();
+    public CmsReportEntry entry = new CmsReportEntry();
 
     // ========================= Constructor ============================
 
     public CmsReport(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("rptID");
+            registerField("optFlds");
+            registerOptionalField("sqNum");
+            registerOptionalField("subSqNum");
+            registerOptionalField("moreSegmentsFollow");
+            registerOptionalField("datSet");
+            registerOptionalField("bufOvfl");
+            registerOptionalField("confRev");
+            registerField("entry");
         } else {
             throw new IllegalArgumentException("Report does not support " + messageType);
         }
@@ -98,6 +125,41 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsReport rptID(String rptID) {
+        this.rptID.set(rptID);
+        return this;
+    }
+
+    public CmsReport sqNum(int sqNum) {
+        this.sqNum.set(sqNum);
+        return this;
+    }
+
+    public CmsReport subSqNum(int subSqNum) {
+        this.subSqNum.set(subSqNum);
+        return this;
+    }
+
+    public CmsReport moreSegmentsFollow(boolean more) {
+        this.moreSegmentsFollow.set(more);
+        return this;
+    }
+
+    public CmsReport datSet(String datSet) {
+        this.datSet.set(datSet);
+        return this;
+    }
+
+    public CmsReport bufOvfl(boolean bufOvfl) {
+        this.bufOvfl.set(bufOvfl);
+        return this;
+    }
+
+    public CmsReport confRev(long confRev) {
+        this.confRev.set(confRev);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -111,7 +173,16 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     @Override
     public CmsReport copy() {
         CmsReport copy = new CmsReport(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.rptID = this.rptID.copy();
+        copy.optFlds = this.optFlds.copy();
+        copy.sqNum = this.sqNum.copy();
+        copy.subSqNum = this.subSqNum.copy();
+        copy.moreSegmentsFollow = this.moreSegmentsFollow.copy();
+        copy.datSet = this.datSet.copy();
+        copy.bufOvfl = this.bufOvfl.copy();
+        copy.confRev = this.confRev.copy();
+        copy.entry = this.entry.copy();
         return copy;
     }
 

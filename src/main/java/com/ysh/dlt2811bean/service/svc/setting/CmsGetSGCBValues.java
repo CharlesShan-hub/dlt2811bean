@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorSgcbChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -73,15 +77,27 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 45 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsObjectReference> sgcbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsErrorSgcbChoice> errorSgcb = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetSGCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("sgcbReference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("errorSgcb");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetSGCBValues does not support " + messageType);
         }
@@ -92,6 +108,21 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetSGCBValues addSgcbReference(String ref) {
+        this.sgcbReference.add(new CmsObjectReference(ref));
+        return this;
+    }
+
+    public CmsGetSGCBValues addErrorChoice(CmsErrorSgcbChoice choice) {
+        this.errorSgcb.add(choice);
+        return this;
+    }
+
+    public CmsGetSGCBValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -105,7 +136,10 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
     @Override
     public CmsGetSGCBValues copy() {
         CmsGetSGCBValues copy = new CmsGetSGCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.sgcbReference = this.sgcbReference.copy();
+        copy.errorSgcb = this.errorSgcb.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

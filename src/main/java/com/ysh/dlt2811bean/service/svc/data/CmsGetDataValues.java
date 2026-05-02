@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.data;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -76,15 +81,29 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetDataValues extends CmsAsdu<CmsGetDataValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 31 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsStructure value = new CmsStructure().capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetDataValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("data");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("value");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetDataValues does not support " + messageType);
         }
@@ -95,6 +114,16 @@ public class CmsGetDataValues extends CmsAsdu<CmsGetDataValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetDataValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
+
+    public CmsGetDataValues moreFollows(boolean moreFollows) {
+        this.moreFollows.set(moreFollows);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -108,7 +137,11 @@ public class CmsGetDataValues extends CmsAsdu<CmsGetDataValues> {
     @Override
     public CmsGetDataValues copy() {
         CmsGetDataValues copy = new CmsGetDataValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.data = this.data.copy();
+        copy.value = this.value.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

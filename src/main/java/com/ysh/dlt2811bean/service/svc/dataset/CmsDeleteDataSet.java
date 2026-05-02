@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.service.svc.dataset;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -66,15 +68,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 38 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference datasetReference = new CmsObjectReference();
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsDeleteDataSet(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("datasetReference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("DeleteDataSet does not support " + messageType);
         }
@@ -85,6 +96,16 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsDeleteDataSet datasetReference(String ref) {
+        this.datasetReference.set(ref);
+        return this;
+    }
+
+    public CmsDeleteDataSet serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -98,7 +119,9 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
     @Override
     public CmsDeleteDataSet copy() {
         CmsDeleteDataSet copy = new CmsDeleteDataSet(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.datasetReference = this.datasetReference.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 
