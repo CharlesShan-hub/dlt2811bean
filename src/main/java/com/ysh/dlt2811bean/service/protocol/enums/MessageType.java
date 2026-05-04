@@ -25,6 +25,8 @@ public enum MessageType {
     RESPONSE_POSITIVE(true, false),
     /** Negative Response-ASDU (Resp=1, Err=1) */
     RESPONSE_NEGATIVE(true, true),
+    /** Indication-ASDU (Resp=0, Err=0) — server-initiated indication */
+    INDICATION(false, false),
     /** Unknown message type */
     UNKNOWN(false, false); // Just to be a placeholder
 

@@ -1,5 +1,17 @@
 package com.ysh.dlt2811bean.service.svc.sv;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsMsvcbOptFlds;
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsSmpMod;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -67,24 +79,55 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 62 ====================
+
+    public CmsVisibleString msvID = new CmsVisibleString().max(129);
+    public CmsObjectReference datSet = new CmsObjectReference();
+    public CmsInt16U smpCnt = new CmsInt16U();
+    public CmsInt32U confRev = new CmsInt32U();
+    public CmsUtcTime refrTm = new CmsUtcTime();
+    public CmsInt8U smpSynch = new CmsInt8U();
+    public CmsInt16U smpRate = new CmsInt16U();
+    public CmsBoolean simulation = new CmsBoolean();
+    public CmsData sample = new CmsData<>();
+    public CmsSmpMod smpMod = new CmsSmpMod();
 
     // ========================= Constructor ============================
 
     public CmsSendMSVMessage(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        if (messageType == MessageType.INDICATION) {
+            registerField("msvID");
+            registerOptionalField("datSet");
+            registerField("smpCnt");
+            registerField("confRev");
+            registerOptionalField("refrTm");
+            registerField("smpSynch");
+            registerOptionalField("smpRate");
+            registerField("simulation");
+            registerField("sample");
+            registerOptionalField("smpMod");
         } else {
             throw new IllegalArgumentException("SendMSVMessage does not support " + messageType);
         }
     }
 
-    public CmsSendMSVMessage(boolean isResp, boolean isErr) {
-        this(MessageType.REQUEST);
+    public CmsSendMSVMessage() {
+        this(MessageType.INDICATION);
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSendMSVMessage msvID(String id) { this.msvID.set(id); return this; }
+    public CmsSendMSVMessage datSet(String ds) { this.datSet.set(ds); return this; }
+    public CmsSendMSVMessage smpCnt(int cnt) { this.smpCnt.set(cnt); return this; }
+    public CmsSendMSVMessage confRev(long rev) { this.confRev.set(rev); return this; }
+    public CmsSendMSVMessage smpSynch(int synch) { this.smpSynch.set(synch); return this; }
+    public CmsSendMSVMessage smpRate(int rate) { this.smpRate.set(rate); return this; }
+    public CmsSendMSVMessage simulation(boolean sim) { this.simulation.set(sim); return this; }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsSendMSVMessage sample(CmsType<?> val) { this.sample = new CmsData(val); return this; }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -98,7 +141,17 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     @Override
     public CmsSendMSVMessage copy() {
         CmsSendMSVMessage copy = new CmsSendMSVMessage(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.msvID = this.msvID.copy();
+        copy.datSet = this.datSet.copy();
+        copy.smpCnt = this.smpCnt.copy();
+        copy.confRev = this.confRev.copy();
+        copy.refrTm = this.refrTm.copy();
+        copy.smpSynch = this.smpSynch.copy();
+        copy.smpRate = this.smpRate.copy();
+        copy.simulation = this.simulation.copy();
+        copy.sample = this.sample.copy();
+        copy.smpMod = this.smpMod.copy();
         return copy;
     }
 

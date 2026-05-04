@@ -1,5 +1,12 @@
 package com.ysh.dlt2811bean.service.svc.goose;
 
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,15 +17,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
- * GOOSE Service — SendGOOSEMessage (send GOOSE message service).
+ * GOOSE Service — CmsSendGooseMessage (send GOOSE message service).
  *
- * Corresponds to Table 57 in GB/T 45906.3-2025: SendGOOSEMessage service parameters.
+ * Corresponds to Table 57 in GB/T 45906.3-2025: CmsSendGooseMessage service parameters.
  *
  * Service type: GOOSE (Generic Object Oriented Substation Event)
- * Service interface: SendGOOSEMessage
+ * Service interface: SendGooseMessage
  * Category: General station event service
  *
- * The SendGOOSEMessage service is used for transmitting real-time status data
+ * The SendGooseMessage service is used for transmitting real-time status data
  * and fast tripping commands. Unlike traditional client/server services, this
  * service operates on a publish/subscribe model using direct Ethernet mapping
  * (GSE) for transmission. The service does not use the standard CMS
@@ -66,26 +73,58 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsSendGOOSEMessage extends CmsAsdu<CmsSendGOOSEMessage> {
+public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 57 ====================
+
+    public CmsVisibleString goID = new CmsVisibleString().max(129);
+    public CmsObjectReference datSet = new CmsObjectReference();
+    public CmsObjectReference goRef = new CmsObjectReference();
+    public CmsUtcTime t = new CmsUtcTime();
+    public CmsInt32U stNum = new CmsInt32U();
+    public CmsInt32U sqNum = new CmsInt32U();
+    public CmsBoolean simulation = new CmsBoolean();
+    public CmsInt32U confRev = new CmsInt32U();
+    public CmsBoolean ndsCom = new CmsBoolean();
+    public CmsData data = new CmsData<>();
 
     // ========================= Constructor ============================
 
-    public CmsSendGOOSEMessage(MessageType messageType) {
+    public CmsSendGooseMessage(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+        if (messageType == MessageType.INDICATION) {
+            registerField("goID");
+            registerOptionalField("datSet");
+            registerOptionalField("goRef");
+            registerField("t");
+            registerField("stNum");
+            registerField("sqNum");
+            registerField("simulation");
+            registerField("confRev");
+            registerField("ndsCom");
+            registerField("data");
         } else {
-            throw new IllegalArgumentException("SendGOOSEMessage does not support " + messageType);
+            throw new IllegalArgumentException("SendGooseMessage does not support " + messageType);
         }
     }
 
-    public CmsSendGOOSEMessage(boolean isResp, boolean isErr) {
-        this(MessageType.REQUEST);
+    public CmsSendGooseMessage() {
+        this(MessageType.INDICATION);
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSendGooseMessage goID(String id) { this.goID.set(id); return this; }
+    public CmsSendGooseMessage datSet(String ds) { this.datSet.set(ds); return this; }
+    public CmsSendGooseMessage goRef(String ref) { this.goRef.set(ref); return this; }
+    public CmsSendGooseMessage stNum(long n) { this.stNum.set(n); return this; }
+    public CmsSendGooseMessage sqNum(long n) { this.sqNum.set(n); return this; }
+    public CmsSendGooseMessage simulation(boolean sim) { this.simulation.set(sim); return this; }
+    public CmsSendGooseMessage confRev(long rev) { this.confRev.set(rev); return this; }
+    public CmsSendGooseMessage ndsCom(boolean nds) { this.ndsCom.set(nds); return this; }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsSendGooseMessage data(CmsType<?> val) { this.data = new CmsData(val); return this; }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -97,21 +136,31 @@ public class CmsSendGOOSEMessage extends CmsAsdu<CmsSendGOOSEMessage> {
     // ==================== CmsType Implementation ====================
 
     @Override
-    public CmsSendGOOSEMessage copy() {
-        CmsSendGOOSEMessage copy = new CmsSendGOOSEMessage(messageType());
-        // todo
+    public CmsSendGooseMessage copy() {
+        CmsSendGooseMessage copy = new CmsSendGooseMessage(messageType());
+        copy.reqId.set(reqId.get());
+        copy.goID = this.goID.copy();
+        copy.datSet = this.datSet.copy();
+        copy.goRef = this.goRef.copy();
+        copy.t = this.t.copy();
+        copy.stNum = this.stNum.copy();
+        copy.sqNum = this.sqNum.copy();
+        copy.simulation = this.simulation.copy();
+        copy.confRev = this.confRev.copy();
+        copy.ndsCom = this.ndsCom.copy();
+        copy.data = this.data.copy();
         return copy;
     }
 
     // ==================== Static Convenience Methods ====================
 
     @SuppressWarnings("unchecked")
-    public static CmsSendGOOSEMessage read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSendGOOSEMessage) new CmsSendGOOSEMessage(messageType).decode(pis);
+    public static CmsSendGooseMessage read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsSendGooseMessage) new CmsSendGooseMessage(messageType).decode(pis);
     }
 
-    public static void write(PerOutputStream pos, CmsSendGOOSEMessage sendGOOSEMessage) {
-        sendGOOSEMessage.encode(pos);
+    public static void write(PerOutputStream pos, CmsSendGooseMessage sendGooseMessage) {
+        sendGooseMessage.encode(pos);
     }
 
 }

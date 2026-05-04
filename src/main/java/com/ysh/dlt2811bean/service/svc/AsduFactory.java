@@ -68,15 +68,15 @@ public class AsduFactory {
             case QUERY_LOG_AFTER: return new CmsQueryLogAfter(isResp, isErr);
             case GET_LOG_STATUS_VALUES: return new CmsGetLogStatusValues(isResp, isErr);
 
-            // 8.9 General Substation Event Services 
-            // case Send_GOOSE_Message
-            // case Get_Go_Reference
-            // case Get_GOOSE_ElementNumber
+            // 8.9 General Substation Event Services
+            case Send_GOOSE_Message: return new CmsSendGooseMessage(); // N/A (Part of GOOSE Management Services)
+            case Get_Go_Reference: return new CmsGetGoReference(isResp, isErr); // N/A (Part of GOOSE Management Services)
+            case Get_GOOSE_ElementNumber: return new CmsGetGooseElementNumber(isResp, isErr); // N/A (Part of GOOSE Management Services)
             case GET_GOCBVALUES: return new CmsGetGoCBValues(isResp, isErr);
             case SET_GOCBVALUES: return new CmsSetGoCBValues(isResp, isErr);
 
             // 8.10 SV Services
-            // case Send_MSVMessage
+            case Send_MSVMessage: return new CmsSendMSVMessage(); // N/A (Part of GOOSE Management Services)
             case GET_MSVCBVALUES: return new CmsGetMSVCBValues(isResp, isErr);
             case SET_MSVCBVALUES: return new CmsSetMSVCBValues(isResp, isErr);
 

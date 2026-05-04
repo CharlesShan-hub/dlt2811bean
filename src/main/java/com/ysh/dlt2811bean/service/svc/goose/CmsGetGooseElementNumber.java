@@ -1,5 +1,11 @@
 package com.ysh.dlt2811bean.service.svc.goose;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,7 +16,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
- * 8.9.3 (GetGOOSEElementNumber)
+ * 8.9.3 — CmsGetGOOSEElementNumber.
  *
  * Corresponds to Table 59 in GB/T 45906.3-2025: GetGOOSEElementNumber service parameters.
  *
@@ -79,27 +85,60 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class GetGOOSEElementNumber extends CmsAsdu<GetGOOSEElementNumber> {
+public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> {
 
-    // ==================== Fields based on Table XX ====================
+
+
+    // ==================== Fields based on Table 59 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference gocbReference = new CmsObjectReference();
+    public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsObjectReference gocbRefResp = new CmsObjectReference();
+    public CmsInt32U confRev = new CmsInt32U();
+    public CmsObjectReference datSet = new CmsObjectReference();
+    public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
-    public GetGOOSEElementNumber(MessageType messageType) {
+    public CmsGetGooseElementNumber(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("gocbReference");
+            registerField("memberData");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("gocbRefResp");
+            registerField("confRev");
+            registerField("datSet");
+            registerField("memberOffset");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
-            throw new IllegalArgumentException("GetGOOSEElementNumber does not support " + messageType);
+            throw new IllegalArgumentException("CmsGetGooseElementNumber does not support " + messageType);
         }
     }
 
-    public GetGOOSEElementNumber(boolean isResp, boolean isErr) {
+    public CmsGetGooseElementNumber(boolean isResp, boolean isErr) {
         this(getRRMessageType(isResp, isErr));
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetGooseElementNumber gocbReference(String ref) { this.gocbReference.set(ref); return this; }
+    public CmsGetGooseElementNumber addMemberData(String reference, String fc) {
+        this.memberData.add(new CmsCreateDataSetEntry().reference(reference).fc(fc));
+        return this;
+    }
+    public CmsGetGooseElementNumber gocbRefResp(String ref) { this.gocbRefResp.set(ref); return this; }
+    public CmsGetGooseElementNumber confRev(long rev) { this.confRev.set(rev); return this; }
+    public CmsGetGooseElementNumber datSet(String ds) { this.datSet.set(ds); return this; }
+    public CmsGetGooseElementNumber addMemberOffset(int offset) { this.memberOffset.add(new CmsInt16U(offset)); return this; }
+    public CmsGetGooseElementNumber serviceError(int errorCode) { this.serviceError.set(errorCode); return this; }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -111,21 +150,28 @@ public class GetGOOSEElementNumber extends CmsAsdu<GetGOOSEElementNumber> {
     // ==================== CmsType Implementation ====================
 
     @Override
-    public GetGOOSEElementNumber copy() {
-        GetGOOSEElementNumber copy = new GetGOOSEElementNumber(messageType());
-        // todo
+    public CmsGetGooseElementNumber copy() {
+        CmsGetGooseElementNumber copy = new CmsGetGooseElementNumber(messageType());
+        copy.reqId.set(reqId.get());
+        copy.gocbReference = this.gocbReference.copy();
+        copy.memberData = this.memberData.copy();
+        copy.gocbRefResp = this.gocbRefResp.copy();
+        copy.confRev = this.confRev.copy();
+        copy.datSet = this.datSet.copy();
+        copy.memberOffset = this.memberOffset.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 
     // ==================== Static Convenience Methods ====================
 
     @SuppressWarnings("unchecked")
-    public static GetGOOSEElementNumber read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (GetGOOSEElementNumber) new GetGOOSEElementNumber(messageType).decode(pis);
+    public static CmsGetGooseElementNumber read(PerInputStream pis, MessageType messageType) throws Exception {
+        return (CmsGetGooseElementNumber) new CmsGetGooseElementNumber(messageType).decode(pis);
     }
 
-    public static void write(PerOutputStream pos, GetGOOSEElementNumber getGOOSEElementNumber) {
-        getGOOSEElementNumber.encode(pos);
+    public static void write(PerOutputStream pos, CmsGetGooseElementNumber getGooseElementNumber) {
+        getGooseElementNumber.encode(pos);  
     }
 
 }
