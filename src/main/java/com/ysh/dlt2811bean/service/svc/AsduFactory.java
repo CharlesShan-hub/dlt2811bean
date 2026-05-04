@@ -11,8 +11,7 @@ import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.dataset.*;
 import com.ysh.dlt2811bean.service.svc.directory.*;
-import com.ysh.dlt2811bean.service.svc.report.CmsGetBRCBValues;
-import com.ysh.dlt2811bean.service.svc.report.CmsReport;
+import com.ysh.dlt2811bean.service.svc.report.*;
 import com.ysh.dlt2811bean.service.svc.setting.*;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 
@@ -57,16 +56,16 @@ public class AsduFactory {
             // 8.7 Report Services
             case REPORT: return new CmsReport(isResp, isErr);
             case GET_BRCBVALUES: return new CmsGetBRCBValues(isResp, isErr);
-            // case SET_BRCBVALUES
-            // case GET_URCBVALUES
-            // case SET_URCBVALUES
+            case SET_BRCBVALUES: return new CmsSetBRCBValues(isResp, isErr);
+            case GET_URCBVALUES: return new CmsGetURCBValues(isResp, isErr);
+            case SET_URCBVALUES: return new CmsSetURCBValues(isResp, isErr);
 
             // 8.8 Log Services
-            // case GET_LCBVALUES
-            // case SET_LCBVALUES
-            // case QUERY_LOG_BY_TIME
-            // case QUERY_LOG_AFTER
-            // case GET_LOG_STATUS_VALUES
+            case GET_LCBVALUES: return new CmsGetLCBValues(isResp, isErr);
+            case SET_LCBVALUES: return new CmsSetLCBValues(isResp, isErr);
+            case QUERY_LOG_BY_TIME: return new CmsQueryLogByTime(isResp,isErr);
+            case QUERY_LOG_AFTER: return new CmsQueryLogAfter(isResp, isErr);
+            case GET_LOG_STATUS_VALUES: return new CmsGetLogStatusValues(isResp, isErr);
 
             // 8.9 General Substation Event Services
             // case Send_GOOSE_Message

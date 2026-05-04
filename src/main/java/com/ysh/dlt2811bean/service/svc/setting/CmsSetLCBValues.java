@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -96,15 +99,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 53 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetLCBValuesEntry> lcb = new CmsArray<>(CmsSetLCBValuesEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsSetLCBValuesResultEntry> result = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetLCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("lcb");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetLCBValues does not support " + messageType);
         }
@@ -115,6 +127,16 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetLCBValues addLcb(CmsSetLCBValuesEntry entry) {
+        this.lcb.add(entry);
+        return this;
+    }
+
+    public CmsSetLCBValues addResult(CmsSetLCBValuesResultEntry entry) {
+        this.result.add(entry);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -128,7 +150,9 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     @Override
     public CmsSetLCBValues copy() {
         CmsSetLCBValues copy = new CmsSetLCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.lcb = this.lcb.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

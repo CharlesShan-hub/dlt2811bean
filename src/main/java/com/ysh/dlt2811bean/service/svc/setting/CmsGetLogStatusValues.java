@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLogStatusChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -87,15 +92,29 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 56 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsObjectReference> logReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsErrorLogStatusChoice> log = new CmsArray<>(CmsErrorLogStatusChoice::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetLogStatusValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("logReference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("log");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetLogStatusValues does not support " + messageType);
         }
@@ -106,6 +125,21 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetLogStatusValues addLogReference(String ref) {
+        this.logReference.add(new CmsObjectReference(ref));
+        return this;
+    }
+
+    public CmsGetLogStatusValues addLogChoice(CmsErrorLogStatusChoice choice) {
+        this.log.add(choice);
+        return this;
+    }
+
+    public CmsGetLogStatusValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -119,7 +153,11 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     @Override
     public CmsGetLogStatusValues copy() {
         CmsGetLogStatusValues copy = new CmsGetLogStatusValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.logReference = this.logReference.copy();
+        copy.log = this.log.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

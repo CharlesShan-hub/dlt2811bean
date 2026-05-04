@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.report;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -89,15 +92,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 48 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetBRCBValuesEntry> brcb = new CmsArray<>(CmsSetBRCBValuesEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetBRCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("brcb");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetBRCBValues does not support " + messageType);
         }
@@ -108,6 +120,16 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetBRCBValues addBrcb(CmsSetBRCBValuesEntry entry) {
+        this.brcb.add(entry);
+        return this;
+    }
+
+    public CmsSetBRCBValues addResult(int errorCode) {
+        this.result.add(new CmsServiceError(errorCode));
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -121,7 +143,9 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     @Override
     public CmsSetBRCBValues copy() {
         CmsSetBRCBValues copy = new CmsSetBRCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.brcb = this.brcb.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

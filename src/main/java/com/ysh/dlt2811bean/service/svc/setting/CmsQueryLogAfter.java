@@ -1,5 +1,12 @@
 package com.ysh.dlt2811bean.service.svc.setting;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.compound.CmsBinaryTime;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsEntryID;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -75,15 +82,33 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 55 ====================
+
+    // --- Request parameters ---
+    public CmsObjectReference logReference = new CmsObjectReference();
+    public CmsBinaryTime startTime = new CmsBinaryTime();
+    public CmsEntryID entry = new CmsEntryID();
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsLogEntry> logEntry = new CmsArray<>(CmsLogEntry::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsQueryLogAfter(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("logReference");
+            registerOptionalField("startTime");
+            registerField("entry");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("logEntry");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("QueryLogAfter does not support " + messageType);
         }
@@ -94,6 +119,26 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsQueryLogAfter logReference(String ref) {
+        this.logReference.set(ref);
+        return this;
+    }
+
+    public CmsQueryLogAfter startTime(long msOfDay, int daysSince1984) {
+        this.startTime.msOfDay(msOfDay).daysSince1984(daysSince1984);
+        return this;
+    }
+
+    public CmsQueryLogAfter entry(byte[] entryId) {
+        this.entry.set(entryId);
+        return this;
+    }
+
+    public CmsQueryLogAfter serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -107,7 +152,13 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     @Override
     public CmsQueryLogAfter copy() {
         CmsQueryLogAfter copy = new CmsQueryLogAfter(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.logReference = this.logReference.copy();
+        copy.startTime = this.startTime.copy();
+        copy.entry = this.entry.copy();
+        copy.logEntry = this.logEntry.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

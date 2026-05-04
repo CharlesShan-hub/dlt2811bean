@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.report;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -105,15 +108,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 50 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetURCBValuesEntry> urcb = new CmsArray<>(CmsSetURCBValuesEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsSetURCBValuesResultEntry> result = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetURCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("urcb");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetURCBValues does not support " + messageType);
         }
@@ -124,6 +136,16 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetURCBValues addUrcb(CmsSetURCBValuesEntry entry) {
+        this.urcb.add(entry);
+        return this;
+    }
+
+    public CmsSetURCBValues addResult(CmsSetURCBValuesResultEntry entry) {
+        this.result.add(entry);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -137,7 +159,9 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     @Override
     public CmsSetURCBValues copy() {
         CmsSetURCBValues copy = new CmsSetURCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.urcb = this.urcb.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 
