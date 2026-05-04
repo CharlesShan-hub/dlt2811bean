@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.rpc;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsErrorMethodChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -88,15 +93,29 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 80 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255)).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsErrorMethodChoice> errorMethod = new CmsArray<>(CmsErrorMethodChoice::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetRpcMethodDefinition(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("errorMethod");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetRpcMethodDefinition does not support " + messageType);
         }
@@ -107,6 +126,21 @@ public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetRpcMethodDefinition addReference(String ref) {
+        this.reference.add(new CmsVisibleString(ref).max(255));
+        return this;
+    }
+
+    public CmsGetRpcMethodDefinition addErrorMethodChoice(CmsErrorMethodChoice choice) {
+        this.errorMethod.add(choice);
+        return this;
+    }
+
+    public CmsGetRpcMethodDefinition serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -120,7 +154,11 @@ public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition
     @Override
     public CmsGetRpcMethodDefinition copy() {
         CmsGetRpcMethodDefinition copy = new CmsGetRpcMethodDefinition(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.errorMethod = this.errorMethod.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

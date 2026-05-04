@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.sv;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsErrorMsvcbChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -75,15 +80,29 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 63 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsErrorMsvcbChoice> errorMsvcb = new CmsArray<>(CmsErrorMsvcbChoice::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetMSVCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("errorMsvcb");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetMSVCBValues does not support " + messageType);
         }
@@ -94,6 +113,21 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetMSVCBValues addReference(String ref) {
+        this.reference.add(new CmsObjectReference(ref));
+        return this;
+    }
+
+    public CmsGetMSVCBValues addErrorMsvcbChoice(CmsErrorMsvcbChoice choice) {
+        this.errorMsvcb.add(choice);
+        return this;
+    }
+
+    public CmsGetMSVCBValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -107,7 +141,11 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
     @Override
     public CmsGetMSVCBValues copy() {
         CmsGetMSVCBValues copy = new CmsGetMSVCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.errorMsvcb = this.errorMsvcb.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

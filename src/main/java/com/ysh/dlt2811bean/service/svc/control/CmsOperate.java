@@ -1,5 +1,14 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsCheck;
+import com.ysh.dlt2811bean.datatypes.compound.CmsOriginator;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsAddCause;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -109,15 +118,49 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsOperate extends CmsAsdu<CmsOperate> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 67 ====================
+
+    // --- Common fields (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE) ---
+    public CmsObjectReference reference = new CmsObjectReference();
+    public CmsData ctlVal = new CmsData<>();
+    public CmsOriginator origin = new CmsOriginator();
+    public CmsInt8U ctlNum = new CmsInt8U();
+    public CmsUtcTime t = new CmsUtcTime();
+    public CmsBoolean test = new CmsBoolean();
+    public CmsCheck check = new CmsCheck();
+
+    // --- RESPONSE_NEGATIVE only ---
+    public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
     public CmsOperate(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
+            registerField("addCause");
         } else {
             throw new IllegalArgumentException("Operate does not support " + messageType);
         }
@@ -128,6 +171,32 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsOperate reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsOperate ctlVal(CmsType<?> val) {
+        this.ctlVal = new CmsData(val);
+        return this;
+    }
+
+    public CmsOperate ctlNum(int num) {
+        this.ctlNum.set(num);
+        return this;
+    }
+
+    public CmsOperate test(boolean test) {
+        this.test.set(test);
+        return this;
+    }
+
+    public CmsOperate addCause(int cause) {
+        this.addCause.set(cause);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -141,7 +210,15 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
     @Override
     public CmsOperate copy() {
         CmsOperate copy = new CmsOperate(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.ctlVal = this.ctlVal.copy();
+        copy.origin = this.origin.copy();
+        copy.ctlNum = this.ctlNum.copy();
+        copy.t = this.t.copy();
+        copy.test = this.test.copy();
+        copy.check = this.check.copy();
+        copy.addCause = this.addCause.copy();
         return copy;
     }
 

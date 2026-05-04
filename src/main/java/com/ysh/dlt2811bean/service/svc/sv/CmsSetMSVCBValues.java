@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.sv;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -94,15 +97,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 64 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsSetMSVCBValuesEntry> msvcb = new CmsArray<>(CmsSetMSVCBValuesEntry::new).capacity(100);
+
+    // --- Response- parameters ---
+    public CmsArray<CmsSetMSVCBValuesResultEntry> result = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
     public CmsSetMSVCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("msvcb");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("result");
         } else {
             throw new IllegalArgumentException("SetMSVCBValues does not support " + messageType);
         }
@@ -113,6 +125,16 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetMSVCBValues addMsvcb(CmsSetMSVCBValuesEntry entry) {
+        this.msvcb.add(entry);
+        return this;
+    }
+
+    public CmsSetMSVCBValues addResult(CmsSetMSVCBValuesResultEntry entry) {
+        this.result.add(entry);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -126,7 +148,9 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
     @Override
     public CmsSetMSVCBValues copy() {
         CmsSetMSVCBValues copy = new CmsSetMSVCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.msvcb = this.msvcb.copy();
+        copy.result = this.result.copy();
         return copy;
     }
 

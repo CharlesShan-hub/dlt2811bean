@@ -1,5 +1,8 @@
 package com.ysh.dlt2811bean.service.svc.file;
 
+import com.ysh.dlt2811bean.datatypes.compound.CmsFileEntry;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -64,15 +67,27 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 75 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString fileName = new CmsVisibleString().max(255);
+
+    // --- Response+ parameters ---
+    public CmsFileEntry fileEntry = new CmsFileEntry();
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetFileAttributeValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("fileName");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("fileEntry");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetFileAttributeValues does not support " + messageType);
         }
@@ -83,6 +98,16 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetFileAttributeValues fileName(String name) {
+        this.fileName.set(name);
+        return this;
+    }
+
+    public CmsGetFileAttributeValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -96,7 +121,10 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
     @Override
     public CmsGetFileAttributeValues copy() {
         CmsGetFileAttributeValues copy = new CmsGetFileAttributeValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.fileName = this.fileName.copy();
+        copy.fileEntry = this.fileEntry.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

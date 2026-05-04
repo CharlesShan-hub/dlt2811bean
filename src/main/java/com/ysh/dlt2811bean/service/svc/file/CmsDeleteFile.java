@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.service.svc.file;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -65,15 +67,24 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 74 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString fileName = new CmsVisibleString().max(255);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsDeleteFile(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("fileName");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("DeleteFile does not support " + messageType);
         }
@@ -84,6 +95,16 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsDeleteFile fileName(String name) {
+        this.fileName.set(name);
+        return this;
+    }
+
+    public CmsDeleteFile serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -97,7 +118,9 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     @Override
     public CmsDeleteFile copy() {
         CmsDeleteFile copy = new CmsDeleteFile(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.fileName = this.fileName.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

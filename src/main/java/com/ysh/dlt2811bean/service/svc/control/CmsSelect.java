@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -71,15 +72,21 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSelect extends CmsAsdu<CmsSelect> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 65 ====================
+
+    // --- All message types ---
+    public CmsObjectReference reference = new CmsObjectReference();
 
     // ========================= Constructor ============================
 
     public CmsSelect(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("reference");
         } else {
             throw new IllegalArgumentException("Select does not support " + messageType);
         }
@@ -90,6 +97,11 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSelect reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -103,7 +115,8 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
     @Override
     public CmsSelect copy() {
         CmsSelect copy = new CmsSelect(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
         return copy;
     }
 

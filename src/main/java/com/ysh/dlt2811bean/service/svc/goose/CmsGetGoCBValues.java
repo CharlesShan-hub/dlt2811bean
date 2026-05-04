@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.goose;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsErrorGocbChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -17,73 +22,35 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  * Service code: 0x66 (102)
  * Service interface: GetGoCBValues
  * Category: GOOSE control block service
- *
- * The GetGoCBValues service is used to retrieve the configuration values of
- * one or more GOOSE Control Blocks (GoCB).
- *
- * This class supports three message types:
- * <ul>
- *   <li>REQUEST - Get GOOSE control block values request</li>
- *   <li>RESPONSE_POSITIVE - Server positive response with GoCB data</li>
- *   <li>RESPONSE_NEGATIVE - Server negative response with error details</li>
- * </ul>
- *
- * ASDU field layout (PER encoded, in order):
- * <pre>
- * Request ASDU:
- * ┌─────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                  │
- * │ gocbReference[0..n]         SEQUENCE OF ObjectReference    │
- * └─────────────────────────────────────────────────────────────┘
- *
- * Response+ ASDU:
- * ┌─────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                  │
- * │ error/gocb[0..n]            SEQUENCE OF CHOICE {           │
- * │   error                     ServiceError                   │
- * │   gocb                      GoCB                           │
- * │ }                                                           │
- * │ moreFollows                 BOOLEAN DEFAULT TRUE           │
- * └─────────────────────────────────────────────────────────────┘
- *
- * Response- ASDU:
- * ┌─────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                  │
- * │ serviceError               ServiceError                    │
- * └─────────────────────────────────────────────────────────────┘
- * </pre>
- *
- * ASN.1 Definition (from standard document):
- * <pre>
- * GetGoCBValues-RequestPDU::= SEQUENCE {
- *   gocbReference    [0] IMPLICIT SEQUENCE OF ObjectReference
- * }
- *
- * GetGoCBValues-ResponsePDU::= SEQUENCE {
- *   errorGocb        [0] IMPLICIT SEQUENCE OF CHOICE {
- *     error          [0] IMPLICIT ServiceError,
- *     gocb           [1] IMPLICIT GoCB
- *   },
- *   moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
- * }
- *
- * GetGoCBValues-ErrorPDU::= ServiceError
- * </pre>
  */
 @Getter
 @Setter
 @Accessors(fluent = true)
 public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 60 ====================
+
+    // --- Request parameters ---
+    public CmsArray<CmsObjectReference> gocbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsErrorGocbChoice> errorGocb = new CmsArray<>(CmsErrorGocbChoice::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetGoCBValues(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("gocbReference");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("errorGocb");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetGoCBValues does not support " + messageType);
         }
@@ -94,6 +61,21 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetGoCBValues addGocbReference(String ref) {
+        this.gocbReference.add(new CmsObjectReference(ref));
+        return this;
+    }
+
+    public CmsGetGoCBValues addErrorGocbChoice(CmsErrorGocbChoice choice) {
+        this.errorGocb.add(choice);
+        return this;
+    }
+
+    public CmsGetGoCBValues serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -107,7 +89,11 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     @Override
     public CmsGetGoCBValues copy() {
         CmsGetGoCBValues copy = new CmsGetGoCBValues(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.gocbReference = this.gocbReference.copy();
+        copy.errorGocb = this.errorGocb.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

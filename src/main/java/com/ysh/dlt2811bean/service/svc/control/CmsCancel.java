@@ -1,5 +1,13 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
+import com.ysh.dlt2811bean.datatypes.compound.CmsOriginator;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsAddCause;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -68,17 +76,51 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsCancel extends CmsAsdu<CmsCancel> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 68 ====================
+
+    // --- Common fields ---
+    public CmsObjectReference reference = new CmsObjectReference();
+    public CmsData ctlVal = new CmsData<>();
+    public CmsUtcTime operTm = new CmsUtcTime();
+    public CmsOriginator origin = new CmsOriginator();
+    public CmsInt8U ctlNum = new CmsInt8U();
+    public CmsUtcTime t = new CmsUtcTime();
+    public CmsBoolean test = new CmsBoolean();
+
+    // --- RESPONSE_NEGATIVE only ---
+    public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
     public CmsCancel(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("addCause");
         } else {
-            throw new IllegalArgumentException("Associate does not support " + messageType);
+            throw new IllegalArgumentException("Cancel does not support " + messageType);
         }
     }
 
@@ -87,6 +129,32 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsCancel reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsCancel ctlVal(CmsType<?> val) {
+        this.ctlVal = new CmsData(val);
+        return this;
+    }
+
+    public CmsCancel ctlNum(int num) {
+        this.ctlNum.set(num);
+        return this;
+    }
+
+    public CmsCancel test(boolean test) {
+        this.test.set(test);
+        return this;
+    }
+
+    public CmsCancel addCause(int cause) {
+        this.addCause.set(cause);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -100,7 +168,15 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     @Override
     public CmsCancel copy() {
         CmsCancel copy = new CmsCancel(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.ctlVal = this.ctlVal.copy();
+        copy.operTm = this.operTm.copy();
+        copy.origin = this.origin.copy();
+        copy.ctlNum = this.ctlNum.copy();
+        copy.t = this.t.copy();
+        copy.test = this.test.copy();
+        copy.addCause = this.addCause.copy();
         return copy;
     }
 

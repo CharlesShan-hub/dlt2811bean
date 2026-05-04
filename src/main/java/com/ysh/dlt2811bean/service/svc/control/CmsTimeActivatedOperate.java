@@ -1,5 +1,14 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsCheck;
+import com.ysh.dlt2811bean.datatypes.compound.CmsOriginator;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsAddCause;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -115,15 +124,53 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsTimeActivatedOperate extends CmsAsdu<CmsTimeActivatedOperate> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 70 ====================
+
+    // --- Common fields ---
+    public CmsObjectReference reference = new CmsObjectReference();
+    public CmsData ctlVal = new CmsData<>();
+    public CmsUtcTime operTm = new CmsUtcTime();
+    public CmsOriginator origin = new CmsOriginator();
+    public CmsInt8U ctlNum = new CmsInt8U();
+    public CmsUtcTime t = new CmsUtcTime();
+    public CmsBoolean test = new CmsBoolean();
+    public CmsCheck check = new CmsCheck();
+
+    // --- RESPONSE_NEGATIVE only ---
+    public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
     public CmsTimeActivatedOperate(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
+            registerField("addCause");
         } else {
             throw new IllegalArgumentException("TimeActivatedOperate does not support " + messageType);
         }
@@ -134,6 +181,32 @@ public class CmsTimeActivatedOperate extends CmsAsdu<CmsTimeActivatedOperate> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsTimeActivatedOperate reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsTimeActivatedOperate ctlVal(CmsType<?> val) {
+        this.ctlVal = new CmsData(val);
+        return this;
+    }
+
+    public CmsTimeActivatedOperate ctlNum(int num) {
+        this.ctlNum.set(num);
+        return this;
+    }
+
+    public CmsTimeActivatedOperate test(boolean test) {
+        this.test.set(test);
+        return this;
+    }
+
+    public CmsTimeActivatedOperate addCause(int cause) {
+        this.addCause.set(cause);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -147,7 +220,16 @@ public class CmsTimeActivatedOperate extends CmsAsdu<CmsTimeActivatedOperate> {
     @Override
     public CmsTimeActivatedOperate copy() {
         CmsTimeActivatedOperate copy = new CmsTimeActivatedOperate(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.ctlVal = this.ctlVal.copy();
+        copy.operTm = this.operTm.copy();
+        copy.origin = this.origin.copy();
+        copy.ctlNum = this.ctlNum.copy();
+        copy.t = this.t.copy();
+        copy.test = this.test.copy();
+        copy.check = this.check.copy();
+        copy.addCause = this.addCause.copy();
         return copy;
     }
 

@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.service.svc.negotiation;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -76,15 +80,34 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 82 ====================
+
+    // --- Request parameters ---
+    public CmsInt16U apduSize = new CmsInt16U();
+    public CmsInt32U asduSize = new CmsInt32U();
+    public CmsInt32U protocolVersion = new CmsInt32U();
+
+    // --- Response+ parameters ---
+    public CmsVisibleString modelVersion = new CmsVisibleString().max(255);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsAssociateNegotiate(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("apduSize");
+            registerField("asduSize");
+            registerField("protocolVersion");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("apduSize");
+            registerField("asduSize");
+            registerField("protocolVersion");
+            registerField("modelVersion");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("AssociateNegotiate does not support " + messageType);
         }
@@ -95,6 +118,31 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsAssociateNegotiate apduSize(int value) {
+        this.apduSize.set(value);
+        return this;
+    }
+
+    public CmsAssociateNegotiate asduSize(long value) {
+        this.asduSize.set(value);
+        return this;
+    }
+
+    public CmsAssociateNegotiate protocolVersion(long value) {
+        this.protocolVersion.set(value);
+        return this;
+    }
+
+    public CmsAssociateNegotiate modelVersion(String value) {
+        this.modelVersion.set(value);
+        return this;
+    }
+
+    public CmsAssociateNegotiate serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -108,7 +156,12 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
     @Override
     public CmsAssociateNegotiate copy() {
         CmsAssociateNegotiate copy = new CmsAssociateNegotiate(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.apduSize = this.apduSize.copy();
+        copy.asduSize = this.asduSize.copy();
+        copy.protocolVersion = this.protocolVersion.copy();
+        copy.modelVersion = this.modelVersion.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

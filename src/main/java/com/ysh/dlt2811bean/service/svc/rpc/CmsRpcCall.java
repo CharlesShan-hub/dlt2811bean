@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.rpc;
 
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsReqDataChoice;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -80,15 +85,31 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 81 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString method = new CmsVisibleString().max(255);
+    public CmsReqDataChoice reqDataCallID = new CmsReqDataChoice();
+
+    // --- Response+ parameters ---
+    public CmsData rspData = new CmsData<>();
+    public CmsOctetString nextCallID = new CmsOctetString().max(255);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsRpcCall(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("method");
+            registerField("reqDataCallID");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("rspData");
+            registerOptionalField("nextCallID");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("RpcCall does not support " + messageType);
         }
@@ -99,6 +120,37 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsRpcCall method(String method) {
+        this.method.set(method);
+        return this;
+    }
+
+    public CmsRpcCall reqData(com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
+        this.reqDataCallID.selectReqData().reqData(value);
+        return this;
+    }
+
+    public CmsRpcCall callID(byte[] id) {
+        this.reqDataCallID.selectCallID().callID(id);
+        return this;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsRpcCall rspData(com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
+        this.rspData = new CmsData(value);
+        return this;
+    }
+
+    public CmsRpcCall nextCallID(byte[] id) {
+        this.nextCallID.set(id);
+        return this;
+    }
+
+    public CmsRpcCall serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -112,7 +164,12 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     @Override
     public CmsRpcCall copy() {
         CmsRpcCall copy = new CmsRpcCall(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.method = this.method.copy();
+        copy.reqDataCallID = this.reqDataCallID.copy();
+        copy.rspData = this.rspData.copy();
+        copy.nextCallID = this.nextCallID.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

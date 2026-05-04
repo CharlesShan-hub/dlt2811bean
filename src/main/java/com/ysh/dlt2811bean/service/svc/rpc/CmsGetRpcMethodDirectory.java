@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.service.svc.rpc;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -71,15 +75,31 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 78 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString interfaceName = new CmsVisibleString().max(255);
+    public CmsVisibleString referenceAfter = new CmsVisibleString().max(255);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255)).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetRpcMethodDirectory(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerOptionalField("interfaceName");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetRpcMethodDirectory does not support " + messageType);
         }
@@ -90,6 +110,26 @@ public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> 
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetRpcMethodDirectory interfaceName(String name) {
+        this.interfaceName.set(name);
+        return this;
+    }
+
+    public CmsGetRpcMethodDirectory referenceAfter(String ref) {
+        this.referenceAfter.set(ref);
+        return this;
+    }
+
+    public CmsGetRpcMethodDirectory addReference(String ref) {
+        this.reference.add(new CmsVisibleString(ref).max(255));
+        return this;
+    }
+
+    public CmsGetRpcMethodDirectory serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -103,7 +143,12 @@ public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> 
     @Override
     public CmsGetRpcMethodDirectory copy() {
         CmsGetRpcMethodDirectory copy = new CmsGetRpcMethodDirectory(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.interfaceName = this.interfaceName.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.reference = this.reference.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

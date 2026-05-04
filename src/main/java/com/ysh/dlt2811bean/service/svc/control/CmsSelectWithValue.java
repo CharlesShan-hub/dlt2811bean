@@ -1,5 +1,14 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsCheck;
+import com.ysh.dlt2811bean.datatypes.compound.CmsOriginator;
+import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsAddCause;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;
+import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -118,15 +127,53 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 66 ====================
+
+    // --- Common fields ---
+    public CmsObjectReference reference = new CmsObjectReference();
+    public CmsData ctlVal = new CmsData<>();
+    public CmsUtcTime operTm = new CmsUtcTime();
+    public CmsOriginator origin = new CmsOriginator();
+    public CmsInt8U ctlNum = new CmsInt8U();
+    public CmsUtcTime t = new CmsUtcTime();
+    public CmsBoolean test = new CmsBoolean();
+    public CmsCheck check = new CmsCheck();
+
+    // --- RESPONSE_NEGATIVE only ---
+    public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
     public CmsSelectWithValue(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("reference");
+            registerField("ctlVal");
+            registerOptionalField("operTm");
+            registerField("origin");
+            registerField("ctlNum");
+            registerField("t");
+            registerField("test");
+            registerField("check");
+            registerField("addCause");
         } else {
             throw new IllegalArgumentException("SelectWithValue does not support " + messageType);
         }
@@ -137,6 +184,32 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSelectWithValue reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsSelectWithValue ctlVal(CmsType<?> val) {
+        this.ctlVal = new CmsData(val);
+        return this;
+    }
+
+    public CmsSelectWithValue ctlNum(int num) {
+        this.ctlNum.set(num);
+        return this;
+    }
+
+    public CmsSelectWithValue test(boolean test) {
+        this.test.set(test);
+        return this;
+    }
+
+    public CmsSelectWithValue addCause(int cause) {
+        this.addCause.set(cause);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -150,7 +223,16 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
     @Override
     public CmsSelectWithValue copy() {
         CmsSelectWithValue copy = new CmsSelectWithValue(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.reference = this.reference.copy();
+        copy.ctlVal = this.ctlVal.copy();
+        copy.operTm = this.operTm.copy();
+        copy.origin = this.origin.copy();
+        copy.ctlNum = this.ctlNum.copy();
+        copy.t = this.t.copy();
+        copy.test = this.test.copy();
+        copy.check = this.check.copy();
+        copy.addCause = this.addCause.copy();
         return copy;
     }
 

@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.file;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
+import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -72,15 +77,30 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsSetFile extends CmsAsdu<CmsSetFile> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 73 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString fileName = new CmsVisibleString().max(255);
+    public CmsInt32U startPosition = new CmsInt32U();
+    public CmsOctetString fileData = new CmsOctetString().max(65535);
+    public CmsBoolean endOfFile = new CmsBoolean();
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsSetFile(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("fileName");
+            registerField("startPosition");
+            registerField("fileData");
+            registerField("endOfFile");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            // no additional fields
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("SetFile does not support " + messageType);
         }
@@ -91,6 +111,31 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsSetFile fileName(String name) {
+        this.fileName.set(name);
+        return this;
+    }
+
+    public CmsSetFile startPosition(long pos) {
+        this.startPosition.set(pos);
+        return this;
+    }
+
+    public CmsSetFile fileData(byte[] data) {
+        this.fileData.set(data);
+        return this;
+    }
+
+    public CmsSetFile endOfFile(boolean eof) {
+        this.endOfFile.set(eof);
+        return this;
+    }
+
+    public CmsSetFile serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -104,7 +149,12 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
     @Override
     public CmsSetFile copy() {
         CmsSetFile copy = new CmsSetFile(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.fileName = this.fileName.copy();
+        copy.startPosition = this.startPosition.copy();
+        copy.fileData = this.fileData.copy();
+        copy.endOfFile = this.endOfFile.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 

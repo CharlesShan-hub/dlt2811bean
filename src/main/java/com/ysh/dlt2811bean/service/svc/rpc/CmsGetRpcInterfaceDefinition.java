@@ -1,5 +1,10 @@
 package com.ysh.dlt2811bean.service.svc.rpc;
 
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodDefEntry;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -87,15 +92,31 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefinition> {
 
-    // ==================== Fields based on Table XX ====================
+    // ==================== Fields based on Table 79 ====================
+
+    // --- Request parameters ---
+    public CmsVisibleString interfaceName = new CmsVisibleString().max(255);
+    public CmsVisibleString referenceAfter = new CmsVisibleString().max(255);
+
+    // --- Response+ parameters ---
+    public CmsArray<CmsRpcMethodDefEntry> method = new CmsArray<>(CmsRpcMethodDefEntry::new).capacity(100);
+    public CmsBoolean moreFollows = new CmsBoolean(true);
+
+    // --- Response- parameters ---
+    public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
     public CmsGetRpcInterfaceDefinition(MessageType messageType) {
         super(messageType);
         if (messageType == MessageType.REQUEST) {
+            registerField("interfaceName");
+            registerOptionalField("referenceAfter");
         } else if (messageType == MessageType.RESPONSE_POSITIVE) {
+            registerField("method");
+            registerField("moreFollows");
         } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
+            registerField("serviceError");
         } else {
             throw new IllegalArgumentException("GetRpcInterfaceDefinition does not support " + messageType);
         }
@@ -106,6 +127,21 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     }
 
     // ====================== Convenience Setters =======================
+
+    public CmsGetRpcInterfaceDefinition interfaceName(String name) {
+        this.interfaceName.set(name);
+        return this;
+    }
+
+    public CmsGetRpcInterfaceDefinition referenceAfter(String ref) {
+        this.referenceAfter.set(ref);
+        return this;
+    }
+
+    public CmsGetRpcInterfaceDefinition serviceError(int errorCode) {
+        this.serviceError.set(errorCode);
+        return this;
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 
@@ -119,7 +155,12 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     @Override
     public CmsGetRpcInterfaceDefinition copy() {
         CmsGetRpcInterfaceDefinition copy = new CmsGetRpcInterfaceDefinition(messageType());
-        // todo
+        copy.reqId.set(reqId.get());
+        copy.interfaceName = this.interfaceName.copy();
+        copy.referenceAfter = this.referenceAfter.copy();
+        copy.method = this.method.copy();
+        copy.moreFollows = this.moreFollows.copy();
+        copy.serviceError = this.serviceError.copy();
         return copy;
     }
 
