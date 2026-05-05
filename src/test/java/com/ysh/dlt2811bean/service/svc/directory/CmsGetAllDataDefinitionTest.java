@@ -2,12 +2,9 @@ package com.ysh.dlt2811bean.service.svc.directory;
 
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsFC;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
+import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -19,17 +16,11 @@ class CmsGetAllDataDefinitionTest {
     @Test
     @DisplayName("REQUEST: encode and decode round-trip via APDU")
     void requestRoundTrip() throws Exception {
-        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST)
-            .ldName("IED1.AP1.LD1")
-            .fc("ST")
-            .reqId(1);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-        CmsGetAllDataDefinition result = (CmsGetAllDataDefinition) decoded.getAsdu();
+        CmsGetAllDataDefinition result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetAllDataDefinition(MessageType.REQUEST)
+                        .ldName("IED1.AP1.LD1")
+                        .fc("ST")
+                        .reqId(1));
 
         assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1.LD1", result.reference().ldName.get());
@@ -42,19 +33,12 @@ class CmsGetAllDataDefinitionTest {
     @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip via APDU")
     void positiveResponseRoundTrip() throws Exception {
         CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.RESPONSE_POSITIVE).reqId(2);
+        asdu.data().add(new CmsDataDefinitionEntry()
+                .reference("DO1")
+                .cdcType("BOOLEAN")
+                .definition(CmsDataDefinition.ofBoolean()));
 
-        CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry()
-            .reference("DO1")
-            .cdcType("BOOLEAN")
-            .definition(CmsDataDefinition.ofBoolean());
-        asdu.data().add(entry);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-        CmsGetAllDataDefinition result = (CmsGetAllDataDefinition) decoded.getAsdu();
+        CmsGetAllDataDefinition result = AsduTestUtil.roundTripViaApdu(asdu);
 
         assertEquals(2, result.reqId().get());
         assertEquals(1, result.data().size());
@@ -67,16 +51,10 @@ class CmsGetAllDataDefinitionTest {
     @Test
     @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip via APDU")
     void negativeResponseRoundTrip() throws Exception {
-        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.RESPONSE_NEGATIVE)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
-            .reqId(3);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-        CmsGetAllDataDefinition result = (CmsGetAllDataDefinition) decoded.getAsdu();
+        CmsGetAllDataDefinition result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetAllDataDefinition(MessageType.RESPONSE_NEGATIVE)
+                        .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
+                        .reqId(3));
 
         assertEquals(3, result.reqId().get());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());

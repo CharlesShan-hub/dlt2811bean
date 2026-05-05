@@ -1,37 +1,37 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import org.junit.jupiter.api.DisplayName;
+import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
+import com.ysh.dlt2811bean.service.testutil.mixin.ServiceNameTest;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DisplayName("CmsSelectWithValue")
-class CmsSelectWithValueTest {
-    @Test
-    void requestRoundTrip() throws Exception {
-        CmsSelectWithValue asdu = new CmsSelectWithValue(MessageType.REQUEST)
-            .reference("IED1.AP1.LD1.LN1.DO1")
-            .ctlVal(new CmsInt32(100))
-            .ctlNum(1)
-            .test(false)
-            .reqId(1);
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-        CmsSelectWithValue result = (CmsSelectWithValue) decoded.getAsdu();
-        assertEquals(1, result.reqId().get());
-        assertEquals("IED1.AP1.LD1.LN1.DO1", result.reference().get());
+class CmsSelectWithValueTest implements ServiceNameTest<CmsSelectWithValue> {
+
+    @Override
+    public ServiceName expectedServiceName() {
+        return ServiceName.SELECT_WITH_VALUE;
+    }
+
+    @Override
+    public CmsSelectWithValue createAsdu() {
+        return new CmsSelectWithValue(MessageType.REQUEST);
     }
 
     @Test
-    void serviceCode() {
-        assertEquals(ServiceName.SELECT_WITH_VALUE, new CmsSelectWithValue(MessageType.REQUEST).getServiceName());
+    void requestRoundTrip() throws Exception {
+        CmsSelectWithValue result = AsduTestUtil.roundTripViaApdu(
+                new CmsSelectWithValue(MessageType.REQUEST)
+                        .reference("IED1.AP1.LD1.LN1.DO1")
+                        .ctlVal(new CmsInt32(100))
+                        .ctlNum(1)
+                        .test(false)
+                        .reqId(1));
+
+        assertEquals(1, result.reqId().get());
+        assertEquals("IED1.AP1.LD1.LN1.DO1", result.reference().get());
     }
 }

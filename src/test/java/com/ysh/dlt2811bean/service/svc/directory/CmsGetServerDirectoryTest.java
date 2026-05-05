@@ -2,81 +2,93 @@ package com.ysh.dlt2811bean.service.svc.directory;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
+import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
+import com.ysh.dlt2811bean.service.testutil.mixin.CopyTest;
+import com.ysh.dlt2811bean.service.testutil.mixin.FromFlagsTest;
+import com.ysh.dlt2811bean.service.testutil.mixin.ServiceNameTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsGetServerDirectory")
-class CmsGetServerDirectoryTest {
+class CmsGetServerDirectoryTest implements
+        ServiceNameTest<CmsGetServerDirectory>,
+        CopyTest<CmsGetServerDirectory>,
+        FromFlagsTest<CmsGetServerDirectory> {
+
+    // ==================== Mixin factory methods ====================
+
+    @Override
+    public ServiceName expectedServiceName() {
+        return ServiceName.GET_SERVER_DIRECTORY;
+    }
+
+    @Override
+    public CmsGetServerDirectory createAsdu() {
+        return new CmsGetServerDirectory(MessageType.REQUEST);
+    }
+
+    @Override
+    public CmsGetServerDirectory createCopyableAsdu() {
+        return new CmsGetServerDirectory(MessageType.REQUEST)
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                .referenceAfter("IED1.AP1.LD1")
+                .reqId(10);
+    }
+
+    @Override
+    public CmsGetServerDirectory createFromFlags(boolean resp, boolean err) {
+        return new CmsGetServerDirectory(resp, err);
+    }
+
+    // ==================== REQUEST tests ====================
 
     @Test
     @DisplayName("REQUEST: encode and decode round-trip via APDU")
     void requestRoundTrip() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-            .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-            .referenceAfter("IED1.AP1.LD1")
-            .reqId(1);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetServerDirectory(MessageType.REQUEST)
+                        .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                        .referenceAfter("IED1.AP1.LD1")
+                        .reqId(1));
 
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(1, result.reqId().get());
         assertEquals(CmsObjectClass.LOGICAL_DEVICE, result.objectClass().get());
         assertEquals("IED1.AP1.LD1", result.referenceAfter().get());
         assertTrue(result.isFieldPresent("referenceAfter"));
-        System.out.println(result);
     }
 
     @Test
     @DisplayName("REQUEST without optional referenceAfter")
     void requestWithoutReferenceAfter() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-            .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-            .reqId(2);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetServerDirectory(MessageType.REQUEST)
+                        .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                        .reqId(2));
 
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(2, result.reqId().get());
         assertEquals(CmsObjectClass.LOGICAL_DEVICE, result.objectClass().get());
         assertFalse(result.isFieldPresent("referenceAfter"));
         assertTrue(result.referenceAfter().get().isEmpty());
     }
 
+    // ==================== RESPONSE_POSITIVE tests ====================
+
     @Test
     @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip via APDU")
     void positiveResponseRoundTrip() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE)
-            .reqId(3);
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE).reqId(3);
         asdu.reference().add(new CmsObjectReference("IED1.AP1.LD1"));
         asdu.reference().add(new CmsObjectReference("IED1.AP1.LD2"));
         asdu.moreFollows().set(true);
 
-        CmsApdu apdu = new CmsApdu(asdu);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaApdu(asdu);
 
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(3, result.reqId().get());
         assertEquals(2, result.reference().size());
         assertEquals("IED1.AP1.LD1", result.reference().get(0).get());
@@ -87,113 +99,53 @@ class CmsGetServerDirectoryTest {
     @Test
     @DisplayName("RESPONSE_POSITIVE: empty reference list")
     void positiveResponseEmpty() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE)
-            .reqId(4)
-            .moreFollows(false);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE).reqId(4);
+        asdu.moreFollows().set(false);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaApdu(asdu);
         assertEquals(4, result.reqId().get());
         assertTrue(result.reference().isEmpty());
         assertFalse(result.moreFollows().get());
     }
 
+    // ==================== RESPONSE_NEGATIVE tests ====================
+
     @Test
     @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip via APDU")
     void negativeResponseRoundTrip() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_NEGATIVE)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
-            .reqId(5);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetServerDirectory(MessageType.RESPONSE_NEGATIVE)
+                        .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
+                        .reqId(5));
 
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetServerDirectory result = (CmsGetServerDirectory) decoded.getAsdu();
         assertEquals(5, result.reqId().get());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
     }
 
+    // ==================== ASDU-only round-trip ====================
+
     @Test
-    @DisplayName("REQUEST: encode and decode round-trip via ASDU static methods")
+    @DisplayName("REQUEST: encode and decode round-trip via ASDU")
     void requestRoundTripAsduOnly() throws Exception {
-        CmsGetServerDirectory service = new CmsGetServerDirectory(MessageType.REQUEST)
-            .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-            .referenceAfter("IED1.AP1.LD1")
-            .reqId(10);
-
-        PerOutputStream pos = new PerOutputStream();
-        CmsGetServerDirectory.write(pos, service);
-
-        CmsGetServerDirectory result = CmsGetServerDirectory.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
+        CmsGetServerDirectory result = AsduTestUtil.roundTripViaAsdu(
+                new CmsGetServerDirectory(MessageType.REQUEST)
+                        .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                        .referenceAfter("IED1.AP1.LD1")
+                        .reqId(10));
 
         assertEquals(10, result.reqId().get());
         assertEquals(CmsObjectClass.LOGICAL_DEVICE, result.objectClass().get());
         assertEquals("IED1.AP1.LD1", result.referenceAfter().get());
     }
 
-    @Test
-    @DisplayName("copy produces independent instance")
-    void copy() {
-        CmsGetServerDirectory original = new CmsGetServerDirectory(MessageType.REQUEST)
-            .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-            .referenceAfter("IED1.AP1.LD1")
-            .reqId(10);
-
-        CmsGetServerDirectory copy = original.copy();
-
-        assertEquals(original.reqId().get(), copy.reqId().get());
-        assertEquals(original.objectClass().get(), copy.objectClass().get());
-        assertEquals(original.referenceAfter().get(), copy.referenceAfter().get());
-
-        copy.reqId(20);
-        assertNotEquals(original.reqId(), copy.reqId());
-    }
-
-    @Test
-    @DisplayName("fromFlags constructor: REQUEST")
-    void fromFlagsRequest() {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(false, false);
-        assertEquals(MessageType.REQUEST, asdu.messageType());
-    }
-
-    @Test
-    @DisplayName("fromFlags constructor: RESPONSE_POSITIVE")
-    void fromFlagsPositive() {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(true, false);
-        assertEquals(MessageType.RESPONSE_POSITIVE, asdu.messageType());
-    }
-
-    @Test
-    @DisplayName("fromFlags constructor: RESPONSE_NEGATIVE")
-    void fromFlagsNegative() {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(true, true);
-        assertEquals(MessageType.RESPONSE_NEGATIVE, asdu.messageType());
-    }
-
-    @Test
-    @DisplayName("getServiceCode returns GET_SERVER_DIRECTORY")
-    void serviceCode() {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST);
-        assertEquals(ServiceName.GET_SERVER_DIRECTORY, asdu.getServiceName());
-    }
+    // ==================== toString tests ====================
 
     @Test
     @DisplayName("toString for REQUEST")
     void toStringRequest() {
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-            .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-            .referenceAfter("IED1.AP1.LD1")
-            .reqId(1);
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                .referenceAfter("IED1.AP1.LD1")
+                .reqId(1);
 
         String str = asdu.toString();
         assertTrue(str.startsWith("(CmsGetServerDirectory) {"));
@@ -205,8 +157,7 @@ class CmsGetServerDirectoryTest {
     @Test
     @DisplayName("toString for RESPONSE_POSITIVE")
     void toStringPositive() {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE)
-            .reqId(2);
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE).reqId(2);
         asdu.reference().add(new CmsObjectReference("IED1.AP1.LD1"));
         asdu.moreFollows().set(true);
 
@@ -221,8 +172,8 @@ class CmsGetServerDirectoryTest {
     @DisplayName("toString for RESPONSE_NEGATIVE")
     void toStringNegative() {
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.RESPONSE_NEGATIVE)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
-            .reqId(3);
+                .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
+                .reqId(3);
 
         String str = asdu.toString();
         assertTrue(str.startsWith("(CmsGetServerDirectory) {"));

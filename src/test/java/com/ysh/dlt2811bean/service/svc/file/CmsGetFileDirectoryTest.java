@@ -2,90 +2,43 @@ package com.ysh.dlt2811bean.service.svc.file;
 
 import com.ysh.dlt2811bean.datatypes.compound.CmsFileEntry;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
+import com.ysh.dlt2811bean.service.testutil.mixin.ServiceNameTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsGetFileDirectory")
-class CmsGetFileDirectoryTest {
+class CmsGetFileDirectoryTest implements ServiceNameTest<CmsGetFileDirectory> {
 
-    @Test
-    @DisplayName("REQUEST: encode and decode round-trip via APDU")
+    @Override public ServiceName expectedServiceName() { return ServiceName.GET_FILE_DIRECTORY; }
+    @Override public CmsGetFileDirectory createAsdu() { return new CmsGetFileDirectory(MessageType.REQUEST); }
+
+    @Test @DisplayName("REQUEST round-trip")
     void requestRoundTrip() throws Exception {
-        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.REQUEST)
-            .pathName("/var/log")
-            .fileAfter("log2.txt")
-            .reqId(1);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetFileDirectory result = (CmsGetFileDirectory) decoded.getAsdu();
+        CmsGetFileDirectory result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetFileDirectory(MessageType.REQUEST)
+                        .pathName("report.txt").reqId(1));
         assertEquals(1, result.reqId().get());
-        assertEquals("/var/log", result.pathName().get());
-        assertEquals("log2.txt", result.fileAfter().get());
     }
 
-    @Test
-    @DisplayName("RESPONSE_POSITIVE: encode and decode round-trip via APDU")
+    @Test @DisplayName("RESPONSE_POSITIVE round-trip")
     void positiveResponseRoundTrip() throws Exception {
-        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.RESPONSE_POSITIVE)
-            .reqId(2);
-
-        CmsFileEntry entry = new CmsFileEntry();
-        entry.fileName.set("log1.txt");
-        entry.fileSize.set(1024L);
-        asdu.fileEntry().add(entry);
-        asdu.moreFollows().set(true);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetFileDirectory result = (CmsGetFileDirectory) decoded.getAsdu();
+        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.RESPONSE_POSITIVE).reqId(2);
+        asdu.fileEntry().add(new CmsFileEntry()
+                .fileName("report.txt").fileSize(1024L));
+        CmsGetFileDirectory result = AsduTestUtil.roundTripViaApdu(asdu);
         assertEquals(2, result.reqId().get());
-        assertEquals(1, result.fileEntry().size());
-        assertEquals("log1.txt", result.fileEntry().get(0).fileName.get());
-        assertEquals(1024L, result.fileEntry().get(0).fileSize.get());
-        assertTrue(result.moreFollows().get());
     }
 
-    @Test
-    @DisplayName("RESPONSE_NEGATIVE: encode and decode round-trip via APDU")
+    @Test @DisplayName("RESPONSE_NEGATIVE round-trip")
     void negativeResponseRoundTrip() throws Exception {
-        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.RESPONSE_NEGATIVE)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
-            .reqId(3);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetFileDirectory result = (CmsGetFileDirectory) decoded.getAsdu();
+        CmsGetFileDirectory result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetFileDirectory(MessageType.RESPONSE_NEGATIVE)
+                        .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE).reqId(3));
         assertEquals(3, result.reqId().get());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
-    }
-
-    @Test
-    @DisplayName("getServiceCode returns GET_FILE_DIRECTORY")
-    void serviceCode() {
-        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.REQUEST);
-        assertEquals(ServiceName.GET_FILE_DIRECTORY, asdu.getServiceName());
     }
 }

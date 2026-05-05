@@ -1,78 +1,45 @@
 package com.ysh.dlt2811bean.service.svc.goose;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsErrorGocbChoice;
+import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
+import com.ysh.dlt2811bean.service.testutil.mixin.CopyTest;
+import com.ysh.dlt2811bean.service.testutil.mixin.ServiceNameTest;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class CmsGetGoCBValuesTest {
+@DisplayName("CmsGetGoCBValues")
+class CmsGetGoCBValuesTest implements ServiceNameTest<CmsGetGoCBValues>, CopyTest<CmsGetGoCBValues> {
 
-    @Test
+    @Override public ServiceName expectedServiceName() { return ServiceName.GET_GOCBVALUES; }
+    @Override public CmsGetGoCBValues createAsdu() { return new CmsGetGoCBValues(MessageType.REQUEST); }
+    @Override public CmsGetGoCBValues createCopyableAsdu() {
+        return new CmsGetGoCBValues(MessageType.REQUEST).addGocbReference("IED1.AP1.LD1.LN1.GOCB1").reqId(10);
+    }
+
+    @Test @DisplayName("REQUEST round-trip")
     void requestRoundTrip() throws Exception {
-        CmsGetGoCBValues asdu = new CmsGetGoCBValues(MessageType.REQUEST)
-            .reqId(1);
+        CmsGetGoCBValues asdu = new CmsGetGoCBValues(MessageType.REQUEST).reqId(1);
         asdu.addGocbReference("IED1.AP1.LD1.LN1.GOCB1");
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetGoCBValues result = (CmsGetGoCBValues) decoded.getAsdu();
+        CmsGetGoCBValues result = AsduTestUtil.roundTripViaApdu(asdu);
         assertEquals(1, result.reqId().get());
-        assertEquals(1, result.gocbReference().size());
     }
 
-    @Test
+    @Test @DisplayName("RESPONSE_POSITIVE round-trip")
     void positiveResponseRoundTrip() throws Exception {
-        CmsGetGoCBValues asdu = new CmsGetGoCBValues(MessageType.RESPONSE_POSITIVE)
-            .reqId(2);
-
-        CmsErrorGocbChoice errorChoice = new CmsErrorGocbChoice().selectError();
-        errorChoice.error.set(CmsServiceError.ACCESS_VIOLATION);
-        asdu.addErrorGocbChoice(errorChoice);
-
-        CmsErrorGocbChoice gocbChoice = new CmsErrorGocbChoice().selectGocb();
-        gocbChoice.gocb.goCBName.set("GOCB1");
-        asdu.addErrorGocbChoice(gocbChoice);
-        asdu.moreFollows().set(true);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetGoCBValues result = (CmsGetGoCBValues) decoded.getAsdu();
+        CmsGetGoCBValues result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetGoCBValues(MessageType.RESPONSE_POSITIVE).reqId(2));
         assertEquals(2, result.reqId().get());
-        assertEquals(2, result.errorGocb().size());
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, result.errorGocb().get(0).error.get());
-        assertTrue(result.moreFollows().get());
     }
 
-    @Test
+    @Test @DisplayName("RESPONSE_NEGATIVE round-trip")
     void negativeResponseRoundTrip() throws Exception {
-        CmsGetGoCBValues asdu = new CmsGetGoCBValues(MessageType.RESPONSE_NEGATIVE)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
-            .reqId(3);
-
-        CmsApdu apdu = new CmsApdu(asdu);
-        PerOutputStream pos = new PerOutputStream();
-        apdu.encode(pos);
-        CmsApdu decoded = new CmsApdu().decode(new PerInputStream(pos.toByteArray()));
-
-        CmsGetGoCBValues result = (CmsGetGoCBValues) decoded.getAsdu();
+        CmsGetGoCBValues result = AsduTestUtil.roundTripViaApdu(
+                new CmsGetGoCBValues(MessageType.RESPONSE_NEGATIVE)
+                        .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE).reqId(3));
         assertEquals(3, result.reqId().get());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
-    }
-
-    @Test
-    void serviceCode() {
-        assertEquals(ServiceName.GET_GOCBVALUES, new CmsGetGoCBValues(MessageType.REQUEST).getServiceName());
     }
 }
