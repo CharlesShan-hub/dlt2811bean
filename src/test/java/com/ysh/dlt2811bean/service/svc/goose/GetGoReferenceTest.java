@@ -12,16 +12,16 @@ class GetGoReferenceTest {
 
     @Test
     void requestRoundTrip() throws Exception {
-        GetGoReference asdu = new GetGoReference(MessageType.REQUEST)
+        CmsGetGoReference asdu = new CmsGetGoReference(MessageType.REQUEST)
             .gocbReference("IED1.AP1.LD1.LN1.GOCB1")
             .addMemberOffset(1)
             .addMemberOffset(2)
             .reqId(1);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGoReference.write(pos, asdu);
+        CmsGetGoReference.write(pos, asdu);
 
-        GetGoReference result = GetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
+        CmsGetGoReference result = CmsGetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);  
         assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1.LD1.LN1.GOCB1", result.gocbReference().get());
         assertEquals(2, result.memberOffset().size());
@@ -29,7 +29,7 @@ class GetGoReferenceTest {
 
     @Test
     void positiveResponseRoundTrip() throws Exception {
-        GetGoReference asdu = new GetGoReference(MessageType.RESPONSE_POSITIVE)
+        CmsGetGoReference asdu = new CmsGetGoReference(MessageType.RESPONSE_POSITIVE)
             .gocbRefResp("IED1.AP1.LD1.LN1.GOCB1")
             .confRev(1L)
             .datSet("DS1")
@@ -38,9 +38,9 @@ class GetGoReferenceTest {
             .reqId(2);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGoReference.write(pos, asdu);
+        CmsGetGoReference.write(pos, asdu);
 
-        GetGoReference result = GetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_POSITIVE);
+        CmsGetGoReference result = CmsGetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_POSITIVE);
         assertEquals(2, result.reqId().get());
         assertEquals(2, result.memberData().size());
         assertEquals("DO1", result.memberData().get(0).reference().get());
@@ -49,20 +49,20 @@ class GetGoReferenceTest {
 
     @Test
     void negativeResponseRoundTrip() throws Exception {
-        GetGoReference asdu = new GetGoReference(MessageType.RESPONSE_NEGATIVE)
+        CmsGetGoReference asdu = new CmsGetGoReference(MessageType.RESPONSE_NEGATIVE)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(3);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGoReference.write(pos, asdu);
+        CmsGetGoReference.write(pos, asdu);
 
-        GetGoReference result = GetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_NEGATIVE);
+        CmsGetGoReference result = CmsGetGoReference.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_NEGATIVE);
         assertEquals(3, result.reqId().get());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
     }
 
     @Test
     void serviceCode() {
-        assertEquals(ServiceName.Get_Go_Reference, new GetGoReference(MessageType.REQUEST).getServiceName());
+        assertEquals(ServiceName.Get_Go_Reference, new CmsGetGoReference(MessageType.REQUEST).getServiceName());
     }
 }

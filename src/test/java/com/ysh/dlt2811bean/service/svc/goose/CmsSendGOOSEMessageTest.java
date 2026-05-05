@@ -8,11 +8,11 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class CmsSendGOOSEMessageTest {
+class CmsSendGooseMessageTest {
 
     @Test
     void indicationRoundTrip() throws Exception {
-        CmsSendGOOSEMessage asdu = new CmsSendGOOSEMessage()
+        CmsSendGooseMessage asdu = new CmsSendGooseMessage()
             .goID("GOCB1")
             .stNum(1L)
             .sqNum(10L)
@@ -22,9 +22,9 @@ class CmsSendGOOSEMessageTest {
             .data(new CmsInt32(42));
 
         PerOutputStream pos = new PerOutputStream();
-        CmsSendGOOSEMessage.write(pos, asdu);
+        CmsSendGooseMessage.write(pos, asdu);
 
-        CmsSendGOOSEMessage result = CmsSendGOOSEMessage.read(new PerInputStream(pos.toByteArray()), MessageType.INDICATION);
+        CmsSendGooseMessage result = CmsSendGooseMessage.read(new PerInputStream(pos.toByteArray()), MessageType.INDICATION);
         assertEquals("GOCB1", result.goID().get());
         assertEquals(1L, result.stNum().get());
         assertEquals(10L, result.sqNum().get());
@@ -32,6 +32,6 @@ class CmsSendGOOSEMessageTest {
 
     @Test
     void serviceCode() {
-        assertEquals(ServiceName.Send_GOOSE_Message, new CmsSendGOOSEMessage().getServiceName());
+        assertEquals(ServiceName.Send_GOOSE_Message, new CmsSendGooseMessage().getServiceName());
     }
 }

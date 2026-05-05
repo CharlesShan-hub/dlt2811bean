@@ -8,27 +8,28 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class GetGOOSEElementNumberTest {
+
+class GetGooseElementNumberTest {
 
     @Test
     void requestRoundTrip() throws Exception {
-        GetGOOSEElementNumber asdu = new GetGOOSEElementNumber(MessageType.REQUEST)
+        CmsGetGooseElementNumber asdu = new CmsGetGooseElementNumber(MessageType.REQUEST)
             .gocbReference("IED1.AP1.LD1.LN1.GOCB1")
             .addMemberData("DO1", "ST")
             .addMemberData("DO2", "MX")
             .reqId(1);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGOOSEElementNumber.write(pos, asdu);
+        CmsGetGooseElementNumber.write(pos, asdu);
 
-        GetGOOSEElementNumber result = GetGOOSEElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);
+        CmsGetGooseElementNumber result = CmsGetGooseElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.REQUEST);    
         assertEquals(1, result.reqId().get());
         assertEquals(2, result.memberData().size());
     }
 
     @Test
     void positiveResponseRoundTrip() throws Exception {
-        GetGOOSEElementNumber asdu = new GetGOOSEElementNumber(MessageType.RESPONSE_POSITIVE)
+        CmsGetGooseElementNumber asdu = new CmsGetGooseElementNumber(MessageType.RESPONSE_POSITIVE)
             .gocbRefResp("IED1.AP1.LD1.LN1.GOCB1")
             .confRev(1L)
             .datSet("DS1")
@@ -37,29 +38,29 @@ class GetGOOSEElementNumberTest {
             .reqId(2);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGOOSEElementNumber.write(pos, asdu);
+        CmsGetGooseElementNumber.write(pos, asdu);
 
-        GetGOOSEElementNumber result = GetGOOSEElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_POSITIVE);
+        CmsGetGooseElementNumber result = CmsGetGooseElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_POSITIVE);
         assertEquals(2, result.reqId().get());
         assertEquals(2, result.memberOffset().size());
     }
 
     @Test
     void negativeResponseRoundTrip() throws Exception {
-        GetGOOSEElementNumber asdu = new GetGOOSEElementNumber(MessageType.RESPONSE_NEGATIVE)
+        CmsGetGooseElementNumber asdu = new CmsGetGooseElementNumber(MessageType.RESPONSE_NEGATIVE)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .reqId(3);
 
         PerOutputStream pos = new PerOutputStream();
-        GetGOOSEElementNumber.write(pos, asdu);
+        CmsGetGooseElementNumber.write(pos, asdu);
 
-        GetGOOSEElementNumber result = GetGOOSEElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_NEGATIVE);
+        CmsGetGooseElementNumber result = CmsGetGooseElementNumber.read(new PerInputStream(pos.toByteArray()), MessageType.RESPONSE_NEGATIVE);
         assertEquals(3, result.reqId().get());
         assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, result.serviceError().get());
     }
 
     @Test
     void serviceCode() {
-        assertEquals(ServiceName.Get_GOOSE_ElementNumber, new GetGOOSEElementNumber(MessageType.REQUEST).getServiceName());
+        assertEquals(ServiceName.Get_GOOSE_ElementNumber, new CmsGetGooseElementNumber(MessageType.REQUEST).getServiceName());
     }
 }
