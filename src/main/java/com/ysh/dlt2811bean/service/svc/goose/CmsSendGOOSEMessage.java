@@ -6,13 +6,12 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -77,39 +76,44 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
 
     // ==================== Fields based on Table 57 ====================
 
+    @CmsField(only = {"INDICATION"})
     public CmsVisibleString goID = new CmsVisibleString().max(129);
+
+    @CmsField(optional = true, only = {"INDICATION"})
     public CmsObjectReference datSet = new CmsObjectReference();
+
+    @CmsField(optional = true, only = {"INDICATION"})
     public CmsObjectReference goRef = new CmsObjectReference();
+
+    @CmsField(only = {"INDICATION"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"INDICATION"})
     public CmsInt32U stNum = new CmsInt32U();
+
+    @CmsField(only = {"INDICATION"})
     public CmsInt32U sqNum = new CmsInt32U();
+
+    @CmsField(only = {"INDICATION"})
     public CmsBoolean simulation = new CmsBoolean();
+
+    @CmsField(only = {"INDICATION"})
     public CmsInt32U confRev = new CmsInt32U();
+
+    @CmsField(only = {"INDICATION"})
     public CmsBoolean ndsCom = new CmsBoolean();
+
+    @CmsField(only = {"INDICATION"})
     public CmsData data = new CmsData<>();
 
     // ========================= Constructor ============================
 
-    public CmsSendGooseMessage(MessageType messageType) {
-        super(messageType);
-        if (messageType == MessageType.INDICATION) {
-            registerField("goID");
-            registerOptionalField("datSet");
-            registerOptionalField("goRef");
-            registerField("t");
-            registerField("stNum");
-            registerField("sqNum");
-            registerField("simulation");
-            registerField("confRev");
-            registerField("ndsCom");
-            registerField("data");
-        } else {
-            throw new IllegalArgumentException("SendGooseMessage does not support " + messageType);
-        }
+    public CmsSendGooseMessage() {
+        super(MessageType.INDICATION);
     }
 
-    public CmsSendGooseMessage() {
-        this(MessageType.INDICATION);
+    public CmsSendGooseMessage(MessageType messageType) {
+        super(messageType);
     }
 
     // ====================== Convenience Setters =======================
@@ -132,35 +136,4 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
     public ServiceName getServiceName() {
         return ServiceName.Send_GOOSE_Message;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSendGooseMessage copy() {
-        CmsSendGooseMessage copy = new CmsSendGooseMessage(messageType());
-        copy.reqId.set(reqId.get());
-        copy.goID = this.goID.copy();
-        copy.datSet = this.datSet.copy();
-        copy.goRef = this.goRef.copy();
-        copy.t = this.t.copy();
-        copy.stNum = this.stNum.copy();
-        copy.sqNum = this.sqNum.copy();
-        copy.simulation = this.simulation.copy();
-        copy.confRev = this.confRev.copy();
-        copy.ndsCom = this.ndsCom.copy();
-        copy.data = this.data.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSendGooseMessage read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSendGooseMessage) new CmsSendGooseMessage(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSendGooseMessage sendGooseMessage) {
-        sendGooseMessage.encode(pos);
-    }
-
 }

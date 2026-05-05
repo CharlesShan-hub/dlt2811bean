@@ -4,8 +4,7 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -108,33 +107,33 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     // ==================== Fields based on Table 30 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsReference reference = new CmsReference();
+
+    @CmsField(only = {"REQUEST"})
     public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsCBValueEntry> cbValue = new CmsArray<>(CmsCBValueEntry::new).capacity(100);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetAllCBValues() {
+    }
+
     public CmsGetAllCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("acsiClass");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("cbValue");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetAllCBValues does not support " + messageType);
-        }
     }
 
     public CmsGetAllCBValues(boolean isResp, boolean isErr) {
@@ -169,31 +168,4 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.GET_ALL_CB_VALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetAllCBValues copy() {
-        CmsGetAllCBValues copy = new CmsGetAllCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = reference.copy();
-        copy.acsiClass = acsiClass.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.cbValue = cbValue.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetAllCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetAllCBValues) new CmsGetAllCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetAllCBValues getAllCBValues) {
-        getAllCBValues.encode(pos);
-    }
-
 }

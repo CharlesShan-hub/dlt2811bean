@@ -5,12 +5,11 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -81,31 +80,30 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
     // ==================== Fields based on Table 72 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
+
+    @CmsField(only = {"REQUEST"})
     public CmsInt32U startPosition = new CmsInt32U();
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsOctetString fileData = new CmsOctetString().max(65535);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean endOfFile = new CmsBoolean();
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetFile() {
+    }
+
     public CmsGetFile(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("fileName");
-            registerField("startPosition");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("fileData");
-            registerField("endOfFile");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetFile does not support " + messageType);
-        }
     }
 
     public CmsGetFile(boolean isResp, boolean isErr) {
@@ -144,31 +142,6 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.GET_FILE;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetFile copy() {
-        CmsGetFile copy = new CmsGetFile(messageType());
-        copy.reqId.set(reqId.get());
-        copy.fileName = this.fileName.copy();
-        copy.startPosition = this.startPosition.copy();
-        copy.fileData = this.fileData.copy();
-        copy.endOfFile = this.endOfFile.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetFile read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetFile) new CmsGetFile(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetFile getFile) {
-        getFile.encode(pos);
     }
 
 }

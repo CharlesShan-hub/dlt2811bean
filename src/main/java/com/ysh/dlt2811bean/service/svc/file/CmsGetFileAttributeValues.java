@@ -3,12 +3,11 @@ package com.ysh.dlt2811bean.service.svc.file;
 import com.ysh.dlt2811bean.datatypes.compound.CmsFileEntry;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -70,27 +69,24 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
     // ==================== Fields based on Table 75 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsFileEntry fileEntry = new CmsFileEntry();
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetFileAttributeValues() {
+    }
+
     public CmsGetFileAttributeValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("fileName");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("fileEntry");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetFileAttributeValues does not support " + messageType);
-        }
     }
 
     public CmsGetFileAttributeValues(boolean isResp, boolean isErr) {
@@ -115,28 +111,4 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
     public ServiceName getServiceName() {
         return ServiceName.GET_FILE_ATTRIBUTEVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetFileAttributeValues copy() {
-        CmsGetFileAttributeValues copy = new CmsGetFileAttributeValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.fileName = this.fileName.copy();
-        copy.fileEntry = this.fileEntry.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetFileAttributeValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetFileAttributeValues) new CmsGetFileAttributeValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetFileAttributeValues getFileAttributeValues) {
-        getFileAttributeValues.encode(pos);
-    }
-
 }

@@ -2,14 +2,13 @@ package com.ysh.dlt2811bean.service.svc.association;
 
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -91,35 +90,26 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     // ==================== Fields based on Table 19 ====================
 
     // --- Request parameters ---
-    // serverAccessPointReference [0..1] VisibleString129
+    @CmsField(only = {"REQUEST"})
     public ServerAccessPointReference serverAccessPointReference = new ServerAccessPointReference();
 
-    // authenticationParameter [0..1] AuthenticationParameter (optional)
+    @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE"})
     public AuthenticationParameter authenticationParameter = new AuthenticationParameter();
 
     // --- Response+ parameters ---
-    // associationId OCTET STRING (SIZE(64))
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    // result (in Response+), serviceError (in Response-)
+    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ==================== Constructor ====================
+    public CmsAssociate() {
+    }
 
     public CmsAssociate(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("serverAccessPointReference");
-            registerField("authenticationParameter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("associationId");
-            registerField("serviceError");
-            registerField("authenticationParameter");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("Associate does not support " + messageType);
-        }
     }
 
     public CmsAssociate(boolean isResp, boolean isErr) {
@@ -139,38 +129,13 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     }
 
     public CmsAssociate serviceError(int errorCode) {
-        this.serviceError = new CmsServiceError(errorCode);
+        this.serviceError.set(errorCode);
         return this;
     }
 
     // ==================== CmsAsdu Abstract Methods ====================
-
     @Override
     public ServiceName getServiceName() {
         return ServiceName.ASSOCIATE;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsAssociate copy() {
-        CmsAssociate copy = new CmsAssociate(messageType());
-        copy.reqId.set(reqId.get());
-        copy.serverAccessPointReference = serverAccessPointReference.copy();
-        copy.authenticationParameter = authenticationParameter.copy();
-        copy.associationId = associationId.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsAssociate read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsAssociate) new CmsAssociate(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsAssociate associate) {
-        associate.encode(pos);
     }
 }

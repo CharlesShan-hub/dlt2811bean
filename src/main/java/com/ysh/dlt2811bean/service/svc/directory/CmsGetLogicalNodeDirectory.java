@@ -3,11 +3,9 @@ package com.ysh.dlt2811bean.service.svc.directory;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectName;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -92,47 +90,43 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
 
     // --- Request parameters ---
     // reference CHOICE { ldName ObjectName, lnReference ObjectReference }
+    @CmsField(only = {"REQUEST"})
     public CmsReference referenceRequest = new CmsReference();
 
     // acsiClass ACSIClass
+    @CmsField(only = {"REQUEST"})
     public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
 
     // referenceAfter [0..1] ObjectReference (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     // --- Response+ parameters ---
     // reference [0..n] SEQUENCE OF SubReference
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new).capacity(100);
 
     // moreFollows [0..1] BOOLEAN (optional)
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean();
 
     // --- Response- parameters ---
     // serviceError ServiceError
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
-    
+
+    public CmsGetLogicalNodeDirectory() {
+    }
+
     public CmsGetLogicalNodeDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("referenceRequest");
-            registerField("acsiClass");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("referenceResponse");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetLogicalNodeDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetLogicalNodeDirectory(boolean isResp, boolean isErr) {
         this(getRRMessageType(isResp, isErr));
     }
-
 
     // ==================== Convenience Setters ====================
 
@@ -161,31 +155,5 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     @Override
     public ServiceName getServiceName() {
         return ServiceName.GET_LOGIC_NODE_DIRECTORY;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetLogicalNodeDirectory copy() {
-        CmsGetLogicalNodeDirectory copy = new CmsGetLogicalNodeDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.referenceRequest = referenceRequest.copy();
-        copy.acsiClass = acsiClass.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.referenceResponse = referenceResponse.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetLogicalNodeDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetLogicalNodeDirectory) new CmsGetLogicalNodeDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetLogicalNodeDirectory service) {
-        service.encode(pos);
     }
 }

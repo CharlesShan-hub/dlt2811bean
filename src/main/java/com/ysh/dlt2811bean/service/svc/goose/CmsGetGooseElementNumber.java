@@ -6,12 +6,11 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -92,35 +91,32 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     // ==================== Fields based on Table 59 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference gocbReference = new CmsObjectReference();
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference gocbRefResp = new CmsObjectReference();
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsInt32U confRev = new CmsInt32U();
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference datSet = new CmsObjectReference();
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new).capacity(100);
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetGooseElementNumber() {
+    }
+
     public CmsGetGooseElementNumber(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("gocbReference");
-            registerField("memberData");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("gocbRefResp");
-            registerField("confRev");
-            registerField("datSet");
-            registerField("memberOffset");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("CmsGetGooseElementNumber does not support " + messageType);
-        }
     }
 
     public CmsGetGooseElementNumber(boolean isResp, boolean isErr) {
@@ -146,32 +142,4 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     public ServiceName getServiceName() {
         return ServiceName.Get_GOOSE_ElementNumber;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetGooseElementNumber copy() {
-        CmsGetGooseElementNumber copy = new CmsGetGooseElementNumber(messageType());
-        copy.reqId.set(reqId.get());
-        copy.gocbReference = this.gocbReference.copy();
-        copy.memberData = this.memberData.copy();
-        copy.gocbRefResp = this.gocbRefResp.copy();
-        copy.confRev = this.confRev.copy();
-        copy.datSet = this.datSet.copy();
-        copy.memberOffset = this.memberOffset.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetGooseElementNumber read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetGooseElementNumber) new CmsGetGooseElementNumber(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetGooseElementNumber getGooseElementNumber) {
-        getGooseElementNumber.encode(pos);  
-    }
-
 }

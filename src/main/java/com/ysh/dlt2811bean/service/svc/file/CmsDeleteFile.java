@@ -2,12 +2,11 @@ package com.ysh.dlt2811bean.service.svc.file;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -70,24 +69,20 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     // ==================== Fields based on Table 74 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsDeleteFile() {
+    }
+
     public CmsDeleteFile(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("fileName");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("DeleteFile does not support " + messageType);
-        }
     }
 
     public CmsDeleteFile(boolean isResp, boolean isErr) {
@@ -111,28 +106,6 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.DELETE_FILE;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsDeleteFile copy() {
-        CmsDeleteFile copy = new CmsDeleteFile(messageType());
-        copy.reqId.set(reqId.get());
-        copy.fileName = this.fileName.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsDeleteFile read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsDeleteFile) new CmsDeleteFile(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsDeleteFile deleteFile) {
-        deleteFile.encode(pos);
     }
 
 }

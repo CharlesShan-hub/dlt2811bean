@@ -6,12 +6,11 @@ import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -84,35 +83,36 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     // ==================== Fields based on Table 76 ====================
 
     // --- Request parameters ---
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString pathName = new CmsVisibleString().max(255);
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsUtcTime startTime = new CmsUtcTime();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsUtcTime stopTime = new CmsUtcTime();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString fileAfter = new CmsVisibleString().max(255);
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsFileEntry> fileEntry = new CmsArray<>(CmsFileEntry::new).capacity(100);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetFileDirectory() {
+    }
+
     public CmsGetFileDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerOptionalField("pathName");
-            registerOptionalField("startTime");
-            registerOptionalField("stopTime");
-            registerOptionalField("fileAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("fileEntry");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetFileDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetFileDirectory(boolean isResp, boolean isErr) {
@@ -142,32 +142,4 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     public ServiceName getServiceName() {
         return ServiceName.GET_FILE_DIRECTORY;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetFileDirectory copy() {
-        CmsGetFileDirectory copy = new CmsGetFileDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.pathName = this.pathName.copy();
-        copy.startTime = this.startTime.copy();
-        copy.stopTime = this.stopTime.copy();
-        copy.fileAfter = this.fileAfter.copy();
-        copy.fileEntry = this.fileEntry.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetFileDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetFileDirectory) new CmsGetFileDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetFileDirectory getFileDirectory) {
-        getFileDirectory.encode(pos);
-    }
-
 }

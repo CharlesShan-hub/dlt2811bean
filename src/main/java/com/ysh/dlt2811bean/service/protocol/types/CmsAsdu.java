@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.service.protocol.types;
 
 import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCompound;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
@@ -8,33 +9,33 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-/**
- * ASDU (Application Service Data Unit) — the service-specific payload.
- *
- * <p>ASDU is the payload portion of an APDU, consisting of a ReqID
- * (2-byte unsigned integer) followed by service-specific data fields.
- *
- * <p><b>ASDU Structure:</b></p>
- * <pre>
- * ┌──────────┬────────────────────┐
- * │ ReqID(2B)│ Service Data (var) │
- * └──────────┴────────────────────┘
- * </pre>
- *
- * The ReqID is handled automatically by this base class.
- */
 @Getter
 @Setter
 @Accessors(fluent = true)
 public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<T> {
 
-    public MessageType messageType = MessageType.UNKNOWN;
+    @CmsField
     public CmsInt16U reqId = new CmsInt16U(0);
 
-    protected CmsAsdu(MessageType messageType) {
+    public MessageType messageType = MessageType.UNKNOWN;
+
+    protected CmsAsdu() {
         super("ASDU");
+    }
+
+    protected CmsAsdu(MessageType messageType) {
+        this();
         this.messageType = messageType;
-        registerField("reqId");
+    }
+
+    @Override
+    protected boolean acceptField(CmsField ann) {
+        if (ann.only().length == 0) return true;
+        String mt = messageType.name();
+        for (String s : ann.only()) {
+            if (s.equals(mt)) return true;
+        }
+        return false;
     }
 
     public abstract ServiceName getServiceName();

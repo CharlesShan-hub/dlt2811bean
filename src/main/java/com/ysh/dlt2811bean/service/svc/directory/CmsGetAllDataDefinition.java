@@ -5,8 +5,7 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -95,40 +94,40 @@ public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
     // ==================== Fields based on Table 29 ====================
 
     // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsReference reference = new CmsReference();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsFC fc = new CmsFC();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsDataDefinitionEntry> data = new CmsArray<>(CmsDataDefinitionEntry::new).capacity(100);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
     // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
-    
+
     // ========================= Constructor ============================
-    
-    public CmsGetAllDataDefinition(MessageType messageType) {
-        super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerOptionalField("fc");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("data");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetAllDataDefinition does not support " + messageType);
-        }
+
+    public CmsGetAllDataDefinition() {
     }
 
-    // ====================== Convenience Setters =======================
+    public CmsGetAllDataDefinition(MessageType messageType) {
+        super(messageType);
+    }
 
     public CmsGetAllDataDefinition(boolean isResp, boolean isErr) {
         this(getRRMessageType(isResp, isErr));
     }
+
+    // ====================== Convenience Setters =======================
 
     public CmsGetAllDataDefinition ldName(String name) {
         this.reference.ldName(name);
@@ -161,31 +160,4 @@ public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
     public ServiceName getServiceName() {
         return ServiceName.GET_ALL_DATA_DEFINITION;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetAllDataDefinition copy() {
-        CmsGetAllDataDefinition copy = new CmsGetAllDataDefinition(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = reference.copy();
-        copy.fc = fc.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.data = data.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetAllDataDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetAllDataDefinition) new CmsGetAllDataDefinition(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetAllDataDefinition getAllDataDefinition) {
-        getAllDataDefinition.encode(pos);
-    }
-
 }

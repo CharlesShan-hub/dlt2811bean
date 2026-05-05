@@ -2,8 +2,7 @@ package com.ysh.dlt2811bean.service.svc.association;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -74,24 +73,19 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
 
     // ==================== Fields based on Table 20 ====================
 
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
     public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
+    @CmsField(only = {"RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ============================ Constructor =========================
 
+    public CmsRelease() {
+    }
+
     public CmsRelease(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("associationId");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("associationId");
-            registerField("serviceError");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("Release does not support " + messageType);
-        }
     }
 
     public CmsRelease(boolean isResp, boolean isErr) {
@@ -115,27 +109,5 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.RELEASE;
-    }
-
-    // ================= CmsType Implementation ========================
-
-    @Override
-    public CmsRelease copy() {
-        CmsRelease copy = new CmsRelease(messageType());
-        copy.reqId.set(reqId.get());
-        copy.associationId = this.associationId.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsRelease read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsRelease) new CmsRelease(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsRelease release) {
-        release.encode(pos);
     }
 }

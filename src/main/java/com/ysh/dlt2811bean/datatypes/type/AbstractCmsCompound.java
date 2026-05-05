@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.datatypes.type;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,17 +11,47 @@ import java.util.Set;
 public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         extends AbstractCmsType<T> implements CmsCompound<T> {
 
+    private boolean fieldsRegistered = false;
     private final List<String> fieldNames = new ArrayList<>();
     private final List<Boolean> fieldOptional = new ArrayList<>();
     private final Set<String> presentFields = new HashSet<>();
+    private final Set<String> removedFields = new HashSet<>();
 
     protected AbstractCmsCompound(String typeName) {
         super(typeName);
     }
 
+    private void ensureFieldsRegistered() {
+        if (fieldsRegistered) return;
+        fieldsRegistered = true;
+        Class<?> clazz = getClass();
+        while (clazz != AbstractCmsCompound.class && clazz != null) {
+            for (java.lang.reflect.Field f : clazz.getFields()) {
+                CmsField ann = f.getAnnotation(CmsField.class);
+                if (ann != null && !fieldNames.contains(f.getName())
+                        && !removedFields.contains(f.getName())
+                        && acceptField(ann)) {
+                    registerField(f.getName(), ann.optional());
+                }
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
+
+    protected boolean acceptField(CmsField ann) {
+        return ann.only().length == 0;
+    }
+
     protected final void registerField(String name) {
         fieldNames.add(name);
         fieldOptional.add(false);
+    }
+
+    private void registerField(String name, boolean optional) {
+        if (!fieldNames.contains(name)) {
+            fieldNames.add(name);
+            fieldOptional.add(optional);
+        }
     }
 
     protected final void registerOptionalField(String name) {
@@ -31,6 +60,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     }
 
     protected final void removeField(String name) {
+        removedFields.add(name);
         int idx = fieldNames.indexOf(name);
         if (idx >= 0) {
             fieldNames.remove(idx);
@@ -44,7 +74,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     private AbstractCmsType<?> getField(String name) {
         try {
-            Field f = getClass().getField(name);
+            java.lang.reflect.Field f = getClass().getField(name);
             return (AbstractCmsType<?>) f.get(this);
         } catch (Exception e) {
             throw new RuntimeException("Field not accessible: " + name, e);
@@ -56,6 +86,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     @Override
     public void encode(PerOutputStream pos) {
+        ensureFieldsRegistered();
         validate();
         for (int i = 0; i < fieldNames.size(); i++) {
             if (fieldOptional.get(i)) {
@@ -74,6 +105,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     @Override
     @SuppressWarnings("unchecked")
     public T decode(PerInputStream pis) throws Exception {
+        ensureFieldsRegistered();
         presentFields.clear();
         for (int i = 0; i < fieldNames.size(); i++) {
             if (fieldOptional.get(i) && pis.readBit()) {
@@ -93,12 +125,13 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     @Override
     @SuppressWarnings("unchecked")
     public T copy() {
+        ensureFieldsRegistered();
         try {
             T clone = (T) getClass().getDeclaredConstructor().newInstance();
             for (String name : fieldNames) {
                 AbstractCmsType<?> field = getField(name);
                 AbstractCmsType<?> clonedField = (AbstractCmsType<?>) field.copy();
-                Field f = getClass().getField(name);
+                java.lang.reflect.Field f = getClass().getField(name);
                 f.set(clone, clonedField);
             }
             ((AbstractCmsCompound<?>) clone).presentFields.addAll(this.presentFields);
@@ -110,6 +143,7 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     @Override
     public String toString() {
+        ensureFieldsRegistered();
         return toString(0);
     }
 
