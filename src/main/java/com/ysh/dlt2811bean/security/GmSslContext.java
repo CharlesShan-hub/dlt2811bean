@@ -37,14 +37,52 @@ public class GmSslContext {
 
     private static final String PROTOCOL = "TLS";
 
+    /**
+     * 国密 TLS 支持的协议版本。
+     * 注意：国密 TLS 使用特定的协议标识，需要 Bouncy Castle JSSE Provider 支持。
+     */
+    private static final String[] ENABLED_PROTOCOLS = {
+            "TLSv1.2"   // 国密 TLS 基于 TLS 1.1/1.2
+    };
+
+    /**
+     * 国密 TLS 支持的加密套件。
+     * Bouncy Castle JSSE Provider 支持的国密套件格式。
+     * 注意：完整的国密 TLS 支持需要特殊的 JSSE Provider（如阿里云 gm-jsse）。
+     */
+    private static final String[] ENABLED_CIPHER_SUITES = {
+            // RFC 风格命名
+            "TLS_ECDHE_ECDSA_WITH_SM4_SM3",
+            "TLS_ECDHE_RSA_WITH_SM4_SM3",
+            "TLS_ECDH_ECDSA_WITH_SM4_SM3",
+            "TLS_ECDH_RSA_WITH_SM4_SM3",
+            // GmSSL 风格命名
+            "ECDHE_SM4_SM3",
+            "ECC_SM4_SM3"
+    };
+
+    /**
+     * Standard TLS cipher suites for testing (when 国密 is not available).
+     */
+    private static final String[] STANDARD_CIPHER_SUITES = {
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_RSA_WITH_AES_256_GCM_SHA384"
+    };
+
     private final SSLContext sslContext;
     private final TrustManager[] trustManagers;
     private final KeyManager[] keyManagers;
+    private final boolean useStandardTls;
 
-    private GmSslContext(SSLContext sslContext, KeyManager[] keyManagers, TrustManager[] trustManagers) {
+    private GmSslContext(SSLContext sslContext, KeyManager[] keyManagers, TrustManager[] trustManagers, boolean useStandardTls) {
         this.sslContext = sslContext;
         this.keyManagers = keyManagers;
         this.trustManagers = trustManagers;
+        this.useStandardTls = useStandardTls;
     }
 
     /**
@@ -82,6 +120,33 @@ public class GmSslContext {
         return trustManagers;
     }
 
+    /**
+     * 获取启用的协议版本数组。
+     *
+     * @return 支持的协议版本
+     */
+    public String[] getEnabledProtocols() {
+        return ENABLED_PROTOCOLS.clone();
+    }
+
+    /**
+     * 获取启用的加密套件数组。
+     *
+     * @return 支持的加密套件
+     */
+    public String[] getEnabledCipherSuites() {
+        return useStandardTls ? STANDARD_CIPHER_SUITES.clone() : ENABLED_CIPHER_SUITES.clone();
+    }
+
+    /**
+     * 获取标准TLS加密套件数组（用于测试）。
+     *
+     * @return 标准TLS加密套件
+     */
+    public String[] getStandardCipherSuites() {
+        return STANDARD_CIPHER_SUITES.clone();
+    }
+
     // ==================== Builder ====================
 
     /**
@@ -93,6 +158,9 @@ public class GmSslContext {
         private String keyPassword;
         private String trustStorePath;
         private String trustStorePassword;
+        private KeyManager[] keyManagers;
+        private TrustManager[] trustManagers;
+        private boolean useStandardTls = false;
 
         public ServerBuilder keyStore(String path, String password) {
             this.keyStorePath = path;
@@ -102,6 +170,19 @@ public class GmSslContext {
 
         public ServerBuilder keyPassword(String password) {
             this.keyPassword = password;
+            return this;
+        }
+
+        /**
+         * Sets key manager directly from KeyPair and Certificate.
+         *
+         * @param keyPair the key pair
+         * @param cert    the certificate
+         * @return this builder
+         * @throws Exception if creation fails
+         */
+        public ServerBuilder keyManager(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
+            this.keyManagers = createKeyManagers(keyPair, cert, useStandardTls);
             return this;
         }
 
@@ -117,15 +198,51 @@ public class GmSslContext {
             return this;
         }
 
+        /**
+         * Sets trust manager directly.
+         *
+         * @param trustManagers the trust managers
+         * @return this builder
+         */
+        public ServerBuilder trustManager(TrustManager[] trustManagers) {
+            this.trustManagers = trustManagers;
+            return this;
+        }
+
+        /**
+         * Uses standard TLS cipher suites instead of 国密 suites.
+         * Useful for testing or when 国密 JSSE provider is not available.
+         *
+         * @return this builder
+         */
+        public ServerBuilder useStandardTls() {
+            this.useStandardTls = true;
+            return this;
+        }
+
         public GmSslContext build() throws Exception {
+            if (useStandardTls) {
+                return buildStandard();
+            }
             registerProvider();
 
-            KeyManager[] keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword);
-            TrustManager[] trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
+            if (keyManagers == null) {
+                keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword);
+            }
+            if (trustManagers == null) {
+                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
+            }
 
             SSLContext sslContext = createSslContext(keyManagers, trustManagers);
 
-            return new GmSslContext(sslContext, keyManagers, trustManagers);
+            return new GmSslContext(sslContext, keyManagers, trustManagers, false);
+        }
+
+        private GmSslContext buildStandard() throws Exception {
+            // Use default SSL context for standard TLS
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+            return new GmSslContext(sslContext, keyManagers, trustManagers, true);
         }
     }
 
@@ -138,6 +255,9 @@ public class GmSslContext {
         private String keyPassword;
         private String trustStorePath;
         private String trustStorePassword;
+        private KeyManager[] keyManagers;
+        private TrustManager[] trustManagers;
+        private boolean useStandardTls = false;
 
         public ClientBuilder keyStore(String path, String password) {
             this.keyStorePath = path;
@@ -147,6 +267,19 @@ public class GmSslContext {
 
         public ClientBuilder keyPassword(String password) {
             this.keyPassword = password;
+            return this;
+        }
+
+        /**
+         * Sets key manager directly from KeyPair and Certificate.
+         *
+         * @param keyPair the key pair
+         * @param cert    the certificate
+         * @return this builder
+         * @throws Exception if creation fails
+         */
+        public ClientBuilder keyManager(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
+            this.keyManagers = createKeyManagers(keyPair, cert, useStandardTls);
             return this;
         }
 
@@ -162,19 +295,51 @@ public class GmSslContext {
             return this;
         }
 
+        /**
+         * Sets trust manager directly.
+         *
+         * @param trustManagers the trust managers
+         * @return this builder
+         */
+        public ClientBuilder trustManager(TrustManager[] trustManagers) {
+            this.trustManagers = trustManagers;
+            return this;
+        }
+
+        /**
+         * Uses standard TLS cipher suites instead of 国密 suites.
+         * Useful for testing or when 国密 JSSE provider is not available.
+         *
+         * @return this builder
+         */
+        public ClientBuilder useStandardTls() {
+            this.useStandardTls = true;
+            return this;
+        }
+
         public GmSslContext build() throws Exception {
+            if (useStandardTls) {
+                return buildStandard();
+            }
             registerProvider();
 
-            KeyManager[] keyManagers = null;
-            if (keyStorePath != null) {
+            if (keyManagers == null && keyStorePath != null) {
                 keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword);
             }
-
-            TrustManager[] trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
+            if (trustManagers == null) {
+                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
+            }
 
             SSLContext sslContext = createSslContext(keyManagers, trustManagers);
 
-            return new GmSslContext(sslContext, keyManagers, trustManagers);
+            return new GmSslContext(sslContext, keyManagers, trustManagers, false);
+        }
+
+        private GmSslContext buildStandard() throws Exception {
+            // Use default SSL context for standard TLS
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(keyManagers, trustManagers, new java.security.SecureRandom());
+            return new GmSslContext(sslContext, keyManagers, trustManagers, true);
         }
     }
 
@@ -205,6 +370,35 @@ public class GmSslContext {
         String actualKeyPassword = (keyPassword != null) ? keyPassword : keyStorePassword;
         KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
         kmf.init(keyStore, actualKeyPassword.toCharArray());
+
+        return kmf.getKeyManagers();
+    }
+
+    /**
+     * 从 KeyPair 和 Certificate 创建 KeyManager。
+     */
+    private static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
+        return createKeyManagers(keyPair, cert, false);
+    }
+
+    /**
+     * 从 KeyPair 和 Certificate 创建 KeyManager。
+     * @param keyPair 密钥对
+     * @param cert 证书
+     * @param useStandardTls 是否使用标准TLS
+     */
+    static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert, boolean useStandardTls) throws Exception {
+        if (!useStandardTls) {
+            registerProvider();
+        }
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keyStore.load(null, null);
+        keyStore.setKeyEntry("key", keyPair.getPrivate(), "".toCharArray(), new java.security.cert.Certificate[]{cert});
+
+        String algorithm = useStandardTls ? KeyManagerFactory.getDefaultAlgorithm() : "PKIX";
+        String provider = useStandardTls ? "BC" : "BCJSSE";
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(algorithm, provider);
+        kmf.init(keyStore, "".toCharArray());
 
         return kmf.getKeyManagers();
     }

@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -62,6 +63,24 @@ public class CmsClient {
     }
 
     /**
+     * Connects to a CMS server using 国密 TLS.
+     * Requires {@link #sslContext(GmSslContext)} to be called first.
+     *
+     * @param host server hostname or IP
+     * @param port server port
+     * @throws Exception if connection fails
+     */
+    public void connectTls(String host, int port) throws Exception {
+        if (!transport.isTlsEnabled()) {
+            throw new IllegalStateException("SSL context not set, call sslContext() first");
+        }
+        connection = transport.connectTls(host, port, listener);
+        session = new CmsClientSession(connection);
+        connection.startReadLoop();
+        log.info("Connected to {}:{} (TLS)", host, port);
+    }
+
+    /**
      * Closes the connection.
      */
     public void close() {
@@ -74,6 +93,26 @@ public class CmsClient {
     }
 
     // ==================== Config ====================
+
+    /**
+     * Sets the 国密 SSL context for TLS connections.
+     *
+     * @param sslContext the SSL context
+     * @return this client for chaining
+     */
+    public CmsClient sslContext(GmSslContext sslContext) {
+        transport.sslContext(sslContext);
+        return this;
+    }
+
+    /**
+     * Checks if TLS/SSL is enabled for this client.
+     *
+     * @return true if TLS is enabled, false otherwise
+     */
+    public boolean isTlsEnabled() {
+        return transport.isTlsEnabled();
+    }
 
     /**
      * Sets the default server access point for associate.

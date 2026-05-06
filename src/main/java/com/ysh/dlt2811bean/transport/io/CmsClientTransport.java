@@ -63,6 +63,16 @@ public class CmsClientTransport {
                     .getSocketFactory()
                     .createSocket(host, port);
 
+            // 设置国密 TLS 协议版本
+            socket.setEnabledProtocols(sslContext.getEnabledProtocols());
+
+            // 尝试设置加密套件，如果不支持则忽略
+            try {
+                socket.setEnabledCipherSuites(sslContext.getEnabledCipherSuites());
+            } catch (Exception e) {
+                // 忽略加密套件设置错误，使用默认值
+            }
+
             // 强制 TLS 握手
             socket.setUseClientMode(true);
             socket.startHandshake();

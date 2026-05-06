@@ -81,6 +81,11 @@ public class CmsServerTransport {
                 SSLServerSocket socket = (SSLServerSocket) sslContext.getSslContext()
                         .getServerSocketFactory()
                         .createServerSocket(port);
+
+                // 设置国密 TLS 协议版本和加密套件
+                socket.setEnabledProtocols(sslContext.getEnabledProtocols());
+                socket.setEnabledCipherSuites(sslContext.getEnabledCipherSuites());
+
                 if (needClientAuth) {
                     socket.setNeedClientAuth(true);
                 } else {
@@ -91,7 +96,9 @@ public class CmsServerTransport {
                 throw new IOException("Failed to create SSL server socket: " + e.getMessage(), e);
             }
         }
-        return new ServerSocket(port);
+        ServerSocket serverSocket = new ServerSocket(port);
+        serverSocket.setReuseAddress(true);
+        return serverSocket;
     }
 
     /**

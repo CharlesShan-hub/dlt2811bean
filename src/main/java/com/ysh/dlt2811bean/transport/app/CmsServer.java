@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
@@ -91,6 +92,32 @@ public class CmsServer {
      */
     public boolean isBound() {
         return transport.isBound();
+    }
+
+    // ==================== TLS Config ====================
+
+    /**
+     * Sets the 国密 SSL context for TLS connections.
+     * Must be called before {@link #start()}.
+     *
+     * @param sslContext the SSL context
+     * @return this server for chaining
+     */
+    public CmsServer sslContext(GmSslContext sslContext) {
+        transport.sslContext(sslContext);
+        return this;
+    }
+
+    /**
+     * Sets whether client certificate is required (mutual TLS).
+     * Must be called before {@link #start()}.
+     *
+     * @param need true to require client certificate
+     * @return this server for chaining
+     */
+    public CmsServer needClientAuth(boolean need) {
+        transport.needClientAuth(need);
+        return this;
     }
 
     // ==================== Handlers ====================
