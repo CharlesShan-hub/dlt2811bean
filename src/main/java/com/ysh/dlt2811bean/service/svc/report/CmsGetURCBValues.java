@@ -111,11 +111,11 @@ public class CmsGetURCBValues extends CmsAsdu<CmsGetURCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetURCBValues() {
-        super(ServiceName.GET_URCBVALUES);
+        super(ServiceName.GET_URCB_VALUES);
     }
 
     public CmsGetURCBValues(MessageType messageType) {
-        super(ServiceName.GET_URCBVALUES, messageType);
+        super(ServiceName.GET_URCB_VALUES, messageType);
     }
 
     public CmsGetURCBValues(boolean isResp, boolean isErr) {

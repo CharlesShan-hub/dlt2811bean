@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsGetFileAttributeValues")
 class CmsGetFileAttributeValuesTest implements ServiceNameTest<CmsGetFileAttributeValues> {
 
-    @Override public ServiceName expectedServiceName() { return ServiceName.GET_FILE_ATTRIBUTEVALUES; }
+    @Override public ServiceName expectedServiceName() { return ServiceName.GET_FILE_ATTRIBUTE_VALUES; }
     @Override public CmsGetFileAttributeValues createAsdu() { return new CmsGetFileAttributeValues(MessageType.REQUEST); }
 
     @Test @DisplayName("REQUEST round-trip")

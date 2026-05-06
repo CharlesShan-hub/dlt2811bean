@@ -109,11 +109,11 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetLCBValues() {
-        super(ServiceName.SET_LCBVALUES);
+        super(ServiceName.SET_LCB_VALUES);
     }
 
     public CmsSetLCBValues(MessageType messageType) {
-        super(ServiceName.SET_LCBVALUES, messageType);
+        super(ServiceName.SET_LCB_VALUES, messageType);
     }
 
     public CmsSetLCBValues(boolean isResp, boolean isErr) {

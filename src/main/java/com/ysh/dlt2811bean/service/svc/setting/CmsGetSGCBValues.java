@@ -90,11 +90,11 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetSGCBValues() {
-        super(ServiceName.GET_SGCBVALUES);
+        super(ServiceName.GET_SGCB_VALUES);
     }
 
     public CmsGetSGCBValues(MessageType messageType) {
-        super(ServiceName.GET_SGCBVALUES, messageType);
+        super(ServiceName.GET_SGCB_VALUES, messageType);
     }
 
     public CmsGetSGCBValues(boolean isResp, boolean isErr) {

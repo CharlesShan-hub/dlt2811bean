@@ -11,7 +11,7 @@ class GetGoReferenceTest implements ServiceNameTest<com.ysh.dlt2811bean.service.
 
     @Override
     public ServiceName expectedServiceName() {
-        return ServiceName.Get_Go_Reference;
+        return ServiceName.GET_GO_REFERENCE;    
     }
 
     @Override

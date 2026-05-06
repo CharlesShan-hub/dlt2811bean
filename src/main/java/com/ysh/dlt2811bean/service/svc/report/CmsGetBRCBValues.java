@@ -96,11 +96,11 @@ public class CmsGetBRCBValues extends CmsAsdu<CmsGetBRCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetBRCBValues() {
-        super(ServiceName.GET_BRCBVALUES);
+        super(ServiceName.GET_BRCB_VALUES);
     }
     
     public CmsGetBRCBValues(MessageType messageType) {
-        super(ServiceName.GET_BRCBVALUES, messageType);
+        super(ServiceName.GET_BRCB_VALUES, messageType);
     }
 
     public CmsGetBRCBValues(boolean isResp, boolean isErr) {

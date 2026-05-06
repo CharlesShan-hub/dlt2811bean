@@ -56,33 +56,33 @@ public enum ServiceName {
     SET_EDIT_SG_VALUE(0x56, "SetEditSGValue"),
     CONFIRM_EDIT_SG_VALUES(0x57, "ConfirmEditSGValues"),
     GET_EDIT_SG_VALUE(0x58, "GetEditSGValue"),
-    GET_SGCBVALUES(0x59, "GetSGCBValues"),
+    GET_SGCB_VALUES(0x59, "GetSGCBValues"),
 
     // ==================== 8.7 报告服务 ====================
     REPORT(0x5A, "Report"),
-    GET_BRCBVALUES(0x5B, "GetBRCBValues"),
-    SET_BRCBVALUES(0x5C, "SetBRCBValues"),
-    GET_URCBVALUES(0x5D, "GetURCBValues"),
-    SET_URCBVALUES(0x5E, "SetURCBValues"),
+    GET_BRCB_VALUES(0x5B, "GetBRCBValues"),
+    SET_BRCB_VALUES(0x5C, "SetBRCBValues"),
+    GET_URCB_VALUES(0x5D, "GetURCBValues"),
+    SET_URCB_VALUES(0x5E, "SetURCBValues"),
 
     // ==================== 8.8 日志服务 ====================
-    GET_LCBVALUES(0x5F, "GetLCBValues"),
-    SET_LCBVALUES(0x60, "SetLCBValues"),
+    GET_LCB_VALUES(0x5F, "GetLCBValues"),
+    SET_LCB_VALUES(0x60, "SetLCBValues"),
     QUERY_LOG_BY_TIME(0x61, "QueryLogByTime"),
     QUERY_LOG_AFTER(0x62, "QueryLogAfter"),
     GET_LOG_STATUS_VALUES(0x63, "GetLogStatusValues"),
 
     // ==================== 8.9 通用变电站事件类服务 ====================
-    Send_GOOSE_Message(0x00, "SendGOOSEMessage"), // goose service, no service code
-    Get_Go_Reference(0x00, "GetGoReference"), // goose service, no service code
-    Get_GOOSE_ElementNumber(0x00, "GetGOOSEElementNumber"), // goose service, no service code
-    GET_GOCBVALUES(0x66, "GetGoCBValues"),
-    SET_GOCBVALUES(0x67, "SetGoCBValues"),
+    SEND_GOOSE_MESSAGE(0x00, "SendGOOSEMessage"), // goose service, no service code
+    GET_GO_REFERENCE(0x00, "GetGoReference"), // goose service, no service code
+    GET_GOOSE_ELEMENT_NUMBER(0x00, "GetGOOSEElementNumber"), // goose service, no service code
+    GET_GOCB_VALUES(0x66, "GetGoCBValues"),
+    SET_GOCB_VALUES(0x67, "SetGoCBValues"),
 
     // ==================== 8.10 多播采样值类服务 ====================
-    Send_MSVMessage(0x00, "SendMSVMessage"), // msv service, no service code
-    GET_MSVCBVALUES(0x69, "GetMSVCBValues"),
-    SET_MSVCBVALUES(0x6A, "SetMSVCBValues"),
+    SEND_MSV_MESSAGE(0x00, "SendMSVMessage"), // msv service, no service code
+    GET_MSVCB_VALUES(0x69, "GetMSVCBValues"),
+    SET_MSVCB_VALUES(0x6A, "SetMSVCBValues"),
 
     // ==================== 8.11 控制服务 ====================
     SELECT(0x44, "Select"),
@@ -97,7 +97,7 @@ public enum ServiceName {
     GET_FILE(0x80, "GetFile"),
     SET_FILE(0x81, "SetFile"),
     DELETE_FILE(0x82, "DeleteFile"),
-    GET_FILE_ATTRIBUTEVALUES(0x83, "GetFileAttributeValues"),
+    GET_FILE_ATTRIBUTE_VALUES(0x83, "GetFileAttributeValues"),
     GET_FILE_DIRECTORY(0x84, "GetFileDirectory"),
 
     // ==================== 8.13 远程过程调用 ====================

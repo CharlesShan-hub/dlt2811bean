@@ -16,7 +16,7 @@ class CmsGetMSVCBValuesTest implements ServiceNameTest<CmsGetMSVCBValues> {
 
     @Override
     public ServiceName expectedServiceName() {
-        return ServiceName.GET_MSVCBVALUES;
+        return ServiceName.GET_MSVCB_VALUES;
     }
 
     @Override

@@ -52,33 +52,33 @@ public class AsduFactory {
             case SET_EDIT_SG_VALUE: return new CmsSetEditSGValue(isResp, isErr);
             case CONFIRM_EDIT_SG_VALUES: return new CmsConfirmEditSGValues(isResp, isErr);
             case GET_EDIT_SG_VALUE: return new CmsGetEditSGValue(isResp, isErr);
-            case GET_SGCBVALUES: return new CmsGetSGCBValues(isResp, isErr);
+            case GET_SGCB_VALUES: return new CmsGetSGCBValues(isResp, isErr);
 
             // 8.7 Report Services
             case REPORT: return new CmsReport();
-            case GET_BRCBVALUES: return new CmsGetBRCBValues(isResp, isErr);
-            case SET_BRCBVALUES: return new CmsSetBRCBValues(isResp, isErr);
-            case GET_URCBVALUES: return new CmsGetURCBValues(isResp, isErr);
-            case SET_URCBVALUES: return new CmsSetURCBValues(isResp, isErr);
+            case GET_BRCB_VALUES: return new CmsGetBRCBValues(isResp, isErr);
+            case SET_BRCB_VALUES: return new CmsSetBRCBValues(isResp, isErr);
+            case GET_URCB_VALUES: return new CmsGetURCBValues(isResp, isErr);
+            case SET_URCB_VALUES: return new CmsSetURCBValues(isResp, isErr);
 
             // 8.8 Log Services
-            case GET_LCBVALUES: return new CmsGetLCBValues(isResp, isErr);
-            case SET_LCBVALUES: return new CmsSetLCBValues(isResp, isErr);
+            case GET_LCB_VALUES: return new CmsGetLCBValues(isResp, isErr);
+            case SET_LCB_VALUES: return new CmsSetLCBValues(isResp, isErr);
             case QUERY_LOG_BY_TIME: return new CmsQueryLogByTime(isResp,isErr);
             case QUERY_LOG_AFTER: return new CmsQueryLogAfter(isResp, isErr);
             case GET_LOG_STATUS_VALUES: return new CmsGetLogStatusValues(isResp, isErr);
 
             // 8.9 General Substation Event Services
-            case Send_GOOSE_Message: return new CmsSendGooseMessage(); // N/A (Part of GOOSE Management Services)
-            case Get_Go_Reference: return new CmsGetGoReference(isResp, isErr); // N/A (Part of GOOSE Management Services)
-            case Get_GOOSE_ElementNumber: return new CmsGetGooseElementNumber(isResp, isErr); // N/A (Part of GOOSE Management Services)
-            case GET_GOCBVALUES: return new CmsGetGoCBValues(isResp, isErr);
-            case SET_GOCBVALUES: return new CmsSetGoCBValues(isResp, isErr);
+            case SEND_GOOSE_MESSAGE: return new CmsSendGooseMessage(); // N/A (Part of GOOSE Management Services)
+            case GET_GO_REFERENCE: return new CmsGetGoReference(isResp, isErr); // N/A (Part of GOOSE Management Services)
+            case GET_GOOSE_ELEMENT_NUMBER: return new CmsGetGooseElementNumber(isResp, isErr); // N/A (Part of GOOSE Management Services)
+            case GET_GOCB_VALUES: return new CmsGetGoCBValues(isResp, isErr);
+            case SET_GOCB_VALUES: return new CmsSetGoCBValues(isResp, isErr);
 
             // 8.10 SV Services
-            case Send_MSVMessage: return new CmsSendMSVMessage(); // N/A (Part of GOOSE Management Services)
-            case GET_MSVCBVALUES: return new CmsGetMSVCBValues(isResp, isErr);
-            case SET_MSVCBVALUES: return new CmsSetMSVCBValues(isResp, isErr);
+            case SEND_MSV_MESSAGE: return new CmsSendMSVMessage(); // N/A (Part of GOOSE Management Services)
+            case GET_MSVCB_VALUES: return new CmsGetMSVCBValues(isResp, isErr);
+            case SET_MSVCB_VALUES: return new CmsSetMSVCBValues(isResp, isErr); 
 
             // 8.11 Control Services
             case SELECT: return new CmsSelect(isResp, isErr);   
@@ -93,7 +93,7 @@ public class AsduFactory {
             case GET_FILE: return new CmsGetFile(isResp, isErr);
             case SET_FILE: return new CmsSetFile(isResp, isErr);
             case DELETE_FILE: return new CmsDeleteFile(isResp, isErr);
-            case GET_FILE_ATTRIBUTEVALUES: return new CmsGetFileAttributeValues(isResp, isErr);
+            case GET_FILE_ATTRIBUTE_VALUES: return new CmsGetFileAttributeValues(isResp, isErr);
             case GET_FILE_DIRECTORY: return new CmsGetFileDirectory(isResp, isErr);
 
             // 8.13 RPC Services

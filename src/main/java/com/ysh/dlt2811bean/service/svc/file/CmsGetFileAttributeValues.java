@@ -80,11 +80,11 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
     // ========================= Constructor ============================
 
     public CmsGetFileAttributeValues() {
-        super(ServiceName.GET_FILE_ATTRIBUTEVALUES);
+        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES);
     }
 
     public CmsGetFileAttributeValues(MessageType messageType) {
-        super(ServiceName.GET_FILE_ATTRIBUTEVALUES, messageType);
+        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, messageType);
     }
 
     public CmsGetFileAttributeValues(boolean isResp, boolean isErr) {

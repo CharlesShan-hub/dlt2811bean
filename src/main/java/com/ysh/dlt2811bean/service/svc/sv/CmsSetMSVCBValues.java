@@ -107,11 +107,11 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetMSVCBValues() {
-        super(ServiceName.SET_MSVCBVALUES);
+        super(ServiceName.SET_MSVCB_VALUES);
     }
 
     public CmsSetMSVCBValues(MessageType messageType) {
-        super(ServiceName.SET_MSVCBVALUES, messageType);
+        super(ServiceName.SET_MSVCB_VALUES, messageType);
     }
 
     public CmsSetMSVCBValues(boolean isResp, boolean isErr) {

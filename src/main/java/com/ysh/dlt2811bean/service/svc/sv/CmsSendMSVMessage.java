@@ -98,7 +98,7 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     }
 
     public CmsSendMSVMessage(MessageType messageType) {
-        super(ServiceName.Send_MSVMessage, messageType);
+        super(ServiceName.SEND_MSV_MESSAGE, messageType);
         // message type is not need for SendMSVMessage
         registerField("msvID");
         registerOptionalField("datSet");

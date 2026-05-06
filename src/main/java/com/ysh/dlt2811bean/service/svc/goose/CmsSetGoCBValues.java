@@ -36,11 +36,11 @@ public class CmsSetGoCBValues extends CmsAsdu<CmsSetGoCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetGoCBValues() {
-        super(ServiceName.SET_GOCBVALUES);
+        super(ServiceName.SET_GOCB_VALUES);
     }
 
     public CmsSetGoCBValues(MessageType messageType) {
-        super(ServiceName.SET_GOCBVALUES, messageType);
+        super(ServiceName.SET_GOCB_VALUES, messageType);
     }
 
     public CmsSetGoCBValues(boolean isResp, boolean isErr) {

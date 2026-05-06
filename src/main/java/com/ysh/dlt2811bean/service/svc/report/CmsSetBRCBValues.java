@@ -102,11 +102,11 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetBRCBValues() {
-        super(ServiceName.SET_BRCBVALUES);
+        super(ServiceName.SET_BRCB_VALUES);
     }
     
     public CmsSetBRCBValues(MessageType messageType) {
-        super(ServiceName.SET_BRCBVALUES, messageType);
+        super(ServiceName.SET_BRCB_VALUES, messageType);
     }
 
     public CmsSetBRCBValues(boolean isResp, boolean isErr) {

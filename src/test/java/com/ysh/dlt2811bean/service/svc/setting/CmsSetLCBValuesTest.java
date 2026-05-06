@@ -138,6 +138,6 @@ class CmsSetLCBValuesTest {
     @DisplayName("getServiceCode returns SET_LCBVALUES")
     void serviceCode() {
         CmsSetLCBValues asdu = new CmsSetLCBValues(MessageType.REQUEST);
-        assertEquals(ServiceName.SET_LCBVALUES, asdu.getServiceName());
+        assertEquals(ServiceName.SET_LCB_VALUES, asdu.getServiceName());
     }
 }

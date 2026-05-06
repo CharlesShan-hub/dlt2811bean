@@ -31,6 +31,6 @@ class CmsSendGooseMessageTest {
 
     @Test
     void serviceCode() {
-        assertEquals(ServiceName.Send_GOOSE_Message, new CmsSendGooseMessage().getServiceName());
+        assertEquals(ServiceName.SEND_GOOSE_MESSAGE, new CmsSendGooseMessage().getServiceName());
     }
 }

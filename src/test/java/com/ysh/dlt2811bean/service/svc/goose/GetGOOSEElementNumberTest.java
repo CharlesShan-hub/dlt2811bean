@@ -8,7 +8,7 @@ class GetGooseElementNumberTest implements ServiceNameTest<com.ysh.dlt2811bean.s
 
     @Override
     public ServiceName expectedServiceName() {
-        return ServiceName.Get_GOOSE_ElementNumber;
+        return ServiceName.GET_GOOSE_ELEMENT_NUMBER;
     }
 
     @Override

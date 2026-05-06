@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsGetSGCBValues")
 class CmsGetSGCBValuesTest implements ServiceNameTest<CmsGetSGCBValues> {
-    @Override public ServiceName expectedServiceName() { return ServiceName.GET_SGCBVALUES; }
+    @Override public ServiceName expectedServiceName() { return ServiceName.GET_SGCB_VALUES; }
     @Override public CmsGetSGCBValues createAsdu() { return new CmsGetSGCBValues(MessageType.REQUEST); }
 
     @Test @DisplayName("REQUEST round-trip")

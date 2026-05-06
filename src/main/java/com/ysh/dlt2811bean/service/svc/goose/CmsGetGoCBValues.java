@@ -104,11 +104,11 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetGoCBValues() {
-        super(ServiceName.GET_GOCBVALUES);
+        super(ServiceName.GET_GOCB_VALUES);
     }
     
     public CmsGetGoCBValues(MessageType messageType) {
-        super(ServiceName.GET_GOCBVALUES, messageType);
+        super(ServiceName.GET_GOCB_VALUES, messageType);
     }
 
     public CmsGetGoCBValues(boolean isResp, boolean isErr) {

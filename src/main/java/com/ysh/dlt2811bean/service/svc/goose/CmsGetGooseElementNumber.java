@@ -112,11 +112,11 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     // ========================= Constructor ============================
 
     public CmsGetGooseElementNumber() {
-        super(ServiceName.Get_GOOSE_ElementNumber);
+        super(ServiceName.GET_GOOSE_ELEMENT_NUMBER);
     }
 
     public CmsGetGooseElementNumber(MessageType messageType) {
-        super(ServiceName.Get_GOOSE_ElementNumber, messageType);
+        super(ServiceName.GET_GOOSE_ELEMENT_NUMBER, messageType);
     }
 
     public CmsGetGooseElementNumber(boolean isResp, boolean isErr) {

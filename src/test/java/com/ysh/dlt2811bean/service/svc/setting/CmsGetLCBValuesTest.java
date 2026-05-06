@@ -16,7 +16,7 @@ class CmsGetLCBValuesTest implements ServiceNameTest<CmsGetLCBValues> {
 
     @Override
     public ServiceName expectedServiceName() {
-        return ServiceName.GET_LCBVALUES;
+        return ServiceName.GET_LCB_VALUES;
     }
 
     @Override

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsGetGoCBValues")
 class CmsGetGoCBValuesTest implements ServiceNameTest<CmsGetGoCBValues>, CopyTest<CmsGetGoCBValues> {
 
-    @Override public ServiceName expectedServiceName() { return ServiceName.GET_GOCBVALUES; }
+    @Override public ServiceName expectedServiceName() { return ServiceName.GET_GOCB_VALUES; }
     @Override public CmsGetGoCBValues createAsdu() { return new CmsGetGoCBValues(MessageType.REQUEST); }
     @Override public CmsGetGoCBValues createCopyableAsdu() {
         return new CmsGetGoCBValues(MessageType.REQUEST).addGocbReference("IED1.AP1.LD1.LN1.GOCB1").reqId(10);

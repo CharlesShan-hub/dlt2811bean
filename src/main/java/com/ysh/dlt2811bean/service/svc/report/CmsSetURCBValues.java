@@ -118,11 +118,11 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetURCBValues() {
-        super(ServiceName.SET_URCBVALUES);
+        super(ServiceName.SET_URCB_VALUES);
     }
     
     public CmsSetURCBValues(MessageType messageType) {
-        super(ServiceName.SET_URCBVALUES, messageType);
+        super(ServiceName.SET_URCB_VALUES, messageType);
     }
 
     public CmsSetURCBValues(boolean isResp, boolean isErr) {

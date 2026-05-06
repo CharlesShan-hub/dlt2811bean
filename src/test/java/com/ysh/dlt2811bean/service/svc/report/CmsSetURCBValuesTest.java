@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsSetURCBValues")
 class CmsSetURCBValuesTest implements ServiceNameTest<CmsSetURCBValues> {
-    @Override public ServiceName expectedServiceName() { return ServiceName.SET_URCBVALUES; }
+    @Override public ServiceName expectedServiceName() { return ServiceName.SET_URCB_VALUES; }
     @Override public CmsSetURCBValues createAsdu() { return new CmsSetURCBValues(MessageType.REQUEST); }
 
     @Test @DisplayName("REQUEST round-trip")

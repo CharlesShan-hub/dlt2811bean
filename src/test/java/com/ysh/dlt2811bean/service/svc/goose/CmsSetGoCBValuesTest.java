@@ -13,7 +13,7 @@ class CmsSetGoCBValuesTest implements ServiceNameTest<CmsSetGoCBValues> {
 
     @Override
     public ServiceName expectedServiceName() {
-        return ServiceName.SET_GOCBVALUES;
+        return ServiceName.SET_GOCB_VALUES;
     }
 
     @Override

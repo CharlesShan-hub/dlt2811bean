@@ -109,11 +109,11 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
     // ========================= Constructor ============================
 
     public CmsSendGooseMessage() {
-        super(ServiceName.Send_GOOSE_Message, MessageType.INDICATION);
+        super(ServiceName.SEND_GOOSE_MESSAGE, MessageType.INDICATION);
     }
 
     public CmsSendGooseMessage(MessageType messageType) {
-        super(ServiceName.Send_GOOSE_Message, messageType);
+        super(ServiceName.SEND_GOOSE_MESSAGE, messageType);
     }
 
     // ====================== Convenience Setters =======================

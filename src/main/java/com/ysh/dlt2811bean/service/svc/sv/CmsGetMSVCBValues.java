@@ -96,11 +96,11 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetMSVCBValues() {
-        super(ServiceName.GET_MSVCBVALUES);
+        super(ServiceName.GET_MSVCB_VALUES);
     }
 
     public CmsGetMSVCBValues(MessageType messageType) {
-        super(ServiceName.GET_MSVCBVALUES, messageType);
+        super(ServiceName.GET_MSVCB_VALUES, messageType);
     }
 
     public CmsGetMSVCBValues(boolean isResp, boolean isErr) {

@@ -32,6 +32,6 @@ class CmsSendMSVMessageTest {
 
     @Test
     void serviceCode() {
-        assertEquals(ServiceName.Send_MSVMessage, new CmsSendMSVMessage().getServiceName());
+        assertEquals(ServiceName.SEND_MSV_MESSAGE, new CmsSendMSVMessage().getServiceName());
     }
 }

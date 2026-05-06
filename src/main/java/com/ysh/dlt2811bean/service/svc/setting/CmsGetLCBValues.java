@@ -104,11 +104,11 @@ public class CmsGetLCBValues extends CmsAsdu<CmsGetLCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetLCBValues() {
-        super(ServiceName.GET_LCBVALUES);
+        super(ServiceName.GET_LCB_VALUES);
     }
 
     public CmsGetLCBValues(MessageType messageType) {
-        super(ServiceName.GET_LCBVALUES, messageType);
+        super(ServiceName.GET_LCB_VALUES, messageType);
     }
 
     public CmsGetLCBValues(boolean isResp, boolean isErr) {
