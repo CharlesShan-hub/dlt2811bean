@@ -46,6 +46,17 @@ public class CmsDispatcher {
      */
     public CmsApdu dispatch(CmsServerSession session, CmsApdu apdu) {
         ServiceName sc = apdu.getAsdu().getServiceName();
+
+        // ASSOCIATE, TEST, ABORT do not need association
+        // - ASSOCIATE: establishes association
+        // - TEST: connection keep-alive
+        // - ABORT: one-way, can abort any connection
+        if (sc != ServiceName.ASSOCIATE && sc != ServiceName.TEST && sc != ServiceName.ABORT) {
+            if (!session.isAssociated()) {
+                return createErrorResponse(apdu, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
+            }
+        }
+
         CmsServiceHandler handler = handlers.get(sc);
 
         if (handler == null) {

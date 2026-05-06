@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.AssociationIdGenerator;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.SessionState;
 
 /**
  * Handler for Associate service (SC=1).
@@ -29,6 +30,7 @@ public class AssociateHandler implements CmsServiceHandler {
         // Generate association ID
         byte[] assocId = AssociationIdGenerator.generate();
         session.setAssociationId(assocId);
+        session.setState(SessionState.ASSOCIATED);
 
         // Build positive response
         CmsAssociate response = new CmsAssociate(MessageType.RESPONSE_POSITIVE)

@@ -147,5 +147,98 @@ service/
     └── CmsTest.java
 ```
 
+---
+
+## TLS 安全传输
+
+本项目支持 TLS/国密 SSL 加密传输，基于 BouncyCastle 实现。
+
+### 依赖
+
+```xml
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcprov-jdk18on</artifactId>
+    <version>1.78</version>
+</dependency>
+<dependency>
+    <groupId>org.bouncycastle</groupId>
+    <artifactId>bcpkix-jdk18on</artifactId>
+    <version>1.78</version>
+</dependency>
+```
+
+### 生成测试证书
+
+运行 PowerShell 脚本自动生成测试证书：
+
+```powershell
+.\Generate-Test-Certs.ps1
+```
+
+生成的文件位于 `src/main/resources/certs/`：
+
+| 文件 | 用途 |
+|------|------|
+| `ca.pfx` | CA 根证书（含私钥） |
+| `ca.cer` | CA 根证书（仅公钥，用于分发） |
+| `server.pfx` | 服务端证书（含私钥+CA链） |
+| `client.pfx` | 客户端证书（含私钥+CA链） |
+
+**密码**: `changeit`
+
+### 使用示例
+
+```java
+import com.ysh.dlt2811bean.security.GmSslContext;
+
+// 服务端
+GmSslContext serverCtx = GmSslContext.forServer()
+    .keyStore("certs/server.pfx", "changeit")
+    .trustCertificate("certs/ca.cer")
+    .build();
+
+// 客户端
+GmSslContext clientCtx = GmSslContext.forClient()
+    .keyStore("certs/client.pfx", "changeit")
+    .trustCertificate("certs/ca.cer")
+    .build();
+
+// 建立 TLS 连接
+CmsClientTransport client = new CmsClientTransport();
+client.sslContext(clientCtx).connectTls("localhost", 8888, new CmsTransportListener() {
+    @Override
+    public void onConnected(CmsConnection conn) { /* ... */ }
+    @Override
+    public void onApduReceived(CmsConnection conn, CmsApdu apdu) { /* ... */ }
+    @Override
+    public void onDisconnected(CmsConnection conn) { /* ... */ }
+    @Override
+    public void onError(CmsConnection conn, Exception e) { /* ... */ }
+});
+```
+
+### 生成国密证书（生产环境）
+
+如需生成真正的国密证书，需安装 [GmSSL](https://www.gmssl.org/) 工具，然后修改脚本使用国密算法：
+
+```bash
+# 生成 SM2 私钥
+gmssl genpkey -algorithm sm2 -out ca.key
+
+# 生成自签名证书
+gmssl req -new -x509 -key ca.key -out ca.cer
+
+# 转换为 PKCS12
+openssl pkcs12 -export -in ca.cer -inkey ca.key -out ca.pfx
+```
+
+### 支持的加密套件
+
+- `ECDHE_SM4_SM3` - 动态加密套件，密钥交换使用 SM2 ECDHE
+- `ECC_SM4_SM3` - 静态加密套件，密钥交换使用 SM2 ECC
+
+
+
 
 

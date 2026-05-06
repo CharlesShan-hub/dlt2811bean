@@ -1,7 +1,9 @@
 package com.ysh.dlt2811bean.transport.io;
 
+import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 
+import javax.net.ssl.SSLServerSocket;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,9 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Server-side transport that listens on a port and accepts incoming connections.
  *
- * <p>Each accepted connection is wrapped in a {@link CmsConnection} and notified
- * via {@link CmsTransportListener#onConnected}. The listener is also notified of
- * disconnections and errors.
+ * <p>Supports both plain TCP and 国密 TLS connections.
+ * Each accepted connection is wrapped in a {@link CmsConnection} and notified
+ * via {@link CmsTransportListener#onConnected}.
  */
 public class CmsServerTransport {
 
@@ -22,9 +24,11 @@ public class CmsServerTransport {
 
     private ServerSocket serverSocket;
     private volatile boolean running;
+    private GmSslContext sslContext;
+    private boolean needClientAuth = false;  // 暂存配置
 
     /**
-     * Creates a server transport.
+     * Creates a server transport with plain TCP.
      *
      * @param port     the port to listen on
      * @param listener event listener for all connections
@@ -35,16 +39,59 @@ public class CmsServerTransport {
     }
 
     /**
+     * Sets the 国密 SSL context for TLS connections.
+     * If not set, plain TCP is used.
+     *
+     * @param sslContext the SSL context
+     * @return this transport for chaining
+     */
+    public CmsServerTransport sslContext(GmSslContext sslContext) {
+        this.sslContext = sslContext;
+        return this;
+    }
+
+    /**
+     * Sets whether client certificate is required (mutual TLS).
+     * Must be called before {@link #start()}.
+     *
+     * @param need true to require client certificate
+     * @return this transport for chaining
+     */
+    public CmsServerTransport needClientAuth(boolean need) {
+        this.needClientAuth = need;
+        return this;
+    }
+
+    /**
      * Starts listening for connections.
      *
      * @throws IOException if the port cannot be bound
      */
     public void start() throws IOException {
-        serverSocket = new ServerSocket(port);
+        serverSocket = createServerSocket();
         running = true;
         Thread acceptor = new Thread(this::acceptLoop, "cms-acceptor");
         acceptor.setDaemon(true);
         acceptor.start();
+    }
+
+    private ServerSocket createServerSocket() throws IOException {
+        if (sslContext != null) {
+            try {
+                SSLServerSocket socket = (SSLServerSocket) sslContext.getSslContext()
+                        .getServerSocketFactory()
+                        .createServerSocket(port);
+                if (needClientAuth) {
+                    socket.setNeedClientAuth(true);
+                } else {
+                    socket.setWantClientAuth(true);
+                }
+                return socket;
+            } catch (Exception e) {
+                throw new IOException("Failed to create SSL server socket: " + e.getMessage(), e);
+            }
+        }
+        return new ServerSocket(port);
     }
 
     /**
@@ -53,7 +100,9 @@ public class CmsServerTransport {
     public void stop() {
         running = false;
         try {
-            serverSocket.close();
+            if (serverSocket != null) {
+                serverSocket.close();
+            }
         } catch (IOException ignored) {
         }
         for (CmsConnection conn : connections) {
@@ -83,10 +132,23 @@ public class CmsServerTransport {
         return serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed();
     }
 
+    /**
+     * @return true if TLS is enabled
+     */
+    public boolean isTlsEnabled() {
+        return sslContext != null;
+    }
+
     private void acceptLoop() {
         while (running) {
             try {
                 Socket socket = serverSocket.accept();
+
+                // TLS 握手
+                if (socket instanceof javax.net.ssl.SSLSocket) {
+                    ((javax.net.ssl.SSLSocket) socket).startHandshake();
+                }
+
                 CmsConnection conn = new CmsConnection(socket, wrapListener(socket));
                 connections.add(conn);
                 listener.onConnected(conn);

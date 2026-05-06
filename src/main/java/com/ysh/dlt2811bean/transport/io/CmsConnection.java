@@ -202,6 +202,13 @@ public class CmsConnection {
     }
 
     /**
+     * @return true if this is a secure (TLS/SSL) connection
+     */
+    public boolean isSecure() {
+        return socket instanceof javax.net.ssl.SSLSocket;
+    }
+
+    /**
      * @return the underlying socket
      */
     public Socket getSocket() {

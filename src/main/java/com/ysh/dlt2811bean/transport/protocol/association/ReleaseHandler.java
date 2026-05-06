@@ -7,6 +7,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.SessionState;
 
 /**
  * Handler for Release service (SC=2).
@@ -28,6 +29,7 @@ public class ReleaseHandler implements CmsServiceHandler {
 
         // Clear association
         session.clearAssociationId();
+        session.setState(SessionState.DISCONNECTED);
 
         // Build positive response
         CmsRelease response = new CmsRelease(MessageType.RESPONSE_POSITIVE)

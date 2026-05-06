@@ -29,7 +29,7 @@ public abstract class CmsSession {
         return state;
     }
 
-    protected void setState(SessionState state) {
+    public void setState(SessionState state) {
         this.state = state;
     }
 

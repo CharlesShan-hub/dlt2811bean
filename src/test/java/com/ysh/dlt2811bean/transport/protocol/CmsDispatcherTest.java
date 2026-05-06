@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
 import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.SessionState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -94,9 +95,10 @@ class CmsDispatcherTest {
     @Test
     @DisplayName("Release: returns positive response and clears association ID")
     void releaseReturnsPositiveResponseAndClearsId() {
-        // First set an association ID
+        // First set association ID and state
         byte[] testId = new byte[64];
         session.setAssociationId(testId);
+        session.setState(SessionState.ASSOCIATED);
 
         CmsRelease releaseAsdu = new CmsRelease(MessageType.REQUEST)
                 .associationId(testId)
