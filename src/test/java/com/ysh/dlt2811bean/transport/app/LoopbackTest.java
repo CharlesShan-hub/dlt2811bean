@@ -2,8 +2,9 @@ package com.ysh.dlt2811bean.transport.app;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -11,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * service loopback tests basic
  */
 public class LoopbackTest {
+
+    protected static final Logger log = LoggerFactory.getLogger(LoopbackTest.class);
 
     static final int PORT = 18773;
 
@@ -28,14 +31,12 @@ public class LoopbackTest {
 
     public void connectClient() throws Exception {
         client = new CmsClient();
+        client.setAccessPoint("IED1", "AP1");
         client.connect("127.0.0.1", PORT);
     }
 
     public CmsApdu associate() throws Exception {
-        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference("IED1", "AP1")
-                .reqId(1);
-        CmsApdu response = client.associate(asdu);
+        CmsApdu response = client.associate();
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNotNull(client.getAssociationId());
         return response;

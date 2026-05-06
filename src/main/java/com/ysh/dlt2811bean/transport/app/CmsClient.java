@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 /**
  * CMS Client — Application layer entry point.
  *
- * <p>Provides high-level operations: connect, associate, release, send.
+ * <p>Provides high-level operations: connect, associate, release, abort, test.
  * Handles ReqID assignment and response matching automatically.
  *
  * <p>Example:
  * <pre>
  * CmsClient client = new CmsClient();
  * client.connect("127.0.0.1", 8888);
- * client.associate(new CmsAssociate(MessageType.REQUEST).serverAccessPointReference("IED1", "AP1"));
- * // send other requests...
- * client.release();
+ * client.associate();     // 建立关联
+ * client.test();          // 心跳测试
+ * client.release();        // 释放关联
  * client.close();
  * </pre>
  */
@@ -40,6 +40,10 @@ public class CmsClient {
     private final ClientListener listener = new ClientListener();
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
+
+    // 默认访问点配置
+    private String defaultAp = "CLIENT";
+    private String defaultEp = "EP1";
 
     // ==================== Connection ====================
 
@@ -69,30 +73,47 @@ public class CmsClient {
         }
     }
 
-    // ==================== Association ====================
+    // ==================== Config ====================
 
     /**
-     * Sends an Associate request and waits for the response.
+     * Sets the default server access point for associate.
      *
-     * @param asdu the Associate ASDU (messageType must be REQUEST)
-     * @return the response APDU (positive or negative)
-     * @throws Exception if the request fails or times out
+     * @param ap the AP name (e.g., "AP1")
+     * @param ep the EP name (e.g., "EP1")
+     * @return this client for chaining
      */
-    public CmsApdu associate(CmsAssociate asdu) throws Exception {
-        asdu.messageType(MessageType.REQUEST);
+    public CmsClient setAccessPoint(String ap, String ep) {
+        this.defaultAp = ap;
+        this.defaultEp = ep;
+        return this;
+    }
+
+    // ==================== Association Services (Public API) ====================
+
+    /**
+     * Sends an Associate request to establish a connection.
+     *
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu associate() throws Exception {
+        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
+                .serverAccessPointReference(defaultAp, defaultEp);
         return send(asdu);
+    }
+    public CmsApdu associate(String ap, String ep) throws Exception {
+        setAccessPoint(ap, ep);
+        return associate();
     }
 
     /**
-     * Sends a Release request and waits for the response.
-     * On positive response, the association ID is cleared.
+     * Sends a Release request to gracefully close the association.
      *
-     * @param asdu the Release ASDU (messageType must be REQUEST)
      * @return the response APDU (positive or negative)
-     * @throws Exception if the request fails or times out
+     * @throws Exception if not connected or timeout
      */
-    public CmsApdu release(CmsRelease asdu) throws Exception {
-        asdu.messageType(MessageType.REQUEST);
+    public CmsApdu release() throws Exception {
+        CmsRelease asdu = new CmsRelease(MessageType.REQUEST);
         CmsApdu response = send(asdu);
         if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             setAssociationId(null);
@@ -100,53 +121,52 @@ public class CmsClient {
         return response;
     }
 
-    // ==================== One-way services (no response expected) ====================
+    /**
+     * Sends an Abort request to immediately terminate the connection.
+     * Abort is one-way: no response expected, connection will be closed.
+     * Default reason is OTHER (0).
+     *
+     * @throws Exception if send fails
+     */
+    public void abort() throws Exception {
+        abort(0);
+    }
 
     /**
-     * Sends an Abort request without waiting for a response.
-     * Abort is one-way: the server does not reply.
+     * Sends an Abort request with specified reason to immediately terminate the connection.
+     * Abort is one-way: no response expected, connection will be closed.
      *
-     * @param asdu the Abort ASDU (messageType must be REQUEST)
+     * @param reason the abort reason (0-5, see {@link com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason})
+     * @throws Exception if send fails
      */
-    public void abort(CmsAbort asdu) throws Exception {
-        if (session == null || !session.isConnected()) {
-            throw new IllegalStateException("Not connected");
-        }
-        asdu.messageType(MessageType.REQUEST);
-        int reqId = session.nextReqId();
-        asdu.reqId(reqId);
-        CmsApdu request = new CmsApdu(asdu);
-        session.send(request);
-        log.debug("[ReqID={}] Sent ABORT (one-way, no response)", reqId);
-        // Close immediately — client initiates abort, server mirrors
+    public void abort(int reason) throws Exception {
+        CmsAbort asdu = new CmsAbort(MessageType.REQUEST).reason(reason);
+        doSendWithoutResponse(asdu);
         close();
     }
 
-    // ==================== Test service (echo) ====================
+    /**
+     * Sends a Test request and waits for the server echo.
+     *
+     * @return the echoed response APDU, or null if timeout
+     * @throws Exception if not connected
+     */
+    public CmsApdu test() throws Exception {
+        CmsTest asdu = new CmsTest(MessageType.REQUEST);
+        return testEcho(asdu);
+    }
+
+    // ==================== Internal Echo ====================
 
     /**
-     * Sends a Test request and waits for the server echo response.
-     *
-     * <p>Test has no ReqID and no ASDU — the server echoes an identical frame.
-     * Since there is no ReqID to match, the response is collected via
-     * {@link ClientListener#onApduReceived} after the request is sent.
-     *
-     * @param request the Test request
-     * @return the echoed response APDU, or null if no response within timeout
+     * Internal: sends Test and waits for echo.
      */
-    public CmsApdu test(CmsTest request) throws Exception {
-        if (session == null || !session.isConnected()) {
-            throw new IllegalStateException("Not connected");
-        }
-
-        // Register pending request for Test echo
+    private CmsApdu testEcho(CmsTest asdu) throws Exception {
         PendingRequest pending = session.addPendingRequest(0);  // ReqID=0 for Test
-        request.messageType(MessageType.REQUEST);
-        CmsApdu apdu = new CmsApdu(request);
+        CmsApdu apdu = new CmsApdu(asdu);
         session.send(apdu);
         log.debug("Sent TEST, waiting for echo...");
 
-        // Wait for echo — will be completed by ClientListener.onApduReceived
         CmsApdu response = (CmsApdu) pending.await(session.getDefaultTimeoutMs());
         if (response == null) {
             session.removePendingRequest(0);
@@ -154,48 +174,17 @@ public class CmsClient {
         return response;
     }
 
-    // ==================== Request/Response services ====================
+    // ==================== Internal Send ====================
 
     /**
-     * Sends a service request and waits for the response.
-     *
-     * <p>The ReqID is automatically assigned from the session.
-     * The response is matched by ReqID.
-     *
-     * <p>Special services:
-     * <ul>
-     *   <li>Abort — server does not reply, client closes connection</li>
-     *   <li>Test  — server echoes the frame, wait for echo via {@link #test(CmsTest)}</li>
-     * </ul>
-     *
-     * @param asdu the request ASDU (messageType must be REQUEST)
-     * @return the response APDU, or null for Test
-     * @throws Exception if not connected or timeout
+     * Internal send: assigns ReqID and waits for response.
      */
-    public CmsApdu send(CmsAsdu<?> asdu) throws Exception {
-        if (session == null || !session.isConnected()) {
-            throw new IllegalStateException("Not connected");
-        }
-
-        ServiceName svc = asdu.getServiceName();
-
-        // One-way: Abort has no response, send without pending request
-        if (svc == ServiceName.ABORT) {
-            abort((CmsAbort) asdu);
-            return null;
-        }
-
-        // Test: server echoes the frame — delegate to test()
-        if (svc == ServiceName.TEST) {
-            return test((CmsTest) asdu);
-        }
-
+    private CmsApdu send(CmsAsdu<?> asdu) throws Exception {
         int reqId = session.nextReqId();
         asdu.reqId(reqId);
-
-        CmsApdu request = new CmsApdu(asdu);
         PendingRequest pending = session.addPendingRequest(reqId);
 
+        CmsApdu request = new CmsApdu(asdu);
         session.send(request);
         log.debug("[ReqID={}] Sent {}", reqId, asdu.getClass().getSimpleName());
 
@@ -205,6 +194,17 @@ public class CmsClient {
             throw new java.util.concurrent.TimeoutException("Request timeout");
         }
         return response;
+    }
+
+    /**
+     * Internal send: no response expected (one-way).
+     */
+    private void doSendWithoutResponse(CmsAsdu<?> asdu) throws Exception {
+        int reqId = session.nextReqId();
+        asdu.reqId(reqId);
+        CmsApdu request = new CmsApdu(asdu);
+        session.send(request);
+        log.debug("[ReqID={}] Sent {} (one-way)", reqId, asdu.getClass().getSimpleName());
     }
 
     /**
