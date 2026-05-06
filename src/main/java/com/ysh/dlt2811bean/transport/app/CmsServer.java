@@ -6,6 +6,10 @@ import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
 import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.protocol.association.AbortHandler;
+import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
+import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
+import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +23,13 @@ import java.util.concurrent.ConcurrentHashMap;
  * <p>Owns the transport, protocol dispatcher, and manages all client sessions.
  * Provides a simple server lifecycle: start, stop, register handlers.
  *
+ * <p>Default handlers (SC=1,2,3,153) are registered via {@link #registerDefaultHandlers()}.
+ *
  * <p>Example:
  * <pre>
  * CmsServer server = new CmsServer(8888);
- * server.registerHandler(new AssociateHandler());
- * server.registerHandler(new ReleaseHandler());
+ * server.registerDefaultHandlers();  // Associate, Release, Abort, Test
+ * // register additional handlers for other services...
  * server.start();
  * </pre>
  */
@@ -88,6 +94,30 @@ public class CmsServer {
     }
 
     // ==================== Handlers ====================
+
+    /**
+     * Registers default association service handlers: Associate, Release, Abort, and Test.
+     * These are the basic services required for connection lifecycle management.
+     *
+     * <p>Call this method before {@link #start()}.
+     *
+     * <p>Registered handlers:
+     * <ul>
+     *   <li>SC=1  Associate  — generates association ID</li>
+     *   <li>SC=2  Abort      — one-way, clears association</li>
+     *   <li>SC=3  Release    — responds positive, clears association</li>
+     *   <li>SC=153 Test      — echoes the frame</li>
+     * </ul>
+     *
+     * @return this server for chaining
+     */
+    public CmsServer registerDefaultHandlers() {
+        dispatcher.registerHandler(new AssociateHandler());
+        dispatcher.registerHandler(new AbortHandler());
+        dispatcher.registerHandler(new ReleaseHandler());
+        dispatcher.registerHandler(new TestHandler());
+        return this;
+    }
 
     /**
      * Registers a service handler.

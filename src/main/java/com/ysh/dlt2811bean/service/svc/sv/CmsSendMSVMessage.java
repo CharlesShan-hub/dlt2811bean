@@ -1,7 +1,5 @@
 package com.ysh.dlt2811bean.service.svc.sv;
 
-import com.ysh.dlt2811bean.datatypes.code.CmsMsvcbOptFlds;
-import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsSmpMod;
@@ -16,7 +14,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -88,7 +85,7 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     public CmsInt8U smpSynch = new CmsInt8U();
     public CmsInt16U smpRate = new CmsInt16U();
     public CmsBoolean simulation = new CmsBoolean();
-    public CmsData sample = new CmsData<>();
+    public CmsData<?> sample = new CmsData<>();
     public CmsSmpMod smpMod = new CmsSmpMod();
 
     // ========================= Constructor ============================

@@ -2,7 +2,6 @@ package com.ysh.dlt2811bean.service.svc.setting;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetEditSGValueEntry;
 import lombok.Getter;

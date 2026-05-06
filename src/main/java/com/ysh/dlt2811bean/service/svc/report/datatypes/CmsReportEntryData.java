@@ -17,7 +17,7 @@ public class CmsReportEntryData extends AbstractCmsCompound<CmsReportEntryData> 
     public CmsObjectReference reference = new CmsObjectReference();
     public CmsFC fc = new CmsFC();
     public CmsInt16U id = new CmsInt16U();
-    public CmsData value = new CmsData<>();
+    public CmsData<?> value = new CmsData<>();
     public CmsReasonCode reason = new CmsReasonCode();
 
     public CmsReportEntryData() {

@@ -7,6 +7,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +34,7 @@ class CmsRpcCallTest {
         CmsRpcCall result = (CmsRpcCall) decoded.getAsdu();
         assertEquals(1, result.reqId().get());
         assertEquals("IF1.Method1", result.method().get());
-        assertEquals(42, ((CmsInt32) ((com.ysh.dlt2811bean.datatypes.data.CmsData) result.reqDataCallID().reqData).get()).get());
+        assertEquals(42, ((CmsInt32) ((CmsData<?>) result.reqDataCallID().reqData).get()).get());
     }
 
     @Test

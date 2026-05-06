@@ -51,7 +51,6 @@ public abstract class AbstractCmsChoice<T extends AbstractCmsChoice<T>>
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public T decode(PerInputStream pis) throws Exception {
         selectedIndex = PerChoice.decode(pis);
         getAlternative(alternativeNames.get(selectedIndex)).decode(pis);

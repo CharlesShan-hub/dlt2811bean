@@ -7,7 +7,7 @@ import com.ysh.dlt2811bean.datatypes.type.CmsType;
 
 public class CmsReqDataChoice extends AbstractCmsChoice<CmsReqDataChoice> {
 
-    public CmsData reqData = new CmsData<>();
+    public CmsData<?> reqData = new CmsData<>();
     public CmsOctetString callID = new CmsOctetString().max(255);
 
     public CmsReqDataChoice() {

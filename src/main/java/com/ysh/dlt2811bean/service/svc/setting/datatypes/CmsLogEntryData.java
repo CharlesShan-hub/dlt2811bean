@@ -15,7 +15,7 @@ public class CmsLogEntryData extends AbstractCmsCompound<CmsLogEntryData> {
 
     public CmsObjectReference reference = new CmsObjectReference();
     public CmsFC fc = new CmsFC();
-    public CmsData value = new CmsData<>();
+    public CmsData<?> value = new CmsData<>();
     public CmsReasonCode reason = new CmsReasonCode();
 
     public CmsLogEntryData() {

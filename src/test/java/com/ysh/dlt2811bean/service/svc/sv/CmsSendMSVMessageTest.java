@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.service.svc.sv;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

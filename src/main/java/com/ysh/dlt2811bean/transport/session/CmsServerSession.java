@@ -1,13 +1,6 @@
 package com.ysh.dlt2811bean.transport.session;
 
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
-import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -23,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class CmsServerSession extends CmsSession {
 
-    private static final Logger log = LoggerFactory.getLogger(CmsServerSession.class);
+    //private static final Logger log = LoggerFactory.getLogger(CmsServerSession.class);
 
     private final AtomicInteger nextReqId = new AtomicInteger(1);
     private final ConcurrentHashMap<Integer, Object> activeServices = new ConcurrentHashMap<>();

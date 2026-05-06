@@ -104,7 +104,7 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
     public CmsBoolean ndsCom = new CmsBoolean();
 
     @CmsField(only = {"INDICATION"})
-    public CmsData data = new CmsData<>();
+    public CmsData<?> data = new CmsData<>();
 
     // ========================= Constructor ============================
 

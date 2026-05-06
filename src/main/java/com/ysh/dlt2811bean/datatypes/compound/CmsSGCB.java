@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.datatypes.compound;
 
-import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt8U;

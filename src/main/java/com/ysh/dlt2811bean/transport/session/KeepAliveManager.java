@@ -1,9 +1,7 @@
 package com.ysh.dlt2811bean.transport.session;
 
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
-import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -184,9 +182,9 @@ public class KeepAliveManager {
 
     private void sendTest() {
         try {
-            int reqId = (session instanceof CmsClientSession)
-                    ? ((CmsClientSession) session).nextReqId()
-                    : 0;
+            // int reqId = (session instanceof CmsClientSession)
+            //         ? ((CmsClientSession) session).nextReqId()
+            //         : 0;
             CmsTest test = new CmsTest();
             CmsApdu apdu = new CmsApdu(test);
             session.send(apdu);

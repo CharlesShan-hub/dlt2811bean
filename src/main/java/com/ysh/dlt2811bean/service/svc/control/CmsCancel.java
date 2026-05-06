@@ -82,7 +82,7 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     public CmsObjectReference reference = new CmsObjectReference();
 
     @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
-    public CmsData ctlVal = new CmsData<>();
+    public CmsData<?> ctlVal = new CmsData<>();
 
     @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();

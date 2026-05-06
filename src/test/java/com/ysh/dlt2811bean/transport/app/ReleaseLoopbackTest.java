@@ -4,8 +4,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
-import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
-import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +22,7 @@ class ReleaseLoopbackTest {
 
     private void startServer() throws Exception {
         server = new CmsServer(PORT);
-        server.registerHandler(new AssociateHandler());
-        server.registerHandler(new ReleaseHandler());
+        server.registerDefaultHandlers();
         server.start();
         while (!server.isBound()) {
             Thread.sleep(10);

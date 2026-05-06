@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.service.svc.report;
 
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;

@@ -123,7 +123,7 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
     public CmsObjectReference reference = new CmsObjectReference();
 
     @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
-    public CmsData ctlVal = new CmsData<>();
+    public CmsData<?> ctlVal = new CmsData<>();
 
     @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();

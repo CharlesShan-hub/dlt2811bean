@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 public class CmsSetEditSGValueEntry extends AbstractCmsCompound<CmsSetEditSGValueEntry> {
 
     public CmsObjectReference reference = new CmsObjectReference();
-    public CmsData value = new CmsData<>();
+    public CmsData<?> value = new CmsData<>();
 
     public CmsSetEditSGValueEntry() {
         super("SetEditSGValueEntry");

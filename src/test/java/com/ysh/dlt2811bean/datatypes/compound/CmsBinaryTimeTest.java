@@ -1,7 +1,5 @@
 package com.ysh.dlt2811bean.datatypes.compound;
 
-import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import org.junit.jupiter.api.DisplayName;

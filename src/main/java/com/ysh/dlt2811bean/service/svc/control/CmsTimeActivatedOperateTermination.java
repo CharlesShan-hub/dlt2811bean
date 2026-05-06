@@ -94,7 +94,7 @@ public class CmsTimeActivatedOperateTermination extends CmsAsdu<CmsTimeActivated
     public CmsObjectReference reference = new CmsObjectReference();
 
     @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
-    public CmsData ctlVal = new CmsData<>();
+    public CmsData<?> ctlVal = new CmsData<>();
 
     @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();

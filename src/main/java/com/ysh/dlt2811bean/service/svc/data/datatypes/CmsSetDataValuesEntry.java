@@ -14,7 +14,7 @@ public class CmsSetDataValuesEntry extends AbstractCmsCompound<CmsSetDataValuesE
 
     public CmsObjectReference reference = new CmsObjectReference();
     public CmsFC fc = new CmsFC();
-    public CmsData value = new CmsData<>();
+    public CmsData<?> value = new CmsData<>();
 
     public CmsSetDataValuesEntry() {
         super("SetDataValuesEntry");

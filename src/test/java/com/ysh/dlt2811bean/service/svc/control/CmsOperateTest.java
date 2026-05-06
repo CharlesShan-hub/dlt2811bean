@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.service.svc.control;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsAddCause;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -37,7 +38,7 @@ class CmsOperateTest implements ServiceNameTest<CmsOperate> {
 
         assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1.LD1.LN1.DO1", result.reference().get());
-        assertEquals(100, ((CmsInt32) ((com.ysh.dlt2811bean.datatypes.data.CmsData) result.ctlVal()).get()).get());
+        assertEquals(100, ((CmsInt32) ((CmsData<?>) result.ctlVal()).get()).get());
     }
 
     @Test

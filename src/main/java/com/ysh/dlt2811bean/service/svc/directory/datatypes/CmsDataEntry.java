@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 public class CmsDataEntry extends AbstractCmsCompound<CmsDataEntry> {
 
     public CmsSubReference reference = new CmsSubReference();
-    public CmsData value = new CmsData<>();
+    public CmsData<?> value = new CmsData<>();
 
     public CmsDataEntry() {
         super("DataEntry");
@@ -25,8 +25,9 @@ public class CmsDataEntry extends AbstractCmsCompound<CmsDataEntry> {
         return this;
     }
 
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsDataEntry value(CmsType<?> val) {
-        this.value.set(val);
+        this.value = new CmsData(val);;
         return this;
     }
 

@@ -94,7 +94,7 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     public CmsReqDataChoice reqDataCallID = new CmsReqDataChoice();
 
     @CmsField(only = {"RESPONSE_POSITIVE"})
-    public CmsData rspData = new CmsData<>();
+    public CmsData<?> rspData = new CmsData<>();
 
     @CmsField(optional = true, only = {"RESPONSE_POSITIVE"})
     public CmsOctetString nextCallID = new CmsOctetString().max(255);
