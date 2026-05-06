@@ -11,8 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -146,31 +145,4 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     public ServiceName getServiceName() {
         return ServiceName.QUERY_LOG_AFTER;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsQueryLogAfter copy() {
-        CmsQueryLogAfter copy = new CmsQueryLogAfter(messageType());
-        copy.reqId.set(reqId.get());
-        copy.logReference = this.logReference.copy();
-        copy.startTime = this.startTime.copy();
-        copy.entry = this.entry.copy();
-        copy.logEntry = this.logEntry.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsQueryLogAfter read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsQueryLogAfter) new CmsQueryLogAfter(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsQueryLogAfter queryLogAfter) {
-        queryLogAfter.encode(pos);
-    }
-
 }

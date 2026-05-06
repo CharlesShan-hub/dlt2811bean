@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -158,30 +157,4 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     public ServiceName getServiceName() {
         return ServiceName.RPC_CALL;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsRpcCall copy() {
-        CmsRpcCall copy = new CmsRpcCall(messageType());
-        copy.reqId.set(reqId.get());
-        copy.method = this.method.copy();
-        copy.reqDataCallID = this.reqDataCallID.copy();
-        copy.rspData = this.rspData.copy();
-        copy.nextCallID = this.nextCallID.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsRpcCall read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsRpcCall) new CmsRpcCall(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsRpcCall rpcCall) {
-        rpcCall.encode(pos);
-    }
-
 }

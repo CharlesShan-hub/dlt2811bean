@@ -13,8 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -217,34 +216,4 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
     public ServiceName getServiceName() {
         return ServiceName.SELECT_WITH_VALUE;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSelectWithValue copy() {
-        CmsSelectWithValue copy = new CmsSelectWithValue(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.ctlVal = this.ctlVal.copy();
-        copy.operTm = this.operTm.copy();
-        copy.origin = this.origin.copy();
-        copy.ctlNum = this.ctlNum.copy();
-        copy.t = this.t.copy();
-        copy.test = this.test.copy();
-        copy.check = this.check.copy();
-        copy.addCause = this.addCause.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSelectWithValue read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSelectWithValue) new CmsSelectWithValue(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSelectWithValue selectWithValue) {
-        selectWithValue.encode(pos);
-    }
-
 }

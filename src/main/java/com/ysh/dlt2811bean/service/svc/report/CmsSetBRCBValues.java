@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -137,27 +136,4 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.SET_BRCBVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSetBRCBValues copy() {
-        CmsSetBRCBValues copy = new CmsSetBRCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.brcb = this.brcb.copy();
-        copy.result = this.result.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSetBRCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSetBRCBValues) new CmsSetBRCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSetBRCBValues setBRCBValues) {
-        setBRCBValues.encode(pos);
-    }
-
 }

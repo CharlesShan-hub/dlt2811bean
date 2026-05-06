@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -148,29 +147,4 @@ public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition
     public ServiceName getServiceName() {
         return ServiceName.GET_RPC_METHOD_DEFINITION;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetRpcMethodDefinition copy() {
-        CmsGetRpcMethodDefinition copy = new CmsGetRpcMethodDefinition(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.errorMethod = this.errorMethod.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetRpcMethodDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetRpcMethodDefinition) new CmsGetRpcMethodDefinition(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetRpcMethodDefinition getRpcMethodDefinition) {
-        getRpcMethodDefinition.encode(pos);
-    }
-
 }

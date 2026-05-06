@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -135,29 +134,4 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.GET_MSVCBVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetMSVCBValues copy() {
-        CmsGetMSVCBValues copy = new CmsGetMSVCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.errorMsvcb = this.errorMsvcb.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetMSVCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetMSVCBValues) new CmsGetMSVCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetMSVCBValues getMSVCBValues) {
-        getMSVCBValues.encode(pos);
-    }
-
 }

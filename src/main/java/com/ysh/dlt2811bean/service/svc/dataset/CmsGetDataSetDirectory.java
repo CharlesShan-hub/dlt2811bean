@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -148,30 +147,4 @@ public class CmsGetDataSetDirectory extends CmsAsdu<CmsGetDataSetDirectory> {
     public ServiceName getServiceName() {
         return ServiceName.GET_DATA_SET_DIRECTORY;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetDataSetDirectory copy() {
-        CmsGetDataSetDirectory copy = new CmsGetDataSetDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.datasetReference = this.datasetReference.copy();
-        copy.referenceAfter = this.referenceAfter.copy();
-        copy.memberData = this.memberData.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetDataSetDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetDataSetDirectory) new CmsGetDataSetDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetDataSetDirectory getDataSetDirectory) {
-        getDataSetDirectory.encode(pos);
-    }
-
 }

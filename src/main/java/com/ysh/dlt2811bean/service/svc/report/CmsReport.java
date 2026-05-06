@@ -11,8 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -167,34 +166,4 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     public ServiceName getServiceName() {
         return ServiceName.REPORT;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsReport copy() {
-        CmsReport copy = new CmsReport(messageType());
-        copy.reqId.set(reqId.get());
-        copy.rptID = this.rptID.copy();
-        copy.optFlds = this.optFlds.copy();
-        copy.sqNum = this.sqNum.copy();
-        copy.subSqNum = this.subSqNum.copy();
-        copy.moreSegmentsFollow = this.moreSegmentsFollow.copy();
-        copy.datSet = this.datSet.copy();
-        copy.bufOvfl = this.bufOvfl.copy();
-        copy.confRev = this.confRev.copy();
-        copy.entry = this.entry.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsReport read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsReport) new CmsReport(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsReport report) {
-        report.encode(pos);
-    }
-
 }

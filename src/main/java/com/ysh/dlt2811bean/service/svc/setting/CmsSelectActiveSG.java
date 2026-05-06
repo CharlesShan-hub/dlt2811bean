@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -121,28 +120,4 @@ public class CmsSelectActiveSG extends CmsAsdu<CmsSelectActiveSG> {
     public ServiceName getServiceName() {
         return ServiceName.SELECT_ACTIVE_SG;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSelectActiveSG copy() {
-        CmsSelectActiveSG copy = new CmsSelectActiveSG(messageType());
-        copy.reqId.set(reqId.get());
-        copy.sgcbReference = this.sgcbReference.copy();
-        copy.settingGroupNumber = this.settingGroupNumber.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSelectActiveSG read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSelectActiveSG) new CmsSelectActiveSG(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSelectActiveSG selectActiveSG) {
-        selectActiveSG.encode(pos);
-    }
-
 }

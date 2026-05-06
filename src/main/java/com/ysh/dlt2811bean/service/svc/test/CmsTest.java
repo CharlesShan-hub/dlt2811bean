@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.service.svc.test;
 
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -76,21 +75,7 @@ public class CmsTest extends CmsAsdu<CmsTest> {
     }
 
     @Override
-    public CmsTest copy() {
-        return new CmsTest();
-    }
-
-    @Override
     public String toString() {
         return "(CmsTest) {}"; // no fields and no new line
-    }
-
-    @SuppressWarnings("unchecked")
-    public static CmsTest read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsTest) new CmsTest().decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsTest test) {
-        test.encode(pos);
     }
 }

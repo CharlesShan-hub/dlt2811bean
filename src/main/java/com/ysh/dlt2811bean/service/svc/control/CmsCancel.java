@@ -12,10 +12,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 /**
  * CMS Service Code 0x48 — Cancel (cancel service).
  *
@@ -162,33 +161,4 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     public ServiceName getServiceName() {
         return ServiceName.CANCEL;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsCancel copy() {
-        CmsCancel copy = new CmsCancel(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.ctlVal = this.ctlVal.copy();
-        copy.operTm = this.operTm.copy();
-        copy.origin = this.origin.copy();
-        copy.ctlNum = this.ctlNum.copy();
-        copy.t = this.t.copy();
-        copy.test = this.test.copy();
-        copy.addCause = this.addCause.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsCancel read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsCancel) new CmsCancel(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsCancel cancel) {
-        cancel.encode(pos);
-    }
-
 }

@@ -7,8 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -71,27 +70,4 @@ public class CmsSetGoCBValues extends CmsAsdu<CmsSetGoCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.SET_GOCBVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSetGoCBValues copy() {
-        CmsSetGoCBValues copy = new CmsSetGoCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.gocb = this.gocb.copy();
-        copy.result = this.result.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSetGoCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSetGoCBValues) new CmsSetGoCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSetGoCBValues setGoCBValues) {
-        setGoCBValues.encode(pos);
-    }
-
 }

@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -144,29 +143,4 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
     public ServiceName getServiceName() {
         return ServiceName.CREATE_DATA_SET;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsCreateDataSet copy() {
-        CmsCreateDataSet copy = new CmsCreateDataSet(messageType());
-        copy.reqId.set(reqId.get());
-        copy.datasetReference = this.datasetReference.copy();
-        copy.referenceAfter = this.referenceAfter.copy();
-        copy.memberData = this.memberData.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsCreateDataSet read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsCreateDataSet) new CmsCreateDataSet(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsCreateDataSet createDataSet) {
-        createDataSet.encode(pos);
-    }
-
 }

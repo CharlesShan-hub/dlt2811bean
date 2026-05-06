@@ -8,8 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -130,28 +129,4 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.GET_SGCBVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetSGCBValues copy() {
-        CmsGetSGCBValues copy = new CmsGetSGCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.sgcbReference = this.sgcbReference.copy();
-        copy.errorSgcb = this.errorSgcb.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetSGCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetSGCBValues) new CmsGetSGCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetSGCBValues getSGCBValues) {
-        getSGCBValues.encode(pos);
-    }
-
 }

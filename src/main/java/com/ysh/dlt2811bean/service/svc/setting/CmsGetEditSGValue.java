@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -134,29 +133,4 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     public ServiceName getServiceName() {
         return ServiceName.GET_EDIT_SG_VALUE;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetEditSGValue copy() {
-        CmsGetEditSGValue copy = new CmsGetEditSGValue(messageType());
-        copy.reqId.set(reqId.get());
-        copy.data = this.data.copy();
-        copy.value = this.value.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetEditSGValue read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetEditSGValue) new CmsGetEditSGValue(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetEditSGValue getEditSGValue) {
-        getEditSGValue.encode(pos);
-    }
-
 }

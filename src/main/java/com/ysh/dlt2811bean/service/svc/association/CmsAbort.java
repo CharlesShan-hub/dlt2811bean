@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.service.svc.association;
 
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
 import lombok.Getter;
 import lombok.Setter;
@@ -89,26 +88,5 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.ABORT;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsAbort copy() {
-        CmsAbort copy = new CmsAbort(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reason = this.reason.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsAbort read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsAbort) new CmsAbort(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsAbort abort) {
-        abort.encode(pos);
     }
 }

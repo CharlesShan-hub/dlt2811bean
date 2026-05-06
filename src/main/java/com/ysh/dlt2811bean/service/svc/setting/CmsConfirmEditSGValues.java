@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -116,27 +115,4 @@ public class CmsConfirmEditSGValues extends CmsAsdu<CmsConfirmEditSGValues> {
     public ServiceName getServiceName() {
         return ServiceName.CONFIRM_EDIT_SG_VALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsConfirmEditSGValues copy() {
-        CmsConfirmEditSGValues copy = new CmsConfirmEditSGValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.sgcbReference = this.sgcbReference.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsConfirmEditSGValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsConfirmEditSGValues) new CmsConfirmEditSGValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsConfirmEditSGValues confirmEditSGValues) {
-        confirmEditSGValues.encode(pos);
-    }
-
 }

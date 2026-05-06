@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -145,30 +144,4 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     public ServiceName getServiceName() {
         return ServiceName.GET_DATA_DIRECTORY;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetDataDirectory copy() {
-        CmsGetDataDirectory copy = new CmsGetDataDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.dataReference = this.dataReference.copy();
-        copy.referenceAfter = this.referenceAfter.copy();
-        copy.dataAttribute = this.dataAttribute.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetDataDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetDataDirectory) new CmsGetDataDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetDataDirectory getDataDirectory) {
-        getDataDirectory.encode(pos);
-    }
-
 }

@@ -10,8 +10,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -143,32 +142,4 @@ public class CmsGetGoReference extends CmsAsdu<CmsGetGoReference> {
     public ServiceName getServiceName() {
         return ServiceName.Get_Go_Reference;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetGoReference copy() {
-        CmsGetGoReference copy = new CmsGetGoReference(messageType());
-        copy.reqId.set(reqId.get());
-        copy.gocbReference = this.gocbReference.copy();
-        copy.memberOffset = this.memberOffset.copy();
-        copy.gocbRefResp = this.gocbRefResp.copy();
-        copy.confRev = this.confRev.copy();
-        copy.datSet = this.datSet.copy();
-        copy.memberData = this.memberData.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetGoReference read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetGoReference) new CmsGetGoReference(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetGoReference getGoReference) {
-        getGoReference.encode(pos);
-    }
-
 }

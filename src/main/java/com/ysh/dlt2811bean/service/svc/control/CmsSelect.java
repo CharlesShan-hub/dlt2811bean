@@ -5,8 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -109,26 +108,4 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
     public ServiceName getServiceName() {
         return ServiceName.SELECT;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSelect copy() {
-        CmsSelect copy = new CmsSelect(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSelect read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSelect) new CmsSelect(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSelect select) {
-        select.encode(pos);
-    }
-
 }

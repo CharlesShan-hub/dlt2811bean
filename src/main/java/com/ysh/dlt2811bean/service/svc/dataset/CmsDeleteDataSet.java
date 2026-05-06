@@ -6,8 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -113,27 +112,4 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
     public ServiceName getServiceName() {
         return ServiceName.DELETE_DATA_SET;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsDeleteDataSet copy() {
-        CmsDeleteDataSet copy = new CmsDeleteDataSet(messageType());
-        copy.reqId.set(reqId.get());
-        copy.datasetReference = this.datasetReference.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsDeleteDataSet read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsDeleteDataSet) new CmsDeleteDataSet(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsDeleteDataSet deleteDataSet) {
-        deleteDataSet.encode(pos);
-    }
-
 }

@@ -13,8 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -204,33 +203,4 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
     public ServiceName getServiceName() {
         return ServiceName.OPERATE;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsOperate copy() {
-        CmsOperate copy = new CmsOperate(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.ctlVal = this.ctlVal.copy();
-        copy.origin = this.origin.copy();
-        copy.ctlNum = this.ctlNum.copy();
-        copy.t = this.t.copy();
-        copy.test = this.test.copy();
-        copy.check = this.check.copy();
-        copy.addCause = this.addCause.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsOperate read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsOperate) new CmsOperate(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsOperate operate) {
-        operate.encode(pos);
-    }
-
 }

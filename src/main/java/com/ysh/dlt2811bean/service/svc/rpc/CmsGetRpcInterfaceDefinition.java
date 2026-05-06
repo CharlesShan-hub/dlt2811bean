@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -149,30 +148,4 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     public ServiceName getServiceName() {
         return ServiceName.GET_RPC_INTERFACE_DEFINITION;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetRpcInterfaceDefinition copy() {
-        CmsGetRpcInterfaceDefinition copy = new CmsGetRpcInterfaceDefinition(messageType());
-        copy.reqId.set(reqId.get());
-        copy.interfaceName = this.interfaceName.copy();
-        copy.referenceAfter = this.referenceAfter.copy();
-        copy.method = this.method.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetRpcInterfaceDefinition read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetRpcInterfaceDefinition) new CmsGetRpcInterfaceDefinition(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetRpcInterfaceDefinition getRpcInterfaceDefinition) {
-        getRpcInterfaceDefinition.encode(pos);
-    }
-
 }

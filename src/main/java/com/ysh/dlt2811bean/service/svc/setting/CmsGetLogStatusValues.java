@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -147,29 +146,4 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     public ServiceName getServiceName() {
         return ServiceName.GET_LOG_STATUS_VALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetLogStatusValues copy() {
-        CmsGetLogStatusValues copy = new CmsGetLogStatusValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.logReference = this.logReference.copy();
-        copy.log = this.log.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetLogStatusValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetLogStatusValues) new CmsGetLogStatusValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetLogStatusValues getLogStatusValues) {
-        getLogStatusValues.encode(pos);
-    }
-
 }

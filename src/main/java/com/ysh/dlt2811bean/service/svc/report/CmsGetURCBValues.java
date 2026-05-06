@@ -9,8 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -150,29 +149,4 @@ public class CmsGetURCBValues extends CmsAsdu<CmsGetURCBValues> {
     public ServiceName getServiceName() {
         return ServiceName.GET_URCBVALUES;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetURCBValues copy() {
-        CmsGetURCBValues copy = new CmsGetURCBValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.urcb = this.urcb.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetURCBValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetURCBValues) new CmsGetURCBValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetURCBValues getURCBValues) {
-        getURCBValues.encode(pos);
-    }
-
 }

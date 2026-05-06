@@ -16,8 +16,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -135,35 +134,4 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     public ServiceName getServiceName() {
         return ServiceName.Send_MSVMessage;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsSendMSVMessage copy() {
-        CmsSendMSVMessage copy = new CmsSendMSVMessage(messageType());
-        copy.reqId.set(reqId.get());
-        copy.msvID = this.msvID.copy();
-        copy.datSet = this.datSet.copy();
-        copy.smpCnt = this.smpCnt.copy();
-        copy.confRev = this.confRev.copy();
-        copy.refrTm = this.refrTm.copy();
-        copy.smpSynch = this.smpSynch.copy();
-        copy.smpRate = this.smpRate.copy();
-        copy.simulation = this.simulation.copy();
-        copy.sample = this.sample.copy();
-        copy.smpMod = this.smpMod.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsSendMSVMessage read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsSendMSVMessage) new CmsSendMSVMessage(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsSendMSVMessage sendMSVMessage) {
-        sendMSVMessage.encode(pos);
-    }
-
 }

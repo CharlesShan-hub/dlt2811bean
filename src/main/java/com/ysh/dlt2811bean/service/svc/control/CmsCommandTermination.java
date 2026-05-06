@@ -12,8 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -201,33 +200,4 @@ public class CmsCommandTermination extends CmsAsdu<CmsCommandTermination> {
     public ServiceName getServiceName() {
         return ServiceName.COMMAND_TERMINATION;
     }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsCommandTermination copy() {
-        CmsCommandTermination copy = new CmsCommandTermination(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = this.reference.copy();
-        copy.ctlVal = this.ctlVal.copy();
-        copy.operTm = this.operTm.copy();
-        copy.origin = this.origin.copy();
-        copy.ctlNum = this.ctlNum.copy();
-        copy.t = this.t.copy();
-        copy.test = this.test.copy();
-        copy.addCause = this.addCause.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsCommandTermination read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsCommandTermination) new CmsCommandTermination(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsCommandTermination commandTermination) {
-        commandTermination.encode(pos);
-    }
-
 }
