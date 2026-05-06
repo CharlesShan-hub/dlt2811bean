@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.transport.app.associate;
 
-import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
