@@ -82,7 +82,6 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
 
     // ==================== Fields based on Table 76 ====================
 
-    // --- Request parameters ---
     @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString pathName = new CmsVisibleString().max(255);
 
@@ -95,14 +94,12 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString fileAfter = new CmsVisibleString().max(255);
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsFileEntry> fileEntry = new CmsArray<>(CmsFileEntry::new).capacity(100);
 
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

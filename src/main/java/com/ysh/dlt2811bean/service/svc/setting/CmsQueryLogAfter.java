@@ -83,34 +83,31 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
 
     // ==================== Fields based on Table 55 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference logReference = new CmsObjectReference();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsBinaryTime startTime = new CmsBinaryTime();
+
+    @CmsField(only = {"REQUEST"})
     public CmsEntryID entry = new CmsEntryID();
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsLogEntry> logEntry = new CmsArray<>(CmsLogEntry::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsQueryLogAfter() {
+    }
+
     public CmsQueryLogAfter(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("logReference");
-            registerOptionalField("startTime");
-            registerField("entry");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("logEntry");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("QueryLogAfter does not support " + messageType);
-        }
     }
 
     public CmsQueryLogAfter(boolean isResp, boolean isErr) {

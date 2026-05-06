@@ -93,25 +93,19 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
 
     // ==================== Fields based on Table 48 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetBRCBValuesEntry> brcb = new CmsArray<>(CmsSetBRCBValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetBRCBValues() {
+    }
+    
     public CmsSetBRCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("brcb");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetBRCBValues does not support " + messageType);
-        }
     }
 
     public CmsSetBRCBValues(boolean isResp, boolean isErr) {

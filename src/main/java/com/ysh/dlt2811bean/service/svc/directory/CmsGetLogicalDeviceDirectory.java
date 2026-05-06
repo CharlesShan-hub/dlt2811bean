@@ -6,8 +6,7 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectName;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -80,45 +79,33 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
 
     // ==================== Fields based on Table 24 ====================
 
-    // --- Request parameters ---
-    // ldName [0..1] ObjectName (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectName ldName = new CmsObjectName();
 
-    // referenceAfter [0..1] ObjectReference (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
-    // lnReference [0..n] SEQUENCE OF SubReference
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsSubReference> lnReference = new CmsArray<>(CmsSubReference::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN DEFAULT TRUE
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
-    // serviceError ServiceError
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
+
+    public CmsGetLogicalDeviceDirectory() {
+    }
     
     public CmsGetLogicalDeviceDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerOptionalField("ldName");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("lnReference");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetLogicalDeviceDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetLogicalDeviceDirectory(boolean isResp, boolean isErr) {
         this(getRRMessageType(isResp, isErr));
     }
-
 
     // ==================== Convenience Setters ====================
 
@@ -142,30 +129,5 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     @Override
     public ServiceName getServiceName() {
         return ServiceName.GET_LOGIC_DEVICE_DIRECTORY;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetLogicalDeviceDirectory copy() {
-        CmsGetLogicalDeviceDirectory copy = new CmsGetLogicalDeviceDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.ldName = ldName.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.lnReference = lnReference.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetLogicalDeviceDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetLogicalDeviceDirectory) new CmsGetLogicalDeviceDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetLogicalDeviceDirectory service) {
-        service.encode(pos);
     }
 }

@@ -46,10 +46,16 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
         return (T) this;
     }
 
-    protected static MessageType getReqMessageType(boolean resp, boolean err) {
+    protected static MessageType getIndicationMessageType(boolean resp, boolean err) {
         if (!resp && !err) return MessageType.REQUEST;
-        if (resp && !err) return MessageType.REQUEST_PLUS;
-        throw new IllegalArgumentException("Abort does not support err=true");
+        if (resp && !err) return MessageType.INDICATION;
+        throw new IllegalArgumentException("does not support err=true");
+    }
+
+    protected static MessageType getReqMessageType(boolean resp, boolean err) {
+        if (!resp && !err) return MessageType.REQUEST_POSITIVE;
+        if (resp && !err) return MessageType.REQUEST_NEGATIVE;
+        throw new IllegalArgumentException("does not support err=true");
     }
 
     protected static MessageType getRRMessageType(boolean resp, boolean err) {

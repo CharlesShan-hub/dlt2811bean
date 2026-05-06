@@ -69,25 +69,19 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
 
     // ==================== Fields based on Table 38 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference datasetReference = new CmsObjectReference();
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsDeleteDataSet() {
+    }
+
     public CmsDeleteDataSet(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("datasetReference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("DeleteDataSet does not support " + messageType);
-        }
     }
 
     public CmsDeleteDataSet(boolean isResp, boolean isErr) {

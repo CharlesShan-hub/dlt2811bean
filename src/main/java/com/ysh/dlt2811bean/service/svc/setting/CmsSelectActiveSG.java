@@ -70,27 +70,22 @@ public class CmsSelectActiveSG extends CmsAsdu<CmsSelectActiveSG> {
 
     // ==================== Fields based on Table 40 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference sgcbReference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST"})
     public CmsInt8U settingGroupNumber = new CmsInt8U(1);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsSelectActiveSG() {
+    }
+
     public CmsSelectActiveSG(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("sgcbReference");
-            registerField("settingGroupNumber");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("SelectActiveSG does not support " + messageType);
-        }
     }
 
     public CmsSelectActiveSG(boolean isResp, boolean isErr) {

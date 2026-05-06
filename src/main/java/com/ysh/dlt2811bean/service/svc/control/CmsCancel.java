@@ -15,6 +15,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+
 /**
  * CMS Service Code 0x48 — Cancel (cancel service).
  *
@@ -77,50 +78,37 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
 
     // ==================== Fields based on Table 68 ====================
 
-    // --- Common fields ---
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
 
-    // --- RESPONSE_NEGATIVE only ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsCancel() {
+    }
+
     public CmsCancel(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("Cancel does not support " + messageType);
-        }
     }
 
     public CmsCancel(boolean isResp, boolean isErr) {

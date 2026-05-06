@@ -83,30 +83,25 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
 
     // ==================== Fields based on Table 44 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsCreateDataSetEntry> data = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsStructure value = new CmsStructure().capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetEditSGValue() {
+    }
+
     public CmsGetEditSGValue(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("data");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("value");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetEditSGValue does not support " + messageType);
-        }
     }
 
     public CmsGetEditSGValue(boolean isResp, boolean isErr) {

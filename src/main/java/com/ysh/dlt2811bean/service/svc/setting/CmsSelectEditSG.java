@@ -71,27 +71,22 @@ public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
 
     // ==================== Fields based on Table 41 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference sgcbReference = new CmsObjectReference();
+    
+    @CmsField(only = {"REQUEST"})
     public CmsInt8U settingGroupNumber = new CmsInt8U(1);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
-
+    
     // ========================= Constructor ============================
+
+    public CmsSelectEditSG() {
+    }
 
     public CmsSelectEditSG(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("sgcbReference");
-            registerField("settingGroupNumber");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("SelectEditSG does not support " + messageType);
-        }
     }
 
     public CmsSelectEditSG(boolean isResp, boolean isErr) {

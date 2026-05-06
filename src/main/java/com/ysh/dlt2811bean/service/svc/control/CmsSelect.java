@@ -73,22 +73,16 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
 
     // ==================== Fields based on Table 65 ====================
 
-    // --- All message types ---
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
 
     // ========================= Constructor ============================
 
+    public CmsSelect(){
+    }
+
     public CmsSelect(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-        } else {
-            throw new IllegalArgumentException("Select does not support " + messageType);
-        }
     }
 
     public CmsSelect(boolean isResp, boolean isErr) {

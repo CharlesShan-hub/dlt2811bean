@@ -72,25 +72,19 @@ public class CmsConfirmEditSGValues extends CmsAsdu<CmsConfirmEditSGValues> {
 
     // ==================== Fields based on Table 43 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference sgcbReference = new CmsObjectReference();
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsConfirmEditSGValues() {
+    }
+    
     public CmsConfirmEditSGValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("sgcbReference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("ConfirmEditSGValues does not support " + messageType);
-        }
     }
 
     public CmsConfirmEditSGValues(boolean isResp, boolean isErr) {

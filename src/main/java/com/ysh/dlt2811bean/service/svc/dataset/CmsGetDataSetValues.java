@@ -65,32 +65,28 @@ public class CmsGetDataSetValues extends CmsAsdu<CmsGetDataSetValues> {
 
     // ==================== Fields based on Table 35 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference datasetReference = new CmsObjectReference();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsStructure value = new CmsStructure().capacity(100);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetDataSetValues() {
+    }
+
     public CmsGetDataSetValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("datasetReference");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("value");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetDataSetValues does not support " + messageType);
-        }
     }
 
     public CmsGetDataSetValues(boolean isResp, boolean isErr) {

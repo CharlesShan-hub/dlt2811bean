@@ -109,25 +109,19 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
 
     // ==================== Fields based on Table 50 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetURCBValuesEntry> urcb = new CmsArray<>(CmsSetURCBValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsSetURCBValuesResultEntry> result = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(100);
-
+    
     // ========================= Constructor ============================
 
+    public CmsSetURCBValues() {
+    }
+    
     public CmsSetURCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("urcb");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetURCBValues does not support " + messageType);
-        }
     }
 
     public CmsSetURCBValues(boolean isResp, boolean isErr) {

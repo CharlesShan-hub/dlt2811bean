@@ -5,10 +5,9 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsReference;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -92,43 +91,31 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
 
     // ==================== Fields based on Table 27 ====================
 
-    // --- Request parameters ---
-    // reference CHOICE { ldName [0] IMPLICIT ObjectName, lnReference [1] IMPLICIT ObjectReference }
+    @CmsField(only = {"REQUEST"})
     public CmsReference reference = new CmsReference();
 
-    // fc [0..1] FunctionalConstraint (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsFC fc = new CmsFC();
 
-    // referenceAfter [0..1] ObjectReference (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
-    // data [0..n] SEQUENCE OF SEQUENCE { reference SubReference, value Data }
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsDataEntry> data = new CmsArray<>(CmsDataEntry::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN DEFAULT TRUE
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
-    // serviceError ServiceError
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
+
+    public CmsGetAllDataValues() {
+    }
     
     public CmsGetAllDataValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerOptionalField("fc");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("data");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetAllDataValues does not support " + messageType);
-        }
     }
 
     public CmsGetAllDataValues(boolean isResp, boolean isErr) {
@@ -168,31 +155,5 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.GET_ALL_DATA_VALUES;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetAllDataValues copy() {
-        CmsGetAllDataValues copy = new CmsGetAllDataValues(messageType());
-        copy.reqId.set(reqId.get());
-        copy.reference = reference.copy();
-        copy.fc = fc.copy();
-        copy.referenceAfter = referenceAfter.copy();
-        copy.data = data.copy();
-        copy.moreFollows = moreFollows.copy();
-        copy.serviceError = serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetAllDataValues read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetAllDataValues) new CmsGetAllDataValues(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetAllDataValues service) {
-        service.encode(pos);
     }
 }

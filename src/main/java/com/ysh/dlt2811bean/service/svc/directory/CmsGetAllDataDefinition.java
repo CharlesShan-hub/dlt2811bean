@@ -93,7 +93,6 @@ public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
 
     // ==================== Fields based on Table 29 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsReference reference = new CmsReference();
 
@@ -103,14 +102,12 @@ public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
     @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsDataDefinitionEntry> data = new CmsArray<>(CmsDataDefinitionEntry::new).capacity(100);
 
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

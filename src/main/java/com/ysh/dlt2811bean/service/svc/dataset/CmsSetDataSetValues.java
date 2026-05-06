@@ -66,29 +66,25 @@ public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
 
     // ==================== Fields based on Table 36 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference datasetReference = new CmsObjectReference();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
+    
+    @CmsField(only = {"REQUEST"})
     public CmsStructure memberValue = new CmsStructure().capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetDataSetValues() {
+    }
+    
     public CmsSetDataSetValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("datasetReference");
-            registerOptionalField("referenceAfter");
-            registerField("memberValue");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetDataSetValues does not support " + messageType);
-        }
     }
 
     public CmsSetDataSetValues(boolean isResp, boolean isErr) {

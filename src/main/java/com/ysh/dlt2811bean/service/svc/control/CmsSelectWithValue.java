@@ -128,54 +128,40 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
 
     // ==================== Fields based on Table 66 ====================
 
-    // --- Common fields ---
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();
+    
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
+    
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsCheck check = new CmsCheck();
 
-    // --- RESPONSE_NEGATIVE only ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsSelectWithValue(){
+    }
+
     public CmsSelectWithValue(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("SelectWithValue does not support " + messageType);
-        }
     }
 
     public CmsSelectWithValue(boolean isResp, boolean isErr) {

@@ -18,7 +18,7 @@ public enum MessageType {
     /** Request-ASDU (Resp=0, Err=0) */
     REQUEST(false, false),
     /** Request+-ASDU (Resp=0, Err=0) — server-initiated positive request */
-    REQUEST_PLUS(false, false),
+    REQUEST_POSITIVE(false, false),
     /** Request--ASDU (Resp=0, Err=1) — server-initiated negative request */
     REQUEST_NEGATIVE(false, true),
     /** Positive Response-ASDU (Resp=1, Err=0) */

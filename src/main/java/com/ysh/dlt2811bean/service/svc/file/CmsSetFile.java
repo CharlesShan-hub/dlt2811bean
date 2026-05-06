@@ -78,7 +78,6 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
 
     // ==================== Fields based on Table 73 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
@@ -91,7 +90,6 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
     @CmsField(only = {"REQUEST"})
     public CmsBoolean endOfFile = new CmsBoolean();
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

@@ -59,7 +59,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *
  * ASN.1 Definition (from standard document):
  * <pre>
- * Report-ResponsePDU::= SEQUENCE {
+ * ReportPDU::= SEQUENCE {
  *   rptID               [0] IMPLICIT VisibleString129,
  *   optFlds             [1] IMPLICIT RCBOptFlds,
  *   sqNum               [2] IMPLICIT INT16U OPTIONAL,
@@ -102,25 +102,22 @@ public class CmsReport extends CmsAsdu<CmsReport> {
 
     // ========================= Constructor ============================
 
-    public CmsReport(MessageType messageType) {
-        super(messageType);
-        if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("rptID");
-            registerField("optFlds");
-            registerOptionalField("sqNum");
-            registerOptionalField("subSqNum");
-            registerOptionalField("moreSegmentsFollow");
-            registerOptionalField("datSet");
-            registerOptionalField("bufOvfl");
-            registerOptionalField("confRev");
-            registerField("entry");
-        } else {
-            throw new IllegalArgumentException("Report does not support " + messageType);
-        }
+    public CmsReport() {
+        this(MessageType.RESPONSE_POSITIVE); // default
     }
 
-    public CmsReport(boolean isResp, boolean isErr) {
-        this(MessageType.RESPONSE_POSITIVE);
+    public CmsReport(MessageType messageType) {
+        super(messageType);
+        // message type is not need for Report
+        registerField("rptID");
+        registerField("optFlds");
+        registerOptionalField("sqNum");
+        registerOptionalField("subSqNum");
+        registerOptionalField("moreSegmentsFollow");
+        registerOptionalField("datSet");
+        registerOptionalField("bufOvfl");
+        registerOptionalField("confRev");
+        registerField("entry");
     }
 
     // ====================== Convenience Setters =======================

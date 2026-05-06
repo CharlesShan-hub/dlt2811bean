@@ -65,25 +65,19 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
 
     // ==================== Fields based on Table 32====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetDataValuesEntry> data = new CmsArray<>(CmsSetDataValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetDataValues() {
+    }
+    
     public CmsSetDataValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("data");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetDataValues does not support " + messageType);
-        }
     }
 
     public CmsSetDataValues(boolean isResp, boolean isErr) {

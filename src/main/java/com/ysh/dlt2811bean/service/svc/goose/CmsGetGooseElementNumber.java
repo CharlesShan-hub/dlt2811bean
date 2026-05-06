@@ -86,27 +86,26 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 @Accessors(fluent = true)
 public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> {
 
-
-
     // ==================== Fields based on Table 59 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsObjectReference gocbReference = new CmsObjectReference();
+
     @CmsField(only = {"REQUEST"})
     public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference gocbRefResp = new CmsObjectReference();
+
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsInt32U confRev = new CmsInt32U();
+
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference datSet = new CmsObjectReference();
+
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new).capacity(100);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
@@ -125,16 +124,40 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
 
     // ====================== Convenience Setters =======================
 
-    public CmsGetGooseElementNumber gocbReference(String ref) { this.gocbReference.set(ref); return this; }
+    public CmsGetGooseElementNumber gocbReference(String ref) { 
+        this.gocbReference.set(ref); 
+        return this; 
+    }
+
     public CmsGetGooseElementNumber addMemberData(String reference, String fc) {
         this.memberData.add(new CmsCreateDataSetEntry().reference(reference).fc(fc));
         return this;
     }
-    public CmsGetGooseElementNumber gocbRefResp(String ref) { this.gocbRefResp.set(ref); return this; }
-    public CmsGetGooseElementNumber confRev(long rev) { this.confRev.set(rev); return this; }
-    public CmsGetGooseElementNumber datSet(String ds) { this.datSet.set(ds); return this; }
-    public CmsGetGooseElementNumber addMemberOffset(int offset) { this.memberOffset.add(new CmsInt16U(offset)); return this; }
-    public CmsGetGooseElementNumber serviceError(int errorCode) { this.serviceError.set(errorCode); return this; }
+
+    public CmsGetGooseElementNumber gocbRefResp(String ref) { 
+        this.gocbRefResp.set(ref); 
+        return this; 
+    }
+
+    public CmsGetGooseElementNumber confRev(long rev) { 
+        this.confRev.set(rev); 
+        return this; 
+    }
+
+    public CmsGetGooseElementNumber datSet(String ds) { 
+        this.datSet.set(ds); 
+        return this; 
+    }
+
+    public CmsGetGooseElementNumber addMemberOffset(int offset) { 
+        this.memberOffset.add(new CmsInt16U(offset)); 
+        return this; 
+    }
+
+    public CmsGetGooseElementNumber serviceError(int errorCode) { 
+        this.serviceError.set(errorCode); 
+        return this; 
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 

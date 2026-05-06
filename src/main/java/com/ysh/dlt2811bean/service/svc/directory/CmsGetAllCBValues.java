@@ -106,7 +106,6 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
 
     // ==================== Fields based on Table 30 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsReference reference = new CmsReference();
 
@@ -116,14 +115,12 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsCBValueEntry> cbValue = new CmsArray<>(CmsCBValueEntry::new).capacity(100);
 
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

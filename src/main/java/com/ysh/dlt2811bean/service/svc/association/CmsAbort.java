@@ -58,22 +58,20 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     // ==================== Fields based on Table 21 ====================
 
-    // reason AbortReason
+    @CmsField(only = {"REQUEST", "INDICATION"})
     public AbortReason reason = new AbortReason();
 
     // ==================== Constructor ====================
 
+    public CmsAbort() {
+    }
+
     public CmsAbort(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST || messageType == MessageType.REQUEST_PLUS) {
-            registerField("reason");
-        } else {
-            throw new IllegalArgumentException("Abort does not support " + messageType);
-        }
     }
 
     public CmsAbort(boolean isResp, boolean isErr) {
-        this(getReqMessageType(isResp, isErr));
+        this(getIndicationMessageType(isResp, isErr));
     }
 
     // ==================== Convenience Setters ====================

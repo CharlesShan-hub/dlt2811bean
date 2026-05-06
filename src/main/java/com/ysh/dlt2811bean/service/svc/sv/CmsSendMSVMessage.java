@@ -93,40 +93,67 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
 
     // ========================= Constructor ============================
 
-    public CmsSendMSVMessage(MessageType messageType) {
-        super(messageType);
-        if (messageType == MessageType.INDICATION) {
-            registerField("msvID");
-            registerOptionalField("datSet");
-            registerField("smpCnt");
-            registerField("confRev");
-            registerOptionalField("refrTm");
-            registerField("smpSynch");
-            registerOptionalField("smpRate");
-            registerField("simulation");
-            registerField("sample");
-            registerOptionalField("smpMod");
-        } else {
-            throw new IllegalArgumentException("SendMSVMessage does not support " + messageType);
-        }
+    public CmsSendMSVMessage() {
+        this(MessageType.REQUEST_POSITIVE);  // default is REQUEST_POSITIVE
     }
 
-    public CmsSendMSVMessage() {
-        this(MessageType.INDICATION);
+    public CmsSendMSVMessage(MessageType messageType) {
+        super(messageType);
+        // message type is not need for SendMSVMessage
+        registerField("msvID");
+        registerOptionalField("datSet");
+        registerField("smpCnt");
+        registerField("confRev");
+        registerOptionalField("refrTm");
+        registerField("smpSynch");
+        registerOptionalField("smpRate");
+        registerField("simulation");
+        registerField("sample");
+        registerOptionalField("smpMod");
     }
 
     // ====================== Convenience Setters =======================
 
-    public CmsSendMSVMessage msvID(String id) { this.msvID.set(id); return this; }
-    public CmsSendMSVMessage datSet(String ds) { this.datSet.set(ds); return this; }
-    public CmsSendMSVMessage smpCnt(int cnt) { this.smpCnt.set(cnt); return this; }
-    public CmsSendMSVMessage confRev(long rev) { this.confRev.set(rev); return this; }
-    public CmsSendMSVMessage smpSynch(int synch) { this.smpSynch.set(synch); return this; }
-    public CmsSendMSVMessage smpRate(int rate) { this.smpRate.set(rate); return this; }
-    public CmsSendMSVMessage simulation(boolean sim) { this.simulation.set(sim); return this; }
+    public CmsSendMSVMessage msvID(String id) { 
+        this.msvID.set(id); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage datSet(String ds) { 
+        this.datSet.set(ds); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage smpCnt(int cnt) { 
+        this.smpCnt.set(cnt); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage confRev(long rev) { 
+        this.confRev.set(rev); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage smpSynch(int synch) { 
+        this.smpSynch.set(synch); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage smpRate(int rate) { 
+        this.smpRate.set(rate); 
+        return this; 
+    }
+
+    public CmsSendMSVMessage simulation(boolean sim) { 
+        this.simulation.set(sim); 
+        return this; 
+    }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public CmsSendMSVMessage sample(CmsType<?> val) { this.sample = new CmsData(val); return this; }
+    public CmsSendMSVMessage sample(CmsType<?> val) { 
+        this.sample = new CmsData(val); 
+        return this; 
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 

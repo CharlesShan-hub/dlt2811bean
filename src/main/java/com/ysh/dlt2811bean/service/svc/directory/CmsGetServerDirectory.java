@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.service.svc.directory;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
@@ -9,8 +10,6 @@ import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import com.ysh.dlt2811bean.per.io.PerInputStream;
-import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -81,39 +80,28 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
 
     // ==================== Fields based on Table 22 ====================
 
-    // --- Request parameters ---
-    // objectClass ENUMERATED
+    @CmsField(only = {"REQUEST"})
     public CmsObjectClass objectClass = new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE);
 
-    // referenceAfter [0..1] ObjectReference (optional)
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
-    // reference [0..n] SEQUENCE OF ObjectReference
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN DEFAULT TRUE
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
-    // serviceError ServiceError
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
-    
+
+    public CmsGetServerDirectory() {
+    }
+
     public CmsGetServerDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("objectClass");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetServerDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetServerDirectory(boolean isResp, boolean isErr) {
@@ -142,30 +130,5 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     @Override
     public ServiceName getServiceName() {
         return ServiceName.GET_SERVER_DIRECTORY;
-    }
-
-    // ==================== CmsType Implementation ====================
-
-    @Override
-    public CmsGetServerDirectory copy() {
-        CmsGetServerDirectory copy = new CmsGetServerDirectory(messageType());
-        copy.reqId.set(reqId.get());
-        copy.objectClass = this.objectClass.copy();
-        copy.referenceAfter = this.referenceAfter.copy();
-        copy.reference = this.reference.copy();
-        copy.moreFollows = this.moreFollows.copy();
-        copy.serviceError = this.serviceError.copy();
-        return copy;
-    }
-
-    // ==================== Static Convenience Methods ====================
-
-    @SuppressWarnings("unchecked")
-    public static CmsGetServerDirectory read(PerInputStream pis, MessageType messageType) throws Exception {
-        return (CmsGetServerDirectory) new CmsGetServerDirectory(messageType).decode(pis);
-    }
-
-    public static void write(PerOutputStream pos, CmsGetServerDirectory getServerDirectory) {
-        getServerDirectory.encode(pos);
     }
 }

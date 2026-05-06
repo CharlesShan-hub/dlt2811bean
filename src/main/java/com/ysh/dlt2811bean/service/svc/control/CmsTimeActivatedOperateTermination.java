@@ -40,7 +40,20 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *
  * ASDU field layout (PER encoded, in order):
  * <pre>
- * Request ASDU:
+ * Request+ ASDU:
+ * ┌─────────────────────────────────────────────────────────────┐
+ * │ ReqID (2B)                                                  │
+ * │ reference                   ObjectReference                 │
+ * │ ctlVal                      Data                            │
+ * │ operTm                      TimeStamp                       │
+ * │ origin                      Originator                      │
+ * │ ctlNum                      INT8U                           │
+ * │ t                           TimeStamp                       │
+ * │ test                        BOOLEAN                         │
+ * │ check                       Check                           │
+ * └─────────────────────────────────────────────────────────────┘
+ * 
+ * Request- ASDU:
  * ┌─────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                  │
  * │ reference                   ObjectReference                 │
@@ -52,33 +65,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  * │ test                        BOOLEAN                         │
  * │ check                       Check                           │
  * │ addCause                    AddCause OPTIONAL               │
- * └─────────────────────────────────────────────────────────────┘
- *
- * Response+ ASDU:
- * ┌─────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                  │
- * │ reference                   ObjectReference                 │
- * │ ctlVal                      Data                            │
- * │ operTm                      TimeStamp                       │
- * │ origin                      Originator                      │
- * │ ctlNum                      INT8U                           │
- * │ t                           TimeStamp                       │
- * │ test                        BOOLEAN                         │
- * │ check                       Check                           │
- * └─────────────────────────────────────────────────────────────┘
- *
- * Response- ASDU:
- * ┌─────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                  │
- * │ reference                   ObjectReference                 │
- * │ ctlVal                      Data                            │
- * │ operTm                      TimeStamp                       │
- * │ origin                      Originator                      │
- * │ ctlNum                      INT8U                           │
- * │ t                           TimeStamp                       │
- * │ test                        BOOLEAN                         │
- * │ check                       Check                           │
- * │ addCause                    AddCause                        │
  * └─────────────────────────────────────────────────────────────┘
  * </pre>
  *
@@ -95,29 +81,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *   check        [7] IMPLICIT Check,
  *   addCause     [8] IMPLICIT AddCause OPTIONAL
  * }
- *
- * TimeActivatedOperateTermination-ResponsePDU:: = SEQUENCE {
- *   reference    [0] IMPLICIT ObjectReference,
- *   ctlVal       [1] IMPLICIT Data,
- *   operTm       [2] IMPLICIT TimeStamp,
- *   origin       [3] IMPLICIT Originator,
- *   ctlNum       [4] IMPLICIT INT8U,
- *   t            [5] IMPLICIT TimeStamp,
- *   test         [6] IMPLICIT BOOLEAN,
- *   check        [7] IMPLICIT Check
- * }
- *
- * TimeActivatedOperateTermination-ErrorPDU:: = SEQUENCE {
- *   reference    [0] IMPLICIT ObjectReference,
- *   ctlVal       [1] IMPLICIT Data,
- *   operTm       [2] IMPLICIT TimeStamp,
- *   origin       [3] IMPLICIT Originator,
- *   ctlNum       [4] IMPLICIT INT8U,
- *   t            [5] IMPLICIT TimeStamp,
- *   test         [6] IMPLICIT BOOLEAN,
- *   check        [7] IMPLICIT Check,
- *   addCause     [8] IMPLICIT AddCause
- * }
  * </pre>
  */
 @Getter
@@ -127,57 +90,44 @@ public class CmsTimeActivatedOperateTermination extends CmsAsdu<CmsTimeActivated
 
     // ==================== Fields based on Table 71 ====================
 
-    // --- Common fields ---
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsCheck check = new CmsCheck();
+
+    @CmsField(optional = true, only = {"REQUEST_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsTimeActivatedOperateTermination() {
+    }
+
     public CmsTimeActivatedOperateTermination(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-            registerOptionalField("addCause");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("TimeActivatedOperateTermination does not support " + messageType);
-        }
     }
 
     public CmsTimeActivatedOperateTermination(boolean isResp, boolean isErr) {
-        this(getRRMessageType(isResp, isErr));
+        this(getReqMessageType(isResp, isErr));
     }
 
     // ====================== Convenience Setters =======================

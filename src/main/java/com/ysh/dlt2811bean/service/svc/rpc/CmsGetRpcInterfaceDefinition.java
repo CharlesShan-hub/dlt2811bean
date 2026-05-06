@@ -93,32 +93,28 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
 
     // ==================== Fields based on Table 79 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsVisibleString interfaceName = new CmsVisibleString().max(255);
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString referenceAfter = new CmsVisibleString().max(255);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsRpcMethodDefEntry> method = new CmsArray<>(CmsRpcMethodDefEntry::new).capacity(100);
+
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetRpcInterfaceDefinition() {
+    }
+    
     public CmsGetRpcInterfaceDefinition(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("interfaceName");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("method");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetRpcInterfaceDefinition does not support " + messageType);
-        }
     }
 
     public CmsGetRpcInterfaceDefinition(boolean isResp, boolean isErr) {

@@ -83,25 +83,19 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
 
     // ==================== Fields based on Table 42 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetEditSGValueEntry> data = new CmsArray<>(CmsSetEditSGValueEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetEditSGValue() {
+    }
+
     public CmsSetEditSGValue(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("data");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetEditSGValue does not support " + messageType);
-        }
     }
 
     public CmsSetEditSGValue(boolean isResp, boolean isErr) {

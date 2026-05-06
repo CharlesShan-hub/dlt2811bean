@@ -88,30 +88,25 @@ public class CmsGetDataDefinition extends CmsAsdu<CmsGetDataDefinition> {
 
     // ==================== Fields based on Table 34 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsGetDataDefinitionEntry> definition = new CmsArray<>(CmsGetDataDefinitionEntry::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetDataDefinition() {
+    }
+
     public CmsGetDataDefinition(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("data");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("definition");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetDataDefinition does not support " + messageType);
-        }
     }
 
     public CmsGetDataDefinition(boolean isResp, boolean isErr) {

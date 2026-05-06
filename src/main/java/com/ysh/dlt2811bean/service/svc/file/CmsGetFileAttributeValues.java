@@ -68,15 +68,12 @@ public class CmsGetFileAttributeValues extends CmsAsdu<CmsGetFileAttributeValues
 
     // ==================== Fields based on Table 75 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsFileEntry fileEntry = new CmsFileEntry();
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

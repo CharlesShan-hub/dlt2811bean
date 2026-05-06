@@ -84,32 +84,28 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
 
     // ==================== Fields based on Table 33 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference dataReference = new CmsObjectReference();
+    
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
-
-    // --- Response+ parameters ---
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsGetDataDirectoryEntry> dataAttribute = new CmsArray<>(CmsGetDataDirectoryEntry::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetDataDirectory() {
+    }
+
     public CmsGetDataDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("dataReference");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("dataAttribute");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetDataDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetDataDirectory(boolean isResp, boolean isErr) {

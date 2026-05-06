@@ -119,50 +119,37 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
 
     // ==================== Fields based on Table 67 ====================
 
-    // --- Common fields (REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE) ---
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
+
+    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsCheck check = new CmsCheck();
 
-    // --- RESPONSE_NEGATIVE only ---
+    @CmsField(only = {"REQUEST_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsOperate(){
+    }
+
     public CmsOperate(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("Operate does not support " + messageType);
-        }
     }
 
     public CmsOperate(boolean isResp, boolean isErr) {

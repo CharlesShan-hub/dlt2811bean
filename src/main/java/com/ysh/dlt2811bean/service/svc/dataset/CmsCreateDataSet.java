@@ -84,29 +84,25 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
 
     // ==================== Fields based on Table 37 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference datasetReference = new CmsObjectReference();
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
+    
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsCreateDataSet() {
+    }
+    
     public CmsCreateDataSet(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("datasetReference");
-            registerOptionalField("referenceAfter");
-            registerField("memberData");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("CreateDataSet does not support " + messageType);
-        }
     }
 
     public CmsCreateDataSet(boolean isResp, boolean isErr) {

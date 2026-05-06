@@ -17,27 +17,26 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
- * CMS Service Code 0x48 — Cancel (cancel service).
+ * CMS Service Code 0x49 — Command Termination (cancel service).
  *
- * Corresponds to Table 68 in GB/T 45906.3-2025: Cancel service parameters.
+ * Corresponds to Table 69 in GB/T 45906.3-2025: CommandTermination service parameters.
  *
- * Service code: 0x48 (72)
- * Service interface: Cancel
+ * Service code: 0x49 (73)
+ * Service interface: CommandTermination
  * Category: Control service
  *
- * The Cancel service is used to abort a previously issued Select, SelectWithValue,
+ * The CommandTermination service is used to abort a previously issued Select, SelectWithValue,
  * or Operate command before it has been completed or executed.
  *
  * This class supports all three message types:
  * <ul>
- *   <li>REQUEST - Cancel a pending control command request</li>
- *   <li>RESPONSE_POSITIVE - Server positive response confirming cancellation</li>
- *   <li>RESPONSE_NEGATIVE - Server negative response with error details</li>
+ *   <li>REQUEST_POSITIVE - Server positive response confirming termination</li>
+ *   <li>REQUEST_NEGATIVE - Server negative response with error details</li>
  * </ul>
  *
  * ASDU field layout (PER encoded, in order):
  * <pre>
- * Request ASDU:
+ * REQUEST+ ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
  * │ reference                   ObjectReference                  │
@@ -49,19 +48,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  * │ test                        BOOLEAN                          │
  * └──────────────────────────────────────────────────────────────┘
  *
- * Response+ ASDU:
- * ┌──────────────────────────────────────────────────────────────┐
- * │ ReqID (2B)                                                   │
- * │ reference                   ObjectReference                  │
- * │ ctlVal                      Data (depends on model)          │
- * │ operTm                      TimeStamp (OPTIONAL)             │
- * │ origin                      Originator                       │
- * │ ctlNum                      INT8U                            │
- * │ t                           TimeStamp                        │
- * │ test                        BOOLEAN                          │
- * └──────────────────────────────────────────────────────────────┘
- *
- * Response- ASDU:
+ * REQUEST- ASDU:
  * ┌──────────────────────────────────────────────────────────────┐
  * │ ReqID (2B)                                                   │
  * │ reference                   ObjectReference                  │
@@ -77,27 +64,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *
  * ASN.1 Definition (from standard document):
  * <pre>
- * Cancel-RequestPDU:: = SEQUENCE {
- *   reference    [0] IMPLICIT ObjectReference,
- *   ctlVal       [1] IMPLICIT Data,
- *   operTm       [2] IMPLICIT TimeStamp OPTIONAL,
- *   origin       [3] IMPLICIT Originator,
- *   ctlNum       [4] IMPLICIT INT8U,
- *   t            [5] IMPLICIT TimeStamp,
- *   test         [6] IMPLICIT BOOLEAN
- * }
- *
- * Cancel-ResponsePDU:: = SEQUENCE {
- *   reference    [0] IMPLICIT ObjectReference,
- *   ctlVal       [1] IMPLICIT Data,
- *   operTm       [2] IMPLICIT TimeStamp OPTIONAL,
- *   origin       [3] IMPLICIT Originator,
- *   ctlNum       [4] IMPLICIT INT8U,
- *   t            [5] IMPLICIT TimeStamp,
- *   test         [6] IMPLICIT BOOLEAN
- * }
- *
- * Cancel-ErrorPDU:: = SEQUENCE {
+ * CommandTermination-RequestPDU:: = SEQUENCE {
  *   reference    [0] IMPLICIT ObjectReference,
  *   ctlVal       [1] IMPLICIT Data,
  *   operTm       [2] IMPLICIT TimeStamp OPTIONAL,
@@ -105,7 +72,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
  *   ctlNum       [4] IMPLICIT INT8U,
  *   t            [5] IMPLICIT TimeStamp,
  *   test         [6] IMPLICIT BOOLEAN,
- *   addCause     [7] IMPLICIT AddCause
+ *   addCause     [7] IMPLICIT AddCause OPTIONAL
  * }
  * </pre>
  */
@@ -117,53 +84,41 @@ public class CmsCommandTermination extends CmsAsdu<CmsCommandTermination> {
     // ==================== Fields based on Table 69 ====================
 
     // --- Common fields ---
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(optional = true, only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})  
     public CmsOriginator origin = new CmsOriginator();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
 
-    // --- RESPONSE_NEGATIVE only ---
+    @CmsField(optional = true, only = {"REQUEST_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsCommandTermination(){
+    }
+
     public CmsCommandTermination(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerOptionalField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("CommandTermination does not support " + messageType);
-        }
     }
 
     public CmsCommandTermination(boolean isResp, boolean isErr) {
-        this(getRRMessageType(isResp, isErr));
+        this(getReqMessageType(isResp, isErr));
     }
 
     // ====================== Convenience Setters =======================

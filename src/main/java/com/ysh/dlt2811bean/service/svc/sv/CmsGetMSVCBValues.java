@@ -81,30 +81,25 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
 
     // ==================== Fields based on Table 63 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsErrorMsvcbChoice> errorMsvcb = new CmsArray<>(CmsErrorMsvcbChoice::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetMSVCBValues() {
+    }
+
     public CmsGetMSVCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("errorMsvcb");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetMSVCBValues does not support " + messageType);
-        }
     }
 
     public CmsGetMSVCBValues(boolean isResp, boolean isErr) {

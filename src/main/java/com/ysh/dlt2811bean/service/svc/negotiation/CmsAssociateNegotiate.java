@@ -81,35 +81,28 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
 
     // ==================== Fields based on Table 82 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
     public CmsInt16U apduSize = new CmsInt16U();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
     public CmsInt32U asduSize = new CmsInt32U();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
     public CmsInt32U protocolVersion = new CmsInt32U();
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsVisibleString modelVersion = new CmsVisibleString().max(255);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsAssociateNegotiate() {
+    }
+
     public CmsAssociateNegotiate(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("apduSize");
-            registerField("asduSize");
-            registerField("protocolVersion");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("apduSize");
-            registerField("asduSize");
-            registerField("protocolVersion");
-            registerField("modelVersion");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("AssociateNegotiate does not support " + messageType);
-        }
     }
 
     public CmsAssociateNegotiate(boolean isResp, boolean isErr) {

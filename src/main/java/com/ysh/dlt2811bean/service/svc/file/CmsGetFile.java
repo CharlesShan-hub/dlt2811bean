@@ -79,21 +79,18 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
 
     // ==================== Fields based on Table 72 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
     @CmsField(only = {"REQUEST"})
     public CmsInt32U startPosition = new CmsInt32U();
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsOctetString fileData = new CmsOctetString().max(65535);
 
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean endOfFile = new CmsBoolean();
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
@@ -143,5 +140,4 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
     public ServiceName getServiceName() {
         return ServiceName.GET_FILE;
     }
-
 }

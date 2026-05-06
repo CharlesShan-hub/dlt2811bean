@@ -68,11 +68,9 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
 
     // ==================== Fields based on Table 74 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public CmsVisibleString fileName = new CmsVisibleString().max(255);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
@@ -107,5 +105,4 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     public ServiceName getServiceName() {
         return ServiceName.DELETE_FILE;
     }
-
 }

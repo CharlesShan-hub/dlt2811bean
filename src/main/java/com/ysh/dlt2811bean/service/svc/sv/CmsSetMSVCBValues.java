@@ -98,25 +98,19 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
 
     // ==================== Fields based on Table 64 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetMSVCBValuesEntry> msvcb = new CmsArray<>(CmsSetMSVCBValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsSetMSVCBValuesResultEntry> result = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetMSVCBValues() {
+    }
+
     public CmsSetMSVCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("msvcb");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetMSVCBValues does not support " + messageType);
-        }
     }
 
     public CmsSetMSVCBValues(boolean isResp, boolean isErr) {

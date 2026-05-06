@@ -88,30 +88,21 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
 
     // ==================== Fields based on Table 25 ====================
 
-    // --- Request parameters ---
-    // reference CHOICE { ldName ObjectName, lnReference ObjectReference }
     @CmsField(only = {"REQUEST"})
     public CmsReference referenceRequest = new CmsReference();
 
-    // acsiClass ACSIClass
     @CmsField(only = {"REQUEST"})
     public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
 
-    // referenceAfter [0..1] ObjectReference (optional)
     @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    // --- Response+ parameters ---
-    // reference [0..n] SEQUENCE OF SubReference
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new).capacity(100);
 
-    // moreFollows [0..1] BOOLEAN (optional)
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(optional = true, only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean();
 
-    // --- Response- parameters ---
-    // serviceError ServiceError
     @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 

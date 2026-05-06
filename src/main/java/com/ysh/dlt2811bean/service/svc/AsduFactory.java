@@ -55,7 +55,7 @@ public class AsduFactory {
             case GET_SGCBVALUES: return new CmsGetSGCBValues(isResp, isErr);
 
             // 8.7 Report Services
-            case REPORT: return new CmsReport(isResp, isErr);
+            case REPORT: return new CmsReport();
             case GET_BRCBVALUES: return new CmsGetBRCBValues(isResp, isErr);
             case SET_BRCBVALUES: return new CmsSetBRCBValues(isResp, isErr);
             case GET_URCBVALUES: return new CmsGetURCBValues(isResp, isErr);

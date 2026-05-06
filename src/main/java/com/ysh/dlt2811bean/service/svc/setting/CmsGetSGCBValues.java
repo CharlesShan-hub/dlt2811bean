@@ -78,28 +78,22 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
 
     // ==================== Fields based on Table 45 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsObjectReference> sgcbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsErrorSgcbChoice> errorSgcb = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetSGCBValues() {
+    }
+
     public CmsGetSGCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("sgcbReference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("errorSgcb");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetSGCBValues does not support " + messageType);
-        }
     }
 
     public CmsGetSGCBValues(boolean isResp, boolean isErr) {

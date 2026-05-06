@@ -14,13 +14,73 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 /**
- * CMS Service Code 0x66 — GetGoCBValues (get GOOSE control block values).
+ * 8.9.4 — GetGoCBValues.
  *
  * Corresponds to Table 60 in GB/T 45906.3-2025: GetGoCBValues service parameters.
  *
- * Service code: 0x66 (102)
+ * Service code: N/A (Part of GOOSE Management Services)
  * Service interface: GetGoCBValues
- * Category: GOOSE control block service
+ * Category: General station event service
+ *
+ * The GetGoCBValues service is used to retrieve the configuration and state information
+ * of one or more GOOSE Control Blocks (GoCBs) from the server. The client can request
+ * multiple GoCBs in a single request, and the server may respond with partial results
+ * using the moreFollows flag when the number of requested GoCBs is large.
+ *
+ * This class supports three message types:
+ * <ul>
+ *   <li>REQUEST - Client request for GoCB values</li>
+ *   <li>RESPONSE_POSITIVE - Server response containing GoCB information</li>
+ *   <li>RESPONSE_NEGATIVE - Server error response</li>
+ * </ul>
+ *
+ * ASDU field layout (PER encoded, in order):
+ * <pre>
+ * Request ASDU:
+ * ┌──────────────────────────────────────────────────────────────┐
+ * │ reference                 SEQUENCE OF ObjectReference        │
+ * └──────────────────────────────────────────────────────────────┘
+ *
+ * Response+ ASDU:
+ * ┌──────────────────────────────────────────────────────────────┐
+ * │ gocb                      SEQUENCE OF CHOICE {               │
+ * │   error                     ServiceError                     │
+ * │   value                     GoCB                             │
+ * │ }                                                            │
+ * │ moreFollows                BOOLEAN (default TRUE)            │
+ * └──────────────────────────────────────────────────────────────┘
+ *
+ * Response- ASDU:
+ * ┌──────────────────────────────────────────────────────────────┐
+ * │ serviceError               ServiceError                      │
+ * └──────────────────────────────────────────────────────────────┘
+ * </pre>
+ *
+ * ASN.1 Definition (from standard document):
+ * <pre>
+ * GetGoCBValues-RequestPDU::= SEQUENCE {
+ *   reference    [0] IMPLICIT SEQUENCE OF ObjectReference
+ * }
+ *
+ * GetGoCBValues-ResponsePDU::= SEQUENCE {
+ *   gocb         [0] IMPLICIT SEQUENCE OF CHOICE {
+ *                      error    [0] IMPLICIT ServiceError,
+ *                      value    [1] IMPLICIT GoCB
+ *                 },
+ *   moreFollows  [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * }
+ *
+ * GetGoCBValues-ErrorPDU::= ServiceError
+ *
+ * GoCB::= SEQUENCE {
+ *   goEna        [1] IMPLICIT BOOLEAN,
+ *   goID         [2] IMPLICIT VisibleString129,
+ *   datSet       [3] IMPLICIT ObjectReference,
+ *   confRev      [4] IMPLICIT INT32U,
+ *   ndsCom       [5] IMPLICIT BOOLEAN,
+ *   dstAddress   [6] IMPLICIT PHYCOMADR OPTIONAL
+ * }
+ * </pre>
  */
 @Getter
 @Setter
@@ -29,30 +89,25 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
 
     // ==================== Fields based on Table 60 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsObjectReference> gocbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsErrorGocbChoice> errorGocb = new CmsArray<>(CmsErrorGocbChoice::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetGoCBValues() {
+    }
+    
     public CmsGetGoCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("gocbReference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("errorGocb");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetGoCBValues does not support " + messageType);
-        }
     }
 
     public CmsGetGoCBValues(boolean isResp, boolean isErr) {

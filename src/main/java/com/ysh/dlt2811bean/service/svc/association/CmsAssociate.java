@@ -89,22 +89,20 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
 
     // ==================== Fields based on Table 19 ====================
 
-    // --- Request parameters ---
     @CmsField(only = {"REQUEST"})
     public ServerAccessPointReference serverAccessPointReference = new ServerAccessPointReference();
 
     @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE"})
     public AuthenticationParameter authenticationParameter = new AuthenticationParameter();
 
-    // --- Response+ parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    // --- Response- parameters ---
     @CmsField(only = {"RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ==================== Constructor ====================
+
     public CmsAssociate() {
     }
 

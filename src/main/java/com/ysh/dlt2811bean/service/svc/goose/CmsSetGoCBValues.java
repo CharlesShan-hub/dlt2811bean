@@ -27,25 +27,19 @@ public class CmsSetGoCBValues extends CmsAsdu<CmsSetGoCBValues> {
 
     // ==================== Fields based on Table 61 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetGoCBValuesEntry> gocb = new CmsArray<>(CmsSetGoCBValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsSetGoCBValuesResultEntry> result = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetGoCBValues() {
+    }
+
     public CmsSetGoCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("gocb");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetGoCBValues does not support " + messageType);
-        }
     }
 
     public CmsSetGoCBValues(boolean isResp, boolean isErr) {

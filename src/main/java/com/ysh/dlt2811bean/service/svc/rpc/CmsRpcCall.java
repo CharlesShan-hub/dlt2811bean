@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 
 /**
  * CMS Service Code 0x72 — RpcCall (remote procedure call service).
@@ -86,32 +87,28 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
 
     // ==================== Fields based on Table 81 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsVisibleString method = new CmsVisibleString().max(255);
+
+    @CmsField(only = {"REQUEST"})
     public CmsReqDataChoice reqDataCallID = new CmsReqDataChoice();
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsData rspData = new CmsData<>();
+
+    @CmsField(optional = true, only = {"RESPONSE_POSITIVE"})
     public CmsOctetString nextCallID = new CmsOctetString().max(255);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsRpcCall() {
+    }
+
     public CmsRpcCall(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("method");
-            registerField("reqDataCallID");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("rspData");
-            registerOptionalField("nextCallID");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("RpcCall does not support " + messageType);
-        }
     }
 
     public CmsRpcCall(boolean isResp, boolean isErr) {
@@ -125,7 +122,7 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
         return this;
     }
 
-    public CmsRpcCall reqData(com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
+    public CmsRpcCall reqData(CmsType<?> value) {
         this.reqDataCallID.selectReqData().reqData(value);
         return this;
     }
@@ -136,7 +133,7 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public CmsRpcCall rspData(com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
+    public CmsRpcCall rspData(CmsType<?> value) {
         this.rspData = new CmsData(value);
         return this;
     }

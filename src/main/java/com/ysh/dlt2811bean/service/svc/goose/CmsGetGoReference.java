@@ -87,36 +87,34 @@ public class CmsGetGoReference extends CmsAsdu<CmsGetGoReference> {
 
     // ==================== Fields based on Table 58 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsObjectReference gocbReference = new CmsObjectReference();
+    
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference gocbRefResp = new CmsObjectReference();
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsInt32U confRev = new CmsInt32U();
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsObjectReference datSet = new CmsObjectReference();
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetGoReference() {
+    }
+    
     public CmsGetGoReference(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("gocbReference");
-            registerField("memberOffset");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("gocbRefResp");
-            registerField("confRev");
-            registerField("datSet");
-            registerField("memberData");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetGoReference does not support " + messageType);
-        }
     }
 
     public CmsGetGoReference(boolean isResp, boolean isErr) {
@@ -125,16 +123,40 @@ public class CmsGetGoReference extends CmsAsdu<CmsGetGoReference> {
 
     // ====================== Convenience Setters =======================
 
-    public CmsGetGoReference gocbReference(String ref) { this.gocbReference.set(ref); return this; }
-    public CmsGetGoReference addMemberOffset(int offset) { this.memberOffset.add(new CmsInt16U(offset)); return this; }
-    public CmsGetGoReference gocbRefResp(String ref) { this.gocbRefResp.set(ref); return this; }
-    public CmsGetGoReference confRev(long rev) { this.confRev.set(rev); return this; }
-    public CmsGetGoReference datSet(String ds) { this.datSet.set(ds); return this; }
+    public CmsGetGoReference gocbReference(String ref) { 
+        this.gocbReference.set(ref); 
+        return this; 
+    }
+
+    public CmsGetGoReference addMemberOffset(int offset) { 
+        this.memberOffset.add(new CmsInt16U(offset)); 
+        return this; 
+    }
+
+    public CmsGetGoReference gocbRefResp(String ref) { 
+        this.gocbRefResp.set(ref); 
+        return this; 
+    }
+
+    public CmsGetGoReference confRev(long rev) { 
+        this.confRev.set(rev); 
+        return this; 
+    }
+
+    public CmsGetGoReference datSet(String ds) { 
+        this.datSet.set(ds); 
+        return this; 
+    }
+
     public CmsGetGoReference addMemberData(String reference, String fc) {
         this.memberData.add(new CmsCreateDataSetEntry().reference(reference).fc(fc));
         return this;
     }
-    public CmsGetGoReference serviceError(int errorCode) { this.serviceError.set(errorCode); return this; }
+    
+    public CmsGetGoReference serviceError(int errorCode) { 
+        this.serviceError.set(errorCode); 
+        return this; 
+    }
 
     // ==================== CmsAsdu Abstract Methods ====================
 

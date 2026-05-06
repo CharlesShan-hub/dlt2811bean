@@ -76,32 +76,28 @@ public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> 
 
     // ==================== Fields based on Table 78 ====================
 
-    // --- Request parameters ---
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString interfaceName = new CmsVisibleString().max(255);
+
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsVisibleString referenceAfter = new CmsVisibleString().max(255);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255)).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetRpcMethodDirectory() {
+    }
+    
     public CmsGetRpcMethodDirectory(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerOptionalField("interfaceName");
-            registerOptionalField("referenceAfter");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetRpcMethodDirectory does not support " + messageType);
-        }
     }
 
     public CmsGetRpcMethodDirectory(boolean isResp, boolean isErr) {

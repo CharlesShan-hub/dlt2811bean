@@ -94,30 +94,25 @@ public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition
 
     // ==================== Fields based on Table 80 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255)).capacity(100);
 
-    // --- Response+ parameters ---
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsArray<CmsErrorMethodChoice> errorMethod = new CmsArray<>(CmsErrorMethodChoice::new).capacity(100);
+    
+    @CmsField(only = {"RESPONSE_POSITIVE"})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================
 
+    public CmsGetRpcMethodDefinition() {
+    }
+    
     public CmsGetRpcMethodDefinition(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("errorMethod");
-            registerField("moreFollows");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("serviceError");
-        } else {
-            throw new IllegalArgumentException("GetRpcMethodDefinition does not support " + messageType);
-        }
     }
 
     public CmsGetRpcMethodDefinition(boolean isResp, boolean isErr) {

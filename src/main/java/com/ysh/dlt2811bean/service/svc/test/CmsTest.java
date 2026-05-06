@@ -59,6 +59,10 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsTest extends CmsAsdu<CmsTest> {
 
+    // ===================== No Fields for Test ========================
+
+    // ========================= Constructor ===========================
+
     public CmsTest(){
         super(MessageType.REQUEST); // MessageType is not used
         removeField("reqId"); // test api there is no "reqId"
@@ -68,6 +72,10 @@ public class CmsTest extends CmsAsdu<CmsTest> {
         super(messageType); // MessageType is not used
         removeField("reqId"); // test api there is no "reqId"
     }
+
+    // ====================== No Convenience Setters ====================
+
+    // ==================== CmsAsdu Abstract Methods ====================
 
     @Override
     public ServiceName getServiceName() {

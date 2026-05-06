@@ -100,25 +100,19 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
 
     // ==================== Fields based on Table 53 ====================
 
-    // --- Request parameters ---
+    @CmsField(only = {"REQUEST"})
     public CmsArray<CmsSetLCBValuesEntry> lcb = new CmsArray<>(CmsSetLCBValuesEntry::new).capacity(100);
 
-    // --- Response- parameters ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsArray<CmsSetLCBValuesResultEntry> result = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================
 
+    public CmsSetLCBValues() {
+    }
+
     public CmsSetLCBValues(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("lcb");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            // no additional fields
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("result");
-        } else {
-            throw new IllegalArgumentException("SetLCBValues does not support " + messageType);
-        }
     }
 
     public CmsSetLCBValues(boolean isResp, boolean isErr) {

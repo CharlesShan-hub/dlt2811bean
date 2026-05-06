@@ -125,54 +125,40 @@ public class CmsTimeActivatedOperate extends CmsAsdu<CmsTimeActivatedOperate> {
 
     // ==================== Fields based on Table 70 ====================
 
-    // --- Common fields ---
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime operTm = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
+
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsCheck check = new CmsCheck();
 
-    // --- RESPONSE_NEGATIVE only ---
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
+    public CmsTimeActivatedOperate() {
+    }
+
     public CmsTimeActivatedOperate(MessageType messageType) {
         super(messageType);
-        if (messageType == MessageType.REQUEST) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_POSITIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-        } else if (messageType == MessageType.RESPONSE_NEGATIVE) {
-            registerField("reference");
-            registerField("ctlVal");
-            registerField("operTm");
-            registerField("origin");
-            registerField("ctlNum");
-            registerField("t");
-            registerField("test");
-            registerField("check");
-            registerField("addCause");
-        } else {
-            throw new IllegalArgumentException("TimeActivatedOperate does not support " + messageType);
-        }
     }
 
     public CmsTimeActivatedOperate(boolean isResp, boolean isErr) {
