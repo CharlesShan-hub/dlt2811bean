@@ -103,10 +103,11 @@ public class CmsGetDataSetDirectory extends CmsAsdu<CmsGetDataSetDirectory> {
     // ========================= Constructor ============================
 
     public CmsGetDataSetDirectory() {
+        super(ServiceName.GET_DATA_SET_DIRECTORY);
     }
 
     public CmsGetDataSetDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_DATA_SET_DIRECTORY, messageType);
     }
 
     public CmsGetDataSetDirectory(boolean isResp, boolean isErr) {
@@ -135,12 +136,5 @@ public class CmsGetDataSetDirectory extends CmsAsdu<CmsGetDataSetDirectory> {
             .reference(reference)
             .fc(fc));
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_SET_DIRECTORY;
     }
 }

@@ -104,10 +104,11 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     // ========================= Constructor ============================
 
     public CmsQueryLogAfter() {
+        super(ServiceName.QUERY_LOG_AFTER);
     }
 
     public CmsQueryLogAfter(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.QUERY_LOG_AFTER, messageType);
     }
 
     public CmsQueryLogAfter(boolean isResp, boolean isErr) {
@@ -134,12 +135,5 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     public CmsQueryLogAfter serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.QUERY_LOG_AFTER;
     }
 }

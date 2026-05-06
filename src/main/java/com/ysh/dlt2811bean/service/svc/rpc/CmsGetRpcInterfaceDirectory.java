@@ -90,10 +90,11 @@ public class CmsGetRpcInterfaceDirectory extends CmsAsdu<CmsGetRpcInterfaceDirec
     // ========================= Constructor ============================
 
     public CmsGetRpcInterfaceDirectory() {
+        super(ServiceName.GET_RPC_INTERFACE_DIRECTORY);
     }
     
     public CmsGetRpcInterfaceDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, messageType);
     }
 
     public CmsGetRpcInterfaceDirectory(boolean isResp, boolean isErr) {
@@ -115,12 +116,5 @@ public class CmsGetRpcInterfaceDirectory extends CmsAsdu<CmsGetRpcInterfaceDirec
     public CmsGetRpcInterfaceDirectory serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_RPC_INTERFACE_DIRECTORY;
     }
 }

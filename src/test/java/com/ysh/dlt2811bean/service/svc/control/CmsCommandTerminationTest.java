@@ -18,13 +18,13 @@ class CmsCommandTerminationTest implements ServiceNameTest<CmsCommandTermination
 
     @Override
     public CmsCommandTermination createAsdu() {
-        return new CmsCommandTermination(MessageType.REQUEST);
+        return new CmsCommandTermination(MessageType.REQUEST_POSITIVE);
     }
 
     @Test
     void requestRoundTrip() throws Exception {
         CmsCommandTermination result = AsduTestUtil.roundTripViaApdu(
-                new CmsCommandTermination(MessageType.REQUEST)
+                new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
                         .reference("IED1.AP1.LD1.LN1.DO1")
                         .ctlVal(new CmsInt32(100))
                         .ctlNum(1)

@@ -92,10 +92,11 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
     // ========================= Constructor ============================
 
     public CmsSetEditSGValue() {
+        super(ServiceName.SET_EDIT_SG_VALUE);
     }
 
     public CmsSetEditSGValue(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_EDIT_SG_VALUE, messageType);
     }
 
     public CmsSetEditSGValue(boolean isResp, boolean isErr) {
@@ -114,12 +115,5 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
     public CmsSetEditSGValue addResult(int errorCode) {
         this.result.add(new CmsServiceError(errorCode));
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_EDIT_SG_VALUE;
     }
 }

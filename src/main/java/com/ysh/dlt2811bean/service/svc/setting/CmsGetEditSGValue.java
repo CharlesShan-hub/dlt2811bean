@@ -98,10 +98,11 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     // ========================= Constructor ============================
 
     public CmsGetEditSGValue() {
+        super(ServiceName.GET_EDIT_SG_VALUE);
     }
 
     public CmsGetEditSGValue(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_EDIT_SG_VALUE, messageType);
     }
 
     public CmsGetEditSGValue(boolean isResp, boolean isErr) {
@@ -120,12 +121,5 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     public CmsGetEditSGValue serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_EDIT_SG_VALUE;
     }
 }

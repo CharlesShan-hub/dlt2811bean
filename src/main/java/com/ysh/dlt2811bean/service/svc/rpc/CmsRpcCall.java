@@ -105,10 +105,11 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     // ========================= Constructor ============================
 
     public CmsRpcCall() {
+        super(ServiceName.RPC_CALL);
     }
 
     public CmsRpcCall(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.RPC_CALL, messageType);
     }
 
     public CmsRpcCall(boolean isResp, boolean isErr) {
@@ -146,12 +147,5 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
     public CmsRpcCall serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.RPC_CALL;
     }
 }

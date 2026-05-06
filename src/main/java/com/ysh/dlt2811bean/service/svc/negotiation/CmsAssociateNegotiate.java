@@ -99,10 +99,11 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
     // ========================= Constructor ============================
 
     public CmsAssociateNegotiate() {
+        super(ServiceName.ASSOCIATE_NEGOTIATE);
     }
 
     public CmsAssociateNegotiate(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.ASSOCIATE_NEGOTIATE, messageType);
     }
 
     public CmsAssociateNegotiate(boolean isResp, boolean isErr) {
@@ -134,12 +135,5 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
     public CmsAssociateNegotiate serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.ASSOCIATE_NEGOTIATE;
     }
 }

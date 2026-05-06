@@ -98,10 +98,11 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     // ========================= Constructor ============================
 
     public CmsGetServerDirectory() {
+        super(ServiceName.GET_SERVER_DIRECTORY);
     }
 
     public CmsGetServerDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_SERVER_DIRECTORY, messageType);
     }
 
     public CmsGetServerDirectory(boolean isResp, boolean isErr) {
@@ -123,12 +124,5 @@ public class CmsGetServerDirectory extends CmsAsdu<CmsGetServerDirectory> {
     public CmsGetServerDirectory moreFollows(boolean moreFollows) {
         this.moreFollows.set(moreFollows);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_SERVER_DIRECTORY;
     }
 }

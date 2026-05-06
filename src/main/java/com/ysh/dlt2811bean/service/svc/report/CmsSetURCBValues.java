@@ -118,10 +118,11 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetURCBValues() {
+        super(ServiceName.SET_URCBVALUES);
     }
     
     public CmsSetURCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_URCBVALUES, messageType);
     }
 
     public CmsSetURCBValues(boolean isResp, boolean isErr) {
@@ -138,12 +139,5 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     public CmsSetURCBValues addResult(CmsSetURCBValuesResultEntry entry) {
         this.result.add(entry);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_URCBVALUES;
     }
 }

@@ -105,10 +105,11 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     // ========================= Constructor ============================
 
     public CmsCancel() {
+        super(ServiceName.CANCEL);
     }
 
     public CmsCancel(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.CANCEL, messageType);
     }
 
     public CmsCancel(boolean isResp, boolean isErr) {
@@ -141,12 +142,5 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
     public CmsCancel addCause(int cause) {
         this.addCause.set(cause);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CANCEL;
     }
 }

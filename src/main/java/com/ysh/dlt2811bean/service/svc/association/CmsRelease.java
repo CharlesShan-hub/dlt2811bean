@@ -82,10 +82,11 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     // ============================ Constructor =========================
 
     public CmsRelease() {
+        super(ServiceName.RELEASE);
     }
 
     public CmsRelease(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.RELEASE, messageType);
     }
 
     public CmsRelease(boolean isResp, boolean isErr) {
@@ -102,12 +103,5 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
     public CmsRelease serviceError(int errorCode) {
         this.serviceError = new CmsServiceError(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.RELEASE;
     }
 }

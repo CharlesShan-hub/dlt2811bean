@@ -107,10 +107,11 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetMSVCBValues() {
+        super(ServiceName.SET_MSVCBVALUES);
     }
 
     public CmsSetMSVCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_MSVCBVALUES, messageType);
     }
 
     public CmsSetMSVCBValues(boolean isResp, boolean isErr) {
@@ -127,12 +128,5 @@ public class CmsSetMSVCBValues extends CmsAsdu<CmsSetMSVCBValues> {
     public CmsSetMSVCBValues addResult(CmsSetMSVCBValuesResultEntry entry) {
         this.result.add(entry);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_MSVCBVALUES;
     }
 }

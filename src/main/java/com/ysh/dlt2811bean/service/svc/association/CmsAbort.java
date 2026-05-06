@@ -64,10 +64,11 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     // ==================== Constructor ====================
 
     public CmsAbort() {
+        super(ServiceName.ABORT);
     }
 
     public CmsAbort(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.ABORT, messageType);
     }
 
     public CmsAbort(boolean isResp, boolean isErr) {
@@ -79,12 +80,5 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
     public CmsAbort reason(int reasonCode) {
         this.reason.set(reasonCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.ABORT;
     }
 }

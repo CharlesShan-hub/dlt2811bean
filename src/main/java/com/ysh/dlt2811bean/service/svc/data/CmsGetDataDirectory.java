@@ -87,7 +87,7 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     @CmsField(only = {"REQUEST"})
     public CmsObjectReference dataReference = new CmsObjectReference();
     
-    @CmsField(only = {"REQUEST"})
+    @CmsField(optional = true, only = {"REQUEST"})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
     
     @CmsField(only = {"RESPONSE_POSITIVE"})
@@ -102,10 +102,11 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     // ========================= Constructor ============================
 
     public CmsGetDataDirectory() {
+        super(ServiceName.GET_DATA_DIRECTORY);
     }
 
     public CmsGetDataDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_DATA_DIRECTORY, messageType);
     }
 
     public CmsGetDataDirectory(boolean isResp, boolean isErr) {
@@ -132,12 +133,5 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     public CmsGetDataDirectory moreFollows(boolean moreFollows) {
         this.moreFollows.set(moreFollows);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_DIRECTORY;
     }
 }

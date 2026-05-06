@@ -104,10 +104,11 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetGoCBValues() {
+        super(ServiceName.GET_GOCBVALUES);
     }
     
     public CmsGetGoCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_GOCBVALUES, messageType);
     }
 
     public CmsGetGoCBValues(boolean isResp, boolean isErr) {
@@ -129,12 +130,5 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     public CmsGetGoCBValues serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_GOCBVALUES;
     }
 }

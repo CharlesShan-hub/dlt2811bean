@@ -97,10 +97,11 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
     // ========================= Constructor ============================
 
     public CmsGetFile() {
+        super(ServiceName.GET_FILE);
     }
 
     public CmsGetFile(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_FILE, messageType);
     }
 
     public CmsGetFile(boolean isResp, boolean isErr) {
@@ -132,12 +133,5 @@ public class CmsGetFile extends CmsAsdu<CmsGetFile> {
     public CmsGetFile serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_FILE;
     }
 }

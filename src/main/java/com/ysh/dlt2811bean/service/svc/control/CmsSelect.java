@@ -73,16 +73,17 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
 
     // ==================== Fields based on Table 65 ====================
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
 
     // ========================= Constructor ============================
 
-    public CmsSelect(){
+    public CmsSelect() {
+        super(ServiceName.SELECT);
     }
 
     public CmsSelect(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SELECT, messageType);
     }
 
     public CmsSelect(boolean isResp, boolean isErr) {
@@ -94,12 +95,5 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
     public CmsSelect reference(String ref) {
         this.reference.set(ref);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT;
     }
 }

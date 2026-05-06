@@ -102,10 +102,11 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetBRCBValues() {
+        super(ServiceName.SET_BRCBVALUES);
     }
     
     public CmsSetBRCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_BRCBVALUES, messageType);
     }
 
     public CmsSetBRCBValues(boolean isResp, boolean isErr) {
@@ -122,12 +123,5 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     public CmsSetBRCBValues addResult(int errorCode) {
         this.result.add(new CmsServiceError(errorCode));
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_BRCBVALUES;
     }
 }

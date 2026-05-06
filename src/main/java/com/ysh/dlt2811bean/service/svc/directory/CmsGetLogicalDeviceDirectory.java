@@ -97,10 +97,11 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     // ========================= Constructor ============================
 
     public CmsGetLogicalDeviceDirectory() {
+        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY);
     }
     
     public CmsGetLogicalDeviceDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, messageType);
     }
 
     public CmsGetLogicalDeviceDirectory(boolean isResp, boolean isErr) {
@@ -122,12 +123,5 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     public CmsGetLogicalDeviceDirectory serviceError(int errorCode) {
         this.serviceError = new CmsServiceError(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOGIC_DEVICE_DIRECTORY;
     }
 }

@@ -109,10 +109,11 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     // ========================= Constructor ============================
 
     public CmsSetLCBValues() {
+        super(ServiceName.SET_LCBVALUES);
     }
 
     public CmsSetLCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_LCBVALUES, messageType);
     }
 
     public CmsSetLCBValues(boolean isResp, boolean isErr) {
@@ -129,12 +130,5 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     public CmsSetLCBValues addResult(CmsSetLCBValuesResultEntry entry) {
         this.result.add(entry);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_LCBVALUES;
     }
 }

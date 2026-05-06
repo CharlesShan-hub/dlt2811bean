@@ -24,9 +24,16 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     private void ensureFieldsRegistered() {
         if (fieldsRegistered) return;
         fieldsRegistered = true;
-        Class<?> clazz = getClass();
-        while (clazz != AbstractCmsCompound.class && clazz != null) {
-            for (java.lang.reflect.Field f : clazz.getFields()) {
+        
+        List<Class<?>> hierarchy = new ArrayList<>();
+        Class<?> curr = getClass();
+        while (curr != AbstractCmsCompound.class && curr != null) {
+            hierarchy.add(0, curr);
+            curr = curr.getSuperclass();
+        }
+
+        for (Class<?> clazz : hierarchy) {
+            for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
                 CmsField ann = f.getAnnotation(CmsField.class);
                 if (ann != null && !fieldNames.contains(f.getName())
                         && !removedFields.contains(f.getName())
@@ -34,7 +41,6 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
                     registerField(f.getName(), ann.optional());
                 }
             }
-            clazz = clazz.getSuperclass();
         }
     }
 

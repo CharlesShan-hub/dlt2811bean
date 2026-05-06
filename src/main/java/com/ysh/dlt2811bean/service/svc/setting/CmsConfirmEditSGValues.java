@@ -81,10 +81,11 @@ public class CmsConfirmEditSGValues extends CmsAsdu<CmsConfirmEditSGValues> {
     // ========================= Constructor ============================
 
     public CmsConfirmEditSGValues() {
+        super(ServiceName.CONFIRM_EDIT_SG_VALUES);
     }
     
     public CmsConfirmEditSGValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.CONFIRM_EDIT_SG_VALUES, messageType);
     }
 
     public CmsConfirmEditSGValues(boolean isResp, boolean isErr) {
@@ -101,12 +102,5 @@ public class CmsConfirmEditSGValues extends CmsAsdu<CmsConfirmEditSGValues> {
     public CmsConfirmEditSGValues serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CONFIRM_EDIT_SG_VALUES;
     }
 }

@@ -112,10 +112,11 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     // ========================= Constructor ============================
 
     public CmsGetGooseElementNumber() {
+        super(ServiceName.Get_GOOSE_ElementNumber);
     }
 
     public CmsGetGooseElementNumber(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.Get_GOOSE_ElementNumber, messageType);
     }
 
     public CmsGetGooseElementNumber(boolean isResp, boolean isErr) {
@@ -157,12 +158,5 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     public CmsGetGooseElementNumber serviceError(int errorCode) { 
         this.serviceError.set(errorCode); 
         return this; 
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.Get_GOOSE_ElementNumber;
     }
 }

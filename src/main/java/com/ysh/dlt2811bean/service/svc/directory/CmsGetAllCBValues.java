@@ -127,10 +127,11 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     // ========================= Constructor ============================
 
     public CmsGetAllCBValues() {
+        super(ServiceName.GET_ALL_CB_VALUES);
     }
 
     public CmsGetAllCBValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_ALL_CB_VALUES, messageType);
     }
 
     public CmsGetAllCBValues(boolean isResp, boolean isErr) {
@@ -157,12 +158,5 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     public CmsGetAllCBValues serviceError(int errorCode) {
         this.serviceError = new CmsServiceError(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_ALL_CB_VALUES;
     }
 }

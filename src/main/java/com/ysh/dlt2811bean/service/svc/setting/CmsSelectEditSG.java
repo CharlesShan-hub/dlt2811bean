@@ -83,10 +83,11 @@ public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
     // ========================= Constructor ============================
 
     public CmsSelectEditSG() {
+        super(ServiceName.SELECT_EDIT_SG);
     }
 
     public CmsSelectEditSG(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SELECT_EDIT_SG, messageType);
     }
 
     public CmsSelectEditSG(boolean isResp, boolean isErr) {
@@ -108,12 +109,5 @@ public class CmsSelectEditSG extends CmsAsdu<CmsSelectEditSG> {
     public CmsSelectEditSG serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT_EDIT_SG;
     }
 }

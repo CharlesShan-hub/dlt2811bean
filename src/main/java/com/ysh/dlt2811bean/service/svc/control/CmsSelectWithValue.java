@@ -157,11 +157,12 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
 
     // ========================= Constructor ============================
 
-    public CmsSelectWithValue(){
+    public CmsSelectWithValue() {
+        super(ServiceName.SELECT_WITH_VALUE);
     }
 
     public CmsSelectWithValue(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SELECT_WITH_VALUE, messageType);
     }
 
     public CmsSelectWithValue(boolean isResp, boolean isErr) {
@@ -194,12 +195,5 @@ public class CmsSelectWithValue extends CmsAsdu<CmsSelectWithValue> {
     public CmsSelectWithValue addCause(int cause) {
         this.addCause.set(cause);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT_WITH_VALUE;
     }
 }

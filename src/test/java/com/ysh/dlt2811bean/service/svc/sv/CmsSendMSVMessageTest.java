@@ -21,9 +21,10 @@ class CmsSendMSVMessageTest {
             .sample(new CmsInt32(100));
 
         PerOutputStream pos = new PerOutputStream();
-        CmsSendMSVMessage.write(pos, asdu);
+        asdu.encode(pos);
 
-        CmsSendMSVMessage result = CmsSendMSVMessage.read(new PerInputStream(pos.toByteArray()), MessageType.INDICATION);
+        CmsSendMSVMessage result = new CmsSendMSVMessage().decode(new PerInputStream(pos.toByteArray()));
+        
         assertEquals("MSVCB1", result.msvID().get());
         assertEquals(42, result.smpCnt().get());
         assertEquals(1L, result.confRev().get());

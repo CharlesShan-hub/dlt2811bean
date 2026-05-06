@@ -96,10 +96,11 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
     // ========================= Constructor ============================
 
     public CmsSetFile() {
+        super(ServiceName.SET_FILE);
     }
 
     public CmsSetFile(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_FILE, messageType);
     }
 
     public CmsSetFile(boolean isResp, boolean isErr) {
@@ -131,12 +132,5 @@ public class CmsSetFile extends CmsAsdu<CmsSetFile> {
     public CmsSetFile serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_FILE;
     }
 }

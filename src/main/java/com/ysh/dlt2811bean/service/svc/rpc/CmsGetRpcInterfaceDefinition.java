@@ -111,10 +111,11 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     // ========================= Constructor ============================
 
     public CmsGetRpcInterfaceDefinition() {
+        super(ServiceName.GET_RPC_INTERFACE_DEFINITION);
     }
     
     public CmsGetRpcInterfaceDefinition(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_RPC_INTERFACE_DEFINITION, messageType);
     }
 
     public CmsGetRpcInterfaceDefinition(boolean isResp, boolean isErr) {
@@ -136,12 +137,5 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     public CmsGetRpcInterfaceDefinition serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_RPC_INTERFACE_DEFINITION;
     }
 }

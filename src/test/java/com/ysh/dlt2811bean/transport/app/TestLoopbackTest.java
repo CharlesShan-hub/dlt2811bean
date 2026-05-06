@@ -5,8 +5,8 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
-import com.ysh.dlt2811bean.transport.protocol.handlers.AssociateHandler;
-import com.ysh.dlt2811bean.transport.protocol.handlers.TestHandler;
+import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
+import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;

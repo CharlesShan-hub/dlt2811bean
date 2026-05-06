@@ -96,8 +96,8 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsDataUnit<CmsData<T
     private static CmsType<?> createValue(int index) {
         switch (index) {
             case 0: return new CmsServiceError();
-            case 1: return new CmsArray<>(CmsData::new);
-            case 2: return new CmsStructure();
+            case 1: return new CmsArray<>(CmsData::new).capacity(100);
+            case 2: return new CmsStructure().capacity(100);
             case 3: return new CmsBoolean();
             case 4: return new CmsInt8();
             case 5: return new CmsInt16();

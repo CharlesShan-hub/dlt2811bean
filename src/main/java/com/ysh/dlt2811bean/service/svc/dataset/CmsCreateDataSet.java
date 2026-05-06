@@ -99,10 +99,11 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
     // ========================= Constructor ============================
 
     public CmsCreateDataSet() {
+        super(ServiceName.CREATE_DATA_SET);
     }
     
     public CmsCreateDataSet(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.CREATE_DATA_SET, messageType);
     }
 
     public CmsCreateDataSet(boolean isResp, boolean isErr) {
@@ -131,12 +132,5 @@ public class CmsCreateDataSet extends CmsAsdu<CmsCreateDataSet> {
     public CmsCreateDataSet serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CREATE_DATA_SET;
     }
 }

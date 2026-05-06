@@ -63,24 +63,19 @@ public class CmsTest extends CmsAsdu<CmsTest> {
 
     // ========================= Constructor ===========================
 
-    public CmsTest(){
-        super(MessageType.REQUEST); // MessageType is not used
+    public CmsTest() {
+        super(ServiceName.TEST, MessageType.REQUEST);
         removeField("reqId"); // test api there is no "reqId"
     }
 
-    public CmsTest(MessageType messageType){
-        super(messageType); // MessageType is not used
+    public CmsTest(MessageType messageType) {
+        super(ServiceName.TEST, messageType);
         removeField("reqId"); // test api there is no "reqId"
     }
 
     // ====================== No Convenience Setters ====================
 
     // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.TEST;
-    }
 
     @Override
     public String toString() {

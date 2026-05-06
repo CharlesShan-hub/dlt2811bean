@@ -104,10 +104,11 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     // ==================== Constructor ====================
 
     public CmsAssociate() {
+        super(ServiceName.ASSOCIATE);
     }
 
     public CmsAssociate(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.ASSOCIATE, messageType);
     }
 
     public CmsAssociate(boolean isResp, boolean isErr) {
@@ -129,11 +130,5 @@ public class CmsAssociate extends CmsAsdu<CmsAssociate> {
     public CmsAssociate serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.ASSOCIATE;
     }
 }

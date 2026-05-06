@@ -80,7 +80,7 @@ public class CmsConnection {
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
         byte[] bytes = pos.toByteArray();
-        dos.writeInt(bytes.length);
+        // Standard DL/T 2811: No length prefix, start directly with APCH
         dos.write(bytes);
         dos.flush();
     }
@@ -134,13 +134,25 @@ public class CmsConnection {
     }
 
     private CmsApdu loadSegment() throws Exception {
-        int length = dis.readInt();
-        if (length < 0) {
-            throw new EOFException("Connection closed by peer");
+        // Standard DL/T 2811: Read 4-byte APCH first
+        byte[] apchBuf = new byte[4];
+        dis.readFully(apchBuf);
+        
+        // Extract Frame Length (FL) from the last 2 bytes of APCH
+        // FL is big-endian 16-bit unsigned integer
+        int fl = ((apchBuf[2] & 0xFF) << 8) | (apchBuf[3] & 0xFF);
+        
+        byte[] asduBuf = new byte[fl];
+        if (fl > 0) {
+            dis.readFully(asduBuf);
         }
-        byte[] buf = new byte[length];
-        dis.readFully(buf);
-        return new CmsApdu().load(new PerInputStream(buf));
+        
+        // Combine APCH and ASDU into a single buffer for decoding
+        byte[] fullFrame = new byte[4 + fl];
+        System.arraycopy(apchBuf, 0, fullFrame, 0, 4);
+        System.arraycopy(asduBuf, 0, fullFrame, 4, fl);
+        
+        return new CmsApdu().load(new PerInputStream(fullFrame));
     }
 
     /**

@@ -19,12 +19,12 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
 
     public MessageType messageType = MessageType.UNKNOWN;
 
-    protected CmsAsdu() {
-        super("ASDU");
+    protected CmsAsdu(ServiceName serviceName) {
+        super(serviceName.name());
     }
 
-    protected CmsAsdu(MessageType messageType) {
-        this();
+    protected CmsAsdu(ServiceName serviceName, MessageType messageType) {
+        this(serviceName);
         this.messageType = messageType;
     }
 
@@ -38,7 +38,9 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
         return false;
     }
 
-    public abstract ServiceName getServiceName();
+    public ServiceName getServiceName(){
+        return ServiceName.fromName(typeName);
+    }
 
     @SuppressWarnings("unchecked")
     public T reqId(int value) {

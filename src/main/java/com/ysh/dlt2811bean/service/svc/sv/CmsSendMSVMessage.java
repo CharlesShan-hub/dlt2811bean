@@ -94,11 +94,11 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     // ========================= Constructor ============================
 
     public CmsSendMSVMessage() {
-        this(MessageType.REQUEST_POSITIVE);  // default is REQUEST_POSITIVE
+        this(MessageType.INDICATION); // default
     }
 
     public CmsSendMSVMessage(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.Send_MSVMessage, messageType);
         // message type is not need for SendMSVMessage
         registerField("msvID");
         registerOptionalField("datSet");
@@ -150,15 +150,8 @@ public class CmsSendMSVMessage extends CmsAsdu<CmsSendMSVMessage> {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public CmsSendMSVMessage sample(CmsType<?> val) { 
-        this.sample = new CmsData(val); 
-        return this; 
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.Send_MSVMessage;
+    public CmsSendMSVMessage sample(CmsType<?> val) {
+        this.sample = new CmsData(val);
+        return this;
     }
 }

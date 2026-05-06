@@ -108,10 +108,11 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     // ========================= Constructor ============================
 
     public CmsGetLogStatusValues() {
+        super(ServiceName.GET_LOG_STATUS_VALUES);
     }
 
     public CmsGetLogStatusValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_LOG_STATUS_VALUES, messageType);
     }
 
     public CmsGetLogStatusValues(boolean isResp, boolean isErr) {
@@ -133,12 +134,5 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     public CmsGetLogStatusValues serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOG_STATUS_VALUES;
     }
 }

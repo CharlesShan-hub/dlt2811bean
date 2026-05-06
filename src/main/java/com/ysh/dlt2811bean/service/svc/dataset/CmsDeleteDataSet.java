@@ -78,10 +78,11 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
     // ========================= Constructor ============================
 
     public CmsDeleteDataSet() {
+        super(ServiceName.DELETE_DATA_SET);
     }
 
     public CmsDeleteDataSet(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.DELETE_DATA_SET, messageType);
     }
 
     public CmsDeleteDataSet(boolean isResp, boolean isErr) {
@@ -98,12 +99,5 @@ public class CmsDeleteDataSet extends CmsAsdu<CmsDeleteDataSet> {
     public CmsDeleteDataSet serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.DELETE_DATA_SET;
     }
 }

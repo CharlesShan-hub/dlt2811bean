@@ -82,10 +82,11 @@ public class CmsSelectActiveSG extends CmsAsdu<CmsSelectActiveSG> {
     // ========================= Constructor ============================
 
     public CmsSelectActiveSG() {
+        super(ServiceName.SELECT_ACTIVE_SG);
     }
 
     public CmsSelectActiveSG(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SELECT_ACTIVE_SG, messageType);
     }
 
     public CmsSelectActiveSG(boolean isResp, boolean isErr) {
@@ -107,12 +108,5 @@ public class CmsSelectActiveSG extends CmsAsdu<CmsSelectActiveSG> {
     public CmsSelectActiveSG serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT_ACTIVE_SG;
     }
 }

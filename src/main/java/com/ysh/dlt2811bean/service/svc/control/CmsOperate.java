@@ -119,37 +119,38 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
 
     // ==================== Fields based on Table 67 ====================
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsObjectReference reference = new CmsObjectReference();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsData ctlVal = new CmsData<>();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsOriginator origin = new CmsOriginator();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsInt8U ctlNum = new CmsInt8U();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsUtcTime t = new CmsUtcTime();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsBoolean test = new CmsBoolean();
 
-    @CmsField(only = {"REQUEST", "REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
     public CmsCheck check = new CmsCheck();
 
-    @CmsField(only = {"REQUEST_NEGATIVE"})
+    @CmsField(only = {"RESPONSE_NEGATIVE"})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================
 
-    public CmsOperate(){
+    public CmsOperate() {
+        super(ServiceName.OPERATE);
     }
 
     public CmsOperate(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.OPERATE, messageType);
     }
 
     public CmsOperate(boolean isResp, boolean isErr) {
@@ -182,12 +183,5 @@ public class CmsOperate extends CmsAsdu<CmsOperate> {
     public CmsOperate addCause(int cause) {
         this.addCause.set(cause);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.OPERATE;
     }
 }

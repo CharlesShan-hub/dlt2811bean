@@ -110,11 +110,12 @@ public class CmsCommandTermination extends CmsAsdu<CmsCommandTermination> {
 
     // ========================= Constructor ============================
 
-    public CmsCommandTermination(){
+    public CmsCommandTermination() {
+        super(ServiceName.COMMAND_TERMINATION);
     }
 
     public CmsCommandTermination(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.COMMAND_TERMINATION, messageType);
     }
 
     public CmsCommandTermination(boolean isResp, boolean isErr) {
@@ -147,12 +148,5 @@ public class CmsCommandTermination extends CmsAsdu<CmsCommandTermination> {
     public CmsCommandTermination addCause(int cause) {
         this.addCause.set(cause);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.COMMAND_TERMINATION;
     }
 }

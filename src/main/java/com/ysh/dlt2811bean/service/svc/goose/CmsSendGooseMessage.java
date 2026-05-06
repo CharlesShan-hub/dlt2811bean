@@ -109,65 +109,58 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
     // ========================= Constructor ============================
 
     public CmsSendGooseMessage() {
-        super(MessageType.INDICATION);
+        super(ServiceName.Send_GOOSE_Message, MessageType.INDICATION);
     }
 
     public CmsSendGooseMessage(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.Send_GOOSE_Message, messageType);
     }
 
     // ====================== Convenience Setters =======================
 
     public CmsSendGooseMessage goID(String id) { 
-        this.goID.set(id); 
+        this.goID.set(id);
         return this; 
     }
 
     public CmsSendGooseMessage datSet(String ds) { 
-        this.datSet.set(ds); 
+        this.datSet.set(ds);
         return this; 
     }
 
     public CmsSendGooseMessage goRef(String ref) { 
-        this.goRef.set(ref); 
+        this.goRef.set(ref);
         return this; 
     }
 
     public CmsSendGooseMessage stNum(long n) { 
-        this.stNum.set(n); 
+        this.stNum.set(n);
         return this; 
     }
 
     public CmsSendGooseMessage sqNum(long n) { 
-        this.sqNum.set(n); 
+        this.sqNum.set(n);
         return this; 
     }
 
     public CmsSendGooseMessage simulation(boolean sim) { 
-        this.simulation.set(sim); 
+        this.simulation.set(sim);
         return this; 
     }
 
     public CmsSendGooseMessage confRev(long rev) { 
-        this.confRev.set(rev); 
+        this.confRev.set(rev);
         return this; 
     }
 
     public CmsSendGooseMessage ndsCom(boolean nds) { 
-        this.ndsCom.set(nds); 
+        this.ndsCom.set(nds);
         return this; 
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsSendGooseMessage data(CmsType<?> val) { 
-        this.data = new CmsData(val); 
+        this.data = new CmsData(val);
         return this; 
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.Send_GOOSE_Message;
     }
 }

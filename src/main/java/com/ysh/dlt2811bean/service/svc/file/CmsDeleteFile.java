@@ -77,10 +77,11 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     // ========================= Constructor ============================
 
     public CmsDeleteFile() {
+        super(ServiceName.DELETE_FILE);
     }
 
     public CmsDeleteFile(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.DELETE_FILE, messageType);
     }
 
     public CmsDeleteFile(boolean isResp, boolean isErr) {
@@ -97,12 +98,5 @@ public class CmsDeleteFile extends CmsAsdu<CmsDeleteFile> {
     public CmsDeleteFile serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.DELETE_FILE;
     }
 }

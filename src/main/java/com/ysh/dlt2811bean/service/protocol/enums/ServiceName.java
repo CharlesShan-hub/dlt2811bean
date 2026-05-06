@@ -142,6 +142,14 @@ public enum ServiceName {
         return null;
     }
 
+    public static ServiceName fromName(String name) {
+        try {
+            return valueOf(name);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     public static ServiceName fromByte(byte code) {
         return fromInt(code & 0xFF);
     }

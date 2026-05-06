@@ -111,10 +111,11 @@ public class CmsGetGoReference extends CmsAsdu<CmsGetGoReference> {
     // ========================= Constructor ============================
 
     public CmsGetGoReference() {
+        super(ServiceName.Get_Go_Reference);
     }
     
     public CmsGetGoReference(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.Get_Go_Reference, messageType);
     }
 
     public CmsGetGoReference(boolean isResp, boolean isErr) {
@@ -156,12 +157,5 @@ public class CmsGetGoReference extends CmsAsdu<CmsGetGoReference> {
     public CmsGetGoReference serviceError(int errorCode) { 
         this.serviceError.set(errorCode); 
         return this; 
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.Get_Go_Reference;
     }
 }

@@ -113,10 +113,11 @@ public class CmsQueryLogByTime extends CmsAsdu<CmsQueryLogByTime> {
     // ========================= Constructor ============================
 
     public CmsQueryLogByTime() {
+        super(ServiceName.QUERY_LOG_BY_TIME);
     }
 
     public CmsQueryLogByTime(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.QUERY_LOG_BY_TIME, messageType);
     }
 
     public CmsQueryLogByTime(boolean isResp, boolean isErr) {
@@ -148,12 +149,5 @@ public class CmsQueryLogByTime extends CmsAsdu<CmsQueryLogByTime> {
     public CmsQueryLogByTime serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.QUERY_LOG_BY_TIME;
     }
 }

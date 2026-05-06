@@ -74,10 +74,11 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
     // ========================= Constructor ============================
 
     public CmsSetDataValues() {
+        super(ServiceName.SET_DATA_VALUES);
     }
     
     public CmsSetDataValues(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.SET_DATA_VALUES, messageType);
     }
 
     public CmsSetDataValues(boolean isResp, boolean isErr) {
@@ -93,12 +94,5 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
             .value(value);
         this.data.add(entry);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_DATA_VALUES;
     }
 }

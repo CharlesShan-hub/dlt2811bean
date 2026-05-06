@@ -120,10 +120,11 @@ public class CmsTimeActivatedOperateTermination extends CmsAsdu<CmsTimeActivated
     // ========================= Constructor ============================
 
     public CmsTimeActivatedOperateTermination() {
+        super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION);
     }
 
     public CmsTimeActivatedOperateTermination(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION, messageType);
     }
 
     public CmsTimeActivatedOperateTermination(boolean isResp, boolean isErr) {
@@ -156,12 +157,5 @@ public class CmsTimeActivatedOperateTermination extends CmsAsdu<CmsTimeActivated
     public CmsTimeActivatedOperateTermination addCause(int cause) {
         this.addCause.set(cause);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION;
     }
 }

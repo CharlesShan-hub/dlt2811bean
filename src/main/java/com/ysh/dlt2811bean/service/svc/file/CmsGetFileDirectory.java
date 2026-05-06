@@ -106,10 +106,11 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     // ========================= Constructor ============================
 
     public CmsGetFileDirectory() {
+        super(ServiceName.GET_FILE_DIRECTORY);
     }
 
     public CmsGetFileDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_FILE_DIRECTORY, messageType);
     }
 
     public CmsGetFileDirectory(boolean isResp, boolean isErr) {
@@ -131,12 +132,5 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     public CmsGetFileDirectory serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_FILE_DIRECTORY;
     }
 }

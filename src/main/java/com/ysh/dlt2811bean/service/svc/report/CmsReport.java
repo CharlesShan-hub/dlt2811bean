@@ -107,7 +107,7 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     }
 
     public CmsReport(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.REPORT, messageType);
         // message type is not need for Report
         registerField("rptID");
         registerField("optFlds");
@@ -155,12 +155,5 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     public CmsReport confRev(long confRev) {
         this.confRev.set(confRev);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.REPORT;
     }
 }

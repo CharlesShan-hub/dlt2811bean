@@ -94,10 +94,11 @@ public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> 
     // ========================= Constructor ============================
 
     public CmsGetRpcMethodDirectory() {
+        super(ServiceName.GET_RPC_METHOD_DIRECTORY);
     }
     
     public CmsGetRpcMethodDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_RPC_METHOD_DIRECTORY, messageType);
     }
 
     public CmsGetRpcMethodDirectory(boolean isResp, boolean isErr) {
@@ -124,12 +125,5 @@ public class CmsGetRpcMethodDirectory extends CmsAsdu<CmsGetRpcMethodDirectory> 
     public CmsGetRpcMethodDirectory serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_RPC_METHOD_DIRECTORY;
     }
 }

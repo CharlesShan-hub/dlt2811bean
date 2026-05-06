@@ -103,10 +103,11 @@ public class CmsGetDataDefinition extends CmsAsdu<CmsGetDataDefinition> {
     // ========================= Constructor ============================
 
     public CmsGetDataDefinition() {
+        super(ServiceName.GET_DATA_DEFINITION);
     }
 
     public CmsGetDataDefinition(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_DATA_DEFINITION, messageType);
     }
 
     public CmsGetDataDefinition(boolean isResp, boolean isErr) {
@@ -133,12 +134,5 @@ public class CmsGetDataDefinition extends CmsAsdu<CmsGetDataDefinition> {
     public CmsGetDataDefinition serviceError(int errorCode) {
         this.serviceError.set(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_DEFINITION;
     }
 }

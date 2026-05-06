@@ -109,10 +109,11 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     // ========================= Constructor ============================
 
     public CmsGetLogicalNodeDirectory() {
+        super(ServiceName.GET_LOGIC_NODE_DIRECTORY);
     }
 
     public CmsGetLogicalNodeDirectory(MessageType messageType) {
-        super(messageType);
+        super(ServiceName.GET_LOGIC_NODE_DIRECTORY, messageType);
     }
 
     public CmsGetLogicalNodeDirectory(boolean isResp, boolean isErr) {
@@ -139,12 +140,5 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     public CmsGetLogicalNodeDirectory serviceError(int errorCode) {
         this.serviceError = new CmsServiceError(errorCode);
         return this;
-    }
-
-    // ==================== CmsAsdu Abstract Methods ====================
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOGIC_NODE_DIRECTORY;
     }
 }

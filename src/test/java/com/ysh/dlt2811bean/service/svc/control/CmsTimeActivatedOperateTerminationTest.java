@@ -18,13 +18,13 @@ class CmsTimeActivatedOperateTerminationTest implements ServiceNameTest<CmsTimeA
 
     @Override
     public CmsTimeActivatedOperateTermination createAsdu() {
-        return new CmsTimeActivatedOperateTermination(MessageType.REQUEST);
+        return new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE);
     }
 
     @Test
     void requestRoundTrip() throws Exception {
         CmsTimeActivatedOperateTermination result = AsduTestUtil.roundTripViaApdu(
-                new CmsTimeActivatedOperateTermination(MessageType.REQUEST)
+                new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE)
                         .reference("IED1.AP1.LD1.LN1.DO1")
                         .ctlVal(new CmsInt32(100))
                         .ctlNum(1)
