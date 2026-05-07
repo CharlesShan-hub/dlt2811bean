@@ -32,3 +32,6 @@ negotiate:
   asduSize: 65531
   protocolVersion: 1
   modelVersion: "1.0"
+
+file:
+  rootPath: config/files

@@ -10,6 +10,7 @@ public class CmsConfig {
     private Security security = new Security();
     private Protocol protocol = new Protocol();
     private Negotiate negotiate = new Negotiate();
+    private File file = new File();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -28,6 +29,9 @@ public class CmsConfig {
 
     public Negotiate getNegotiate() { return negotiate; }
     public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
+
+    public File getFile() { return file; }
+    public void setFile(File file) { this.file = file; }
 
     public static class Server {
         private int port = 8102;
@@ -130,6 +134,13 @@ public class CmsConfig {
         public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
     }
 
+    public static class File {
+        private String rootPath = "config/files";
+
+        public String getRootPath() { return rootPath; }
+        public void setRootPath(String rootPath) { this.rootPath = rootPath; }
+    }
+
     public void merge(CmsConfig other) {
         if (other == null) return;
         if (other.server != null) {
@@ -160,6 +171,10 @@ public class CmsConfig {
             if (other.negotiate.protocolVersion != 1) negotiate.protocolVersion = other.negotiate.protocolVersion;
             if (other.negotiate.modelVersion != null && !other.negotiate.modelVersion.equals("1.0"))
                 negotiate.modelVersion = other.negotiate.modelVersion;
+        }
+        if (other.file != null) {
+            if (other.file.rootPath != null && !other.file.rootPath.equals("config/files"))
+                file.rootPath = other.file.rootPath;
         }
     }
 }

@@ -33,6 +33,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -771,6 +772,24 @@ public class CmsClient {
 
     public CmsApdu getRpcInterfaceDirectory() throws Exception {
         return getRpcInterfaceDirectory(null);
+    }
+
+    /**
+     * File - getFile - Service Code 0x80
+     * Reads a file chunk from the server at the specified start position.
+     * Repeatedly call with increasing startPosition to read the full file.
+     * Set startPosition to 0 to cancel the read.
+     *
+     * @param fileName      the file path starting with "/"
+     * @param startPosition the 1-based start position, or 0 to cancel
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getFile(String fileName, long startPosition) throws Exception {
+        CmsGetFile asdu = new CmsGetFile(MessageType.REQUEST)
+                .fileName(fileName)
+                .startPosition(startPosition);
+        return send(asdu);
     }
 
     /**
