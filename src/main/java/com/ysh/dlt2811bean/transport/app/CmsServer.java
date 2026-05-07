@@ -222,6 +222,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
         // control handlers
         dispatcher.registerDefaultHandler(new SelectHandler());
+        dispatcher.registerDefaultHandler(new SelectWithValueHandler());
         // rpc handlers
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());

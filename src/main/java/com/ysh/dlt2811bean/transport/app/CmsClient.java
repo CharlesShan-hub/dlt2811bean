@@ -39,6 +39,7 @@ import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
+import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -885,6 +886,25 @@ public class CmsClient {
     public CmsApdu select(String reference) throws Exception {
         CmsSelect asdu = new CmsSelect(MessageType.REQUEST)
                 .reference(reference);
+        return send(asdu);
+    }
+
+    /**
+     * Control - selectWithValue - Service Code 0x45
+     * Selects a controllable object with the intended control value.
+     *
+     * @param reference the object reference
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu selectWithValue(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsSelectWithValue asdu = new CmsSelectWithValue(MessageType.REQUEST)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(0)
+                .test(false);
         return send(asdu);
     }
 

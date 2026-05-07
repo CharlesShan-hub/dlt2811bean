@@ -25,6 +25,7 @@ import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
+import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
@@ -58,6 +59,7 @@ public class CmsCli {
         register(new FileAttrHandler());
         register(new FileDirHandler());
         register(new SelectHandler());
+        register(new SelectWithValueHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -698,6 +700,32 @@ public class CmsCli {
                 return;
             }
             System.out.println("  Selected: " + ref);
+        }
+    }
+
+    private class SelectWithValueHandler implements CommandHandler {
+        public String getName() { return "select-with-value"; }
+        public String getDescription() { return "带值选择控制对象"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.selectWithValue(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  SelectWithValue failed");
+                return;
+            }
+            System.out.println("  Selected: " + ref + " with value " + val);
         }
     }
 
