@@ -19,7 +19,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1");
-        log.info("Response (ldName=C1): {}", response);
+        //log.info("Response (ldName=C1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -28,9 +28,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.referenceResponse());
         assertTrue(asdu.referenceResponse().size() > 0);
 
-        log.info("Data objects under C1:");
+        //log.info("Data objects under C1:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
     }
 
@@ -40,7 +40,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLn("C1/CSWI1");
-        log.info("Response (lnReference=C1/CSWI1): {}", response);
+        //log.info("Response (lnReference=C1/CSWI1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -49,9 +49,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.referenceResponse());
         assertTrue(asdu.referenceResponse().size() > 0);
 
-        log.info("Data objects under C1/CSWI1:");
+        //log.info("Data objects under C1/CSWI1:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
     }
 
@@ -63,10 +63,10 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         CmsApdu allResponse = client.getLogicalNodeDirectoryByLn("C1/CSWI1");
         CmsGetLogicalNodeDirectory allAsdu = (CmsGetLogicalNodeDirectory) allResponse.getAsdu();
         int totalCount = allAsdu.referenceResponse().size();
-        log.info("Total DOs under C1/CSWI1: {}", totalCount);
+        //log.info("Total DOs under C1/CSWI1: {}", totalCount);
 
         CmsApdu response = client.getLogicalNodeDirectoryByLn("C1/CSWI1", "Beh");
-        log.info("Response (lnReference=C1/CSWI1, referenceAfter=Beh): {}", response);
+        //log.info("Response (lnReference=C1/CSWI1, referenceAfter=Beh): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -74,9 +74,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
         assertNotNull(asdu.referenceResponse());
 
-        log.info("Data objects under C1/CSWI1 after Beh:");
+        //log.info("Data objects under C1/CSWI1 after Beh:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
 
         assertEquals(totalCount - 3, asdu.referenceResponse().size());
@@ -89,7 +89,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.DATA_SET);
-        log.info("Response (DATA_SET): {}", response);
+        //log.info("Response (DATA_SET): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -98,9 +98,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.referenceResponse());
         assertEquals(3, asdu.referenceResponse().size());
 
-        log.info("DataSets under C1:");
+        //log.info("DataSets under C1:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
 
         assertEquals("Positions", asdu.referenceResponse().get(0).get());
@@ -114,7 +114,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.BRCB);
-        log.info("Response (BRCB): {}", response);
+        //log.info("Response (BRCB): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -129,7 +129,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.URCB);
-        log.info("Response (URCB): {}", response);
+        //log.info("Response (URCB): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -138,9 +138,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.referenceResponse());
         assertEquals(2, asdu.referenceResponse().size());
 
-        log.info("Unbuffered reports under C1:");
+        //log.info("Unbuffered reports under C1:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
 
         assertEquals("PosReport", asdu.referenceResponse().get(0).get());
@@ -153,7 +153,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.LCB);
-        log.info("Response (LCB): {}", response);
+        //log.info("Response (LCB): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -162,9 +162,9 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.referenceResponse());
         assertEquals(1, asdu.referenceResponse().size());
 
-        log.info("Log controls under C1:");
+        //log.info("Log controls under C1:");
         for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-            log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
+            //log.info("  [{}] {}", i, asdu.referenceResponse().get(i).get());
         }
 
         assertEquals("Log", asdu.referenceResponse().get(0).get());
@@ -176,7 +176,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.LOG);
-        log.info("Response (LOG): {}", response);
+        //log.info("Response (LOG): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -194,7 +194,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.GO_CB);
-        log.info("Response (GO_CB): {}", response);
+        //log.info("Response (GO_CB): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -212,7 +212,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.MSV_CB);
-        log.info("Response (MSV_CB): {}", response);
+        //log.info("Response (MSV_CB): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());

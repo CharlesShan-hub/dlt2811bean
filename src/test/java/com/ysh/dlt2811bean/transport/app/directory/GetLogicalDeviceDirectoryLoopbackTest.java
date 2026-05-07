@@ -63,13 +63,13 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         CmsApdu allResponse = client.getLogicalDeviceDirectory("C1");
         CmsGetLogicalDeviceDirectory allAsdu = (CmsGetLogicalDeviceDirectory) allResponse.getAsdu();
         int totalCount = allAsdu.lnReference().size();
-        log.info("Total entries under C1: {}", totalCount);
+        //log.info("Total entries under C1: {}", totalCount);
 
         // Now call with referenceAfter pointing to an entry in the middle
         // Expected order (from SCD): LLN0, LPHD1, CSWI1, CSWI2, MMXU1, TVTR1
         String afterRef = "CSWI1";
         CmsApdu response = client.getLogicalDeviceDirectory("C1", afterRef);
-        log.info("Response (ldName=C1, referenceAfter=CSWI1): {}", response);
+        //log.info("Response (ldName=C1, referenceAfter=CSWI1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -77,9 +77,9 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) response.getAsdu();
         assertNotNull(asdu.lnReference());
 
-        log.info("Logical nodes under C1 after {}:", afterRef);
+        //log.info("Logical nodes under C1 after {}:", afterRef);
         for (int i = 0; i < asdu.lnReference().size(); i++) {
-            log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
+            //log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
         }
 
         // CSWI1 is at index 2, so we expect 4 entries: CSWI2, MMXU1, TVTR1

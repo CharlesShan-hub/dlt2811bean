@@ -13,6 +13,7 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
@@ -478,10 +479,11 @@ public class CmsClient {
     }
 
     /**
-     * Directory - getAllDataValuesByLd - Service Code 83
-     * Sends a GetAllDataValuesByLd request to retrieve all data values by logical device name.
+     * Directory - getAllDataValues - Service Code 83
+     * Sends a GetAllDataValues request to retrieve all data values.
      * 
      * @param ldName the logical device name (optional)
+     * @param lnReference the logical reference (optional)
      * @param fc the function class (optional)
      * @param referenceAfter the reference after which to continue the search (optional)
      * @return the response APDU (positive or negative)
@@ -500,16 +502,6 @@ public class CmsClient {
         return send(asdu);
     }
 
-    /**
-     * Directory - getAllDataValuesByLn - Service Code 83
-     * Sends a GetAllDataValuesByLn request to retrieve all data values by logical reference.
-     * 
-     * @param lnReference the logical reference (optional)
-     * @param fc the function class (optional)
-     * @param referenceAfter the reference after which to continue the search (optional)
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
     public CmsApdu getAllDataValuesByLn(String lnReference) throws Exception {
         CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
                 .lnReference(lnReference);
@@ -518,6 +510,42 @@ public class CmsClient {
 
     public CmsApdu getAllDataValuesByLn(String lnReference, String fc) throws Exception {
         CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
+                .lnReference(lnReference)
+                .fc(fc);
+        return send(asdu);
+    }
+
+    /**
+     * Directory - getAllDataDefinitionByLd - Service Code 84
+     * Sends a GetAllDataDefinitionByLd request to retrieve all data definitions by logical device name.
+     * 
+     * @param ldName the logical device name (optional)
+     * @param lnReference the logical reference (optional)
+     * @param fc the function class (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getAllDataDefinitionByLd(String ldName) throws Exception {
+        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST)
+                .ldName(ldName);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllDataDefinitionByLd(String ldName, String fc) throws Exception {
+        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST)
+                .ldName(ldName)
+                .fc(fc);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllDataDefinitionByLn(String lnReference) throws Exception {
+        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST)
+                .lnReference(lnReference);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllDataDefinitionByLn(String lnReference, String fc) throws Exception {
+        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST)
                 .lnReference(lnReference)
                 .fc(fc);
         return send(asdu);

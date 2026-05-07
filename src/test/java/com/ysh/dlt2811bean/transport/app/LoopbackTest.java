@@ -107,7 +107,7 @@ public class LoopbackTest {
             if (System.currentTimeMillis() > deadline) {
                 throw new IOException("Port " + PORT + " still in use after " + MAX_WAIT_SECONDS + " seconds");
             }
-            log.debug("Port {} is in use, waiting...", PORT);
+            //log.debug("Port {} is in use, waiting...", PORT);
             Thread.sleep(RETRY_INTERVAL_MS);
         }
 
@@ -115,7 +115,7 @@ public class LoopbackTest {
         while (!server.isBound()) {
             Thread.sleep(10);
         }
-        log.debug("Server started successfully on port {}", PORT);
+        //log.debug("Server started successfully on port {}", PORT);
     }
 
     public void startClient() throws Exception {

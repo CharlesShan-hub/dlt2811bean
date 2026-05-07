@@ -21,7 +21,7 @@ class ReleaseLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.release();
-        log.info(response.toString());
+        //log.info(response.toString());
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());

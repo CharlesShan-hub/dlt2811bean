@@ -110,9 +110,9 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsDataUnit<CmsData<T
             case 12: return new CmsFloat32();
             case 13: return new CmsFloat64();
             case 14: return new CmsBitString();
-            case 15: return new CmsOctetString();
-            case 16: return new CmsVisibleString();
-            case 17: return new CmsUtf8String();
+            case 15: return new CmsOctetString().max(255);
+            case 16: return new CmsVisibleString().max(255);
+            case 17: return new CmsUtf8String().max(255);
             case 18: return new CmsUtcTime();
             case 19: return new CmsBinaryTime();
             case 20: return new CmsQuality();

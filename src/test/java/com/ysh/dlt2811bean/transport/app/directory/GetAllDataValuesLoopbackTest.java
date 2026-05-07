@@ -19,7 +19,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataValuesByLn("C1/LPHD1");
-        log.info("Response (lnReference=C1/LPHD1): {}", response);
+        //log.info("Response (lnReference=C1/LPHD1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -30,7 +30,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
 
         CmsDataEntry entry = asdu.data().get(0);
         assertEquals("Proxy.stVal", entry.reference().get());
-        log.info("  {} = {}", entry.reference().get(), entry.value());
+        //log.info("  {} = {}", entry.reference().get(), entry.value());
     }
 
     @Test
@@ -39,7 +39,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataValuesByLn("C1/LPHD1", "ST");
-        log.info("Response (lnReference=C1/LPHD1, fc=ST): {}", response);
+        //log.info("Response (lnReference=C1/LPHD1, fc=ST): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -50,7 +50,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
 
         CmsDataEntry entry = asdu.data().get(0);
         assertEquals("Proxy.stVal", entry.reference().get());
-        log.info("  {} = {}", entry.reference().get(), entry.value());
+        //log.info("  {} = {}", entry.reference().get(), entry.value());
     }
 
     @Test
@@ -59,7 +59,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataValuesByLn("C1/LPHD1", "MX");
-        log.info("Response (lnReference=C1/LPHD1, fc=MX): {}", response);
+        //log.info("Response (lnReference=C1/LPHD1, fc=MX): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -74,7 +74,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataValuesByLd("C1");
-        log.info("Response (ldName=C1): {}", response);
+        //log.info("Response (ldName=C1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -82,11 +82,11 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
         assertNotNull(asdu.data());
 
-        log.info("All data values under C1:");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataEntry entry = asdu.data().get(i);
-            log.info("  [{}] {} = {}", i, entry.reference().get(), entry.value());
-        }
+        //log.info("All data values under C1:");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] {} = {}", i, entry.reference().get(), entry.value());
+        //}
 
         assertEquals(3, asdu.data().size());
     }
@@ -97,7 +97,7 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataValuesByLn("C1/MMXU1");
-        log.info("Response (lnReference=C1/MMXU1): {}", response);
+        //log.info("Response (lnReference=C1/MMXU1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -106,11 +106,11 @@ class GetAllDataValuesLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.data());
         assertEquals(2, asdu.data().size());
 
-        log.info("Data values for C1/MMXU1:");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataEntry entry = asdu.data().get(i);
-            log.info("  [{}] {} = {}", i, entry.reference().get(), entry.value());
-        }
+        //log.info("Data values for C1/MMXU1:");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] {} = {}", i, entry.reference().get(), entry.value());
+        //}
 
         assertEquals("Volts.sVC.offset", asdu.data().get(0).reference().get());
         assertEquals("Volts.sVC.scaleFactor", asdu.data().get(1).reference().get());

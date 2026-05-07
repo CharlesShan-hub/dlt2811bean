@@ -66,10 +66,14 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
         String ldName = null;
         String lnRef = null;
         boolean useLdName = asdu.reference.getSelectedIndex() == 0;
+        log.debug("[Server] reference selectedIndex={}, useLdName={}",
+                asdu.reference.getSelectedIndex(), useLdName);
         if (useLdName) {
             ldName = asdu.reference.ldName.get();
+            log.debug("[Server] reference ldName='{}'", ldName);
         } else {
             lnRef = asdu.reference.lnReference.get();
+            log.debug("[Server] reference lnReference='{}'", lnRef);
         }
 
         String fcFilter = asdu.fc != null ? asdu.fc.get() : null;
@@ -106,7 +110,7 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
             DataValue dv = values.get(i);
             CmsDataEntry entry = new CmsDataEntry()
                     .reference(dv.ref)
-                    .value(new CmsVisibleString(dv.val));
+                    .value(new CmsVisibleString(dv.val).max(255));
             data.add(entry);
         }
 

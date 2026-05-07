@@ -315,25 +315,25 @@ class CmsBitStringTest {
         bit8.encode(pos);
 
         byte[] encodedData = pos.toByteArray();
-        System.out.println("Encoded data length: " + encodedData.length + " bytes");
+        //System.out.println("Encoded data length: " + encodedData.length + " bytes");
         
         // 从同一个输入流解码
         PerInputStream pis = new PerInputStream(encodedData);
         
         // 解码第一个（3位）
         CmsBitString decoded3 = new CmsBitString().max(16).decode(pis);
-        System.out.println("Decoded 3-bit: bitLength=" + decoded3.getBitLength() + 
-                          ", value=" + String.format("%02X", decoded3.get()[0] & 0xFF));
+        //System.out.println("Decoded 3-bit: bitLength=" + decoded3.getBitLength() + 
+        //                  ", value=" + String.format("%02X", decoded3.get()[0] & 0xFF));
         
         // 解码第二个（5位）
         CmsBitString decoded5 = new CmsBitString().max(16).decode(pis);
-        System.out.println("Decoded 5-bit: bitLength=" + decoded5.getBitLength() + 
-                          ", value=" + String.format("%02X", decoded5.get()[0] & 0xFF));
+        //System.out.println("Decoded 5-bit: bitLength=" + decoded5.getBitLength() + 
+        //                  ", value=" + String.format("%02X", decoded5.get()[0] & 0xFF));
         
         // 解码第三个（8位）
         CmsBitString decoded8 = new CmsBitString().max(16).decode(pis);
-        System.out.println("Decoded 8-bit: bitLength=" + decoded8.getBitLength() + 
-                          ", value=" + String.format("%02X", decoded8.get()[0] & 0xFF));
+        //System.out.println("Decoded 8-bit: bitLength=" + decoded8.getBitLength() + 
+        //                  ", value=" + String.format("%02X", decoded8.get()[0] & 0xFF));
 
         // 验证解码后的值
         // 注意：由于bitLength记录问题，我们只验证字节值
@@ -345,7 +345,7 @@ class CmsBitStringTest {
         // 3位数据存储在1字节中，但bitLength可能被记录为8
         // 5位数据存储在1字节中，但bitLength可能被记录为8
         // 8位数据存储在1字节中，bitLength应该为8
-        System.out.println("Note: Current implementation may record bitLength as byteLength * 8");
+        //System.out.println("Note: Current implementation may record bitLength as byteLength * 8");
     }
 
     @Test
@@ -366,7 +366,7 @@ class CmsBitStringTest {
         bit8.encode(pos);
 
         byte[] encodedData = pos.toByteArray();
-        System.out.println("Boundary test encoded data length: " + encodedData.length + " bytes");
+        //System.out.println("Boundary test encoded data length: " + encodedData.length + " bytes");
         
         PerInputStream pis = new PerInputStream(encodedData);
         
@@ -379,6 +379,6 @@ class CmsBitStringTest {
         assertEquals(0b1, decoded1.get()[0] & 0xFF);
         assertEquals(0b10101010, decoded8.get()[0] & 0xFF);
         
-        System.out.println("Boundary test passed: 7-bit + 1-bit + 8-bit encoded/decoded correctly");
+        //System.out.println("Boundary test passed: 7-bit + 1-bit + 8-bit encoded/decoded correctly");
     }
 }

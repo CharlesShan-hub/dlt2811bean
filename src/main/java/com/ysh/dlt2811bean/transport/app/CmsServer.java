@@ -11,7 +11,6 @@ import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
 import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.*;
 import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
@@ -178,6 +177,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
         dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));
+        dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }

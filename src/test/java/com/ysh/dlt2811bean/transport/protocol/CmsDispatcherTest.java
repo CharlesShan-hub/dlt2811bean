@@ -61,11 +61,11 @@ class CmsDispatcherTest {
                 .reqId(1);
 
         CmsApdu request = new CmsApdu(requestAsdu);
-        System.out.println("Sending: " + request);
+        //System.out.println("Sending: " + request);
 
         CmsApdu response = dispatcher.dispatch(session, request);
 
-        System.out.println("Received: " + response);
+        //System.out.println("Received: " + response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());

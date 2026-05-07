@@ -1,17 +1,42 @@
 # Compiled class file
 *.class
+
+# Maven output
 target/
 
-# Log file
-*.log
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
 
-# BlueJ files
-*.ctxt
+# IDE - VS Code / Trae
+.vscode/
+*.vscode-workspace
+
+# IDE - Eclipse
+.settings/
+.project
+.classpath
+*.prefs
+
+# IDE - NetBeans
+nbproject/
+nb-configuration.xml
+
+# Log files
+*.log
+log/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files #
+# Package Files
 *.jar
 *.war
 *.nar
@@ -20,6 +45,25 @@ target/
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Certificate files (sensitive)
+*.pfx
+*.p12
+*.jks
+*.keystore
+*.cer
+*.crt
+*.pem
+*.csr
+
+# virtual machine crash logs
 hs_err_pid*
 replay_pid*
+
+# Maven Wrapper - keep the jar but ignore the dist
+!/.mvn/wrapper/maven-wrapper.jar
+
+# Temp files
+*.tmp
+*.swp
+*~
+*.bak
