@@ -19,6 +19,7 @@ import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
 import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcInterfaceDefinitionHandler;
+import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcInterfaceDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcMethodDefinitionHandler;
 import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcMethodDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.rpc.RpcCallHandler;
@@ -214,6 +215,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
         // rpc handlers
+        dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());
         dispatcher.registerDefaultHandler(new GetRpcMethodDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());

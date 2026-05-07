@@ -29,6 +29,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
@@ -750,6 +751,26 @@ public class CmsClient {
 
     public CmsApdu getRpcMethodDirectory() throws Exception {
         return getRpcMethodDirectory(null, null);
+    }
+
+    /**
+     * RPC - getRpcInterfaceDirectory - Service Code 0x6E
+     * Retrieves the list of all available RPC interfaces.
+     *
+     * @param referenceAfter optional interface name to continue from a previous response
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getRpcInterfaceDirectory(String referenceAfter) throws Exception {
+        CmsGetRpcInterfaceDirectory asdu = new CmsGetRpcInterfaceDirectory(MessageType.REQUEST);
+        if (referenceAfter != null && !referenceAfter.isEmpty()) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getRpcInterfaceDirectory() throws Exception {
+        return getRpcInterfaceDirectory(null);
     }
 
     /**

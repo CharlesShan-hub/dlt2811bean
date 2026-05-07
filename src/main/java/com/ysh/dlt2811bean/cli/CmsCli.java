@@ -15,6 +15,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
@@ -41,6 +42,7 @@ public class CmsCli {
         register(new AbortHandler());
         register(new TestHandler());
         register(new RpcHandler());
+        register(new IfaceDirHandler());
         register(new IfaceDefHandler());
         register(new MethodDirHandler());
         register(new MethodDefHandler());
@@ -354,6 +356,32 @@ public class CmsCli {
 
             CmsApdu response = client.rpcCall("echo", new com.ysh.dlt2811bean.datatypes.string.CmsVisibleString(data));
             System.out.println("  RPC echo: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
+        }
+    }
+
+    // ==================== RPC Interface Directory ====================
+
+    private class IfaceDirHandler implements CommandHandler {
+        public String getName() { return "iface-dir"; }
+        public String getDescription() { return "获取RPC接口目录 (IF1, IF2)"; }
+        public List<Param> getParams() { return List.of(); }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            CmsApdu response = client.getRpcInterfaceDirectory();
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Request failed");
+                return;
+            }
+
+            CmsGetRpcInterfaceDirectory dir = (CmsGetRpcInterfaceDirectory) response.getAsdu();
+            System.out.println("  Interfaces: " + dir.reference.size());
+            for (int i = 0; i < dir.reference.size(); i++) {
+                System.out.println("    [" + i + "] " + dir.reference.get(i).get());
+            }
         }
     }
 
