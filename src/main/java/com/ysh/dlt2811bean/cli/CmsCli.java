@@ -31,6 +31,7 @@ public class CmsCli {
         register(new ConnectHandler());
         register(new CloseHandler());
         register(new StatusHandler());
+        register(new NegotiateHandler());
         register(new AssociateHandler());
         register(new ReleaseHandler());
         register(new AbortHandler());
@@ -181,6 +182,34 @@ public class CmsCli {
     }
 
     // ==================== Association ====================
+
+    private class NegotiateHandler implements CommandHandler {
+        public String getName() { return "negotiate"; }
+        public String getDescription() { return "协商服务参数 (连接后、关联前)"; }
+        public List<Param> getParams() {
+            CmsConfig config = CmsConfigLoader.load();
+            return List.of(
+                new Param("apduSize", "APDU 帧大小", String.valueOf(config.getNegotiate().getApduSize())),
+                new Param("asduSize", "ASDU 大小", String.valueOf(config.getNegotiate().getAsduSize())),
+                new Param("protocolVersion", "协议版本号", String.valueOf(config.getNegotiate().getProtocolVersion()))
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+            int apduSize = Integer.parseInt(values.get("apduSize"));
+            int asduSize = Integer.parseInt(values.get("asduSize"));
+            long protocolVersion = Long.parseLong(values.get("protocolVersion"));
+            CmsApdu response = client.associateNegotiate(apduSize, asduSize, protocolVersion);
+            if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Negotiated!");
+            } else {
+                System.out.println("  Negotiate failed");
+            }
+        }
+    }
 
     private class AssociateHandler implements CommandHandler {
         public String getName() { return "associate"; }

@@ -9,6 +9,7 @@ public class CmsConfig {
     private KeepAlive keepalive = new KeepAlive();
     private Security security = new Security();
     private Protocol protocol = new Protocol();
+    private Negotiate negotiate = new Negotiate();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -24,6 +25,9 @@ public class CmsConfig {
 
     public Protocol getProtocol() { return protocol; }
     public void setProtocol(Protocol protocol) { this.protocol = protocol; }
+
+    public Negotiate getNegotiate() { return negotiate; }
+    public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
 
     public static class Server {
         private int port = 8102;
@@ -110,6 +114,22 @@ public class CmsConfig {
         public void setMaxAsduSize(int maxAsduSize) { this.maxAsduSize = maxAsduSize; }
     }
 
+    public static class Negotiate {
+        private int apduSize = 65535;
+        private int asduSize = 65531;
+        private int protocolVersion = 1;
+        private String modelVersion = "1.0";
+
+        public int getApduSize() { return apduSize; }
+        public void setApduSize(int apduSize) { this.apduSize = apduSize; }
+        public int getAsduSize() { return asduSize; }
+        public void setAsduSize(int asduSize) { this.asduSize = asduSize; }
+        public int getProtocolVersion() { return protocolVersion; }
+        public void setProtocolVersion(int protocolVersion) { this.protocolVersion = protocolVersion; }
+        public String getModelVersion() { return modelVersion; }
+        public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
+    }
+
     public void merge(CmsConfig other) {
         if (other == null) return;
         if (other.server != null) {
@@ -133,6 +153,13 @@ public class CmsConfig {
         if (other.protocol != null) {
             if (other.protocol.pi != 0x01) protocol.pi = other.protocol.pi;
             if (other.protocol.maxAsduSize != 65531) protocol.maxAsduSize = other.protocol.maxAsduSize;
+        }
+        if (other.negotiate != null) {
+            if (other.negotiate.apduSize != 65535) negotiate.apduSize = other.negotiate.apduSize;
+            if (other.negotiate.asduSize != 65531) negotiate.asduSize = other.negotiate.asduSize;
+            if (other.negotiate.protocolVersion != 1) negotiate.protocolVersion = other.negotiate.protocolVersion;
+            if (other.negotiate.modelVersion != null && !other.negotiate.modelVersion.equals("1.0"))
+                negotiate.modelVersion = other.negotiate.modelVersion;
         }
     }
 }

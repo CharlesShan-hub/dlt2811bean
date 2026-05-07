@@ -26,3 +26,9 @@ security:
 protocol:
   pi: 1
   maxAsduSize: 65531
+
+negotiate:
+  apduSize: 65535
+  asduSize: 65531
+  protocolVersion: 1
+  modelVersion: "1.0"

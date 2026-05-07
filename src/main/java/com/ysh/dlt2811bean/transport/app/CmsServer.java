@@ -17,6 +17,7 @@ import com.ysh.dlt2811bean.transport.protocol.association.*;
 import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
+import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -191,7 +192,13 @@ public class CmsServer {
     // ==================== Handlers ====================
 
     private void registerDefaultHandlers() {
-        // associate handler
+        CmsConfig config = CmsConfigLoader.load();
+        CmsConfig.Negotiate negCfg = config.getNegotiate();
+
+        dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(
+                negCfg.getApduSize(), negCfg.getAsduSize(),
+                negCfg.getProtocolVersion(), negCfg.getModelVersion()));
+
         dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));
         dispatcher.registerDefaultHandler(new AbortHandler());
         dispatcher.registerDefaultHandler(new ReleaseHandler());

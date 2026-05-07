@@ -27,6 +27,7 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -615,6 +616,36 @@ public class CmsClient {
 
     public CmsApdu setDataValues(CmsSetDataValues asdu) throws Exception {
         return send(asdu);
+    }
+
+    /**
+     * Association - associateNegotiate - Service Code 9A
+     * Sends an AssociateNegotiate request to negotiate service parameters before association.
+     * Must be called after connect() and before associate().
+     *
+     * @param apduSize       the maximum APDU frame size supported by this client
+     * @param asduSize       the maximum ASDU size supported by this client
+     * @param protocolVersion the protocol version used by this client
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu associateNegotiate(int apduSize, int asduSize, long protocolVersion) throws Exception {
+        CmsAssociateNegotiate asdu = new CmsAssociateNegotiate(MessageType.REQUEST)
+                .apduSize(apduSize)
+                .asduSize(asduSize)
+                .protocolVersion(protocolVersion);
+
+        CmsApdu response = send(asdu);
+
+        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            CmsAssociateNegotiate respAsdu = (CmsAssociateNegotiate) response.getAsdu();
+            session.setNegotiated(true);
+            session.setNegotiatedApduSize(respAsdu.apduSize.get());
+            session.setPeerAsduSize((int) (long) respAsdu.asduSize.get());
+            session.setPeerProtocolVersion((int) (long) respAsdu.protocolVersion.get());
+        }
+
+        return response;
     }
 
     public CmsApdu test() throws Exception {

@@ -18,6 +18,11 @@ public abstract class CmsSession {
     private volatile SessionState state = SessionState.DISCONNECTED;
     private volatile byte[] associationId;
 
+    private volatile boolean negotiated;
+    private volatile int negotiatedApduSize = 65535;
+    private volatile int peerAsduSize;
+    private volatile int peerProtocolVersion;
+
     protected CmsSession(String sessionId, CmsConnection connection) {
         this.sessionId = sessionId;
         this.connection = connection;
@@ -59,6 +64,20 @@ public abstract class CmsSession {
     public void clearAssociationId() {
         this.associationId = null;
     }
+
+    // ==================== Negotiation ====================
+
+    public boolean isNegotiated() { return negotiated; }
+    public void setNegotiated(boolean negotiated) { this.negotiated = negotiated; }
+
+    public int getNegotiatedApduSize() { return negotiatedApduSize; }
+    public void setNegotiatedApduSize(int negotiatedApduSize) { this.negotiatedApduSize = negotiatedApduSize; }
+
+    public int getPeerAsduSize() { return peerAsduSize; }
+    public void setPeerAsduSize(int peerAsduSize) { this.peerAsduSize = peerAsduSize; }
+
+    public int getPeerProtocolVersion() { return peerProtocolVersion; }
+    public void setPeerProtocolVersion(int peerProtocolVersion) { this.peerProtocolVersion = peerProtocolVersion; }
 
     public CmsConnection getConnection() {
         return connection;
