@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.session;
 
+import com.ysh.dlt2811bean.config.CmsConfigInjector;
+import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -21,16 +23,15 @@ public class CmsClientSession extends CmsSession {
 
     private static final Logger log = LoggerFactory.getLogger(CmsClientSession.class);
 
-    /** Default request timeout in milliseconds. */
-    public static final long DEFAULT_TIMEOUT_MS = 5000;
-
     private final AtomicInteger nextReqId = new AtomicInteger(1);
     private final ConcurrentHashMap<Integer, PendingRequest> pendingRequests = new ConcurrentHashMap<>();
 
-    private long defaultTimeoutMs = DEFAULT_TIMEOUT_MS;
+    @CmsValue("client.requestTimeoutMs")
+    private long defaultTimeoutMs = 5000;
 
     public CmsClientSession(CmsConnection connection) {
         super("cli-" + connection.getSocket().getPort(), connection);
+        CmsConfigInjector.inject(this);
     }
 
     // ==================== ReqID ====================

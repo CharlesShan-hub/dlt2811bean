@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.session;
 
+import com.ysh.dlt2811bean.config.CmsConfigInjector;
+import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import org.slf4j.Logger;
@@ -31,13 +33,16 @@ public class KeepAliveManager {
     private static final Logger log = LoggerFactory.getLogger(KeepAliveManager.class);
 
     /** Idle timeout before sending the first Test (ms). Default 30s. */
-    private final long idleTimeoutMs;
+    @CmsValue("keepalive.idleTimeoutMs")
+    private long idleTimeoutMs = 30000;
 
     /** Interval between Test retries (ms). Default 5s. */
-    private final long retryIntervalMs;
+    @CmsValue("keepalive.retryIntervalMs")
+    private long retryIntervalMs = 5000;
 
     /** Maximum number of Test retries. Default 4. */
-    private final int maxRetries;
+    @CmsValue("keepalive.maxRetries")
+    private int maxRetries = 4;
 
     private final CmsSession session;
     private final AtomicInteger retryCount = new AtomicInteger(0);
@@ -55,12 +60,14 @@ public class KeepAliveManager {
     }
 
     /**
-     * Creates a KeepAliveManager with default DL/T 2811 parameters.
+     * Creates a KeepAliveManager with default DL/T 2811 parameters
+     * (values from application.yaml or built-in defaults).
      *
      * @param session the session to manage
      */
     public KeepAliveManager(CmsSession session) {
-        this(session, 30_000, 5_000, 4);
+        this.session = session;
+        CmsConfigInjector.inject(this);
     }
 
     /**

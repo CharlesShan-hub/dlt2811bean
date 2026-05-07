@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.scl.SclDocument;
 import com.ysh.dlt2811bean.scl.SclReader;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
@@ -55,6 +57,12 @@ public class CmsServer {
     private SclDocument sclDocument;
     private boolean securityEnabled = false;
 
+    public CmsServer() {
+        CmsConfig config = CmsConfigLoader.load();
+        this.transport = new CmsServerTransport(config.getServer().getPort(), new ServerListener());
+        this.dispatcher = new CmsDispatcher();
+    }
+
     public CmsServer(int port) {
         this.transport = new CmsServerTransport(port, new ServerListener());
         this.dispatcher = new CmsDispatcher();
@@ -67,6 +75,11 @@ public class CmsServer {
 
     public CmsServer(int port, Path sclPath) throws Exception {
         this(port);
+        loadScl(sclPath);
+    }
+
+    public CmsServer(String sclPath) throws Exception {
+        this();
         loadScl(sclPath);
     }
 

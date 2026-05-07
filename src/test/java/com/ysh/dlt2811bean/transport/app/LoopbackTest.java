@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import org.junit.jupiter.api.*;
@@ -23,7 +24,7 @@ public class LoopbackTest {
 
     protected static final Logger log = LoggerFactory.getLogger(LoopbackTest.class);
 
-    protected static final int PORT = 18773;
+    protected static final int PORT = CmsConfigLoader.load().getServer().getPort();
     private static final int MAX_WAIT_SECONDS = 30;
     private static final int RETRY_INTERVAL_MS = 100;
 
@@ -87,7 +88,7 @@ public class LoopbackTest {
         startServer(false);
     }
 
-    private static final String SCL_FILE = "config/sample-scd-full.scd";
+    private static final String SCL_FILE = CmsConfigLoader.load().getServer().getSclFile();
 
     public void startServer(boolean enableSecurity) throws Exception {
         if (server != null) {

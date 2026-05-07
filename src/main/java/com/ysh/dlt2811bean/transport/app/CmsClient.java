@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.config.CmsConfigInjector;
+import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmCertificateParser;
 import com.ysh.dlt2811bean.security.GmSignature;
@@ -65,16 +67,23 @@ public class CmsClient {
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
+    @CmsValue("client.defaultAccessPoint")
     private String defaultAp = "E1Q1SB1";
+
+    @CmsValue("client.defaultEp")
     private String defaultEp = "S1";
+
+    public CmsClient() {
+        CmsConfigInjector.inject(this);
+    }
 
     // ==================== Security (GM) ====================
 
     private boolean securityEnabled = false;
     private KeyPair securityKeyPair;
     private GmAuthenticator securityAuthenticator;
-    private java.security.cert.X509Certificate securityCertificate;
-    private java.security.cert.X509Certificate serverCertificate;
+    private X509Certificate securityCertificate;
+    private X509Certificate serverCertificate;
 
     // ==================== Connection ====================
 

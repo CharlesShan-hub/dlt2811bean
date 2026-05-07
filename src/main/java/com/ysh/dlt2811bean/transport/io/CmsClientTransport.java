@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.io;
 
+import com.ysh.dlt2811bean.config.CmsConfigInjector;
+import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.security.GmSslContext;
 
 import javax.net.ssl.SSLSocket;
@@ -18,7 +20,14 @@ import java.net.Socket;
  */
 public class CmsClientTransport {
 
+    @CmsValue("client.connectTimeoutMs")
+    private int connectTimeout = 5000;
+
     private GmSslContext sslContext;
+
+    public CmsClientTransport() {
+        CmsConfigInjector.inject(this);
+    }
 
     /* ==================== Configuration ==================== */
 
@@ -31,7 +40,7 @@ public class CmsClientTransport {
 
     public CmsConnection connect(String host, int port, CmsTransportListener listener) throws IOException {
         Socket socket = createSocket();
-        socket.connect(new java.net.InetSocketAddress(host, port), 5000);
+        socket.connect(new java.net.InetSocketAddress(host, port), connectTimeout);
         return new CmsConnection(socket, listener);
     }
 
