@@ -6,7 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.transport.app.CmsServer;
 import org.junit.jupiter.api.*;
-
+import static org.junit.jupiter.api.Assertions.*;
 import javax.net.ssl.TrustManager;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -14,7 +14,7 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 
 /**
  * Associate service loopback tests with TLS.
@@ -67,7 +67,6 @@ class AssociateLoopbackGmTest {
 
         // Start server with TLS
         server = new CmsServer(PORT);
-        server.registerDefaultHandlers();
         server.sslContext(serverSslContext);
         server.start();
         while (!server.isBound()) {

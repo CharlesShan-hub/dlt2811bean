@@ -1,6 +1,9 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.security.GmAuthenticator;
+import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
+import com.ysh.dlt2811bean.security.GmTrustManager;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
@@ -14,23 +17,30 @@ import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * CMS Server — Application layer entry point.
  *
  * <p>Owns the transport, protocol dispatcher, and manages all client sessions.
- * Provides a simple server lifecycle: start, stop, register handlers.
+ * Provides a simple server lifecycle: start, stop.
  *
- * <p>Default handlers (SC=1,2,3,153) are registered via {@link #registerDefaultHandlers()}.
+ * <p>Default handlers (SC=1,2,3,153) are automatically registered on {@link #start()}.
  *
  * <p>Example:
  * <pre>
  * CmsServer server = new CmsServer(8888);
- * server.registerDefaultHandlers();  // Associate, Release, Abort, Test
- * // register additional handlers for other services...
+ * server.start();  // handlers auto-registered
+ * </pre>
+ *
+ * <p>With GM security:
+ * <pre>
+ * CmsServer server = new CmsServer(8888);
+ * server.enableSecurity();  // 启用国密认证
  * server.start();
  * </pre>
  */
@@ -41,6 +51,13 @@ public class CmsServer {
     private final CmsServerTransport transport;
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
+
+    // ==================== Security (GM) ====================
+
+    private boolean securityEnabled = false;
+    private KeyPair securityKeyPair;
+    private GmAuthenticator securityAuthenticator;
+    private AssociateHandler associateHandler;
 
     /**
      * Creates a server listening on the given port.
@@ -56,10 +73,13 @@ public class CmsServer {
 
     /**
      * Starts the server (starts accepting connections).
+     * Automatically registers default handlers if not already registered.
      *
      * @throws IOException if the port cannot be bound
      */
     public void start() throws IOException {
+        // Auto-register default handlers if not already registered
+        registerDefaultHandlers();
         transport.start();
         log.info("CMS Server started on port {}", transport.getPort());
     }
@@ -120,13 +140,61 @@ public class CmsServer {
         return this;
     }
 
+    // ==================== Security (GM) ====================
+
+    /**
+     * Enables GM (Guomi) security for this server.
+     * When enabled, AssociateHandler will verify client authentication certificates.
+     *
+     * <p>This method:
+     * <ul>
+     *   <li>Generates a SM2 key pair for the server</li>
+     *   <li>Creates a trust manager that trusts all client certificates</li>
+     *   <li>Creates an authenticator for certificate verification</li>
+     * </ul>
+     *
+     * <p>Call this method before {@link #start()}.
+     *
+     * @return this server for chaining
+     * @throws Exception if key pair generation fails
+     */
+    public CmsServer enableSecurity() throws Exception {
+        // Generate SM2 key pair for the server
+        this.securityKeyPair = GmSignature.generateKeyPair();
+
+        // Create trust manager that trusts all (for receiving client certificates)
+        // 默认启用 trustAll 模式，简化开发/测试
+        GmTrustManager trustManager = new GmTrustManager().trustAll();
+
+        // Create authenticator for verification
+        this.securityAuthenticator = new GmAuthenticator(trustManager);
+
+        // Create associate handler with authenticator and require authentication
+        this.associateHandler = new AssociateHandler().enableSecurity(securityAuthenticator);
+
+        this.securityEnabled = true;
+        log.info("GM security enabled, server key pair generated");
+        return this;
+    }
+
+    /**
+     * Checks if GM security is enabled for this server.
+     *
+     * @return true if security is enabled
+     */
+    public boolean isSecurityEnabled() {
+        return securityEnabled;
+    }
+
     // ==================== Handlers ====================
 
     /**
      * Registers default association service handlers: Associate, Release, Abort, and Test.
      * These are the basic services required for connection lifecycle management.
      *
-     * <p>Call this method before {@link #start()}.
+     * <p>Automatically called by {@link #start()} if not already registered.
+     * Can be called manually to register additional handlers before default ones.
+     * Safe to call multiple times (idempotent).
      *
      * <p>Registered handlers:
      * <ul>
@@ -139,10 +207,21 @@ public class CmsServer {
      * @return this server for chaining
      */
     public CmsServer registerDefaultHandlers() {
-        dispatcher.registerHandler(new AssociateHandler());
-        dispatcher.registerHandler(new AbortHandler());
-        dispatcher.registerHandler(new ReleaseHandler());
-        dispatcher.registerHandler(new TestHandler());
+        // Use associate handler with security if enabled, otherwise create new one
+        if (associateHandler != null) {
+            dispatcher.registerHandler(associateHandler);
+        } else if (!dispatcher.hasHandler(ServiceName.ASSOCIATE)) {
+            dispatcher.registerHandler(new AssociateHandler());
+        }
+        if (!dispatcher.hasHandler(ServiceName.ABORT)) {
+            dispatcher.registerHandler(new AbortHandler());
+        }
+        if (!dispatcher.hasHandler(ServiceName.RELEASE)) {
+            dispatcher.registerHandler(new ReleaseHandler());
+        }
+        if (!dispatcher.hasHandler(ServiceName.TEST)) {
+            dispatcher.registerHandler(new TestHandler());
+        }
         return this;
     }
 

@@ -9,30 +9,78 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Associate service loopback tests.
- * No prerequisite - tests connection establishment from scratch.
+ * Tests both plain TCP and TCP with GM authentication.
  */
 @DisplayName("Associate Loopback Test")
 class AssociateLoopbackTest extends LoopbackTest {
 
     @Test
-    @DisplayName("Associate → positive response + 64-byte associationId")
+    @DisplayName("Associate → default access point, no authentication, no security")
     void associatePositive() throws Exception {
-        CmsApdu response = client.associate();
-        //log.info(response.toString());
 
-        assertNotNull(response);
+        startServer(false);
+        startClient(false);
+
+        CmsApdu response = associate();
+
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
-        assertNotNull(client.getAssociationId());
         assertEquals(64, client.getAssociationId().length);
+
+        closeClient();
+        closeServer();
     }
 
     @Test
-    @DisplayName("associate(ap, ep) → positive response with specified access point")
+    @DisplayName("Associate → custom access point, no authentication, no security")
     void associateWithAccessPoint() throws Exception {
+
+        startServer(false);
+        startClient(false);
+
         CmsApdu response = client.associate("IED1", "AP1");
-        
-        assertNotNull(response);
+
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNotNull(client.getAssociationId());
+
+        closeClient();
+        closeServer();
+    }
+
+    @Test
+    @DisplayName("Associate → client with security, server without")
+    void associateClientSecurityOnly() throws Exception {
+        
+        startServer(false);
+        startClient(true);
+
+        CmsApdu response = client.setAccessPoint("CLIENT", "EP1").associate();
+
+        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
+        assertNotNull(client.getAssociationId());
+        assertEquals(64, client.getAssociationId().length);
+        assertFalse(server.isSecurityEnabled());
+        assertTrue(client.isSecurityEnabled());
+
+        closeClient();
+        closeServer();
+    }
+
+    @Test
+    @DisplayName("Associate → both server and client with security")
+    void associateWithSecurity() throws Exception {
+        
+        startServer(true);
+        startClient(true);
+
+        CmsApdu response = client.setAccessPoint("CLIENT", "EP2").associate();
+
+        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
+        assertNotNull(client.getAssociationId());
+        assertEquals(64, client.getAssociationId().length);
+        assertTrue(server.isSecurityEnabled());
+        assertTrue(client.isSecurityEnabled());
+
+        closeClient();
+        closeServer();
     }
 }

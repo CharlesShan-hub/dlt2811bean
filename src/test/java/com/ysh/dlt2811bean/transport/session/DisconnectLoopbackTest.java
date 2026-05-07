@@ -4,7 +4,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.transport.app.CmsServer;
-import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
 import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,19 +21,32 @@ class DisconnectLoopbackTest {
     CmsServer server;
     CmsClient client;
 
-    private void startServer() throws Exception {
+    void startServer() throws Exception {
         server = new CmsServer(PORT);
-        server.registerHandler(new AssociateHandler());
         server.start();
         while (!server.isBound()) {
             Thread.sleep(10);
         }
     }
 
-    private void connectClient() throws Exception {
+    void startClient() throws Exception {
         client = new CmsClient();
         client.setAccessPoint("IED1", "AP1");
         client.connect("127.0.0.1", PORT);
+    }
+
+    void closeServer() {
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
+    }
+
+    void closeClient() {
+        if (client != null) {
+            client.close();
+            client = null;
+        }
     }
 
     private CmsApdu associate() throws Exception {
@@ -47,19 +59,13 @@ class DisconnectLoopbackTest {
     @BeforeEach
     void setup() throws Exception {
         startServer();
-        connectClient();
+        startClient();
     }
 
     @AfterEach
     void cleanup() {
-        if (client != null) {
-            client.close();
-            client = null;
-        }
-        if (server != null) {
-            server.stop();
-            server = null;
-        }
+        closeClient();
+        closeServer();
     }
 
     @Test

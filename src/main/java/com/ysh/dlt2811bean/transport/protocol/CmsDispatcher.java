@@ -87,4 +87,14 @@ public class CmsDispatcher {
     public int handlerCount() {
         return handlers.size();
     }
+
+    /**
+     * Checks if a handler is registered for the given service name.
+     *
+     * @param serviceName the service name to check
+     * @return true if a handler is registered
+     */
+    public boolean hasHandler(ServiceName serviceName) {
+        return handlers.containsKey(serviceName);
+    }
 }

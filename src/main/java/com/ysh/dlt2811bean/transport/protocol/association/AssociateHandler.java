@@ -32,7 +32,8 @@ import java.util.Optional;
 @Slf4j
 public class AssociateHandler implements CmsServiceHandler {
 
-    private final GmAuthenticator authenticator;
+    private GmAuthenticator authenticator;
+    private boolean requireAuthentication = false;  // true = must have cert, false = optional
 
     public AssociateHandler() {
         this.authenticator = null; // No authentication by default
@@ -40,6 +41,28 @@ public class AssociateHandler implements CmsServiceHandler {
 
     public AssociateHandler(GmAuthenticator authenticator) {
         this.authenticator = authenticator;
+    }
+
+    /**
+     * Enables security with the given authenticator.
+     * Clients with valid certificates will be authenticated, clients without will be rejected.
+     *
+     * @param authenticator the authenticator to use for verification
+     * @return this handler for chaining
+     */
+    public AssociateHandler enableSecurity(GmAuthenticator authenticator) {
+        this.authenticator = authenticator;
+        this.requireAuthentication = true;
+        return this;
+    }
+
+    /**
+     * Checks if security is enabled.
+     *
+     * @return true if authenticator is set
+     */
+    public boolean isSecurityEnabled() {
+        return authenticator != null;
     }
 
     @Override
@@ -61,6 +84,11 @@ public class AssociateHandler implements CmsServiceHandler {
 
         // 2. Validate authentication parameter if required
         AuthenticationParameter authParam = asdu.authenticationParameter();
+        if (requireAuthentication && (authParam == null || authParam.signatureCertificate() == null)) {
+            // Must have certificate but doesn't
+            log.warn("[Server] Authentication required but no certificate provided");
+            return buildNegativeResponse(asdu, new CmsServiceError(CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE));
+        }
         if (authenticator != null && authParam != null && authParam.signatureCertificate() != null) {
             // Prepare signed data: serverAccessPointReference + other request fields
             byte[] signedData = prepareSignedData(asdu);
@@ -84,7 +112,7 @@ public class AssociateHandler implements CmsServiceHandler {
                 .associationId(assocId)
                 .serviceError(CmsServiceError.NO_ERROR);
 
-        // Add authentication parameter in response if requested
+        // 5. Add authentication parameter in response if requested
         if (authParam != null) {
             response.authenticationParameter(authParam);
         }

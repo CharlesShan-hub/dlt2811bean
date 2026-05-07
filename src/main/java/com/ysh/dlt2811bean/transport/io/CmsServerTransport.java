@@ -24,6 +24,7 @@ public class CmsServerTransport {
 
     private ServerSocket serverSocket;
     private volatile boolean running;
+    private Thread acceptorThread;
     private GmSslContext sslContext;
     private boolean needClientAuth = false;  // 暂存配置
 
@@ -70,9 +71,9 @@ public class CmsServerTransport {
     public void start() throws IOException {
         serverSocket = createServerSocket();
         running = true;
-        Thread acceptor = new Thread(this::acceptLoop, "cms-acceptor");
-        acceptor.setDaemon(true);
-        acceptor.start();
+        acceptorThread = new Thread(this::acceptLoop, "cms-acceptor");
+        acceptorThread.setDaemon(true);
+        acceptorThread.start();
     }
 
     private ServerSocket createServerSocket() throws IOException {
@@ -102,15 +103,44 @@ public class CmsServerTransport {
     }
 
     /**
+     * 中断阻塞中的 accept() 调用，让 stop() 能及时返回
+     */
+    private void interruptAccept() {
+        try {
+            if (serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed()) {
+                // 连接一个"取消连接"到本地端口，中断 accept()
+                // 使用 127.0.0.1 而不是 getLocalSocketAddress() 以避免潜在的问题
+                java.net.InetSocketAddress addr = new java.net.InetSocketAddress("127.0.0.1", port);
+                try (java.net.Socket cancelSocket = new java.net.Socket()) {
+                    cancelSocket.connect(addr, 50);
+                }
+            }
+        } catch (Exception ignored) {
+            // 忽略所有异常，中断成功或失败都不影响 stop() 流程
+        }
+    }
+
+    /**
      * Stops the server and closes all connections.
      */
     public void stop() {
         running = false;
+        // 先中断阻塞中的 accept()（在 Windows 上 close() 不会立即中断）
+        interruptAccept();
         try {
-            if (serverSocket != null) {
+            if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
         } catch (IOException ignored) {
+        }
+        // 等待 acceptor 线程结束，确保端口被释放
+        if (acceptorThread != null) {
+            try {
+                acceptorThread.join(1000);
+            } catch (InterruptedException ignored) {
+                Thread.currentThread().interrupt();
+            }
+            acceptorThread = null;
         }
         for (CmsConnection conn : connections) {
             conn.close();
@@ -148,8 +178,9 @@ public class CmsServerTransport {
 
     private void acceptLoop() {
         while (running) {
+            Socket socket = null;
             try {
-                Socket socket = serverSocket.accept();
+                socket = serverSocket.accept();
 
                 // TLS 握手
                 if (socket instanceof javax.net.ssl.SSLSocket) {
@@ -161,9 +192,18 @@ public class CmsServerTransport {
                 listener.onConnected(conn);
                 conn.startReadLoop();
             } catch (IOException e) {
-                if (running) {
-                    listener.onError(null, e);
+                // 确保 socket 被关闭，防止资源泄漏
+                if (socket != null && !socket.isClosed()) {
+                    try {
+                        socket.close();
+                    } catch (IOException ignored) {
+                    }
                 }
+                // socket 关闭或出错时退出循环
+                if (!running || serverSocket.isClosed()) {
+                    break;
+                }
+                listener.onError(null, e);
             }
         }
     }

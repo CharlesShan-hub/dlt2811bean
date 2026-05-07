@@ -18,20 +18,30 @@ class AbortLoopbackTest extends LoopbackTest {
     @Test
     @DisplayName("Abort → server closes, client sees disconnect")
     void abortNoResponse() throws Exception {
+        startServer(false);
+        startClient(false);
+
         associate();
 
         client.abort(); // default AbortReason.OTHER (0)
 
         assertFalse(client.isConnected());
+
+        closeServer();
     }
 
     @Test
     @DisplayName("Abort → server closes, client sees disconnect")
     void abortWithReason() throws Exception {
+        startServer(false);
+        startClient(false);
+
         associate();
 
         client.abort(AbortReason.INVALID_REQ_ID);
 
         assertFalse(client.isConnected());
+
+        closeServer();
     }
 }

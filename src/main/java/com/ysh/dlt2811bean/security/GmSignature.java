@@ -10,14 +10,22 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Hex;
 
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.operator.ContentSigner;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
+
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.security.*;
+import java.security.cert.X509Certificate;
 import java.security.spec.ECGenParameterSpec;
-import java.security.spec.EllipticCurve;
 import java.security.spec.ECParameterSpec;
 import java.security.spec.ECPoint;
-import java.math.BigInteger;
+import java.security.spec.EllipticCurve;
+import java.util.Date;
 
 /**
  * 国密签名工具类。
@@ -324,6 +332,49 @@ public class GmSignature {
             return keyGen.generateKeyPair();
         } catch (Exception e) {
             throw new SecurityException("Failed to generate SM2 key pair", e);
+        }
+    }
+
+    /**
+     * 生成自签名 SM2 X509 证书。
+     *
+     * @param keyPair SM2 密钥对
+     * @return X509Certificate 自签名证书
+     */
+    public static X509Certificate generateSelfSignedCertificate(KeyPair keyPair) {
+        return generateSelfSignedCertificate(keyPair, "CN=SM2 Self-Signed");
+    }
+
+    /**
+     * 生成自签名 SM2 X509 证书。
+     *
+     * @param keyPair       SM2 密钥对
+     * @param subjectDN     主题 DN
+     * @return X509Certificate 自签名证书
+     */
+    public static X509Certificate generateSelfSignedCertificate(KeyPair keyPair, String subjectDN) {
+        try {
+            long now = System.currentTimeMillis();
+            Date notBefore = new Date(now - 24 * 60 * 60 * 1000); // 昨天
+            Date notAfter = new Date(now + 365L * 24 * 60 * 60 * 1000); // 1年后
+
+            JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
+                    new X500Name(subjectDN),
+                    BigInteger.valueOf(now),
+                    notBefore,
+                    notAfter,
+                    new X500Name(subjectDN),
+                    keyPair.getPublic());
+
+            ContentSigner signer = new JcaContentSignerBuilder(SIGNATURE_ALGORITHM)
+                    .setProvider(PROVIDER)
+                    .build(keyPair.getPrivate());
+
+            return new JcaX509CertificateConverter()
+                    .setProvider(PROVIDER)
+                    .getCertificate(certBuilder.build(signer));
+        } catch (Exception e) {
+            throw new SecurityException("Failed to generate self-signed certificate", e);
         }
     }
 }
