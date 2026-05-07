@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 public class CmsConfigLoader {
 
     private static final Logger log = LoggerFactory.getLogger(CmsConfigLoader.class);
+    private static final String PROP_PREFIX = "cms.";
     private static final String[] SEARCH_PATHS = {
         "application.yaml",
         "config/application.yaml",
@@ -40,6 +41,8 @@ public class CmsConfigLoader {
         } else {
             log.info("No application.yaml found, using default config");
         }
+
+        applySystemProperties(config);
 
         loadedConfig = config;
         return config;
@@ -91,5 +94,17 @@ public class CmsConfigLoader {
         LoaderOptions options = new LoaderOptions();
         Yaml yaml = new Yaml(new Constructor(CmsConfig.class, options));
         return yaml.loadAs(in, CmsConfig.class);
+    }
+
+    private static void applySystemProperties(CmsConfig config) {
+        String port = System.getProperty(PROP_PREFIX + "server.port");
+        if (port != null && !port.isEmpty()) {
+            try {
+                config.getServer().setPort(Integer.parseInt(port));
+                log.info("Override server.port={} from system property", port);
+            } catch (NumberFormatException e) {
+                log.warn("Invalid system property cms.server.port: {}", port);
+            }
+        }
     }
 }

@@ -18,7 +18,7 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalDeviceDirectory();
-        log.info("Response (no ldName): {}", response);
+        //log.info("Response (no ldName): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -27,10 +27,10 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.lnReference());
         assertTrue(asdu.lnReference().size() > 0);
 
-        log.info("Logical nodes:");
-        for (int i = 0; i < asdu.lnReference().size(); i++) {
-            log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
-        }
+        //log.info("Logical nodes:");
+        //for (int i = 0; i < asdu.lnReference().size(); i++) {
+        //    log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
+        //}
     }
 
     @Test
@@ -39,7 +39,7 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getLogicalDeviceDirectory("C1");
-        log.info("Response (ldName=C1): {}", response);
+        //log.info("Response (ldName=C1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -48,10 +48,10 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.lnReference());
         assertTrue(asdu.lnReference().size() > 0);
 
-        log.info("Logical nodes under C1:");
-        for (int i = 0; i < asdu.lnReference().size(); i++) {
-            log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
-        }
+        //log.info("Logical nodes under C1:");
+        //for (int i = 0; i < asdu.lnReference().size(); i++) {
+        //    log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
+        //}
     }
 
     @Test
@@ -78,9 +78,9 @@ class GetLogicalDeviceDirectoryLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.lnReference());
 
         //log.info("Logical nodes under C1 after {}:", afterRef);
-        for (int i = 0; i < asdu.lnReference().size(); i++) {
-            //log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
-        }
+        //for (int i = 0; i < asdu.lnReference().size(); i++) {
+        //    log.info("  [{}] {}", i, asdu.lnReference().get(i).get());
+        //}
 
         // CSWI1 is at index 2, so we expect 4 entries: CSWI2, MMXU1, TVTR1
         assertEquals(totalCount - 3, asdu.lnReference().size());

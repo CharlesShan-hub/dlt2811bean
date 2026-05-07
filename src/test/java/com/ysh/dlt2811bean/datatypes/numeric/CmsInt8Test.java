@@ -17,7 +17,7 @@ class CmsInt8Test {
         new CmsInt8(42).encode(pos);
 
         CmsInt8 r = CmsInt8.read(new PerInputStream(pos.toByteArray()));
-        assertEquals(42,r.get());
+        assertEquals(42, (int) r.get());
     }
 
     @Test
@@ -37,7 +37,7 @@ class CmsInt8Test {
         new CmsInt8(CmsInt8.MIN).encode(pos);
 
         CmsInt8 r = new CmsInt8().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt8.MIN, r.get());
+        assertEquals(CmsInt8.MIN, (int) r.get());
     }
 
     @Test
@@ -47,7 +47,7 @@ class CmsInt8Test {
         new CmsInt8(CmsInt8.MAX).encode(pos);
 
         CmsInt8 r = new CmsInt8().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt8.MAX, r.get());
+        assertEquals(CmsInt8.MAX, (int) r.get());
     }
 
     @Test
@@ -63,7 +63,7 @@ class CmsInt8Test {
     @Test
     @DisplayName("default value is 0")
     void defaultValue() {
-        assertEquals(0, new CmsInt8().get());
+        assertEquals(0, (int) new CmsInt8().get());
     }
 
     @Test

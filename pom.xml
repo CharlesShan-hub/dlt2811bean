@@ -137,6 +137,32 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- 运行入口 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>cms-cli</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.ysh.dlt2811bean.cli.CmsCli</mainClass>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cms-server</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.ysh.dlt2811bean.transport.app.CmsServer</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

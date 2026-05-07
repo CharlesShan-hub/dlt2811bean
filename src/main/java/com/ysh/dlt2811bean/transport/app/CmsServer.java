@@ -16,6 +16,7 @@ import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.association.*;
 import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
+import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +62,15 @@ public class CmsServer {
         CmsConfig config = CmsConfigLoader.load();
         this.transport = new CmsServerTransport(config.getServer().getPort(), new ServerListener());
         this.dispatcher = new CmsDispatcher();
+        loadSclSilently(config.getServer().getSclFile());
+    }
+
+    private void loadSclSilently(String sclPath) {
+        try {
+            loadScl(sclPath);
+        } catch (Exception e) {
+            log.warn("Failed to load SCL from {}: {}", sclPath, e.getMessage());
+        }
     }
 
     public CmsServer(int port) {
@@ -191,6 +201,10 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
         dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));
         dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));
+        dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());
+        // data handlers
+        dispatcher.registerDefaultHandler(new GetDataValuesHandler());
+        dispatcher.registerDefaultHandler(new SetDataValuesHandler());
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }
@@ -237,5 +251,17 @@ public class CmsServer {
         public void onError(CmsConnection conn, Exception e) {
             log.error("Transport error on {}: {}", conn, e.getMessage(), e);
         }
+    }
+
+    public static void main(String[] args) throws Exception {
+        CmsServer server = new CmsServer();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            server.stop();
+            System.out.println("Server stopped");
+        }));
+        server.start();
+        System.out.println("CMS Server running on port " + CmsConfigLoader.load().getServer().getPort() + "...");
+        System.out.println("Press Ctrl+C to stop");
+        Thread.currentThread().join();
     }
 }

@@ -17,6 +17,11 @@ import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
+import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
+import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
+import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
@@ -561,12 +566,57 @@ public class CmsClient {
     }
 
     /**
-     * Test - test - Service Code 153
-     * Sends a Test request to verify the connection.
-     *
+     * Directory - getAllCBValues - Service Code 85
+     * Sends a GetAllCBValues request to retrieve all CB values.
+     * 
+     * @param ldName the logical device name (optional)
+     * @param lnReference the logical reference (optional)
+     * @param acsiClass the ACI class (optional)
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
+    public CmsApdu getAllCBValuesByLd(String ldName, int acsiClass) throws Exception {
+        CmsGetAllCBValues asdu = new CmsGetAllCBValues(MessageType.REQUEST)
+                .ldName(ldName);
+        asdu.acsiClass = new CmsACSIClass(acsiClass);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllCBValuesByLn(String lnReference, int acsiClass) throws Exception {
+        CmsGetAllCBValues asdu = new CmsGetAllCBValues(MessageType.REQUEST)
+                .lnReference(lnReference);
+        asdu.acsiClass = new CmsACSIClass(acsiClass);
+        return send(asdu);
+    }
+
+    /**
+     * Data - getDataValues - Service Code 86
+     * Sends a GetDataValues request to retrieve data values.
+     * 
+     * @param references the references of the data values to retrieve
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getDataValues(String... references) throws Exception {
+        CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.data.add(new CmsGetDataValuesEntry().reference(ref));
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getDataValuesWithFc(String fc, String... references) throws Exception {
+        CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.data.add(new CmsGetDataValuesEntry().reference(ref).fc(fc));
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu setDataValues(CmsSetDataValues asdu) throws Exception {
+        return send(asdu);
+    }
+
     public CmsApdu test() throws Exception {
         CmsTest asdu = new CmsTest(MessageType.REQUEST);
         return testEcho(asdu);

@@ -19,7 +19,7 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataDefinitionByLn("C1/CSWI1");
-        log.info("Response (lnReference=C1/CSWI1): {}", response);
+        //log.info("Response (lnReference=C1/CSWI1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -28,12 +28,12 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.data());
         assertTrue(asdu.data().size() >= 5);
 
-        log.info("DO definitions for C1/CSWI1:");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataDefinitionEntry entry = asdu.data().get(i);
-            log.info("  [{}] ref={}, cdc={}, def={}",
-                    i, entry.reference().get(), entry.cdcType().get(), entry.definition());
-        }
+        //log.info("DO definitions for C1/CSWI1:");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataDefinitionEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] ref={}, cdc={}, def={}",
+        //        i, entry.reference().get(), entry.cdcType().get(), entry.definition());
+        //}
     }
 
     @Test
@@ -42,7 +42,7 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataDefinitionByLn("C1/CSWI1", "ST");
-        log.info("Response (lnReference=C1/CSWI1, fc=ST): {}", response);
+        //log.info("Response (lnReference=C1/CSWI1, fc=ST): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -51,12 +51,12 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.data());
         assertTrue(asdu.data().size() > 0);
 
-        log.info("DO definitions for C1/CSWI1 (fc=ST):");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataDefinitionEntry entry = asdu.data().get(i);
-            log.info("  [{}] ref={}, cdc={}, def={}",
-                    i, entry.reference().get(), entry.cdcType().get(), entry.definition());
-        }
+        //log.info("DO definitions for C1/CSWI1 (fc=ST):");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataDefinitionEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] ref={}, cdc={}, def={}",
+        //        i, entry.reference().get(), entry.cdcType().get(), entry.definition());
+        //}
     }
 
     @Test
@@ -65,7 +65,7 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataDefinitionByLn("C1/MMXU1", "MX");
-        log.info("Response (lnReference=C1/MMXU1, fc=MX): {}", response);
+        //log.info("Response (lnReference=C1/MMXU1, fc=MX): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -74,12 +74,12 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.data());
         assertTrue(asdu.data().size() > 0);
 
-        log.info("DO definitions for C1/MMXU1 (fc=MX):");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataDefinitionEntry entry = asdu.data().get(i);
-            log.info("  [{}] ref={}, cdc={}, def={}",
-                    i, entry.reference().get(), entry.cdcType().get(), entry.definition());
-        }
+        //log.info("DO definitions for C1/MMXU1 (fc=MX):");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataDefinitionEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] ref={}, cdc={}, def={}",
+        //        i, entry.reference().get(), entry.cdcType().get(), entry.definition());
+        //}
     }
 
     @Test
@@ -88,7 +88,7 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getAllDataDefinitionByLd("C1");
-        log.info("Response (ldName=C1): {}", response);
+        //log.info("Response (ldName=C1): {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -97,11 +97,11 @@ class GetAllDataDefinitionLoopbackTest extends LoopbackTest {
         assertNotNull(asdu.data());
         assertTrue(asdu.data().size() > 0);
 
-        log.info("All DO definitions under C1:");
-        for (int i = 0; i < asdu.data().size(); i++) {
-            CmsDataDefinitionEntry entry = asdu.data().get(i);
-            log.info("  [{}] ref={}, cdc={}, def={}",
-                    i, entry.reference().get(), entry.cdcType().get(), entry.definition());
-        }
+        //log.info("All DO definitions under C1:");
+        //for (int i = 0; i < asdu.data().size(); i++) {
+        //    CmsDataDefinitionEntry entry = asdu.data().get(i);
+        //    log.info("  [{}] ref={}, cdc={}, def={}",
+        //        i, entry.reference().get(), entry.cdcType().get(), entry.definition());
+        //}
     }
 }

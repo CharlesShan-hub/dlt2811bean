@@ -37,7 +37,7 @@ class CmsInt64Test {
         new CmsInt64(CmsInt64.MIN).encode(pos);
 
         CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt64.MIN, r.get());
+        assertEquals(CmsInt64.MIN, (long) r.get());
     }
 
     @Test
@@ -47,7 +47,7 @@ class CmsInt64Test {
         new CmsInt64(CmsInt64.MAX).encode(pos);
 
         CmsInt64 r = new CmsInt64().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt64.MAX, r.get());
+        assertEquals(CmsInt64.MAX, (long) r.get());
     }
 
     @Test
@@ -63,7 +63,7 @@ class CmsInt64Test {
     @Test
     @DisplayName("default value is 0")
     void defaultValue() {
-        assertEquals(0L, new CmsInt64().get());
+        assertEquals(0L, (long) new CmsInt64().get());
     }
 
     @Test

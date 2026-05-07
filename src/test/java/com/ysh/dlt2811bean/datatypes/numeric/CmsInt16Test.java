@@ -37,7 +37,7 @@ class CmsInt16Test {
         new CmsInt16(CmsInt16.MIN).encode(pos);
 
         CmsInt16 r = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt16.MIN, r.get());
+        assertEquals(CmsInt16.MIN, (int) r.get());
     }
 
     @Test
@@ -47,7 +47,7 @@ class CmsInt16Test {
         new CmsInt16(CmsInt16.MAX).encode(pos);
 
         CmsInt16 r = new CmsInt16().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt16.MAX, r.get());
+        assertEquals(CmsInt16.MAX, (int) r.get());
     }
 
     @Test
@@ -63,7 +63,7 @@ class CmsInt16Test {
     @Test
     @DisplayName("default value is 0")
     void defaultValue() {
-        assertEquals(0, new CmsInt16().get());
+        assertEquals(0, (int) new CmsInt16().get());
     }
 
     @Test

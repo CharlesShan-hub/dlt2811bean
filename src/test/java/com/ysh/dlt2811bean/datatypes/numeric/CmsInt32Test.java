@@ -37,7 +37,7 @@ class CmsInt32Test {
         new CmsInt32(CmsInt32.MIN).encode(pos);
 
         CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt32.MIN, r.get());
+        assertEquals(CmsInt32.MIN, (int) r.get());
     }
 
     @Test
@@ -47,7 +47,7 @@ class CmsInt32Test {
         new CmsInt32(CmsInt32.MAX).encode(pos);
 
         CmsInt32 r = new CmsInt32().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsInt32.MAX, r.get());
+        assertEquals(CmsInt32.MAX, (int) r.get());
     }
 
     @Test
@@ -63,7 +63,7 @@ class CmsInt32Test {
     @Test
     @DisplayName("default value is 0")
     void defaultValue() {
-        assertEquals(0, new CmsInt32().get());
+        assertEquals(0, (int) new CmsInt32().get());
     }
 
     @Test
