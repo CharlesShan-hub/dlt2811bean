@@ -9,9 +9,9 @@ import java.security.cert.X509Certificate;
 import java.security.cert.CertificateFactory;
 
 /**
- * 国密证书解析器。
+ * GM Certificate Parser.
  *
- * <p>提供 SM2/X.509 证书的解析和编码转换功能。
+ * <p>Provides SM2/X.509 certificate parsing and encoding conversion.
  */
 public class GmCertificateParser {
 
@@ -26,11 +26,11 @@ public class GmCertificateParser {
     }
 
     /**
-     * 从字节数组解析 X509 证书。
+     * Parses X509 certificate from byte array.
      *
-     * @param certBytes DER 编码的证书字节
+     * @param certBytes DER-encoded certificate bytes
      * @return X509Certificate
-     * @throws CertificateException 如果解析失败
+     * @throws CertificateException if parsing fails
      */
     public static X509Certificate parseX509(byte[] certBytes) throws CertificateException {
         try {
@@ -46,16 +46,16 @@ public class GmCertificateParser {
     }
 
     /**
-     * 从 Base64 字符串解析证书。
+     * Parses certificate from Base64 string.
      */
     public static X509Certificate parseFromBase64(String base64) throws CertificateException {
         return parseX509(Base64.decode(base64));
     }
 
     /**
-     * 从 PEM 格式解析证书。
+     * Parses certificate from PEM format.
      *
-     * @param pem PEM 格式证书字符串（包含 -----BEGIN CERTIFICATE----- 标记）
+     * @param pem PEM format certificate string (containing -----BEGIN CERTIFICATE----- markers)
      */
     public static X509Certificate parseFromPem(String pem) throws CertificateException {
         String content = pem
@@ -66,7 +66,7 @@ public class GmCertificateParser {
     }
 
     /**
-     * 获取证书的十六进制编码。
+     * Gets the hexadecimal encoding of the certificate.
      */
     public static String toHex(X509Certificate certificate) {
         try {
@@ -77,7 +77,7 @@ public class GmCertificateParser {
     }
 
     /**
-     * 获取证书的 Base64 编码。
+     * Gets the Base64 encoding of the certificate.
      */
     public static String toBase64(X509Certificate certificate) {
         try {
@@ -88,7 +88,7 @@ public class GmCertificateParser {
     }
 
     /**
-     * 获取证书的 PEM 格式字符串。
+     * Gets the PEM format string of the certificate.
      */
     public static String toPem(X509Certificate certificate) {
         try {
@@ -101,28 +101,28 @@ public class GmCertificateParser {
     }
 
     /**
-     * 获取证书主题名称。
+     * Gets the certificate subject name.
      */
     public static String getSubject(X509Certificate certificate) {
         return certificate.getSubjectX500Principal().getName();
     }
 
     /**
-     * 获取证书颁发者名称。
+     * Gets the certificate issuer name.
      */
     public static String getIssuer(X509Certificate certificate) {
         return certificate.getIssuerX500Principal().getName();
     }
 
     /**
-     * 获取证书序列号（十六进制）。
+     * Gets the certificate serial number (hexadecimal).
      */
     public static String getSerialNumberHex(X509Certificate certificate) {
         return certificate.getSerialNumber().toString(16).toUpperCase();
     }
 
     /**
-     * 获取证书指纹（SHA-256）。
+     * Gets the certificate fingerprint (SHA-256).
      */
     public static String getFingerprintSha256(X509Certificate certificate) {
         try {

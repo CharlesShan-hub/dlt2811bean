@@ -74,15 +74,31 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
                 collectDataObjects(targets, entries, !useLdName);
                 break;
             case CmsACSIClass.DATA_SET:
+                collectDataSets(targets, entries);
+                break;
             case CmsACSIClass.BRCB:
+                collectReportControls(targets, entries, true);
+                break;
             case CmsACSIClass.URCB:
+                collectReportControls(targets, entries, false);
+                break;
             case CmsACSIClass.LCB:
+                collectLogControls(targets, entries);
+                break;
             case CmsACSIClass.LOG:
-            case CmsACSIClass.SGCB:
+                collectLogNames(targets, entries);
+                break;
             case CmsACSIClass.GO_CB:
+                collectGseControls(targets, entries);
+                break;
             case CmsACSIClass.MSV_CB:
+                collectSvControls(targets, entries);
+                break;
+            case CmsACSIClass.SGCB:
+                log.warn("[Server] ACSI class SGCB not supported in current SCL model");
+                return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             default:
-                log.warn("[Server] ACSI class {} not yet implemented", acsiClass);
+                log.warn("[Server] Unknown ACSI class: {}", acsiClass);
                 return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
@@ -131,10 +147,10 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             List<TargetLn> result = new ArrayList<>();
             SclLN0 ln0 = device.getLn0();
             if (ln0 != null) {
-                result.add(new TargetLn(ldName, ln0.getLnClass(), ln0.getInst(), ln0.getLnType()));
+                result.add(new TargetLn(ldName, ln0.getLnClass(), ln0.getInst(), ln0.getLnType(), ln0, null));
             }
             for (SclLN ln : device.getLns()) {
-                result.add(new TargetLn(ldName, ln.getLnClass(), ln.getInst(), ln.getLnType()));
+                result.add(new TargetLn(ldName, ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
             }
             return result;
         }
@@ -166,7 +182,7 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             if (ln0Name.equals(targetLnName)) {
                 List<TargetLn> result = new ArrayList<>();
                 result.add(new TargetLn(device.getInst(), device.getLn0().getLnClass(),
-                        device.getLn0().getInst(), device.getLn0().getLnType()));
+                        device.getLn0().getInst(), device.getLn0().getLnType(), device.getLn0(), null));
                 return result;
             }
         }
@@ -174,7 +190,7 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             String lnName = ln.getLnClass() + ln.getInst();
             if (lnName.equals(targetLnName)) {
                 List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), ln.getLnClass(), ln.getInst(), ln.getLnType()));
+                result.add(new TargetLn(device.getInst(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
                 return result;
             }
         }
@@ -226,6 +242,64 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
         }
     }
 
+    private void collectDataSets(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclDataSet ds : t.ln0.getDataSets()) {
+                entries.add(ds.getName());
+            }
+        }
+    }
+
+    private void collectReportControls(List<TargetLn> targets, List<String> entries, boolean buffered) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclReportControl rc : t.ln0.getReportControls()) {
+                if (rc.isBuffered() == buffered) {
+                    entries.add(rc.getName());
+                }
+            }
+        }
+    }
+
+    private void collectLogControls(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclLogControl lc : t.ln0.getLogControls()) {
+                entries.add(lc.getName());
+            }
+        }
+    }
+
+    private void collectLogNames(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclLogControl lc : t.ln0.getLogControls()) {
+                if (lc.getLogName() != null && !lc.getLogName().isEmpty()) {
+                    entries.add(lc.getLogName());
+                }
+            }
+        }
+    }
+
+    private void collectGseControls(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclGSEControl gse : t.ln0.getGseControls()) {
+                entries.add(gse.getName());
+            }
+        }
+    }
+
+    private void collectSvControls(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            for (SclIED.SclSampledValueControl sv : t.ln0.getSampledValueControls()) {
+                entries.add(sv.getName());
+            }
+        }
+    }
+
     private SclIED.SclLDevice findLDevice(SclIED.SclServer server, String ldName) {
         for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getInst().equals(ldName)) {
@@ -247,12 +321,16 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
         final String lnClass;
         final String inst;
         final String lnType;
+        final SclLN0 ln0;
+        final SclLN ln;
 
-        TargetLn(String ldInst, String lnClass, String inst, String lnType) {
+        TargetLn(String ldInst, String lnClass, String inst, String lnType, SclLN0 ln0, SclLN ln) {
             this.ldInst = ldInst;
             this.lnClass = lnClass;
             this.inst = inst;
             this.lnType = lnType;
+            this.ln0 = ln0;
+            this.ln = ln;
         }
     }
 }

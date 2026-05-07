@@ -10,23 +10,23 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateFactory;
 
 /**
- * 国密 SSL 上下文工厂。
+ * GM SSL Context Factory.
  *
- * <p>基于 BouncyCastle 实现国密 TLS，支持以下加密套件：
+ * <p>Implements GM TLS based on BouncyCastle, supporting the following cipher suites:
  * <ul>
- *   <li>ECDHE_SM4_SM3 - 动态加密套件，密钥交换使用 SM2 ECDHE</li>
- *   <li>ECC_SM4_SM3 - 静态加密套件，密钥交换使用 SM2 ECC</li>
+ *   <li>ECDHE_SM4_SM3 - Ephemeral cipher suite, key exchange using SM2 ECDHE</li>
+ *   <li>ECC_SM4_SM3 - Static cipher suite, key exchange using SM2 ECC</li>
  * </ul>
  *
- * <p>使用方式：
+ * <p>Usage:
  * <pre>
- * // 服务端
+ * // Server
  * GmSslContext ctx = GmSslContext.forServer()
  *     .keyStore("server.pfx", "password")
  *     .trustStore("client.cer")
  *     .build();
  *
- * // 客户端
+ * // Client
  * GmSslContext ctx = GmSslContext.forClient()
  *     .keyStore("client.pfx", "password")
  *     .trustStore("server.cer")
@@ -38,31 +38,31 @@ public class GmSslContext {
     private static final String PROTOCOL = "TLS";
 
     /**
-     * 国密 TLS 支持的协议版本。
-     * 注意：国密 TLS 使用特定的协议标识，需要 Bouncy Castle JSSE Provider 支持。
+     * Protocol versions supported by GM TLS.
+     * Note: GM TLS uses specific protocol identifiers, requires Bouncy Castle JSSE Provider.
      */
     private static final String[] ENABLED_PROTOCOLS = {
-            "TLSv1.2"   // 国密 TLS 基于 TLS 1.1/1.2
+            "TLSv1.2"   // GM TLS based on TLS 1.1/1.2
     };
 
     /**
-     * 国密 TLS 支持的加密套件。
-     * Bouncy Castle JSSE Provider 支持的国密套件格式。
-     * 注意：完整的国密 TLS 支持需要特殊的 JSSE Provider（如阿里云 gm-jsse）。
+     * GM TLS supported cipher suites.
+     * Cipher suite formats supported by Bouncy Castle JSSE Provider.
+     * Note: Full GM TLS support requires special JSSE Provider (e.g., Aliyun gm-jsse).
      */
     private static final String[] ENABLED_CIPHER_SUITES = {
-            // RFC 风格命名
+            // RFC style naming
             "TLS_ECDHE_ECDSA_WITH_SM4_SM3",
             "TLS_ECDHE_RSA_WITH_SM4_SM3",
             "TLS_ECDH_ECDSA_WITH_SM4_SM3",
             "TLS_ECDH_RSA_WITH_SM4_SM3",
-            // GmSSL 风格命名
+            // GmSSL style naming
             "ECDHE_SM4_SM3",
             "ECC_SM4_SM3"
     };
 
     /**
-     * Standard TLS cipher suites for testing (when 国密 is not available).
+     * Standard TLS cipher suites for testing (when GM is not available).
      */
     private static final String[] STANDARD_CIPHER_SUITES = {
             "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
@@ -86,62 +86,62 @@ public class GmSslContext {
     }
 
     /**
-     * 创建服务端 SSL 上下文构建器。
+     * Creates a server SSL context builder.
      */
     public static ServerBuilder forServer() {
         return new ServerBuilder();
     }
 
     /**
-     * 创建客户端 SSL 上下文构建器。
+     * Creates a client SSL context builder.
      */
     public static ClientBuilder forClient() {
         return new ClientBuilder();
     }
 
     /**
-     * 获取底层 SSLContext。
+     * Gets the underlying SSLContext.
      */
     public SSLContext getSslContext() {
         return sslContext;
     }
 
     /**
-     * 获取 KeyManager 数组。
+     * Gets the KeyManager array.
      */
     public KeyManager[] getKeyManagers() {
         return keyManagers;
     }
 
     /**
-     * 获取 TrustManager 数组。
+     * Gets the TrustManager array.
      */
     public TrustManager[] getTrustManagers() {
         return trustManagers;
     }
 
     /**
-     * 获取启用的协议版本数组。
+     * Gets the enabled protocol versions array.
      *
-     * @return 支持的协议版本
+     * @return supported protocol versions
      */
     public String[] getEnabledProtocols() {
         return ENABLED_PROTOCOLS.clone();
     }
 
     /**
-     * 获取启用的加密套件数组。
+     * Gets the enabled cipher suites array.
      *
-     * @return 支持的加密套件
+     * @return supported cipher suites
      */
     public String[] getEnabledCipherSuites() {
         return useStandardTls ? STANDARD_CIPHER_SUITES.clone() : ENABLED_CIPHER_SUITES.clone();
     }
 
     /**
-     * 获取标准TLS加密套件数组（用于测试）。
+     * Gets the standard TLS cipher suites array (for testing).
      *
-     * @return 标准TLS加密套件
+     * @return standard TLS cipher suites
      */
     public String[] getStandardCipherSuites() {
         return STANDARD_CIPHER_SUITES.clone();
@@ -150,7 +150,7 @@ public class GmSslContext {
     // ==================== Builder ====================
 
     /**
-     * 服务端构建器。
+     * Server builder.
      */
     public static class ServerBuilder {
         private String keyStorePath;
@@ -210,8 +210,8 @@ public class GmSslContext {
         }
 
         /**
-         * Uses standard TLS cipher suites instead of 国密 suites.
-         * Useful for testing or when 国密 JSSE provider is not available.
+         * Uses standard TLS cipher suites instead of GM suites.
+         * Useful for testing or when GM JSSE provider is not available.
          *
          * @return this builder
          */
@@ -247,7 +247,7 @@ public class GmSslContext {
     }
 
     /**
-     * 客户端构建器。
+     * Client builder.
      */
     public static class ClientBuilder {
         private String keyStorePath;
@@ -307,8 +307,8 @@ public class GmSslContext {
         }
 
         /**
-         * Uses standard TLS cipher suites instead of 国密 suites.
-         * Useful for testing or when 国密 JSSE provider is not available.
+         * Uses standard TLS cipher suites instead of GM suites.
+         * Useful for testing or when GM JSSE provider is not available.
          *
          * @return this builder
          */
@@ -346,7 +346,7 @@ public class GmSslContext {
     // ==================== Internal ====================
 
     /**
-     * 注册 BouncyCastle JSSE Provider。
+     * Registers BouncyCastle JSSE Provider.
      */
     private static void registerProvider() {
         if (Security.getProvider(BouncyCastleJsseProvider.PROVIDER_NAME) == null) {
@@ -355,7 +355,7 @@ public class GmSslContext {
     }
 
     /**
-     * 加载 KeyManager。
+     * Loads KeyManagers.
      */
     private static KeyManager[] loadKeyManagers(String keyStorePath, String keyStorePassword, String keyPassword) throws Exception {
         if (keyStorePath == null) {
@@ -375,17 +375,17 @@ public class GmSslContext {
     }
 
     /**
-     * 从 KeyPair 和 Certificate 创建 KeyManager。
+     * Creates KeyManagers from KeyPair and Certificate.
      */
     private static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
         return createKeyManagers(keyPair, cert, false);
     }
 
     /**
-     * 从 KeyPair 和 Certificate 创建 KeyManager。
-     * @param keyPair 密钥对
-     * @param cert 证书
-     * @param useStandardTls 是否使用标准TLS
+     * Creates KeyManagers from KeyPair and Certificate.
+     * @param keyPair key pair
+     * @param cert certificate
+     * @param useStandardTls whether to use standard TLS
      */
     static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert, boolean useStandardTls) throws Exception {
         if (!useStandardTls) {
@@ -404,22 +404,22 @@ public class GmSslContext {
     }
 
     /**
-     * 加载 TrustManager。
+     * Loads TrustManagers.
      */
     private static TrustManager[] loadTrustManagers(String trustStorePath, String trustStorePassword) throws Exception {
         if (trustStorePath == null) {
-            // 使用默认 TrustManager，信任所有证书（仅用于测试）
+            // Use default TrustManager, trust all certificates (for testing only)
             TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
             tmf.init((KeyStore) null);
             return tmf.getTrustManagers();
         }
 
-        // 支持证书文件直接加载
+        // Support direct certificate file loading
         if (trustStorePath.endsWith(".cer") || trustStorePath.endsWith(".crt") || trustStorePath.endsWith(".pem")) {
             return createTrustManagersFromCert(trustStorePath);
         }
 
-        // 支持 KeyStore 加载
+        // Support KeyStore loading
         KeyStore trustStore = KeyStore.getInstance("PKCS12");
         try (InputStream is = loadResource(trustStorePath)) {
             trustStore.load(is, trustStorePassword.toCharArray());
@@ -432,7 +432,7 @@ public class GmSslContext {
     }
 
     /**
-     * 从证书文件创建 TrustManager。
+     * Creates TrustManagers from certificate file.
      */
     private static TrustManager[] createTrustManagersFromCert(String certPath) throws Exception {
         CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
@@ -452,7 +452,7 @@ public class GmSslContext {
     }
 
     /**
-     * 创建 SSLContext。
+     * Creates SSLContext.
      */
     private static SSLContext createSslContext(KeyManager[] keyManagers, TrustManager[] trustManagers) throws Exception {
         SSLContext sslContext = SSLContext.getInstance(PROTOCOL, "BCJSSE");
@@ -461,16 +461,16 @@ public class GmSslContext {
     }
 
     /**
-     * 加载资源文件。
+     * Loads resource file.
      */
     private static InputStream loadResource(String path) throws Exception {
-        // 先尝试文件系统
+        // Try filesystem first
         java.io.File file = new java.io.File(path);
         if (file.exists()) {
             return new java.io.FileInputStream(file);
         }
 
-        // 再尝试 classpath
+        // Then try classpath
         InputStream is = GmSslContext.class.getClassLoader().getResourceAsStream(path);
         if (is == null) {
             throw new Exception("Cannot find resource: " + path);

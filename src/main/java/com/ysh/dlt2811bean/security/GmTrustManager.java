@@ -7,19 +7,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 国密信任管理器。
+ * GM Trust Manager.
  *
- * <p>管理可信证书集合，支持证书指纹匹配和链式验证。
+ * <p>Manages trusted certificate collection, supports certificate fingerprint matching and chain verification.
  */
 @Slf4j
 public class GmTrustManager {
 
     private final Set<String> trustedFingerprints = new HashSet<>();
     private final Set<X509Certificate> trustedCertificates = new HashSet<>();
-    private boolean trustAll = false;  // 开发/测试模式：信任所有证书
+    private boolean trustAll = false;  // Dev/test mode: trust all certificates
 
     /**
-     * 添加可信证书。
+     * Adds a trusted certificate.
      */
     public GmTrustManager addTrustedCertificate(X509Certificate certificate) {
         trustedCertificates.add(certificate);
@@ -28,7 +28,7 @@ public class GmTrustManager {
     }
 
     /**
-     * 添加可信证书（通过 PEM 字符串）。
+     * Adds a trusted certificate (from PEM string).
      */
     public GmTrustManager addTrustedCertificate(String pem) throws Exception {
         X509Certificate cert = GmCertificateParser.parseFromPem(pem);
@@ -36,7 +36,7 @@ public class GmTrustManager {
     }
 
     /**
-     * 添加可信指纹。
+     * Adds a trusted fingerprint.
      */
     public GmTrustManager addTrustedFingerprint(String sha256Fingerprint) {
         trustedFingerprints.add(sha256Fingerprint.toUpperCase());
@@ -44,8 +44,8 @@ public class GmTrustManager {
     }
 
     /**
-     * 启用"信任所有"模式（用于开发/测试）。
-     * 启用后，所有证书都将被视为可信。
+     * Enables "trust all" mode (for dev/testing).
+     * When enabled, all certificates will be treated as trusted.
      */
     public GmTrustManager trustAll() {
         this.trustAll = true;
@@ -53,27 +53,27 @@ public class GmTrustManager {
     }
 
     /**
-     * 检查证书是否可信。
+     * Checks if a certificate is trusted.
      */
     public boolean isTrusted(X509Certificate certificate) {
         if (certificate == null) {
             return false;
         }
 
-        // 如果启用了信任所有模式，则信任所有证书
+        // If trust-all mode is enabled, trust all certificates
         if (trustAll) {
             log.debug("Trust-all mode enabled, accepting certificate");
             return true;
         }
 
-        // 检查指纹
+        // Check fingerprint
         String fingerprint = GmCertificateParser.getFingerprintSha256(certificate);
         if (trustedFingerprints.contains(fingerprint.toUpperCase())) {
             log.debug("Certificate trusted by fingerprint match");
             return true;
         }
 
-        // 检查证书对象
+        // Check certificate object
         if (trustedCertificates.contains(certificate)) {
             log.debug("Certificate trusted by object match");
             return true;
@@ -83,21 +83,21 @@ public class GmTrustManager {
     }
 
     /**
-     * 检查证书指纹是否可信。
+     * Checks if a certificate fingerprint is trusted.
      */
     public boolean isTrustedFingerprint(String fingerprint) {
         return trustedFingerprints.contains(fingerprint.toUpperCase());
     }
 
     /**
-     * 获取可信证书数量。
+     * Gets the count of trusted certificates.
      */
     public int getTrustedCount() {
         return trustedCertificates.size();
     }
 
     /**
-     * 清空可信证书。
+     * Clears all trusted certificates.
      */
     public void clear() {
         trustedCertificates.clear();

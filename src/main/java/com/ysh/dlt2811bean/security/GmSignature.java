@@ -28,28 +28,28 @@ import java.security.spec.EllipticCurve;
 import java.util.Date;
 
 /**
- * 国密签名工具类。
+ * GM Signature Utility.
  *
- * <p>提供 SM2 数字签名和验签功能，遵循 GB/T 32918.4-2016 标准。
- * 支持：
+ * <p>Provides SM2 digital signature and verification following GB/T 32918.4-2016.
+ * Supports:
  * <ul>
- *   <li>SM2签名 - SM3withSM2 算法</li>
- *   <li>SM3哈希 - 消息摘要</li>
+ *   <li>SM2 signature - SM3withSM2 algorithm</li>
+ *   <li>SM3 hash - Message digest</li>
  * </ul>
  *
- * <p>签名数据格式（DL/T 2811-2024）：
+ * <p>Signature data format (DL/T 2811-2024):
  * <pre>
  * ┌─────────────────────────────────────────────────────────────┐
  * │ signatureValue  OCTET STRING (SIZE(64))                     │
  * └─────────────────────────────────────────────────────────────┘
  * </pre>
  *
- * <p>使用示例：
+ * <p>Usage example:
  * <pre>
- * // 签名
+ * // Sign
  * byte[] signature = GmSignature.sign(privateKey, message);
  *
- * // 验签
+ * // Verify
  * boolean valid = GmSignature.verify(publicKey, message, signature);
  * </pre>
  */
@@ -68,12 +68,12 @@ public class GmSignature {
     }
 
     /**
-     * 使用 SM2 私钥签名。
+     * Signs with SM2 private key.
      *
-     * @param privateKey SM2 私钥
-     * @param message    待签名消息
-     * @return 64字节签名值 (r || s)
-     * @throws SecurityException 如果签名失败
+     * @param privateKey SM2 private key
+     * @param message    message to sign
+     * @return 64-byte signature value (r || s)
+     * @throws SecurityException if signing fails
      */
     public static byte[] sign(PrivateKey privateKey, byte[] message) {
         try {
@@ -90,12 +90,12 @@ public class GmSignature {
     }
 
     /**
-     * 验证 SM2 签名。
+     * Verifies SM2 signature.
      *
-     * @param publicKey SM2 公钥
-     * @param message   原始消息
-     * @param signature 64字节签名值 (r || s)
-     * @return 验签是否通过
+     * @param publicKey SM2 public key
+     * @param message   original message
+     * @param signature 64-byte signature value (r || s)
+     * @return true if signature is valid
      */
     public static boolean verify(PublicKey publicKey, byte[] message, byte[] signature) {
         try {
@@ -112,7 +112,7 @@ public class GmSignature {
     }
 
     /**
-     * 将 DER 编码的签名转换为原始的 r||s 格式。
+     * Converts DER-encoded signature to raw r||s format.
      */
     private static byte[] convertDerSignatureToRaw(byte[] derSignature) throws IOException {
         org.bouncycastle.asn1.ASN1Sequence seq = 
@@ -130,7 +130,7 @@ public class GmSignature {
     }
 
     /**
-     * 将原始的 r||s 格式签名转换为 DER 编码。
+     * Converts raw r||s format signature to DER encoding.
      */
     private static byte[] convertRawSignatureToDer(byte[] rawSignature) throws IOException {
         if (rawSignature.length != 64) {
@@ -142,7 +142,7 @@ public class GmSignature {
     }
 
     /**
-     * 去除大整数字节数组前面的零字节。
+     * Removes leading zero bytes from BigInteger byte array.
      */
     private static byte[] trimLeadingZeros(byte[] bytes) {
         int i = 0;
@@ -153,10 +153,10 @@ public class GmSignature {
     }
 
     /**
-     * 计算 SM3 哈希值。
+     * Computes SM3 hash value.
      *
-     * @param data 输入数据
-     * @return 32字节哈希值
+     * @param data input data
+     * @return 32-byte hash value
      */
     public static byte[] sm3(byte[] data) {
         try {
@@ -168,23 +168,23 @@ public class GmSignature {
     }
 
     /**
-     * 计算 SM3 哈希值（字符串）。
+     * Computes SM3 hash value (string).
      */
     public static String sm3Hex(String data) {
         return Hex.toHexString(sm3(data.getBytes(StandardCharsets.UTF_8)));
     }
 
     /**
-     * 计算 SM3 哈希值（字节数组）。
+     * Computes SM3 hash value (byte array).
      */
     public static String sm3Hex(byte[] data) {
         return Hex.toHexString(sm3(data));
     }
 
     /**
-     * 从十六进制字符串创建 SM2 公钥。
+     * Creates SM2 public key from hex string.
      *
-     * @param hex 十六进制公钥（支持 X.509 编码或原始椭圆曲线点）
+     * @param hex hex public key (supports X.509 encoding or raw EC point)
      * @return PublicKey
      */
     public static PublicKey decodePublicKey(String hex) throws Exception {
@@ -193,8 +193,8 @@ public class GmSignature {
     }
 
     /**
-     * 从字节数组创建 SM2 公钥。
-     * 支持 X.509 SubjectPublicKeyInfo 格式和原始椭圆曲线点格式。
+     * Creates SM2 public key from byte array.
+     * Supports X.509 SubjectPublicKeyInfo format and raw elliptic curve point format.
      */
     public static PublicKey decodePublicKey(byte[] keyBytes) throws Exception {
         // Check if it's X.509 format (starts with ASN.1 sequence)
@@ -256,9 +256,9 @@ public class GmSignature {
     }
 
     /**
-     * 从十六进制字符串创建 SM2 私钥。
+     * Creates SM2 private key from hex string.
      *
-     * @param hex 十六进制私钥（支持 PKCS#8 编码或原始 d 值）
+     * @param hex hex private key (supports PKCS#8 encoding or raw d value)
      * @return PrivateKey
      */
     public static PrivateKey decodePrivateKey(String hex) throws Exception {
@@ -267,8 +267,8 @@ public class GmSignature {
     }
 
     /**
-     * 从字节数组创建 SM2 私钥。
-     * 支持 PKCS#8 格式和原始私钥 d 值格式。
+     * Creates SM2 private key from byte array.
+     * Supports PKCS#8 format and raw private key d value format.
      */
     public static PrivateKey decodePrivateKey(byte[] keyBytes) throws Exception {
         // Check if it's PKCS#8 format (starts with ASN.1 sequence)
@@ -321,7 +321,7 @@ public class GmSignature {
     }
 
     /**
-     * 生成 SM2 密钥对。
+     * Generates SM2 key pair.
      *
      * @return KeyPair
      */
@@ -336,27 +336,27 @@ public class GmSignature {
     }
 
     /**
-     * 生成自签名 SM2 X509 证书。
+     * Generates self-signed SM2 X509 certificate.
      *
-     * @param keyPair SM2 密钥对
-     * @return X509Certificate 自签名证书
+     * @param keyPair SM2 key pair
+     * @return X509Certificate self-signed certificate
      */
     public static X509Certificate generateSelfSignedCertificate(KeyPair keyPair) {
         return generateSelfSignedCertificate(keyPair, "CN=SM2 Self-Signed");
     }
 
     /**
-     * 生成自签名 SM2 X509 证书。
+     * Generates self-signed SM2 X509 certificate.
      *
-     * @param keyPair       SM2 密钥对
-     * @param subjectDN     主题 DN
-     * @return X509Certificate 自签名证书
+     * @param keyPair   SM2 key pair
+     * @param subjectDN subject DN
+     * @return X509Certificate self-signed certificate
      */
     public static X509Certificate generateSelfSignedCertificate(KeyPair keyPair, String subjectDN) {
         try {
             long now = System.currentTimeMillis();
-            Date notBefore = new Date(now - 24 * 60 * 60 * 1000); // 昨天
-            Date notAfter = new Date(now + 365L * 24 * 60 * 60 * 1000); // 1年后
+            Date notBefore = new Date(now - 24 * 60 * 60 * 1000); // Yesterday
+            Date notAfter = new Date(now + 365L * 24 * 60 * 60 * 1000); // 1 year
 
             JcaX509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
                     new X500Name(subjectDN),

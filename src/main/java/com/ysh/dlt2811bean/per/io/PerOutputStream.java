@@ -100,7 +100,19 @@ public final class PerOutputStream {
         }
         ensureCapacity(bitPosition + numBits);
 
-        // Write from MSB to LSB
+        // Fast path: byte-aligned writes of whole bytes
+        if (bitPosition % 8 == 0 && numBits % 8 == 0) {
+            int bytePos = bitPosition / 8;
+            int numBytes = numBits / 8;
+            for (int i = numBytes - 1; i >= 0; i--) {
+                buffer[bytePos + i] = (byte) value;
+                value >>= 8;
+            }
+            bitPosition += numBits;
+            return;
+        }
+
+        // Slow path: bit-by-bit writing
         for (int i = numBits - 1; i >= 0; i--) {
             boolean bit = ((value >> i) & 1L) != 0;
             if (bit) {

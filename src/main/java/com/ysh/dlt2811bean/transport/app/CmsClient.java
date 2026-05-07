@@ -13,8 +13,10 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
@@ -437,6 +439,13 @@ public class CmsClient {
         return send(asdu);
     }
 
+    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, int acsiClass) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .ldName(ldName)
+                .acsiClass(new CmsACSIClass(acsiClass));
+        return send(asdu);
+    }
+
     public CmsApdu getLogicalNodeDirectoryByLd(String ldName, String referenceAfter) throws Exception {
         CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
                 .ldName(ldName);
@@ -452,12 +461,65 @@ public class CmsClient {
         return send(asdu);
     }
 
+    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, int acsiClass) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .lnReference(lnReference)
+                .acsiClass(new CmsACSIClass(acsiClass));
+        return send(asdu);
+    }
+
     public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, String referenceAfter) throws Exception {
         CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
                 .lnReference(lnReference);
         if (referenceAfter != null) {
             asdu.referenceAfter(referenceAfter);
         }
+        return send(asdu);
+    }
+
+    /**
+     * Directory - getAllDataValuesByLd - Service Code 83
+     * Sends a GetAllDataValuesByLd request to retrieve all data values by logical device name.
+     * 
+     * @param ldName the logical device name (optional)
+     * @param fc the function class (optional)
+     * @param referenceAfter the reference after which to continue the search (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getAllDataValuesByLd(String ldName) throws Exception {
+        CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
+                .ldName(ldName);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllDataValuesByLd(String ldName, String fc) throws Exception {
+        CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
+                .ldName(ldName)
+                .fc(fc);
+        return send(asdu);
+    }
+
+    /**
+     * Directory - getAllDataValuesByLn - Service Code 83
+     * Sends a GetAllDataValuesByLn request to retrieve all data values by logical reference.
+     * 
+     * @param lnReference the logical reference (optional)
+     * @param fc the function class (optional)
+     * @param referenceAfter the reference after which to continue the search (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getAllDataValuesByLn(String lnReference) throws Exception {
+        CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
+                .lnReference(lnReference);
+        return send(asdu);
+    }
+
+    public CmsApdu getAllDataValuesByLn(String lnReference, String fc) throws Exception {
+        CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST)
+                .lnReference(lnReference)
+                .fc(fc);
         return send(asdu);
     }
 

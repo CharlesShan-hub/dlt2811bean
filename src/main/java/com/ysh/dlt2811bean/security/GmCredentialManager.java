@@ -15,18 +15,18 @@ import java.security.cert.X509Certificate;
 import java.util.Date;
 
 /**
- * 国密凭证管理器。
+ * GM Credential Manager.
  *
- * <p>提供 SM2 证书和密钥的加载、解析、签名和验签功能。
- * 支持从 PKCS12 密钥库或 PEM/DER 证书文件加载凭证。
+ * <p>Provides SM2 certificate and key loading, parsing, signing and verification.
+ * Supports loading credentials from PKCS12 keystore or PEM/DER certificate files.
  *
- * <p>支持的加密套件：
+ * <p>Supported cipher suites:
  * <ul>
- *   <li>SM2 with SM3 - 国家密码管理局推荐的签名算法</li>
- *   <li>SM2 with SM4 - 加密算法</li>
+ *   <li>SM2 with SM3 - Signature algorithm recommended by National Cryptography Administration</li>
+ *   <li>SM2 with SM4 - Encryption algorithm</li>
  * </ul>
  *
- * <p>签名格式遵循 GB/T 32918.4-2016《信息安全技术 SM2椭圆曲线公钥密码算法》
+ * <p>Signature format follows GB/T 32918.4-2016 "Information Security Technology SM2 Elliptic Curve Public Key Cryptographic Algorithm"
  */
 @Getter
 public class GmCredentialManager {
@@ -52,27 +52,27 @@ public class GmCredentialManager {
     private final PublicKey publicKey;
 
     /**
-     * 创建服务端凭证管理器。
+     * Creates a server credential manager.
      *
-     * @param keyStorePath  密钥库路径 (PKCS12)
-     * @param keyPassword   密钥库密码
-     * @param keyAlias      密钥别名（可选，为 null 时使用第一个密钥）
+     * @param keyStorePath  keystore path (PKCS12)
+     * @param keyPassword   keystore password
+     * @param keyAlias      key alias (optional, uses first key if null)
      */
     public static GmCredentialManager forServer(String keyStorePath, String keyPassword, String keyAlias) {
         return loadFromKeyStore(keyStorePath, keyPassword, keyAlias);
     }
 
     /**
-     * 创建客户端凭证管理器。
+     * Creates a client credential manager.
      */
     public static GmCredentialManager forClient(String keyStorePath, String keyPassword, String keyAlias) {
         return loadFromKeyStore(keyStorePath, keyPassword, keyAlias);
     }
 
     /**
-     * 从证书文件创建只读的凭证管理器（仅用于验签）。
+     * Creates a read-only credential manager from certificate file (for verification only).
      *
-     * @param certPath 证书文件路径 (PEM/DER)
+     * @param certPath certificate file path (PEM/DER)
      */
     public static GmCredentialManager fromCertificate(String certPath) {
         try {
@@ -84,7 +84,7 @@ public class GmCredentialManager {
     }
 
     /**
-     * 从证书和私钥创建凭证管理器。
+     * Creates a credential manager from certificate and private key.
      */
     public static GmCredentialManager fromKeyAndCert(PrivateKey privateKey, X509Certificate certificate) {
         return new GmCredentialManager(null, null, null, certificate, privateKey, certificate.getPublicKey());
@@ -97,7 +97,7 @@ public class GmCredentialManager {
                 ks.load(is, keyPassword.toCharArray());
             }
 
-            // 如果没有指定别名，使用第一个密钥
+            // If no alias specified, use the first key
             if (keyAlias == null) {
                 java.util.Enumeration<String> aliases = ks.aliases();
                 while (aliases.hasMoreElements()) {
@@ -138,10 +138,10 @@ public class GmCredentialManager {
     }
 
     /**
-     * 验证证书有效性。
+     * Validates certificate validity.
      *
-     * @param validationDate 验证日期
-     * @throws SecurityException 如果证书无效或已过期
+     * @param validationDate validation date
+     * @throws SecurityException if certificate is invalid or expired
      */
     public void validateCertificate(Date validationDate) {
         if (certificate == null) {
@@ -158,7 +158,7 @@ public class GmCredentialManager {
     }
 
     /**
-     * 获取证书的十六进制编码（不含首尾标记）。
+     * Gets the hexadecimal encoding of the certificate (without header/footer).
      */
     public String getCertificateHex() {
         try {
@@ -169,7 +169,7 @@ public class GmCredentialManager {
     }
 
     /**
-     * 获取证书的 Base64 编码（不含首尾标记）。
+     * Gets the Base64 encoding of the certificate (without header/footer).
      */
     public String getCertificateBase64() {
         try {
@@ -180,7 +180,7 @@ public class GmCredentialManager {
     }
 
     /**
-     * 获取证书指纹（SHA-256）。
+     * Gets the certificate fingerprint (SHA-256).
      */
     public String getCertificateFingerprint() {
         try {
@@ -193,13 +193,13 @@ public class GmCredentialManager {
     }
 
     private static InputStream loadResource(String path) throws Exception {
-        // 先尝试文件系统
+        // Try filesystem first
         java.io.File file = new java.io.File(path);
         if (file.exists()) {
             return new java.io.FileInputStream(file);
         }
 
-        // 再尝试 classpath
+        // Then try classpath
         InputStream is = GmCredentialManager.class.getClassLoader().getResourceAsStream(path);
         if (is == null) {
             throw new Exception("Cannot find resource: " + path);

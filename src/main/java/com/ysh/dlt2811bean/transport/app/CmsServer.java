@@ -177,6 +177,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
+        dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }

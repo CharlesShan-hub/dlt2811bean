@@ -86,6 +86,19 @@ public final class PerInputStream {
         }
         ensureAvailable(numBits);
 
+        // Fast path: byte-aligned reads of whole bytes
+        if (bitPosition % 8 == 0 && numBits % 8 == 0) {
+            int bytePos = bitPosition / 8;
+            int numBytes = numBits / 8;
+            long result = 0;
+            for (int i = 0; i < numBytes; i++) {
+                result = (result << 8) | (data[bytePos + i] & 0xFF);
+            }
+            bitPosition += numBits;
+            return result;
+        }
+
+        // Slow path: bit-by-bit reading
         long result = 0;
         for (int i = 0; i < numBits; i++) {
             result <<= 1;
