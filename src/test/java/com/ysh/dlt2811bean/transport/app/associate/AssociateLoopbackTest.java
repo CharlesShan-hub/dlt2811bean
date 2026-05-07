@@ -10,9 +10,17 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Associate service loopback tests.
  * Tests both plain TCP and TCP with GM authentication.
+ *
+ * <p>Uses manual lifecycle because each test method requires
+ * different server/client security configurations.
  */
 @DisplayName("Associate Loopback Test")
 class AssociateLoopbackTest extends LoopbackTest {
+
+    @Override
+    protected boolean useAutoLifecycle() {
+        return false;
+    }
 
     @Test
     @DisplayName("Associate → default access point, no authentication, no security")
@@ -37,7 +45,7 @@ class AssociateLoopbackTest extends LoopbackTest {
         startServer(false);
         startClient(false);
 
-        CmsApdu response = client.associate("IED1", "AP1");
+        CmsApdu response = client.associate("E1Q1SB1", "S1");
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNotNull(client.getAssociationId());
@@ -53,7 +61,7 @@ class AssociateLoopbackTest extends LoopbackTest {
         startServer(false);
         startClient(true);
 
-        CmsApdu response = client.setAccessPoint("CLIENT", "EP1").associate();
+        CmsApdu response = client.setAccessPoint("E1Q1SB1", "S1").associate();
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNotNull(client.getAssociationId());
@@ -72,7 +80,7 @@ class AssociateLoopbackTest extends LoopbackTest {
         startServer(true);
         startClient(true);
 
-        CmsApdu response = client.setAccessPoint("CLIENT", "EP2").associate();
+        CmsApdu response = client.setAccessPoint("E1Q1SB1", "S1").associate();
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNotNull(client.getAssociationId());

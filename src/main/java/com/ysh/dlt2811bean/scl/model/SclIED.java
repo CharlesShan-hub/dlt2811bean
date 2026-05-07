@@ -53,6 +53,21 @@ public class SclIED {
         this.accessPoints.add(accessPoint);
     }
 
+    /**
+     * Finds an AccessPoint by its name.
+     *
+     * @param name the AccessPoint name to search for
+     * @return the matching AccessPoint, or null if not found
+     */
+    public SclAccessPoint findAccessPointByName(String name) {
+        for (SclAccessPoint ap : accessPoints) {
+            if (ap.getName().equals(name)) {
+                return ap;
+            }
+        }
+        return null;
+    }
+
     public static class SclServices {
 
         private boolean dynAssociation;

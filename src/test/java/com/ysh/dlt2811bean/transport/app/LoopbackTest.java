@@ -13,7 +13,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * service loopback tests basic
+ *
+ * <p>Provides automatic lifecycle management via {@link #useAutoLifecycle()}.
+ * Subclasses that override {@code useAutoLifecycle()} to return {@code false}
+ * must manually manage server/client lifecycle in their own test methods.
  */
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LoopbackTest {
 
     protected static final Logger log = LoggerFactory.getLogger(LoopbackTest.class);
@@ -24,6 +29,47 @@ public class LoopbackTest {
 
     public CmsServer server;
     public CmsClient client;
+
+    /**
+     * Whether to use automatic {@code @BeforeAll}/{code @AfterAll}/{code @BeforeEach}/{code @AfterEach} lifecycle.
+     * Override to return {@code false} in subclasses that need manual control
+     * (e.g. when different test methods require different server/client configurations).
+     */
+    protected boolean useAutoLifecycle() {
+        return true;
+    }
+
+    @BeforeAll
+    void beforeAll() throws Exception {
+        if (!useAutoLifecycle()) {
+            return;
+        }
+        startServer(false);
+    }
+
+    @AfterAll
+    void afterAll() throws Exception {
+        if (!useAutoLifecycle()) {
+            return;
+        }
+        closeServer();
+    }
+
+    @BeforeEach
+    void setUp() throws Exception {
+        if (!useAutoLifecycle()) {
+            return;
+        }
+        startClient(false);
+    }
+
+    @AfterEach
+    void tearDown() throws Exception {
+        if (!useAutoLifecycle()) {
+            return;
+        }
+        closeClient();
+    }
 
     /**
      * 检测端口是否可用（没有被占用）
@@ -41,8 +87,14 @@ public class LoopbackTest {
         startServer(false);
     }
 
+    private static final String SCL_FILE = "config/sample-scd-full.scd";
+
     public void startServer(boolean enableSecurity) throws Exception {
-        server = new CmsServer(PORT);
+        if (server != null) {
+            server.stop();
+            server = null;
+        }
+        server = new CmsServer(PORT, SCL_FILE);
         if (enableSecurity) {
             server.enableSecurity();
         }
@@ -75,7 +127,7 @@ public class LoopbackTest {
         if (enableSecurity) {
             client.enableSecurity();
         }
-        client.setAccessPoint("IED1", "AP1");
+        client.setAccessPoint("E1Q1SB1", "S1");
         client.connect("127.0.0.1", PORT);
     }
 

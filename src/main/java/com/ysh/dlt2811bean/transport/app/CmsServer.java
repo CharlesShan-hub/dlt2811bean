@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.scl.SclDocument;
+import com.ysh.dlt2811bean.scl.SclReader;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -52,6 +55,10 @@ public class CmsServer {
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
 
+    // ==================== SCL Model ====================
+
+    private SclDocument sclDocument;
+
     // ==================== Security (GM) ====================
 
     private boolean securityEnabled = false;
@@ -67,6 +74,30 @@ public class CmsServer {
     public CmsServer(int port) {
         this.transport = new CmsServerTransport(port, new ServerListener());
         this.dispatcher = new CmsDispatcher();
+    }
+
+    /**
+     * Creates a server listening on the given port and loads an SCL/ICD file.
+     *
+     * @param port    the port to listen on
+     * @param sclPath path to the SCL/ICD file
+     * @throws Exception if the SCL file cannot be parsed
+     */
+    public CmsServer(int port, String sclPath) throws Exception {
+        this(port);
+        loadScl(sclPath);
+    }
+
+    /**
+     * Creates a server listening on the given port and loads an SCL/ICD file.
+     *
+     * @param port    the port to listen on
+     * @param sclPath path to the SCL/ICD file
+     * @throws Exception if the SCL file cannot be parsed
+     */
+    public CmsServer(int port, Path sclPath) throws Exception {
+        this(port);
+        loadScl(sclPath);
     }
 
     // ==================== Lifecycle ====================
@@ -140,6 +171,47 @@ public class CmsServer {
         return this;
     }
 
+    // ==================== SCL Model ====================
+
+    /**
+     * Loads an SCL/ICD file to define the server's information model.
+     * Must be called before {@link #start()}.
+     *
+     * @param filePath path to the SCL/ICD file
+     * @return this server for chaining
+     * @throws Exception if the file cannot be parsed
+     */
+    public CmsServer loadScl(String filePath) throws Exception {
+        this.sclDocument = new SclReader().read(filePath);
+        log.info("SCL model loaded from {}: IEDs={}", filePath,
+                 sclDocument.getIeds().size());
+        return this;
+    }
+
+    /**
+     * Loads an SCL/ICD file to define the server's information model.
+     * Must be called before {@link #start()}.
+     *
+     * @param filePath path to the SCL/ICD file
+     * @return this server for chaining
+     * @throws Exception if the file cannot be parsed
+     */
+    public CmsServer loadScl(Path filePath) throws Exception {
+        this.sclDocument = new SclReader().read(filePath);
+        log.info("SCL model loaded from {}: IEDs={}", filePath,
+                 sclDocument.getIeds().size());
+        return this;
+    }
+
+    /**
+     * Returns the loaded SCL document, or null if not loaded.
+     *
+     * @return the SCL document, or null
+     */
+    public SclDocument getSclDocument() {
+        return sclDocument;
+    }
+
     // ==================== Security (GM) ====================
 
     /**
@@ -170,7 +242,7 @@ public class CmsServer {
         this.securityAuthenticator = new GmAuthenticator(trustManager);
 
         // Create associate handler with authenticator and require authentication
-        this.associateHandler = new AssociateHandler().enableSecurity(securityAuthenticator);
+        this.associateHandler = new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator);
 
         this.securityEnabled = true;
         log.info("GM security enabled, server key pair generated");
@@ -211,7 +283,7 @@ public class CmsServer {
         if (associateHandler != null) {
             dispatcher.registerHandler(associateHandler);
         } else if (!dispatcher.hasHandler(ServiceName.ASSOCIATE)) {
-            dispatcher.registerHandler(new AssociateHandler());
+            dispatcher.registerHandler(new AssociateHandler(sclDocument));
         }
         if (!dispatcher.hasHandler(ServiceName.ABORT)) {
             dispatcher.registerHandler(new AbortHandler());

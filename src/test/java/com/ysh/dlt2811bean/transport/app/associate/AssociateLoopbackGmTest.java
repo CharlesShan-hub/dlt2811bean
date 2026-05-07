@@ -66,7 +66,7 @@ class AssociateLoopbackGmTest {
             .build();
 
         // Start server with TLS
-        server = new CmsServer(PORT);
+        server = new CmsServer(PORT, "config/sample-scd-full.scd");
         server.sslContext(serverSslContext);
         server.start();
         while (!server.isBound()) {
@@ -75,6 +75,7 @@ class AssociateLoopbackGmTest {
 
         // Create client with TLS
         client = new CmsClient();
+        client.setAccessPoint("E1Q1SB1", "S1");
         client.sslContext(clientSslContext);
     }
 
@@ -113,7 +114,7 @@ class AssociateLoopbackGmTest {
     @DisplayName("TLS associate with access point → positive response")
     void associateWithAccessPointTLS() throws Exception {
         client.connectTls("127.0.0.1", PORT);
-        CmsApdu response = client.associate("IED1", "AP1");
+        CmsApdu response = client.associate("E1Q1SB1", "S1");
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());

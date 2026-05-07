@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.session;
 
+import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 
 import java.net.InetSocketAddress;
@@ -25,6 +26,13 @@ public class CmsServerSession extends CmsSession {
     private volatile String negotiatedApduSize;
     private volatile String negotiatedAsduSize;
     private volatile String negotiatedVersion;
+
+    // ==================== AccessPoint (set on Associate) ====================
+
+    private volatile String serverAccessPointReference;
+    private volatile String iedName;
+    private volatile String accessPointName;
+    private volatile SclIED.SclAccessPoint sclAccessPoint;
 
     public CmsServerSession(CmsConnection connection) {
         super("srv-" + connection.getSocket().getPort(), connection);
@@ -108,6 +116,51 @@ public class CmsServerSession extends CmsSession {
         listeners.remove(listener);
     }
 
+    // ==================== AccessPoint ====================
+
+    /**
+     * Sets the AccessPoint information for this session.
+     * Called by AssociateHandler when association is successful.
+     */
+    public void setAccessPoint(String serverAccessPointReference, String iedName,
+                               String accessPointName, SclIED.SclAccessPoint sclAccessPoint) {
+        this.serverAccessPointReference = serverAccessPointReference;
+        this.iedName = iedName;
+        this.accessPointName = accessPointName;
+        this.sclAccessPoint = sclAccessPoint;
+    }
+
+    /**
+     * Clears the AccessPoint information for this session.
+     * Called by ReleaseHandler or AbortHandler.
+     */
+    public void clearAccessPoint() {
+        this.serverAccessPointReference = null;
+        this.iedName = null;
+        this.accessPointName = null;
+        this.sclAccessPoint = null;
+    }
+
+    public String getServerAccessPointReference() {
+        return serverAccessPointReference;
+    }
+
+    public String getIedName() {
+        return iedName;
+    }
+
+    public String getAccessPointName() {
+        return accessPointName;
+    }
+
+    /**
+     * Returns the SCL AccessPoint model for this session.
+     * Contains the Server with its LDevices and data model.
+     */
+    public SclIED.SclAccessPoint getSclAccessPoint() {
+        return sclAccessPoint;
+    }
+
     // ==================== Lifecycle ====================
 
     /**
@@ -120,6 +173,7 @@ public class CmsServerSession extends CmsSession {
     @Override
     public void onDisconnected() {
         super.onDisconnected();
+        clearAccessPoint();
         for (SessionListener l : listeners) {
             l.onSessionClosed(this);
         }

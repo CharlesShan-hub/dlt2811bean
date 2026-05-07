@@ -18,9 +18,6 @@ class ReleaseLoopbackTest extends LoopbackTest {
     @Test
     @DisplayName("Associate → Release → positive response, associationId cleared")
     void releasePositive() throws Exception {
-        startServer(false);
-        startClient(false);
-
         associate();
 
         CmsApdu response = client.release();
@@ -29,8 +26,5 @@ class ReleaseLoopbackTest extends LoopbackTest {
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         assertNull(client.getAssociationId());
-
-        closeClient();
-        closeServer();
     }
 }

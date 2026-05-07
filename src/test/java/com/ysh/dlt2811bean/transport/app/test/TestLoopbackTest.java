@@ -16,17 +16,10 @@ class TestLoopbackTest extends LoopbackTest {
     @Test
     @DisplayName("Test request → echo received")
     void testPositive() throws Exception {
-        startServer(false);
-        startClient(false);
-
         associate();
 
         CmsApdu response = client.test();
-        //log.info(response.toString());
 
         assertNotNull(response, "Test echo should arrive within timeout");
-
-        closeClient();
-        closeServer();
     }
 }
