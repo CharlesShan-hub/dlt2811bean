@@ -90,4 +90,22 @@ public class SclDocument {
         }
         return null;
     }
+
+    /**
+     * Returns the default server access point reference ("IEDName.AccessPoint").
+     * Uses the first IED and its first AccessPoint.
+     *
+     * @return the default reference, or null if no IED or AccessPoint exists
+     */
+    public String getDefaultAccessPointReference() {
+        if (ieds.isEmpty()) {
+            return null;
+        }
+        SclIED firstIed = ieds.get(0);
+        List<SclIED.SclAccessPoint> aps = firstIed.getAccessPoints();
+        if (aps.isEmpty()) {
+            return null;
+        }
+        return firstIed.getName() + "." + aps.get(0).getName();
+    }
 }

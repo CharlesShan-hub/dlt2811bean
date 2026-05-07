@@ -15,6 +15,7 @@ import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import lombok.extern.slf4j.Slf4j;
 
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 /**
@@ -35,49 +36,23 @@ import java.util.Optional;
 public class AssociateHandler implements CmsServiceHandler {
 
     private GmAuthenticator authenticator;
-    private boolean requireAuthentication = false;  // true = must have cert, false = optional
+    private boolean requireAuthentication = false;
     private final SclDocument sclDocument;
+    private byte[] serverCertificateBytes;
 
     public AssociateHandler() {
-        this.authenticator = null; // No authentication by default
         this.sclDocument = null;
     }
 
     public AssociateHandler(SclDocument sclDocument) {
-        this.authenticator = null;
         this.sclDocument = sclDocument;
     }
 
-    public AssociateHandler(GmAuthenticator authenticator) {
-        this.authenticator = authenticator;
-        this.sclDocument = null;
-    }
-
-    public AssociateHandler(SclDocument sclDocument, GmAuthenticator authenticator) {
-        this.authenticator = authenticator;
-        this.sclDocument = sclDocument;
-    }
-
-    /**
-     * Enables security with the given authenticator.
-     * Clients with valid certificates will be authenticated, clients without will be rejected.
-     *
-     * @param authenticator the authenticator to use for verification
-     * @return this handler for chaining
-     */
-    public AssociateHandler enableSecurity(GmAuthenticator authenticator) {
+    public AssociateHandler enableSecurity(GmAuthenticator authenticator, X509Certificate serverCert) throws Exception {
         this.authenticator = authenticator;
         this.requireAuthentication = true;
+        this.serverCertificateBytes = serverCert.getEncoded();
         return this;
-    }
-
-    /**
-     * Checks if security is enabled.
-     *
-     * @return true if authenticator is set
-     */
-    public boolean isSecurityEnabled() {
-        return authenticator != null;
     }
 
     @Override
@@ -89,15 +64,19 @@ public class AssociateHandler implements CmsServiceHandler {
     public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
         CmsAssociate asdu = (CmsAssociate) request.getAsdu();
 
-        // 1. Validate serverAccessPointReference
-        if (asdu.serverAccessPointReference() == null ||
-            asdu.serverAccessPointReference().get() == null ||
-            asdu.serverAccessPointReference().get().isEmpty()) {
-            log.warn("[Server] Invalid serverAccessPointReference");
-            return buildNegativeResponse(asdu, new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
+        // 1. Resolve serverAccessPointReference
+        String sapRef = asdu.serverAccessPointReference() != null
+            ? asdu.serverAccessPointReference().get() : null;
+        if (sapRef == null || sapRef.isEmpty()) {
+            if (sclDocument != null) {
+                sapRef = sclDocument.getDefaultAccessPointReference();
+                log.info("[Server] Using default access point: {}", sapRef);
+            }
+            if (sapRef == null || sapRef.isEmpty()) {
+                log.warn("[Server] No serverAccessPointReference and no default available");
+                return buildNegativeResponse(asdu, new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
+            }
         }
-
-        String sapRef = asdu.serverAccessPointReference().get();
 
         // 2. Validate against SCL model if loaded
         if (sclDocument != null) {
@@ -154,9 +133,10 @@ public class AssociateHandler implements CmsServiceHandler {
                 .associationId(assocId)
                 .serviceError(CmsServiceError.NO_ERROR);
 
-        // 6. Add authentication parameter in response if requested
-        if (authParam != null) {
-            response.authenticationParameter(authParam);
+        // 6. Add server certificate in response for bidirectional auth
+        if (serverCertificateBytes != null) {
+            response.authenticationParameter(new AuthenticationParameter()
+                .signatureCertificate(serverCertificateBytes));
         }
 
         log.info("[Server] Association accepted, assocId={}, SAP={}",
@@ -164,12 +144,6 @@ public class AssociateHandler implements CmsServiceHandler {
         return new CmsApdu(response);
     }
 
-    /**
-     * Prepare data for signature verification.
-     *
-     * <p>According to DL/T 2811-2024, the signed data includes:
-     * serverAccessPointReference concatenated with request timestamp.
-     */
     private byte[] prepareSignedData(CmsAssociate asdu) {
         String sap = asdu.serverAccessPointReference().get();
         byte[] sapBytes = sap.getBytes(java.nio.charset.StandardCharsets.UTF_8);
@@ -188,13 +162,10 @@ public class AssociateHandler implements CmsServiceHandler {
         return sapBytes;
     }
 
-    /**
-     * Build negative (error) response.
-     */
     private CmsApdu buildNegativeResponse(CmsAssociate request, CmsServiceError error) {
         CmsAssociate response = new CmsAssociate(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.reqId().get())
-                .serviceError(error.get()); // CmsServiceError.get() returns int
+                .serviceError(error.get());
         return new CmsApdu(response);
     }
 

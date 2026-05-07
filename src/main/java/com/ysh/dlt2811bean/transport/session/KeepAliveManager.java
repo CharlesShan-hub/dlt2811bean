@@ -182,9 +182,6 @@ public class KeepAliveManager {
 
     private void sendTest() {
         try {
-            // int reqId = (session instanceof CmsClientSession)
-            //         ? ((CmsClientSession) session).nextReqId()
-            //         : 0;
             CmsTest test = new CmsTest();
             CmsApdu apdu = new CmsApdu(test);
             session.send(apdu);

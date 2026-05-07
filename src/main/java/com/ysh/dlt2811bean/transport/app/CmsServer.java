@@ -15,15 +15,16 @@ import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.AbortHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
+import com.ysh.dlt2811bean.transport.protocol.directory.GetServerDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -54,47 +55,19 @@ public class CmsServer {
     private final CmsServerTransport transport;
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
-
-    // ==================== SCL Model ====================
-
     private SclDocument sclDocument;
-
-    // ==================== Security (GM) ====================
-
     private boolean securityEnabled = false;
-    private KeyPair securityKeyPair;
-    private GmAuthenticator securityAuthenticator;
-    private AssociateHandler associateHandler;
 
-    /**
-     * Creates a server listening on the given port.
-     *
-     * @param port the port to listen on
-     */
     public CmsServer(int port) {
         this.transport = new CmsServerTransport(port, new ServerListener());
         this.dispatcher = new CmsDispatcher();
     }
 
-    /**
-     * Creates a server listening on the given port and loads an SCL/ICD file.
-     *
-     * @param port    the port to listen on
-     * @param sclPath path to the SCL/ICD file
-     * @throws Exception if the SCL file cannot be parsed
-     */
     public CmsServer(int port, String sclPath) throws Exception {
         this(port);
         loadScl(sclPath);
     }
 
-    /**
-     * Creates a server listening on the given port and loads an SCL/ICD file.
-     *
-     * @param port    the port to listen on
-     * @param sclPath path to the SCL/ICD file
-     * @throws Exception if the SCL file cannot be parsed
-     */
     public CmsServer(int port, Path sclPath) throws Exception {
         this(port);
         loadScl(sclPath);
@@ -102,22 +75,12 @@ public class CmsServer {
 
     // ==================== Lifecycle ====================
 
-    /**
-     * Starts the server (starts accepting connections).
-     * Automatically registers default handlers if not already registered.
-     *
-     * @throws IOException if the port cannot be bound
-     */
     public void start() throws IOException {
-        // Auto-register default handlers if not already registered
         registerDefaultHandlers();
         transport.start();
         log.info("CMS Server started on port {}", transport.getPort());
     }
 
-    /**
-     * Stops the server and closes all client sessions.
-     */
     public void stop() {
         for (CmsServerSession session : sessions.values()) {
             session.getConnection().close();
@@ -127,45 +90,22 @@ public class CmsServer {
         log.info("CMS Server stopped");
     }
 
-    /**
-     * Stops the server after a delay.
-     *
-     * @param delayMs milliseconds to wait before stopping
-     * @throws InterruptedException if the delay is interrupted
-     */
     public void stop(long delayMs) throws InterruptedException {
         Thread.sleep(delayMs);
         stop();
     }
 
-    /**
-     * @return true if the server socket is bound and listening
-     */
     public boolean isBound() {
         return transport.isBound();
     }
 
     // ==================== TLS Config ====================
 
-    /**
-     * Sets the 国密 SSL context for TLS connections.
-     * Must be called before {@link #start()}.
-     *
-     * @param sslContext the SSL context
-     * @return this server for chaining
-     */
     public CmsServer sslContext(GmSslContext sslContext) {
         transport.sslContext(sslContext);
         return this;
     }
 
-    /**
-     * Sets whether client certificate is required (mutual TLS).
-     * Must be called before {@link #start()}.
-     *
-     * @param need true to require client certificate
-     * @return this server for chaining
-     */
     public CmsServer needClientAuth(boolean need) {
         transport.needClientAuth(need);
         return this;
@@ -173,14 +113,6 @@ public class CmsServer {
 
     // ==================== SCL Model ====================
 
-    /**
-     * Loads an SCL/ICD file to define the server's information model.
-     * Must be called before {@link #start()}.
-     *
-     * @param filePath path to the SCL/ICD file
-     * @return this server for chaining
-     * @throws Exception if the file cannot be parsed
-     */
     public CmsServer loadScl(String filePath) throws Exception {
         this.sclDocument = new SclReader().read(filePath);
         log.info("SCL model loaded from {}: IEDs={}", filePath,
@@ -188,14 +120,6 @@ public class CmsServer {
         return this;
     }
 
-    /**
-     * Loads an SCL/ICD file to define the server's information model.
-     * Must be called before {@link #start()}.
-     *
-     * @param filePath path to the SCL/ICD file
-     * @return this server for chaining
-     * @throws Exception if the file cannot be parsed
-     */
     public CmsServer loadScl(Path filePath) throws Exception {
         this.sclDocument = new SclReader().read(filePath);
         log.info("SCL model loaded from {}: IEDs={}", filePath,
@@ -203,11 +127,6 @@ public class CmsServer {
         return this;
     }
 
-    /**
-     * Returns the loaded SCL document, or null if not loaded.
-     *
-     * @return the SCL document, or null
-     */
     public SclDocument getSclDocument() {
         return sclDocument;
     }
@@ -231,79 +150,35 @@ public class CmsServer {
      * @throws Exception if key pair generation fails
      */
     public CmsServer enableSecurity() throws Exception {
-        // Generate SM2 key pair for the server
-        this.securityKeyPair = GmSignature.generateKeyPair();
+        KeyPair keyPair = GmSignature.generateKeyPair();
+        X509Certificate serverCert = GmSignature.generateSelfSignedCertificate(keyPair);
 
-        // Create trust manager that trusts all (for receiving client certificates)
-        // 默认启用 trustAll 模式，简化开发/测试
         GmTrustManager trustManager = new GmTrustManager().trustAll();
+        GmAuthenticator authenticator = new GmAuthenticator(trustManager);
 
-        // Create authenticator for verification
-        this.securityAuthenticator = new GmAuthenticator(trustManager);
-
-        // Create associate handler with authenticator and require authentication
-        this.associateHandler = new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator);
+        dispatcher.registerHandler(
+            new AssociateHandler(sclDocument).enableSecurity(authenticator, serverCert));
 
         this.securityEnabled = true;
-        log.info("GM security enabled, server key pair generated");
+        log.info("GM security enabled");
         return this;
     }
 
-    /**
-     * Checks if GM security is enabled for this server.
-     *
-     * @return true if security is enabled
-     */
     public boolean isSecurityEnabled() {
         return securityEnabled;
     }
 
     // ==================== Handlers ====================
 
-    /**
-     * Registers default association service handlers: Associate, Release, Abort, and Test.
-     * These are the basic services required for connection lifecycle management.
-     *
-     * <p>Automatically called by {@link #start()} if not already registered.
-     * Can be called manually to register additional handlers before default ones.
-     * Safe to call multiple times (idempotent).
-     *
-     * <p>Registered handlers:
-     * <ul>
-     *   <li>SC=1  Associate  — generates association ID</li>
-     *   <li>SC=2  Abort      — one-way, clears association</li>
-     *   <li>SC=3  Release    — responds positive, clears association</li>
-     *   <li>SC=153 Test      — echoes the frame</li>
-     * </ul>
-     *
-     * @return this server for chaining
-     */
-    public CmsServer registerDefaultHandlers() {
-        // Use associate handler with security if enabled, otherwise create new one
-        if (associateHandler != null) {
-            dispatcher.registerHandler(associateHandler);
-        } else if (!dispatcher.hasHandler(ServiceName.ASSOCIATE)) {
-            dispatcher.registerHandler(new AssociateHandler(sclDocument));
-        }
-        if (!dispatcher.hasHandler(ServiceName.ABORT)) {
-            dispatcher.registerHandler(new AbortHandler());
-        }
-        if (!dispatcher.hasHandler(ServiceName.RELEASE)) {
-            dispatcher.registerHandler(new ReleaseHandler());
-        }
-        if (!dispatcher.hasHandler(ServiceName.TEST)) {
-            dispatcher.registerHandler(new TestHandler());
-        }
-        return this;
-    }
-
-    /**
-     * Registers a service handler.
-     *
-     * @param handler the handler to register
-     */
-    public void registerHandler(CmsServiceHandler handler) {
-        dispatcher.registerHandler(handler);
+    private void registerDefaultHandlers() {
+        // associate handler
+        dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));
+        dispatcher.registerDefaultHandler(new AbortHandler());
+        dispatcher.registerDefaultHandler(new ReleaseHandler());
+        // directory handlers
+        dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());
+        // test handlers
+        dispatcher.registerDefaultHandler(new TestHandler());
     }
 
     // ==================== Transport Listener ====================

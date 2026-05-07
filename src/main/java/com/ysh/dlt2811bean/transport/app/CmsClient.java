@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.transport.app;
 
 import com.ysh.dlt2811bean.security.GmAuthenticator;
+import com.ysh.dlt2811bean.security.GmCertificateParser;
 import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.security.GmTrustManager;
@@ -11,6 +12,8 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
@@ -57,9 +60,8 @@ public class CmsClient {
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
-    // 默认访问点配置
-    private String defaultAp = "CLIENT";
-    private String defaultEp = "EP1";
+    private String defaultAp = "E1Q1SB1";
+    private String defaultEp = "S1";
 
     // ==================== Security (GM) ====================
 
@@ -67,16 +69,10 @@ public class CmsClient {
     private KeyPair securityKeyPair;
     private GmAuthenticator securityAuthenticator;
     private java.security.cert.X509Certificate securityCertificate;
+    private java.security.cert.X509Certificate serverCertificate;
 
     // ==================== Connection ====================
 
-    /**
-     * Connects to a CMS server.
-     *
-     * @param host server hostname or IP
-     * @param port server port
-     * @throws Exception if connection fails
-     */
     public void connect(String host, int port) throws Exception {
         connection = transport.connect(host, port, listener);
         session = new CmsClientSession(connection);
@@ -84,14 +80,6 @@ public class CmsClient {
         log.info("Connected to {}:{}", host, port);
     }
 
-    /**
-     * Connects to a CMS server using 国密 TLS.
-     * Requires {@link #sslContext(GmSslContext)} to be called first.
-     *
-     * @param host server hostname or IP
-     * @param port server port
-     * @throws Exception if connection fails
-     */
     public void connectTls(String host, int port) throws Exception {
         if (!transport.isTlsEnabled()) {
             throw new IllegalStateException("SSL context not set, call sslContext() first");
@@ -102,9 +90,6 @@ public class CmsClient {
         log.info("Connected to {}:{} (TLS)", host, port);
     }
 
-    /**
-     * Closes the connection.
-     */
     public void close() {
         if (connection != null) {
             connection.close();
@@ -116,33 +101,15 @@ public class CmsClient {
 
     // ==================== Config ====================
 
-    /**
-     * Sets the 国密 SSL context for TLS connections.
-     *
-     * @param sslContext the SSL context
-     * @return this client for chaining
-     */
     public CmsClient sslContext(GmSslContext sslContext) {
         transport.sslContext(sslContext);
         return this;
     }
 
-    /**
-     * Checks if TLS/SSL is enabled for this client.
-     *
-     * @return true if TLS is enabled, false otherwise
-     */
     public boolean isTlsEnabled() {
         return transport.isTlsEnabled();
     }
 
-    /**
-     * Sets the default server access point for associate.
-     *
-     * @param ap the AP name (e.g., "AP1")
-     * @param ep the EP name (e.g., "EP1")
-     * @return this client for chaining
-     */
     public CmsClient setAccessPoint(String ap, String ep) {
         this.defaultAp = ap;
         this.defaultEp = ep;
@@ -182,21 +149,19 @@ public class CmsClient {
         return this;
     }
 
-    /**
-     * Checks if GM security is enabled for this client.
-     *
-     * @return true if security is enabled
-     */
     public boolean isSecurityEnabled() {
         return securityEnabled;
     }
 
-    // ==================== Association Services (Public API) ====================
+    // ========================== Public Services API ========================
 
     /**
+     * Associate - associate - Service Code 01
      * Sends an Associate request to establish a connection.
      * If security is enabled, automatically includes authentication certificate.
      *
+     * @param ap        the access point name (optional, uses default if null)
+     * @param ep        the end point name (optional, uses default if null)
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
@@ -204,61 +169,35 @@ public class CmsClient {
         CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
                 .serverAccessPointReference(defaultAp, defaultEp);
 
-        // Add authentication parameter if security is enabled
         if (securityEnabled && securityKeyPair != null) {
             AuthenticationParameter authParam = createAuthenticationParameter();
             asdu.authenticationParameter(authParam);
         }
 
-        return send(asdu);
+        CmsApdu response = send(asdu);
+
+        // Save server certificate from response if present
+        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            CmsAssociate responseAsdu = (CmsAssociate) response.getAsdu();
+            if (responseAsdu.authenticationParameter() != null &&
+                responseAsdu.authenticationParameter().signatureCertificate() != null) {
+                byte[] certBytes = responseAsdu.authenticationParameter().signatureCertificate().get();
+                this.serverCertificate = GmCertificateParser.parseX509(certBytes);
+            }
+        }
+
+        return response;
     }
 
-    /**
-     * Sends an Associate request to establish a connection.
-     *
-     * @param ap the access point name
-     * @param ep the end point name
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
     public CmsApdu associate(String ap, String ep) throws Exception {
         setAccessPoint(ap, ep);
         return associate();
     }
 
-    /**
-     * Sends an Associate request with authentication parameter (for GM security).
-     *
-     * @param authParam the authentication parameter containing certificate and signature
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu associate(AuthenticationParameter authParam) throws Exception {
-        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(defaultAp, defaultEp)
-                .authenticationParameter(authParam);
-        return send(asdu);
-    }
 
     /**
-     * Sends an Associate request with access point and authentication parameter.
-     *
-     * @param ap the access point name
-     * @param ep the end point name
-     * @param authParam the authentication parameter containing certificate and signature
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu associate(String ap, String ep, AuthenticationParameter authParam) throws Exception {
-        setAccessPoint(ap, ep);
-        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(ap, ep)
-                .authenticationParameter(authParam);
-        return send(asdu);
-    }
-
-    /**
-     * Sends a Release request to gracefully close the association.
+     * Associate - release - Service Code 02
+     * Sends a Release request to terminate the connection.
      *
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
@@ -273,23 +212,16 @@ public class CmsClient {
     }
 
     /**
-     * Sends an Abort request to immediately terminate the connection.
-     * Abort is one-way: no response expected, connection will be closed.
-     * Default reason is OTHER (0).
+     * Associate - abort - Service Code 03
+     * Sends an Abort request to terminate the connection.
      *
-     * @throws Exception if send fails
+     * @param reason the reason for aborting (optional)
+     * @throws Exception if not connected or timeout
      */
     public void abort() throws Exception {
         abort(0);
     }
 
-    /**
-     * Sends an Abort request with specified reason to immediately terminate the connection.
-     * Abort is one-way: no response expected, connection will be closed.
-     *
-     * @param reason the abort reason (0-5, see {@link com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason})
-     * @throws Exception if send fails
-     */
     public void abort(int reason) throws Exception {
         CmsAbort asdu = new CmsAbort(MessageType.REQUEST).reason(reason);
         doSendWithoutResponse(asdu);
@@ -297,21 +229,32 @@ public class CmsClient {
     }
 
     /**
-     * Sends a Test request and waits for the server echo.
+     * Test - test - Service Code 153
+     * Sends a Test request to verify the connection.
      *
-     * @return the echoed response APDU, or null if timeout
-     * @throws Exception if not connected
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
      */
     public CmsApdu test() throws Exception {
         CmsTest asdu = new CmsTest(MessageType.REQUEST);
         return testEcho(asdu);
     }
 
+    public CmsApdu getServerDirectory() throws Exception {
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
+        return send(asdu);
+    }
+
+    public CmsApdu getServerDirectory(String referenceAfter) throws Exception {
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                .referenceAfter(referenceAfter);
+        return send(asdu);
+    }
+
     // ==================== Internal Echo ====================
 
-    /**
-     * Internal: sends Test and waits for echo.
-     */
     private CmsApdu testEcho(CmsTest asdu) throws Exception {
         PendingRequest pending = session.addPendingRequest(0);  // ReqID=0 for Test
         CmsApdu apdu = new CmsApdu(asdu);
@@ -327,9 +270,6 @@ public class CmsClient {
 
     // ==================== Internal Send ====================
 
-    /**
-     * Internal send: assigns ReqID and waits for response.
-     */
     private CmsApdu send(CmsAsdu<?> asdu) throws Exception {
         int reqId = session.nextReqId();
         asdu.reqId(reqId);
@@ -347,9 +287,6 @@ public class CmsClient {
         return response;
     }
 
-    /**
-     * Internal send: no response expected (one-way).
-     */
     private void doSendWithoutResponse(CmsAsdu<?> asdu) throws Exception {
         int reqId = session.nextReqId();
         asdu.reqId(reqId);
@@ -358,23 +295,14 @@ public class CmsClient {
         log.debug("[ReqID={}] Sent {} (one-way)", reqId, asdu.getClass().getSimpleName());
     }
 
-    /**
-     * @return true if connected
-     */
     public boolean isConnected() {
         return session != null && session.isConnected();
     }
 
-    /**
-     * @return the current association ID, or null if not associated
-     */
     public byte[] getAssociationId() {
         return session != null ? session.getAssociationId() : null;
     }
 
-    /**
-     * Sets the association ID (typically set after a successful Associate response).
-     */
     public void setAssociationId(byte[] id) {
         if (session != null) {
             session.setAssociationId(id);

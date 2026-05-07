@@ -24,16 +24,14 @@ public class CmsDispatcher {
 
     private final Map<ServiceName, CmsServiceHandler> handlers = new HashMap<>();
 
-    /**
-     * Registers a handler for a service code.
-     *
-     * @param handler the handler to register
-     * @throws IllegalArgumentException if a handler is already registered for the service code
-     */
     public void registerHandler(CmsServiceHandler handler) {
+        handlers.put(handler.getServiceName(), handler);
+    }
+
+    public void registerDefaultHandler(CmsServiceHandler handler) {
         ServiceName sn = handler.getServiceName();
-        if (handlers.put(sn, handler) != null) {
-            throw new IllegalArgumentException("Handler already registered for " + sn);
+        if (!handlers.containsKey(sn)) {
+            handlers.put(sn, handler);
         }
     }
 
@@ -48,9 +46,6 @@ public class CmsDispatcher {
         ServiceName sc = apdu.getAsdu().getServiceName();
 
         // ASSOCIATE, TEST, ABORT do not need association
-        // - ASSOCIATE: establishes association
-        // - TEST: connection keep-alive
-        // - ABORT: one-way, can abort any connection
         if (sc != ServiceName.ASSOCIATE && sc != ServiceName.TEST && sc != ServiceName.ABORT) {
             if (!session.isAssociated()) {
                 return createErrorResponse(apdu, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
@@ -70,31 +65,21 @@ public class CmsDispatcher {
         }
     }
 
-    /**
-     * Creates an error response with the given service error.
-     */
     private CmsApdu createErrorResponse(CmsApdu request, int error) {
         CmsAsdu<?> asdu = request.getAsdu();
-        // Copy request ASDU and set MessageType
         CmsAsdu<?> errorAsdu = asdu.copy();
         errorAsdu.messageType(MessageType.RESPONSE_NEGATIVE);
+        try {
+            java.lang.reflect.Field f = errorAsdu.getClass().getField("serviceError");
+            CmsServiceError se = (CmsServiceError) f.get(errorAsdu);
+            se.set(error);
+        } catch (Exception ignored) {
+        }
         return new CmsApdu(errorAsdu);
     }
 
-    /**
-     * @return the number of registered handlers
-     */
     public int handlerCount() {
         return handlers.size();
     }
 
-    /**
-     * Checks if a handler is registered for the given service name.
-     *
-     * @param serviceName the service name to check
-     * @return true if a handler is registered
-     */
-    public boolean hasHandler(ServiceName serviceName) {
-        return handlers.containsKey(serviceName);
-    }
 }

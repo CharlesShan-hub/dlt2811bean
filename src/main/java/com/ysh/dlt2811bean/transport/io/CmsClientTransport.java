@@ -9,50 +9,32 @@ import java.net.Socket;
 /**
  * Client-side transport factory.
  *
- * <p>Creates {@link CmsConnection} instances by connecting to a server.
- * Supports both plain TCP and TLS (国密 SSL) connections.
+ * <p>Features:
+ * <ol>
+ *   <li>Plain TCP and GM (Guomi) TLS connections
+ *   <li>Simple factory API — creates connected {@link CmsConnection} instances
+ *   <li>Fluent configuration via {@link #sslContext(GmSslContext)}
+ * </ol>
  */
 public class CmsClientTransport {
 
     private GmSslContext sslContext;
 
-    /**
-     * Sets the 国密 SSL context for secure connections.
-     * If not set, plain TCP connection is used.
-     *
-     * @param sslContext the SSL context
-     * @return this transport for chaining
-     */
+    /* ==================== Configuration ==================== */
+
     public CmsClientTransport sslContext(GmSslContext sslContext) {
         this.sslContext = sslContext;
         return this;
     }
 
-    /**
-     * Connects to a CMS server using plain TCP.
-     *
-     * @param host     server hostname or IP address
-     * @param port     server port
-     * @param listener event listener for the new connection
-     * @return a connected CmsConnection
-     * @throws IOException if the connection fails
-     */
+    /* ==================== Connect ==================== */
+
     public CmsConnection connect(String host, int port, CmsTransportListener listener) throws IOException {
         Socket socket = createSocket();
         socket.connect(new java.net.InetSocketAddress(host, port), 5000);
         return new CmsConnection(socket, listener);
     }
 
-    /**
-     * Connects to a CMS server using 国密 TLS.
-     * Requires {@link #sslContext(GmSslContext)} to be called first.
-     *
-     * @param host     server hostname or IP address
-     * @param port     server port
-     * @param listener event listener for the new connection
-     * @return a connected CmsConnection
-     * @throws IOException if the connection fails
-     */
     public CmsConnection connectTls(String host, int port, CmsTransportListener listener) throws IOException {
         if (sslContext == null) {
             throw new IllegalStateException("SSL context not set, call sslContext() first");
@@ -63,17 +45,13 @@ public class CmsClientTransport {
                     .getSocketFactory()
                     .createSocket(host, port);
 
-            // 设置国密 TLS 协议版本
             socket.setEnabledProtocols(sslContext.getEnabledProtocols());
 
-            // 尝试设置加密套件，如果不支持则忽略
             try {
                 socket.setEnabledCipherSuites(sslContext.getEnabledCipherSuites());
-            } catch (Exception e) {
-                // 忽略加密套件设置错误，使用默认值
+            } catch (Exception ignored) {
             }
 
-            // 强制 TLS 握手
             socket.setUseClientMode(true);
             socket.startHandshake();
 
@@ -82,6 +60,8 @@ public class CmsClientTransport {
             throw new IOException("TLS connection failed: " + e.getMessage(), e);
         }
     }
+
+    /* ==================== Internal ==================== */
 
     private Socket createSocket() throws IOException {
         if (sslContext != null) {
@@ -98,9 +78,8 @@ public class CmsClientTransport {
         return new Socket();
     }
 
-    /**
-     * @return true if TLS is configured
-     */
+    /* ==================== Status ==================== */
+
     public boolean isTlsEnabled() {
         return sslContext != null;
     }
