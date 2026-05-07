@@ -103,7 +103,7 @@ public class GetAllCBValuesHandler implements CmsServiceHandler {
                 .cbValue(cbValue);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetAllCBValues: {} entries (acsiClass={})", cbValue.size(), acsiClass);
+        log.debug("[Server] GetAllCBValues: {} entries (acsiClass={})", cbValue.size(), acsiClass);
         return new CmsApdu(response);
     }
 

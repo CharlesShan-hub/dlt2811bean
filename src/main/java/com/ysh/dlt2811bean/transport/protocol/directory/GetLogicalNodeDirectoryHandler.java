@@ -130,7 +130,7 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
                 .referenceResponse(refs);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetLogicalNodeDirectory: {} entries (acsiClass={})", refs.size(), acsiClass);
+        log.debug("[Server] GetLogicalNodeDirectory: {} entries (acsiClass={})", refs.size(), acsiClass);
         return new CmsApdu(response);
     }
 

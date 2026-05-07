@@ -6,6 +6,8 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for Abort service (SC=3).
@@ -14,6 +16,8 @@ import com.ysh.dlt2811bean.transport.session.SessionState;
  * Clears the association ID and lets the connection close naturally.
  */
 public class AbortHandler implements CmsServiceHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(AbortHandler.class);
 
     @Override
     public ServiceName getServiceName() {
@@ -24,12 +28,10 @@ public class AbortHandler implements CmsServiceHandler {
     public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
         CmsAbort asdu = (CmsAbort) request.getAsdu();
 
-        // Clear association
         session.clearAssociationId();
         session.setState(SessionState.CLOSED);
 
-        System.out.println("[Server] Association aborted, reason=" + asdu.reason().get());
-        // No response — Abort is one-way, close the connection
+        log.debug("Association aborted, reason={}", asdu.reason().get());
         session.close();
         return null;
     }

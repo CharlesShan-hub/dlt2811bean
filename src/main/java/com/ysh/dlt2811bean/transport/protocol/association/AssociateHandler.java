@@ -70,7 +70,7 @@ public class AssociateHandler implements CmsServiceHandler {
         if (sapRef == null || sapRef.isEmpty()) {
             if (sclDocument != null) {
                 sapRef = sclDocument.getDefaultAccessPointReference();
-                log.info("[Server] Using default access point: {}", sapRef);
+                log.debug("[Server] Using default access point: {}", sapRef);
             }
             if (sapRef == null || sapRef.isEmpty()) {
                 log.warn("[Server] No serverAccessPointReference and no default available");
@@ -119,7 +119,7 @@ public class AssociateHandler implements CmsServiceHandler {
                 log.warn("[Server] Authentication failed: {}", authError.get());
                 return buildNegativeResponse(asdu, authError.get());
             }
-            log.info("[Server] GM authentication successful for {}", sapRef);
+            log.debug("[Server] GM authentication successful for {}", sapRef);
         }
 
         // 4. Generate association ID
@@ -139,7 +139,7 @@ public class AssociateHandler implements CmsServiceHandler {
                 .signatureCertificate(serverCertificateBytes));
         }
 
-        log.info("[Server] Association accepted, assocId={}, SAP={}",
+        log.debug("[Server] Association accepted, assocId={}, SAP={}",
                  hex(assocId), sapRef);
         return new CmsApdu(response);
     }

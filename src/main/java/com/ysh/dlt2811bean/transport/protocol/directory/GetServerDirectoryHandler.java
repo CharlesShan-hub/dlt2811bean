@@ -70,7 +70,7 @@ public class GetServerDirectoryHandler implements CmsServiceHandler {
                 .reference(refs);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetServerDirectory: {} entries", refs.size());
+        log.debug("[Server] GetServerDirectory: {} entries", refs.size());
         return new CmsApdu(response);
     }
 

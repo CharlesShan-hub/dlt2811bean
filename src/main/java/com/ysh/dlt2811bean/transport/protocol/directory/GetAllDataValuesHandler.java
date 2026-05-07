@@ -119,7 +119,7 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
                 .data(data);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetAllDataValues: {} entries{}", data.size(),
+        log.debug("[Server] GetAllDataValues: {} entries{}", data.size(),
                 fcFilter != null ? " (fc=" + fcFilter + ")" : "");
         return new CmsApdu(response);
     }

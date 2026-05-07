@@ -84,7 +84,7 @@ public class GetLogicalDeviceDirectoryHandler implements CmsServiceHandler {
                 .lnReference(refs);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetLogicalDeviceDirectory: {} entries", refs.size());
+        log.debug("[Server] GetLogicalDeviceDirectory: {} entries", refs.size());
         return new CmsApdu(response);
     }
 

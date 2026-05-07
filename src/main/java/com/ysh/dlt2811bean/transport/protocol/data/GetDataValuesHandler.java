@@ -61,7 +61,7 @@ public class GetDataValuesHandler implements CmsServiceHandler {
                 .value(values);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetDataValues: {} entries", values.size());
+        log.debug("[Server] GetDataValues: {} entries", values.size());
         return new CmsApdu(response);
     }
 

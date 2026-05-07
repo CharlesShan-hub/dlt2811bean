@@ -117,7 +117,7 @@ public class GetAllDataDefinitionHandler implements CmsServiceHandler {
                 .data(data);
         response.moreFollows.set(false);
 
-        log.info("[Server] GetAllDataDefinition: {} entries{}", data.size(),
+        log.debug("[Server] GetAllDataDefinition: {} entries{}", data.size(),
                 fcFilter != null ? " (fc=" + fcFilter + ")" : "");
         return new CmsApdu(response);
     }

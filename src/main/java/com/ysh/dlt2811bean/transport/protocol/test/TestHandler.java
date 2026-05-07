@@ -6,6 +6,8 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for Test service (SC=4).
@@ -13,6 +15,8 @@ import com.ysh.dlt2811bean.transport.session.CmsServerSession;
  * <p>Test is used for keep-alive. Responds positively with an empty ASDU.
  */
 public class TestHandler implements CmsServiceHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(TestHandler.class);
 
     @Override
     public ServiceName getServiceName() {
@@ -22,7 +26,7 @@ public class TestHandler implements CmsServiceHandler {
     @Override
     public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
         CmsTest response = new CmsTest(MessageType.RESPONSE_POSITIVE);
-        System.out.println("[Server] Test received");
+        log.debug("Test received");
         return new CmsApdu(response);
     }
 }

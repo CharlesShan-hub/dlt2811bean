@@ -4,6 +4,8 @@ import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 
 import javax.net.ssl.SSLServerSocket;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +22,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * </ol>
  */
 public class CmsServerTransport {
+
+    private static final Logger log = LoggerFactory.getLogger(CmsServerTransport.class);
 
     private final int port;
     private final CmsTransportListener listener;
@@ -87,7 +91,6 @@ public class CmsServerTransport {
 
     public void stop() {
         running = false;
-        interruptAccept();
         try {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
@@ -96,7 +99,7 @@ public class CmsServerTransport {
         }
         if (acceptorThread != null) {
             try {
-                acceptorThread.join(1000);
+                acceptorThread.join(2000);
             } catch (InterruptedException ignored) {
                 Thread.currentThread().interrupt();
             }
@@ -106,15 +109,6 @@ public class CmsServerTransport {
             conn.close();
         }
         connections.clear();
-    }
-
-    private void interruptAccept() {
-        try {
-            if (serverSocket != null && serverSocket.isBound() && !serverSocket.isClosed()) {
-                new java.net.Socket("127.0.0.1", port).close();
-            }
-        } catch (Exception ignored) {
-        }
     }
 
     /* ==================== Status ==================== */
@@ -141,16 +135,20 @@ public class CmsServerTransport {
         while (running) {
             Socket socket = null;
             try {
+                serverSocket.setSoTimeout(1000);
                 socket = serverSocket.accept();
+                socket.setSoTimeout(0);
 
-                if (socket instanceof javax.net.ssl.SSLSocket) {
-                    ((javax.net.ssl.SSLSocket) socket).startHandshake();
+                if (socket instanceof javax.net.ssl.SSLSocket sslSocket) {
+                    sslSocket.startHandshake();
                 }
 
                 CmsConnection conn = new CmsConnection(socket, connectionListener);
                 connections.add(conn);
                 listener.onConnected(conn);
                 conn.startReadLoop();
+            } catch (java.net.SocketTimeoutException e) {
+                // expected timeout to check running flag
             } catch (IOException e) {
                 if (socket != null && !socket.isClosed()) {
                     try {
@@ -158,10 +156,10 @@ public class CmsServerTransport {
                     } catch (IOException ignored) {
                     }
                 }
-                if (!running || serverSocket.isClosed()) {
+                if (!running || serverSocket == null || serverSocket.isClosed()) {
                     break;
                 }
-                listener.onError(null, e);
+                log.debug("Accept error (expected during shutdown): {}", e.getMessage());
             }
         }
     }

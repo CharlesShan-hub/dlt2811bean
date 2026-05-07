@@ -8,6 +8,8 @@ import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Handler for Release service (SC=2).
@@ -16,6 +18,8 @@ import com.ysh.dlt2811bean.transport.session.SessionState;
  * Release is the graceful way to terminate an association.
  */
 public class ReleaseHandler implements CmsServiceHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ReleaseHandler.class);
 
     @Override
     public ServiceName getServiceName() {
@@ -27,17 +31,15 @@ public class ReleaseHandler implements CmsServiceHandler {
         CmsRelease asdu = (CmsRelease) request.getAsdu();
         byte[] localId = session.getAssociationId();
 
-        // Clear association
         session.clearAssociationId();
         session.setState(SessionState.DISCONNECTED);
 
-        // Build positive response
         CmsRelease response = new CmsRelease(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get())
                 .associationId(localId != null ? localId : new byte[64])
                 .serviceError(CmsServiceError.NO_ERROR);
 
-        System.out.println("[Server] Association released");
+        log.debug("Association released");
         return new CmsApdu(response);
     }
 }

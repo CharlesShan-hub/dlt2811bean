@@ -57,7 +57,7 @@ public class SetDataValuesHandler implements CmsServiceHandler {
             }
         }
 
-        log.info("[Server] SetDataValues: {} entries, allSuccess={}", asdu.data.size(), allSuccess);
+        log.debug("[Server] SetDataValues: {} entries, allSuccess={}", asdu.data.size(), allSuccess);
 
         if (allSuccess) {
             CmsSetDataValues response = new CmsSetDataValues(MessageType.RESPONSE_POSITIVE)
