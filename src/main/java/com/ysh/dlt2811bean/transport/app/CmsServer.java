@@ -18,6 +18,7 @@ import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
+import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcMethodDefinitionHandler;
 import com.ysh.dlt2811bean.transport.protocol.rpc.RpcCallHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
@@ -211,6 +212,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
         // rpc handlers
+        dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());
         dispatcher.registerDefaultHandler(new RpcCallHandler());
         // negotiation handlers
         dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(

@@ -28,6 +28,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
@@ -679,6 +680,22 @@ public class CmsClient {
         CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST)
                 .method(method)
                 .callID(callId);
+        return send(asdu);
+    }
+
+    /**
+     * RPC - getRpcMethodDefinition - Service Code 0x71
+     * Retrieves definitions for the specified RPC methods.
+     *
+     * @param references the method references to look up
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getRpcMethodDefinition(String... references) throws Exception {
+        CmsGetRpcMethodDefinition asdu = new CmsGetRpcMethodDefinition(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addReference(ref);
+        }
         return send(asdu);
     }
 
