@@ -28,6 +28,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
@@ -699,6 +700,35 @@ public class CmsClient {
         return send(asdu);
     }
 
+    /**
+     * RPC - getRpcInterfaceDefinition - Service Code 0x70
+     * Retrieves the definition of all methods in the specified interface.
+     *
+     * @param interfaceName the interface name (e.g. "IF1")
+     * @param referenceAfter optional method name to continue from a previous response
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getRpcInterfaceDefinition(String interfaceName, String referenceAfter) throws Exception {
+        CmsGetRpcInterfaceDefinition asdu = new CmsGetRpcInterfaceDefinition(MessageType.REQUEST)
+                .interfaceName(interfaceName);
+        if (referenceAfter != null && !referenceAfter.isEmpty()) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getRpcInterfaceDefinition(String interfaceName) throws Exception {
+        return getRpcInterfaceDefinition(interfaceName, null);
+    }
+
+    /**
+     * Test - test - Service Code 0x00
+     * Sends a test request to the server to verify the connection.
+     *
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
     public CmsApdu test() throws Exception {
         CmsTest asdu = new CmsTest(MessageType.REQUEST);
         return testEcho(asdu);
