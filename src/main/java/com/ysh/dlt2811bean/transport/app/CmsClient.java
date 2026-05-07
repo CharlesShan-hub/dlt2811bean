@@ -36,6 +36,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -825,6 +826,20 @@ public class CmsClient {
      */
     public CmsApdu deleteFile(String fileName) throws Exception {
         CmsDeleteFile asdu = new CmsDeleteFile(MessageType.REQUEST)
+                .fileName(fileName);
+        return send(asdu);
+    }
+
+    /**
+     * File - getFileAttributeValues - Service Code 0x83
+     * Retrieves the attributes (size, last modified, checksum) of a file.
+     *
+     * @param fileName the file path starting with "/"
+     * @return the response APDU containing file attributes
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getFileAttributeValues(String fileName) throws Exception {
+        CmsGetFileAttributeValues asdu = new CmsGetFileAttributeValues(MessageType.REQUEST)
                 .fileName(fileName);
         return send(asdu);
     }

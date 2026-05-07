@@ -22,6 +22,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
@@ -52,6 +53,7 @@ public class CmsCli {
         register(new FileGetHandler());
         register(new FileSetHandler());
         register(new FileDeleteHandler());
+        register(new FileAttrHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -602,6 +604,34 @@ public class CmsCli {
                 return;
             }
             System.out.println("  Deleted " + fileName);
+        }
+    }
+
+    private class FileAttrHandler implements CommandHandler {
+        public String getName() { return "file-attr"; }
+        public String getDescription() { return "读文件属性 (大小、时间、校验和)"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("fileName", "文件路径", "/README.txt")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String fileName = values.get("fileName");
+            CmsApdu response = client.getFileAttributeValues(fileName);
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Request failed");
+                return;
+            }
+
+            CmsGetFileAttributeValues attr = (CmsGetFileAttributeValues) response.getAsdu();
+            System.out.println("  File: " + attr.fileEntry.fileName.get());
+            System.out.println("  Size: " + attr.fileEntry.fileSize.get() + " bytes");
+            System.out.println("  CRC32: " + Long.toHexString(attr.fileEntry.checkSum.get()));
         }
     }
 

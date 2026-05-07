@@ -18,6 +18,7 @@ import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
+import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.SetFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
@@ -227,6 +228,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetFileHandler());
         dispatcher.registerDefaultHandler(new SetFileHandler());
         dispatcher.registerDefaultHandler(new DeleteFileHandler());
+        dispatcher.registerDefaultHandler(new GetFileAttributeValuesHandler());
         // negotiation handlers
         dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(
                 negCfg.getApduSize(), negCfg.getAsduSize(),
