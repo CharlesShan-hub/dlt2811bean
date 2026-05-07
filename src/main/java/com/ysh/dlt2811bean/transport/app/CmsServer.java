@@ -18,6 +18,7 @@ import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
+import com.ysh.dlt2811bean.transport.protocol.rpc.RpcCallHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -194,11 +195,8 @@ public class CmsServer {
     private void registerDefaultHandlers() {
         CmsConfig config = CmsConfigLoader.load();
         CmsConfig.Negotiate negCfg = config.getNegotiate();
-
-        dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(
-                negCfg.getApduSize(), negCfg.getAsduSize(),
-                negCfg.getProtocolVersion(), negCfg.getModelVersion()));
-
+        
+        // association handlers
         dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));
         dispatcher.registerDefaultHandler(new AbortHandler());
         dispatcher.registerDefaultHandler(new ReleaseHandler());
@@ -212,6 +210,12 @@ public class CmsServer {
         // data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
+        // rpc handlers
+        dispatcher.registerDefaultHandler(new RpcCallHandler());
+        // negotiation handlers
+        dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(
+                negCfg.getApduSize(), negCfg.getAsduSize(),
+                negCfg.getProtocolVersion(), negCfg.getModelVersion()));
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }

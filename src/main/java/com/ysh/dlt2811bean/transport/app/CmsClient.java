@@ -28,6 +28,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -646,6 +647,39 @@ public class CmsClient {
         }
 
         return response;
+    }
+
+    /**
+     * RPC - rpcCall - Service Code 0x72
+     * Calls a remote procedure with request data.
+     *
+     * @param method  the method reference
+     * @param reqData the request data payload
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu rpcCall(String method, CmsType<?> reqData) throws Exception {
+        CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST)
+                .method(method)
+                .reqData(reqData);
+        return send(asdu);
+    }
+
+    /**
+     * RPC - rpcCall - Service Code 0x72 (continuation)
+     * Continues a previous RPC call using a call ID from a previous response.
+     *
+     * @param method the method reference (must match the original call)
+     * @param callId the call ID from a previous response's nextCallID
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu rpcCall(String method, byte[] callId) throws Exception {
+        CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST)
+                .method(method)
+                .callID(callId);
+        return send(asdu);
     }
 
     public CmsApdu test() throws Exception {

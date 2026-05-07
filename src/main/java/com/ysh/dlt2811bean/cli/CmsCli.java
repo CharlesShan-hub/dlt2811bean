@@ -14,6 +14,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
@@ -36,6 +37,7 @@ public class CmsCli {
         register(new ReleaseHandler());
         register(new AbortHandler());
         register(new TestHandler());
+        register(new RpcHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -285,6 +287,67 @@ public class CmsCli {
             }
             CmsApdu response = client.test();
             System.out.println("  Test " + (response != null ? "OK" : "failed"));
+        }
+    }
+
+    // ==================== RPC ====================
+
+    private class RpcHandler implements CommandHandler {
+        private final java.util.Map<String, byte[]> lastCallIds = new java.util.HashMap<>();
+
+        public String getName() { return "rpc"; }
+        public String getDescription() { return "远程过程调用 (ping/echo/iterate)"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("method", "方法名 (ping/echo/iterate)", "ping"),
+                new Param("data", "请求数据 (仅echo)", "hello")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String method = values.get("method");
+            String data = values.get("data");
+
+            if (method.equals("ping") || method.equals("pong")) {
+                CmsApdu response = client.rpcCall("ping", new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
+                System.out.println("  RPC ping: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
+                return;
+            }
+
+            if (method.equals("iterate")) {
+                byte[] lastId = lastCallIds.get("iterate");
+                CmsApdu response;
+                if (lastId != null) {
+                    response = client.rpcCall("iterate", lastId);
+                } else {
+                    response = client.rpcCall("iterate", new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
+                }
+
+                if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                    System.out.println("  RPC iterate failed");
+                    lastCallIds.remove("iterate");
+                    return;
+                }
+
+                CmsRpcCall rpc = (CmsRpcCall) response.getAsdu();
+                System.out.println("  RPC result: " + rpc.rspData);
+
+                if (rpc.nextCallID != null && rpc.nextCallID.get() != null && rpc.nextCallID.get().length > 0) {
+                    lastCallIds.put("iterate", rpc.nextCallID.get());
+                    System.out.println("  More data available — run 'rpc' with method=iterate to continue");
+                } else {
+                    lastCallIds.remove("iterate");
+                    System.out.println("  All data received");
+                }
+                return;
+            }
+
+            CmsApdu response = client.rpcCall("echo", new com.ysh.dlt2811bean.datatypes.string.CmsVisibleString(data));
+            System.out.println("  RPC echo: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
         }
     }
 
