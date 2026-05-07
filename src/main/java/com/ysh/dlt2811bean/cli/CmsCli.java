@@ -23,6 +23,7 @@ import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
@@ -54,6 +55,7 @@ public class CmsCli {
         register(new FileSetHandler());
         register(new FileDeleteHandler());
         register(new FileAttrHandler());
+        register(new FileDirHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -632,6 +634,42 @@ public class CmsCli {
             System.out.println("  File: " + attr.fileEntry.fileName.get());
             System.out.println("  Size: " + attr.fileEntry.fileSize.get() + " bytes");
             System.out.println("  CRC32: " + Long.toHexString(attr.fileEntry.checkSum.get()));
+        }
+    }
+
+    private class FileDirHandler implements CommandHandler {
+        public String getName() { return "file-dir"; }
+        public String getDescription() { return "列文件目录"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("path", "路径", "/"),
+                new Param("after", "参考文件名 (可选)", "")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String path = values.get("path");
+            String after = values.get("after");
+            CmsApdu response = after.isEmpty()
+                ? client.getFileDirectory(path)
+                : client.getFileDirectory(path, after);
+
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Request failed");
+                return;
+            }
+
+            CmsGetFileDirectory dir = (CmsGetFileDirectory) response.getAsdu();
+            System.out.println("  Files: " + dir.fileEntry.size());
+            for (int i = 0; i < dir.fileEntry.size(); i++) {
+                var entry = dir.fileEntry.get(i);
+                System.out.println("    [" + i + "] " + entry.fileName.get()
+                    + " (" + entry.fileSize.get() + " bytes)");
+            }
         }
     }
 

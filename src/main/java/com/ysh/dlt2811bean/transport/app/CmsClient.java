@@ -37,6 +37,7 @@ import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -842,6 +843,34 @@ public class CmsClient {
         CmsGetFileAttributeValues asdu = new CmsGetFileAttributeValues(MessageType.REQUEST)
                 .fileName(fileName);
         return send(asdu);
+    }
+
+    /**
+     * File - getFileDirectory - Service Code 0x84
+     * Lists files in a directory, optionally filtered by path, time range, and pagination.
+     *
+     * @param pathName   the directory path (e.g. "/" or "/data"), null for all
+     * @param fileAfter  optional filename to continue pagination from a previous response
+     * @return the response APDU containing file entries
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getFileDirectory(String pathName, String fileAfter) throws Exception {
+        CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.REQUEST);
+        if (pathName != null && !pathName.isEmpty()) {
+            asdu.pathName(pathName);
+        }
+        if (fileAfter != null && !fileAfter.isEmpty()) {
+            asdu.fileAfter(fileAfter);
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getFileDirectory(String pathName) throws Exception {
+        return getFileDirectory(pathName, null);
+    }
+
+    public CmsApdu getFileDirectory() throws Exception {
+        return getFileDirectory(null, null);
     }
 
     /**
