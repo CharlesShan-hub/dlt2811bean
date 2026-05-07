@@ -162,4 +162,11 @@ public class LoopbackTest {
         assertNotNull(client.getAssociationId());
         return response;
     }
+
+    public CmsApdu associate(String ap, String ep) throws Exception {
+        CmsApdu response = client.associate(ap, ep);
+        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
+        assertNotNull(client.getAssociationId());
+        return response;
+    }
 }

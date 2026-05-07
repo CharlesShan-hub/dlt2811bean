@@ -15,6 +15,7 @@ import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.AbortHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
 import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
+import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalDeviceDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.directory.GetServerDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
@@ -177,6 +178,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new ReleaseHandler());
         // directory handlers
         dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());
+        dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }

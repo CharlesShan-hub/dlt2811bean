@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
@@ -153,106 +154,6 @@ public class CmsClient {
         return securityEnabled;
     }
 
-    // ========================== Public Services API ========================
-
-    /**
-     * Associate - associate - Service Code 01
-     * Sends an Associate request to establish a connection.
-     * If security is enabled, automatically includes authentication certificate.
-     *
-     * @param ap        the access point name (optional, uses default if null)
-     * @param ep        the end point name (optional, uses default if null)
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu associate() throws Exception {
-        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(defaultAp, defaultEp);
-
-        if (securityEnabled && securityKeyPair != null) {
-            AuthenticationParameter authParam = createAuthenticationParameter();
-            asdu.authenticationParameter(authParam);
-        }
-
-        CmsApdu response = send(asdu);
-
-        // Save server certificate from response if present
-        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            CmsAssociate responseAsdu = (CmsAssociate) response.getAsdu();
-            if (responseAsdu.authenticationParameter() != null &&
-                responseAsdu.authenticationParameter().signatureCertificate() != null) {
-                byte[] certBytes = responseAsdu.authenticationParameter().signatureCertificate().get();
-                this.serverCertificate = GmCertificateParser.parseX509(certBytes);
-            }
-        }
-
-        return response;
-    }
-
-    public CmsApdu associate(String ap, String ep) throws Exception {
-        setAccessPoint(ap, ep);
-        return associate();
-    }
-
-
-    /**
-     * Associate - release - Service Code 02
-     * Sends a Release request to terminate the connection.
-     *
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu release() throws Exception {
-        CmsRelease asdu = new CmsRelease(MessageType.REQUEST);
-        CmsApdu response = send(asdu);
-        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            setAssociationId(null);
-        }
-        return response;
-    }
-
-    /**
-     * Associate - abort - Service Code 03
-     * Sends an Abort request to terminate the connection.
-     *
-     * @param reason the reason for aborting (optional)
-     * @throws Exception if not connected or timeout
-     */
-    public void abort() throws Exception {
-        abort(0);
-    }
-
-    public void abort(int reason) throws Exception {
-        CmsAbort asdu = new CmsAbort(MessageType.REQUEST).reason(reason);
-        doSendWithoutResponse(asdu);
-        close();
-    }
-
-    /**
-     * Test - test - Service Code 153
-     * Sends a Test request to verify the connection.
-     *
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu test() throws Exception {
-        CmsTest asdu = new CmsTest(MessageType.REQUEST);
-        return testEcho(asdu);
-    }
-
-    public CmsApdu getServerDirectory() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
-        return send(asdu);
-    }
-
-    public CmsApdu getServerDirectory(String referenceAfter) throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
     // ==================== Internal Echo ====================
 
     private CmsApdu testEcho(CmsTest asdu) throws Exception {
@@ -390,5 +291,146 @@ public class CmsClient {
                 certBytes.length, signature.length, fullSap);
 
         return authParam;
+    }
+
+    // ========================== Public Services API ========================
+
+    /**
+     * Associate - associate - Service Code 01
+     * Sends an Associate request to establish a connection.
+     * If security is enabled, automatically includes authentication certificate.
+     *
+     * @param ap        the access point name (optional, uses default if null)
+     * @param ep        the end point name (optional, uses default if null)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu associate() throws Exception {
+        CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
+                .serverAccessPointReference(defaultAp, defaultEp);
+
+        if (securityEnabled && securityKeyPair != null) {
+            AuthenticationParameter authParam = createAuthenticationParameter();
+            asdu.authenticationParameter(authParam);
+        }
+
+        CmsApdu response = send(asdu);
+
+        // Save server certificate from response if present
+        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            CmsAssociate responseAsdu = (CmsAssociate) response.getAsdu();
+            if (responseAsdu.authenticationParameter() != null &&
+                responseAsdu.authenticationParameter().signatureCertificate() != null) {
+                byte[] certBytes = responseAsdu.authenticationParameter().signatureCertificate().get();
+                this.serverCertificate = GmCertificateParser.parseX509(certBytes);
+            }
+        }
+
+        return response;
+    }
+
+    public CmsApdu associate(String ap, String ep) throws Exception {
+        setAccessPoint(ap, ep);
+        return associate();
+    }
+
+
+    /**
+     * Associate - release - Service Code 02
+     * Sends a Release request to terminate the connection.
+     *
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu release() throws Exception {
+        CmsRelease asdu = new CmsRelease(MessageType.REQUEST);
+        CmsApdu response = send(asdu);
+        if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            setAssociationId(null);
+        }
+        return response;
+    }
+
+    /**
+     * Associate - abort - Service Code 03
+     * Sends an Abort request to terminate the connection.
+     *
+     * @param reason the reason for aborting (optional)
+     * @throws Exception if not connected or timeout
+     */
+    public void abort() throws Exception {
+        abort(0);
+    }
+
+    public void abort(int reason) throws Exception {
+        CmsAbort asdu = new CmsAbort(MessageType.REQUEST).reason(reason);
+        doSendWithoutResponse(asdu);
+        close();
+    }
+
+    /**
+     * Directory - getServerDirectory - Service Code 80
+     * Sends a GetServerDirectory request to retrieve the server directory.
+     *
+     * @param referenceAfter the reference after which to continue the search (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+
+    public CmsApdu getServerDirectory() throws Exception {
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
+        return send(asdu);
+    }
+
+    public CmsApdu getServerDirectory(String referenceAfter) throws Exception {
+        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
+                .referenceAfter(referenceAfter);
+        return send(asdu);
+    }
+
+    /**
+     * Directory - getLogicalDeviceDirectory - Service Code 81
+     * Sends a GetLogicalDeviceDirectory request to retrieve the logical device directory.
+     * 
+     * @param ldName the logical device name (optional)
+     * @param referenceAfter the reference after which to continue the search (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+
+    public CmsApdu getLogicalDeviceDirectory() throws Exception {
+        CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalDeviceDirectory(String ldName) throws Exception {
+        CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST)
+                .ldName(ldName);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalDeviceDirectory(String ldName, String referenceAfter) throws Exception {
+        CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
+        if (ldName != null) {
+            asdu.ldName(ldName);
+        }
+        if (referenceAfter != null) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * Test - test - Service Code 153
+     * Sends a Test request to verify the connection.
+     *
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu test() throws Exception {
+        CmsTest asdu = new CmsTest(MessageType.REQUEST);
+        return testEcho(asdu);
     }
 }

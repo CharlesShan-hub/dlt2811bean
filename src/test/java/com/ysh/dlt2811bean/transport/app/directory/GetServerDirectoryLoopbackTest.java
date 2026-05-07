@@ -18,7 +18,7 @@ class GetServerDirectoryLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getServerDirectory();
-        log.info("Response: {}", response);
+        //log.info("Response: {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -26,10 +26,21 @@ class GetServerDirectoryLoopbackTest extends LoopbackTest {
         CmsGetServerDirectory asdu = (CmsGetServerDirectory) response.getAsdu();
         assertNotNull(asdu.reference());
         assertTrue(asdu.reference().size() > 0, "Should return at least one logical device");
+    }
 
-        log.info("Logical devices:");
-        for (int i = 0; i < asdu.reference().size(); i++) {
-            log.info("  [{}] {}", i, asdu.reference().get(i).get());
-        }
+    @Test
+    @DisplayName("GetServerDirectory returns logical device list")
+    void getServerDirectoryPositive2() throws Exception {
+        associate("D1Q1SB4", "S1");
+
+        CmsApdu response = client.getServerDirectory();
+        //log.info("Response: {}", response);
+
+        assertNotNull(response);
+        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
+
+        CmsGetServerDirectory asdu = (CmsGetServerDirectory) response.getAsdu();
+        assertNotNull(asdu.reference());
+        assertTrue(asdu.reference().size() > 0, "Should return at least one logical device");
     }
 }
