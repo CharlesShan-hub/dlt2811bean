@@ -13,6 +13,7 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
@@ -416,6 +417,44 @@ public class CmsClient {
         if (ldName != null) {
             asdu.ldName(ldName);
         }
+        if (referenceAfter != null) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * Directory - getLogicalNodeDirectoryByLd - Service Code 82
+     * Sends a GetLogicalNodeDirectoryByLd request to retrieve the logical node directory by logical device name.
+     * 
+     * @param ldName the logical device name (optional)
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getLogicalNodeDirectoryByLd(String ldName) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .ldName(ldName);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, String referenceAfter) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .ldName(ldName);
+        if (referenceAfter != null) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .lnReference(lnReference);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, String referenceAfter) throws Exception {
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .lnReference(lnReference);
         if (referenceAfter != null) {
             asdu.referenceAfter(referenceAfter);
         }

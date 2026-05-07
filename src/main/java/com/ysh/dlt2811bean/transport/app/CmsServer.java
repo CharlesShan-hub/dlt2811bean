@@ -12,12 +12,9 @@ import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
 import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
-import com.ysh.dlt2811bean.transport.protocol.association.AbortHandler;
-import com.ysh.dlt2811bean.transport.protocol.association.AssociateHandler;
-import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
-import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalDeviceDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.directory.GetServerDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
+import com.ysh.dlt2811bean.transport.protocol.association.*;
+import com.ysh.dlt2811bean.transport.protocol.directory.*;
+import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -179,6 +176,7 @@ public class CmsServer {
         // directory handlers
         dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());
+        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
         // test handlers
         dispatcher.registerDefaultHandler(new TestHandler());
     }
