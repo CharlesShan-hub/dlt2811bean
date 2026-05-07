@@ -30,6 +30,7 @@ import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParam
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
@@ -720,6 +721,35 @@ public class CmsClient {
 
     public CmsApdu getRpcInterfaceDefinition(String interfaceName) throws Exception {
         return getRpcInterfaceDefinition(interfaceName, null);
+    }
+
+    /**
+     * RPC - getRpcMethodDirectory - Service Code 0x6F
+     * Retrieves the list of method names for the specified interface.
+     * If interfaceName is null or empty, returns methods from all interfaces.
+     *
+     * @param interfaceName  the interface name (optional, null for all)
+     * @param referenceAfter optional method name to continue from a previous response
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getRpcMethodDirectory(String interfaceName, String referenceAfter) throws Exception {
+        CmsGetRpcMethodDirectory asdu = new CmsGetRpcMethodDirectory(MessageType.REQUEST);
+        if (interfaceName != null && !interfaceName.isEmpty()) {
+            asdu.interfaceName(interfaceName);
+        }
+        if (referenceAfter != null && !referenceAfter.isEmpty()) {
+            asdu.referenceAfter(referenceAfter);
+        }
+        return send(asdu);
+    }
+
+    public CmsApdu getRpcMethodDirectory(String interfaceName) throws Exception {
+        return getRpcMethodDirectory(interfaceName, null);
+    }
+
+    public CmsApdu getRpcMethodDirectory() throws Exception {
+        return getRpcMethodDirectory(null, null);
     }
 
     /**

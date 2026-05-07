@@ -16,6 +16,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntr
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
+import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -41,6 +42,7 @@ public class CmsCli {
         register(new TestHandler());
         register(new RpcHandler());
         register(new IfaceDefHandler());
+        register(new MethodDirHandler());
         register(new MethodDefHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
@@ -392,6 +394,51 @@ public class CmsCli {
             }
             if (def.moreFollows.get()) {
                 String last = def.method.get(def.method.size() - 1).name.get();
+                System.out.println("  More available — use after=" + last + " to continue");
+            }
+        }
+    }
+
+    // ==================== RPC Method Directory ====================
+
+    private class MethodDirHandler implements CommandHandler {
+        public String getName() { return "method-dir"; }
+        public String getDescription() { return "获取RPC方法目录 (IF1/IF2/空=全部)"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("iface", "接口名 (可选)", ""),
+                new Param("after", "参考点 (可选)", "")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String iface = values.get("iface");
+            String after = values.get("after");
+            CmsApdu response;
+            if (iface.isEmpty() && after.isEmpty()) {
+                response = client.getRpcMethodDirectory();
+            } else if (after.isEmpty()) {
+                response = client.getRpcMethodDirectory(iface);
+            } else {
+                response = client.getRpcMethodDirectory(iface.isEmpty() ? null : iface, after);
+            }
+
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Request failed");
+                return;
+            }
+
+            CmsGetRpcMethodDirectory dir = (CmsGetRpcMethodDirectory) response.getAsdu();
+            System.out.println("  Methods: " + dir.reference.size());
+            for (int i = 0; i < dir.reference.size(); i++) {
+                System.out.println("    [" + i + "] " + dir.reference.get(i).get());
+            }
+            if (dir.moreFollows.get()) {
+                String last = dir.reference.get(dir.reference.size() - 1).get();
                 System.out.println("  More available — use after=" + last + " to continue");
             }
         }
