@@ -34,6 +34,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -789,6 +790,27 @@ public class CmsClient {
         CmsGetFile asdu = new CmsGetFile(MessageType.REQUEST)
                 .fileName(fileName)
                 .startPosition(startPosition);
+        return send(asdu);
+    }
+
+    /**
+     * File - setFile - Service Code 0x81
+     * Writes a file chunk to the server. First chunk should use startPosition=1.
+     * Set endOfFile=true on the last chunk. Set startPosition=0 to cancel.
+     *
+     * @param fileName      the file path starting with "/"
+     * @param startPosition the 1-based start position, or 0 to cancel
+     * @param fileData      the data chunk to write
+     * @param endOfFile     true if this is the final chunk
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu setFile(String fileName, long startPosition, byte[] fileData, boolean endOfFile) throws Exception {
+        CmsSetFile asdu = new CmsSetFile(MessageType.REQUEST)
+                .fileName(fileName)
+                .startPosition(startPosition)
+                .fileData(fileData)
+                .endOfFile(endOfFile);
         return send(asdu);
     }
 
