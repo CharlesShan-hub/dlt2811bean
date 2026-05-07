@@ -38,6 +38,7 @@ import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
+import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -871,6 +872,20 @@ public class CmsClient {
 
     public CmsApdu getFileDirectory() throws Exception {
         return getFileDirectory(null, null);
+    }
+
+    /**
+     * Control - select - Service Code 0x44
+     * Selects a controllable object prior to an operate command.
+     *
+     * @param reference the object reference to select
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu select(String reference) throws Exception {
+        CmsSelect asdu = new CmsSelect(MessageType.REQUEST)
+                .reference(reference);
+        return send(asdu);
     }
 
     /**

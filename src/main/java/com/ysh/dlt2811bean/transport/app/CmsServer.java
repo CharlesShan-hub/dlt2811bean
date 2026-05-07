@@ -16,6 +16,7 @@ import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.association.*;
 import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
+import com.ysh.dlt2811bean.transport.protocol.control.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
@@ -219,6 +220,8 @@ public class CmsServer {
         // data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
+        // control handlers
+        dispatcher.registerDefaultHandler(new SelectHandler());
         // rpc handlers
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());
