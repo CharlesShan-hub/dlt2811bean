@@ -35,6 +35,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -811,6 +812,20 @@ public class CmsClient {
                 .startPosition(startPosition)
                 .fileData(fileData)
                 .endOfFile(endOfFile);
+        return send(asdu);
+    }
+
+    /**
+     * File - deleteFile - Service Code 0x82
+     * Deletes a file on the server. Protected builtin files cannot be deleted.
+     *
+     * @param fileName the file path starting with "/"
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu deleteFile(String fileName) throws Exception {
+        CmsDeleteFile asdu = new CmsDeleteFile(MessageType.REQUEST)
+                .fileName(fileName);
         return send(asdu);
     }
 
