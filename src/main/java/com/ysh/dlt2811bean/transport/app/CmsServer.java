@@ -153,15 +153,15 @@ public class CmsServer {
 
     public CmsServer loadScl(String filePath) throws Exception {
         this.sclDocument = new SclReader().read(filePath);
-        log.info("SCL model loaded from {}: IEDs={}", filePath,
-                 sclDocument.getIeds().size());
+        log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
+                 sclDocument.getFileType(), sclDocument.getIeds().size());
         return this;
     }
 
     public CmsServer loadScl(Path filePath) throws Exception {
         this.sclDocument = new SclReader().read(filePath);
-        log.info("SCL model loaded from {}: IEDs={}", filePath,
-                 sclDocument.getIeds().size());
+        log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
+                 sclDocument.getFileType(), sclDocument.getIeds().size());
         return this;
     }
 

@@ -14,6 +14,21 @@ import java.util.List;
 
 public class SclReader {
 
+    private boolean strictMode = false;
+
+    /**
+     * Enables strict validation mode that checks SCL file content against
+     * its detected type. For example, ICD files must not contain a Substation element.
+     */
+    public SclReader setStrictMode(boolean strictMode) {
+        this.strictMode = strictMode;
+        return this;
+    }
+
+    public boolean isStrictMode() {
+        return strictMode;
+    }
+
     public SclDocument read(String filePath) throws Exception {
         return read(Paths.get(filePath));
     }
@@ -23,7 +38,15 @@ public class SclReader {
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(filePath.toFile());
-        return parseDocument(doc);
+        SclDocument scl = parseDocument(doc);
+        scl.setOriginalFilePath(filePath.toString());
+        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
+            scl.setFileType(detectFileType(doc));
+        }
+        if (strictMode) {
+            validateStrict(scl, doc);
+        }
+        return scl;
     }
 
     public SclDocument read(InputStream inputStream) throws Exception {
@@ -31,7 +54,30 @@ public class SclReader {
         factory.setNamespaceAware(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(inputStream);
-        return parseDocument(doc);
+        SclDocument scl = parseDocument(doc);
+        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
+            scl.setFileType(detectFileType(doc));
+        }
+        if (strictMode) {
+            validateStrict(scl, doc);
+        }
+        return scl;
+    }
+
+    public SclDocument read(InputStream inputStream, String pathHint) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document doc = builder.parse(inputStream);
+        SclDocument scl = parseDocument(doc);
+        scl.setOriginalFilePath(pathHint);
+        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
+            scl.setFileType(detectFileType(doc));
+        }
+        if (strictMode) {
+            validateStrict(scl, doc);
+        }
+        return scl;
     }
 
     private SclDocument parseDocument(Document doc) {
@@ -818,6 +864,56 @@ public class SclReader {
         if (!ord.isEmpty()) ev.setOrd(Integer.parseInt(ord));
         ev.setValue(elem.getTextContent().trim());
         return ev;
+    }
+
+    private void validateStrict(SclDocument scl, Document doc) {
+        Element root = doc.getDocumentElement();
+        boolean hasSubstation = hasChild(root, "Substation");
+        boolean hasCommunication = hasChild(root, "Communication");
+        int iedCount = root.getElementsByTagName("IED").getLength();
+
+        switch (scl.getFileType()) {
+            case ICD:
+                if (hasSubstation) {
+                    throw new IllegalArgumentException(
+                        "ICD file must not contain a Substation element");
+                }
+                if (iedCount != 1) {
+                    throw new IllegalArgumentException(
+                        "ICD file must contain exactly 1 IED, found " + iedCount);
+                }
+                break;
+            case CID:
+                if (iedCount != 1) {
+                    throw new IllegalArgumentException(
+                        "CID file must contain exactly 1 IED, found " + iedCount);
+                }
+                break;
+            case SCD:
+                if (iedCount < 1) {
+                    throw new IllegalArgumentException(
+                        "SCD file must contain at least 1 IED");
+                }
+                break;
+        }
+    }
+
+    private SclDocument.SclFileType detectFileType(Document doc) {
+        Element root = doc.getDocumentElement();
+        boolean hasSubstation = hasChild(root, "Substation");
+        boolean hasCommunication = hasChild(root, "Communication");
+        int iedCount = root.getElementsByTagName("IED").getLength();
+
+        if (hasSubstation && hasCommunication && iedCount >= 1) {
+            return SclDocument.SclFileType.SCD;
+        }
+        if (!hasSubstation && hasCommunication && iedCount == 1) {
+            return SclDocument.SclFileType.CID;
+        }
+        if (!hasSubstation && !hasCommunication && iedCount == 1) {
+            return SclDocument.SclFileType.ICD;
+        }
+        return SclDocument.SclFileType.UNKNOWN;
     }
 
     private Element getChild(Element parent, String tagName) {

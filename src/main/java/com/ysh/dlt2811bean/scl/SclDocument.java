@@ -10,6 +10,13 @@ import java.util.List;
 
 public class SclDocument {
 
+    public enum SclFileType {
+        SCD,   // Substation Configuration Description — 全站配置文件
+        ICD,   // IED Capability Description — 装置能力描述文件
+        CID,   // Configured IED Description — 已配置的 IED 描述文件
+        UNKNOWN
+    }
+
     private String xmlns = "http://www.iec.ch/61850/2006/SCL";
     private String xsiSchemaLocation = "http://www.iec.ch/61850/2006/SCL SCL.xsd";
 
@@ -18,6 +25,9 @@ public class SclDocument {
     private SclCommunication communication;
     private List<SclIED> ieds = new ArrayList<>();
     private SclDataTypeTemplates dataTypeTemplates;
+
+    private SclFileType fileType = SclFileType.UNKNOWN;
+    private String originalFilePath;
 
     public SclDocument() {
     }
@@ -107,5 +117,21 @@ public class SclDocument {
             return null;
         }
         return firstIed.getName() + "." + aps.get(0).getName();
+    }
+
+    public SclFileType getFileType() {
+        return fileType;
+    }
+
+    public void setFileType(SclFileType fileType) {
+        this.fileType = fileType;
+    }
+
+    public String getOriginalFilePath() {
+        return originalFilePath;
+    }
+
+    public void setOriginalFilePath(String originalFilePath) {
+        this.originalFilePath = originalFilePath;
     }
 }
