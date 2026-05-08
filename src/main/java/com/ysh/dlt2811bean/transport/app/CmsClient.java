@@ -248,7 +248,7 @@ public class CmsClient {
 
             session.onDataActivity();
 
-            // Test echo: complete the pending request registered with ReqID=0
+            // Test echo: respond to keep-alive Test messages from the server
             if (apdu.getReqId() == 0 && apdu.getApch().getServiceCode() == ServiceName.TEST) {
                 PendingRequest pending = session.removePendingRequest(0);
                 if (pending != null) {
@@ -256,6 +256,16 @@ public class CmsClient {
                     log.debug("Received Test echo, response delivered");
                     return;
                 }
+                if (!apdu.getApch().isResp()) {
+                    CmsTest echo = new CmsTest(MessageType.RESPONSE_POSITIVE);
+                    try {
+                        conn.send(new CmsApdu(echo));
+                        log.debug("Test echo sent to server");
+                    } catch (Exception e) {
+                        log.warn("Failed to echo Test: {}", e.getMessage());
+                    }
+                }
+                return;
             }
 
             session.dispatchResponse(apdu);

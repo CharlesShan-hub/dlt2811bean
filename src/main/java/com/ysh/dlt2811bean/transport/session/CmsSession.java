@@ -77,7 +77,12 @@ public abstract class CmsSession {
     public void setNegotiated(boolean negotiated) { this.negotiated = negotiated; }
 
     public int getNegotiatedApduSize() { return negotiatedApduSize; }
-    public void setNegotiatedApduSize(int negotiatedApduSize) { this.negotiatedApduSize = negotiatedApduSize; }
+    public void setNegotiatedApduSize(int negotiatedApduSize) {
+        this.negotiatedApduSize = negotiatedApduSize;
+        if (connection != null) {
+            connection.setMaxFrameSize(negotiatedApduSize);
+        }
+    }
 
     public int getPeerAsduSize() { return peerAsduSize; }
     public void setPeerAsduSize(int peerAsduSize) { this.peerAsduSize = peerAsduSize; }

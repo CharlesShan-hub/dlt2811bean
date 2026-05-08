@@ -6,34 +6,21 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.svc.AsduFactory;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * APDU (Application Protocol Data Unit) — the complete application-layer frame.
- *
- * <p>APDU consists of an APCH (4-byte header) followed by an ASDU (service payload).
- *
- * <p><b>APDU Structure:</b></p>
- * <pre>
- * ┌──────────────────────┬──────────────────────┐
- * │ APCH (4B)            │ ASDU (variable)      │
- * │ CC + SC + FL         │ ReqID + Service Data │
- * └──────────────────────┴──────────────────────┘
- * </pre>
  */
 public class CmsApdu implements CmsType<CmsApdu> {
 
     public static final int MAX_ASDU_SIZE = 65531;
 
-    private CmsApch apch = new CmsApch();
-    private CmsAsdu<?> asdu;
-    private MessageType messageType;
-    private byte[] asduBytes;
-    private boolean segmented;
-    private int actualAsduSize;
-    private int reqId;
+    public CmsApch apch = new CmsApch();
+    public CmsAsdu<?> asdu;
+    public MessageType messageType;
+    public byte[] asduBytes;
+    public boolean segmented;
+    public int actualAsduSize;
+    public int reqId;
 
     // for encode
     public CmsApdu(CmsAsdu<?> asdu) {
@@ -81,11 +68,6 @@ public class CmsApdu implements CmsType<CmsApdu> {
 
     @Override
     public void encode(PerOutputStream pos) {
-        if (actualAsduSize > MAX_ASDU_SIZE) {
-            throw new IllegalStateException(
-                "ASDU size " + actualAsduSize + " exceeds maximum " + MAX_ASDU_SIZE
-                + ", call split() first");
-        }
         apch.encode(pos);
         pos.writeBytes(asduBytes);
     }
@@ -94,18 +76,13 @@ public class CmsApdu implements CmsType<CmsApdu> {
     public CmsApdu decode(PerInputStream pis) throws Exception {
         load(pis);
         if (apch.isNext()) {
-            throw new IllegalStateException("Cannot decode segmented frame, use decode(PerInputStream, List) instead");
+            throw new IllegalStateException("Cannot decode segmented frame, use CmsFrameManager instead");
         }
         asdu = AsduFactory.create(apch.getServiceCode(), apch.isResp(), apch.isErr());
         asdu.decode(new PerInputStream(asduBytes));
         messageType = asdu.messageType();
         reqId = asdu.reqId().get();
         return this;
-    }
-
-    public CmsApdu decode(PerInputStream pis, List<CmsApdu> previous) throws Exception {
-        load(pis);
-        return merge(previous);
     }
 
     /**
@@ -129,79 +106,10 @@ public class CmsApdu implements CmsType<CmsApdu> {
         apch.decode(pis);
         int len = apch.getFrameLength();
         asduBytes = pis.readBytes(len);
-        // ReqID is the first 2 bytes of ASDU (after APCH).
-        // For FL=0 (Test service, no ASDU), reqId stays 0 (not applicable).
         if (asduBytes.length >= 2) {
             reqId = ((asduBytes[0] & 0xFF) << 8) | (asduBytes[1] & 0xFF);
         }
-        // else: FL=0 (e.g. Test), reqId = 0 — caller must not rely on it.
         return this;
-    }
-
-    public CmsApdu merge(List<CmsApdu> previous) throws Exception {
-        int totalLen = 0;
-        for (CmsApdu seg : previous) {
-            if (seg.asduBytes == null) {
-                throw new IllegalStateException("All segments must have asduBytes loaded");
-            }
-            totalLen += seg.asduBytes.length;
-        }
-        totalLen += asduBytes.length;
-
-        byte[] merged = new byte[totalLen];
-        int offset = 0;
-        for (CmsApdu seg : previous) {
-            System.arraycopy(seg.asduBytes, 0, merged, offset, seg.asduBytes.length);
-            offset += seg.asduBytes.length;
-        }
-        System.arraycopy(this.asduBytes, 0, merged, offset, this.asduBytes.length);
-
-        this.asduBytes = merged;
-        this.actualAsduSize = merged.length;
-        this.apch.next(false);
-        this.apch.frameLength(Math.min(merged.length, MAX_ASDU_SIZE));
-        this.segmented = false;
-        this.asdu = AsduFactory.create(apch.getServiceCode(), apch.isResp(), apch.isErr());
-        this.asdu.decode(new PerInputStream(merged));
-        reqId = asdu.reqId().get();
-        return this;
-    }
-
-    public List<CmsApdu> split() {
-        if (asduBytes == null) {
-            throw new IllegalStateException("ASDU not encoded yet");
-        }
-
-        int totalLen = asduBytes.length;
-        if (totalLen <= MAX_ASDU_SIZE) {
-            return Collections.singletonList(this);
-        }
-
-        List<CmsApdu> segments = new ArrayList<>();
-        int offset = 0;
-        while (offset < totalLen) {
-            int chunkSize = Math.min(MAX_ASDU_SIZE, totalLen - offset);
-            byte[] chunk = new byte[chunkSize];
-            System.arraycopy(asduBytes, offset, chunk, 0, chunkSize);
-
-            boolean isLast = (offset + chunkSize >= totalLen);
-
-            CmsApdu segment = new CmsApdu();
-            segment.asdu = this.asdu;
-            segment.messageType = this.messageType;
-            segment.asduBytes = chunk;
-            segment.segmented = true;
-            segment.actualAsduSize = chunkSize;
-            segment.reqId = this.reqId;
-            segment.apch.fromMessageType(this.messageType);
-            segment.apch.serviceCode(asdu.getServiceName());
-            segment.apch.next(!isLast);
-            segment.apch.frameLength(chunkSize);
-
-            segments.add(segment);
-            offset += chunkSize;
-        }
-        return segments;
     }
 
     @Override

@@ -5,6 +5,8 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsControlCode;
+import com.ysh.dlt2811bean.transport.protocol.CmsFrameManager;
+import com.ysh.dlt2811bean.transport.protocol.CmsFrameManager.FrameFormatException;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -12,19 +14,10 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * A single TCP connection for CMS protocol.
- *
- * <p>Provides APDU-level send/receive over a socket connection.
- * The read loop runs in a background thread started by {@link #startReadLoop()}.
- *
- * <p>Thread safety: multiple threads may call {@link #send(CmsApdu)} concurrently.
- * The read loop is single-threaded.
  */
 public class CmsConnection {
 
@@ -32,30 +25,15 @@ public class CmsConnection {
     private final DataInputStream dis;
     private final DataOutputStream dos;
     private final CmsTransportListener listener;
+    private final CmsFrameManager frameManager = new CmsFrameManager();
 
-    /**
-     * Tracks in-flight segmented frames by ReqID.
-     * Key: ReqID (from first 2 bytes of ASDU)
-     * Value: accumulated segments (all with isNext=true except the last)
-     */
-    private final Map<Integer, List<CmsApdu>> pending = new HashMap<>();
+    /** 分帧时的最大帧大小 (FL)，默认标准上限 65531 */
+    private volatile int maxFrameSize = CmsApdu.MAX_ASDU_SIZE;
 
     private volatile boolean running;
 
-    /** 连续收到的错误帧计数器，超阈值会主动断开连接 */
     private int consecutiveErrors;
-    /** 连续错误阈值，超过此值主动中断连接 */
     private static final int MAX_CONSECUTIVE_ERRORS = 5;
-
-    /**
-     * Marker exception for frame format errors (PI/SC/FL) that should NOT
-     * cause a disconnect — the frame is discarded and the connection stays alive.
-     */
-    public static class FrameFormatException extends Exception {
-        public FrameFormatException(String message) {
-            super(message);
-        }
-    }
 
     /**
      * Creates a connection over an existing socket.
@@ -87,12 +65,24 @@ public class CmsConnection {
      * @throws IOException if the send fails
      */
     public void send(CmsApdu apdu) throws IOException {
-        List<CmsApdu> segments = apdu.split();
+        List<CmsApdu> segments = CmsFrameManager.split(apdu, maxFrameSize);
         synchronized (dos) {
             for (CmsApdu seg : segments) {
                 sendOne(seg);
             }
         }
+    }
+
+    /**
+     * Sets the maximum frame size for outgoing frames.
+     * After negotiation, this should be set to the negotiated APDU size.
+     */
+    public void setMaxFrameSize(int maxFrameSize) {
+        this.maxFrameSize = Math.min(maxFrameSize, CmsApdu.MAX_ASDU_SIZE);
+    }
+
+    public int getMaxFrameSize() {
+        return maxFrameSize;
     }
 
     private void sendOne(CmsApdu apdu) throws IOException {
@@ -105,47 +95,16 @@ public class CmsConnection {
 
     /**
      * Reads the next complete APDU from the connection (blocking).
-     *
-     * <p>Handles segmented frames by accumulating all segments with the same
-     * ReqID before returning. Multiple concurrent requests are supported
-     * (interleaved frames are reassembled independently by ReqID).
-     *
-     * <p>When a new frame arrives with a ReqID that already has pending segments,
-     * the pending group is cleared (protocol violation: ReqID reused before completion).
-     *
-     * @return the complete APDU (merged if segmented)
-     * @throws FrameFormatException if the frame has format errors (frame is discarded)
-     * @throws Exception if receive fails or connection is closed
      */
     public CmsApdu receive() throws Exception {
-        CmsApdu seg = loadSegment();
-        int reqId = seg.getReqId();
-
-        if (pending.containsKey(reqId)) {
-            pending.remove(reqId);
-            throw new FrameFormatException("ReqID " + reqId + " reused before previous transfer completed");
-        }
-
-        List<CmsApdu> segments = new ArrayList<>();
-        segments.add(seg);
-
-        while (seg.getApch().isNext()) {
-            seg = loadSegment();
-            if (seg.getReqId() != reqId) {
-                pending.remove(reqId);
-                throw new FrameFormatException(
-                    "Segment ReqID mismatch: expected " + reqId + ", got " + seg.getReqId());
+        while (true) {
+            CmsApdu seg = loadSegment();
+            CmsApdu complete = frameManager.addSegment(seg);
+            if (complete != null) {
+                complete.decodeAsdu();
+                return complete;
             }
-            segments.add(seg);
         }
-
-        if (segments.size() > 1) {
-            CmsApdu last = segments.removeLast();
-            last.merge(segments);
-        } else {
-            segments.getFirst().decodeAsdu();
-        }
-        return segments.getFirst();
     }
 
     private CmsApdu loadSegment() throws Exception {

@@ -197,7 +197,7 @@ public class KeepAliveManager {
         try {
             CmsTest test = new CmsTest();
             CmsApdu apdu = new CmsApdu(test);
-            session.send(apdu);
+            session.getConnection().send(apdu);
         } catch (Exception e) {
             log.warn("[{}] KeepAlive: failed to send Test: {}", session.getSessionId(), e.getMessage());
         }

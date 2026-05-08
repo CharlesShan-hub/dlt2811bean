@@ -4,6 +4,7 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.transport.protocol.CmsFrameManager;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
@@ -135,7 +136,7 @@ class CmsAssociateTest implements
                 .reqId(1);
 
         CmsApdu apdu = new CmsApdu(asdu);
-        List<CmsApdu> segments = apdu.split();
+        List<CmsApdu> segments = CmsFrameManager.split(apdu);
         assertTrue(segments.size() >= 2, "Should produce at least 2 segments");
 
         PerOutputStream pos = new PerOutputStream();
@@ -152,10 +153,10 @@ class CmsAssociateTest implements
             loaded.add(seg);
         } while (seg.getApch().isNext());
 
-        CmsApdu last = loaded.removeLast();
-        last.merge(loaded);
+        CmsApdu merged = CmsFrameManager.merge(loaded);
+        merged.decodeAsdu();
 
-        CmsAssociate result = (CmsAssociate) last.getAsdu();
+        CmsAssociate result = (CmsAssociate) merged.getAsdu();
         assertEquals(1, result.reqId().get());
         assertEquals("IED1.AP1", result.serverAccessPointReference().get());
         assertArrayEquals(largeCert, result.authenticationParameter().signatureCertificate.get());
