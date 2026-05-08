@@ -80,7 +80,7 @@ public abstract class CmsSession {
     public void setNegotiatedApduSize(int negotiatedApduSize) {
         this.negotiatedApduSize = negotiatedApduSize;
         if (connection != null) {
-            connection.setMaxFrameSize(negotiatedApduSize);
+            connection.setMaxFrameSize(negotiatedApduSize - 4);
         }
     }
 

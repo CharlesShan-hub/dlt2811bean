@@ -262,9 +262,9 @@ public final class PerInteger {
             pos.writeByteAligned(high);
             pos.writeByteAligned(low);
         } else {
-            // Long form: 11 + fragment count
+            // Long form: 11 + (fragments - 1) in low 6 bits
             int fragments = (length + 16383) / 16384;
-            byte header = (byte) ((fragments << 4) | 0xC0);
+            byte header = (byte) (((fragments - 1) & 0x3F) | 0xC0);
             pos.writeByteAligned(header);
 
             int remaining = length;
@@ -300,8 +300,8 @@ public final class PerInteger {
             return ((firstByte & 0x3F) << 8) | secondByte;
         }
 
-        // Long form: 11xxxxxxxxxxxx
-        int numFragments = (firstByte >> 4) & 0x07;
+        // Long form: 11 + (fragments - 1) in low 6 bits
+        int numFragments = (firstByte & 0x3F) + 1;
         int totalLength = 0;
         for (int i = 0; i < numFragments; i++) {
             int hi = pis.readByteAligned() & 0xFF;

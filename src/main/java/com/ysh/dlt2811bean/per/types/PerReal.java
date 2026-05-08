@@ -5,10 +5,16 @@ import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
 /**
- * ASN.1 REAL type — APER codec.
+ * DL/T 2811 Float32 / Float64 — IEEE 754 codec.
  *
- * <p>ASN.1 type: <b>REAL</b> (ITU-T X.680 §24)
- * <br>Encoding rules: ITU-T X.691 §19
+ * <p><b>NOTE: This is NOT a standard ASN.1 PER REAL (X.691 §19) codec.
+ * It is purpose-built for the custom Float32 / Float64 data types
+ * defined in the DL/T 2811 protocol.</b>
+ *
+ * <p>The standard ASN.1 REAL type uses base/exponent/mantissa encoding,
+ * whereas DL/T 2811's CmsFloat32/CmsFloat64 map directly to IEEE 754
+ * binary representation. Hence this class uses a simplified encoding:
+ * 1-bit zero flag + aligned IEEE 754 bytes.
  *
  * <p>DL/T 2811 usage:
  * <ul>

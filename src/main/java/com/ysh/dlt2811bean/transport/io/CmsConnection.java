@@ -78,7 +78,7 @@ public class CmsConnection {
      * After negotiation, this should be set to the negotiated APDU size.
      */
     public void setMaxFrameSize(int maxFrameSize) {
-        this.maxFrameSize = Math.min(maxFrameSize, CmsApdu.MAX_ASDU_SIZE);
+        this.maxFrameSize = Math.max(1, Math.min(maxFrameSize, CmsApdu.MAX_ASDU_SIZE));
     }
 
     public int getMaxFrameSize() {

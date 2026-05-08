@@ -84,6 +84,7 @@ public class CmsCli {
     public void run() {
         System.out.println("CMS CLI v1.0 — Type 'help' for commands, 'exit' to quit");
         while (running) {
+            System.out.println();
             System.out.print("cms> ");
             String line = scanner.nextLine().trim().toLowerCase();
 
@@ -98,12 +99,18 @@ public class CmsCli {
             try {
                 Map<String, String> values = new HashMap<>();
                 for (Param param : handler.getParams()) {
-                    String prompt = param.getPrompt();
-                    if (param.getDefaultValue() != null) {
-                        prompt += " [" + param.getDefaultValue() + "]";
+                    if (!param.getEnumChoices().isEmpty()) {
+                        System.out.println("  " + param.getPrompt() + ":");
+                        for (Param.EnumChoice ec : param.getEnumChoices()) {
+                            System.out.println("    " + ec.value + "  " + ec.label);
+                        }
                     }
-                    prompt += ": ";
-                    System.out.print(prompt);
+                    String simplePrompt = param.getEnumChoices().isEmpty() ? param.getPrompt() : "  值";
+                    if (param.getDefaultValue() != null) {
+                        simplePrompt += " [" + param.getDefaultValue() + "]";
+                    }
+                    simplePrompt += ": ";
+                    System.out.print(simplePrompt);
                     String input = scanner.nextLine().trim();
 
                     if (input.isEmpty()) {
@@ -145,7 +152,6 @@ public class CmsCli {
             }
             System.out.println("  " + padRight("help", 18) + "显示帮助信息");
             System.out.println("  " + padRight("exit", 18) + "退出程序");
-            System.out.println();
         }
         private String padRight(String s, int n) {
             return String.format("%-" + n + "s", s);
@@ -175,8 +181,7 @@ public class CmsCli {
             return List.of(
                 new Param("host", "服务器 IP", "127.0.0.1"),
                 new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getPort())),
-                new Param("apduSize", "APDU 大小（留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getApduSize())),
-                new Param("asduSize", "ASDU 大小", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
+                new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
                 new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
                 new Param("ap", "AccessPoint", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
                 new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp())
@@ -188,10 +193,10 @@ public class CmsCli {
             client.connect(host, port);
             System.out.println("  Connected to " + host + ":" + port);
 
-            String apduSizeStr = values.get("apduSize");
-            if (!apduSizeStr.isEmpty()) {
-                int apduSize = Integer.parseInt(apduSizeStr);
-                int asduSize = Integer.parseInt(values.get("asduSize"));
+            String asduSizeStr = values.get("asduSize");
+            if (!asduSizeStr.isEmpty()) {
+                int asduSize = Integer.parseInt(asduSizeStr);
+                int apduSize = asduSize + 4;
                 long protocolVersion = Long.parseLong(values.get("protocolVersion"));
                 String ap = values.get("ap");
                 String ep = values.get("ep");
@@ -203,7 +208,7 @@ public class CmsCli {
                     System.out.println("  Negotiate failed");
                     return;
                 }
-                System.out.println("  Negotiated OK");
+                System.out.println("  Negotiated OK (asduSize=" + asduSize + ")");
 
                 CmsApdu assocResponse = client.associate();
                 if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
@@ -317,7 +322,13 @@ public class CmsCli {
         public String getName() { return "abort"; }
         public String getDescription() { return "异常中止关联"; }
         public List<Param> getParams() {
-            return List.of(new Param("reason", "中止原因 (0=normal, 4=other)", "4"));
+            return List.of(new Param("reason", "中止原因", "4", List.of(
+                new Param.EnumChoice("0", "正常中止"),
+                new Param.EnumChoice("1", "内存不足"),
+                new Param.EnumChoice("2", "通信中断"),
+                new Param.EnumChoice("3", "未知错误"),
+                new Param.EnumChoice("4", "其他")
+            )));
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
@@ -353,7 +364,11 @@ public class CmsCli {
         public String getDescription() { return "远程过程调用 (ping/echo/iterate)"; }
         public List<Param> getParams() {
             return List.of(
-                new Param("method", "方法名 (ping/echo/iterate)", "ping"),
+                new Param("method", "RPC 方法", "ping", List.of(
+                    new Param.EnumChoice("ping", "通信测试"),
+                    new Param.EnumChoice("echo", "回声测试（发送数据并返回）"),
+                    new Param.EnumChoice("iterate", "迭代遍历（分页读取数据）")
+                )),
                 new Param("data", "请求数据 (仅echo)", "hello")
             );
         }
@@ -1041,7 +1056,17 @@ public class CmsCli {
         public List<Param> getParams() {
             return List.of(
                 new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-                new Param("acsi", "ACSI 类 (DATA_OBJECT/DATA_SET/BRCB/URCB/LCB/GO_CB/MSV_CB)", "DATA_OBJECT")
+                new Param("acsi", "ACSI 类", "DATA_OBJECT", List.of(
+                    new Param.EnumChoice("DATA_OBJECT", "数据对象"),
+                    new Param.EnumChoice("DATA_SET", "数据集"),
+                    new Param.EnumChoice("BRCB", "报告控制块（缓存）"),
+                    new Param.EnumChoice("URCB", "报告控制块（非缓存）"),
+                    new Param.EnumChoice("LCB", "日志控制块"),
+                    new Param.EnumChoice("LOG", "日志"),
+                    new Param.EnumChoice("SGCB", "定值组控制块"),
+                    new Param.EnumChoice("GO_CB", "GOOSE 控制块"),
+                    new Param.EnumChoice("MSV_CB", "采样值控制块")
+                ))
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
@@ -1160,7 +1185,14 @@ public class CmsCli {
         public List<Param> getParams() {
             return List.of(
                 new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-                new Param("type", "类型 (URCB/BRCB/LCB/GO_CB/MSV_CB/SGCB)", "URCB")
+                new Param("type", "控制块类型", "URCB", List.of(
+                    new Param.EnumChoice("BRCB", "报告控制块（缓存）"),
+                    new Param.EnumChoice("URCB", "报告控制块（非缓存）"),
+                    new Param.EnumChoice("LCB", "日志控制块"),
+                    new Param.EnumChoice("GO_CB", "GOOSE 控制块"),
+                    new Param.EnumChoice("MSV_CB", "采样值控制块"),
+                    new Param.EnumChoice("SGCB", "定值组控制块")
+                ))
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
