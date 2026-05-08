@@ -13,8 +13,6 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     private boolean fieldsRegistered = false;
     private final List<String> fieldNames = new ArrayList<>();
-    private final List<Boolean> fieldOptional = new ArrayList<>();
-    private final Set<String> presentFields = new HashSet<>();
     private final Set<String> removedFields = new HashSet<>();
 
     protected AbstractCmsCompound(String typeName) {
@@ -38,7 +36,8 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
                 if (ann != null && !fieldNames.contains(f.getName())
                         && !removedFields.contains(f.getName())
                         && acceptField(ann)) {
-                    registerField(f.getName(), ann.optional());
+                    registerField(f.getName());
+                    getField(f.getName()).setOptional(ann.optional());
                 }
             }
         }
@@ -50,19 +49,11 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
 
     protected final void registerField(String name) {
         fieldNames.add(name);
-        fieldOptional.add(false);
-    }
-
-    private void registerField(String name, boolean optional) {
-        if (!fieldNames.contains(name)) {
-            fieldNames.add(name);
-            fieldOptional.add(optional);
-        }
     }
 
     protected final void registerOptionalField(String name) {
         fieldNames.add(name);
-        fieldOptional.add(true);
+        getField(name).setOptional(true);
     }
 
     protected final void removeField(String name) {
@@ -70,12 +61,16 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         int idx = fieldNames.indexOf(name);
         if (idx >= 0) {
             fieldNames.remove(idx);
-            fieldOptional.remove(idx);
         }
     }
 
     public boolean isFieldPresent(String name) {
-        return presentFields.contains(name);
+        return getField(name).isPresent();
+    }
+
+    public T setFieldPresent(String name, boolean present) {
+        getField(name).setPresent(present);
+        return self();
     }
 
     private AbstractCmsType<?> getField(String name) {
@@ -95,16 +90,17 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
         ensureFieldsRegistered();
         validate();
         for (int i = 0; i < fieldNames.size(); i++) {
-            if (fieldOptional.get(i)) {
-                pos.writeBit(!getField(fieldNames.get(i)).isDefault());
+            String name = fieldNames.get(i);
+            AbstractCmsType<?> field = getField(name);
+            if (field.isOptional()) {
+                pos.writeBit(field.isPresent());
             }
         }
         for (int i = 0; i < fieldNames.size(); i++) {
             String name = fieldNames.get(i);
-            if (fieldOptional.get(i) && getField(name).isDefault()) {
-                continue;
-            }
-            getField(name).encode(pos);
+            AbstractCmsType<?> field = getField(name);
+            if (field.isOptional() && !field.isPresent()) continue;
+            field.encode(pos);
         }
     }
 
@@ -112,17 +108,18 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
     @SuppressWarnings("unchecked")
     public T decode(PerInputStream pis) throws Exception {
         ensureFieldsRegistered();
-        presentFields.clear();
         for (int i = 0; i < fieldNames.size(); i++) {
-            if (fieldOptional.get(i) && pis.readBit()) {
-                presentFields.add(fieldNames.get(i));
+            String name = fieldNames.get(i);
+            AbstractCmsType<?> field = getField(name);
+            if (field.isOptional()) {
+                field.setPresent(pis.readBit());
             }
         }
         for (int i = 0; i < fieldNames.size(); i++) {
-            if (fieldOptional.get(i) && !presentFields.contains(fieldNames.get(i))) {
-                continue;
-            }
-            getField(fieldNames.get(i)).decode(pis);
+            String name = fieldNames.get(i);
+            AbstractCmsType<?> field = getField(name);
+            if (field.isOptional() && !field.isPresent()) continue;
+            field.decode(pis);
         }
         validate();
         return (T) this;
@@ -139,9 +136,8 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>>
                 AbstractCmsType<?> clonedField = (AbstractCmsType<?>) field.copy();
                 java.lang.reflect.Field f = getClass().getField(name);
                 f.set(clone, clonedField);
-            }
-            ((AbstractCmsCompound<?>) clone).presentFields.addAll(this.presentFields);
-            return clone;
+        }
+        return clone;
         } catch (Exception e) {
             throw new RuntimeException("Failed to copy " + typeName, e);
         }

@@ -45,11 +45,6 @@ public abstract class AbstractCmsCollection<T extends AbstractCmsCollection<T, E
         return value.iterator();
     }
 
-    @Override
-    public boolean isDefault() {
-        return value.isEmpty();
-    }
-
     protected void encodeLengthPrefix(PerOutputStream pos) {
         if (capacity <= 0) {
             throw new IllegalStateException("capacity must be set before encode");

@@ -72,6 +72,7 @@ public abstract class AbstractCmsPackedList<T extends AbstractCmsPackedList<T>>
         checkBitPos(pos);
         if (value) this.value |= (1L << pos);
         else       this.value &= ~(1L << pos);
+        this.present = true;
         if (value && pos >= bitLength) {
             bitLength = pos + 1;
         }
@@ -102,6 +103,7 @@ public abstract class AbstractCmsPackedList<T extends AbstractCmsPackedList<T>>
         long mask = (1L << width) - 1;
         value &= ~(mask << pos);
         value |= ((long) (fieldValue & mask) << pos);
+        this.present = true;
         int end = pos + width;
         if (end > bitLength) {
             bitLength = end;

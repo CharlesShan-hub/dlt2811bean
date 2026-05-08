@@ -90,8 +90,10 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
     public CmsSetDataValues addData(String reference, String fc, com.ysh.dlt2811bean.datatypes.type.CmsType<?> value) {
         CmsSetDataValuesEntry entry = new CmsSetDataValuesEntry()
             .reference(reference)
-            .fc(fc)
             .value(value);
+        if (fc != null && !fc.isEmpty()) {
+            entry.fc(fc);
+        }
         this.data.add(entry);
         return this;
     }

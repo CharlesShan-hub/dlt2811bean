@@ -47,6 +47,7 @@ public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V> 
             validateRange(value);
         }
         this.value = value;
+        this.present = true;
         return self();
     }
 

@@ -37,6 +37,7 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> ex
         checkBitPos(pos);
         if (value) this.value |= (1L << pos);
         else       this.value &= ~(1L << pos);
+        this.present = true;
         return self();
     }
 
@@ -65,8 +66,9 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>> ex
     @Override
     public T setBits(int pos, int width, int fieldValue) {
         long mask = (1L << width) - 1;
-        value &= ~(mask << pos);            // clear the field
-        value |= ((long) (fieldValue & mask) << pos);  // set the new value
+        value &= ~(mask << pos);
+        value |= ((long) (fieldValue & mask) << pos);
+        this.present = true;
         return self();
     }
 

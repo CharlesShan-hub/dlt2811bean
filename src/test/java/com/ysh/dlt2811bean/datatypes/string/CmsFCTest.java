@@ -102,7 +102,7 @@ class CmsFCTest {
     @DisplayName("encode/decode default (empty)")
     void encodeDecodeDefault() throws Exception {
         CmsFC fc = new CmsFC();
-        assertTrue(fc.isDefault());
+        assertFalse(fc.isPresent());
 
         // encoding empty FC directly is invalid for fixed-size 2
         // should only be used as optional field in a compound

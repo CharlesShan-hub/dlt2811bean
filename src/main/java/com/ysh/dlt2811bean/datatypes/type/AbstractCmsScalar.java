@@ -8,6 +8,7 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
     protected AbstractCmsScalar(String typeName, V defaultValue) {
         super(typeName);
         this.value = defaultValue;
+        this.present = false;
     }
 
     @Override
@@ -16,6 +17,7 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
             throw new IllegalArgumentException(typeName + " value cannot be null");
         }
         this.value = value;
+        this.present = true;
         return self();
     }
 
@@ -30,6 +32,7 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
         try {
             T clone = (T) getClass().getDeclaredConstructor().newInstance();
             clone.set(this.value);
+            clone.present = this.present;
             return clone;
         } catch (Exception e) {
             throw new RuntimeException("Failed to copy " + typeName, e);
@@ -39,14 +42,5 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
     @Override
     public String toString() {
         return "(" + getClass().getSimpleName() + ") " + value;
-    }
-
-    @Override
-    public boolean isDefault() {
-        if (value instanceof String s) return s.isEmpty();
-        if (value instanceof byte[] b) return b.length == 0;
-        if (value instanceof Boolean b) return !b;
-        if (value instanceof Number n) return n.longValue() == 0;
-        return false;
     }
 }
