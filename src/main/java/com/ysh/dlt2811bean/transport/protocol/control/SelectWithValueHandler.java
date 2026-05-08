@@ -54,6 +54,7 @@ public class SelectWithValueHandler implements CmsServiceHandler {
         CmsSelectWithValue response = new CmsSelectWithValue(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.reqId().get())
                 .reference(request.reference.get())
+                .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
                 .addCause(addCauseCode);
         return new CmsApdu(response);
     }

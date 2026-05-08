@@ -60,6 +60,11 @@ public class CmsCli {
         register(new FileDirHandler());
         register(new SelectHandler());
         register(new SelectWithValueHandler());
+        register(new OperateHandler());
+        register(new CancelHandler());
+        register(new CommandTerminationHandler());
+        register(new TimeActOperateHandler());
+        register(new TimeActTermHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -726,6 +731,146 @@ public class CmsCli {
                 return;
             }
             System.out.println("  Selected: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== Operate ====================
+
+    private class OperateHandler implements CommandHandler {
+        public String getName() { return "operate"; }
+        public String getDescription() { return "执行控制操作 (需先 select)"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.operate(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Operate failed");
+                return;
+            }
+            System.out.println("  Operated: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== Cancel ====================
+
+    private class CancelHandler implements CommandHandler {
+        public String getName() { return "cancel"; }
+        public String getDescription() { return "取消控制操作 (撤销 select/operate)"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.cancel(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Cancel failed");
+                return;
+            }
+            System.out.println("  Cancelled: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== CommandTermination ====================
+
+    private class CommandTerminationHandler implements CommandHandler {
+        public String getName() { return "cmd-term"; }
+        public String getDescription() { return "命令终止通知"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.commandTermination(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  CommandTermination failed");
+                return;
+            }
+            System.out.println("  CommandTermination: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== TimeActivatedOperate ====================
+
+    private class TimeActOperateHandler implements CommandHandler {
+        public String getName() { return "time-act"; }
+        public String getDescription() { return "定时执行控制操作"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.timeActivatedOperate(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  TimeActivatedOperate failed");
+                return;
+            }
+            System.out.println("  TimeActivatedOperate: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== TimeActivatedOperateTermination ====================
+
+    private class TimeActTermHandler implements CommandHandler {
+        public String getName() { return "time-act-term"; }
+        public String getDescription() { return "终止定时控制操作"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
+                new Param("value", "控制值", "true")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("reference");
+            boolean val = Boolean.parseBoolean(values.get("value"));
+            CmsApdu response = client.timeActivatedOperateTermination(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  TimeActivatedOperateTermination failed");
+                return;
+            }
+            System.out.println("  TimeActivatedOperateTermination: " + ref + " with value " + val);
         }
     }
 

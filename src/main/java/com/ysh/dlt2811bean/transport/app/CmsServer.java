@@ -223,6 +223,11 @@ public class CmsServer {
         // control handlers
         dispatcher.registerDefaultHandler(new SelectHandler());
         dispatcher.registerDefaultHandler(new SelectWithValueHandler());
+        dispatcher.registerDefaultHandler(new OperateHandler());
+        dispatcher.registerDefaultHandler(new CancelHandler());
+        dispatcher.registerDefaultHandler(new CommandTerminationHandler());
+        dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());
+        dispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());
         // rpc handlers
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());

@@ -40,6 +40,11 @@ import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
+import com.ysh.dlt2811bean.service.svc.control.CmsOperate;
+import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
+import com.ysh.dlt2811bean.service.svc.control.CmsCommandTermination;
+import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
+import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperateTermination;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -904,6 +909,101 @@ public class CmsClient {
                 .reference(reference)
                 .ctlVal(ctlVal)
                 .ctlNum(0)
+                .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * Control - operate - Service Code 0x47
+     * Executes a control command on a previously selected object.
+     *
+     * @param reference the object reference
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu operate(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsOperate asdu = new CmsOperate(MessageType.REQUEST)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(1)
+                .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * Control - cancel - Service Code 0x46
+     * Cancels a previously issued Select, SelectWithValue, or Operate command.
+     *
+     * @param reference the object reference to cancel
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu cancel(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsCancel asdu = new CmsCancel(MessageType.REQUEST)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(2)
+                .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * Control - commandTermination - Service Code 0x48
+     * Handles command termination notification from server.
+     *
+     * @param reference the object reference
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu commandTermination(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsCommandTermination asdu = new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(3)
+                .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * Control - timeActivatedOperate - Service Code 0x49
+     * Executes a control operation at a specific time.
+     *
+     * @param reference the object reference
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu timeActivatedOperate(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsTimeActivatedOperate asdu = new CmsTimeActivatedOperate(MessageType.REQUEST)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(4)
+                .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * Control - timeActivatedOperateTermination - Service Code 0x4A
+     * Terminates a scheduled time-activated control operation.
+     *
+     * @param reference the object reference
+     * @param ctlVal    the control value
+     * @return the response APDU (positive or negative)
+     * @throws Exception if not connected or timeout
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public CmsApdu timeActivatedOperateTermination(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
+        CmsTimeActivatedOperateTermination asdu = new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE)
+                .reference(reference)
+                .ctlVal(ctlVal)
+                .ctlNum(5)
                 .test(false);
         return send(asdu);
     }
