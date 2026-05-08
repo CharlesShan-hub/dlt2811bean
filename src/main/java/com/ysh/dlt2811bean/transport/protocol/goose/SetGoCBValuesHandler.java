@@ -8,7 +8,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.CmsSetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class SetGoCBValuesHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class SetGoCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetGoCBValues asdu = (CmsSetGoCBValues) request.getAsdu();
 
         if (asdu.gocb == null || asdu.gocb.size() == 0) {

@@ -11,6 +11,7 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.AssociationIdGenerator;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,8 @@ public class AssociateHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsAssociate asdu = (CmsAssociate) request.getAsdu();
 
         if (!session.isNegotiated()) {
@@ -107,7 +109,7 @@ public class AssociateHandler implements CmsServiceHandler {
             }
 
             // Save AccessPoint info to session
-            session.setAccessPoint(sapRef, iedName, apName, accessPoint);
+            serverSession.setAccessPoint(sapRef, iedName, apName, accessPoint);
         }
 
         // 3. Validate authentication parameter if required

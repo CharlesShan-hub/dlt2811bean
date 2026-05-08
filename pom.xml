@@ -152,7 +152,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.cli.CmsCli</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.CmsClientCli</mainClass>
                         </configuration>
                     </execution>
                     <execution>
@@ -161,7 +161,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.transport.app.CmsServer</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.CmsServerCli</mainClass>
                         </configuration>
                     </execution>
                 </executions>

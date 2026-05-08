@@ -56,8 +56,9 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
 
     protected static MessageType getReqMessageType(boolean resp, boolean err) {
         if (!resp && !err) return MessageType.REQUEST_POSITIVE;
-        if (resp && !err) return MessageType.REQUEST_NEGATIVE;
-        throw new IllegalArgumentException("does not support err=true");
+        if (!resp && err) return MessageType.REQUEST_NEGATIVE;
+        if (resp && !err) return MessageType.RESPONSE_POSITIVE;
+        return MessageType.RESPONSE_NEGATIVE;
     }
 
     protected static MessageType getRRMessageType(boolean resp, boolean err) {

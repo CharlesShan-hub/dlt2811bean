@@ -10,7 +10,7 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsErrorMethodChoice;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodValue;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class GetRpcMethodDefinitionHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -74,7 +74,7 @@ public class GetRpcMethodDefinitionHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsGetRpcMethodDefinition asdu = (CmsGetRpcMethodDefinition) request.getAsdu();
 
         CmsGetRpcMethodDefinition response = new CmsGetRpcMethodDefinition(MessageType.RESPONSE_POSITIVE)

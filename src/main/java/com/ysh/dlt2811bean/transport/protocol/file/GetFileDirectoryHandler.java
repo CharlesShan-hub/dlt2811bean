@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +50,7 @@ public class GetFileDirectoryHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -59,7 +60,8 @@ public class GetFileDirectoryHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFileDirectory asdu = (CmsGetFileDirectory) request.getAsdu();
         String pathName = asdu.pathName.get();
         String fileAfter = asdu.fileAfter.get();

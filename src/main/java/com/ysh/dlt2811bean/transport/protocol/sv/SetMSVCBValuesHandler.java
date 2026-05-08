@@ -8,7 +8,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public class SetMSVCBValuesHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -33,7 +33,7 @@ public class SetMSVCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetMSVCBValues asdu = (CmsSetMSVCBValues) request.getAsdu();
 
         if (asdu.msvcb == null || asdu.msvcb.size() == 0) {

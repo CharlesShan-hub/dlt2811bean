@@ -5,7 +5,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,11 +38,11 @@ public class CmsDispatcher {
     /**
      * Dispatches an incoming APDU to the appropriate handler.
      *
-     * @param session the server session
+     * @param session the session (CmsServerSession on server, CmsClientSession on client)
      * @param apdu    the incoming APDU
      * @return the response APDU, or null if the service is one-way
      */
-    public CmsApdu dispatch(CmsServerSession session, CmsApdu apdu) {
+    public CmsApdu dispatch(CmsSession session, CmsApdu apdu) {
         ServiceName sc = apdu.getAsdu().getServiceName();
 
         // ASSOCIATE, ASSOCIATE_NEGOTIATE, TEST, ABORT do not need association

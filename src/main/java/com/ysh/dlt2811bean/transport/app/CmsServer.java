@@ -8,7 +8,13 @@ import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.security.GmTrustManager;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.control.CmsCommandTermination;
+import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperateTermination;
+import com.ysh.dlt2811bean.service.svc.report.CmsReport;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsReportEntryData;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
@@ -137,6 +143,10 @@ public class CmsServer {
         return transport.isBound();
     }
 
+    public int getPort() {
+        return transport.getPort();
+    }
+
     // ==================== TLS Config ====================
 
     public CmsServer sslContext(GmSslContext sslContext) {
@@ -206,6 +216,70 @@ public class CmsServer {
         return securityEnabled;
     }
 
+    // ==================== Session Access ====================
+
+    /**
+     * Returns all active server sessions.
+     */
+    public java.util.Collection<CmsServerSession> getSessions() {
+        return sessions.values();
+    }
+
+    // ==================== Push API (Server → Client) ====================
+
+    /**
+     * Pushes a CommandTermination notification to a specific client session.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void pushCommandTermination(CmsServerSession session, String ref, CmsType<?> ctlVal) throws Exception {
+        CmsCommandTermination asdu = new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
+                .reference(ref)
+                .ctlVal(ctlVal)
+                .ctlNum(1)
+                .test(false);
+        session.send(new CmsApdu(asdu));
+        log.debug("[Server] Push CommandTermination: {}", ref);
+    }
+
+    /**
+     * Pushes a TimeActivatedOperateTermination notification to a specific client session.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void pushTimeActivatedOperateTermination(CmsServerSession session, String ref, CmsType<?> ctlVal) throws Exception {
+        CmsTimeActivatedOperateTermination asdu = new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE)
+                .reference(ref)
+                .ctlVal(ctlVal)
+                .ctlNum(1)
+                .test(false);
+        session.send(new CmsApdu(asdu));
+        log.debug("[Server] Push TimeActivatedOperateTermination: {}", ref);
+    }
+
+    /**
+     * Pushes a Report to a specific client session.
+     */
+    public void pushReport(CmsServerSession session, String rptID, String dataRef, String fc, int intVal) throws Exception {
+        CmsReport report = new CmsReport(MessageType.RESPONSE_POSITIVE)
+                .rptID(rptID)
+                .sqNum(1);
+        CmsReportEntryData entryData = new CmsReportEntryData()
+                .reference(dataRef)
+                .fc(fc)
+                .id(1)
+                .value(new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32(intVal));
+        report.entry.entryData().add(entryData);
+        session.send(new CmsApdu(report));
+        log.debug("[Server] Push Report: {} -> {}", rptID, dataRef);
+    }
+
+    /**
+     * Pushes a Report to a specific client session using a pre-built CmsReport ASDU.
+     */
+    public void pushReport(CmsServerSession session, CmsReport asdu) throws Exception {
+        session.send(new CmsApdu(asdu));
+        log.debug("[Server] Push Report: {}", asdu.rptID.get());
+    }
+
     // ==================== Handlers ====================
 
     private void registerDefaultHandlers() {
@@ -242,7 +316,6 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
         dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
         // 8.7 report handlers
-        dispatcher.registerDefaultHandler(new ReportHandler());// 8.7.1
         dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
         dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
         dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
@@ -264,9 +337,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new SelectWithValueHandler());// 8.11.2
         dispatcher.registerDefaultHandler(new OperateHandler());// 8.11.3
         dispatcher.registerDefaultHandler(new CancelHandler());// 8.11.4
-        dispatcher.registerDefaultHandler(new CommandTerminationHandler());// 8.11.5
         dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());// 8.11.6
-        dispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());// 8.11.7
         // 8.12 rpc handlers
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());// 8.12.1
         dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());// 8.12.2
@@ -307,6 +378,12 @@ public class CmsServer {
             }
 
             session.onDataActivity();
+
+            // Server only handles REQUESTs. RESPONSEs from client (e.g. push acknowledgments) are ignored.
+            if (apdu.getApch().isResp()) {
+                log.debug("[{}] Ignoring response APDU (SC=0x{:02X})", session, apdu.getApch().getServiceCode().getCode());
+                return;
+            }
 
             try {
                 CmsApdu response = dispatcher.dispatch(session, apdu);

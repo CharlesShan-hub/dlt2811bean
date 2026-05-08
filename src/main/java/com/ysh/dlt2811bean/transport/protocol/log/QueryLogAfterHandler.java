@@ -10,6 +10,7 @@ import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,8 @@ public class QueryLogAfterHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -33,10 +35,11 @@ public class QueryLogAfterHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsQueryLogAfter asdu = (CmsQueryLogAfter) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = session.getSclAccessPoint();
+        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
             return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);

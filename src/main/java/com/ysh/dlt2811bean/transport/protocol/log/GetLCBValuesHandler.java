@@ -11,6 +11,7 @@ import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,8 @@ public class GetLCBValuesHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -34,10 +36,11 @@ public class GetLCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLCBValues asdu = (CmsGetLCBValues) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = session.getSclAccessPoint();
+        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
             return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);

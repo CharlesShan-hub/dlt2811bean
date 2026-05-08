@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +35,8 @@ public class SetLCBValuesHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -44,7 +46,8 @@ public class SetLCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetLCBValues asdu = (CmsSetLCBValues) request.getAsdu();
 
         if (asdu.lcb == null || asdu.lcb.size() == 0) {
@@ -53,7 +56,7 @@ public class SetLCBValuesHandler implements CmsServiceHandler {
                     .reqId(asdu.reqId().get()));
         }
 
-        SclIED.SclAccessPoint accessPoint = session.getSclAccessPoint();
+        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
 
         CmsArray<CmsSetLCBValuesResultEntry> results = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
         boolean hasAnyError = false;

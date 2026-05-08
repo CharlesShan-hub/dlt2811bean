@@ -9,6 +9,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class RpcCallHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -37,7 +38,8 @@ public class RpcCallHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsRpcCall asdu = (CmsRpcCall) request.getAsdu();
         String method = asdu.method.get();
 
@@ -53,18 +55,18 @@ public class RpcCallHandler implements CmsServiceHandler {
             byte[] callId = asdu.reqDataCallID.callID.get();
             log.debug("[Server] RpcCall continuation: method={}, callId={}", method, bytesToHex(callId));
 
-            RpcContinuationState state = (RpcContinuationState) session.getAttribute(callIdKey(callId));
+            RpcContinuationState state = (RpcContinuationState) serverSession.getAttribute(callIdKey(callId));
             if (state == null) {
                 log.warn("[Server] RpcCall continuation not found: callId={}", bytesToHex(callId));
                 return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
 
-            session.removeAttribute(callIdKey(callId));
-            return executeMethod(session, asdu, method, state);
+            serverSession.removeAttribute(callIdKey(callId));
+            return executeMethod(serverSession, asdu, method, state);
         }
 
         log.debug("[Server] RpcCall new call: method={}", method);
-        return executeMethod(session, asdu, method, null);
+        return executeMethod(serverSession, asdu, method, null);
     }
 
     private CmsApdu executeMethod(CmsServerSession session, CmsRpcCall asdu,

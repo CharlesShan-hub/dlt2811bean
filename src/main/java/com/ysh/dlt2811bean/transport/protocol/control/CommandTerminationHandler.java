@@ -6,7 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsCommandTermination;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,7 @@ public class CommandTerminationHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -30,7 +30,7 @@ public class CommandTerminationHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsCommandTermination asdu = (CmsCommandTermination) request.getAsdu();
         String ref = asdu.reference.get();
 
@@ -39,25 +39,16 @@ public class CommandTerminationHandler implements CmsServiceHandler {
             return buildNegativeResponse(asdu, CmsAddCause.NOT_SUPPORTED);
         }
 
-        CmsCommandTermination response = new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
-                .reqId(asdu.reqId().get())
-                .reference(ref)
-                .ctlVal(asdu.ctlVal.get())
-                .ctlNum((int) asdu.ctlNum.get())
-                .test(asdu.test.get());
+        CmsCommandTermination response = new CmsCommandTermination(MessageType.RESPONSE_POSITIVE)
+                .reqId(asdu.reqId().get());
 
-        log.debug("[Server] CommandTermination: {}", ref);
+        log.debug("[Client] CommandTermination acknowledged: {}", ref);
         return new CmsApdu(response);
     }
 
     private CmsApdu buildNegativeResponse(CmsCommandTermination request, int addCauseCode) {
-        CmsCommandTermination response = new CmsCommandTermination(MessageType.REQUEST_NEGATIVE)
-                .reqId(request.reqId().get())
-                .reference(request.reference.get())
-                .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
-                .ctlNum(0)
-                .test(false)
-                .addCause(addCauseCode);
+        CmsCommandTermination response = new CmsCommandTermination(MessageType.RESPONSE_NEGATIVE)
+                .reqId(request.reqId().get());
         return new CmsApdu(response);
     }
 }

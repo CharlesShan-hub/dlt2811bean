@@ -29,6 +29,21 @@ public class CmsReportEntryData extends AbstractCmsCompound<CmsReportEntryData> 
         registerOptionalField("reason");
     }
 
+    public CmsReportEntryData reference(String ref) {
+        this.reference.set(ref);
+        return this;
+    }
+
+    public CmsReportEntryData fc(String f) {
+        this.fc.set(f);
+        return this;
+    }
+
+    public CmsReportEntryData id(int i) {
+        this.id.set(i);
+        return this;
+    }
+
     @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsReportEntryData value(CmsType<?> val) {
         this.value = new CmsData(val);

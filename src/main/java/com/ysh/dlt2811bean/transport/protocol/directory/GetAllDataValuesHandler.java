@@ -23,6 +23,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +45,7 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -54,10 +55,11 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) throws Exception {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = session.getSclAccessPoint();
+        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
             return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);

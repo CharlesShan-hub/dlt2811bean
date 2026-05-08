@@ -4,6 +4,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import org.slf4j.Logger;
@@ -25,14 +26,15 @@ public class AbortHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsAbort asdu = (CmsAbort) request.getAsdu();
 
-        session.clearAssociationId();
-        session.setState(SessionState.CLOSED);
+        serverSession.clearAssociationId();
+        serverSession.setState(SessionState.CLOSED);
 
         log.debug("Association aborted, reason={}", asdu.reason().get());
-        session.close();
+        serverSession.close();
         return null;
     }
 }

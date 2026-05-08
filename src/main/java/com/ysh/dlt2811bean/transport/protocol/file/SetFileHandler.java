@@ -6,6 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ public class SetFileHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -32,7 +33,8 @@ public class SetFileHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetFile asdu = (CmsSetFile) request.getAsdu();
         String fileName = asdu.fileName.get();
         long startPosition = asdu.startPosition.get();
@@ -43,7 +45,7 @@ public class SetFileHandler implements CmsServiceHandler {
         }
 
         if (startPosition == 0) {
-            pendingFile(session, fileName).reset();
+            pendingFile(serverSession, fileName).reset();
             log.debug("[Server] SetFile: cancelled write for {}", fileName);
             return new CmsApdu(new CmsSetFile(MessageType.RESPONSE_POSITIVE)
                     .reqId(asdu.reqId().get()));
@@ -54,7 +56,7 @@ public class SetFileHandler implements CmsServiceHandler {
             return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        PendingFile pf = pendingFile(session, fileName);
+        PendingFile pf = pendingFile(serverSession, fileName);
 
         if (startPosition == 1) {
             pf.reset();

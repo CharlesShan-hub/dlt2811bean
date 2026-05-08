@@ -20,26 +20,22 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
-import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
-import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
 
-public class CmsCli {
+public class CmsClientCli {
 
     private final CmsClient client = new CmsClient();
     private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
     private final Scanner scanner = new Scanner(System.in);
     private boolean running = true;
 
-    public CmsCli() {
+    public CmsClientCli() {
         register(new HelpHandler());
         register(new ExitHandler());
         register(new ConnectHandler());
@@ -64,9 +60,7 @@ public class CmsCli {
         register(new SelectWithValueHandler());
         register(new OperateHandler());
         register(new CancelHandler());
-        register(new CommandTerminationHandler());
         register(new TimeActOperateHandler());
-        register(new TimeActTermHandler());
         register(new MsvcbValHandler());
         register(new SetMsvcbHandler());
         register(new ServerDirHandler());
@@ -135,7 +129,7 @@ public class CmsCli {
     }
 
     public static void main(String[] args) {
-        new CmsCli().run();
+        new CmsClientCli().run();
     }
 
     // ==================== Help & Exit ====================
@@ -832,33 +826,7 @@ public class CmsCli {
         }
     }
 
-    // ==================== CommandTermination ====================
 
-    private class CommandTerminationHandler implements CommandHandler {
-        public String getName() { return "cmd-term"; }
-        public String getDescription() { return "命令终止通知"; }
-        public List<Param> getParams() {
-            return List.of(
-                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
-                new Param("value", "控制值", "true")
-            );
-        }
-        public void execute(CmsClient client, Map<String, String> values) throws Exception {
-            if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
-                return;
-            }
-
-            String ref = values.get("reference");
-            boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.commandTermination(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
-            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-                System.out.println("  CommandTermination failed");
-                return;
-            }
-            System.out.println("  CommandTermination: " + ref + " with value " + val);
-        }
-    }
 
     // ==================== TimeActivatedOperate ====================
 
@@ -888,33 +856,7 @@ public class CmsCli {
         }
     }
 
-    // ==================== TimeActivatedOperateTermination ====================
 
-    private class TimeActTermHandler implements CommandHandler {
-        public String getName() { return "time-act-term"; }
-        public String getDescription() { return "终止定时控制操作"; }
-        public List<Param> getParams() {
-            return List.of(
-                new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),
-                new Param("value", "控制值", "true")
-            );
-        }
-        public void execute(CmsClient client, Map<String, String> values) throws Exception {
-            if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
-                return;
-            }
-
-            String ref = values.get("reference");
-            boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.timeActivatedOperateTermination(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
-            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-                System.out.println("  TimeActivatedOperateTermination failed");
-                return;
-            }
-            System.out.println("  TimeActivatedOperateTermination: " + ref + " with value " + val);
-        }
-    }
 
     // ==================== GetMSVCBValues ====================
 

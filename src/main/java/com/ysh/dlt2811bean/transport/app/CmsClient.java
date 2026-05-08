@@ -35,6 +35,10 @@ import com.ysh.dlt2811bean.service.svc.dataset.*;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
+import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
+import com.ysh.dlt2811bean.transport.protocol.control.CommandTerminationHandler;
+import com.ysh.dlt2811bean.transport.protocol.control.TimeActivatedOperateTerminationHandler;
+import com.ysh.dlt2811bean.transport.protocol.report.ReportHandler;
 import com.ysh.dlt2811bean.transport.session.CmsClientSession;
 import com.ysh.dlt2811bean.transport.session.PendingRequest;
 import org.slf4j.Logger;
@@ -73,6 +77,7 @@ public class CmsClient {
 
     private final CmsClientTransport transport = new CmsClientTransport();
     private final ClientListener listener = new ClientListener();
+    private final CmsDispatcher serverPushDispatcher = new CmsDispatcher();
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
@@ -84,6 +89,13 @@ public class CmsClient {
 
     public CmsClient() {
         CmsConfigInjector.inject(this);
+        registerDefaultClientHandlers();
+    }
+
+    private void registerDefaultClientHandlers() {
+        serverPushDispatcher.registerDefaultHandler(new ReportHandler());
+        serverPushDispatcher.registerDefaultHandler(new CommandTerminationHandler());
+        serverPushDispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());
     }
 
     // ==================== Security (GM) ====================
@@ -263,6 +275,19 @@ public class CmsClient {
                         log.debug("Test echo sent to server");
                     } catch (Exception e) {
                         log.warn("Failed to echo Test: {}", e.getMessage());
+                    }
+                }
+                return;
+            }
+
+            // Server push: REQUEST (Resp=0) — dispatch to client handler and auto-respond
+            if (!apdu.getApch().isResp()) {
+                CmsApdu response = serverPushDispatcher.dispatch(session, apdu);
+                if (response != null) {
+                    try {
+                        conn.send(response);
+                    } catch (Exception e) {
+                        log.warn("Failed to send push response: {}", e.getMessage());
                     }
                 }
                 return;
@@ -705,7 +730,6 @@ public class CmsClient {
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsApdu rpcCall(String method, CmsType<?> reqData) throws Exception {
         CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST)
                 .method(method)
@@ -972,7 +996,6 @@ public class CmsClient {
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsApdu cancel(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
         CmsCancel asdu = new CmsCancel(MessageType.REQUEST)
                 .reference(reference)
@@ -982,24 +1005,7 @@ public class CmsClient {
         return send(asdu);
     }
 
-    /**
-     * Control - commandTermination - Service Code 0x48
-     * Handles command termination notification from server.
-     *
-     * @param reference the object reference
-     * @param ctlVal    the control value
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public CmsApdu commandTermination(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
-        CmsCommandTermination asdu = new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
-                .reference(reference)
-                .ctlVal(ctlVal)
-                .ctlNum(3)
-                .test(false);
-        return send(asdu);
-    }
+
 
     /**
      * Control - timeActivatedOperate - Service Code 0x49
@@ -1016,25 +1022,6 @@ public class CmsClient {
                 .reference(reference)
                 .ctlVal(ctlVal)
                 .ctlNum(4)
-                .test(false);
-        return send(asdu);
-    }
-
-    /**
-     * Control - timeActivatedOperateTermination - Service Code 0x4A
-     * Terminates a scheduled time-activated control operation.
-     *
-     * @param reference the object reference
-     * @param ctlVal    the control value
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    public CmsApdu timeActivatedOperateTermination(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
-        CmsTimeActivatedOperateTermination asdu = new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE)
-                .reference(reference)
-                .ctlVal(ctlVal)
-                .ctlNum(5)
                 .test(false);
         return send(asdu);
     }

@@ -6,6 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
+import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,7 @@ public class GetFileHandler implements CmsServiceHandler {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
         } catch (Exception e) {
@@ -90,7 +91,8 @@ public class GetFileHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
+    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFile asdu = (CmsGetFile) request.getAsdu();
         String fileName = asdu.fileName.get();
         long startPosition = asdu.startPosition.get();
@@ -102,7 +104,7 @@ public class GetFileHandler implements CmsServiceHandler {
 
         if (startPosition == 0) {
             log.debug("[Server] GetFile: cancel read for {}", fileName);
-            session.removeAttribute(fileKey(fileName));
+            serverSession.removeAttribute(fileKey(fileName));
             return buildNegativeResponse(asdu, CmsServiceError.NO_ERROR);
         }
 
@@ -126,7 +128,7 @@ public class GetFileHandler implements CmsServiceHandler {
         byte[] chunk = new byte[chunkSize];
         System.arraycopy(fileData, offset, chunk, 0, chunkSize);
 
-        session.setAttribute(fileKey(fileName), System.currentTimeMillis());
+        serverSession.setAttribute(fileKey(fileName), System.currentTimeMillis());
 
         CmsGetFile response = new CmsGetFile(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get())
