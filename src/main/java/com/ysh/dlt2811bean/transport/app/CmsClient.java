@@ -11,50 +11,22 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
-import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
-import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
-import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
+import com.ysh.dlt2811bean.service.svc.association.*;
+import com.ysh.dlt2811bean.service.svc.directory.*;
+import com.ysh.dlt2811bean.service.svc.data.*;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
-import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
-import com.ysh.dlt2811bean.service.svc.goose.CmsSetGoCBValues;
+import com.ysh.dlt2811bean.service.svc.goose.*;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
-import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
-import com.ysh.dlt2811bean.service.svc.setting.CmsSetLCBValues;
-import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogByTime;
-import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
-import com.ysh.dlt2811bean.service.svc.setting.CmsGetLogStatusValues;
+import com.ysh.dlt2811bean.service.svc.setting.*;
+import com.ysh.dlt2811bean.service.svc.report.*;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
-import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
-import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
-import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
-import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
-import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
-import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
-import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
-import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
-import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
-import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
-import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
-import com.ysh.dlt2811bean.service.svc.control.CmsOperate;
-import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
-import com.ysh.dlt2811bean.service.svc.control.CmsCommandTermination;
-import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
-import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperateTermination;
-import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
-import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.*;
+import com.ysh.dlt2811bean.service.svc.association.datatypes.*;
+import com.ysh.dlt2811bean.service.svc.negotiation.*;
+import com.ysh.dlt2811bean.service.svc.rpc.*;
+import com.ysh.dlt2811bean.service.svc.file.*;
+import com.ysh.dlt2811bean.service.svc.control.*;
+import com.ysh.dlt2811bean.service.svc.sv.*;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
@@ -1125,6 +1097,49 @@ public class CmsClient {
         for (String ref : references) {
             asdu.addLogReference(ref);
         }
+        return send(asdu);
+    }
+
+    /**
+     * REPORT - report - Service Code 0x5A
+     */
+    public CmsApdu report(CmsReport asdu) throws Exception {
+        return send(asdu);
+    }
+
+    /**
+     * REPORT - getBRCBValues - Service Code 0x5B
+     */
+    public CmsApdu getBRCBValues(String... references) throws Exception {
+        CmsGetBRCBValues asdu = new CmsGetBRCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addBrcbReference(ref);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * REPORT - setBRCBValues - Service Code 0x5C
+     */
+    public CmsApdu setBRCBValues(CmsSetBRCBValues asdu) throws Exception {
+        return send(asdu);
+    }
+
+    /**
+     * REPORT - getURCBValues - Service Code 0x5D
+     */
+    public CmsApdu getURCBValues(String... references) throws Exception {
+        CmsGetURCBValues asdu = new CmsGetURCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addReference(ref);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * REPORT - setURCBValues - Service Code 0x5E
+     */
+    public CmsApdu setURCBValues(CmsSetURCBValues asdu) throws Exception {
         return send(asdu);
     }
 

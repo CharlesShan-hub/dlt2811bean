@@ -20,7 +20,7 @@ class GetDataValuesLoopbackTest extends LoopbackTest {
         associate();
 
         CmsApdu response = client.getDataValues("C1/LPHD1.Proxy.stVal");
-        log.info("Response: {}", response);
+        // log.info("Response: {}", response);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());

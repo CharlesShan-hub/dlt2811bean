@@ -21,6 +21,7 @@ import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.sv.*;
 import com.ysh.dlt2811bean.transport.protocol.goose.*;
 import com.ysh.dlt2811bean.transport.protocol.log.*;
+import com.ysh.dlt2811bean.transport.protocol.report.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileDirectoryHandler;
@@ -226,11 +227,11 @@ public class CmsServer {
         // 8.5
         // 8.6
         // 8.7 report handlers
-        // 8.7.1
-        // 8.7.2
-        // 8.7.3
-        // 8.7.4
-        // 8.7.5
+        dispatcher.registerDefaultHandler(new ReportHandler());// 8.7.1
+        dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
+        dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
+        dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
+        dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
         // 8.8 log handlers
         dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
         dispatcher.registerDefaultHandler(new SetLCBValuesHandler());// 8.8.3
