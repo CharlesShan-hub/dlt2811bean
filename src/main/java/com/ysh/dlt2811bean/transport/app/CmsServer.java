@@ -18,6 +18,8 @@ import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.control.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
+import com.ysh.dlt2811bean.transport.protocol.sv.*;
+import com.ysh.dlt2811bean.transport.protocol.goose.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileDirectoryHandler;
@@ -220,6 +222,9 @@ public class CmsServer {
         // data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
+        // sv handlers
+        dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());
+        dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());
         // control handlers
         dispatcher.registerDefaultHandler(new SelectHandler());
         dispatcher.registerDefaultHandler(new SelectWithValueHandler());

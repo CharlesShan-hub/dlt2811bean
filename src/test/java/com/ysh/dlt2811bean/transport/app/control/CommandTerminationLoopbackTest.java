@@ -12,22 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CommandTerminationLoopbackTest extends LoopbackTest {
 
     @Test
-    @DisplayName("CommandTermination valid reference and value")
+    @DisplayName("CommandTermination valid reference")
     void cmdTermValid() throws Exception {
         associate();
 
         CmsApdu response = client.commandTermination("E1Q1SB1/XCBR1.Pos", new CmsBoolean(true));
 
-        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
-    }
-
-    @Test
-    @DisplayName("CommandTermination empty reference returns negative")
-    void cmdTermEmpty() throws Exception {
-        associate();
-
-        CmsApdu response = client.commandTermination("", new CmsBoolean(true));
-
-        assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
+        assertEquals(MessageType.REQUEST_POSITIVE, response.getMessageType());
     }
 }

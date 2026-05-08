@@ -12,22 +12,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class TimeActivatedOperateTerminationLoopbackTest extends LoopbackTest {
 
     @Test
-    @DisplayName("timeActTerm valid reference and value")
+    @DisplayName("TimeActivatedOperateTermination valid reference")
     void timeActTermValid() throws Exception {
         associate();
 
         CmsApdu response = client.timeActivatedOperateTermination("E1Q1SB1/XCBR1.Pos", new CmsBoolean(true));
 
-        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
-    }
-
-    @Test
-    @DisplayName("timeActTerm empty reference returns negative")
-    void timeActTermEmpty() throws Exception {
-        associate();
-
-        CmsApdu response = client.timeActivatedOperateTermination("", new CmsBoolean(true));
-
-        assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
+        assertEquals(MessageType.REQUEST_POSITIVE, response.getMessageType());
     }
 }

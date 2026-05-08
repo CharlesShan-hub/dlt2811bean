@@ -55,6 +55,8 @@ public class CommandTerminationHandler implements CmsServiceHandler {
                 .reqId(request.reqId().get())
                 .reference(request.reference.get())
                 .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
+                .ctlNum(0)
+                .test(false)
                 .addCause(addCauseCode);
         return new CmsApdu(response);
     }

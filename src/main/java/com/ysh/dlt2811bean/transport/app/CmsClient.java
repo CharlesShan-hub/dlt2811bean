@@ -45,6 +45,9 @@ import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
 import com.ysh.dlt2811bean.service.svc.control.CmsCommandTermination;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperateTermination;
+import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
@@ -1005,6 +1008,38 @@ public class CmsClient {
                 .ctlVal(ctlVal)
                 .ctlNum(5)
                 .test(false);
+        return send(asdu);
+    }
+
+    /**
+     * SV - getMSVCBValues - Service Code 0x69
+     * Retrieves multicast sampled value control block values.
+     *
+     * @param references one or more MSVCB references
+     * @return the response APDU
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu getMSVCBValues(String... references) throws Exception {
+        CmsGetMSVCBValues asdu = new CmsGetMSVCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addReference(ref);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * SV - setMSVCBValues - Service Code 0x6A
+     * Sets multicast sampled value control block values.
+     *
+     * @param entries one or more MSVCB entries to set
+     * @return the response APDU
+     * @throws Exception if not connected or timeout
+     */
+    public CmsApdu setMSVCBValues(CmsSetMSVCBValuesEntry... entries) throws Exception {
+        CmsSetMSVCBValues asdu = new CmsSetMSVCBValues(MessageType.REQUEST);
+        for (CmsSetMSVCBValuesEntry entry : entries) {
+            asdu.addMsvcb(entry);
+        }
         return send(asdu);
     }
 

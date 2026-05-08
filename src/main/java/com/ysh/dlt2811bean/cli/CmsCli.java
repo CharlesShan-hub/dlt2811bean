@@ -26,6 +26,8 @@ import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
+import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
@@ -65,6 +67,8 @@ public class CmsCli {
         register(new CommandTerminationHandler());
         register(new TimeActOperateHandler());
         register(new TimeActTermHandler());
+        register(new MsvcbValHandler());
+        register(new SetMsvcbHandler());
         register(new ServerDirHandler());
         register(new LdDirHandler());
         register(new LnDirHandler());
@@ -871,6 +875,91 @@ public class CmsCli {
                 return;
             }
             System.out.println("  TimeActivatedOperateTermination: " + ref + " with value " + val);
+        }
+    }
+
+    // ==================== GetMSVCBValues ====================
+
+    private class MsvcbValHandler implements CommandHandler {
+        public String getName() { return "msvcb-val"; }
+        public String getDescription() { return "读多播采样值控制块值"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("refs", "MSVCB 引用 (逗号分隔)", "C1/LLN0.Volt")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String[] refs = values.get("refs").split(",");
+            CmsApdu response = client.getMSVCBValues(refs);
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Request failed");
+                return;
+            }
+
+            CmsGetMSVCBValues asdu = (CmsGetMSVCBValues) response.getAsdu();
+            System.out.println("  MSVCB entries (" + asdu.errorMsvcb.size() + "):");
+            for (int i = 0; i < asdu.errorMsvcb.size(); i++) {
+                var choice = asdu.errorMsvcb.get(i);
+                if (choice.getSelectedIndex() == 0) {
+                    System.out.println("    [" + i + "] ERROR: " + choice.error.get());
+                } else {
+                    var msvcb = choice.msvcb;
+                    System.out.println("    [" + i + "] " + msvcb.msvCBRef.get()
+                        + "  id=" + msvcb.msvID.get()
+                        + "  ds=" + msvcb.datSet.get()
+                        + "  rate=" + msvcb.smpRate.get());
+                }
+            }
+        }
+    }
+
+    // ==================== SetMSVCBValues ====================
+
+    private class SetMsvcbHandler implements CommandHandler {
+        public String getName() { return "set-msvcb"; }
+        public String getDescription() { return "设置多播采样值控制块值"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("ref", "MSVCB 引用", "C1/LLN0.Volt"),
+                new Param("svEna", "启用 (true/false)", "true"),
+                new Param("msvID", "SV ID (留空不修改)", ""),
+                new Param("smpRate", "采样率", "4000")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            if (!client.isConnected()) {
+                System.out.println("  Not connected. Type 'connect' first.");
+                return;
+            }
+
+            String ref = values.get("ref");
+            boolean svEna = Boolean.parseBoolean(values.get("svEna"));
+
+            CmsSetMSVCBValuesEntry entry = new CmsSetMSVCBValuesEntry();
+            entry.reference.set(ref);
+            entry.svEna.set(svEna);
+
+            String msvID = values.get("msvID");
+            if (!msvID.isEmpty()) {
+                entry.msvID.set(msvID);
+            }
+
+            String smpRate = values.get("smpRate");
+            if (!smpRate.isEmpty()) {
+                entry.smpRate.set(Integer.parseInt(smpRate));
+            }
+
+            CmsApdu response = client.setMSVCBValues(entry);
+            if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                System.out.println("  Set " + ref + " OK");
+            } else {
+                System.out.println("  Set " + ref + " failed");
+            }
         }
     }
 
