@@ -21,6 +21,9 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
+import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
+import com.ysh.dlt2811bean.service.svc.goose.CmsSetGoCBValues;
+import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
@@ -1044,12 +1047,27 @@ public class CmsClient {
     }
 
     /**
-     * Test - test - Service Code 0x00
-     * Sends a test request to the server to verify the connection.
-     *
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
+     * GOOSE - getGoCBValues - Service Code 0x66
      */
+    public CmsApdu getGoCBValues(String... references) throws Exception {
+        CmsGetGoCBValues asdu = new CmsGetGoCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addGocbReference(ref);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * GOOSE - setGoCBValues - Service Code 0x67
+     */
+    public CmsApdu setGoCBValues(CmsSetGoCBValuesEntry... entries) throws Exception {
+        CmsSetGoCBValues asdu = new CmsSetGoCBValues(MessageType.REQUEST);
+        for (CmsSetGoCBValuesEntry entry : entries) {
+            asdu.addGocb(entry);
+        }
+        return send(asdu);
+    }
+
     public CmsApdu test() throws Exception {
         CmsTest asdu = new CmsTest(MessageType.REQUEST);
         return testEcho(asdu);

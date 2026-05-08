@@ -222,6 +222,11 @@ public class CmsServer {
         // data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());
+        // setting handlers
+        //dispatcher.registerDefaultHandler(new ());
+        // goose handlers
+        dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());
+        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler());
         // sv handlers
         dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());
         dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());
