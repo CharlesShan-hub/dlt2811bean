@@ -1,15 +1,35 @@
 package com.ysh.dlt2811bean.transport.app.log;
 
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import org.junit.jupiter.api.*;
+import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * QueryLogAfter service loopback tests.
- */
 @DisplayName("QueryLogAfter Loopback Test")
 class QueryLogAfterLoopbackTest extends LoopbackTest {
 
+    @Test
+    @DisplayName("valid log reference returns Response+ with empty entries")
+    void validRef() throws Exception {
+        associate();
+
+        CmsApdu response = client.queryLogAfter("C1/LLN0.Log", new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01});
+
+        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
+        CmsQueryLogAfter asdu = (CmsQueryLogAfter) response.getAsdu();
+        assertNotNull(asdu.logEntry());
+    }
+
+    @Test
+    @DisplayName("invalid log reference returns Response-")
+    void invalidRef() throws Exception {
+        associate();
+
+        CmsApdu response = client.queryLogAfter("C1/LLN0.Unknown", new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01});
+
+        assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
+    }
 }

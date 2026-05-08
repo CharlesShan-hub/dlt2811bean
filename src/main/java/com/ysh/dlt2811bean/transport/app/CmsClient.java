@@ -24,6 +24,11 @@ import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.CmsSetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
+import com.ysh.dlt2811bean.service.svc.setting.CmsSetLCBValues;
+import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogByTime;
+import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
+import com.ysh.dlt2811bean.service.svc.setting.CmsGetLogStatusValues;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
@@ -1064,6 +1069,61 @@ public class CmsClient {
         CmsSetGoCBValues asdu = new CmsSetGoCBValues(MessageType.REQUEST);
         for (CmsSetGoCBValuesEntry entry : entries) {
             asdu.addGocb(entry);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * LOG - getLCBValues - Service Code 0x5F
+     */
+    public CmsApdu getLCBValues(String... references) throws Exception {
+        CmsGetLCBValues asdu = new CmsGetLCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addReference(ref);
+        }
+        return send(asdu);
+    }
+
+    /**
+     * LOG - setLCBValues - Service Code 0x60
+     */
+    public CmsApdu setLCBValues(CmsSetLCBValues asdu) throws Exception {
+        return send(asdu);
+    }
+
+    /**
+     * LOG - queryLogByTime - Service Code 0x61
+     */
+    public CmsApdu queryLogByTime(String logReference) throws Exception {
+        CmsQueryLogByTime asdu = new CmsQueryLogByTime(MessageType.REQUEST)
+                .logReference(logReference);
+        return send(asdu);
+    }
+
+    public CmsApdu queryLogByTime(String logReference, byte[] entryAfter) throws Exception {
+        CmsQueryLogByTime asdu = new CmsQueryLogByTime(MessageType.REQUEST)
+                .logReference(logReference)
+                .entryAfter(entryAfter);
+        return send(asdu);
+    }
+
+    /**
+     * LOG - queryLogAfter - Service Code 0x62
+     */
+    public CmsApdu queryLogAfter(String logReference, byte[] entryId) throws Exception {
+        CmsQueryLogAfter asdu = new CmsQueryLogAfter(MessageType.REQUEST)
+                .logReference(logReference)
+                .entry(entryId);
+        return send(asdu);
+    }
+
+    /**
+     * LOG - getLogStatusValues - Service Code 0x63
+     */
+    public CmsApdu getLogStatusValues(String... references) throws Exception {
+        CmsGetLogStatusValues asdu = new CmsGetLogStatusValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addLogReference(ref);
         }
         return send(asdu);
     }

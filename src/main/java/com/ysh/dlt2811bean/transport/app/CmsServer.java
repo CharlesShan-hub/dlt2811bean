@@ -20,6 +20,7 @@ import com.ysh.dlt2811bean.transport.protocol.control.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.sv.*;
 import com.ysh.dlt2811bean.transport.protocol.goose.*;
+import com.ysh.dlt2811bean.transport.protocol.log.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileDirectoryHandler;
@@ -208,54 +209,66 @@ public class CmsServer {
         CmsConfig config = CmsConfigLoader.load();
         CmsConfig.Negotiate negCfg = config.getNegotiate();
         
-        // association handlers
-        dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));
-        dispatcher.registerDefaultHandler(new AbortHandler());
-        dispatcher.registerDefaultHandler(new ReleaseHandler());
-        // directory handlers
-        dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());
-        dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());
-        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
-        dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));
-        dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));
-        dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());
-        // data handlers
-        dispatcher.registerDefaultHandler(new GetDataValuesHandler());
-        dispatcher.registerDefaultHandler(new SetDataValuesHandler());
-        // setting handlers
-        //dispatcher.registerDefaultHandler(new ());
-        // goose handlers
-        dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());
-        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler());
-        // sv handlers
-        dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());
-        dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());
-        // control handlers
-        dispatcher.registerDefaultHandler(new SelectHandler());
-        dispatcher.registerDefaultHandler(new SelectWithValueHandler());
-        dispatcher.registerDefaultHandler(new OperateHandler());
-        dispatcher.registerDefaultHandler(new CancelHandler());
-        dispatcher.registerDefaultHandler(new CommandTerminationHandler());
-        dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());
-        dispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());
-        // rpc handlers
-        dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());
-        dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());
-        dispatcher.registerDefaultHandler(new GetRpcMethodDirectoryHandler());
-        dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());
-        dispatcher.registerDefaultHandler(new RpcCallHandler());
-        // file handlers
-        dispatcher.registerDefaultHandler(new GetFileHandler());
-        dispatcher.registerDefaultHandler(new SetFileHandler());
-        dispatcher.registerDefaultHandler(new DeleteFileHandler());
-        dispatcher.registerDefaultHandler(new GetFileAttributeValuesHandler());
-        dispatcher.registerDefaultHandler(new GetFileDirectoryHandler());
-        // negotiation handlers
+        // 8.2 association handlers
+        dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));// 8.2.1
+        dispatcher.registerDefaultHandler(new AbortHandler());// 8.2.2
+        dispatcher.registerDefaultHandler(new ReleaseHandler());// 8.2.3
+        // 8.3 directory handlers
+        dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());// 8.3.1
+        dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());// 8.3.2
+        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));// 8.3.3
+        dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));// 8.3.4
+        dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));// 8.3.5
+        dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
+        // 8.4 data handlers
+        dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
+        dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2
+        // 8.5
+        // 8.6
+        // 8.7 report handlers
+        // 8.7.1
+        // 8.7.2
+        // 8.7.3
+        // 8.7.4
+        // 8.7.5
+        // 8.8 log handlers
+        dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
+        dispatcher.registerDefaultHandler(new SetLCBValuesHandler());// 8.8.3
+        dispatcher.registerDefaultHandler(new QueryLogByTimeHandler());// 8.8.4
+        dispatcher.registerDefaultHandler(new QueryLogAfterHandler());// 8.8.5
+        dispatcher.registerDefaultHandler(new GetLogStatusValuesHandler());// 8.8.6
+        // 8.9 goose handlers
+        dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());// 8.9.4
+        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler());// 8.9.5
+        // 8.10 sv handlers
+        dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());// 8.10.2
+        dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());// 8.10.3
+        // 8.11 control handlers
+        dispatcher.registerDefaultHandler(new SelectHandler());// 8.11.1
+        dispatcher.registerDefaultHandler(new SelectWithValueHandler());// 8.11.2
+        dispatcher.registerDefaultHandler(new OperateHandler());// 8.11.3
+        dispatcher.registerDefaultHandler(new CancelHandler());// 8.11.4
+        dispatcher.registerDefaultHandler(new CommandTerminationHandler());// 8.11.5
+        dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());// 8.11.6
+        dispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());// 8.11.7
+        // 8.12 rpc handlers
+        dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());// 8.12.1
+        dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());// 8.12.2
+        dispatcher.registerDefaultHandler(new GetRpcMethodDirectoryHandler());// 8.12.3
+        dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());// 8.12.4
+        dispatcher.registerDefaultHandler(new RpcCallHandler());// 8.12.5
+        // 8.13 file handlers
+        dispatcher.registerDefaultHandler(new GetFileHandler());// 8.13.1
+        dispatcher.registerDefaultHandler(new SetFileHandler());// 8.13.2
+        dispatcher.registerDefaultHandler(new DeleteFileHandler());// 8.13.3
+        dispatcher.registerDefaultHandler(new GetFileAttributeValuesHandler());// 8.13.4
+        dispatcher.registerDefaultHandler(new GetFileDirectoryHandler());// 8.13.5
+        // 8.14 test handlers
+        dispatcher.registerDefaultHandler(new TestHandler());// 8.14.1
+        // 8.15 negotiation handlers
         dispatcher.registerDefaultHandler(new AssociateNegotiateHandler(
                 negCfg.getApduSize(), negCfg.getAsduSize(),
-                negCfg.getProtocolVersion(), negCfg.getModelVersion()));
-        // test handlers
-        dispatcher.registerDefaultHandler(new TestHandler());
+                negCfg.getProtocolVersion(), negCfg.getModelVersion()));// 8.15.1
     }
 
     // ==================== Transport Listener ====================
