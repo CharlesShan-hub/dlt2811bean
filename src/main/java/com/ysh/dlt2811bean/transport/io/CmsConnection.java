@@ -2,7 +2,9 @@ package com.ysh.dlt2811bean.transport.io;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsControlCode;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -40,6 +42,21 @@ public class CmsConnection {
 
     private volatile boolean running;
 
+    /** 连续收到的错误帧计数器，超阈值会主动断开连接 */
+    private int consecutiveErrors;
+    /** 连续错误阈值，超过此值主动中断连接 */
+    private static final int MAX_CONSECUTIVE_ERRORS = 5;
+
+    /**
+     * Marker exception for frame format errors (PI/SC/FL) that should NOT
+     * cause a disconnect — the frame is discarded and the connection stays alive.
+     */
+    public static class FrameFormatException extends Exception {
+        public FrameFormatException(String message) {
+            super(message);
+        }
+    }
+
     /**
      * Creates a connection over an existing socket.
      *
@@ -73,14 +90,10 @@ public class CmsConnection {
         }
     }
 
-    /**
-     * Sends a single (already-segmented) APDU frame.
-     */
     private void sendOne(CmsApdu apdu) throws IOException {
         PerOutputStream pos = new PerOutputStream();
         apdu.encode(pos);
         byte[] bytes = pos.toByteArray();
-        // Standard DL/T 2811: No length prefix, start directly with APCH
         dos.write(bytes);
         dos.flush();
     }
@@ -96,34 +109,31 @@ public class CmsConnection {
      * the pending group is cleared (protocol violation: ReqID reused before completion).
      *
      * @return the complete APDU (merged if segmented)
+     * @throws FrameFormatException if the frame has format errors (frame is discarded)
      * @throws Exception if receive fails or connection is closed
      */
     public CmsApdu receive() throws Exception {
         CmsApdu seg = loadSegment();
         int reqId = seg.getReqId();
 
-        // Protocol violation: ReqID reused before completion
         if (pending.containsKey(reqId)) {
             pending.remove(reqId);
-            throw new IllegalStateException("ReqID " + reqId + " reused before previous transfer completed");
+            throw new FrameFormatException("ReqID " + reqId + " reused before previous transfer completed");
         }
 
         List<CmsApdu> segments = new ArrayList<>();
         segments.add(seg);
 
-        // Keep reading while More flag is set
         while (seg.getApch().isNext()) {
             seg = loadSegment();
             if (seg.getReqId() != reqId) {
-                // Clear the pending group for this ReqID
                 pending.remove(reqId);
-                throw new IllegalStateException(
+                throw new FrameFormatException(
                     "Segment ReqID mismatch: expected " + reqId + ", got " + seg.getReqId());
             }
             segments.add(seg);
         }
 
-        // Merge if segmented, otherwise decode ASDU directly
         if (segments.size() > 1) {
             CmsApdu last = segments.removeLast();
             last.merge(segments);
@@ -134,24 +144,39 @@ public class CmsConnection {
     }
 
     private CmsApdu loadSegment() throws Exception {
-        // Standard DL/T 2811: Read 4-byte APCH first
         byte[] apchBuf = new byte[4];
         dis.readFully(apchBuf);
-        
-        // Extract Frame Length (FL) from the last 2 bytes of APCH
-        // FL is big-endian 16-bit unsigned integer
+
+        // 6.1.1 / 6.1.2: Validate Protocol Identifier (PI) — CC byte bits 3-0 must be 0x01
+        int pi = apchBuf[0] & 0x0F;
+        if (pi != CmsControlCode.PI_DEFAULT) {
+            throw new FrameFormatException(
+                "Invalid PI: expected " + CmsControlCode.PI_DEFAULT + ", got " + pi);
+        }
+
+        // Validate Frame Length (FL) — must be ≤ 65531 (MAX_ASDU_SIZE)
         int fl = ((apchBuf[2] & 0xFF) << 8) | (apchBuf[3] & 0xFF);
-        
+        if (fl < 0 || fl > CmsApdu.MAX_ASDU_SIZE) {
+            throw new FrameFormatException(
+                "Invalid FL: " + fl + ", max allowed is " + CmsApdu.MAX_ASDU_SIZE);
+        }
+
+        // Validate Service Code (SC) — must be a known service code
+        int sc = apchBuf[1] & 0xFF;
+        if (ServiceName.fromInt(sc) == null) {
+            throw new FrameFormatException(
+                "Unknown service code: 0x" + Integer.toHexString(sc));
+        }
+
         byte[] asduBuf = new byte[fl];
         if (fl > 0) {
             dis.readFully(asduBuf);
         }
-        
-        // Combine APCH and ASDU into a single buffer for decoding
+
         byte[] fullFrame = new byte[4 + fl];
         System.arraycopy(apchBuf, 0, fullFrame, 0, 4);
         System.arraycopy(asduBuf, 0, fullFrame, 4, fl);
-        
+
         return new CmsApdu().load(new PerInputStream(fullFrame));
     }
 
@@ -160,13 +185,31 @@ public class CmsConnection {
      *
      * <p>Incoming APDUs are dispatched to {@link CmsTransportListener#onApduReceived}.
      * When the connection closes or an error occurs, the appropriate callback is invoked.
+     *
+     * <p>Frame format errors (PI/SC/FL) are handled per 6.1.3:
+     * <ul>
+     *   <li>The malformed frame is discarded (not processed)</li>
+     *   <li>The connection is NOT closed</li>
+     *   <li>If consecutive errors exceed the threshold, the connection is closed</li>
+     * </ul>
      */
     public void startReadLoop() {
         Thread reader = new Thread(() -> {
             try {
                 while (running) {
-                    CmsApdu apdu = receive();
-                    listener.onApduReceived(this, apdu);
+                    try {
+                        CmsApdu apdu = receive();
+                        consecutiveErrors = 0;
+                        listener.onApduReceived(this, apdu);
+                    } catch (FrameFormatException e) {
+                        consecutiveErrors++;
+                        if (listener != null) {
+                            listener.onError(this, e);
+                        }
+                        if (consecutiveErrors >= MAX_CONSECUTIVE_ERRORS) {
+                            break;
+                        }
+                    }
                 }
             } catch (EOFException | SocketException e) {
                 // normal disconnection
