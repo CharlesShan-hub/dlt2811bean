@@ -29,6 +29,7 @@ import com.ysh.dlt2811bean.service.svc.control.*;
 import com.ysh.dlt2811bean.service.svc.sv.*;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
+import com.ysh.dlt2811bean.service.svc.dataset.*;
 import com.ysh.dlt2811bean.transport.io.CmsClientTransport;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
@@ -1196,6 +1197,65 @@ public class CmsClient {
         for (String ref : references) {
             asdu.addSgcbReference(ref);
         }
+        return send(asdu);
+    }
+
+    /**
+     * DATASET - getDataSetValues - Service Code 0x3A
+     */
+    public CmsApdu getDataSetValues(String datasetReference) throws Exception {
+        CmsGetDataSetValues asdu = new CmsGetDataSetValues(MessageType.REQUEST)
+                .datasetReference(datasetReference);
+        return send(asdu);
+    }
+
+    public CmsApdu getDataSetValues(String datasetReference, String referenceAfter) throws Exception {
+        CmsGetDataSetValues asdu = new CmsGetDataSetValues(MessageType.REQUEST)
+                .datasetReference(datasetReference)
+                .referenceAfter(referenceAfter);
+        return send(asdu);
+    }
+
+    /**
+     * DATASET - setDataSetValues - Service Code 0x3B
+     */
+    public CmsApdu setDataSetValues(CmsSetDataSetValues asdu) throws Exception {
+        return send(asdu);
+    }
+
+    /**
+     * DATASET - createDataSet - Service Code 0x36
+     */
+    public CmsApdu createDataSet(String datasetReference, String memberReference, String fc) throws Exception {
+        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference(datasetReference)
+                .addMemberData(memberReference, fc);
+        return send(asdu);
+    }
+
+    public CmsApdu createDataSet(String datasetReference, String referenceAfter, String memberReference, String fc) throws Exception {
+        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference(datasetReference)
+                .referenceAfter(referenceAfter)
+                .addMemberData(memberReference, fc);
+        return send(asdu);
+    }
+
+    /**
+     * DATASET - deleteDataSet - Service Code 0x37
+     */
+    public CmsApdu deleteDataSet(String datasetReference) throws Exception {
+        CmsDeleteDataSet asdu = new CmsDeleteDataSet(MessageType.REQUEST)
+                .datasetReference(datasetReference);
+        return send(asdu);
+    }
+
+    /**
+     * DATASET - getDataSetDirectory - Service Code 0x39
+     */
+    public CmsApdu getDataSetDirectory(String datasetReference) throws Exception {
+        CmsGetDataSetDirectory asdu = new CmsGetDataSetDirectory(MessageType.REQUEST)
+                .datasetReference(datasetReference);
         return send(asdu);
     }
 
