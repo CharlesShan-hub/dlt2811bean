@@ -1,6 +1,8 @@
 package com.ysh.dlt2811bean.transport.app;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigInjector;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmCertificateParser;
@@ -209,11 +211,10 @@ public class CmsClient {
     }
 
     private void doSendWithoutResponse(CmsAsdu<?> asdu) throws Exception {
-        int reqId = session.nextReqId();
-        asdu.reqId(reqId);
+        asdu.reqId(0);
         CmsApdu request = new CmsApdu(asdu);
         session.send(request);
-        log.debug("[ReqID={}] Sent {} (one-way)", reqId, asdu.getClass().getSimpleName());
+        log.debug("[ReqID=0] Sent {} (one-way)", asdu.getClass().getSimpleName());
     }
 
     public boolean isConnected() {
@@ -244,6 +245,8 @@ public class CmsClient {
             if (session == null) {
                 return;
             }
+
+            session.onDataActivity();
 
             // Test echo: complete the pending request registered with ReqID=0
             if (apdu.getReqId() == 0 && apdu.getApch().getServiceCode() == ServiceName.TEST) {
@@ -326,6 +329,17 @@ public class CmsClient {
      * @throws Exception if not connected or timeout
      */
     public CmsApdu associate() throws Exception {
+        if (session != null && !session.isNegotiated()) {
+            CmsConfig config = CmsConfigLoader.load();
+            CmsApdu negResponse = associateNegotiate(
+                    config.getNegotiate().getApduSize(),
+                    config.getNegotiate().getAsduSize(),
+                    config.getNegotiate().getProtocolVersion());
+            if (negResponse == null || negResponse.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                return negResponse;
+            }
+        }
+
         CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
                 .serverAccessPointReference(defaultAp, defaultEp);
 
@@ -336,7 +350,6 @@ public class CmsClient {
 
         CmsApdu response = send(asdu);
 
-        // Save server certificate from response if present
         if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             CmsAssociate responseAsdu = (CmsAssociate) response.getAsdu();
             if (responseAsdu.authenticationParameter() != null &&
@@ -1128,8 +1141,8 @@ public class CmsClient {
     /**
      * REPORT - report - Service Code 0x5A
      */
-    public CmsApdu report(CmsReport asdu) throws Exception {
-        return send(asdu);
+    public void report(CmsReport asdu) throws Exception {
+        doSendWithoutResponse(asdu);
     }
 
     /**

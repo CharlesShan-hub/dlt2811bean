@@ -306,6 +306,8 @@ public class CmsServer {
                 return;
             }
 
+            session.onDataActivity();
+
             try {
                 CmsApdu response = dispatcher.dispatch(session, apdu);
                 if (response != null) {

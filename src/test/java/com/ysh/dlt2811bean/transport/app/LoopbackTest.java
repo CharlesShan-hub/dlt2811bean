@@ -24,7 +24,7 @@ public class LoopbackTest {
 
     protected static final Logger log = LoggerFactory.getLogger(LoopbackTest.class);
 
-    protected static final int PORT = CmsConfigLoader.load().getServer().getPort();
+    protected static final int PORT = 18773;
     private static final int MAX_WAIT_SECONDS = 30;
     private static final int RETRY_INTERVAL_MS = 100;
 

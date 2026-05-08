@@ -7,4 +7,4 @@ cd "$SCRIPT_DIR"
 export JAVA_HOME="${JAVA_HOME:-$(dirname "$(dirname "$(readlink -f "$(which java)")")")}"
 export PATH="$JAVA_HOME/bin:$PATH"
 
-exec mvn "-Dcms.server.port=18773" exec:java@cms-server -q
+exec mvn exec:java@cms-server -q

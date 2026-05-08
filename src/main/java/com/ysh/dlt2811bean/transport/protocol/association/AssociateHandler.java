@@ -64,6 +64,11 @@ public class AssociateHandler implements CmsServiceHandler {
     public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
         CmsAssociate asdu = (CmsAssociate) request.getAsdu();
 
+        if (!session.isNegotiated()) {
+            log.warn("[Server] Association rejected: negotiation not completed");
+            return buildNegativeResponse(asdu, new CmsServiceError(CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE));
+        }
+
         // 1. Resolve serverAccessPointReference
         String sapRef = asdu.serverAccessPointReference() != null
             ? asdu.serverAccessPointReference().get() : null;

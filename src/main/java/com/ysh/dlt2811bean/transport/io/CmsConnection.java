@@ -66,6 +66,11 @@ public class CmsConnection {
      */
     public CmsConnection(Socket socket, CmsTransportListener listener) throws IOException {
         this.socket = socket;
+        try {
+            socket.setKeepAlive(true);
+        } catch (Exception ignored) {
+            // TCP KeepAlive is best-effort; some platforms may not support it
+        }
         this.dis = new DataInputStream(socket.getInputStream());
         this.dos = new DataOutputStream(socket.getOutputStream());
         this.listener = listener;
@@ -256,5 +261,16 @@ public class CmsConnection {
      */
     public Socket getSocket() {
         return socket;
+    }
+
+    /**
+     * @return the remote IP address string (e.g. "192.168.1.100"), or null if closed
+     */
+    public String getRemoteAddress() {
+        try {
+            return socket.getInetAddress().getHostAddress();
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

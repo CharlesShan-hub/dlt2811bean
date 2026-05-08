@@ -143,6 +143,18 @@ public class CmsServerTransport {
                     sslSocket.startHandshake();
                 }
 
+                String clientIp = socket.getInetAddress() != null
+                    ? socket.getInetAddress().getHostAddress() : null;
+
+                if (clientIp != null) {
+                    for (CmsConnection existing : connections) {
+                        if (clientIp.equals(existing.getRemoteAddress())) {
+                            log.warn("Duplicate connection from same client IP {}, closing old connection", clientIp);
+                            existing.close();
+                        }
+                    }
+                }
+
                 CmsConnection conn = new CmsConnection(socket, connectionListener);
                 connections.add(conn);
                 listener.onConnected(conn);

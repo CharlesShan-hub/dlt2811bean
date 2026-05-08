@@ -10,31 +10,37 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Manages the CMS KeepAlive (Test) mechanism per session.
+ * Manages the CMS application-layer heartbeat (Test service) per session.
  *
- * <p>DL/T 2811 §6.9:
+ * <p>Implements DL/T 2811 §6.9.2:
  * <ul>
- *   <li>Idle detection: 30 seconds</li>
- *   <li>Test send interval: 5 seconds</li>
- *   <li>Max retries: 4</li>
- *   <li>Max fault detection: 50 seconds</li>
+ *   <li>After association, periodically checks communication status</li>
+ *   <li>Ongoing data exchange is considered normal communication</li>
+ *   <li>During idle periods, Test messages are sent proactively</li>
+ *   <li>Test interval: 1min~5min (default 60s)</li>
+ *   <li>Receiving any valid message resets the idle timer</li>
  * </ul>
+ *
+ * <p>Note: This is the APPLICATION-LAYER heartbeat (CMS Test service).
+ * TCP-level KeepAlive (§6.9.3) is enabled separately on the socket
+ * via {@link java.net.Socket#setKeepAlive(boolean)} in {@link
+ * com.ysh.dlt2811bean.transport.io.CmsConnection}.
  *
  * <p>State machine:
  * <pre>
  *   IDLE ──(data received)──► IDLE
- *   IDLE ──(30s idle)───────► SENDING ──(response)──► IDLE
- *   SENDING ──(no response)──► SENDING (retry up to 4x)
- *   SENDING ──(4 failures)──► TIMEOUT
+ *   IDLE ──(idle timeout)───► SENDING ──(response)──► IDLE
+ *   SENDING ──(no response)──► SENDING (retry up to maxRetries)
+ *   SENDING ──(all retries fail)──► TIMEOUT
  * </pre>
  */
 public class KeepAliveManager {
 
     private static final Logger log = LoggerFactory.getLogger(KeepAliveManager.class);
 
-    /** Idle timeout before sending the first Test (ms). Default 30s. */
+    /** Idle timeout before sending the first Test (ms). Default 60s. */
     @CmsValue("keepalive.idleTimeoutMs")
-    private long idleTimeoutMs = 30000;
+    private long idleTimeoutMs = 60000;
 
     /** Interval between Test retries (ms). Default 5s. */
     @CmsValue("keepalive.retryIntervalMs")

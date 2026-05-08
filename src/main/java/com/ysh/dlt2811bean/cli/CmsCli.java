@@ -170,11 +170,16 @@ public class CmsCli {
 
     private class ConnectHandler implements CommandHandler {
         public String getName() { return "connect"; }
-        public String getDescription() { return "连接到 CMS 服务器"; }
+        public String getDescription() { return "连接到 CMS 服务器（可选自动协商+关联）"; }
         public List<Param> getParams() {
             return List.of(
                 new Param("host", "服务器 IP", "127.0.0.1"),
-                new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getPort()))
+                new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getPort())),
+                new Param("apduSize", "APDU 大小（留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getApduSize())),
+                new Param("asduSize", "ASDU 大小", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
+                new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
+                new Param("ap", "AccessPoint", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
+                new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp())
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
@@ -182,6 +187,31 @@ public class CmsCli {
             int port = Integer.parseInt(values.get("port"));
             client.connect(host, port);
             System.out.println("  Connected to " + host + ":" + port);
+
+            String apduSizeStr = values.get("apduSize");
+            if (!apduSizeStr.isEmpty()) {
+                int apduSize = Integer.parseInt(apduSizeStr);
+                int asduSize = Integer.parseInt(values.get("asduSize"));
+                long protocolVersion = Long.parseLong(values.get("protocolVersion"));
+                String ap = values.get("ap");
+                String ep = values.get("ep");
+
+                client.setAccessPoint(ap, ep);
+
+                CmsApdu negResponse = client.associateNegotiate(apduSize, asduSize, protocolVersion);
+                if (negResponse == null || negResponse.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                    System.out.println("  Negotiate failed");
+                    return;
+                }
+                System.out.println("  Negotiated OK");
+
+                CmsApdu assocResponse = client.associate();
+                if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                    System.out.println("  Associated (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
+                } else {
+                    System.out.println("  Associate failed");
+                }
+            }
         }
     }
 
@@ -204,13 +234,6 @@ public class CmsCli {
             byte[] assocId = client.getAssociationId();
             System.out.println("  Connected: " + (connected ? "YES" : "NO"));
             System.out.println("  Associated: " + (assocId != null ? "YES (id=" + bytesToHex(assocId, 8) + "...)" : "NO"));
-        }
-        private String bytesToHex(byte[] bytes, int len) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < Math.min(len, bytes.length); i++) {
-                sb.append(String.format("%02X", bytes[i]));
-            }
-            return sb.toString();
         }
     }
 
@@ -1174,5 +1197,14 @@ public class CmsCli {
                 default: return CmsACSIClass.URCB;
             }
         }
+    }
+
+    private static String bytesToHex(byte[] bytes, int len) {
+        if (bytes == null) return "null";
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < Math.min(len, bytes.length); i++) {
+            sb.append(String.format("%02X", bytes[i]));
+        }
+        return sb.toString();
     }
 }

@@ -35,7 +35,13 @@ public abstract class CmsSession {
     }
 
     public void setState(SessionState state) {
+        SessionState old = this.state;
         this.state = state;
+        if (state == SessionState.ASSOCIATED && old != SessionState.ASSOCIATED) {
+            startKeepAlive();
+        } else if (old == SessionState.ASSOCIATED && state != SessionState.ASSOCIATED) {
+            stopKeepAlive();
+        }
     }
 
     public boolean isConnected() {
@@ -83,12 +89,32 @@ public abstract class CmsSession {
         return connection;
     }
 
+    // ==================== KeepAlive ====================
+
+    protected final KeepAliveManager keepAliveManager = new KeepAliveManager(this);
+
+    public void startKeepAlive() {
+        keepAliveManager.start();
+    }
+
+    public void stopKeepAlive() {
+        keepAliveManager.stop();
+    }
+
+    /**
+     * Called when any APDU is sent or received. Resets the idle timer.
+     */
+    public void onDataActivity() {
+        keepAliveManager.onActivity();
+    }
+
     // ==================== I/O ====================
 
     public void send(com.ysh.dlt2811bean.service.protocol.types.CmsApdu apdu) throws Exception {
         if (!isConnected()) {
             throw new IllegalStateException("Session is not connected");
         }
+        onDataActivity();
         connection.send(apdu);
     }
 
@@ -98,6 +124,7 @@ public abstract class CmsSession {
     public void onDisconnected() {
         this.state = SessionState.CLOSED;
         this.associationId = null;
+        stopKeepAlive();
     }
 
     @Override

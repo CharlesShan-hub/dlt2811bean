@@ -51,6 +51,7 @@ class CmsDispatcherTest {
 
         when(mockConnection.getSocket()).thenReturn(mockSocket);
         session = new CmsServerSession(mockConnection);
+        session.setNegotiated(true);
     }
 
     @Test

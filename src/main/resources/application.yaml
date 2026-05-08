@@ -10,7 +10,7 @@ client:
   requestTimeoutMs: 5000
 
 keepalive:
-  idleTimeoutMs: 30000
+  idleTimeoutMs: 60000 # 1-5 minutes
   retryIntervalMs: 5000
   maxRetries: 4
 
