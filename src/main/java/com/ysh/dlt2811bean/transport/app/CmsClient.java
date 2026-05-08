@@ -1143,6 +1143,62 @@ public class CmsClient {
         return send(asdu);
     }
 
+    /**
+     * SETTING - selectActiveSG - Service Code 0x54
+     */
+    public CmsApdu selectActiveSG(String sgcbReference, int sgNum) throws Exception {
+        CmsSelectActiveSG asdu = new CmsSelectActiveSG(MessageType.REQUEST)
+                .sgcbReference(sgcbReference)
+                .settingGroupNumber(sgNum);
+        return send(asdu);
+    }
+
+    /**
+     * SETTING - selectEditSG - Service Code 0x55
+     */
+    public CmsApdu selectEditSG(String sgcbReference, int sgNum) throws Exception {
+        CmsSelectEditSG asdu = new CmsSelectEditSG(MessageType.REQUEST)
+                .sgcbReference(sgcbReference)
+                .settingGroupNumber(sgNum);
+        return send(asdu);
+    }
+
+    /**
+     * SETTING - setEditSGValue - Service Code 0x56
+     */
+    public CmsApdu setEditSGValue(CmsSetEditSGValue asdu) throws Exception {
+        return send(asdu);
+    }
+
+    /**
+     * SETTING - confirmEditSGValues - Service Code 0x57
+     */
+    public CmsApdu confirmEditSGValues(String sgcbReference) throws Exception {
+        CmsConfirmEditSGValues asdu = new CmsConfirmEditSGValues(MessageType.REQUEST)
+                .sgcbReference(sgcbReference);
+        return send(asdu);
+    }
+
+    /**
+     * SETTING - getEditSGValue - Service Code 0x58
+     */
+    public CmsApdu getEditSGValue(String reference, String fc) throws Exception {
+        CmsGetEditSGValue asdu = new CmsGetEditSGValue(MessageType.REQUEST)
+                .addData(reference, fc);
+        return send(asdu);
+    }
+
+    /**
+     * SETTING - getSGCBValues - Service Code 0x59
+     */
+    public CmsApdu getSGCBValues(String... references) throws Exception {
+        CmsGetSGCBValues asdu = new CmsGetSGCBValues(MessageType.REQUEST);
+        for (String ref : references) {
+            asdu.addSgcbReference(ref);
+        }
+        return send(asdu);
+    }
+
     public CmsApdu test() throws Exception {
         CmsTest asdu = new CmsTest(MessageType.REQUEST);
         return testEcho(asdu);

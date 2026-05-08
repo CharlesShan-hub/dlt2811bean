@@ -22,6 +22,7 @@ import com.ysh.dlt2811bean.transport.protocol.sv.*;
 import com.ysh.dlt2811bean.transport.protocol.goose.*;
 import com.ysh.dlt2811bean.transport.protocol.log.*;
 import com.ysh.dlt2811bean.transport.protocol.report.*;
+import com.ysh.dlt2811bean.transport.protocol.setting.*;
 import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
 import com.ysh.dlt2811bean.transport.protocol.file.GetFileDirectoryHandler;
@@ -224,8 +225,21 @@ public class CmsServer {
         // 8.4 data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2
-        // 8.5
-        // 8.6
+        // 8.4.3
+        // 8.4.4
+        // 8.5 dataset handlers
+        // 8.5.1
+        // 8.5.2
+        // 8.5.3
+        // 8.5.4
+        // 8.5.5
+        // 8.6 value handlers
+        dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
+        dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2
+        dispatcher.registerDefaultHandler(new SetEditSGValueHandler());// 8.6.3
+        dispatcher.registerDefaultHandler(new ConfirmEditSGValuesHandler());// 8.6.4
+        dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
+        dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
         // 8.7 report handlers
         dispatcher.registerDefaultHandler(new ReportHandler());// 8.7.1
         dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2

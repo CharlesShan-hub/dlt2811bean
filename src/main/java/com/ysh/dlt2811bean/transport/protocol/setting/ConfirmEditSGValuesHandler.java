@@ -1,15 +1,18 @@
 package com.ysh.dlt2811bean.transport.protocol.setting;
 
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsConfirmEditSGValues;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-/**
- * Handler for ConfirmEditSGValues service (SC=0x57).
- */
 public class ConfirmEditSGValuesHandler implements CmsServiceHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ConfirmEditSGValuesHandler.class);
 
     @Override
     public ServiceName getServiceName() {
@@ -18,7 +21,34 @@ public class ConfirmEditSGValuesHandler implements CmsServiceHandler {
 
     @Override
     public CmsApdu handleRequest(CmsServerSession session, CmsApdu request) {
+        try {
+            return doHandle(session, request);
+        } catch (Exception e) {
+            log.error("[Server] Error handling ConfirmEditSGValues: {}", e.getMessage(), e);
+            return buildNegativeResponse((CmsConfirmEditSGValues) request.getAsdu(),
+                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+    }
+
+    private CmsApdu doHandle(CmsServerSession session, CmsApdu request) {
         CmsConfirmEditSGValues asdu = (CmsConfirmEditSGValues) request.getAsdu();
-        return new CmsApdu(asdu);
+
+        String ref = asdu.sgcbReference.get();
+        if (ref == null || ref.isEmpty()) {
+            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        }
+
+        log.debug("[Server] ConfirmEditSGValues: ref={}", ref);
+
+        CmsConfirmEditSGValues response = new CmsConfirmEditSGValues(MessageType.RESPONSE_POSITIVE)
+                .reqId(asdu.reqId().get());
+        return new CmsApdu(response);
+    }
+
+    private CmsApdu buildNegativeResponse(CmsConfirmEditSGValues request, int errorCode) {
+        CmsConfirmEditSGValues response = new CmsConfirmEditSGValues(MessageType.RESPONSE_NEGATIVE)
+                .reqId(request.reqId().get())
+                .serviceError(errorCode);
+        return new CmsApdu(response);
     }
 }

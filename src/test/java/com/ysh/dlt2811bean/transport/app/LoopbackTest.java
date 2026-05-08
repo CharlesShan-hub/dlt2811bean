@@ -133,7 +133,7 @@ public class LoopbackTest {
     }
 
     public void closeServer() {
-        closeServer(500); // 默认等待500ms让socket释放（Windows需要更长时间）
+        closeServer(0);
     }
 
     public void closeServer(int waitMs) {
