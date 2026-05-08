@@ -226,8 +226,8 @@ public class CmsServer {
         // 8.4 data handlers
         dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
         dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2
-        // 8.4.3
-        // 8.4.4
+        dispatcher.registerDefaultHandler(new GetDataDirectoryHandler());// 8.4.3
+        dispatcher.registerDefaultHandler(new GetDataDefinitionHandler());// 8.4.4
         // 8.5 dataset handlers
         dispatcher.registerDefaultHandler(new GetDataSetValuesHandler());// 8.5.1
         dispatcher.registerDefaultHandler(new SetDataSetValuesHandler());// 8.5.2

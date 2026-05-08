@@ -620,6 +620,30 @@ public class CmsClient {
     }
 
     /**
+     * DATA - getDataDirectory - Service Code 0x32
+     */
+    public CmsApdu getDataDirectory(String dataReference) throws Exception {
+        CmsGetDataDirectory asdu = new CmsGetDataDirectory(MessageType.REQUEST)
+                .dataReference(dataReference);
+        return send(asdu);
+    }
+
+    /**
+     * DATA - getDataDefinition - Service Code 0x33
+     */
+    public CmsApdu getDataDefinition(String reference) throws Exception {
+        CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST)
+                .addData(reference);
+        return send(asdu);
+    }
+
+    public CmsApdu getDataDefinition(String reference, String fc) throws Exception {
+        CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST)
+                .addData(reference, fc);
+        return send(asdu);
+    }
+
+    /**
      * Association - associateNegotiate - Service Code 9A
      * Sends an AssociateNegotiate request to negotiate service parameters before association.
      * Must be called after connect() and before associate().
