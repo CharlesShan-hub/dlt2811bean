@@ -240,8 +240,6 @@ byte[] v9 = CmsEntryID.read(pis).get();
 | 类名                      | 中文名       | 章节      |
 | ----------------------- | --------- | ------- |
 | `AbstractCmsEnumerated` | 枚举        | §7.1.6  |
-| `CmsDbpos`              | 双点位置      | §7.3.5  |
-| `CmsTcmd`               | 档位命令      | §7.3.7  |
 | `CmsServiceError`       | 服务错误      | §7.3.11 |
 | `CmsOrCat`              | 发出者类别     | §7.5.2  |
 | `CmsAddCause`           | 控制操作的附加原因 | §7.5.4  |
@@ -252,8 +250,6 @@ byte[] v9 = CmsEntryID.read(pis).get();
 ```java
 // 创建并编码
 PerOutputStream pos = new PerOutputStream();
-CmsDbpos.write(pos, CmsDbpos.ON);
-CmsTcmd.write(pos, CmsTcmd.HIGH);
 CmsServiceError.write(pos, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 CmsOrCat.write(pos, CmsOrCat.BAY_CONTROL);
 CmsAddCause.write(pos, CmsAddCause.REMOTE_COMMAND);
@@ -264,12 +260,10 @@ byte[] encoded = pos.toByteArray();
 ```java
 // 解码
 PerInputStream pis = new PerInputStream(encoded);
-int v1 = CmsDbpos.read(pis).get();
-int v2 = CmsTcmd.read(pis).get();
-int v3 = CmsServiceError.read(pis).get();
-int v4 = CmsOrCat.read(pis).get();
-int v5 = CmsAddCause.read(pis).get();
-int v6 = CmsSmpMod.read(pis).get();
+int v1 = CmsServiceError.read(pis).get();
+int v2 = CmsOrCat.read(pis).get();
+int v3 = CmsAddCause.read(pis).get();
+int v4 = CmsSmpMod.read(pis).get();
 ```
 
 ## 位域编码类型
@@ -278,7 +272,7 @@ int v6 = CmsSmpMod.read(pis).get();
 
 ### 位域编码类型介绍
 
-位域编码类型实现了 DL/T 2811 协议 §7.1.7 定义的编码枚举，将多个布尔标志或小整型字段紧凑编码到一个整型值中。所有位域类继承自 `AbstractCmsCodedEnum`，底层委托 `PerCodedEnum` 编码器，支持按位读写（`testBit`/`setBit`）和按段读写（`getBits`/`setBits`）。典型应用包括品质（`CmsQuality`）、时标品质（`CmsTimeQuality`）、检测（`CmsCheck`）以及报告/日志/采样值控制块的选项域和触发条件等。
+位域编码类型实现了 DL/T 2811 协议 §7.1.7 定义的编码枚举，将多个布尔标志或小整型字段紧凑编码到一个整型值中。所有位域类继承自 `AbstractCmsCodedEnum`，底层委托 `PerCodedEnum` 编码器，支持按位读写（`testBit`/`setBit`）和按段读写（`getBits`/`setBits`）。典型应用包括品质（`CmsQuality`）、时标品质（`CmsTimeQuality`）、双点位置（`CmsDbpos`）、档位命令（`CmsTcmd`）、检测（`CmsCheck`）以及报告/日志/采样值控制块的选项域和触发条件等。
 
 ### 位域编码类的实现
 
@@ -286,7 +280,9 @@ int v6 = CmsSmpMod.read(pis).get();
 | ---------------------- | ------------ | ------ |
 | `AbstractCmsCodedEnum` | 编码枚举         | §7.1.7 |
 | `CmsTimeQuality`       | 时标品质         | §7.3.4 |
-| `CmsQuality`           | 品质           | §7.3.6 |
+| `CmsDbpos`             | 双点位置         | §7.3.5 |
+| `CmsQuality`           | 品质            | §7.3.6 |
+| `CmsTcmd`              | 档位命令         | §7.3.7 |
 | `CmsCheck`             | 控制操作的检测      | §7.5.3 |
 | `CmsTriggerConditions` | 触发条件         | §7.6.2 |
 | `CmsReasonCode`        | 触发原因         | §7.6.3 |
@@ -299,6 +295,12 @@ int v6 = CmsSmpMod.read(pis).get();
 ```java
 // 创建并编码（位域类型通常先 new 出来逐位设置，再 encode）
 PerOutputStream pos = new PerOutputStream();
+
+CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
+dbpos.encode(pos);
+
+CmsTcmd tcmd = new CmsTcmd(CmsTcmd.HIGH);
+tcmd.encode(pos);
 
 CmsQuality quality = new CmsQuality()
     .setValidity(CmsQuality.GOOD)
@@ -327,15 +329,19 @@ byte[] encoded = pos.toByteArray();
 ```java
 // 解码
 PerInputStream pis = new PerInputStream(encoded);
-CmsQuality v1 = new CmsQuality().decode(pis);
-CmsCheck v2 = new CmsCheck().decode(pis);
-CmsTriggerConditions v3 = new CmsTriggerConditions().decode(pis);
-CmsRcbOptFlds v4 = new CmsRcbOptFlds().decode(pis);
+CmsDbpos v1 = new CmsDbpos().decode(pis);
+CmsTcmd v2 = new CmsTcmd().decode(pis);
+CmsQuality v3 = new CmsQuality().decode(pis);
+CmsCheck v4 = new CmsCheck().decode(pis);
+CmsTriggerConditions v5 = new CmsTriggerConditions().decode(pis);
+CmsRcbOptFlds v6 = new CmsRcbOptFlds().decode(pis);
 
 // 解码后检查位
-boolean test = v1.testBit(CmsQuality.TEST);
-boolean interlock = v2.testBit(CmsCheck.INTERLOCK_CHECK);
-int validity = v1.getValidity();
+long dbposVal = v1.get();
+long tcmdVal = v2.get();
+boolean test = v3.testBit(CmsQuality.TEST);
+boolean interlock = v4.testBit(CmsCheck.INTERLOCK_CHECK);
+int validity = v3.getValidity();
 ```
 
 ## 压缩列表类型

@@ -1,6 +1,6 @@
-package com.ysh.dlt2811bean.datatypes.enumerated;
+package com.ysh.dlt2811bean.datatypes.code;
 
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsEnumerated;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCodedEnum;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
@@ -18,7 +18,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * └──────┴───────┴────────────────────┴──────────────┘
  * </pre>
  *
- * <p>Encoded as a 2-bit constrained enumeration (ENUMERATED 0..3).
+ * <p>Encoded as a fixed 2-bit CODED ENUM (BIT STRING).
  *
  * <pre>
  * // Construction
@@ -35,7 +35,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * if (pos.is(2)) { ... } // same as ON
  *
  * // Getting the value
- * int value = pos.get(); // returns 0, 1, 2, or 3
+ * long value = pos.get(); // returns 0, 1, 2, or 3
  *
  * // Encoding and decoding
  * PerOutputStream posStream = new PerOutputStream();
@@ -46,9 +46,9 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * </pre>
  *
  * <p>This is a concrete application type with fixed enumeration values.
- * The size is fixed to 4 (values 0..3).
+ * The size is 2 bits (values 0..3).
  */
-public class CmsDbpos extends AbstractCmsEnumerated<CmsDbpos> {
+public class CmsDbpos extends AbstractCmsCodedEnum<CmsDbpos> {
 
     /** 00 — intermediate-state */
     public static final int INTERMEDIATE = 0;
@@ -66,14 +66,14 @@ public class CmsDbpos extends AbstractCmsEnumerated<CmsDbpos> {
         this(INTERMEDIATE);
     }
 
-    public CmsDbpos(int value) {
-        super("CmsDbpos", value, 4);
+    public CmsDbpos(long value) {
+        super("CmsDbpos", value, 2);
     }
 
     private static final CmsDbpos SHARED = new CmsDbpos();
 
     /** Static write with raw value. */
-    public static void write(PerOutputStream pos, int value) {
+    public static void write(PerOutputStream pos, long value) {
         SHARED.set(value);
         SHARED.encode(pos);
     }

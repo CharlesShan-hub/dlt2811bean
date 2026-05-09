@@ -7,9 +7,9 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.compound.CmsBinaryTime;
 import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsDbpos;
+import com.ysh.dlt2811bean.datatypes.code.CmsDbpos;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsTcmd;
+import com.ysh.dlt2811bean.datatypes.code.CmsTcmd;
 import com.ysh.dlt2811bean.datatypes.numeric.*;
 import com.ysh.dlt2811bean.datatypes.string.CmsBitString;
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
@@ -592,7 +592,7 @@ class CmsDataTest {
         CmsData<CmsDbpos> decoded = new CmsData<CmsDbpos>()
                 .set(new CmsDbpos())
                 .decode(new PerInputStream(pos.toByteArray()));
-        assertTrue(decoded.get().is(CmsDbpos.ON));
+        assertEquals((long) CmsDbpos.ON, decoded.get().get());
     }
 
     @Test
@@ -603,7 +603,7 @@ class CmsDataTest {
 
         CmsDbpos template = new CmsDbpos();
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
-        assertTrue(template.is(CmsDbpos.ON));
+        assertEquals((long) CmsDbpos.ON, template.get());
     }
 
     @Test
@@ -617,7 +617,7 @@ class CmsDataTest {
         CmsData<CmsTcmd> decoded = new CmsData<CmsTcmd>()
                 .set(new CmsTcmd())
                 .decode(new PerInputStream(pos.toByteArray()));
-        assertTrue(decoded.get().is(CmsTcmd.HIGHER));
+        assertEquals((long) CmsTcmd.HIGHER, decoded.get().get());
     }
 
     @Test
@@ -628,7 +628,7 @@ class CmsDataTest {
 
         CmsTcmd template = new CmsTcmd();
         CmsData.read(new PerInputStream(pos.toByteArray()), template);
-        assertTrue(template.is(CmsTcmd.HIGHER));
+        assertEquals((long) CmsTcmd.HIGHER, template.get());
     }
 
     @Test

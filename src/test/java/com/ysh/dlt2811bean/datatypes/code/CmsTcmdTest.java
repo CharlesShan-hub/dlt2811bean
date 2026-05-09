@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.datatypes.enumerated;
+package com.ysh.dlt2811bean.datatypes.code;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
@@ -11,30 +11,28 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsTcmdTest {
 
     @Test
-    @DisplayName("construct, set, is, encode/decode")
+    @DisplayName("construct, set, encode/decode")
     void testAll() throws Exception {
         CmsTcmd cmd = new CmsTcmd();
-        assertEquals(CmsTcmd.STOP, cmd.get());
+        assertEquals(CmsTcmd.STOP, (long) cmd.get());
 
-        cmd.set(CmsTcmd.HIGHER);
-        assertTrue(cmd.is(CmsTcmd.HIGHER));
-        assertFalse(cmd.is(CmsTcmd.LOWER));
+        cmd.set((long) CmsTcmd.HIGHER);
+        assertEquals(CmsTcmd.HIGHER, (long) cmd.get());
 
         PerOutputStream pos = new PerOutputStream();
         cmd.encode(pos);
 
         CmsTcmd decoded = new CmsTcmd().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsTcmd.HIGHER, decoded.get());
-        assertTrue(decoded.is(CmsTcmd.HIGHER));
+        assertEquals(CmsTcmd.HIGHER, (long) decoded.get());
     }
 
     @Test
     @DisplayName("static write and read")
     void staticWriteRead() throws Exception {
         PerOutputStream pos = new PerOutputStream();
-        CmsTcmd.write(pos, CmsTcmd.LOWER);
+        CmsTcmd.write(pos, (long) CmsTcmd.LOWER);
 
         CmsTcmd decoded = CmsTcmd.read(new PerInputStream(pos.toByteArray()));
-        assertTrue(decoded.is(CmsTcmd.LOWER));
+        assertEquals(CmsTcmd.LOWER, (long) decoded.get());
     }
 }

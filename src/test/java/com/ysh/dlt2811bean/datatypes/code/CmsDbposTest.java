@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.datatypes.enumerated;
+package com.ysh.dlt2811bean.datatypes.code;
 
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
@@ -14,51 +14,30 @@ class CmsDbposTest {
     @DisplayName("default constructor sets INTERMEDIATE")
     void defaultConstructor() {
         CmsDbpos dbpos = new CmsDbpos();
-        assertEquals(CmsDbpos.INTERMEDIATE, dbpos.get());
-        assertTrue(dbpos.is(CmsDbpos.INTERMEDIATE));
+        assertEquals(CmsDbpos.INTERMEDIATE, (long) dbpos.get());
     }
 
     @Test
     @DisplayName("constructor with value")
     void constructorWithValue() {
         CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
-        assertEquals(CmsDbpos.ON, dbpos.get());
-        assertTrue(dbpos.is(CmsDbpos.ON));
+        assertEquals(CmsDbpos.ON, (long) dbpos.get());
     }
 
     @Test
     @DisplayName("set method")
     void set() {
         CmsDbpos dbpos = new CmsDbpos();
-        dbpos.set(CmsDbpos.OFF);
-        assertEquals(CmsDbpos.OFF, dbpos.get());
-        assertTrue(dbpos.is(CmsDbpos.OFF));
+        dbpos.set((long) CmsDbpos.OFF);
+        assertEquals(CmsDbpos.OFF, (long) dbpos.get());
     }
 
     @Test
-    @DisplayName("set with integer value")
-    void setWithIntegerValue() {
+    @DisplayName("set with long value")
+    void setWithLongValue() {
         CmsDbpos dbpos = new CmsDbpos();
-        dbpos.set(3); // BAD
-        assertEquals(CmsDbpos.BAD, dbpos.get());
-        assertTrue(dbpos.is(CmsDbpos.BAD));
-    }
-
-    @Test
-    @DisplayName("is method returns true for matching value")
-    void isMethodReturnsTrueForMatchingValue() {
-        CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
-        assertTrue(dbpos.is(CmsDbpos.ON));
-        assertTrue(dbpos.is(2));
-    }
-
-    @Test
-    @DisplayName("is method returns false for non-matching value")
-    void isMethodReturnsFalseForNonMatchingValue() {
-        CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
-        assertFalse(dbpos.is(CmsDbpos.OFF));
-        assertFalse(dbpos.is(CmsDbpos.INTERMEDIATE));
-        assertFalse(dbpos.is(CmsDbpos.BAD));
+        dbpos.set(3L);
+        assertEquals(CmsDbpos.BAD, (long) dbpos.get());
     }
 
     @Test
@@ -70,8 +49,7 @@ class CmsDbposTest {
         dbpos.encode(pos);
 
         CmsDbpos decoded = new CmsDbpos().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsDbpos.INTERMEDIATE, decoded.get());
-        assertTrue(decoded.is(CmsDbpos.INTERMEDIATE));
+        assertEquals(CmsDbpos.INTERMEDIATE, (long) decoded.get());
     }
 
     @Test
@@ -83,8 +61,7 @@ class CmsDbposTest {
         dbpos.encode(pos);
 
         CmsDbpos decoded = new CmsDbpos().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsDbpos.OFF, decoded.get());
-        assertTrue(decoded.is(CmsDbpos.OFF));
+        assertEquals(CmsDbpos.OFF, (long) decoded.get());
     }
 
     @Test
@@ -96,8 +73,7 @@ class CmsDbposTest {
         dbpos.encode(pos);
 
         CmsDbpos decoded = new CmsDbpos().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsDbpos.ON, decoded.get());
-        assertTrue(decoded.is(CmsDbpos.ON));
+        assertEquals(CmsDbpos.ON, (long) decoded.get());
     }
 
     @Test
@@ -109,14 +85,12 @@ class CmsDbposTest {
         dbpos.encode(pos);
 
         CmsDbpos decoded = new CmsDbpos().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsDbpos.BAD, decoded.get());
-        assertTrue(decoded.is(CmsDbpos.BAD));
+        assertEquals(CmsDbpos.BAD, (long) decoded.get());
     }
 
     @Test
     @DisplayName("encode/decode all values sequentially")
     void encodeDecodeAllValuesSequentially() throws Exception {
-        // 编码所有4个值
         PerOutputStream pos = new PerOutputStream();
 
         new CmsDbpos(CmsDbpos.INTERMEDIATE).encode(pos);
@@ -124,7 +98,6 @@ class CmsDbposTest {
         new CmsDbpos(CmsDbpos.ON).encode(pos);
         new CmsDbpos(CmsDbpos.BAD).encode(pos);
 
-        // 解码所有4个值
         PerInputStream pis = new PerInputStream(pos.toByteArray());
 
         CmsDbpos decoded1 = new CmsDbpos().decode(pis);
@@ -132,29 +105,19 @@ class CmsDbposTest {
         CmsDbpos decoded3 = new CmsDbpos().decode(pis);
         CmsDbpos decoded4 = new CmsDbpos().decode(pis);
 
-        assertEquals(CmsDbpos.INTERMEDIATE, decoded1.get());
-        assertEquals(CmsDbpos.OFF, decoded2.get());
-        assertEquals(CmsDbpos.ON, decoded3.get());
-        assertEquals(CmsDbpos.BAD, decoded4.get());
+        assertEquals(CmsDbpos.INTERMEDIATE, (long) decoded1.get());
+        assertEquals(CmsDbpos.OFF, (long) decoded2.get());
+        assertEquals(CmsDbpos.ON, (long) decoded3.get());
+        assertEquals(CmsDbpos.BAD, (long) decoded4.get());
     }
 
     @Test
     @DisplayName("set out of range value throws exception")
     void setOutOfRangeValueThrowsException() {
         CmsDbpos dbpos = new CmsDbpos();
-
-        // 有效范围是 0..3
-        assertThrows(IllegalArgumentException.class, () -> dbpos.set(-1));
-        assertThrows(IllegalArgumentException.class, () -> dbpos.set(4));
-        assertThrows(IllegalArgumentException.class, () -> dbpos.set(100));
-    }
-
-    @Test
-    @DisplayName("constructor with out of range value throws exception")
-    void constructorWithOutOfRangeValueThrowsException() {
-        // 构造函数应该立即验证范围
-        // 注意：当前实现可能在构造函数中不验证，在encode时才验证
-        // 但AbstractCmsEnumerated的validate()方法会检查
+        assertThrows(IllegalArgumentException.class, () -> dbpos.set(-1L));
+        assertThrows(IllegalArgumentException.class, () -> dbpos.set(4L));
+        assertThrows(IllegalArgumentException.class, () -> dbpos.set(100L));
     }
 
     @Test
@@ -171,22 +134,22 @@ class CmsDbposTest {
         CmsDbpos.write(pos, CmsDbpos.ON);
 
         CmsDbpos decoded = CmsDbpos.read(new PerInputStream(pos.toByteArray()));
-        assertTrue(decoded.is(CmsDbpos.ON));
+        assertEquals(CmsDbpos.ON, (long) decoded.get());
     }
 
     @Test
     @DisplayName("chain usage")
     void chainUsage() throws Exception {
         CmsDbpos dbpos = new CmsDbpos()
-                .set(CmsDbpos.OFF);
+                .set((long) CmsDbpos.OFF);
 
-        assertEquals(CmsDbpos.OFF, dbpos.get());
+        assertEquals(CmsDbpos.OFF, (long) dbpos.get());
 
         PerOutputStream pos = new PerOutputStream();
         dbpos.encode(pos);
 
         CmsDbpos decoded = new CmsDbpos().decode(new PerInputStream(pos.toByteArray()));
-        assertEquals(CmsDbpos.OFF, decoded.get());
+        assertEquals(CmsDbpos.OFF, (long) decoded.get());
     }
 
     @Test
@@ -199,21 +162,11 @@ class CmsDbposTest {
     }
 
     @Test
-    @DisplayName("is method with raw integer")
-    void isMethodWithRawInteger() {
-        CmsDbpos dbpos = new CmsDbpos(2);
-        assertTrue(dbpos.is(2));
-        assertFalse(dbpos.is(0));
-        assertFalse(dbpos.is(1));
-        assertFalse(dbpos.is(3));
-    }
-
-    @Test
-    @DisplayName("get returns Integer object")
-    void getReturnsIntegerObject() {
+    @DisplayName("get returns Long object")
+    void getReturnsLongObject() {
         CmsDbpos dbpos = new CmsDbpos(CmsDbpos.ON);
-        Integer value = dbpos.get();
-        assertEquals(Integer.valueOf(2), value);
-        assertEquals(2, value.intValue());
+        Long value = dbpos.get();
+        assertEquals(Long.valueOf(2L), value);
+        assertEquals(2L, value.longValue());
     }
 }

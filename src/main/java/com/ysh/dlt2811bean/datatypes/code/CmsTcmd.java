@@ -1,6 +1,6 @@
-package com.ysh.dlt2811bean.datatypes.enumerated;
+package com.ysh.dlt2811bean.datatypes.code;
 
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsEnumerated;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCodedEnum;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
@@ -18,7 +18,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * └──────┴──────┴──────────────────┴───────────┘
  * </pre>
  *
- * <p>Encoded as a 2-bit constrained enumeration (ENUMERATED 0..3).
+ * <p>Encoded as a fixed 2-bit CODED ENUM (BIT STRING).
  *
  * <pre>
  * // Construction
@@ -35,7 +35,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * if (cmd.is(2)) { ... } // same as HIGHER
  *
  * // Getting the value
- * int value = cmd.get(); // returns 0, 1, 2, or 3
+ * long value = cmd.get(); // returns 0, 1, 2, or 3
  *
  * // Encoding and decoding
  * PerOutputStream pos = new PerOutputStream();
@@ -46,9 +46,9 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * </pre>
  *
  * <p>This is a concrete application type with fixed enumeration values.
- * The size is fixed to 4 (values 0..3).
+ * The size is 2 bits (values 0..3).
  */
-public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {
+public class CmsTcmd extends AbstractCmsCodedEnum<CmsTcmd> {
 
     /** 00 — stop */
     public static final int STOP = 0;
@@ -66,14 +66,14 @@ public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {
         this(STOP);
     }
 
-    public CmsTcmd(int value) {
-        super("CmsTcmd", value, 4);
+    public CmsTcmd(long value) {
+        super("CmsTcmd", value, 2);
     }
 
     private static final CmsTcmd SHARED = new CmsTcmd();
 
     /** Static write with raw value. */
-    public static void write(PerOutputStream pos, int value) {
+    public static void write(PerOutputStream pos, long value) {
         SHARED.set(value);
         SHARED.encode(pos);
     }
