@@ -1,10 +1,58 @@
 # 项目加密功能文档
 
-## 概述
+## 标准 vs 代码实现比对
 
 本文档描述了项目中的所有加密相关功能，包括国密（SM2/SM3/SM4）算法支持和标准TLS加密套件。
 
----
+### B.2 传输层安全
+
+> *传输层安全采用TLS协议...加密算法宜采用国密算法。*
+
+| 标准要求    | 实现                                                      | 状态 |
+| ------- | ------------------------------------------------------- | -- |
+| TLS协议   | `GmSslContext` — 支持TLSv1.2，基于BouncyCastle JSSE          | ✅  |
+| 国密加密算法  | 支持 `TLS_ECDHE_ECDSA_WITH_SM4_SM3`、`ECC_SM4_SM3` 等 GM 套件 | ✅  |
+| 标准TLS回退 | `useStandardTls()` 支持AES-GCM等标准套件                       | ✅  |
+| 服务端/客户端 | `forServer()` / `forClient()` 双Builder模式                | ✅  |
+
+### B.3.1 应用层安全连接过程
+
+> *启用认证信息域实现身份认证，在Associate服务中实现。*
+
+| 标准要求                  | 实现                                                           | 状态 |
+| --------------------- | ------------------------------------------------------------ | -- |
+| 客户发送Associate请求携带认证参数 | `GmAuthenticator.validate()` 接收 `AuthenticationParameter` 参数 | ✅  |
+| 服务器校验认证参数             | `validate()` 方法执行6步校验                                        | ✅  |
+| 校验失败→否定响应/成功→肯定响应     | 返回 `Optional<CmsServiceError>` — empty表示成功                   | ✅  |
+| 时间戳防重放                | `signedTime` 校验，默认300s可配置                                    | ✅  |
+| a)\~f) 完整流程           | 流程在服务层 `Associate` 服务中编排，security模块提供底层校验能力                  | ✅  |
+
+### B.3.2 应用层安全参数认证过程
+
+**签名过程（6步）：**
+
+| 标准步骤                              | 实现                                                  | 状态 |
+| --------------------------------- | --------------------------------------------------- | -- |
+| 步骤1：请求数字证书 → signatureCertificate | `GmCredentialManager.getCertificate()`              | ✅  |
+| 步骤2：记录UTC时间 → time                | `CmsUtcTime` 记录当前时间                                 | ✅  |
+| 步骤3：加载私钥                          | `GmCredentialManager.getPrivateKey()`               | ✅  |
+| 步骤4：SM3withSM2签名 → signedValue    | `GmSignature.sign(privateKey, data)` 输出64字节(r\|\|s) | ✅  |
+| 步骤5：赋值signedValue                 | 由上层Service组装到 `AuthenticationParameter`             | ✅  |
+| 步骤6：编码authenticationParameter     | 由PER编码器完成                                           | ✅  |
+
+**验签过程（7步）：**
+
+| 标准步骤                                             | 实现                                                                               | 状态 |
+| ------------------------------------------------ | -------------------------------------------------------------------------------- | -- |
+| 步骤1：解码authenticationParameter                    | PER解码                                                                            | ✅  |
+| 步骤2：提取 {signatureCertificate, time, signedValue} | `authParam.signatureCertificate()` / `.signedTime()` / `.signedValue()`          | ✅  |
+| 步骤3：加载CA根证书                                      | `GmTrustManager.addTrustedCertificate()` 或 `GmAuthenticator(trustedCertificate)` | ✅  |
+| 步骤4：CA验证申请方证书                                    | `trustManager.isTrusted(cert)` 或 `clientCert.equals(trustedCertificate)`         | ✅  |
+| 步骤5：提取公钥                                         | `clientCert.getPublicKey()`                                                      | ✅  |
+| 步骤6：SM3withSM2验签                                 | `GmSignature.verify(publicKey, data, signature)`                                 | ✅  |
+| 步骤7：时间差校验（<10min）                                | `timeToleranceSeconds` 可配置，默认300s(5min)                                          | ✅  |
+
+***
 
 ## 一、项目依赖的加密库
 
@@ -33,20 +81,20 @@
 </dependency>
 ```
 
----
+***
 
 ## 二、核心加密模块
 
-| 模块 | 文件路径 | 功能描述 |
-|------|---------|---------|
-| GmSslContext | `security/GmSslContext.java` | 国密SSL/TLS上下文工厂 |
-| GmSignature | `security/GmSignature.java` | SM2签名与SM3哈希 |
-| GmCredentialManager | `security/GmCredentialManager.java` | 国密凭证管理 |
-| GmCertificateParser | `security/GmCertificateParser.java` | 国密证书解析器 |
-| GmAuthenticator | `security/GmAuthenticator.java` | 国密认证验证器 |
-| GmTrustManager | `security/GmTrustManager.java` | 信任管理器 |
+| 模块                  | 文件路径                                | 功能描述           |
+| ------------------- | ----------------------------------- | -------------- |
+| GmSslContext        | `security/GmSslContext.java`        | 国密SSL/TLS上下文工厂 |
+| GmSignature         | `security/GmSignature.java`         | SM2签名与SM3哈希    |
+| GmCredentialManager | `security/GmCredentialManager.java` | 国密凭证管理         |
+| GmCertificateParser | `security/GmCertificateParser.java` | 国密证书解析器        |
+| GmAuthenticator     | `security/GmAuthenticator.java`     | 国密认证验证器        |
+| GmTrustManager      | `security/GmTrustManager.java`      | 信任管理器          |
 
----
+***
 
 ## 三、国密SSL/TLS上下文 (GmSslContext)
 
@@ -58,25 +106,25 @@
 
 #### 国密加密套件
 
-| 加密套件名称 | 密钥交换 | 签名算法 | 加密算法 | 哈希算法 |
-|------------|---------|---------|---------|---------|
-| `TLS_ECDHE_ECDSA_WITH_SM4_SM3` | ECDHE | SM2/ECDSA | SM4 | SM3 |
-| `TLS_ECDHE_RSA_WITH_SM4_SM3` | ECDHE | SM2/RSA | SM4 | SM3 |
-| `TLS_ECDH_ECDSA_WITH_SM4_SM3` | ECDH | SM2/ECDSA | SM4 | SM3 |
-| `TLS_ECDH_RSA_WITH_SM4_SM3` | ECDH | SM2/RSA | SM4 | SM3 |
-| `ECDHE_SM4_SM3` | ECDHE | SM2 | SM4 | SM3 |
-| `ECC_SM4_SM3` | ECC | SM2 | SM4 | SM3 |
+| 加密套件名称                         | 密钥交换  | 签名算法      | 加密算法 | 哈希算法 |
+| ------------------------------ | ----- | --------- | ---- | ---- |
+| `TLS_ECDHE_ECDSA_WITH_SM4_SM3` | ECDHE | SM2/ECDSA | SM4  | SM3  |
+| `TLS_ECDHE_RSA_WITH_SM4_SM3`   | ECDHE | SM2/RSA   | SM4  | SM3  |
+| `TLS_ECDH_ECDSA_WITH_SM4_SM3`  | ECDH  | SM2/ECDSA | SM4  | SM3  |
+| `TLS_ECDH_RSA_WITH_SM4_SM3`    | ECDH  | SM2/RSA   | SM4  | SM3  |
+| `ECDHE_SM4_SM3`                | ECDHE | SM2       | SM4  | SM3  |
+| `ECC_SM4_SM3`                  | ECC   | SM2       | SM4  | SM3  |
 
 #### 标准TLS备选套件
 
-| 加密套件 | 密钥交换 | 签名算法 | 加密算法 |
-|---------|---------|---------|---------|
+| 加密套件                                      | 密钥交换  | 签名算法  | 加密算法        |
+| ----------------------------------------- | ----- | ----- | ----------- |
 | `TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256` | ECDHE | ECDSA | AES-128-GCM |
-| `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256` | ECDHE | RSA | AES-128-GCM |
+| `TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256`   | ECDHE | RSA   | AES-128-GCM |
 | `TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384` | ECDHE | ECDSA | AES-256-GCM |
-| `TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384` | ECDHE | RSA | AES-256-GCM |
-| `TLS_RSA_WITH_AES_128_GCM_SHA256` | RSA | RSA | AES-128-GCM |
-| `TLS_RSA_WITH_AES_256_GCM_SHA384` | RSA | RSA | AES-256-GCM |
+| `TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384`   | ECDHE | RSA   | AES-256-GCM |
+| `TLS_RSA_WITH_AES_128_GCM_SHA256`         | RSA   | RSA   | AES-128-GCM |
+| `TLS_RSA_WITH_AES_256_GCM_SHA384`         | RSA   | RSA   | AES-256-GCM |
 
 ### 3.3 使用方法
 
@@ -105,7 +153,7 @@ SSLContext context = sslContext.getSslContext();
 - KeyStore格式: `PKCS12`
 - 协议版本: `TLSv1.2`
 
----
+***
 
 ## 四、SM2签名与SM3哈希 (GmSignature)
 
@@ -215,7 +263,7 @@ byte[] hash = GmSignature.sm3(data);
 String hexHash = GmSignature.sm3Hex(data);
 ```
 
----
+***
 
 ## 五、凭证管理 (GmCredentialManager)
 
@@ -266,7 +314,7 @@ String getCertificateBase64()
 String getCertificateFingerprint()
 ```
 
----
+***
 
 ## 六、证书解析器 (GmCertificateParser)
 
@@ -312,7 +360,7 @@ String getSerialNumberHex(X509Certificate cert)
 String getFingerprintSha256(X509Certificate cert)
 ```
 
----
+***
 
 ## 七、认证验证器 (GmAuthenticator)
 
@@ -350,7 +398,7 @@ Optional<CmsServiceError> validateSimple(
 )
 ```
 
----
+***
 
 ## 八、信任管理器 (GmTrustManager)
 
@@ -383,7 +431,7 @@ boolean isTrusted(X509Certificate cert)
 boolean isTrustedFingerprint(String sha256Fingerprint)
 ```
 
----
+***
 
 ## 九、测试证书生成
 
@@ -397,8 +445,8 @@ boolean isTrustedFingerprint(String sha256Fingerprint)
 
 ### 9.2 生成的证书
 
-| 类型 | 算法 | 密钥长度 | 有效期 |
-|------|------|---------|-------|
+| 类型    | 算法  | 密钥长度  | 有效期  |
+| ----- | --- | ----- | ---- |
 | CA根证书 | RSA | 2048位 | 365天 |
 | 服务端证书 | RSA | 2048位 | 365天 |
 | 客户端证书 | RSA | 2048位 | 365天 |
@@ -414,7 +462,7 @@ boolean isTrustedFingerprint(String sha256Fingerprint)
 
 > **注意**: 测试脚本使用RSA算法生成证书。生产环境应使用GmSSL工具生成国密证书。
 
----
+***
 
 ## 十、传输层加密
 
@@ -448,21 +496,21 @@ server.needClientAuth(true);
 boolean tlsEnabled = server.isTlsEnabled();
 ```
 
----
+***
 
 ## 十一、算法汇总
 
-| 算法类型 | 算法名称 | 密钥长度 | 用途 |
-|---------|---------|---------|------|
-| **签名算法** | SM3withSM2 | 256位 | 数字签名 |
-| **哈希算法** | SM3 | 256位 | 消息摘要 |
-| **对称加密** | SM4 | 128位 | 数据加密 |
-| **椭圆曲线** | sm2p256v1 | 256位 | 国密密钥交换/签名 |
-| **椭圆曲线** | secp256r1 | 256位 | 标准TLS备用 |
-| **证书格式** | X.509 | - | 证书存储 |
-| **密钥库** | PKCS12 | - | 密钥存储 |
+| 算法类型     | 算法名称       | 密钥长度 | 用途        |
+| -------- | ---------- | ---- | --------- |
+| **签名算法** | SM3withSM2 | 256位 | 数字签名      |
+| **哈希算法** | SM3        | 256位 | 消息摘要      |
+| **对称加密** | SM4        | 128位 | 数据加密      |
+| **椭圆曲线** | sm2p256v1  | 256位 | 国密密钥交换/签名 |
+| **椭圆曲线** | secp256r1  | 256位 | 标准TLS备用   |
+| **证书格式** | X.509      | -    | 证书存储      |
+| **密钥库**  | PKCS12     | -    | 密钥存储      |
 
----
+***
 
 ## 十二、标准遵循
 
@@ -470,7 +518,7 @@ boolean tlsEnabled = server.isTlsEnabled();
 - **DL/T 2811-2024**: 变电站通信网络和系统 - CMS协议实现
 - **TLS 1.2**: 传输层安全协议
 
----
+***
 
 ## 十三、注意事项
 
@@ -479,3 +527,4 @@ boolean tlsEnabled = server.isTlsEnabled();
 3. **证书有效期**: 定期更新证书，避免过期
 4. **TLS版本**: 当前仅支持TLS 1.2，不支持TLS 1.3
 5. **双向认证**: 高安全场景应启用客户端证书认证
+
