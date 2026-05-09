@@ -85,17 +85,13 @@ public final class PerInteger {
             return;
         }
 
-        if (range <= 256) {
+        if (range < 256) {
             int bitsNeeded = calculateBitsNeeded(range);
             long offset = value - lowerBound;
             pos.writeBits(offset, bitsNeeded);
-        } else if (range <= 65536) {
-            long offset = value - lowerBound;
-            pos.align();
-            pos.writeBits(offset, 16);
         } else {
-            long offset = value - lowerBound;
             int bytesNeeded = calculateBytesForRange(range);
+            long offset = value - lowerBound;
             pos.align();
             for (int i = bytesNeeded - 1; i >= 0; i--) {
                 byte b = (byte) ((offset >> (i * 8)) & 0xFF);
@@ -119,13 +115,9 @@ public final class PerInteger {
             return lowerBound;
         }
 
-        if (range <= 256) {
+        if (range < 256) {
             int bitsNeeded = calculateBitsNeeded(range);
             long offset = pis.readBits(bitsNeeded);
-            return lowerBound + offset;
-        } else if (range <= 65536) {
-            pis.align();
-            long offset = pis.readBits(16);
             return lowerBound + offset;
         } else {
             int bytesNeeded = calculateBytesForRange(range);
@@ -321,14 +313,8 @@ public final class PerInteger {
 
     /** Calculates bytes needed for large range offsets. */
     static int calculateBytesForRange(long range) {
-        if (range <= 65536) return 2;
-        long maxOffset = range - 1;
-        if (maxOffset <= 0xFFFFFFL) return 3;
-        if (maxOffset <= 0xFFFFFFFFL) return 4;
-        if (maxOffset <= 0xFFFFFFFFFFL) return 5;
-        if (maxOffset <= 0xFFFFFFFFFFFFL) return 6;
-        if (maxOffset <= 0xFFFFFFFFFFFFFFL) return 7;
-        return 8;
+        int bits = calculateBitsNeeded(range);
+        return (bits + 7) / 8;
     }
 
     /** Encodes an unsigned long to minimal big-endian bytes. */
