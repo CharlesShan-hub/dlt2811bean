@@ -17,14 +17,17 @@ public class SclDocument {
         UNKNOWN
     }
 
-    private String xmlns = "http://www.iec.ch/61850/2006/SCL";
-    private String xsiSchemaLocation = "http://www.iec.ch/61850/2006/SCL SCL.xsd";
+    private String xmlns = "http://www.iec.ch/61850/2003/SCL";
+    private String xsiSchemaLocation = "http://www.iec.ch/61850/2003/SCL SCL.xsd";
 
     private SclHeader header;
     private SclSubstation substation;
     private SclCommunication communication;
     private List<SclIED> ieds = new ArrayList<>();
     private SclDataTypeTemplates dataTypeTemplates;
+
+    /** Unsupported SCL elements encountered during parsing (e.g. Line, Process). */
+    private final List<String> unsupportedElements = new ArrayList<>();
 
     private SclFileType fileType = SclFileType.UNKNOWN;
     private String originalFilePath;
@@ -133,5 +136,26 @@ public class SclDocument {
 
     public void setOriginalFilePath(String originalFilePath) {
         this.originalFilePath = originalFilePath;
+    }
+
+    /**
+     * Records an unsupported SCL element encountered during parsing.
+     */
+    public void addUnsupportedElement(String elementName) {
+        unsupportedElements.add(elementName);
+    }
+
+    /**
+     * Returns the list of unsupported SCL elements encountered during parsing (e.g. Line, Process).
+     */
+    public List<String> getUnsupportedElements() {
+        return new ArrayList<>(unsupportedElements);
+    }
+
+    /**
+     * Returns true if any unsupported SCL elements were encountered during parsing.
+     */
+    public boolean hasUnsupportedElements() {
+        return !unsupportedElements.isEmpty();
     }
 }

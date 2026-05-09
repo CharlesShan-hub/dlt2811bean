@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.scl;
 
 import com.ysh.dlt2811bean.scl.model.*;
+import lombok.extern.slf4j.Slf4j;
 import com.ysh.dlt2811bean.scl.model.SclCommunication.*;
 import com.ysh.dlt2811bean.scl.model.SclIED.*;
 import com.ysh.dlt2811bean.scl.model.SclSubstation.*;
@@ -12,6 +13,7 @@ import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class SclReader {
 
     private boolean strictMode = false;
@@ -97,6 +99,22 @@ public class SclReader {
             scl.addIed(parseIED(iedElem));
         }
         scl.setDataTypeTemplates(parseDataTypeTemplates(getChild(root, "DataTypeTemplates")));
+
+        // Detect unsupported SCL elements (Line, Process, etc.)
+        NodeList children = root.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (!(children.item(i) instanceof Element)) continue;
+            Element child = (Element) children.item(i);
+            String tag = child.getTagName();
+            if (tag.equals("Line") || tag.equals("Process")) {
+                String name = child.getAttribute("name");
+                String msg = "Unsupported SCL element <%s name=\"%s\"> encountered, it will be ignored"
+                        .formatted(tag, name);
+                log.warn("{}", msg);
+                scl.addUnsupportedElement(tag);
+            }
+        }
+
         return scl;
     }
 
@@ -108,7 +126,38 @@ public class SclReader {
         header.setRevision(elem.getAttribute("revision"));
         header.setToolId(elem.getAttribute("toolID"));
         header.setNameStructure(elem.getAttribute("nameStructure"));
+
+        NodeList children = elem.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++) {
+            if (!(children.item(i) instanceof Element)) continue;
+            Element child = (Element) children.item(i);
+            String tag = child.getTagName();
+            if ("Text".equals(tag)) {
+                header.setText(child.getTextContent());
+            } else if ("History".equals(tag)) {
+                NodeList hitems = child.getChildNodes();
+                for (int j = 0; j < hitems.getLength(); j++) {
+                    if (!(hitems.item(j) instanceof Element)) continue;
+                    Element hitemElem = (Element) hitems.item(j);
+                    if ("Hitem".equals(hitemElem.getTagName())) {
+                        header.addHitem(parseHitem(hitemElem));
+                    }
+                }
+            }
+        }
+
         return header;
+    }
+
+    private SclHitem parseHitem(Element elem) {
+        SclHitem hitem = new SclHitem();
+        hitem.setVersion(elem.getAttribute("version"));
+        hitem.setRevision(elem.getAttribute("revision"));
+        hitem.setWhen(elem.getAttribute("when"));
+        hitem.setWho(elem.getAttribute("who"));
+        hitem.setWhat(elem.getAttribute("what"));
+        hitem.setWhy(elem.getAttribute("why"));
+        return hitem;
     }
 
     private SclSubstation parseSubstation(Element elem) {
@@ -328,14 +377,7 @@ public class SclReader {
             Element pElem = (Element) pNodes.item(i);
             String type = pElem.getAttribute("type");
             String value = pElem.getTextContent().trim();
-            switch (type) {
-                case "IP": addr.setIp(value); break;
-                case "IP-SUBNET": addr.setSubnet(value); break;
-                case "IP-GATEWAY": addr.setGateway(value); break;
-                case "OSI-TSEL": addr.setOsiTsel(value); break;
-                case "OSI-PSEL": addr.setOsiPsel(value); break;
-                case "OSI-SSEL": addr.setOsiSsel(value); break;
-            }
+            addr.addParam(type, value);
         }
         return addr;
     }
