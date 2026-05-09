@@ -135,6 +135,31 @@ class PerOutputStreamTest {
     }
 
     @Test
+    @DisplayName("writeBytes: with offset and length")
+    void writeBytes_offset() throws PerDecodeException {
+        PerOutputStream pos = new PerOutputStream();
+        byte[] full = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
+        pos.writeBytes(full, 1, 3);
+
+        byte[] data = pos.toByteArray();
+        assertEquals(3, data.length);
+        assertEquals(0x01, data[0] & 0xFF);
+        assertEquals(0x02, data[1] & 0xFF);
+        assertEquals(0x03, data[2] & 0xFF);
+
+        PerInputStream pis = new PerInputStream(data);
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03}, pis.readBytes(3));
+    }
+
+    @Test
+    @DisplayName("writeBytes: zero length with offset does nothing")
+    void writeBytes_offset_zeroLength() {
+        PerOutputStream pos = new PerOutputStream();
+        pos.writeBytes(new byte[]{0x01, 0x02}, 1, 0);
+        assertEquals(0, pos.getBitLength());
+    }
+
+    @Test
     @DisplayName("toByteArray: returns trimmed copy")
     void toByteArray() {
         PerOutputStream pos = new PerOutputStream(256); // large initial

@@ -4,6 +4,8 @@ import com.ysh.dlt2811bean.per.exception.PerDecodeException;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
+import java.io.ByteArrayOutputStream;
+
 /**
  * ASN.1 INTEGER type — APER codec.
  *
@@ -81,22 +83,27 @@ public final class PerInteger {
 
         long range = upperBound - lowerBound + 1;
         if (range == 1) {
-            // Only one possible value — encode nothing
             return;
         }
 
+        long offset = value - lowerBound;
+
         if (range < 256) {
             int bitsNeeded = calculateBitsNeeded(range);
-            long offset = value - lowerBound;
             pos.writeBits(offset, bitsNeeded);
-        } else {
+        } else if (range <= 65536) {
             int bytesNeeded = calculateBytesForRange(range);
-            long offset = value - lowerBound;
             pos.align();
             for (int i = bytesNeeded - 1; i >= 0; i--) {
                 byte b = (byte) ((offset >> (i * 8)) & 0xFF);
                 pos.writeByteAligned(b);
             }
+        } else {
+            byte[] content = encodeUnsignedValueToBytes(offset);
+            int maxLen = calculateBytesForRange(range);
+            encode(pos, content.length, 1, maxLen);
+            pos.align();
+            pos.writeBytes(content);
         }
     }
 
@@ -119,13 +126,20 @@ public final class PerInteger {
             int bitsNeeded = calculateBitsNeeded(range);
             long offset = pis.readBits(bitsNeeded);
             return lowerBound + offset;
-        } else {
+        } else if (range <= 65536) {
             int bytesNeeded = calculateBytesForRange(range);
             pis.align();
             long offset = 0;
             for (int i = 0; i < bytesNeeded; i++) {
                 offset = (offset << 8) | (pis.readByteAligned() & 0xFFL);
             }
+            return lowerBound + offset;
+        } else {
+            int maxLen = calculateBytesForRange(range);
+            int contentLen = (int) decode(pis, 1, maxLen);
+            pis.align();
+            byte[] content = pis.readBytes(contentLen);
+            long offset = bytesToUnsignedLong(content);
             return lowerBound + offset;
         }
     }
@@ -234,14 +248,14 @@ public final class PerInteger {
      *
      * <p>0..127: 1 byte, MSB=0, lower 7 bits = length.
      * <br>128..16383: 2 bytes, MSB=10, 14 bits = length.
-     * <br>>=16384: multi-fragment, MSB=11.
+     * <br>>>=16384: throws — use {@link #encodeContent} for fragmented encoding.
      *
      * @param pos    output stream
-     * @param length length value (>= 0)
+     * @param length length value (0..16383)
      */
     public static void encodeLength(PerOutputStream pos, int length) {
         if (length < 0) {
-            throw new IllegalArgumentException("Length must be >= 0");
+            throw new IllegalArgumentException("Length must be >= 0, got " + length);
         }
 
         if (length <= 127) {
@@ -254,18 +268,8 @@ public final class PerInteger {
             pos.writeByteAligned(high);
             pos.writeByteAligned(low);
         } else {
-            // Long form: 11 + (fragments - 1) in low 6 bits
-            int fragments = (length + 16383) / 16384;
-            byte header = (byte) (((fragments - 1) & 0x3F) | 0xC0);
-            pos.writeByteAligned(header);
-
-            int remaining = length;
-            for (int i = 0; i < fragments; i++) {
-                int segmentLen = Math.min(remaining, 16384);
-                pos.writeByteAligned((byte) (segmentLen >> 8));
-                pos.writeByteAligned((byte) (segmentLen & 0xFF));
-                remaining -= segmentLen;
-            }
+            throw new IllegalArgumentException(
+                "Length " + length + " >= 16384 requires fragmented encoding — use encodeContent()");
         }
     }
 
@@ -273,8 +277,8 @@ public final class PerInteger {
      * Decodes a length field per APER rules.
      *
      * @param pis input stream
-     * @return decoded length value
-     * @throws PerDecodeException if insufficient data
+     * @return decoded length value (0..16383)
+     * @throws PerDecodeException if fragmented form (11xxxxxx) is encountered — use {@link #decodeContent}
      */
     public static int decodeLength(PerInputStream pis) throws PerDecodeException {
         pis.align();
@@ -292,15 +296,105 @@ public final class PerInteger {
             return ((firstByte & 0x3F) << 8) | secondByte;
         }
 
-        // Long form: 11 + (fragments - 1) in low 6 bits
-        int numFragments = (firstByte & 0x3F) + 1;
-        int totalLength = 0;
-        for (int i = 0; i < numFragments; i++) {
-            int hi = pis.readByteAligned() & 0xFF;
-            int lo = pis.readByteAligned() & 0xFF;
-            totalLength = totalLength + ((hi << 8) | lo);
+        throw new PerDecodeException(
+            "Encountered fragmented length header (11xxxxxx) — use decodeContent() for length >= 16384");
+    }
+
+    // ==================== Content encoding with fragmentation (§11.9.3.8) ====================
+
+    /**
+     * Encodes content bytes with PER length handling, including 16K+ fragmentation.
+     *
+     * <p>For length &lt; 16384: writes short/medium form length + content bytes.
+     * <br>For length >= 16384: writes fragment headers and content chunks iteratively.
+     *
+     * @param pos  output stream
+     * @param data content bytes
+     */
+    public static void encodeContent(PerOutputStream pos, byte[] data) {
+        encodeContent(pos, data, 0, data != null ? data.length : 0);
+    }
+
+    /**
+     * Encodes content bytes with PER length handling, including 16K+ fragmentation.
+     *
+     * @param pos    output stream
+     * @param data   content bytes
+     * @param offset start offset in data
+     * @param length number of bytes to encode
+     */
+    public static void encodeContent(PerOutputStream pos, byte[] data, int offset, int length) {
+        if (length == 0) {
+            encodeLength(pos, 0);
+            return;
         }
-        return totalLength;
+
+        int remaining = length;
+        int dataOff = offset;
+
+        while (remaining > 0) {
+            if (remaining <= 127) {
+                pos.writeByteAligned((byte) remaining);
+                pos.writeBytes(data, dataOff, remaining);
+                break;
+            } else if (remaining <= 16383) {
+                byte high = (byte) ((remaining >> 8) | 0x80);
+                byte low = (byte) (remaining & 0xFF);
+                pos.writeByteAligned(high);
+                pos.writeByteAligned(low);
+                pos.writeBytes(data, dataOff, remaining);
+                break;
+            } else {
+                int k = Math.min(4, remaining / 16384);
+                int chunk = k * 16384;
+                byte header = (byte) (0xC0 | (k & 0x3F));
+                pos.writeByteAligned(header);
+                pos.writeBytes(data, dataOff, chunk);
+                remaining -= chunk;
+                dataOff += chunk;
+            }
+        }
+
+        if (remaining == 0 && length > 0 && length % 16384 == 0) {
+            pos.writeByteAligned((byte) 0);
+        }
+    }
+
+    /**
+     * Decodes content bytes with PER length handling, including 16K+ fragmentation.
+     *
+     * @param pis input stream
+     * @return decoded content bytes
+     * @throws PerDecodeException if insufficient data or encoding error
+     */
+    public static byte[] decodeContent(PerInputStream pis) throws PerDecodeException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+        while (true) {
+            pis.align();
+            if (!pis.hasRemaining()) break;
+
+            int firstByte = pis.readByteAligned() & 0xFF;
+
+            if ((firstByte & 0x80) == 0) {
+                if (firstByte == 0) break;
+                baos.write(pis.readBytes(firstByte), 0, firstByte);
+                break;
+            } else if ((firstByte & 0xC0) == 0x80) {
+                int secondByte = pis.readByteAligned() & 0xFF;
+                int chunkLen = ((firstByte & 0x3F) << 8) | secondByte;
+                if (chunkLen > 0) {
+                    baos.write(pis.readBytes(chunkLen), 0, chunkLen);
+                }
+                break;
+            } else {
+                int k = firstByte & 0x3F;
+                int chunkLen = k * 16384;
+                baos.write(pis.readBytes(chunkLen), 0, chunkLen);
+            }
+        }
+
+        return baos.toByteArray();
     }
 
     // ==================== Internal utilities ====================

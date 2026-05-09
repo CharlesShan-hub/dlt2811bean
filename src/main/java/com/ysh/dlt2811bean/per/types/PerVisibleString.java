@@ -199,16 +199,9 @@ public final class PerVisibleString {
      * @param value string value
      */
     public static void encodeUnconstrained(PerOutputStream pos, String value) {
-        if (value == null || value.isEmpty()) {
-            PerInteger.encodeLength(pos, 0);
-            return;
-        }
-
-        byte[] bytes = value.getBytes(DEFAULT_CHARSET);
-        PerInteger.encodeLength(pos, bytes.length);
-        for (byte b : bytes) {
-            pos.writeBits(b & 0xFF, 8);
-        }
+        byte[] bytes = (value != null && !value.isEmpty())
+            ? value.getBytes(DEFAULT_CHARSET) : new byte[0];
+        PerInteger.encodeContent(pos, bytes);
     }
 
     /**
@@ -219,13 +212,8 @@ public final class PerVisibleString {
      * @throws PerDecodeException if insufficient data
      */
     public static String decodeUnconstrained(PerInputStream pis) throws PerDecodeException {
-        int length = PerInteger.decodeLength(pis);
-        if (length == 0) return "";
-
-        byte[] bytes = new byte[length];
-        for (int i = 0; i < length; i++) {
-            bytes[i] = (byte) pis.readBits(8);
-        }
+        byte[] bytes = PerInteger.decodeContent(pis);
+        if (bytes.length == 0) return "";
         return new String(bytes, DEFAULT_CHARSET);
     }
 

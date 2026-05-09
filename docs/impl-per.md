@@ -37,6 +37,7 @@
 | `writeBits(long, int)` | X.691 §9 | 写 n 比特（1~64），MSB 优先 |
 | `writeByteAligned(byte)` | X.691 §9.2 | 自动对齐后写 1 字节 |
 | `writeBytes(byte[])` | X.691 §9.2 | 自动对齐后写字节数组 |
+| `writeBytes(byte[], int, int)` | X.691 §9.2 | 自动对齐后写字节数组指定范围 |
 | `align()` | X.691 §9.2 | 字节对齐（补零到下一字节边界） |
 | `writeSignedInteger(long, int)` | X.691 §12 | 补码形式有符号整数 |
 | `toByteArray()` | — | 获取编码结果（副本） |
@@ -127,9 +128,11 @@ PerNull.decode(pis);   // 读取 0 比特
 | `= 1` | 0 比特（值已确定） | 无 |
 | `= 2 .. 256` | `ceil(log2(range))` 比特 | 无 |
 | `= 257 .. 65536` | 16 比特 | **对齐** |
-| `> 65536` | `ceil(log2(range)/8)` 字节 | **对齐** |
+| `> 65536` | `[constrained int: 1..maxLen][对齐][offset bytes]` | **对齐** |
 
 编码的是偏移量 `offset = value - lowerBound`。
+
+当 `range > 65536` 时，先编码**内容字节长度**（受限整数 `1..maxLen`），再对齐后写入偏移量字节。其中 `maxLen = ceil(log2(range) / 8)`。
 
 **使用示例**:
 ```java
@@ -145,6 +148,10 @@ PerInteger.encode(pos, 1000, 0, 65535);
 
 // 负范围: -128..127, 8 bits
 PerInteger.encode(pos, -50, -128, 127);
+
+// range=0..4294967295 (Int32U): [len:2bits][align][4 bytes]
+PerInteger.encode(pos, 100000, 0, 4294967295L);
+long v2 = PerInteger.decode(pis, 0, 4294967295L);  // 100000
 ```
 
 ### 4.2 小非负整数 (Normally Small Non-negative) — X.691 §11.6
@@ -185,13 +192,42 @@ long v = PerInteger.decodeUnconstrained(pis);
 |:--------:|----------|:----------:|
 | `0 .. 127` | 1 字节 | `0xxxxxxx` |
 | `128 .. 16383` | 2 字节 | `10xxxxxxxxxxxxxx`（14 位） |
-| `≥ 16384` | 多片段 | `11` + 6 位 `(fragments-1)` + 2B 每段 |
+| `≥ 16384` | ❌ **不可用** — 使用 `encodeContent()` | — |
+
+`encodeLength` / `decodeLength` 仅用于长度 `≤ 16383` 的情况。长度 `≥ 16384` 时需使用 `encodeContent` / `decodeContent`，它们会自动处理标准分片格式。
 
 **使用示例**:
 ```java
+// 16383 以下直接使用
 PerInteger.encodeLength(pos, 42);      // 1 byte
 PerInteger.encodeLength(pos, 1000);    // 2 bytes
 int len = PerInteger.decodeLength(pis);
+```
+
+### 4.6 内容编码 (Content encoding with fragmentation) — X.691 §11.9.3.8
+
+对"长度 + 内容"进行整体编解码，自动处理 `≥ 16384` 时的分片。
+
+标准分片格式（`≥ 16384`）:
+```
+[11][k] → [k*16384 bytes content] → [下一个长度头] → [content] ... → [0][remainder] 或结束
+```
+其中 `k = 1..4`，对应 16384~65536 字节/片段。
+
+| 方法 | 说明 |
+|------|------|
+| `encodeContent(pos, data)` | 编码长度 + 内容，含分片 |
+| `encodeContent(pos, data, offset, length)` | 同上，指定偏移 |
+| `decodeContent(pis) → byte[]` | 解码长度 + 内容，含分片 |
+
+```java
+// 小数据: 等同于 encodeLength + writeBytes
+PerInteger.encodeContent(pos, new byte[]{1, 2, 3});
+
+// 大数据 (≥16384): 自动分片
+byte[] big = new byte[20000];
+PerInteger.encodeContent(pos, big);
+byte[] out = PerInteger.decodeContent(pis);  // 20000 bytes
 ```
 
 ---
@@ -306,7 +342,9 @@ byte[] out = PerBitString.decodeConstrained(pis, 0, 65535);
 
 ### 7.3 无约束 BIT STRING
 
-编码格式: `[length determinant][对齐][content bytes][unused bits count(1byte)]`
+编码格式: `[encodeContent][content bytes + unused bits(1byte)]`
+
+内部委托 `PerInteger.encodeContent` / `decodeContent` 处理长度和分片。
 
 ```java
 PerBitString.encodeUnconstrained(pos, data, 13);  // 13 valid bits
@@ -326,12 +364,18 @@ BitStringResult br = PerBitString.decodeUnconstrained(pis);
 
 ### 8.1 定长 OCTET STRING (SIZE(n))
 
-对齐后直接写入 n 字节。**无长度字段**。
+| n 范围 | 编码方式 | 对齐 |
+|:------:|----------|:----:|
+| `= 0` | 0 比特 | 无 |
+| `1 .. 2` | n × 8 比特直接编码（位字段） | **无** |
+| `≥ 3` | n 字节对齐后写入 | **对齐** |
+
+≤ 2 字节时以位字段写入，不插入填充位。≥ 3 字节时对齐后写入。**无长度字段**。
 
 | 方法 | 说明 |
 |------|------|
-| `encodeFixedSize(pos, data, n)` | n 字节对齐写入 |
-| `decodeFixedSize(pis, n) → byte[]` | n 字节对齐读取 |
+| `encodeFixedSize(pos, data, n)` | 定长编码（自动选择对齐方式） |
+| `decodeFixedSize(pis, n) → byte[]` | 定长解码 |
 | `encodeInt2(pos, v)` | 2 字节大端（SIZE(2) 快捷方式） |
 | `decodeInt2(pis) → int` | 2 字节大端 → int |
 | `encodeInt4(pos, v)` | 4 字节大端（SIZE(4) 快捷方式） |
@@ -352,12 +396,14 @@ BitStringResult br = PerBitString.decodeUnconstrained(pis);
 
 ### 8.3 无约束 OCTET STRING
 
-编码格式: `[length determinant][content bytes]`
+编码格式: `[encodeContent: length + content（含自动分片）]`
+
+内部委托 `PerInteger.encodeContent` / `decodeContent`。
 
 | 方法 | 说明 |
 |------|------|
-| `encodeUnconstrained(pos, data)` | 长度编码 + 内容 |
-| `decodeUnconstrained(pis) → byte[]` | |
+| `encodeUnconstrained(pos, data)` | 内容编码（含分片） |
+| `decodeUnconstrained(pis) → byte[]` | 内容解码（含分片） |
 
 **使用示例**:
 ```java
@@ -416,7 +462,9 @@ String s = PerVisibleString.decodeConstrained(pis, 0, 255);
 
 ### 9.4 无约束
 
-编码格式: `[length determinant][每字符 8 比特]`
+编码格式: `[encodeContent][每字符 8 比特]`
+
+内部委托 `PerInteger.encodeContent` / `decodeContent` 处理长度和分片。
 
 ```java
 PerVisibleString.encodeUnconstrained(pos, "any length string");
@@ -440,8 +488,8 @@ String s = PerVisibleString.decodeUnconstrained(pis);
 
 | 方法 | 说明 |
 |------|------|
-| `encodeUtf8(pos, value)` | 无约束，[length][UTF-8 bytes] |
-| `decodeUtf8(pis) → String` | |
+| `encodeUtf8(pos, value)` | 无约束，委托 `encodeContent` 处理长度和分片 |
+| `decodeUtf8(pis) → String` | 无约束解码 |
 | `encodeUtf8Constrained(pos, value, lb, ub)` | 约束字节数 |
 | `decodeUtf8Constrained(pis, lb, ub) → String` | |
 
@@ -501,7 +549,7 @@ float f = PerReal.decodeFloat32(pis);    // 3.14f
 **编码规则**:
 - 前两个子标识符 `(a, b)` 合并为第一字节: `40*a + b`
 - 后续子标识符使用 BER 风格变长编码（每 7 位一组，MSB 为 continuation 标志）
-- 整体格式: `[length determinant][content bytes]`
+- 整体格式: `[encodeContent][content bytes]`（委托 `PerInteger.encodeContent` 处理长度和分片）
 
 ```java
 // OID: 1.3.6.1 (iso.org.dod.internet)
@@ -534,3 +582,4 @@ int[] parsed = PerObjectIdentifier.fromString("1.3.6.1");
 | `PerObjectIdentifier` | §23 | OBJECT IDENTIFIER |
 | — | §11.9 | Length determinant |
 | — | §11.6 | Normally small non-negative integer |
+| — | `PerInteger.encodeContent/decodeContent` | §11.9.3.8 Content fragmentation |

@@ -251,18 +251,13 @@ public final class PerBitString {
         int contentBytes = (totalBits + 7) / 8;
         int unusedBits = contentBytes * 8 - totalBits;
 
-        // Total length = data bytes + 1 byte unused-bits count
-        PerInteger.encodeLength(pos, contentBytes + 1);
-        pos.align();
-
-        for (int i = 0; i < contentBytes && (data != null && i < data.length); i++) {
-            pos.writeByteAligned(data[i]);
+        byte[] allBytes = new byte[contentBytes + 1];
+        for (int i = 0; i < contentBytes && data != null && i < data.length; i++) {
+            allBytes[i] = data[i];
         }
-        for (int i = (data != null ? Math.min(data.length, contentBytes) : 0); i < contentBytes; i++) {
-            pos.writeByteAligned((byte) 0);
-        }
+        allBytes[contentBytes] = (byte) unusedBits;
 
-        pos.writeByteAligned((byte) unusedBits);
+        PerInteger.encodeContent(pos, allBytes);
     }
 
     /**
@@ -273,16 +268,10 @@ public final class PerBitString {
      * @throws PerDecodeException if insufficient data
      */
     public static BitStringResult decodeUnconstrained(PerInputStream pis) throws PerDecodeException {
-        int totalLength = PerInteger.decodeLength(pis);
-        pis.align();
+        byte[] raw = PerInteger.decodeContent(pis);
 
-        byte[] raw = new byte[totalLength];
-        for (int i = 0; i < totalLength; i++) {
-            raw[i] = (byte) pis.readByteAligned();
-        }
-
-        int unusedBits = raw[totalLength - 1] & 0xFF;
-        int contentBytes = totalLength - 1;
+        int unusedBits = raw[raw.length - 1] & 0xFF;
+        int contentBytes = raw.length - 1;
         int totalBits = contentBytes * 8 - unusedBits;
 
         byte[] data = new byte[contentBytes];

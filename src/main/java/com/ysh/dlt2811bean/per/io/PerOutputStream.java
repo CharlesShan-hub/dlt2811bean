@@ -162,10 +162,22 @@ public final class PerOutputStream {
      */
     public void writeBytes(byte[] data) {
         if (data == null || data.length == 0) return;
+        writeBytes(data, 0, data.length);
+    }
+
+    /**
+     * Writes a portion of a byte array after alignment.
+     *
+     * @param data   byte array
+     * @param offset start offset in data
+     * @param length number of bytes to write
+     */
+    public void writeBytes(byte[] data, int offset, int length) {
+        if (data == null || length == 0) return;
         align();
-        ensureCapacity(bitPosition + data.length * 8);
-        System.arraycopy(data, 0, buffer, bitPosition / 8, data.length);
-        bitPosition += data.length * 8;
+        ensureCapacity(bitPosition + length * 8);
+        System.arraycopy(data, offset, buffer, bitPosition / 8, length);
+        bitPosition += length * 8;
     }
 
     // ==================== Alignment ====================

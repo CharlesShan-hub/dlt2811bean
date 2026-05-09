@@ -61,7 +61,7 @@ class PerIntegerTest {
     @DisplayName("constrained: range 0..65535 with bit offset (aligned to byte)")
     void constrained_16bits_withOffset() throws PerDecodeException {
         PerOutputStream pos = new PerOutputStream();
-        PerBoolean.encode(pos, true); // 1 bit offset
+        PerBoolean.encode(pos, true);
         PerInteger.encode(pos, 1000, 0, 65535);
 
         PerInputStream pis = new PerInputStream(pos.toByteArray());
@@ -211,6 +211,122 @@ class PerIntegerTest {
         PerOutputStream pos = new PerOutputStream();
         assertThrows(IllegalArgumentException.class,
             () -> PerInteger.encodeLength(pos, -1));
+    }
+
+    // ==================== Content encoding (encodeContent/decodeContent) ====================
+
+    @Test
+    @DisplayName("encodeContent: small data (<=127)")
+    void encodeContent_small() throws PerDecodeException {
+        byte[] data = {0x01, 0x02, 0x03};
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, data);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertArrayEquals(data, PerInteger.decodeContent(pis));
+    }
+
+    @Test
+    @DisplayName("encodeContent: medium data (128..16383)")
+    void encodeContent_medium() throws PerDecodeException {
+        byte[] data = new byte[1000];
+        for (int i = 0; i < data.length; i++) data[i] = (byte) i;
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, data);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertArrayEquals(data, PerInteger.decodeContent(pis));
+    }
+
+    @Test
+    @DisplayName("encodeContent: fragmented (>=16384)")
+    void encodeContent_fragmented() throws PerDecodeException {
+        byte[] data = new byte[20000];
+        for (int i = 0; i < data.length; i++) data[i] = (byte) (i & 0xFF);
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, data);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertArrayEquals(data, PerInteger.decodeContent(pis));
+    }
+
+    @Test
+    @DisplayName("encodeContent: empty data")
+    void encodeContent_empty() throws PerDecodeException {
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, new byte[0]);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertEquals(0, PerInteger.decodeContent(pis).length);
+    }
+
+    @Test
+    @DisplayName("encodeContent: exactly 16384 boundary")
+    void encodeContent_16384() throws PerDecodeException {
+        byte[] data = new byte[16384];
+        for (int i = 0; i < data.length; i++) data[i] = (byte) (i & 0xFF);
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, data);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertArrayEquals(data, PerInteger.decodeContent(pis));
+    }
+
+    @Test
+    @DisplayName("encodeContent: with offset and length")
+    void encodeContent_offset() throws PerDecodeException {
+        byte[] full = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
+        PerOutputStream pos = new PerOutputStream();
+        PerInteger.encodeContent(pos, full, 1, 4);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertArrayEquals(new byte[]{0x01, 0x02, 0x03, 0x04}, PerInteger.decodeContent(pis));
+    }
+
+    // ==================== Large range constrained integer (> 65536) ====================
+
+    @Test
+    @DisplayName("constrained: range > 65536 (Int32U 0..4294967295)")
+    void constrained_largeRange() throws PerDecodeException {
+        for (long v : new long[]{0, 1, 100000, 4294967295L}) {
+            PerOutputStream pos = new PerOutputStream();
+            PerInteger.encode(pos, v, 0, 4294967295L);
+
+            PerInputStream pis = new PerInputStream(pos.toByteArray());
+            assertEquals(v, PerInteger.decode(pis, 0, 4294967295L));
+        }
+    }
+
+    @Test
+    @DisplayName("constrained: range > 65536 with bit offset")
+    void constrained_largeRange_withOffset() throws PerDecodeException {
+        PerOutputStream pos = new PerOutputStream();
+        PerBoolean.encode(pos, true);
+        PerInteger.encode(pos, 100000, 0, 4294967295L);
+
+        PerInputStream pis = new PerInputStream(pos.toByteArray());
+        assertTrue(PerBoolean.decode(pis));
+        assertEquals(100000, PerInteger.decode(pis, 0, 4294967295L));
+    }
+
+    @Test
+    @DisplayName("constrained: large range with negative bounds (-2B..2B)")
+    void constrained_largeRange_negative() throws PerDecodeException {
+        for (long v : new long[]{-2000000000L, -1, 0, 1, 2000000000L}) {
+            PerOutputStream pos = new PerOutputStream();
+            PerInteger.encode(pos, v, -2000000001L, 2000000001L);
+
+            PerInputStream pis = new PerInputStream(pos.toByteArray());
+            assertEquals(v, PerInteger.decode(pis, -2000000001L, 2000000001L));
+        }
+    }
+
+    @Test
+    @DisplayName("constrained: large range out of bounds throws")
+    void constrained_largeRange_outOfBounds() {
+        PerOutputStream pos = new PerOutputStream();
+        assertThrows(IllegalArgumentException.class,
+            () -> PerInteger.encode(pos, -1, 0, 4294967295L));
     }
 
     // ==================== Mixed types in sequence ====================

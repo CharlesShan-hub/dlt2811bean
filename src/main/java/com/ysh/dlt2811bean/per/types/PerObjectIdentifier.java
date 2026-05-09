@@ -46,6 +46,8 @@ public final class PerObjectIdentifier {
 
     private PerObjectIdentifier() { /* utility class */ }
 
+    // ==================== Encode / Decode ====================
+
     /**
      * Encodes an OBJECT IDENTIFIER.
      *
@@ -55,13 +57,12 @@ public final class PerObjectIdentifier {
      */
     public static void encode(PerOutputStream pos, int[] components) {
         if (components == null || components.length == 0) {
-            PerInteger.encodeLength(pos, 0);
+            PerInteger.encodeContent(pos, new byte[0]);
             return;
         }
 
         byte[] content = encodeComponents(components);
-        PerInteger.encodeLength(pos, content.length);
-        pos.writeBytes(content);
+        PerInteger.encodeContent(pos, content);
     }
 
     /**
@@ -72,14 +73,15 @@ public final class PerObjectIdentifier {
      * @throws PerDecodeException if insufficient data or format error
      */
     public static int[] decode(PerInputStream pis) throws PerDecodeException {
-        int length = PerInteger.decodeLength(pis);
-        if (length == 0) {
+        byte[] content = PerInteger.decodeContent(pis);
+        if (content.length == 0) {
             return new int[0];
         }
 
-        byte[] content = pis.readBytes(length);
         return decodeComponents(content);
     }
+
+    // ==================== String conversion ====================
 
     /**
      * Converts an OID array to dotted-decimal string representation.

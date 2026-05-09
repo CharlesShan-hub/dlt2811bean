@@ -64,14 +64,9 @@ public final class PerUtf8String {
      * @param value string value
      */
     public static void encodeUtf8(PerOutputStream pos, String value) {
-        if (value == null || value.isEmpty()) {
-            PerInteger.encodeLength(pos, 0);
-            return;
-        }
-
-        byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
-        PerInteger.encodeLength(pos, bytes.length);
-        pos.writeBytes(bytes);
+        byte[] bytes = (value != null && !value.isEmpty())
+            ? value.getBytes(StandardCharsets.UTF_8) : new byte[0];
+        PerInteger.encodeContent(pos, bytes);
     }
 
     /**
@@ -82,10 +77,8 @@ public final class PerUtf8String {
      * @throws PerDecodeException if insufficient data
      */
     public static String decodeUtf8(PerInputStream pis) throws PerDecodeException {
-        int length = PerInteger.decodeLength(pis);
-        if (length == 0) return "";
-
-        byte[] bytes = pis.readBytes(length);
+        byte[] bytes = PerInteger.decodeContent(pis);
+        if (bytes.length == 0) return "";
         return new String(bytes, StandardCharsets.UTF_8);
     }
 

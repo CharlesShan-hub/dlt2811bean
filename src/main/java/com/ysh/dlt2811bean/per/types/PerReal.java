@@ -51,6 +51,8 @@ public final class PerReal {
 
     private PerReal() { /* utility class */ }
 
+    // ==================== Float64 (double) ====================
+
     /**
      * Encodes a 64-bit double value (IEEE 754 double-precision, 8 bytes).
      *
@@ -81,6 +83,8 @@ public final class PerReal {
         }
         return readIeee754(pis);
     }
+
+    // ==================== Float32 (float) ====================
 
     /**
      * Encodes a 32-bit float value (IEEE 754 single-precision, 4 bytes).

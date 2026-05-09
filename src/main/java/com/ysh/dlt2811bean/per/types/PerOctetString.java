@@ -206,6 +206,16 @@ public final class PerOctetString {
             throw new IllegalArgumentException("data cannot be null");
         }
 
+        if (fixedSize <= 2) {
+            long value = 0;
+            int writeLen = Math.min(data.length, fixedSize);
+            for (int i = 0; i < writeLen; i++) {
+                value = (value << 8) | (data[i] & 0xFFL);
+            }
+            pos.writeBits(value, fixedSize * 8);
+            return;
+        }
+
         pos.align();
 
         int writeLen = Math.min(data.length, fixedSize);
@@ -227,6 +237,15 @@ public final class PerOctetString {
      */
     public static byte[] decodeFixedSize(PerInputStream pis, int fixedSize) throws PerDecodeException {
         if (fixedSize == 0) return new byte[0];
+
+        if (fixedSize <= 2) {
+            long value = pis.readBits(fixedSize * 8);
+            byte[] result = new byte[fixedSize];
+            for (int i = 0; i < fixedSize; i++) {
+                result[i] = (byte) ((value >> ((fixedSize - 1 - i) * 8)) & 0xFF);
+            }
+            return result;
+        }
 
         pis.align();
         return pis.readBytes(fixedSize);
@@ -287,11 +306,8 @@ public final class PerOctetString {
      * @param data byte data
      */
     public static void encodeUnconstrained(PerOutputStream pos, byte[] data) {
-        int length = (data != null) ? data.length : 0;
-        PerInteger.encodeLength(pos, length);
-        if (length > 0) {
-            pos.writeBytes(data.clone());
-        }
+        byte[] bytes = (data != null) ? data : new byte[0];
+        PerInteger.encodeContent(pos, bytes);
     }
 
     /**
@@ -302,8 +318,6 @@ public final class PerOctetString {
      * @throws PerDecodeException if insufficient data
      */
     public static byte[] decodeUnconstrained(PerInputStream pis) throws PerDecodeException {
-        int length = PerInteger.decodeLength(pis);
-        if (length == 0) return new byte[0];
-        return pis.readBytes(length);
+        return PerInteger.decodeContent(pis);
     }
 }

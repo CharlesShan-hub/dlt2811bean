@@ -48,6 +48,8 @@ public final class PerEnumerated {
 
     private PerEnumerated() { /* utility class */ }
 
+    // ==================== Non-extensible ====================
+
     /**
      * Encodes a non-extensible enumerated value.
      *
@@ -74,6 +76,8 @@ public final class PerEnumerated {
     public static int decode(PerInputStream pis, int maxOrdinal) throws PerDecodeException {
         return (int) PerInteger.decode(pis, 0, maxOrdinal);
     }
+
+    // ==================== Extensible ====================
 
     /**
      * Encodes an extensible enumerated value.
