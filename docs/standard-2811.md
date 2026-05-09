@@ -1865,3 +1865,1024 @@ startTime表示查询服务的起始时间，stopTime表示查询服务的截止
 | confRev | | INT32U |
 | ndsCom | | BOOLEAN |
 | data[1..n] | | Data |
+
+#### 8.9.2 读GOOSE引用服务(GetGoReference)
+
+读GOOSE引用服务的参数见表58。
+
+**表58 读GOOSE引用服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| gocbReference | | ObjectReference |
+| memberOffset[1..n] | | INT16U |
+| **Response+** | | |
+| gocbReference | | ObjectReference |
+| confRev | | INT32U |
+| datSet | | ObjectReference |
+| memberData[1..n] | | |
+| reference | memberData | ObjectReference |
+| fc | memberData | FunctionalConstraint |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.9.3 读GOOSE元素序号服务(GetGOOSEElementNumber)
+
+读GOOSE元素序号服务的参数见表59。
+
+**表59 读GOOSE元素序号服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| gocbReference | | ObjectReference |
+| memberData[1..n] | | |
+| reference | memberData | ObjectReference |
+| fc | memberData | FunctionalConstraint |
+| **Response+** | | |
+| gocbReference | | ObjectReference |
+| confRev | | INT32U |
+| datSet | | ObjectReference |
+| memberOffset[1..n] | | INT16U |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.9.4 读GOOSE控制块值服务(GetGoCBValues)
+
+读GOOSE控制块值服务的参数见表60。
+
+**表60 读GOOSE控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| gocbReference[1..n] | | ObjectReference |
+| **Response+** | | |
+| error/gocb[1..n] | | ServiceError/GoCB |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.9.5 设置GOOSE控制块值服务(SetGoCBValues)
+
+设置GOOSE控制块值服务的参数见表61。
+
+**表61 设置GOOSE控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| gocb[1..n] | | |
+| reference | gocb | ObjectReference |
+| goEna[0..1] | gocb | BOOLEAN |
+| goID[0..1] | gocb | VisibleString129 |
+| datSet[0..1] | gocb | ObjectReference |
+| **Response+** | | |
+| **Response-** | | |
+| result[1..n] | | ServiceError |
+
+### 8.10 多播采样值类服务
+
+#### 8.10.1 发送多播采样值消息服务(SendMSVMessage)
+
+发送多播采样值消息服务的参数见表62。
+
+**表62 发送多播采样值消息服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Ind** | | |
+| msvID | | VisibleString129 |
+| datSet[0..1] | | ObjectReference |
+| smpCnt | | INT16U |
+| confRev | | INT32U |
+| refrTm[0..1] | | TimeStamp |
+| smpSynch | | INT8U |
+| smpRate[0..1] | | INT16U |
+| simulation | | BOOLEAN |
+| sample[1..n] | | Data |
+| smpMod[0..1] | | SmpMod |
+
+#### 8.10.2 读多播采样值控制块值服务(GetMSVCBValues)
+
+读多播采样值控制块值服务的参数见表63。
+
+**表63 读多播采样值控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference[1..n] | | ObjectReference |
+| **Response+** | | |
+| error/msvcb[1..n] | | ServiceError/MSVCB |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.10.3 设置多播采样值控制块值服务(SetMSVCBValues)
+
+设置多播采样值控制块值服务的参数见表64。
+
+**表64 设置多播采样值控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| msvcb[1..n] | | |
+| reference | msvcb | ObjectReference |
+| svEna[0..1] | msvcb | BOOLEAN |
+| msvID[0..1] | msvcb | VisibleString129 |
+| datSet[0..1] | msvcb | ObjectReference |
+| smpMod[0..1] | msvcb | SmpMod |
+| smpRate[0..1] | msvcb | INT16U |
+| optFlds[0..1] | msvcb | MSVOptFlds |
+| **Response+** | | |
+| **Response-** | | |
+| result[1..n] | | ServiceError |
+
+### 8.11 控制类服务
+
+#### 8.11.1 选择服务(Select)
+
+选择服务的参数见表65。
+
+**表65 选择服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference | | ObjectReference |
+| **Response+** | | |
+| reference | | ObjectReference |
+| **Response-** | | |
+| reference | | ObjectReference |
+
+#### 8.11.2 带值选择服务(SelectWithValue)
+
+##### 8.11.2.1 带值选择服务的参数
+
+见表66。
+
+**表66 带值选择服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| addCause | | AddCause |
+
+##### 8.11.2.2 服务要求
+
+因为不同控制对象的数据类型不同，所以ctlVal的类型由模型定义。客户可通过解析模型文件获取ctlVal的类型，也可通过8.4.4的GetDataDefinition服务获取ctlVal的类型。以下控制类服务中的ctlVal与此相同。
+
+#### 8.11.3 执行服务(Operate)
+
+执行服务的参数见表67。
+
+**表67 执行服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| addCause | | AddCause |
+
+#### 8.11.4 取消服务(Cancel)
+
+取消服务的参数见表68。
+
+**表68 取消服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| **Response+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| **Response-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| addCause | | AddCause |
+
+#### 8.11.5 命令终止服务(CommandTermination)
+
+命令终止服务的参数见表69。
+
+**表69 命令终止服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Request-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm[0..1] | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| addCause | | AddCause |
+
+#### 8.11.6 时间激活操作服务(TimeActivatedOperate)
+
+时间激活操作服务的参数见表70。
+
+**表70 时间激活操作服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Response-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| addCause | | AddCause |
+
+#### 8.11.7 时间激活操作终止服务(TimeActivatedOperateTermination)
+
+时间激活操作终止服务的参数见表71。
+
+**表71 时间激活操作终止服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request+** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| **Request-** | | |
+| reference | | ObjectReference |
+| ctlVal | | 由模型定义 |
+| operTm | | TimeStamp |
+| origin | | Originator |
+| ctlNum | | INT8U |
+| t | | TimeStamp |
+| test | | BOOLEAN |
+| check | | Check |
+| addCause | | AddCause |
+
+### 8.12 文件类服务
+
+#### 8.12.1 读文件服务(GetFile)
+
+##### 8.12.1.1 服务参数
+
+读文件服务用于客户从服务器读取文件，服务的参数见表72。
+
+**表72 读文件服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| startPosition | | INT32U |
+| **Response+** | | |
+| fileData[0..n] | | OCTETSTRING |
+| endOfFile[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+startPosition表示读文件的起始位置，服务器根据startPosition返回从指定位置开始的文件数据，返回的数据长度不超过一个ASDU的最大限制。startPosition从1开始。endOfFile表示是否到达文件尾。
+
+##### 8.12.1.2 服务要求
+
+读文件的服务要求如下。
+
+a) fileName应使用完整路径，以"/"起始。
+
+b) 每一个GetFile请求，服务器只返回一个响应。客户应重复请求不同起始位置的数据，直到文件结束。文件读取结束时，服务器可关闭所读的文件。客户长时间未读后续数据的情况下，服务器应具有超时机制，自动关闭相关文件。
+
+c) startPosition等于0时，表示客户放弃读取后续数据，服务器应关闭所读的文件。
+
+#### 8.12.2 写文件服务(SetFile)
+
+##### 8.12.2.1 服务参数
+
+写文件服务用于客户向服务器写入文件，服务的参数见表73。
+
+**表73 写文件服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| startPosition | | INT32U |
+| fileData[0..n] | | OCTETSTRING |
+| endOfFile[0..1] | | BOOLEAN |
+| **Response+** | | |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+fileName和startPosition的定义与GetFile服务相同。endOfFile表示是否到达文件尾。
+
+##### 8.12.2.2 服务要求
+
+写文件的服务要求如下。
+
+a) 根据写入文件的长度，客户应发起多个SetFile请求。第一个请求的startPosition为1，后续每个请求的startPosition和fileData应是连续的。
+
+b) startPosition等于0时，表示客户放弃写入后续数据，服务器应关闭并删除未完成的文件。
+
+c) 文件写入结束时，服务器应保存所写的文件。客户长时间未写入后续数据的情况下，服务器应具有超时机制，自动关闭并删除不完整的文件。
+
+#### 8.12.3 删除文件服务(DeleteFile)
+
+删除文件服务的参数见表74。
+
+**表74 删除文件服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| **Response+** | | |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.12.4 读文件属性值服务(GetFileAttributeValues)
+
+读文件属性值服务的参数见表75。
+
+**表75 读文件属性值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| fileName | | VisibleString255 |
+| **Response+** | | |
+| fileEntry | | FileEntry |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.12.5 列文件目录服务(GetFileDirectory)
+
+##### 8.12.5.1 服务参数
+
+列文件目录的参数见表76。
+
+**表76 列文件目录服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| pathName[0..1] | | VisibleString255 |
+| startTime[0..1] | | TimeStamp |
+| stopTime[0..1] | | TimeStamp |
+| fileAfter[0..1] | | VisibleString255 |
+| **Response+** | | |
+| fileEntry[0..n] | | FileEntry |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+##### 8.12.5.2 服务要求
+
+列文件目录的服务要求如下：
+
+a) startTime和stopTime表示文件目录的起始和截止时间，返回结果应在起始和截止时间之间，包含起始和截止时间；
+
+b) pathName应采用完整路径名，格式为"/××××××"。
+
+> 注：pathName中不要求支持"*""?"等通配符，具体实现时，厂商可自主决定。
+
+### 8.13 远程过程调用类服务
+
+#### 8.13.1 远程过程调用
+
+远程过程调用是一组扩展服务，用于远程请求服务器执行特定功能，并返回执行结果。广义而言，数据、数据集、定值、报告、控制等服务均可视为远程过程调用。本节定义的远程过程调用特指一种通用化、自描述的接口和方法调用机制，可由客户动态获取接口和方法定义，根据定义动态组织发送数据并对返回结果进行自动解析。
+
+远程过程调用由方法和接口组成，方法是调用的入口，用于实现某一特定功能；接口则是一组方法的集合，提供面向对象的封装。方法和接口的名称均为VisibleString格式的字符串，完整的引用方式为：
+
+```
+接口名.方法名
+```
+
+远程过程调用是典型的请求响应过程，客户发出调用请求，服务器返回响应结果。请求和响应的参数采用0中Data格式的数据，其数据结构由0的DataDefinition描述。客户可通过读目录和读定义等服务动态获取请求和响应的参数定义。
+
+原则上，远程过程调用可用于任何功能。但出于安全性考虑，在变电站的应用场景中，远程过程调用应仅限于查询和分析类功能的调用，而不可用于远程控制、下装、复归。需要使用远程控制、下装、复归等功能时，应使用控制、定值等服务，此类服务提供了更加全面的安全性保障。
+
+#### 8.13.2 读远程过程调用接口目录服务(GetRpcInterfaceDirectory)
+
+读远程过程调用接口目录服务用于获取服务器所有可用的调用接口，服务的参数见表77。
+
+**表77 读远程过程调用接口目录服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| referenceAfter[0..1] | | VisibleString |
+| **Response+** | | |
+| reference[0..n] | | VisibleString |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+#### 8.13.3 读远程过程调用方法目录服务(GetRpcMethodDirectory)
+
+##### 8.13.3.1 服务参数
+
+读远程过程调用方法目录服务用于获取指定调用接口的所有方法的名称，服务的参数见表78。
+
+**表78 读远程过程调用方法目录服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| interface[0..1] | | VisibleString |
+| referenceAfter[0..1] | | VisibleString |
+| **Response+** | | |
+| reference[0..n] | | VisibleString |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+参数interface是指定的接口名称，参数referenceAfter用于通知服务器只返回referenceAfter之后的方法。肯定响应中的reference是所有方法的名称，moreFollows表示是否返回了全部方法。
+
+##### 8.13.3.2 服务要求
+
+读远程过程调用方法目录的服务要求如下：
+
+a) 没有指定interface时，表示需要获取所有调用接口的所有方法的名称，参数referenceAfter和reference应使用完整的引用名，格式见8.13.1；
+
+b) DataDefinition、Data仅用于描述实例化后的数据，所以应不使用OPTIONAL和Default语法，请求和响应参数均应是明确定义的结构。
+
+#### 8.13.4 读远程过程调用接口定义服务(GetRpcInterfaceDefinition)
+
+##### 8.13.4.1 服务参数
+
+读远程过程调用接口定义服务用于获取指定接口的所有方法的定义，服务的参数见表79。
+
+**表79 读远程过程调用接口定义服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| interface | | VisibleString |
+| referenceAfter[0..1] | | VisibleString |
+| **Response+** | | |
+| method[1..n] | | |
+| name | method | VisibleString |
+| version | method | INT32U |
+| timeout | method | INT32U |
+| request | method | DataDefinition |
+| response | method | DataDefinition |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+interface是接口的名称，referenceAfter用于通知服务器返回指定方法之后的结果。name是方法的名称，version是方法的版本，timeout是该方法执行的超时时间，request是请求参数的格式定义，response是响应结果的格式定义。
+
+##### 8.13.4.2 服务要求
+
+远程过程调用接口定义的服务要求如下。
+
+a) version用于客户和服务器间的版本适配。客户应提供向前兼容的能力，服务器提供方法的版本低于客户时，应能正确适配并进行调用。
+
+b) 若客户版本低于服务器版本，应及时对客户程序进行升级，而应不强行发起调用请求。
+
+c) timeout用于说明服务器执行该方法的超时时间。超过timeout定义的时间仍未收到服务器响应的情况下，客户可认为该请求失败。
+
+d) 读远程过程调用接口定义服务应返回指定接口的所有方法的定义。一帧报文无法返回所有方法时，服务器应按顺序返回其中的部分结果，返回的每一个方法应是完整的，同时设置moreFollows参数，通知客户数据未能完全响应。客户应根据响应的结果，修改参数referenceAfter，再次发起新的读远程过程调用接口定义请求。
+
+#### 8.13.5 读远程过程调用方法定义服务(GetRpcMethodDefinition)
+
+##### 8.13.5.1 服务参数
+
+读远程过程调用方法定义服务用于获取一组方法的定义，服务的参数见表80。
+
+**表80 读远程过程调用方法定义服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| reference[1..n] | | VisibleString |
+| **Response+** | | |
+| error/method[1..n] | | |
+| timeout | error/method | INT32U |
+| version | error/method | INT32U |
+| request | error/method | DataDefinition |
+| response | error/method | DataDefinition |
+| moreFollows[0..1] | | BOOLEAN |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+reference是方法的引用名，格式见8.13.1。timeout、version、request、response的含义见8.13.4。
+
+##### 8.13.5.2 服务要求
+
+读远程过程调用方法定义的服务要求如下。
+
+a) 一帧报文无法返回所有方法的定义时，服务器应按顺序返回其中的部分结果，返回的每一组定义应是完整的，同时设置moreFollows参数，通知客户数据未能完全响应。客户应根据响应的结果，修改参数队列，再次发起新的读远程过程调用方法定义请求。
+
+b) 请求队列中的某一个方法无法访问时，应返回错误原因，并继续处理下一个方法。
+
+#### 8.13.6 远程过程调用服务(RpcCall)
+
+##### 8.13.6.1 服务参数
+
+远程过程调用服务用于请求服务器执行指定的方法，服务的参数见表81。
+
+**表81 远程过程调用服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| method | | VISIBLESTRING |
+| reqData/callID | | Data/OCTETSTRING |
+| **Response+** | | |
+| rspData | | Data |
+| nextCallID[0..1] | | OCTETSTRING |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+method是调用方法的引用，格式见8.13.1；reqData是调用方法的请求参数；rspData是调用后的返回结果。
+
+##### 8.13.6.2 服务要求
+
+远程过程调用的服务要求如下。
+
+a) 一帧报文无法返回所有结果时，服务器应按顺序返回其中的部分结果，返回的每一组结果应是完整的，同时设置nextCallID参数，通知客户数据未能完全响应。
+
+b) nextCallID是一组十六进制串，其含义由服务器定义，服务器应能根据这一组十六进制串直接定位到上一次调用的位置并继续执行。客户识别出响应结果中含有nextCallID时，应再次发起新的调用请求，参数method应与前一次调用相同，参数callID设置为前一次响应返回的nextCallID。服务器继续执行未完成的调用，直至调用全部完成。
+
+### 8.14 测试服务(Test)
+
+测试服务用于通信连接的双方测试链路是否正常、对方是否能正确响应请求。当接收到Test帧时，应立刻返回一个Test帧。测试服务仅有APCH头，不含ASDU部分，帧长度FL=0。
+
+### 8.15 关联协商服务(AssociateNegotiate)
+
+#### 8.15.1 服务参数
+
+关联协商服务用于客户和服务器之间协商双方的服务参数，服务的参数见表82。
+
+**表82 关联协商服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| apduSize | | INT16U |
+| asduSize | | INT32U |
+| protocolVersion | | INT32U |
+| **Response+** | | |
+| apduSize | | INT16U |
+| asduSize | | INT32U |
+| protocolVersion | | INT32U |
+| modelVersion | | VisibleString |
+| **Response-** | | |
+| serviceError | | ServiceError |
+
+apduSize参数用于协商客户和服务器的APDU帧大小。asduSize参数用于声明客户和服务器所支持的最大ASDU大小。protocolVersion用于声明客户和服务器所使用的协议版本号。modelVersion参数用于声明服务器的模型版本。
+
+#### 8.15.2 服务要求
+
+建立TCP连接后，关联服务之前，应首先使用该服务协商通信双方服务参数。后续通信服务应按照协商后的服务参数执行。符合以下要求：
+
+a) 服务器应根据客户该参数，结合自身APDU帧大小，返回可支持的APDU帧大小，作为协商结果。通信双方后续通信服务中APDU帧大小应采用服务器响应的该参数。
+
+b) apduSize大于asduSize表示支持分帧传输，小于apduSize表示不能实现分帧传输数据。通信双方应记录对侧所能支持的ASDU大小，并据此组织ASDU数据帧，确保不超出对侧的能力。
+
+c) 接收方应检查自身是否能够支持对端协议的版本，并采用对应版本的协议报文进行通信。无法支持该版本时，应返回协商失败。
+
+# 附录 A
+(规范性)
+
+## 通信网关应用
+
+### A.1 工作模式
+
+参与通信的双方称为客户和服务器，客户应是业务数据的消费者和接收方、控制命令的发送者，服务器应是业务数据的生产者和发送方、控制命令的执行者。通信网关可作为客户与服务器通信，也可作为服务器与另一客户通信。
+
+通信网关有使用路由模式和网关模式两种工作方式。路由模式也叫代理模式，客户可透过网关直接访问位于内部子网的IED，网关模式下，客户无法透过通信网关直接访问内部子网的设备。两个子网可使用不同的通信协议，由通信网关将一种协议转换成另一种协议。出于安全性考虑，变电站与主站之间应使用网关模式，通信网关的工作模式见图A.1。
+
+```mermaid
+%%{init: {'flowchart': {'curve': 'basis'}}}%%
+flowchart TD
+    %% --- 顶部：主站层 ---
+    subgraph 主站1
+        P1_1[客户-一平面]
+        P1_2[客户-二平面]
+    end
+
+    subgraph 主站2
+        P2_1[客户-一平面]
+        P2_2[客户-二平面]
+    end
+
+    %% --- 中部：变电站虚线框 ---
+    subgraph 变电站
+        subgraph 客户-通信网关A机
+            S_A1[服务器1]
+            S_A2[服务器2]
+        end
+
+        subgraph 客户-通信网关B机
+            S_B1[服务器1]
+            S_B2[服务器2]
+        end
+    end
+
+    %% --- 底部：服务器-IED ---
+    SI1[服务器-IED1]
+    SI2[服务器-IED2]
+    SI3[服务器-IED3]
+    SI4[服务器-IED4]
+
+    %% --- 连线（尽量用直线布局）---
+    P1_1 --- S_A1
+    P1_2 --- S_A1
+    P2_1 --- S_A2
+    P2_2 --- S_A2
+    
+    P1_1 --- S_B1
+    P1_2 --- S_B1
+    P2_1 --- S_B2
+    P2_2 --- S_B2
+
+    %% 网关到底部
+    客户-通信网关A机 --- SI1
+    客户-通信网关A机 --- SI2
+    客户-通信网关A机 --- SI3
+    客户-通信网关A机 --- SI4
+    
+    客户-通信网关B机 --- SI1
+    客户-通信网关B机 --- SI2
+    客户-通信网关B机 --- SI3
+    客户-通信网关B机 --- SI4
+```
+
+
+
+**图A.1 通信网关的工作模式示意图**
+
+### A.2 通信网关模型
+
+A.2.1 通信网关与变电站内设备通信时，作为通信双方中的客户，应使用变电站的模型。
+
+A.2.2 通信网关与主站通信时，作为通信双方中的服务器，应使用对变电站模型进行转换后的通信网关模型，转换方式有直接映射和裁剪重组两种。
+
+- **直接映射方式。** 通信网关模型中仍保留变电站模型的逻辑设备，数据引用名与变电站模型保持一致。
+- **裁剪重组方式。** 通信网关模型中，原变电站模型被彻底打散，数据引用名与变电站模型不再有任何关系，而是通过内部的映射索引进行转换。
+
+A.2.3 通信网关应支持动态创建数据集，支持主站定制需传输的数据。
+
+A.2.4 通信网关同时为多个主站提供服务时，宜为每个主站创建一个通信网关模型。根据主站需求，该模型应预配置数据集和控制块。
+
+### A.3 通信网关实现
+
+#### A.3.1 软件组成
+
+A.3.1.1 通信网关应至少包含子站IED通信、主站通信、数据库3个模块：
+
+- **子站IED通信模块**，与自身之外的所有变电站IED建立关联，对各个IED进行读写、控制、报告使能、接收报告、查询日志、操作定值和文件，并根据接收的报告更新本地的数据库；
+- **主站通信模块**，接收所有主站发来的连接请求并与主站建立关联，提供读写、控制、发送报告、文件、日志等各类服务；
+- **数据库模块**，存储通信网关自身和子站IED通信模块采集的数据。
+
+A.3.1.2 子站IED通信模块应随时保持与变电站内各IED的通信。当与某个IED长时间通信中断时，应能正确识别，并设置该IED的数据品质为无效(invalid)或可疑(questionable)。
+
+A.3.1.3 通信网关转发主站服务请求/响应时，应基于该服务报文中的数据服务区重新组织，应不直接转发。
+
+#### A.3.2 数据集和报告服务
+
+A.3.2.1 通信网关应支持主站动态创建和删除数据集，支持将数据集赋予预先配置的报告控制块。对于动态创建的持久数据集，即使设备重启，也应不丢失。
+
+A.3.2.2 报告服务应基于通信网关的数据库实现，应不直接转发到子站IED。报告控制块的EntryID(条目标识)应重新组织。通信网关重启后，缓冲的报告应不丢失。缓冲报告可来自于与子站IED之间的重新同步，也可在通信网关进行保存。
+
+#### A.3.3 控制和定值服务
+
+通信网关应提供以下两类控制和定值服务。
+
+a) 面向自身的控制和定值请求。通信网关应直接响应远方的控制和定值请求，并操作内部的数据和功能。
+
+b) 面向子站IED的控制和定值请求。通信网关应实时转发给对应的子站IED，并将响应结果转发给主站。通信网关应不在自身内部进行控制确认和定值确认。
+
+通信网关应能根据请求的引用名识别实际需要操作的IED。通信网关应不缓存控制和定值请求。
+
+#### A.3.4 日志和取代服务
+
+通信网关的日志和取代服务应由自身实现，而应不转发给子站IED。通信网关重启后，日志记录和取代标记应不丢失。
+
+#### A.3.5 文件服务
+
+A.3.5.1 通信网关应提供以下两类文件服务。
+
+a) 存储在通信网关上的文件。通信网关应直接响应远方的文件请求。
+
+b) 存储在子站IED上的文件。通信网关应在数据库中维护一个子站IED的文件列表。主站发起读文件属性和列文件目录请求时，通信网关应首先查询本地列表，本地查询失败时才进行转发。主站发起读文件、写文件和删除文件请求时，通信网关应将请求转发给子站IED处理。
+
+A.3.5.2 通信网关应能根据请求的目录名识别实际需要访问的IED。通信网关的子站IED文件列表应定时更新。长时间通信中断时，应自动清空文件列表。
+
+# 附录 B
+(资料性)
+
+## 通信传输安全
+
+### B.1 概述
+
+通信安全机制分为传输层安全(T-Profile)与应用层安全(A-Profile)。安全手段的实施需要考虑适用性，尤其在资源紧缺或者实时性要求高的通信设施上，如低资源的嵌入式设备或者高实时性要求的GOOSE通信，不适用过于复杂的耗资源、耗时的加密手段。
+
+### B.2 传输层安全
+
+传输层安全采用TLS协议，保证通信双方数据传输的保密性与身份的真实性，加密算法宜采用国密算法。
+
+### B.3 应用层安全
+
+#### B.3.1 应用层安全连接过程
+
+应用层安全通过启用认证信息域来实现身份认证，在关联服务Associate中实现。关联请求和响应报文中传输表征自身身份的数字证书，接收方对收到的证书进行校验，应用层安全连接的过程见图B.1。
+
+```mermaid
+sequenceDiagram
+    participant 客户
+    participant 服务器
+    
+    %% 原：客户->>+客户: Associate.req
+    Note over 客户: Associate.req
+    
+    %% 客户到服务器的消息
+    客户->>+服务器: 建立连接
+    
+    %% 原：服务器到自己的消息
+    Note over 服务器: Associate.ind
+    Note over 服务器: 认证失败
+    Note over 服务器: Associate.resp-
+    
+    %% 服务器到客户的消息
+    服务器->>+客户: 连接失败
+    
+    %% 原：客户到自己的消息
+    Note over 客户: Associate.cnf
+    Note over 客户: 认证失败
+    Note over 客户: 关闭
+    
+    %% 客户到服务器的消息
+    客户->>+服务器: 断开连接
+    
+    %% 原：服务器到自己的消息
+    Note over 服务器: 断开连接，关闭
+```
+
+
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant S as 服务器
+
+    Note over C: Associate.req
+    C->>+S: 建立连接
+    Note over S: Associate.ind
+    
+    Note over S: 认证通过
+    S->>+C: Associate.resp+
+    
+    Note over C: 认证失败
+    Note over C: Associate.cnf
+    Note over C: 关闭
+    C->>+S: 断开连接
+    Note over S: 断开连接，关闭
+   
+```
+
+```mermaid
+sequenceDiagram
+    participant C as 客户端
+    participant S as 服务器
+
+    Note over C: Associate.req
+    C->>+S: 建立连接
+    Note over S: Associate.ind
+    
+    Note over S: 认证通过
+    S->>+C: Associate.resp+
+    
+    Note over C: 认证通过
+    Note over C: Associate.cnf
+    
+    Note over C,S: 数据传输阶段
+    C->>+S: 发送数据
+    S->>-C: 返回数据
+    
+    Note over C: 关闭
+    C->>+S: 断开连接
+    Note over S: 断开连接，关闭
+```
+
+
+
+**图B.1 应用层安全连接过程**
+
+关联建立Associate服务有以下过程：
+
+a) 客户发起的Associate请求中携带认证参数authenticationParameter；
+
+b) 服务器收到关联请求后对认证参数进行校验；
+
+c) 服务器校验失败发出Associate否定响应，校验成功发出Associate肯定响应；
+
+d) 客户收到否定响应发起断开连接请求；
+
+e) 客户收到肯定响应但校验失败发起断开连接请求；
+
+f) 客户收到肯定响应且校验成功开始数据传输过程。
+
+#### B.3.2 应用层安全参数认证过程
+
+应用层安全参数认证分为签名和验签两个过程。关联请求发起端签名过程包含以下步骤：
+
+步骤1：请求数字证书并赋值给authenticationParameter的signatureCertificate参数；
+
+步骤2：以UtcTime记录当前的时间值cur_time，并将cur_time赋给authenticationParameter的time参数；
+
+步骤3：加载signatureCertificate相对应的私钥req-user-privatekey；
+
+步骤4：用hash算法和私钥req-user-privatekey进行签名得到签名值signedValue；
+
+步骤5：将signedValue赋给authenticationParameter的signedValue参数；
+
+步骤6：将authenticationParameter进行编码。
+
+关联请求接收端验签过程包含以下步骤：
+
+步骤1：对收到的authenticationParameter进行解码；
+
+步骤2：提取authenticationParameter的{signatureCertificate, time, signedValue}中的参数；
+
+步骤3：加载CA根证书；
+
+步骤4：使用CA根证书对申请方证书进行验证，验证通过，否则认证失败，终止关联并记录失败原因；
+
+步骤5：提取请求数字证书signatureCertificate中的公钥req-user-publickey；
+
+步骤6：进行验签，认证失败时，终止关联并记录失败原因；
+
+步骤7：提取当前时间cur_time，与time比较，如差值小于10min(可配置)，发出肯定响应，否则发出否定响应。
+
+# 附录 C
+(资料性)
+
+## 在辅控及传感物联网络中的应用
+
+### C.1 工作模式
+
+C.1.1 辅控系统及传感物联网络设备包括但不限于部署于变电站的设备在线监测、消防、安防、动环等辅助设备，以及通过无线接入的各类传感设备(以下统称辅控传感设备)。辅控传感设备的数据可以直接传输至站控层主机(服务网关机、综合应用主机等，以下统称站控层设备)，或通过具有接入汇聚功能的网关(以下统称汇聚接入网关)传输，辅控传感网络的结构见图C.1。
+
+```mermaid
+flowchart TD
+    BUS[通信总线]
+    
+    BUS --- A[综合应用主机]
+    BUS --- B[服务网关机]
+    BUS --- C[汇聚接入网关]
+    
+    BUS --- D1[辅控传感设备]
+    BUS --- D2[辅控传感设备]
+    C --- D3[辅控传感设备]
+    C --- D4[辅控传感设备]
+```
+
+**图C.1 辅控传感网络结构**
+
+C.1.2 在辅控传感设备直接与站控层设备通信的情况下，辅控传感设备作为服务器，站控层设备作为客户。
+
+C.1.3 在辅控传感设备通过汇聚接入网关接入站控层设备的情况下，汇聚接入网关对上作为服务器与作为客户的站控层设备通信，对下作为客户与作为服务器的辅控传感设备通信。
+
+### C.2 设备模型
+
+辅控传感设备模型包括逻辑设备、逻辑节点、数据对象、数据属性等元素。为简化服务器处理机制，模型中不必构建数据集、报告控制块(BRCB和URCB)、定值组控制块(SGCB)、GOOSE控制块、采样值控制块、日志控制块(LCB)以及日志(LOG)等元素。站控层设备或汇聚接入网关作为客户，导入由系统配置工具合成的模型文件，与所接入的各个IED进行通信。
+
+### C.3 通信数据分类
+
+辅控传感设备对外传输的数据包括实时变化的采集数据和实时告警信息，需要支持动态读取、变化实时上送和总召唤全体上送服务，部分设备还需提供参数读取和配置功能，具体服务类型如下：
+
+- 实时数据和告警信息的动态读取；
+- 实时数据的变化上送；
+- 实时数据的总召唤；
+- 设备参数的读取和写入；
+- 设备状态控制。
+
+### C.4 通信服务
+
+#### C.4.1 通信基础服务
+
+通过使用通信协议中的关联协商(AssociateNegotiate)、关联(Associate)、关联释放(Release)、异常中止(Abort)、Test等五项服务，可以实现客户与服务器之间的通信链路初始化、链路断开和链路维持等基础功能。
+
+#### C.4.2 实时数据和告警信息的动态读取
+
+客户可通过GetDataValues服务读取服务器的数据对象或数据属性。
+
+#### C.4.3 实时数据的变化上送
+
+服务器实时数据发生数值变化或品质变化，变化数据通过报告Report服务上传，传送原因分别为数据变化和品质变化。报告的rptID设置为NULL，optFlds设置序列号、报告时标、包含原因、数据集名称、数据引用、配置版本、分段等均为False。
+
+#### C.4.4 实时数据的总召唤
+
+客户通过GetDataValues服务读取指定数据集的所有数据值。
+
+#### C.4.5 设备参数的读取和写入
+
+客户通过GetDataValues和SetDataValues服务访问和修改指定参数。
+
+#### C.4.6 设备状态控制
+
+客户通过SetDataValues服务实现对设备状态的控制。
