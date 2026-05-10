@@ -4,6 +4,8 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.scl.SclDocument;
 import com.ysh.dlt2811bean.scl.SclReader;
+import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmSignature;
 import com.ysh.dlt2811bean.security.GmSslContext;
@@ -83,6 +85,8 @@ public class CmsServer {
     private String sclFilePath;
     private SclDocument sclDocument;
     private boolean securityEnabled = false;
+    private GmAuthenticator securityAuthenticator;
+    private X509Certificate serverCertificate;
 
     public CmsServer() {
         CmsConfig config = CmsConfigLoader.load();
@@ -189,7 +193,40 @@ public class CmsServer {
         this.sclDocument = new SclReader().read(filePath);
         log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
                  sclDocument.getFileType(), sclDocument.getIeds().size());
+        reRegisterSclHandlers();
+        printConnectHint();
         return this;
+    }
+
+    private void printConnectHint() {
+        if (sclDocument == null || sclDocument.getIeds().isEmpty()) return;
+        CmsConfig config = CmsConfigLoader.load();
+        int port = config.getServer().getPort();
+        int asduSize = config.getNegotiate().getAsduSize();
+        long protoVer = config.getNegotiate().getProtocolVersion();
+
+        System.out.println(CmsColor.gray("\n  " + CmsColor.bold("Client connect command:")));
+        for (SclIED ied : sclDocument.getIeds()) {
+            for (SclIED.SclAccessPoint accPt : ied.getAccessPoints()) {
+                String iedAp = ied.getName();
+                String accPtName = accPt.getName();
+                System.out.println(CmsColor.gray("    connect 127.0.0.1 " + port + " " + asduSize + " " + protoVer + " " + iedAp + " " + accPtName));
+            }
+        }
+        System.out.println(CmsColor.gray(""));
+    }
+
+    private void reRegisterSclHandlers() throws Exception {
+        dispatcher.registerHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
+        dispatcher.registerHandler(new GetAllDataValuesHandler(sclDocument));
+        dispatcher.registerHandler(new GetAllDataDefinitionHandler(sclDocument));
+        if (securityEnabled && securityAuthenticator != null && serverCertificate != null) {
+            dispatcher.registerHandler(
+                new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator, serverCertificate));
+        } else {
+            dispatcher.registerHandler(new AssociateHandler(sclDocument));
+        }
+        log.info("SCL-dependent handlers re-registered");
     }
 
     /**
@@ -237,13 +274,13 @@ public class CmsServer {
      */
     public CmsServer enableSecurity() throws Exception {
         KeyPair keyPair = GmSignature.generateKeyPair();
-        X509Certificate serverCert = GmSignature.generateSelfSignedCertificate(keyPair);
+        this.serverCertificate = GmSignature.generateSelfSignedCertificate(keyPair);
 
         GmTrustManager trustManager = new GmTrustManager().trustAll();
-        GmAuthenticator authenticator = new GmAuthenticator(trustManager);
+        this.securityAuthenticator = new GmAuthenticator(trustManager);
 
         dispatcher.registerHandler(
-            new AssociateHandler(sclDocument).enableSecurity(authenticator, serverCert));
+            new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator, serverCertificate));
 
         this.securityEnabled = true;
         log.info("GM security enabled");

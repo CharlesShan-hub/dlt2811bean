@@ -59,9 +59,34 @@ public class CmsClientCli {
     private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
     private final LineReader reader;
     private boolean running = true;
+    private final java.util.Set<String> cachedRefs = new java.util.HashSet<>();
+    private final java.util.Set<String> cachedLds = new java.util.HashSet<>();
 
     public CmsClientCli() {
         reader = LineReaderBuilder.builder()
+                .highlighter(new org.jline.reader.Highlighter() {
+                    public org.jline.utils.AttributedString highlight(org.jline.reader.LineReader rdr, String buffer) {
+                        String[] parts = buffer.split("\\s+", 2);
+                        String cmd = parts[0].toLowerCase();
+                        CommandHandler h = handlers.get(cmd);
+                        if (h == null || h.getParams().isEmpty()) {
+                            return new org.jline.utils.AttributedStringBuilder().append(buffer).toAttributedString();
+                        }
+                        int argsCount = buffer.trim().isEmpty() ? 0 : buffer.trim().split("\\s+").length - 1;
+                        if (argsCount >= h.getParams().size()) {
+                            return new org.jline.utils.AttributedStringBuilder().append(buffer).toAttributedString();
+                        }
+                        org.jline.utils.AttributedStringBuilder asb = new org.jline.utils.AttributedStringBuilder();
+                        asb.append(buffer);
+                        for (int i = argsCount; i < h.getParams().size(); i++) {
+                            asb.style(org.jline.utils.AttributedStyle.DEFAULT.foreground(org.jline.utils.AttributedStyle.BRIGHT));
+                            asb.append(" <" + h.getParams().get(i).getName() + ">");
+                        }
+                        return asb.toAttributedString();
+                    }
+                    public void setErrorPattern(java.util.regex.Pattern errorPattern) {}
+                    public void setErrorIndex(int errorIndex) {}
+                })
                 .completer(new Completer() {
                     @Override
                     public void complete(LineReader rdr, ParsedLine parsedLine, java.util.List<Candidate> candidates) {
@@ -81,6 +106,32 @@ public class CmsClientCli {
                             }
                             if ("datatype".startsWith(word.toLowerCase())) {
                                 candidates.add(new Candidate("datatype"));
+                            }
+                        } else if (buffer.contains(" ")) {
+                            String[] parts = buffer.trim().split("\\s+");
+                            String cmdName = parts[0].toLowerCase();
+                            CommandHandler h = handlers.get(cmdName);
+                            if (h != null) {
+                                int paramIdx = parts.length - 1;
+                                if (paramIdx < h.getParams().size()) {
+                                    Param param = h.getParams().get(paramIdx);
+                                    if (!param.getEnumChoices().isEmpty()) {
+                                        for (Param.EnumChoice ec : param.getEnumChoices()) {
+                                            if (ec.value.toLowerCase().startsWith(word.toLowerCase())) {
+                                                candidates.add(new Candidate(ec.value));
+                                            }
+                                        }
+                                    } else if (isRefParam(cmdName, paramIdx)) {
+                                        java.util.Set<String> pool = "ld-dir".equals(cmdName) ? cachedLds : cachedRefs;
+                                        for (String ref : pool) {
+                                            if (ref.toLowerCase().startsWith(word.toLowerCase())) {
+                                                candidates.add(new Candidate(ref));
+                                            }
+                                        }
+                                    } else if (param.getDefaultValue() != null && !param.getDefaultValue().isEmpty()) {
+                                        candidates.add(new Candidate(param.getDefaultValue()));
+                                    }
+                                }
                             }
                         } else {
                             for (String cmd : handlers.keySet()) {
@@ -200,6 +251,14 @@ public class CmsClientCli {
                     ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
                     : new java.util.ArrayList<>();
 
+                if (inlineTokens.isEmpty() && !handler.getParams().isEmpty()) {
+                    StringBuilder hint = new StringBuilder();
+                    hint.append(CmsColor.gray("  Usage: " + cmdName));
+                    for (Param p : handler.getParams()) {
+                        hint.append(" <" + p.getName() + ">");
+                    }
+                    System.out.println(hint.toString());
+                }
                 for (Param param : handler.getParams()) {
                     if (!inlineTokens.isEmpty()) {
                         values.put(param.getName(), inlineTokens.remove(0));
@@ -322,6 +381,14 @@ public class CmsClientCli {
         return pa.length - pb.length;
     }
 
+    private static boolean isRefParam(String cmdName, int paramIdx) {
+        return switch (cmdName) {
+            case "ld-dir" -> paramIdx == 0;
+            case "ln-dir", "get-all-values", "get-all-def", "get-all-cb" -> paramIdx == 0;
+            default -> false;
+        };
+    }
+
     private void printDatatypeHelp(DataTypeInfo dt) {
         System.out.println("\n  " + CmsColor.bold(dt.getTypeName()) + " - "
                 + CmsColor.cyan("[" + dt.getSection() + "] ") + dt.getDescription());
@@ -430,6 +497,7 @@ public class CmsClientCli {
                 }
                 if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
                     System.out.println(CmsColor.green("  Associated") + " (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
+                    discoverAfterConnect(client);
                 } else {
                     System.out.println(CmsColor.red("  Associate failed"));
                 }
@@ -507,11 +575,49 @@ public class CmsClientCli {
                 }
                 if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
                     System.out.println(CmsColor.green("  Associated") + " (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
+                    discoverAfterConnect(client);
                 } else {
                     System.out.println(CmsColor.red("  Associate failed"));
                 }
             }
         }
+    }
+
+    private void discoverAfterConnect(CmsClient client) {
+        try {
+            CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                    .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
+            CmsApdu response = client.send(asdu);
+            if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                CmsGetServerDirectory dir = (CmsGetServerDirectory) response.getAsdu();
+                cachedRefs.clear();
+                cachedLds.clear();
+                System.out.println(CmsColor.gray("  Discovered devices:"));
+                for (int i = 0; i < dir.reference().size(); i++) {
+                    String ldRef = dir.reference().get(i).get();
+                    cachedRefs.add(ldRef);
+                    cachedLds.add(ldRef);
+                    System.out.println(CmsColor.gray("    [" + i + "] LD: " + ldRef));
+                    discoverLnRefs(client, ldRef);
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void discoverLnRefs(CmsClient client, String ldName) {
+        try {
+            CmsGetLogicalDeviceDirectory req = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
+            req.ldName(ldName);
+            CmsApdu response = client.send(req);
+            if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) response.getAsdu();
+                for (int i = 0; i < asdu.lnReference().size(); i++) {
+                    String lnRef = ldName + "/" + asdu.lnReference().get(i).get();
+                    cachedRefs.add(lnRef);
+                    System.out.println(CmsColor.gray("      LN[" + i + "] " + lnRef));
+                }
+            }
+        } catch (Exception ignored) {}
     }
 
     private class CloseHandler implements CommandHandler {
