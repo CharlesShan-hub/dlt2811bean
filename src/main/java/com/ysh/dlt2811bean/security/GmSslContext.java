@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.security;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 import javax.net.ssl.*;
@@ -221,17 +222,16 @@ public class GmSslContext {
         }
 
         public GmSslContext build() throws Exception {
+            if (keyManagers == null) {
+                keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword, useStandardTls);
+            }
+            if (trustManagers == null) {
+                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword, useStandardTls);
+            }
             if (useStandardTls) {
                 return buildStandard();
             }
             registerProvider();
-
-            if (keyManagers == null) {
-                keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword);
-            }
-            if (trustManagers == null) {
-                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
-            }
 
             SSLContext sslContext = createSslContext(keyManagers, trustManagers);
 
@@ -318,17 +318,16 @@ public class GmSslContext {
         }
 
         public GmSslContext build() throws Exception {
+            if (keyManagers == null && keyStorePath != null) {
+                keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword, useStandardTls);
+            }
+            if (trustManagers == null) {
+                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword, useStandardTls);
+            }
             if (useStandardTls) {
                 return buildStandard();
             }
             registerProvider();
-
-            if (keyManagers == null && keyStorePath != null) {
-                keyManagers = loadKeyManagers(keyStorePath, keyStorePassword, keyPassword);
-            }
-            if (trustManagers == null) {
-                trustManagers = loadTrustManagers(trustStorePath, trustStorePassword);
-            }
 
             SSLContext sslContext = createSslContext(keyManagers, trustManagers);
 
@@ -349,6 +348,9 @@ public class GmSslContext {
      * Registers BouncyCastle JSSE Provider.
      */
     private static void registerProvider() {
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.insertProviderAt(new BouncyCastleProvider(), 1);
+        }
         if (Security.getProvider(BouncyCastleJsseProvider.PROVIDER_NAME) == null) {
             Security.insertProviderAt(new BouncyCastleJsseProvider(), 1);
         }
@@ -357,7 +359,7 @@ public class GmSslContext {
     /**
      * Loads KeyManagers.
      */
-    private static KeyManager[] loadKeyManagers(String keyStorePath, String keyStorePassword, String keyPassword) throws Exception {
+    private static KeyManager[] loadKeyManagers(String keyStorePath, String keyStorePassword, String keyPassword, boolean useStandardTls) throws Exception {
         if (keyStorePath == null) {
             return null;
         }
@@ -368,7 +370,11 @@ public class GmSslContext {
         }
 
         String actualKeyPassword = (keyPassword != null) ? keyPassword : keyStorePassword;
-        KeyManagerFactory kmf = KeyManagerFactory.getInstance("PKIX", "BCJSSE");
+        String algorithm = useStandardTls ? KeyManagerFactory.getDefaultAlgorithm() : "PKIX";
+        String provider = useStandardTls ? null : "BCJSSE";
+        KeyManagerFactory kmf = provider != null
+                ? KeyManagerFactory.getInstance(algorithm, provider)
+                : KeyManagerFactory.getInstance(algorithm);
         kmf.init(keyStore, actualKeyPassword.toCharArray());
 
         return kmf.getKeyManagers();
@@ -406,17 +412,20 @@ public class GmSslContext {
     /**
      * Loads TrustManagers.
      */
-    private static TrustManager[] loadTrustManagers(String trustStorePath, String trustStorePassword) throws Exception {
+    private static TrustManager[] loadTrustManagers(String trustStorePath, String trustStorePassword, boolean useStandardTls) throws Exception {
         if (trustStorePath == null) {
-            // Use default TrustManager, trust all certificates (for testing only)
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+            String algorithm = useStandardTls ? TrustManagerFactory.getDefaultAlgorithm() : "PKIX";
+            String provider = useStandardTls ? null : "BCJSSE";
+            TrustManagerFactory tmf = provider != null
+                    ? TrustManagerFactory.getInstance(algorithm, provider)
+                    : TrustManagerFactory.getInstance(algorithm);
             tmf.init((KeyStore) null);
             return tmf.getTrustManagers();
         }
 
         // Support direct certificate file loading
         if (trustStorePath.endsWith(".cer") || trustStorePath.endsWith(".crt") || trustStorePath.endsWith(".pem")) {
-            return createTrustManagersFromCert(trustStorePath);
+            return createTrustManagersFromCert(trustStorePath, useStandardTls);
         }
 
         // Support KeyStore loading
@@ -425,7 +434,11 @@ public class GmSslContext {
             trustStore.load(is, trustStorePassword.toCharArray());
         }
 
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+        String algorithm = useStandardTls ? TrustManagerFactory.getDefaultAlgorithm() : "PKIX";
+        String provider = useStandardTls ? null : "BCJSSE";
+        TrustManagerFactory tmf = provider != null
+                ? TrustManagerFactory.getInstance(algorithm, provider)
+                : TrustManagerFactory.getInstance(algorithm);
         tmf.init(trustStore);
 
         return tmf.getTrustManagers();
@@ -434,8 +447,14 @@ public class GmSslContext {
     /**
      * Creates TrustManagers from certificate file.
      */
-    private static TrustManager[] createTrustManagersFromCert(String certPath) throws Exception {
-        CertificateFactory cf = CertificateFactory.getInstance("X.509", "BC");
+    private static TrustManager[] createTrustManagersFromCert(String certPath, boolean useStandardTls) throws Exception {
+        if (!useStandardTls) {
+            registerProvider();
+        }
+        String provider = useStandardTls ? null : "BC";
+        CertificateFactory cf = provider != null
+                ? CertificateFactory.getInstance("X.509", provider)
+                : CertificateFactory.getInstance("X.509");
         Certificate cert;
         try (InputStream is = loadResource(certPath)) {
             cert = cf.generateCertificate(is);
@@ -445,7 +464,11 @@ public class GmSslContext {
         trustStore.load(null, null);
         trustStore.setCertificateEntry("server", cert);
 
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance("PKIX", "BCJSSE");
+        String algorithm = useStandardTls ? TrustManagerFactory.getDefaultAlgorithm() : "PKIX";
+        String tmfProvider = useStandardTls ? null : "BCJSSE";
+        TrustManagerFactory tmf = tmfProvider != null
+                ? TrustManagerFactory.getInstance(algorithm, tmfProvider)
+                : TrustManagerFactory.getInstance(algorithm);
         tmf.init(trustStore);
 
         return tmf.getTrustManagers();

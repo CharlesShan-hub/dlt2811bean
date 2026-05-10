@@ -1,16 +1,32 @@
 package com.ysh.dlt2811bean.cli;
 
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
+import com.ysh.dlt2811bean.security.GmSslContext;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.transport.app.CmsServer;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import com.ysh.dlt2811bean.utils.CmsColor;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.impl.completer.StringsCompleter;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 public class CmsServerCli {
 
     private CmsServer server;
-    private final Scanner scanner = new Scanner(System.in);
+    private final LineReader reader;
     private boolean running = true;
+
+    public CmsServerCli() {
+        reader = LineReaderBuilder.builder()
+                .completer(new StringsCompleter("help", "status", "list", "push", "exit", "quit"))
+                .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_server_history"))
+                .build();
+    }
 
     public static void main(String[] args) throws Exception {
         new CmsServerCli().run();
@@ -22,14 +38,30 @@ public class CmsServerCli {
             server.stop();
             System.out.println("Server stopped");
         }));
+        try {
+            CmsConfig config = CmsConfigLoader.load();
+            GmSslContext sslContext = GmSslContext.forServer()
+                    .keyStore(config.getSecurity().getKeystore().getPath(), config.getSecurity().getKeystore().getPassword())
+                    .trustManager(new javax.net.ssl.X509TrustManager[]{
+                        new javax.net.ssl.X509TrustManager() {
+                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                            public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
+                        }
+                    })
+                    .useStandardTls()
+                    .build();
+            server.sslContext(sslContext);
+        } catch (Exception e) {
+            System.out.println(CmsColor.gray("  TLS not available: " + e.getMessage()));
+        }
         server.start();
         System.out.println("CMS Server running on port " + server.getPort() + "...");
         System.out.println("Type 'help' for commands");
 
         while (running) {
             System.out.println();
-            System.out.print("server> ");
-            String line = scanner.nextLine().trim();
+            String line = reader.readLine("server> ").trim();
             if (line.isEmpty()) continue;
 
             try {
@@ -37,34 +69,80 @@ public class CmsServerCli {
                 String cmd = parts[0].toLowerCase();
 
                 switch (cmd) {
-                    case "help" -> printHelp();
+                    case "help" -> {
+                        if (parts.length > 1) {
+                            printCommandHelp(parts[1]);
+                        } else {
+                            printHelp();
+                        }
+                    }
                     case "exit", "quit" -> { server.stop(); running = false; }
                     case "status" -> printStatus();
                     case "list" -> listSessions();
+                    case "load-scl" -> handleLoadScl(parts);
                     case "push" -> handlePush(parts);
-                    default -> System.out.println("  Unknown command: " + cmd);
+                    default -> System.out.println(CmsColor.red("  Unknown command: " + cmd));
                 }
             } catch (Exception e) {
-                System.out.println("  Error: " + e.getMessage());
+                System.out.println(CmsColor.red("  Error: " + e.getMessage()));
             }
         }
     }
 
     private void printHelp() {
-        System.out.println("  Commands:");
-        System.out.println("    status                        查看服务器状态");
-        System.out.println("    list                          列出已连接的客户端");
-        System.out.println("    push cmd-term <ref> <val>     推送命令终止通知 (val=true/false)");
-        System.out.println("    push time-act-term <ref> <val> 推送定时终止通知 (val=true/false)");
-        System.out.println("    push report <rptID> <ref> <val> 推送报告");
-        System.out.println("    exit                          停止服务器并退出");
+        System.out.println(CmsColor.bold("\n  Commands:"));
+        System.out.println("    " + CmsColor.bold("status") + "                        查看服务器状态");
+        System.out.println("    " + CmsColor.bold("list") + "                          列出已连接的客户端");
+        System.out.println("    " + CmsColor.bold("load-scl") + " [path]              重新/切换 SCL 配置文件");
+        System.out.println("    push " + CmsColor.cyan("cmd-term") + " <ref> <val>      " + section("cmd-term") + "推送命令终止通知");
+        System.out.println("    push " + CmsColor.cyan("time-act-term") + " <ref> <val>  " + section("time-act-term") + "推送定时终止通知");
+        System.out.println("    push " + CmsColor.cyan("report") + " <rptID> <ref> <val> " + section("report") + "推送报告");
+        System.out.println("    " + CmsColor.bold("exit") + "                          停止服务器并退出");
+        System.out.println(CmsColor.gray("\nTip: Tab 键可补全命令"));
+    }
+
+    private static String section(String cliName) {
+        ServiceInfo info = ServiceInfo.byCliName(cliName);
+        return info != null ? "[" + info.getSection() + "] " : "";
+    }
+
+    private void printCommandHelp(String cmd) {
+        switch (cmd) {
+            case "status" -> System.out.println("  " + CmsColor.bold("status") + " - 查看服务器运行状态\n    " + CmsColor.green("用法: ") + "status");
+            case "list" -> System.out.println("  " + CmsColor.bold("list") + " - 列出所有已连接的客户端会话\n    " + CmsColor.green("用法: ") + "list");
+            case "load-scl" -> System.out.println("  " + CmsColor.bold("load-scl") + " - 重新/切换 SCL 配置文件\n    " + CmsColor.green("用法: ") + "load-scl [path]\n    不指定路径则重新加载当前文件");
+            case "push" -> System.out.println("  " + CmsColor.bold("push") + " - 向客户端推送主动通知\n"
+                    + "    " + CmsColor.green("用法: ") + "push cmd-term <reference> <value>       推送命令终止通知\n"
+                    + "          push time-act-term <reference> <value>  推送定时激活终止通知\n"
+                    + "          push report <rptID> <reference> <value>  推送报告");
+            case "exit", "quit" -> System.out.println("  " + CmsColor.bold("exit") + " - 停止服务器并退出\n    " + CmsColor.green("用法: ") + "exit");
+            default -> System.out.println(CmsColor.red("  Unknown command: " + cmd));
+        }
     }
 
     private void printStatus() {
-        System.out.println("  Port: " + server.getPort());
+        System.out.println("  Port: " + server.getPort() + " (TLS: " + CmsConfigLoader.load().getServer().getSslPort() + ")");
         System.out.println("  Bound: " + server.isBound());
         System.out.println("  Security: " + (server.isSecurityEnabled() ? "ON" : "OFF"));
         System.out.println("  Active sessions: " + server.getSessions().size());
+        String scl = server.getSclFilePath();
+        if (scl != null) {
+            System.out.println("  SCL: " + scl);
+        }
+    }
+
+    private void handleLoadScl(String[] parts) throws Exception {
+        String path;
+        if (parts.length > 1) {
+            path = parts[1];
+        } else {
+            path = server.getSclFilePath();
+            if (path == null) {
+                path = CmsConfigLoader.load().getServer().getSclFile();
+            }
+        }
+        server.loadScl(path);
+        System.out.println(CmsColor.green("  SCL loaded: " + path));
     }
 
     private void listSessions() {

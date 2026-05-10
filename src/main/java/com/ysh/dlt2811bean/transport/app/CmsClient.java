@@ -205,7 +205,7 @@ public class CmsClient {
 
     // ==================== Internal Send ====================
 
-    private CmsApdu send(CmsAsdu<?> asdu) throws Exception {
+    public CmsApdu send(CmsAsdu<?> asdu) throws Exception {
         int reqId = session.nextReqId();
         asdu.reqId(reqId);
         PendingRequest pending = session.addPendingRequest(reqId);

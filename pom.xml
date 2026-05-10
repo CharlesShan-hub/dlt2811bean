@@ -102,6 +102,13 @@
             <version>5.11.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- 命令行交互（tab 补全） -->
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>3.26.3</version>
+        </dependency>
     </dependencies>
 
     <build>

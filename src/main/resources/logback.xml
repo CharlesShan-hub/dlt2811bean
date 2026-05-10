@@ -6,6 +6,8 @@
         </encoder>
     </appender>
 
+    <logger name="com.ysh.dlt2811bean.transport" level="ERROR"/>
+
     <root level="WARN">
         <appender-ref ref="STDERR"/>
     </root>

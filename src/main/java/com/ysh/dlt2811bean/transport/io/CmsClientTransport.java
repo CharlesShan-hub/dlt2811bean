@@ -73,17 +73,6 @@ public class CmsClientTransport {
     /* ==================== Internal ==================== */
 
     private Socket createSocket() throws IOException {
-        if (sslContext != null) {
-            try {
-                SSLSocket socket = (SSLSocket) sslContext.getSslContext()
-                        .getSocketFactory()
-                        .createSocket();
-                socket.setUseClientMode(true);
-                return socket;
-            } catch (Exception e) {
-                throw new IOException("Failed to create SSL socket: " + e.getMessage(), e);
-            }
-        }
         return new Socket();
     }
 

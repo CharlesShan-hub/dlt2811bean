@@ -77,8 +77,10 @@ public class CmsServer {
     private static final Logger log = LoggerFactory.getLogger(CmsServer.class);
 
     private final CmsServerTransport transport;
+    private CmsServerTransport tlsTransport;
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
+    private String sclFilePath;
     private SclDocument sclDocument;
     private boolean securityEnabled = false;
 
@@ -123,6 +125,10 @@ public class CmsServer {
         registerDefaultHandlers();
         transport.start();
         log.info("CMS Server started on port {}", transport.getPort());
+        if (tlsTransport != null) {
+            tlsTransport.start();
+            log.info("CMS Server started TLS on port {}", tlsTransport.getPort());
+        }
     }
 
     public void stop() {
@@ -131,6 +137,9 @@ public class CmsServer {
         }
         sessions.clear();
         transport.stop();
+        if (tlsTransport != null) {
+            tlsTransport.stop();
+        }
         log.info("CMS Server stopped");
     }
 
@@ -150,22 +159,51 @@ public class CmsServer {
     // ==================== TLS Config ====================
 
     public CmsServer sslContext(GmSslContext sslContext) {
-        transport.sslContext(sslContext);
+        CmsConfig config = CmsConfigLoader.load();
+        this.tlsTransport = new CmsServerTransport(config.getServer().getSslPort(), new ServerListener());
+        this.tlsTransport.sslContext(sslContext);
         return this;
     }
 
+    public CmsServer sslContext(GmSslContext sslContext, int tlsPort) {
+        this.tlsTransport = new CmsServerTransport(tlsPort, new ServerListener());
+        this.tlsTransport.sslContext(sslContext);
+        return this;
+    }
+
+    public int getTlsPort() {
+        return tlsTransport != null ? tlsTransport.getPort() : -1;
+    }
+
     public CmsServer needClientAuth(boolean need) {
-        transport.needClientAuth(need);
+        if (tlsTransport != null) {
+            tlsTransport.needClientAuth(need);
+        }
         return this;
     }
 
     // ==================== SCL Model ====================
 
     public CmsServer loadScl(String filePath) throws Exception {
+        this.sclFilePath = filePath;
         this.sclDocument = new SclReader().read(filePath);
         log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
                  sclDocument.getFileType(), sclDocument.getIeds().size());
         return this;
+    }
+
+    /**
+     * Reloads the previously loaded SCL file.
+     */
+    public CmsServer reloadScl() throws Exception {
+        if (sclFilePath == null) {
+            throw new IllegalStateException("No SCL file previously loaded");
+        }
+        return loadScl(sclFilePath);
+    }
+
+    public String getSclFilePath() {
+        return sclFilePath;
     }
 
     public CmsServer loadScl(Path filePath) throws Exception {
@@ -418,6 +456,9 @@ public class CmsServer {
         }));
         server.start();
         System.out.println("CMS Server running on port " + CmsConfigLoader.load().getServer().getPort() + "...");
+        if (server.tlsTransport != null) {
+            System.out.println("CMS TLS Server running on port " + CmsConfigLoader.load().getServer().getSslPort() + "...");
+        }
         System.out.println("Press Ctrl+C to stop");
         Thread.currentThread().join();
     }

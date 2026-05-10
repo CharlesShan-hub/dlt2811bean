@@ -1,9 +1,14 @@
 package com.ysh.dlt2811bean.cli;
 
+import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
+import com.ysh.dlt2811bean.security.GmSslContext;
+import com.ysh.dlt2811bean.service.info.DataTypeInfo;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
@@ -12,33 +17,86 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
-import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
+import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
+import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
+import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
+import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
+import com.ysh.dlt2811bean.service.svc.control.CmsOperate;
+import com.ysh.dlt2811bean.service.svc.control.CmsSelect;
+import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
+import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
+import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
+import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
+import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
+import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
-import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.test.CmsTest;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
+import org.jline.reader.Candidate;
+import org.jline.reader.Completer;
+import org.jline.reader.LineReader;
+import org.jline.reader.LineReaderBuilder;
+import org.jline.reader.ParsedLine;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 public class CmsClientCli {
 
     private final CmsClient client = new CmsClient();
     private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
-    private final Scanner scanner = new Scanner(System.in);
+    private final LineReader reader;
     private boolean running = true;
 
     public CmsClientCli() {
+        reader = LineReaderBuilder.builder()
+                .completer(new Completer() {
+                    @Override
+                    public void complete(LineReader rdr, ParsedLine parsedLine, java.util.List<Candidate> candidates) {
+                        String buffer = parsedLine.line();
+                        String word = parsedLine.word();
+                        if (buffer.toLowerCase().startsWith("help datatype ")) {
+                            for (DataTypeInfo dt : DataTypeInfo.values()) {
+                                if (dt.getTypeName().toLowerCase().startsWith(word.toLowerCase())) {
+                                    candidates.add(new Candidate(dt.getTypeName()));
+                                }
+                            }
+                        } else if (buffer.toLowerCase().startsWith("help ")) {
+                            for (String cmd : handlers.keySet()) {
+                                if (cmd.startsWith(word.toLowerCase())) {
+                                    candidates.add(new Candidate(cmd));
+                                }
+                            }
+                            if ("datatype".startsWith(word.toLowerCase())) {
+                                candidates.add(new Candidate("datatype"));
+                            }
+                        } else {
+                            for (String cmd : handlers.keySet()) {
+                                if (cmd.startsWith(word.toLowerCase())) {
+                                    candidates.add(new Candidate(cmd));
+                                }
+                            }
+                        }
+                    }
+                })
+                .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_cli_history"))
+                .build();
         register(new HelpHandler());
         register(new ExitHandler());
         register(new ConnectHandler());
+        register(new ConnectTlsHandler());
         register(new CloseHandler());
         register(new StatusHandler());
         register(new NegotiateHandler());
@@ -76,42 +134,96 @@ public class CmsClientCli {
     }
 
     public void run() {
+        java.util.logging.Logger.getLogger("org.bouncycastle").setLevel(java.util.logging.Level.SEVERE);
         System.out.println("CMS CLI v1.0 — Type 'help' for commands, 'exit' to quit");
         while (running) {
             System.out.println();
-            System.out.print("cms> ");
-            String line = scanner.nextLine().trim().toLowerCase();
+            String raw;
+            try {
+                raw = reader.readLine("cms> ").trim();
+            } catch (Exception e) {
+                if (running) {
+                    System.out.println(CmsColor.red("\n  Connection lost. Type 'connect' to reconnect."));
+                }
+                continue;
+            }
+            String line = raw.toLowerCase();
 
             if (line.isEmpty()) continue;
 
-            CommandHandler handler = handlers.get(line);
+            if (line.startsWith("help ")) {
+                String helpArg = line.substring(5).trim().toLowerCase();
+                if (helpArg.equals("datatype")) {
+                    printDatatypeList();
+                    continue;
+                }
+                if (helpArg.startsWith("datatype ")) {
+                    String dtName = raw.substring(5).trim().substring(9).trim();
+                    DataTypeInfo dt = DataTypeInfo.byTypeName(dtName);
+                    if (dt == null) {
+                        System.out.println("  " + CmsColor.red("Unknown datatype: " + dtName));
+                    } else {
+                        printDatatypeHelp(dt);
+                    }
+                    continue;
+                }
+                CommandHandler h = handlers.get(helpArg);
+                String helpCmdName = helpArg;
+                if (h == null) {
+                    ServiceInfo sectionInfo = ServiceInfo.bySection(helpArg);
+                    if (sectionInfo != null) {
+                        helpCmdName = sectionInfo.getCliName();
+                        h = handlers.get(helpCmdName);
+                    }
+                }
+                if (h == null) {
+                    System.out.println("  " + CmsColor.red("Unknown command: " + helpArg));
+                } else {
+                    printCommandHelp(helpCmdName, h);
+                }
+                continue;
+            }
+
+            String[] inputParts = raw.split("\\s+", 2);
+            String cmdName = inputParts[0].toLowerCase();
+            String inlineArgs = inputParts.length > 1 ? inputParts[1].trim() : null;
+
+            CommandHandler handler = handlers.get(cmdName);
             if (handler == null) {
-                System.out.println("Unknown command: " + line + "  (type 'help' for available commands)");
+                System.out.println(CmsColor.red("Unknown command: " + cmdName) + "  (type 'help' for available commands)");
                 continue;
             }
 
             try {
                 Map<String, String> values = new HashMap<>();
+                java.util.List<String> inlineTokens = inlineArgs != null && !inlineArgs.isEmpty()
+                    ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
+                    : new java.util.ArrayList<>();
+
                 for (Param param : handler.getParams()) {
+                    if (!inlineTokens.isEmpty()) {
+                        values.put(param.getName(), inlineTokens.remove(0));
+                        continue;
+                    }
+
                     if (!param.getEnumChoices().isEmpty()) {
                         System.out.println("  " + param.getPrompt() + ":");
+                        int maxLen = param.getEnumChoices().stream().mapToInt(ec -> ec.value.length()).max().orElse(0);
                         for (Param.EnumChoice ec : param.getEnumChoices()) {
-                            System.out.println("    " + ec.value + "  " + ec.label);
+                            System.out.println("    " + padRight(ec.value, maxLen) + "  " + ec.label);
                         }
                     }
                     String simplePrompt = param.getEnumChoices().isEmpty() ? param.getPrompt() : "  值";
                     if (param.getDefaultValue() != null) {
                         simplePrompt += " [" + param.getDefaultValue() + "]";
                     }
-                    simplePrompt += ": ";
-                    System.out.print(simplePrompt);
-                    String input = scanner.nextLine().trim();
+                    String input = reader.readLine(simplePrompt + ": ").trim();
 
                     if (input.isEmpty()) {
                         if (param.getDefaultValue() != null) {
                             values.put(param.getName(), param.getDefaultValue());
                         } else if (param.isRequired()) {
-                            System.out.println("  (skipped, using empty)");
+                            System.out.println(CmsColor.gray("  (skipped, using empty)"));
                             values.put(param.getName(), "");
                         } else {
                             values.put(param.getName(), "");
@@ -121,11 +233,14 @@ public class CmsClientCli {
                     }
                 }
                 handler.execute(client, values);
+                if (!cmdName.equals("connect") && !cmdName.equals("exit") && !cmdName.equals("close")
+                        && !client.isConnected()) {
+                    System.out.println(CmsColor.red("  Connection lost. Type 'connect' to reconnect."));
+                }
             } catch (Exception e) {
-                System.out.println("  ERROR: " + e.getMessage());
+                System.out.println(CmsColor.red("  ERROR: " + e.getMessage()));
             }
         }
-        scanner.close();
     }
 
     public static void main(String[] args) {
@@ -139,17 +254,108 @@ public class CmsClientCli {
         public String getDescription() { return "显示帮助信息"; }
         public List<Param> getParams() { return List.of(); }
         public void execute(CmsClient client, Map<String, String> values) {
-            System.out.println("\nAvailable commands:");
-            for (CommandHandler h : handlers.values()) {
+            System.out.println("\n" + CmsColor.bold("可用命令:") + "\n");
+            System.out.println(CmsColor.gray("  " + padRight("命令", 17) + String.format("%-7s", "章节") + String.format("%-5s", "服务码") + " 描述"));
+            System.out.println(CmsColor.gray("  ────────────────────────────────────────────"));
+            java.util.List<CommandHandler> sorted = new java.util.ArrayList<>(handlers.values());
+            sorted.sort((a, b) -> {
+                ServiceInfo ai = ServiceInfo.byCliName(a.getName());
+                ServiceInfo bi = ServiceInfo.byCliName(b.getName());
+                if (ai == null && bi == null) return a.getName().compareTo(b.getName());
+                if (ai == null) return 1;
+                if (bi == null) return -1;
+                return compareSection(ai.getSection(), bi.getSection());
+            });
+            for (CommandHandler h : sorted) {
                 if (h.getName().equals("help") || h.getName().equals("exit")) continue;
-                System.out.println("  " + padRight(h.getName(), 18) + h.getDescription());
+                ServiceInfo info = ServiceInfo.byCliName(h.getName());
+                if (info != null) {
+                    System.out.println("  " + CmsColor.bold(padRight(h.getName(), 18))
+                            + CmsColor.cyan(String.format("%-8s", "[" + info.getSection() + "]"))
+                            + " " + CmsColor.yellow(String.format("0x%02X", info.getServiceCode()))
+                            + " " + info.getDescription());
+                } else {
+                    System.out.println("  " + CmsColor.bold(padRight(h.getName(), 18))
+                             + String.format("%-8s", "")
+                             + String.format("%-6s", "")
+                            + " " + h.getDescription());
+                }
             }
-            System.out.println("  " + padRight("help", 18) + "显示帮助信息");
-            System.out.println("  " + padRight("exit", 18) + "退出程序");
+            System.out.println("  " + CmsColor.bold(padRight("help", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 显示帮助信息");
+            System.out.println("  " + CmsColor.bold(padRight("exit", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 退出程序");
+            System.out.println(CmsColor.gray("\nUse: help <command> 查看命令详细用法  |  help datatype <name> 查看数据类型  |  Tab 键可补全命令"));
         }
-        private String padRight(String s, int n) {
-            return String.format("%-" + n + "s", s);
+    }
+
+    private void printCommandHelp(String cmdName, CommandHandler h) {
+        ServiceInfo info = ServiceInfo.byCliName(cmdName);
+        System.out.println("\n  " + CmsColor.bold(cmdName) + " - "
+                + (info != null ? (CmsColor.cyan("[" + info.getSection() + "] ") + info.getDescription()) : h.getDescription()));
+        if (info != null) {
+            if (!info.getDescriptionDetail().isEmpty()) {
+                System.out.println("\n  " + CmsColor.cyan("功能介绍: "));
+                for (String line : info.getDescriptionDetail().split("\n")) {
+                    System.out.println("    " + line);
+                }
+            }
+            if (!info.getAsn1Definition().isEmpty()) {
+                System.out.println("\n  " + CmsColor.cyan("ASN.1 定义: "));
+                for (String line : info.getAsn1Definition().split("\n")) {
+                    System.out.println("    " + line);
+                }
+            }
+            System.out.println("\n  " + CmsColor.green("用法: ") + info.getUsage());
         }
+        for (Param param : h.getParams()) {
+            System.out.println("    " + CmsColor.cyan(param.getName()) + "  " + param.getPrompt()
+                    + (param.getDefaultValue() != null && !param.getDefaultValue().isEmpty() ? CmsColor.gray(" (默认: " + param.getDefaultValue() + ")") : ""));
+        }
+    }
+
+    private static int compareSection(String a, String b) {
+        String[] pa = a.split("\\.");
+        String[] pb = b.split("\\.");
+        for (int i = 0; i < Math.min(pa.length, pb.length); i++) {
+            int cmp = Integer.parseInt(pa[i]) - Integer.parseInt(pb[i]);
+            if (cmp != 0) return cmp;
+        }
+        return pa.length - pb.length;
+    }
+
+    private void printDatatypeHelp(DataTypeInfo dt) {
+        System.out.println("\n  " + CmsColor.bold(dt.getTypeName()) + " - "
+                + CmsColor.cyan("[" + dt.getSection() + "] ") + dt.getDescription());
+        if (!dt.getAsn1Definition().isEmpty()) {
+            System.out.println("\n  " + CmsColor.cyan("ASN.1 定义: "));
+            for (String line : dt.getAsn1Definition().split("\n")) {
+                System.out.println("    " + line);
+            }
+        }
+    }
+
+    private void printDatatypeList() {
+        System.out.println("\n" + CmsColor.bold("可用数据类型:") + "\n");
+        System.out.println(CmsColor.gray("  " + padRight("类型名", 22) + String.format("%-7s", "章节") + " 描述"));
+        System.out.println(CmsColor.gray("  ────────────────────────────────────────────"));
+        java.util.List<DataTypeInfo> sorted = new java.util.ArrayList<>(java.util.Arrays.asList(DataTypeInfo.values()));
+        sorted.sort((a, b) -> compareSection(a.getSection(), b.getSection()));
+        for (DataTypeInfo dt : sorted) {
+            System.out.println("  " + CmsColor.bold(padRight(dt.getTypeName(), 22))
+                    + CmsColor.cyan(String.format("%-8s", "[" + dt.getSection() + "]"))
+                    + " " + dt.getDescription());
+        }
+        System.out.println(CmsColor.gray("\nUse: help datatype <name> 查看数据类型详细定义"));
+    }
+
+    private String padRight(String s, int n) {
+        return String.format("%-" + n + "s", s);
+    }
+
+    private CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
+        System.out.println(CmsColor.gray("  >> Request PDU:\n" + asdu.toString().indent(4).stripTrailing()));
+        CmsApdu response = client.send(asdu);
+        System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+        return response;
     }
 
     private class ExitHandler implements CommandHandler {
@@ -170,7 +376,7 @@ public class CmsClientCli {
 
     private class ConnectHandler implements CommandHandler {
         public String getName() { return "connect"; }
-        public String getDescription() { return "连接到 CMS 服务器（可选自动协商+关联）"; }
+        public String getDescription() { return "连接服务器（自动协商与关联）"; }
         public List<Param> getParams() {
             return List.of(
                 new Param("host", "服务器 IP", "127.0.0.1"),
@@ -178,14 +384,15 @@ public class CmsClientCli {
                 new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
                 new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
                 new Param("ap", "AccessPoint", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
-                new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp())
+                new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp()),
+                new Param("secure", "携带证书认证 (true/false)", "false")
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             String host = values.get("host");
             int port = Integer.parseInt(values.get("port"));
             client.connect(host, port);
-            System.out.println("  Connected to " + host + ":" + port);
+            System.out.println(CmsColor.green("  Connected to " + host + ":" + port));
 
             String asduSizeStr = values.get("asduSize");
             if (!asduSizeStr.isEmpty()) {
@@ -197,18 +404,111 @@ public class CmsClientCli {
 
                 client.setAccessPoint(ap, ep);
 
+                CmsAssociateNegotiate negReq = new CmsAssociateNegotiate(MessageType.REQUEST)
+                        .apduSize(apduSize).asduSize(asduSize).protocolVersion(protocolVersion);
+                System.out.println(CmsColor.gray("  >> Request PDU:\n" + negReq.toString().indent(4).stripTrailing()));
                 CmsApdu negResponse = client.associateNegotiate(apduSize, asduSize, protocolVersion);
+                System.out.println(CmsColor.gray("  << Response PDU:\n" + negResponse.toString().indent(4).stripTrailing()));
                 if (negResponse == null || negResponse.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-                    System.out.println("  Negotiate failed");
+                    System.out.println(CmsColor.red("  Negotiate failed"));
                     return;
                 }
-                System.out.println("  Negotiated OK (asduSize=" + asduSize + ")");
+                System.out.println(CmsColor.green("  Negotiated OK") + " (asduSize=" + asduSize + ")");
 
+                boolean secure = Boolean.parseBoolean(values.get("secure"));
+                if (secure) {
+                    client.enableSecurity();
+                    System.out.println(CmsColor.gray("  GM security enabled"));
+                }
+
+                CmsAssociate assocReq = new CmsAssociate(MessageType.REQUEST)
+                        .serverAccessPointReference(ap, ep);
+                System.out.println(CmsColor.gray("  >> Request PDU:\n" + assocReq.toString().indent(4).stripTrailing()));
                 CmsApdu assocResponse = client.associate();
+                if (assocResponse != null) {
+                    System.out.println(CmsColor.gray("  << Response PDU:\n" + assocResponse.toString().indent(4).stripTrailing()));
+                }
                 if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-                    System.out.println("  Associated (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
+                    System.out.println(CmsColor.green("  Associated") + " (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
                 } else {
-                    System.out.println("  Associate failed");
+                    System.out.println(CmsColor.red("  Associate failed"));
+                }
+            }
+        }
+    }
+
+    private class ConnectTlsHandler implements CommandHandler {
+        public String getName() { return "connect-tls"; }
+        public String getDescription() { return "TLS 连接服务器（自动协商与关联）"; }
+        public List<Param> getParams() {
+            return List.of(
+                new Param("host", "服务器 IP", "127.0.0.1"),
+                new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getSslPort())),
+                new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
+                new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
+                new Param("ap", "AccessPoint", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
+                new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp()),
+                new Param("secure", "携带证书认证 (true/false)", "false")
+            );
+        }
+        public void execute(CmsClient client, Map<String, String> values) throws Exception {
+            String host = values.get("host");
+            int port = Integer.parseInt(values.get("port"));
+
+            CmsConfig config = CmsConfigLoader.load();
+            GmSslContext sslContext = GmSslContext.forClient()
+                    .keyStore(config.getSecurity().getKeystore().getPath(), config.getSecurity().getKeystore().getPassword())
+                    .trustManager(new javax.net.ssl.X509TrustManager[]{
+                        new javax.net.ssl.X509TrustManager() {
+                            public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                            public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+                            public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
+                        }
+                    })
+                    .useStandardTls()
+                    .build();
+            client.sslContext(sslContext);
+            client.connectTls(host, port);
+            System.out.println(CmsColor.green("  Connected to " + host + ":" + port + " (TLS)"));
+
+            String asduSizeStr = values.get("asduSize");
+            if (!asduSizeStr.isEmpty()) {
+                int asduSize = Integer.parseInt(asduSizeStr);
+                int apduSize = asduSize + 4;
+                long protocolVersion = Long.parseLong(values.get("protocolVersion"));
+                String ap = values.get("ap");
+                String ep = values.get("ep");
+
+                client.setAccessPoint(ap, ep);
+
+                CmsAssociateNegotiate negReq = new CmsAssociateNegotiate(MessageType.REQUEST)
+                        .apduSize(apduSize).asduSize(asduSize).protocolVersion(protocolVersion);
+                System.out.println(CmsColor.gray("  >> Request PDU:\n" + negReq.toString().indent(4).stripTrailing()));
+                CmsApdu negResponse = client.associateNegotiate(apduSize, asduSize, protocolVersion);
+                System.out.println(CmsColor.gray("  << Response PDU:\n" + negResponse.toString().indent(4).stripTrailing()));
+                if (negResponse == null || negResponse.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                    System.out.println(CmsColor.red("  Negotiate failed"));
+                    return;
+                }
+                System.out.println(CmsColor.green("  Negotiated OK") + " (asduSize=" + asduSize + ")");
+
+                boolean secure = Boolean.parseBoolean(values.get("secure"));
+                if (secure) {
+                    client.enableSecurity();
+                    System.out.println(CmsColor.gray("  GM security enabled"));
+                }
+
+                CmsAssociate assocReq = new CmsAssociate(MessageType.REQUEST)
+                        .serverAccessPointReference(ap, ep);
+                System.out.println(CmsColor.gray("  >> Request PDU:\n" + assocReq.toString().indent(4).stripTrailing()));
+                CmsApdu assocResponse = client.associate();
+                if (assocResponse != null) {
+                    System.out.println(CmsColor.gray("  << Response PDU:\n" + assocResponse.toString().indent(4).stripTrailing()));
+                }
+                if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                    System.out.println(CmsColor.green("  Associated") + " (ID=" + bytesToHex(client.getAssociationId(), 8) + "...)");
+                } else {
+                    System.out.println(CmsColor.red("  Associate failed"));
                 }
             }
         }
@@ -220,7 +520,7 @@ public class CmsClientCli {
         public List<Param> getParams() { return List.of(); }
         public void execute(CmsClient client, Map<String, String> values) {
             client.close();
-            System.out.println("  Disconnected");
+            System.out.println(CmsColor.green("  Disconnected"));
         }
     }
 
@@ -231,8 +531,8 @@ public class CmsClientCli {
         public void execute(CmsClient client, Map<String, String> values) {
             boolean connected = client.isConnected();
             byte[] assocId = client.getAssociationId();
-            System.out.println("  Connected: " + (connected ? "YES" : "NO"));
-            System.out.println("  Associated: " + (assocId != null ? "YES (id=" + bytesToHex(assocId, 8) + "...)" : "NO"));
+            System.out.println("  Connected: " + (connected ? CmsColor.green("YES") : CmsColor.red("NO")));
+            System.out.println("  Associated: " + (assocId != null ? CmsColor.green("YES") + " (id=" + bytesToHex(assocId, 8) + "...)" : CmsColor.red("NO")));
         }
     }
 
@@ -244,24 +544,29 @@ public class CmsClientCli {
         public List<Param> getParams() {
             CmsConfig config = CmsConfigLoader.load();
             return List.of(
-                new Param("apduSize", "APDU 帧大小", String.valueOf(config.getNegotiate().getApduSize())),
                 new Param("asduSize", "ASDU 大小", String.valueOf(config.getNegotiate().getAsduSize())),
                 new Param("protocolVersion", "协议版本号", String.valueOf(config.getNegotiate().getProtocolVersion()))
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
+                System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
                 return;
             }
-            int apduSize = Integer.parseInt(values.get("apduSize"));
             int asduSize = Integer.parseInt(values.get("asduSize"));
+            int apduSize = asduSize + 4;
             long protocolVersion = Long.parseLong(values.get("protocolVersion"));
+            CmsAssociateNegotiate reqAsdu = new CmsAssociateNegotiate(MessageType.REQUEST)
+                    .apduSize(apduSize)
+                    .asduSize(asduSize)
+                    .protocolVersion(protocolVersion);
+            System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
             CmsApdu response = client.associateNegotiate(apduSize, asduSize, protocolVersion);
+            System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
             if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-                System.out.println("  Negotiated!");
+                System.out.println(CmsColor.green("  Negotiated!"));
             } else {
-                System.out.println("  Negotiate failed");
+                System.out.println(CmsColor.red("  Negotiate failed"));
             }
         }
     }
@@ -273,23 +578,32 @@ public class CmsClientCli {
             CmsConfig config = CmsConfigLoader.load();
             return List.of(
                 new Param("ap", "访问点 (AccessPoint)", config.getClient().getDefaultAccessPoint()),
-                new Param("ep", "EP", config.getClient().getDefaultEp())
+                new Param("ep", "EP", config.getClient().getDefaultEp()),
+                new Param("secure", "携带证书认证 (true/false)", "false")
             );
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
+                System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
                 return;
+            }
+            if (Boolean.parseBoolean(values.get("secure"))) {
+                client.enableSecurity();
+                System.out.println(CmsColor.gray("  GM security enabled"));
             }
             String ap = values.get("ap");
             String ep = values.get("ep");
+            CmsAssociate reqAsdu = new CmsAssociate(MessageType.REQUEST)
+                    .serverAccessPointReference(ap, ep);
+            System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
             CmsApdu response = "E1Q1SB1".equals(ap) && "S1".equals(ep)
                 ? client.associate()
                 : client.associate(ap, ep);
+            System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
             if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-                System.out.println("  Associated!");
+                System.out.println(CmsColor.green("  Associated!"));
             } else {
-                System.out.println("  Associate failed");
+                System.out.println(CmsColor.red("  Associate failed"));
             }
         }
     }
@@ -300,14 +614,17 @@ public class CmsClientCli {
         public List<Param> getParams() { return List.of(); }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
+                System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
                 return;
             }
+            CmsRelease reqAsdu = new CmsRelease(MessageType.REQUEST);
+            System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
             CmsApdu response = client.release();
+            System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
             if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-                System.out.println("  Released");
+                System.out.println(CmsColor.green("  Released"));
             } else {
-                System.out.println("  Release failed");
+                System.out.println(CmsColor.red("  Release failed"));
             }
         }
     }
@@ -326,12 +643,14 @@ public class CmsClientCli {
         }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
-                System.out.println("  Not connected.");
+                System.out.println(CmsColor.gray("  Not connected."));
                 return;
             }
             int reason = Integer.parseInt(values.get("reason"));
+            CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
+            System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
             client.abort(reason);
-            System.out.println("  Abort sent");
+            System.out.println(CmsColor.green("  Abort sent"));
         }
     }
 
@@ -341,11 +660,16 @@ public class CmsClientCli {
         public List<Param> getParams() { return List.of(); }
         public void execute(CmsClient client, Map<String, String> values) throws Exception {
             if (!client.isConnected()) {
-                System.out.println("  Not connected. Type 'connect' first.");
+                System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
                 return;
             }
+            CmsTest reqAsdu = new CmsTest(MessageType.REQUEST);
+            System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
             CmsApdu response = client.test();
-            System.out.println("  Test " + (response != null ? "OK" : "failed"));
+            if (response != null) {
+                System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+            }
+            System.out.println("  Test " + (response != null ? CmsColor.green("OK") : CmsColor.red("failed")));
         }
     }
 
@@ -376,19 +700,21 @@ public class CmsClientCli {
             String data = values.get("data");
 
             if (method.equals("ping") || method.equals("pong")) {
-                CmsApdu response = client.rpcCall("ping", new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
-                System.out.println("  RPC ping: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
+                CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST).method("ping").reqData(new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
+                CmsApdu response = sendAndPrint(client, asdu);
+                System.out.println("  RPC ping: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? CmsColor.green("OK") : CmsColor.red("failed")));
                 return;
             }
 
             if (method.equals("iterate")) {
                 byte[] lastId = lastCallIds.get("iterate");
-                CmsApdu response;
+                CmsRpcCall asdu;
                 if (lastId != null) {
-                    response = client.rpcCall("iterate", lastId);
+                    asdu = new CmsRpcCall(MessageType.REQUEST).method("iterate").callID(lastId);
                 } else {
-                    response = client.rpcCall("iterate", new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
+                    asdu = new CmsRpcCall(MessageType.REQUEST).method("iterate").reqData(new com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U(0));
                 }
+                CmsApdu response = sendAndPrint(client, asdu);
 
                 if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                     System.out.println("  RPC iterate failed");
@@ -409,8 +735,9 @@ public class CmsClientCli {
                 return;
             }
 
-            CmsApdu response = client.rpcCall("echo", new com.ysh.dlt2811bean.datatypes.string.CmsVisibleString(data));
-            System.out.println("  RPC echo: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
+            CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST).method("echo").reqData(new com.ysh.dlt2811bean.datatypes.string.CmsVisibleString(data));
+            CmsApdu response = sendAndPrint(client, asdu);
+            System.out.println("  RPC echo: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? CmsColor.green("OK") : CmsColor.red("failed")));
         }
     }
 
@@ -426,7 +753,8 @@ public class CmsClientCli {
                 return;
             }
 
-            CmsApdu response = client.getRpcInterfaceDirectory();
+            CmsGetRpcInterfaceDirectory asdu = new CmsGetRpcInterfaceDirectory(MessageType.REQUEST);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -459,9 +787,11 @@ public class CmsClientCli {
 
             String iface = values.get("iface");
             String after = values.get("after");
-            CmsApdu response = after.isEmpty()
-                ? client.getRpcInterfaceDefinition(iface)
-                : client.getRpcInterfaceDefinition(iface, after);
+            CmsGetRpcInterfaceDefinition asdu = new CmsGetRpcInterfaceDefinition(MessageType.REQUEST).interfaceName(iface);
+            if (!after.isEmpty()) {
+                asdu.referenceAfter(after);
+            }
+            CmsApdu response = sendAndPrint(client, asdu);
 
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
@@ -501,14 +831,14 @@ public class CmsClientCli {
 
             String iface = values.get("iface");
             String after = values.get("after");
-            CmsApdu response;
-            if (iface.isEmpty() && after.isEmpty()) {
-                response = client.getRpcMethodDirectory();
-            } else if (after.isEmpty()) {
-                response = client.getRpcMethodDirectory(iface);
-            } else {
-                response = client.getRpcMethodDirectory(iface.isEmpty() ? null : iface, after);
+            CmsGetRpcMethodDirectory asdu = new CmsGetRpcMethodDirectory(MessageType.REQUEST);
+            if (!iface.isEmpty()) {
+                asdu.interfaceName(iface);
             }
+            if (!after.isEmpty()) {
+                asdu.referenceAfter(after);
+            }
+            CmsApdu response = sendAndPrint(client, asdu);
 
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
@@ -544,7 +874,11 @@ public class CmsClientCli {
             }
 
             String refs = values.get("refs");
-            CmsApdu response = client.getRpcMethodDefinition(refs.split(","));
+            CmsGetRpcMethodDefinition asdu = new CmsGetRpcMethodDefinition(MessageType.REQUEST);
+            for (String ref : refs.split(",")) {
+                asdu.addReference(ref);
+            }
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -584,8 +918,8 @@ public class CmsClientCli {
 
             String fileName = values.get("fileName");
             long start = Long.parseLong(values.get("start"));
-
-            CmsApdu response = client.getFile(fileName, start);
+            CmsGetFile asdu = new CmsGetFile(MessageType.REQUEST).fileName(fileName).startPosition(start);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -620,7 +954,9 @@ public class CmsClientCli {
             String text = values.get("data");
             boolean eof = Boolean.parseBoolean(values.get("eof"));
 
-            CmsApdu response = client.setFile(fileName, start, text.getBytes(java.nio.charset.StandardCharsets.UTF_8), eof);
+            CmsSetFile asdu = new CmsSetFile(MessageType.REQUEST).fileName(fileName).startPosition(start)
+                    .fileData(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)).endOfFile(eof);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -645,7 +981,8 @@ public class CmsClientCli {
             }
 
             String fileName = values.get("fileName");
-            CmsApdu response = client.deleteFile(fileName);
+            CmsDeleteFile asdu = new CmsDeleteFile(MessageType.REQUEST).fileName(fileName);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Delete failed");
                 return;
@@ -669,7 +1006,8 @@ public class CmsClientCli {
             }
 
             String fileName = values.get("fileName");
-            CmsApdu response = client.getFileAttributeValues(fileName);
+            CmsGetFileAttributeValues asdu = new CmsGetFileAttributeValues(MessageType.REQUEST).fileName(fileName);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -699,9 +1037,10 @@ public class CmsClientCli {
 
             String path = values.get("path");
             String after = values.get("after");
-            CmsApdu response = after.isEmpty()
-                ? client.getFileDirectory(path)
-                : client.getFileDirectory(path, after);
+            CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.REQUEST);
+            if (!path.isEmpty()) asdu.pathName(path);
+            if (!after.isEmpty()) asdu.fileAfter(after);
+            CmsApdu response = sendAndPrint(client, asdu);
 
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
@@ -735,7 +1074,8 @@ public class CmsClientCli {
             }
 
             String ref = values.get("reference");
-            CmsApdu response = client.select(ref);
+            CmsSelect asdu = new CmsSelect(MessageType.REQUEST).reference(ref);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Select failed");
                 return;
@@ -761,7 +1101,9 @@ public class CmsClientCli {
 
             String ref = values.get("reference");
             boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.selectWithValue(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            CmsSelectWithValue asdu = new CmsSelectWithValue(MessageType.REQUEST).reference(ref)
+                    .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val)).ctlNum(0).test(false);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  SelectWithValue failed");
                 return;
@@ -789,7 +1131,9 @@ public class CmsClientCli {
 
             String ref = values.get("reference");
             boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.operate(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            CmsOperate asdu = new CmsOperate(MessageType.REQUEST).reference(ref)
+                    .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val)).ctlNum(1).test(false);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Operate failed");
                 return;
@@ -817,7 +1161,9 @@ public class CmsClientCli {
 
             String ref = values.get("reference");
             boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.cancel(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            CmsCancel asdu = new CmsCancel(MessageType.REQUEST).reference(ref)
+                    .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val)).ctlNum(2).test(false);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Cancel failed");
                 return;
@@ -847,7 +1193,9 @@ public class CmsClientCli {
 
             String ref = values.get("reference");
             boolean val = Boolean.parseBoolean(values.get("value"));
-            CmsApdu response = client.timeActivatedOperate(ref, new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val));
+            CmsTimeActivatedOperate asdu = new CmsTimeActivatedOperate(MessageType.REQUEST).reference(ref)
+                    .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(val)).ctlNum(4).test(false);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  TimeActivatedOperate failed");
                 return;
@@ -875,7 +1223,11 @@ public class CmsClientCli {
             }
 
             String[] refs = values.get("refs").split(",");
-            CmsApdu response = client.getMSVCBValues(refs);
+            CmsGetMSVCBValues asduReq = new CmsGetMSVCBValues(MessageType.REQUEST);
+            for (String ref : refs) {
+                asduReq.addReference(ref);
+            }
+            CmsApdu response = sendAndPrint(client, asduReq);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed");
                 return;
@@ -934,7 +1286,9 @@ public class CmsClientCli {
                 entry.smpRate.set(Integer.parseInt(smpRate));
             }
 
-            CmsApdu response = client.setMSVCBValues(entry);
+            CmsSetMSVCBValues asdu = new CmsSetMSVCBValues(MessageType.REQUEST);
+            asdu.addMsvcb(entry);
+            CmsApdu response = sendAndPrint(client, asdu);
             if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Set " + ref + " OK");
             } else {
@@ -954,14 +1308,16 @@ public class CmsClientCli {
                 System.out.println("  Not connected. Type 'connect' first.");
                 return;
             }
-            CmsApdu response = client.getServerDirectory();
+            CmsGetServerDirectory reqAsdu = new CmsGetServerDirectory(MessageType.REQUEST)
+                    .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
-            CmsGetServerDirectory asdu = (CmsGetServerDirectory) response.getAsdu();
+            CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
             System.out.println("  Logical devices:");
-            for (int i = 0; i < asdu.reference().size(); i++) {
-                System.out.println("    [" + i + "] " + asdu.reference().get(i).get());
+            for (int i = 0; i < resAsdu.reference().size(); i++) {
+                System.out.println("    [" + i + "] " + resAsdu.reference().get(i).get());
             }
         }
     }
@@ -978,9 +1334,9 @@ public class CmsClientCli {
                 return;
             }
             String ldName = values.get("ldName");
-            CmsApdu response = ldName.isEmpty()
-                ? client.getLogicalDeviceDirectory()
-                : client.getLogicalDeviceDirectory(ldName);
+            CmsGetLogicalDeviceDirectory reqAsdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
+            if (!ldName.isEmpty()) reqAsdu.ldName(ldName);
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
@@ -1018,12 +1374,14 @@ public class CmsClientCli {
             }
             String target = values.get("target");
             int acsiClass = parseAcsi(values.get("acsi"));
-            CmsApdu response;
+            CmsGetLogicalNodeDirectory reqAsdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST);
             if (target.contains("/")) {
-                response = client.getLogicalNodeDirectoryByLn(target, acsiClass);
+                reqAsdu.lnReference(target);
             } else {
-                response = client.getLogicalNodeDirectoryByLd(target, acsiClass);
+                reqAsdu.ldName(target);
             }
+            reqAsdu.acsiClass(new CmsACSIClass(acsiClass));
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
@@ -1066,13 +1424,14 @@ public class CmsClientCli {
             }
             String target = values.get("target");
             String fc = values.get("fc");
-            boolean hasFc = fc != null && !fc.isEmpty();
-            CmsApdu response;
+            CmsGetAllDataValues reqAsdu = new CmsGetAllDataValues(MessageType.REQUEST);
             if (target.contains("/")) {
-                response = hasFc ? client.getAllDataValuesByLn(target, fc) : client.getAllDataValuesByLn(target);
+                reqAsdu.lnReference(target);
             } else {
-                response = hasFc ? client.getAllDataValuesByLd(target, fc) : client.getAllDataValuesByLd(target);
+                reqAsdu.ldName(target);
             }
+            if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
@@ -1101,13 +1460,14 @@ public class CmsClientCli {
             }
             String target = values.get("target");
             String fc = values.get("fc");
-            boolean hasFc = fc != null && !fc.isEmpty();
-            CmsApdu response;
+            CmsGetAllDataDefinition reqAsdu = new CmsGetAllDataDefinition(MessageType.REQUEST);
             if (target.contains("/")) {
-                response = hasFc ? client.getAllDataDefinitionByLn(target, fc) : client.getAllDataDefinitionByLn(target);
+                reqAsdu.lnReference(target);
             } else {
-                response = hasFc ? client.getAllDataDefinitionByLd(target, fc) : client.getAllDataDefinitionByLd(target);
+                reqAsdu.ldName(target);
             }
+            if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
@@ -1144,12 +1504,14 @@ public class CmsClientCli {
             }
             String target = values.get("target");
             int acsiClass = parseAcsi(values.get("type"));
-            CmsApdu response;
+            CmsGetAllCBValues reqAsdu = new CmsGetAllCBValues(MessageType.REQUEST);
             if (target.contains("/")) {
-                response = client.getAllCBValuesByLn(target, acsiClass);
+                reqAsdu.lnReference(target);
             } else {
-                response = client.getAllCBValuesByLd(target, acsiClass);
+                reqAsdu.ldName(target);
             }
+            reqAsdu.acsiClass = new CmsACSIClass(acsiClass);
+            CmsApdu response = sendAndPrint(client, reqAsdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  Request failed"); return;
             }
