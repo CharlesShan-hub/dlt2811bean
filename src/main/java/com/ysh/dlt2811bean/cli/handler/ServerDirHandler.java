@@ -5,18 +5,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class ServerDirHandler implements CommandHandler {
+public class ServerDirHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public ServerDirHandler(CliContext ctx) { this.ctx = ctx; }
+    public ServerDirHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "server-dir"; }
     public String getDescription() { return "读服务器目录"; }

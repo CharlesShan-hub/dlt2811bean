@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class MethodDirHandler implements CommandHandler {
+public class MethodDirHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public MethodDirHandler(CliContext ctx) { this.ctx = ctx; }
+    public MethodDirHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "method-dir"; }
     public String getDescription() { return "获取RPC方法目录 (IF1/IF2/空=全部)"; }

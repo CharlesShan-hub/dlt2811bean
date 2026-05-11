@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class FileDeleteHandler implements CommandHandler {
+public class FileDeleteHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public FileDeleteHandler(CliContext ctx) { this.ctx = ctx; }
+    public FileDeleteHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "file-delete"; }
     public String getDescription() { return "删除文件 (内置文件受保护)"; }

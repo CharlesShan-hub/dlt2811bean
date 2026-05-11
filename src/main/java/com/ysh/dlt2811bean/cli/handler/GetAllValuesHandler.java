@@ -6,25 +6,22 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class GetAllValuesHandler implements CommandHandler {
+public class GetAllValuesHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public GetAllValuesHandler(CliContext ctx) { this.ctx = ctx; }
+    public GetAllValuesHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "get-all-values"; }
     public String getDescription() { return "读所有数据值"; }
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-            new Param("fc", "功能约束 (留空=全部)", "", FcInfo.enumChoices())
+            new Param("fc", "功能约束 (留空=全部)", "XX", FcInfo.enumChoices())
         );
     }
 

@@ -4,18 +4,15 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class ReleaseHandler implements CommandHandler {
+public class ReleaseHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public ReleaseHandler(CliContext ctx) { this.ctx = ctx; }
+    public ReleaseHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "release"; }
     public String getDescription() { return "释放关联"; }

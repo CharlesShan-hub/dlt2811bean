@@ -2,12 +2,7 @@ package com.ysh.dlt2811bean.transport.protocol.goose;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.compound.CmsGoCB;
-import com.ysh.dlt2811bean.datatypes.compound.CmsPhyComAddr;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;

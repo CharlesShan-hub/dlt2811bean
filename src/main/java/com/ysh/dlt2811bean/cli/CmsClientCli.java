@@ -168,6 +168,8 @@ public class CmsClientCli {
         register(new GetAllCbHandler(ctx));
         register(new GetDataValuesHandler(ctx));
         register(new SetDataValuesHandler(ctx));
+        register(new GetDataDirectoryHandler(ctx));
+        register(new GetDataDefinitionHandler(ctx));
         register(new CliSettingHandler(ctx));
         register(new ClearHandler(ctx));
     }
@@ -366,7 +368,7 @@ public class CmsClientCli {
     private static boolean isRefParam(String cmdName, int paramIdx) {
         return switch (cmdName) {
             case "ld-dir" -> paramIdx == 0;
-            case "ln-dir", "get-all-values", "get-all-def", "get-all-cb" -> paramIdx == 0;
+            case "ln-dir", "get-all-values", "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
             case "get-data-values", "set-data-values" -> paramIdx == 0;
             default -> false;
         };

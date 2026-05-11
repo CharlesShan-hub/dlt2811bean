@@ -960,7 +960,6 @@ public class CmsClient {
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsApdu selectWithValue(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
         CmsSelectWithValue asdu = new CmsSelectWithValue(MessageType.REQUEST)
                 .reference(reference)
@@ -1018,7 +1017,6 @@ public class CmsClient {
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsApdu timeActivatedOperate(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
         CmsTimeActivatedOperate asdu = new CmsTimeActivatedOperate(MessageType.REQUEST)
                 .reference(reference)

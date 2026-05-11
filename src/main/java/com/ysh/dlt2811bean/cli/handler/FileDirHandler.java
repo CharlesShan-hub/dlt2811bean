@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class FileDirHandler implements CommandHandler {
+public class FileDirHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public FileDirHandler(CliContext ctx) { this.ctx = ctx; }
+    public FileDirHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "file-dir"; }
     public String getDescription() { return "列文件目录"; }

@@ -4,18 +4,15 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class SelectWithValueHandler implements CommandHandler {
+public class SelectWithValueHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public SelectWithValueHandler(CliContext ctx) { this.ctx = ctx; }
+    public SelectWithValueHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "select-with-value"; }
     public String getDescription() { return "带值选择控制对象"; }

@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.service.info.FcInfo;
@@ -9,18 +8,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class SetDataValuesHandler implements CommandHandler {
+public class SetDataValuesHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public SetDataValuesHandler(CliContext ctx) { this.ctx = ctx; }
+    public SetDataValuesHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "set-data-values"; }
     public String getDescription() { return "写数据值"; }
@@ -28,7 +24,7 @@ public class SetDataValuesHandler implements CommandHandler {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal"),
             new Param("value", "要设置的值", "true"),
-            new Param("fc", "功能约束 (留空=不限制)", "", FcInfo.enumChoices())   
+            new Param("fc", "功能约束 (留空=不限制)", "XX", FcInfo.enumChoices())  
         );
     }
 

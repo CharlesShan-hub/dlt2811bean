@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class MethodDefHandler implements CommandHandler {
+public class MethodDefHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public MethodDefHandler(CliContext ctx) { this.ctx = ctx; }
+    public MethodDefHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "method-def"; }
     public String getDescription() { return "获取RPC方法定义"; }

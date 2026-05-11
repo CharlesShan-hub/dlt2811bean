@@ -6,18 +6,15 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class GetAllCbHandler implements CommandHandler {
+public class GetAllCbHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public GetAllCbHandler(CliContext ctx) { this.ctx = ctx; }
+    public GetAllCbHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "get-all-cb"; }
     public String getDescription() { return "读所有控制块值"; }

@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class AbortHandler implements CommandHandler {
-
-    private final CliContext ctx;
-
-    public AbortHandler(CliContext ctx) { this.ctx = ctx; }
+public class AbortHandler extends AbstractServiceHandler {
+    
+    public AbortHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "abort"; }
     public String getDescription() { return "异常中止关联"; }

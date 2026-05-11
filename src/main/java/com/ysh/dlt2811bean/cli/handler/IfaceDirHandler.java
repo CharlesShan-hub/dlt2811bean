@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class IfaceDirHandler implements CommandHandler {
+public class IfaceDirHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public IfaceDirHandler(CliContext ctx) { this.ctx = ctx; }
+    public IfaceDirHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "iface-dir"; }
     public String getDescription() { return "获取RPC接口目录 (IF1, IF2)"; }

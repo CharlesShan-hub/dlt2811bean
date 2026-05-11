@@ -5,18 +5,15 @@ import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class AssociateHandler implements CommandHandler {
+public class AssociateHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public AssociateHandler(CliContext ctx) { this.ctx = ctx; }
+    public AssociateHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "associate"; }
     public String getDescription() { return "建立关联"; }

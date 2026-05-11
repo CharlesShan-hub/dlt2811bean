@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class MsvcbValHandler implements CommandHandler {
+public class MsvcbValHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public MsvcbValHandler(CliContext ctx) { this.ctx = ctx; }
+    public MsvcbValHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "msvcb-val"; }
     public String getDescription() { return "读多播采样值控制块值"; }
@@ -25,10 +22,7 @@ public class MsvcbValHandler implements CommandHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String[] refs = values.get("refs").split(",");
         CmsGetMSVCBValues asduReq = new CmsGetMSVCBValues(MessageType.REQUEST);

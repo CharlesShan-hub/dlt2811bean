@@ -4,18 +4,15 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class TestHandler implements CommandHandler {
+public class TestHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public TestHandler(CliContext ctx) { this.ctx = ctx; }
+    public TestHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "test"; }
     public String getDescription() { return "发送心跳测试"; }

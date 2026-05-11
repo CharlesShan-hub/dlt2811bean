@@ -4,18 +4,15 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class TimeActOperateHandler implements CommandHandler {
+public class TimeActOperateHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public TimeActOperateHandler(CliContext ctx) { this.ctx = ctx; }
+    public TimeActOperateHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "time-act"; }
     public String getDescription() { return "定时执行控制操作"; }

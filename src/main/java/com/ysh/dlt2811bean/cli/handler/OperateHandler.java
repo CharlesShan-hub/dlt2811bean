@@ -4,18 +4,15 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsOperate;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class OperateHandler implements CommandHandler {
+public class OperateHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public OperateHandler(CliContext ctx) { this.ctx = ctx; }
+    public OperateHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "operate"; }
     public String getDescription() { return "执行控制操作 (需先 select)"; }

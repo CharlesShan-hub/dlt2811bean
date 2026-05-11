@@ -5,18 +5,15 @@ import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class NegotiateHandler implements CommandHandler {
+public class NegotiateHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public NegotiateHandler(CliContext ctx) { this.ctx = ctx; }
+    public NegotiateHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "negotiate"; }
     public String getDescription() { return "协商服务参数 (连接后、关联前)"; }

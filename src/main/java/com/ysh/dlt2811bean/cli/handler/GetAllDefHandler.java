@@ -6,18 +6,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class GetAllDefHandler implements CommandHandler {
+public class GetAllDefHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public GetAllDefHandler(CliContext ctx) { this.ctx = ctx; }
+    public GetAllDefHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "get-all-def"; }
     public String getDescription() { return "读所有数据定义"; }

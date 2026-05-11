@@ -6,15 +6,31 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.CmsSetGoCBValues;
+import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesResultEntry;
+import com.ysh.dlt2811bean.transport.goose.GooseConfig;
+import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SetGoCBValuesHandler implements CmsServiceHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SetGoCBValuesHandler.class);
+
+    private final GoosePublisher goosePublisher;
+
+    public SetGoCBValuesHandler() {
+        this.goosePublisher = null;
+    }
+
+    public SetGoCBValuesHandler(GoosePublisher goosePublisher) {
+        this.goosePublisher = goosePublisher;
+    }
 
     @Override
     public ServiceName getServiceName() {
@@ -43,7 +59,25 @@ public class SetGoCBValuesHandler implements CmsServiceHandler {
 
         CmsArray<CmsSetGoCBValuesResultEntry> results = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(100);
         for (int i = 0; i < asdu.gocb.size(); i++) {
+            CmsSetGoCBValuesEntry entry = asdu.gocb.get(i);
             CmsSetGoCBValuesResultEntry result = new CmsSetGoCBValuesResultEntry();
+
+            if (entry.goEna.isPresent() && goosePublisher != null) {
+                String goCBRef = entry.reference.get();
+                boolean goEna = entry.goEna.get();
+                if (goEna) {
+                    GooseConfig config = GooseConfig.builder()
+                            .goCBRef(goCBRef)
+                            .goID(entry.goID.isPresent() ? entry.goID.get() : goCBRef)
+                            .build();
+                    goosePublisher.start(config);
+                    log.info("GOOSE publishing started via SetGoCBValues: {}", goCBRef);
+                } else {
+                    goosePublisher.stop(goCBRef);
+                    log.info("GOOSE publishing stopped via SetGoCBValues: {}", goCBRef);
+                }
+            }
+
             results.add(result);
         }
 

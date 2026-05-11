@@ -5,18 +5,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class LnDirHandler implements CommandHandler {
+public class LnDirHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public LnDirHandler(CliContext ctx) { this.ctx = ctx; }
+    public LnDirHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "ln-dir"; }
     public String getDescription() { return "读逻辑节点目录"; }

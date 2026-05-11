@@ -3,18 +3,15 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class FileGetHandler implements CommandHandler {
+public class FileGetHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
-
-    public FileGetHandler(CliContext ctx) { this.ctx = ctx; }
+    public FileGetHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "file-get"; }
     public String getDescription() { return "读文件 (startPosition=0 取消)"; }

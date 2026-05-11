@@ -27,6 +27,8 @@ import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.control.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.sv.*;
+import com.ysh.dlt2811bean.transport.goose.GooseDataProvider;
+import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 import com.ysh.dlt2811bean.transport.protocol.goose.*;
 import com.ysh.dlt2811bean.transport.protocol.log.*;
 import com.ysh.dlt2811bean.transport.protocol.report.*;
@@ -82,6 +84,7 @@ public class CmsServer {
     private CmsServerTransport tlsTransport;
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
+    private final GoosePublisher goosePublisher;
     private String sclFilePath;
     private SclDocument sclDocument;
     private boolean securityEnabled = false;
@@ -92,6 +95,7 @@ public class CmsServer {
         CmsConfig config = CmsConfigLoader.load();
         this.transport = new CmsServerTransport(config.getServer().getPort(), new ServerListener());
         this.dispatcher = new CmsDispatcher();
+        this.goosePublisher = new GoosePublisher();
         loadSclSilently(config.getServer().getSclFile());
     }
 
@@ -106,6 +110,7 @@ public class CmsServer {
     public CmsServer(int port) {
         this.transport = new CmsServerTransport(port, new ServerListener());
         this.dispatcher = new CmsDispatcher();
+        this.goosePublisher = new GoosePublisher();
     }
 
     public CmsServer(int port, String sclPath) throws Exception {
@@ -127,6 +132,12 @@ public class CmsServer {
 
     public void start() throws IOException {
         registerDefaultHandlers();
+        try {
+            goosePublisher.init();
+            goosePublisher.dataProvider((goCBRef, dataSetRefs) -> null);
+        } catch (Exception e) {
+            log.warn("GoosePublisher init failed (GOOSE publishing unavailable): {}", e.getMessage());
+        }
         transport.start();
         log.info("CMS Server started on port {}", transport.getPort());
         if (tlsTransport != null) {
@@ -136,6 +147,7 @@ public class CmsServer {
     }
 
     public void stop() {
+        goosePublisher.destroy();
         for (CmsServerSession session : sessions.values()) {
             session.getConnection().close();
         }
@@ -291,6 +303,10 @@ public class CmsServer {
         return securityEnabled;
     }
 
+    public GoosePublisher getGoosePublisher() {
+        return goosePublisher;
+    }
+
     // ==================== Session Access ====================
 
     /**
@@ -305,7 +321,6 @@ public class CmsServer {
     /**
      * Pushes a CommandTermination notification to a specific client session.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void pushCommandTermination(CmsServerSession session, String ref, CmsType<?> ctlVal) throws Exception {
         CmsCommandTermination asdu = new CmsCommandTermination(MessageType.REQUEST_POSITIVE)
                 .reference(ref)
@@ -403,7 +418,7 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetLogStatusValuesHandler());// 8.8.6
         // 8.9 goose handlers
         dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());// 8.9.4
-        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler());// 8.9.5
+        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler(goosePublisher));// 8.9.5
         // 8.10 sv handlers
         dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());// 8.10.2
         dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());// 8.10.3
