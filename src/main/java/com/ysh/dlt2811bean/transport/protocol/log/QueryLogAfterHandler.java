@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -20,18 +19,6 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling QueryLogAfter: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsQueryLogAfter) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsQueryLogAfter asdu = (CmsQueryLogAfter) request.getAsdu();
@@ -39,16 +26,16 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String logRef = asdu.logReference.get();
         if (logRef == null || logRef.isEmpty()) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (!validateLogReference(accessPoint, logRef)) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         log.debug("[Server] QueryLogAfter: logRef={}, startPresent={}", logRef, asdu.startTime != null);
@@ -72,12 +59,5 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
             }
         }
         return false;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsQueryLogAfter request, int errorCode) {
-        CmsQueryLogAfter response = new CmsQueryLogAfter(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

@@ -72,22 +72,6 @@ public class GetFileHandler extends AbstractCmsServiceHandler<CmsGetFile> {
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_FILE;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetFile: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetFile) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFile asdu = (CmsGetFile) request.getAsdu();
@@ -96,25 +80,25 @@ public class GetFileHandler extends AbstractCmsServiceHandler<CmsGetFile> {
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] GetFile: empty filename");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (startPosition == 0) {
             log.debug("[Server] GetFile: cancel read for {}", fileName);
             serverSession.removeAttribute(fileKey(fileName));
-            return buildNegativeResponse(asdu, CmsServiceError.NO_ERROR);
+            return buildNegativeResponse(request, CmsServiceError.NO_ERROR);
         }
 
         byte[] fileData = resolveFile(fileName);
         if (fileData == null) {
             log.warn("[Server] GetFile: file not found: {}", fileName);
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (startPosition < 1 || startPosition > fileData.length + 1) {
             log.warn("[Server] GetFile: invalid startPosition {} for file {} (size={})",
                     startPosition, fileName, fileData.length);
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int offset = (int) (startPosition - 1);
@@ -152,13 +136,6 @@ public class GetFileHandler extends AbstractCmsServiceHandler<CmsGetFile> {
         }
 
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetFile request, int errorCode) {
-        CmsGetFile response = new CmsGetFile(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 
     private static String fileKey(String fileName) {

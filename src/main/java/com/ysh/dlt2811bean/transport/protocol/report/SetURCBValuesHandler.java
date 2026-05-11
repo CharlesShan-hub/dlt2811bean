@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -24,17 +23,6 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
 
     public SetURCBValuesHandler() {
         super(ServiceName.SET_URCB_VALUES, CmsSetURCBValues::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetURCBValues: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetURCBValues) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeAllError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -194,9 +182,10 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
         return CmsServiceError.INSTANCE_NOT_AVAILABLE;
     }
 
-    private CmsApdu buildNegativeAllError(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId);
+                .reqId(request.getReqId());
         CmsSetURCBValuesResultEntry entry = new CmsSetURCBValuesResultEntry();
         entry.error.set(errorCode);
         response.result = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(1);

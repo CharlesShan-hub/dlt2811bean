@@ -6,7 +6,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsDeleteFile;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,32 +29,19 @@ public class DeleteFileHandler extends AbstractCmsServiceHandler<CmsDeleteFile> 
         super(ServiceName.DELETE_FILE, CmsDeleteFile::new);
         this.fileRoot = fileRoot;
     }
-    
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling DeleteFile: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsDeleteFile) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        CmsDeleteFile asdu = (CmsDeleteFile) request.getAsdu();
-        String fileName = asdu.fileName.get();
+        String fileName = request.getAsdu() instanceof CmsDeleteFile ? ((CmsDeleteFile) request.getAsdu()).fileName.get() : null;
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] DeleteFile: empty filename");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (PROTECTED_FILES.contains(fileName)) {
             log.warn("[Server] DeleteFile: cannot delete protected file {}", fileName);
-            return buildNegativeResponse(asdu, CmsServiceError.ACCESS_VIOLATION);
+            return buildNegativeResponse(request, CmsServiceError.ACCESS_VIOLATION);
         }
 
         if (fileRoot != null) {
@@ -64,22 +50,15 @@ public class DeleteFileHandler extends AbstractCmsServiceHandler<CmsDeleteFile> 
                 if (Files.deleteIfExists(filePath)) {
                     log.debug("[Server] DeleteFile: deleted {}", fileName);
                     return new CmsApdu(new CmsDeleteFile(MessageType.RESPONSE_POSITIVE)
-                            .reqId(asdu.reqId().get()));
+                            .reqId(request.getAsdu().reqId().get()));
                 }
             } catch (IOException e) {
                 log.warn("[Server] DeleteFile: IO error deleting {}: {}", fileName, e.getMessage());
-                return buildNegativeResponse(asdu, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
         }
 
         log.warn("[Server] DeleteFile: file not found {}", fileName);
-        return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-    }
-
-    private CmsApdu buildNegativeResponse(CmsDeleteFile request, int errorCode) {
-        CmsDeleteFile response = new CmsDeleteFile(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
+        return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
     }
 }

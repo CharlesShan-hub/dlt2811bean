@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -23,17 +22,6 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
 
     public SetBRCBValuesHandler() {
         super(ServiceName.SET_BRCB_VALUES, CmsSetBRCBValues::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetBRCBValues: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetBRCBValues) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeResponse(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -179,9 +167,10 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
         return CmsServiceError.INSTANCE_NOT_AVAILABLE;
     }
 
-    private CmsApdu buildNegativeResponse(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         CmsSetBRCBValues response = new CmsSetBRCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId)
+                .reqId(request.getReqId())
                 .addResult(errorCode);
         return new CmsApdu(response);
     }

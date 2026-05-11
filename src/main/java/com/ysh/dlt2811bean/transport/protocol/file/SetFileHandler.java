@@ -17,17 +17,6 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetFile: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsSetFile) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetFile asdu = (CmsSetFile) request.getAsdu();
@@ -36,7 +25,7 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] SetFile: empty filename");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (startPosition == 0) {
@@ -48,7 +37,7 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
 
         if (startPosition < 1) {
             log.warn("[Server] SetFile: invalid startPosition {}", startPosition);
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         PendingFile pf = pendingFile(serverSession, fileName);
@@ -73,13 +62,6 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
                 data != null ? data.length : 0, eof);
         return new CmsApdu(new CmsSetFile(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get()));
-    }
-
-    private CmsApdu buildNegativeResponse(CmsSetFile request, int errorCode) {
-        CmsSetFile response = new CmsSetFile(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 
     private static PendingFile pendingFile(CmsServerSession session, String fileName) {

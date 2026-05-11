@@ -7,7 +7,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -18,24 +17,11 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
        }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetMSVCBValues: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetMSVCBValues) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeResponse(reqId,
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetMSVCBValues asdu = (CmsSetMSVCBValues) request.getAsdu();
 
         if (asdu.msvcb == null || asdu.msvcb.size() == 0) {
-            return buildNegativeResponse(asdu.reqId().get(),
-                    CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsArray<CmsSetMSVCBValuesResultEntry> results = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new).capacity(100);
@@ -64,9 +50,10 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
         return false; // Accept all for now
     }
 
-    private CmsApdu buildNegativeResponse(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         CmsSetMSVCBValues response = new CmsSetMSVCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId);
+                .reqId(request.getReqId());
         CmsSetMSVCBValuesResultEntry entry = new CmsSetMSVCBValuesResultEntry();
         entry.error.set(errorCode);
         response.result = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new).capacity(1);

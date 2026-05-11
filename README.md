@@ -269,7 +269,31 @@ openssl pkcs12 -export -in ca.cer -inkey ca.key -out ca.pfx
 - `ECDHE_SM4_SM3` - 动态加密套件，密钥交换使用 SM2 ECDHE
 - `ECC_SM4_SM3` - 静态加密套件，密钥交换使用 SM2 ECC
 
+---
 
+## GOOSE / SV 支持
 
+GOOSE 和 SV 模块依赖原始以太网帧收发，需要安装 pcap 库。
+
+### Windows
+
+下载安装 [Npcap 1.88](https://npcap.com/dist/npcap-1.88.exe)，安装时勾选 "Install in WinPcap API-compatible Mode"。
+
+### macOS / Linux
+
+需要给 BPF 设备添加权限：
+
+```bash
+sudo chmod 666 /dev/bpf*
+```
+
+### 验证
+
+```bash
+# 确认 JNA 可正常加载
+mvn test -Dtest=GooseFrameBuilderTest
+```
+
+---
 
 

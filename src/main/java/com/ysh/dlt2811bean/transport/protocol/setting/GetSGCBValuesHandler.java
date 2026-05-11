@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetSGCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorSgcbChoice;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -21,17 +20,6 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetSGCBValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetSGCBValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetSGCBValues asdu = (CmsGetSGCBValues) request.getAsdu();
@@ -39,7 +27,7 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsArray<CmsErrorSgcbChoice> choices = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
@@ -75,12 +63,5 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
         sgcb.cnfEdit.set(false);
         choice.selectSgcb().sgcb = sgcb;
         return choice;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetSGCBValues request, int errorCode) {
-        CmsGetSGCBValues response = new CmsGetSGCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

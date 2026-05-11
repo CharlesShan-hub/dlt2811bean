@@ -20,17 +20,6 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetGoCBValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetGoCBValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetGoCBValues asdu = (CmsGetGoCBValues) request.getAsdu();
@@ -38,7 +27,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsArray<CmsErrorGocbChoice> choices = new CmsArray<>(CmsErrorGocbChoice::new).capacity(100);
@@ -91,12 +80,5 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
 
         choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         return choice;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetGoCBValues request, int errorCode) {
-        CmsGetGoCBValues response = new CmsGetGoCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

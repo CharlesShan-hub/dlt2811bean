@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -23,17 +22,6 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling RpcCall: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsRpcCall) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsRpcCall asdu = (CmsRpcCall) request.getAsdu();
@@ -41,7 +29,7 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
 
         if (method == null || method.isEmpty()) {
             log.warn("[Server] RpcCall with empty method");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int selected = asdu.reqDataCallID.getSelectedIndex();
@@ -54,19 +42,20 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
             RpcContinuationState state = (RpcContinuationState) serverSession.getAttribute(callIdKey(callId));
             if (state == null) {
                 log.warn("[Server] RpcCall continuation not found: callId={}", bytesToHex(callId));
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
 
             serverSession.removeAttribute(callIdKey(callId));
-            return executeMethod(serverSession, asdu, method, state);
+            return executeMethod(serverSession, request, method, state);
         }
 
         log.debug("[Server] RpcCall new call: method={}", method);
-        return executeMethod(serverSession, asdu, method, null);
+        return executeMethod(serverSession, request, method, null);
     }
 
-    private CmsApdu executeMethod(CmsServerSession session, CmsRpcCall asdu,
+    private CmsApdu executeMethod(CmsServerSession session, CmsApdu request,
                                    String method, RpcContinuationState state) {
+        CmsRpcCall asdu = (CmsRpcCall) request.getAsdu();
         String methodLower = method.toLowerCase();
 
         if (methodLower.equals("ping")) {
@@ -85,7 +74,7 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
         }
 
         log.warn("[Server] RpcCall unknown method: {}", method);
-        return buildNegativeResponse(asdu, CmsServiceError.CLASS_NOT_SUPPORTED);
+        return buildNegativeResponse(request, CmsServiceError.CLASS_NOT_SUPPORTED);
     }
 
     private CmsApdu respondWithPong(CmsRpcCall asdu) {
@@ -135,13 +124,6 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
         session.setAttribute(callIdKey(nextId), nextState);
 
         log.debug("[Server] RpcCall iterate: {}/{}, nextCallId={}", end, total, bytesToHex(nextId));
-        return new CmsApdu(response);
-    }
-
-    private CmsApdu buildNegativeResponse(CmsRpcCall request, int errorCode) {
-        CmsRpcCall response = new CmsRpcCall(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
         return new CmsApdu(response);
     }
 

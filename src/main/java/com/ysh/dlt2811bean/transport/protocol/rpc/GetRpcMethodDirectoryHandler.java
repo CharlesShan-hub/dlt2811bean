@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
@@ -28,17 +27,6 @@ public class GetRpcMethodDirectoryHandler extends AbstractCmsServiceHandler<CmsG
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetRpcMethodDirectory: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetRpcMethodDirectory) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsGetRpcMethodDirectory asdu = (CmsGetRpcMethodDirectory) request.getAsdu();
         String ifName = asdu.interfaceName.get();
@@ -53,7 +41,7 @@ public class GetRpcMethodDirectoryHandler extends AbstractCmsServiceHandler<CmsG
             allMethods = builtinInterfaces.get(ifName);
             if (allMethods == null) {
                 log.warn("[Server] GetRpcMethodDirectory: interface not found: {}", ifName);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -80,13 +68,6 @@ public class GetRpcMethodDirectoryHandler extends AbstractCmsServiceHandler<CmsG
 
         log.debug("[Server] GetRpcMethodDirectory: interface={}, entries={}, moreFollows={}",
                 ifName != null ? ifName : "(all)", response.reference.size(), response.moreFollows.get());
-        return new CmsApdu(response);
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetRpcMethodDirectory request, int errorCode) {
-        CmsGetRpcMethodDirectory response = new CmsGetRpcMethodDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
         return new CmsApdu(response);
     }
 }

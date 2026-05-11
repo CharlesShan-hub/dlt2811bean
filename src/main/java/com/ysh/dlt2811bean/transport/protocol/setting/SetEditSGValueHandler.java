@@ -6,7 +6,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetEditSGValue;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -14,17 +13,6 @@ public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditS
 
     public SetEditSGValueHandler() {
         super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSGValue::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetEditSGValue: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetEditSGValue) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeResponse(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -60,9 +48,10 @@ public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditS
                 .reqId(asdu.reqId().get()));
     }
 
-    private CmsApdu buildNegativeResponse(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         return new CmsApdu(new CmsSetEditSGValue(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId)
+                .reqId(request.getReqId())
                 .addResult(errorCode));
     }
 }

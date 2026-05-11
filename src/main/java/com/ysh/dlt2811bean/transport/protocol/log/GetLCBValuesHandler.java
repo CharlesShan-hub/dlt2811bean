@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLcbChoice;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -21,18 +20,6 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetLCBValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetLCBValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLCBValues asdu = (CmsGetLCBValues) request.getAsdu();
@@ -40,7 +27,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsArray<CmsErrorLcbChoice> choices = new CmsArray<>(CmsErrorLcbChoice::new).capacity(100);
@@ -91,12 +78,5 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
 
         choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         return choice;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetLCBValues request, int errorCode) {
-        CmsGetLCBValues response = new CmsGetLCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

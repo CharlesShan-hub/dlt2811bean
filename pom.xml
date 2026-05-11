@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <bouncycastle.version>1.78</bouncycastle.version>
         <pcap4j.version>1.8.2</pcap4j.version>
+        <jna.version>5.14.0</jna.version>
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.12</logback.version>
         <lombok.version>1.18.30</lombok.version>
@@ -66,6 +67,13 @@
             <groupId>org.pcap4j</groupId>
             <artifactId>pcap4j-packetfactory-static</artifactId>
             <version>${pcap4j.version}</version>
+        </dependency>
+
+        <!-- JNA（pcap4j 需要，升级版本以支持 Apple Silicon） -->
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${jna.version}</version>
         </dependency>
 
         <!-- Lombok -->

@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -64,36 +63,19 @@ public class GetFileAttributeValuesHandler extends AbstractCmsServiceHandler<Cms
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_FILE_ATTRIBUTE_VALUES;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetFileAttributeValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetFileAttributeValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFileAttributeValues asdu = (CmsGetFileAttributeValues) request.getAsdu();
         String fileName = asdu.fileName.get();
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] GetFileAttributeValues: empty filename");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsFileEntry entry = resolveFileAttributes(fileName);
         if (entry == null) {
             log.warn("[Server] GetFileAttributeValues: file not found {}", fileName);
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsGetFileAttributeValues response = new CmsGetFileAttributeValues(MessageType.RESPONSE_POSITIVE)
@@ -137,12 +119,5 @@ public class GetFileAttributeValuesHandler extends AbstractCmsServiceHandler<Cms
         CRC32 crc32 = new CRC32();
         crc32.update(data);
         return crc32.getValue();
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetFileAttributeValues request, int errorCode) {
-        CmsGetFileAttributeValues response = new CmsGetFileAttributeValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

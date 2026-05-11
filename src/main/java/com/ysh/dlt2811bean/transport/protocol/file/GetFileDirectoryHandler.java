@@ -2,13 +2,11 @@ package com.ysh.dlt2811bean.transport.protocol.file;
 
 import com.ysh.dlt2811bean.datatypes.compound.CmsFileEntry;
 import com.ysh.dlt2811bean.datatypes.compound.CmsUtcTime;
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,24 +39,7 @@ public class GetFileDirectoryHandler extends AbstractCmsServiceHandler<CmsGetFil
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_FILE_DIRECTORY;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetFileDirectory: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetFileDirectory) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFileDirectory asdu = (CmsGetFileDirectory) request.getAsdu();
         String pathName = asdu.pathName.get();
         String fileAfter = asdu.fileAfter.get();
@@ -97,13 +78,6 @@ public class GetFileDirectoryHandler extends AbstractCmsServiceHandler<CmsGetFil
         }
 
         log.debug("[Server] GetFileDirectory: path={}, {} entries", pathName, response.fileEntry.size());
-        return new CmsApdu(response);
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetFileDirectory request, int errorCode) {
-        CmsGetFileDirectory response = new CmsGetFileDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
         return new CmsApdu(response);
     }
 }

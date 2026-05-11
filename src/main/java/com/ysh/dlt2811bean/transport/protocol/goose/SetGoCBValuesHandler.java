@@ -28,29 +28,11 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_GOCB_VALUES;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetGoCBValues: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetGoCBValues) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeResponse(reqId,
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetGoCBValues asdu = (CmsSetGoCBValues) request.getAsdu();
 
         if (asdu.gocb == null || asdu.gocb.size() == 0) {
-            return buildNegativeResponse(asdu.reqId().get(),
-                    CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsArray<CmsSetGoCBValuesResultEntry> results = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(100);
@@ -95,9 +77,10 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
         return false;
     }
 
-    private CmsApdu buildNegativeResponse(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         CmsSetGoCBValues response = new CmsSetGoCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId);
+                .reqId(request.getReqId());
         CmsSetGoCBValuesResultEntry entry = new CmsSetGoCBValuesResultEntry();
         entry.error.set(errorCode);
         response.result = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(1);

@@ -2,41 +2,22 @@ package com.ysh.dlt2811bean.transport.protocol.sv;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.compound.CmsMSVCB;
-import com.ysh.dlt2811bean.datatypes.compound.CmsPhyComAddr;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsSmpMod;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
-import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsErrorMsvcbChoice;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
-import java.util.List;
 
 public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCBValues> {
 
     public GetMSVCBValuesHandler() {
         super(ServiceName.GET_MSVCB_VALUES, CmsGetMSVCBValues::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetMSVCBValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetMSVCBValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -47,7 +28,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsArray<CmsErrorMsvcbChoice> choices = new CmsArray<>(CmsErrorMsvcbChoice::new).capacity(100);
@@ -99,12 +80,5 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
 
         choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         return choice;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetMSVCBValues request, int errorCode) {
-        CmsGetMSVCBValues response = new CmsGetMSVCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.transport.protocol.report;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsReport;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
@@ -12,16 +11,6 @@ public class ReportHandler extends AbstractCmsServiceHandler<CmsReport> {
 
     public ReportHandler() {
         super(ServiceName.REPORT, CmsReport::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling Report: {}", e.getMessage(), e);
-            return null;
-        }
     }
 
     @Override

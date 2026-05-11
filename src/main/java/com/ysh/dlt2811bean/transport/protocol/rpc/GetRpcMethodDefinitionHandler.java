@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsErrorMethodChoice;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodValue;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.LinkedHashMap;
@@ -21,6 +20,7 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
     private final Map<String, CmsRpcMethodValue> builtinMethods = new LinkedHashMap<>();
 
     public GetRpcMethodDefinitionHandler() {
+        super(ServiceName.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinition::new);
         builtinMethods.put("IF1.Method1", createMethod(
                 5000, 1,
                 CmsDataDefinition.ofVisibleString(128),
@@ -41,33 +41,6 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
                 8000, 1,
                 CmsDataDefinition.ofInt8(),
                 CmsDataDefinition.ofInt8()));
-    }
-
-    private static CmsRpcMethodValue createMethod(long timeout, int version,
-                                                   CmsDataDefinition request,
-                                                   CmsDataDefinition response) {
-        CmsRpcMethodValue m = new CmsRpcMethodValue();
-        m.timeout.set(Long.valueOf(timeout));
-        m.version.set(Long.valueOf(version));
-        m.request = request;
-        m.response = response;
-        return m;
-    }
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_RPC_METHOD_DEFINITION;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetRpcMethodDefinition: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetRpcMethodDefinition) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -107,7 +80,7 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
 
         if (response.errorMethod.size() == 0) {
             log.warn("[Server] GetRpcMethodDefinition: no references provided");
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         log.debug("[Server] GetRpcMethodDefinition: {} entries, moreFollows={}",
@@ -116,10 +89,14 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
         return new CmsApdu(response);
     }
 
-    private CmsApdu buildNegativeResponse(CmsGetRpcMethodDefinition request, int errorCode) {
-        CmsGetRpcMethodDefinition response = new CmsGetRpcMethodDefinition(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
+    private static CmsRpcMethodValue createMethod(long timeout, int version,
+                                                   CmsDataDefinition request,
+                                                   CmsDataDefinition response) {
+        CmsRpcMethodValue m = new CmsRpcMethodValue();
+        m.timeout.set(Long.valueOf(timeout));
+        m.version.set(Long.valueOf(version));
+        m.request = request;
+        m.response = response;
+        return m;
     }
 }

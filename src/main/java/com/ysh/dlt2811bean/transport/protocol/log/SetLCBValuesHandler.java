@@ -2,7 +2,6 @@ package com.ysh.dlt2811bean.transport.protocol.log;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -10,13 +9,10 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
-import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValues> {
@@ -27,18 +23,6 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
 
     public SetLCBValuesHandler() {
         super(ServiceName.SET_LCB_VALUES, CmsSetLCBValues::new);
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SetLCBValues: {}", e.getMessage(), e);
-            int reqId = request != null ? ((CmsSetLCBValues) request.getAsdu()).reqId().get() : 0;
-            return buildNegativeAllError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
     }
 
     @Override
@@ -200,9 +184,10 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
         return CmsServiceError.INSTANCE_NOT_AVAILABLE;
     }
 
-    private CmsApdu buildNegativeAllError(int reqId, int errorCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
         CmsSetLCBValues response = new CmsSetLCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(reqId);
+                .reqId(request.getReqId());
         CmsSetLCBValuesResultEntry entry = new CmsSetLCBValuesResultEntry();
         entry.error.set(errorCode);
         response.result = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(1);
