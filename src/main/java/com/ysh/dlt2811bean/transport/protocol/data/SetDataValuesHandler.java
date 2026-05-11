@@ -52,7 +52,7 @@ public class SetDataValuesHandler implements CmsServiceHandler {
 
         for (CmsSetDataValuesEntry entry : asdu.data) {
             String ref = entry.reference.get();
-            int error = validateReference(server, ref);
+            int error = validateAndSetValue(server, ref, entry);
             results.add(new CmsServiceError(error));
             if (error != CmsServiceError.NO_ERROR) {
                 allSuccess = false;
@@ -73,7 +73,7 @@ public class SetDataValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private int validateReference(SclIED.SclServer server, String ref) {
+    private int validateAndSetValue(SclIED.SclServer server, String ref, CmsSetDataValuesEntry entry) {
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
             return CmsServiceError.INSTANCE_NOT_AVAILABLE;
@@ -99,27 +99,32 @@ public class SetDataValuesHandler implements CmsServiceHandler {
             return CmsServiceError.INSTANCE_NOT_AVAILABLE;
         }
 
-        if (parts.length == 2) {
-            return CmsServiceError.NO_ERROR;
-        }
-
         String daName = parts[parts.length - 1];
-        if (parts.length == 3) {
-            return findDai(doi.getDais(), daName)
-                    ? CmsServiceError.NO_ERROR
-                    : CmsServiceError.INSTANCE_NOT_AVAILABLE;
+        SclDAI dai = findDaiByName(doi.getDais(), daName);
+        if (dai == null) {
+            if (parts.length == 2) {
+                return CmsServiceError.NO_ERROR;
+            }
+            return CmsServiceError.INSTANCE_NOT_AVAILABLE;
         }
 
-        return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+        String newValue = entry.value != null ? entry.value.getInnerValue().toString() : null;
+        if (newValue != null) {
+            int idx = newValue.lastIndexOf(") ");
+            if (idx >= 0) newValue = newValue.substring(idx + 2);
+            dai.setValue(newValue);
+            log.debug("[Server] Set {} = {}", ref, newValue);
+        }
+        return CmsServiceError.NO_ERROR;
     }
 
-    private boolean findDai(java.util.List<SclDAI> dais, String name) {
+    private SclDAI findDaiByName(java.util.List<SclDAI> dais, String name) {
         for (SclDAI dai : dais) {
             if (dai.getName().equals(name)) {
-                return true;
+                return dai;
             }
         }
-        return false;
+        return null;
     }
 
     private SclDOI findDoiInDevice(SclIED.SclLDevice device, String lnName, String doName) {

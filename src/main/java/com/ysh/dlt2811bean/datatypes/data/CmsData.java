@@ -35,6 +35,10 @@ public class CmsData<T extends CmsType<T>> extends AbstractCmsDataUnit<CmsData<T
         this.value = value;
     }
 
+    public CmsType<?> getInnerValue() {
+        return value;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public CmsData<T> copy() {

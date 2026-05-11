@@ -5,6 +5,8 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
@@ -20,19 +22,23 @@ public class CliContext {
     private final Map<String, CommandHandler> handlers;
     private final Set<String> cachedRefs;
     private final Set<String> cachedLds;
+    private final Set<String> cachedValues;
 
     public CliContext(CmsConfig config, Map<String, CommandHandler> handlers,
-                      Set<String> cachedRefs, Set<String> cachedLds) {
+                      Set<String> cachedRefs, Set<String> cachedLds,
+                      Set<String> cachedValues) {
         this.config = config;
         this.handlers = handlers;
         this.cachedRefs = cachedRefs;
         this.cachedLds = cachedLds;
+        this.cachedValues = cachedValues;
     }
 
     public CmsConfig getConfig() { return config; }
     public Map<String, CommandHandler> getHandlers() { return handlers; }
     public Set<String> getCachedRefs() { return cachedRefs; }
     public Set<String> getCachedLds() { return cachedLds; }
+    public Set<String> getCachedValues() { return cachedValues; }
 
     public CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
         if (config.getCli().isTracePdu()) {
@@ -102,6 +108,33 @@ public class CliContext {
                     String lnRef = ldName + "/" + asdu.lnReference().get(i).get();
                     cachedRefs.add(lnRef);
                     System.out.println(CmsColor.gray("      LN[" + i + "] " + lnRef));
+                    discoverDataRefs(client, lnRef);
+                }
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private void discoverDataRefs(CmsClient client, String lnRef) {
+        try {
+            CmsGetAllDataDefinition req = new CmsGetAllDataDefinition(MessageType.REQUEST);
+            req.lnReference(lnRef);
+            CmsApdu response = client.send(req);
+            if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
+                for (int i = 0; i < asdu.data().size(); i++) {
+                    String dataRef = lnRef + "." + asdu.data().get(i).reference().get();
+                    cachedRefs.add(dataRef);
+                }
+            }
+        } catch (Exception ignored) {}
+        try {
+            CmsGetAllDataValues reqVal = new CmsGetAllDataValues(MessageType.REQUEST);
+            reqVal.lnReference(lnRef);
+            CmsApdu response = client.send(reqVal);
+            if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
+                for (int i = 0; i < asdu.data().size(); i++) {
+                    cachedValues.add(lnRef + "." + asdu.data().get(i).reference().get());
                 }
             }
         } catch (Exception ignored) {}

@@ -28,9 +28,10 @@ public class CmsClientCli {
     private boolean running = true;
     private final java.util.Set<String> cachedRefs = new java.util.HashSet<>();
     private final java.util.Set<String> cachedLds = new java.util.HashSet<>();
+    private final java.util.Set<String> cachedValues = new java.util.HashSet<>();
 
     public CmsClientCli() {
-        ctx = new CliContext(config, handlers, cachedRefs, cachedLds);
+        ctx = new CliContext(config, handlers, cachedRefs, cachedLds, cachedValues);
         reader = LineReaderBuilder.builder()
                 .highlighter(new org.jline.reader.Highlighter() {
                     public org.jline.utils.AttributedString highlight(org.jline.reader.LineReader rdr, String buffer) {
@@ -99,7 +100,16 @@ public class CmsClientCli {
                                             }
                                         }
                                     } else if (isRefParam(cmdName, paramIdx)) {
-                                        java.util.Set<String> pool = "ld-dir".equals(cmdName) ? cachedLds : cachedRefs;
+                                        java.util.Set<String> pool;
+                                        if ("ld-dir".equals(cmdName)) {
+                                             pool = cachedLds;
+                                         } else if ("get-data-values".equals(cmdName)) {
+                                             pool = cachedValues;
+                                         } else if ("set-data-values".equals(cmdName)) {
+                                             pool = cachedRefs;
+                                        } else {
+                                            pool = cachedRefs;
+                                        }
                                         for (String ref : pool) {
                                             if (ref.toLowerCase().startsWith(word.toLowerCase())) {
                                                 candidates.add(new Candidate(ref));
@@ -156,6 +166,7 @@ public class CmsClientCli {
         register(new GetAllDefHandler(ctx));
         register(new GetAllCbHandler(ctx));
         register(new GetDataValuesHandler(ctx));
+        register(new SetDataValuesHandler(ctx));
         register(new CliSettingHandler(ctx));
         register(new ClearHandler(ctx));
     }
@@ -259,7 +270,17 @@ public class CmsClientCli {
                 }
                 for (Param param : handler.getParams()) {
                     if (!inlineTokens.isEmpty()) {
-                        values.put(param.getName(), inlineTokens.remove(0));
+                        String token = inlineTokens.remove(0);
+                        if (!param.getEnumChoices().isEmpty()) {
+                            String matched = matchEnum(token, param);
+                            if (matched == null) {
+                                System.out.println(CmsColor.red("  无效选项: " + token + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                                continue;
+                            }
+                            values.put(param.getName(), matched);
+                        } else {
+                            values.put(param.getName(), token);
+                        }
                         continue;
                     }
 
@@ -286,7 +307,16 @@ public class CmsClientCli {
                             values.put(param.getName(), "");
                         }
                     } else {
-                        values.put(param.getName(), input);
+                        if (!param.getEnumChoices().isEmpty()) {
+                            String matched = matchEnum(input, param);
+                            if (matched == null) {
+                                System.out.println(CmsColor.red("  无效选项: " + input + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                                continue;
+                            }
+                            values.put(param.getName(), matched);
+                        } else {
+                            values.put(param.getName(), input);
+                        }
                     }
                 }
                 handler.execute(client, values);
@@ -305,10 +335,24 @@ public class CmsClientCli {
         return String.format("%-" + n + "s", s);
     }
 
+    private static String matchEnum(String input, Param param) {
+        for (int i = 0; i < param.getEnumChoices().size(); i++) {
+            Param.EnumChoice ec = param.getEnumChoices().get(i);
+            if (ec.value.equals(input)) return ec.value;
+            if (String.valueOf(i).equals(input)) return ec.value;
+        }
+        for (Param.EnumChoice ec : param.getEnumChoices()) {
+            if (ec.label.equals(input)) return ec.value;
+            if (ec.value.equalsIgnoreCase(input)) return ec.value;
+        }
+        return null;
+    }
+
     private static boolean isRefParam(String cmdName, int paramIdx) {
         return switch (cmdName) {
             case "ld-dir" -> paramIdx == 0;
             case "ln-dir", "get-all-values", "get-all-def", "get-all-cb" -> paramIdx == 0;
+            case "get-data-values", "set-data-values" -> paramIdx == 0;
             default -> false;
         };
     }

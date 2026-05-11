@@ -22,7 +22,7 @@ public class GetDataValuesHandler implements CommandHandler {
     public String getDescription() { return "读数据值"; }
     public List<Param> getParams() {
         return List.of(
-            new Param("refs", "数据引用 (逗号分隔)", "E1Q1SB1/XCBR1.Pos"),
+            new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts"),
             new Param("fc", "功能约束 (留空=不限制, 如 ST/MX/CO)", "")
         );
     }
@@ -54,7 +54,12 @@ public class GetDataValuesHandler implements CommandHandler {
         CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();
         System.out.println("  Data values (" + resp.value.size() + " entries):");
         for (int i = 0; i < resp.value.size(); i++) {
-            System.out.println("    [" + i + "] " + resp.value.get(i));
+            String raw = resp.value.get(i).toString();
+            if (raw.contains("CmsServiceError")) {
+                System.out.println("    [" + i + "] " + CmsColor.red("Error: " + raw.replaceAll(".*=(CmsServiceError) ", "ServiceError ")));
+            } else {
+                System.out.println("    [" + i + "] " + raw);
+            }
         }
         if (resp.moreFollows.get()) {
             System.out.println(CmsColor.gray("  (more data available)"));
