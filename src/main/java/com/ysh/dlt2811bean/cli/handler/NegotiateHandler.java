@@ -39,9 +39,9 @@ public class NegotiateHandler implements CommandHandler {
                 .apduSize(apduSize)
                 .asduSize(asduSize)
                 .protocolVersion(protocolVersion);
-        System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         CmsApdu response = client.associateNegotiate(apduSize, asduSize, protocolVersion);
-        System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  << Response PDU:", response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Negotiated!"));
         } else {

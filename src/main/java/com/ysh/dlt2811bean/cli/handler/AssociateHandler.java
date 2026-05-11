@@ -41,11 +41,11 @@ public class AssociateHandler implements CommandHandler {
         String ep = values.get("ep");
         CmsAssociate reqAsdu = new CmsAssociate(MessageType.REQUEST)
                 .serverAccessPointReference(ap, ep);
-        System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         CmsApdu response = "E1Q1SB1".equals(ap) && "S1".equals(ep)
             ? client.associate()
             : client.associate(ap, ep);
-        System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  << Response PDU:", response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Associated!"));
         } else {

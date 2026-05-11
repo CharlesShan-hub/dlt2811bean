@@ -25,7 +25,6 @@ public class HelpHandler implements CommandHandler {
     public void execute(CmsClient client, Map<String, String> values) {
         System.out.println("\n" + CmsColor.bold("可用命令:") + "\n");
         System.out.println(CmsColor.gray("  " + ctx.padRight("命令", 17) + String.format("%-7s", "章节") + String.format("%-5s", "服务码") + " 描述"));
-        System.out.println(CmsColor.gray("  ────────────────────────────────────────────"));
         List<CommandHandler> sorted = new ArrayList<>(ctx.getHandlers().values());
         sorted.sort((a, b) -> {
             ServiceInfo ai = ServiceInfo.byCliName(a.getName());
@@ -35,15 +34,31 @@ public class HelpHandler implements CommandHandler {
             if (bi == null) return -1;
             return compareSection(ai.getSection(), bi.getSection());
         });
+        String lastSection = "";
         for (CommandHandler h : sorted) {
             if (h.getName().equals("help") || h.getName().equals("exit")) continue;
             ServiceInfo info = ServiceInfo.byCliName(h.getName());
             if (info != null) {
+                String major = info.getSection().replaceAll("(\\d+\\.\\d+).*", "$1");
+                if (!major.equals(lastSection)) {
+                    lastSection = major;
+                    System.out.println();
+                    System.out.println(CmsColor.gray("  ────────────────────────────────────────────"));
+                    System.out.println("  " + CmsColor.cyan(major + " " + sectionTitle(major)));
+                }
                 System.out.println("  " + CmsColor.bold(ctx.padRight(h.getName(), 18))
                         + CmsColor.cyan(String.format("%-8s", "[" + info.getSection() + "]"))
                         + " " + CmsColor.yellow(String.format("0x%02X", info.getServiceCode()))
                         + " " + info.getDescription());
-            } else {
+            }
+        }
+        System.out.println();
+        System.out.println(CmsColor.gray("  ────────────────────────────────────────────"));
+        System.out.println("  " + CmsColor.cyan("控制台命令"));
+        for (CommandHandler h : sorted) {
+            if (h.getName().equals("help") || h.getName().equals("exit")) continue;
+            ServiceInfo info = ServiceInfo.byCliName(h.getName());
+            if (info == null) {
                 System.out.println("  " + CmsColor.bold(ctx.padRight(h.getName(), 18))
                          + String.format("%-8s", "")
                          + String.format("%-6s", "")
@@ -53,6 +68,26 @@ public class HelpHandler implements CommandHandler {
         System.out.println("  " + CmsColor.bold(ctx.padRight("help", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 显示帮助信息");
         System.out.println("  " + CmsColor.bold(ctx.padRight("exit", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 退出程序");
         System.out.println(CmsColor.gray("\nUse: help <command> 查看命令详细用法  |  help datatype 查看数据类型  |  help cdc 查看公用数据类  |  Tab 键可补全命令"));
+    }
+
+    private static String sectionTitle(String section) {
+        return switch (section) {
+            case "8.2" -> "关联服务";
+            case "8.3" -> "服务器、逻辑设备、逻辑节点目录服务";
+            case "8.4" -> "数据类服务";
+            case "8.5" -> "数据集服务";
+            case "8.6" -> "定值组服务";
+            case "8.7" -> "报告服务";
+            case "8.8" -> "日志服务";
+            case "8.9" -> "通用变电站事件类服务";
+            case "8.10" -> "多播采样值类服务";
+            case "8.11" -> "控制服务";
+            case "8.12" -> "文件服务";
+            case "8.13" -> "远程过程调用";
+            case "8.14" -> "测试服务";
+            case "8.15" -> "协商服务";
+            default -> "";
+        };
     }
 
     private static int compareSection(String a, String b) {
@@ -134,5 +169,26 @@ public class HelpHandler implements CommandHandler {
     public void printCdcHelp(CdcInfo cdc) {
         System.out.println("\n  " + CmsColor.bold(cdc.getName()) + " - " + CmsColor.cyan(cdc.getChineseName()));
         System.out.println("\n  " + CmsColor.green("英文名: ") + cdc.getDescription());
+    }
+
+    public void printSectionCommands(String section) {
+        System.out.println("\n" + CmsColor.bold("章节 " + section + " " + sectionTitle(section) + " 下的命令:") + "\n");
+        System.out.println(CmsColor.gray("  " + ctx.padRight("命令", 17) + String.format("%-7s", "章节") + String.format("%-5s", "服务码") + " 描述"));
+        String prefix = section + ".";
+        boolean found = false;
+        for (CommandHandler h : ctx.getHandlers().values()) {
+            if (h.getName().equals("help") || h.getName().equals("exit")) continue;
+            ServiceInfo info = ServiceInfo.byCliName(h.getName());
+            if (info != null && info.getSection().startsWith(prefix)) {
+                found = true;
+                System.out.println("  " + CmsColor.bold(ctx.padRight(h.getName(), 18))
+                        + CmsColor.cyan(String.format("%-8s", "[" + info.getSection() + "]"))
+                        + " " + CmsColor.yellow(String.format("0x%02X", info.getServiceCode()))
+                        + " " + info.getDescription());
+            }
+        }
+        if (!found) {
+            System.out.println(CmsColor.gray("  无命令"));
+        }
     }
 }

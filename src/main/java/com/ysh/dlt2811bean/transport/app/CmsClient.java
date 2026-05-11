@@ -126,6 +126,7 @@ public class CmsClient {
     }
 
     public void close() {
+        securityEnabled = false;
         if (connection != null) {
             connection.close();
             connection = null;
@@ -413,6 +414,7 @@ public class CmsClient {
     public CmsApdu release() throws Exception {
         CmsRelease asdu = new CmsRelease(MessageType.REQUEST);
         CmsApdu response = send(asdu);
+        securityEnabled = false;
         if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             setAssociationId(null);
         }

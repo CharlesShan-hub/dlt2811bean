@@ -155,6 +155,7 @@ public class CmsClientCli {
         register(new GetAllValuesHandler(ctx));
         register(new GetAllDefHandler(ctx));
         register(new GetAllCbHandler(ctx));
+        register(new GetDataValuesHandler(ctx));
         register(new CliSettingHandler(ctx));
         register(new ClearHandler(ctx));
     }
@@ -219,6 +220,10 @@ public class CmsClientCli {
                         helpCmdName = sectionInfo.getCliName();
                         h = handlers.get(helpCmdName);
                     }
+                }
+                if (h == null && helpArg.matches("8\\.\\d+")) {
+                    ((HelpHandler) handlers.get("help")).printSectionCommands(helpArg);
+                    continue;
                 }
                 if (h == null) {
                     System.out.println("  " + CmsColor.red("Unknown command: " + helpArg));
@@ -285,8 +290,8 @@ public class CmsClientCli {
                     }
                 }
                 handler.execute(client, values);
-                if (!cmdName.equals("connect") && !cmdName.equals("exit") && !cmdName.equals("close") && !cmdName.equals("clear") && !cmdName.equals("help") && !cmdName.equals("cli-setting")
-                        && !client.isConnected()) {
+                ServiceInfo si = ServiceInfo.byCliName(cmdName);
+                if (si != null && !client.isConnected()) {
                     System.out.println(CmsColor.red("  Connection lost. Type 'connect' to reconnect."));
                 }
             } catch (Exception e) {

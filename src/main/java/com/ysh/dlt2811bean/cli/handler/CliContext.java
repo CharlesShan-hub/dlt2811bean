@@ -36,13 +36,25 @@ public class CliContext {
 
     public CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
         if (config.getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  >> Request PDU:\n" + asdu.toString().indent(4).stripTrailing()));
+            printGray("  >> Request PDU:\n" + asdu.toString().indent(4).stripTrailing());
         }
         CmsApdu response = client.send(asdu);
         if (config.getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+            printGray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing());
         }
         return response;
+    }
+
+    private void printGray(String text) {
+        for (String line : text.split("\n")) {
+            System.out.println(CmsColor.gray(line));
+        }
+    }
+
+    public void printGrayPdu(String label, Object pdu) {
+        if (config.getCli().isTracePdu()) {
+            printGray(label + "\n" + pdu.toString().indent(4).stripTrailing());
+        }
     }
 
     public String padRight(String s, int n) {

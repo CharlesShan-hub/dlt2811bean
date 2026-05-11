@@ -22,6 +22,12 @@ public class StatusHandler implements CommandHandler {
         boolean connected = client.isConnected();
         byte[] assocId = client.getAssociationId();
         System.out.println("  Connected: " + (connected ? CmsColor.green("YES") : CmsColor.red("NO")));
+        if (connected) {
+            System.out.println("  TLS: " + (client.isTlsEnabled() ? CmsColor.green("YES") : CmsColor.gray("NO")));
+        }
         System.out.println("  Associated: " + (assocId != null ? CmsColor.green("YES") + " (id=" + ctx.bytesToHex(assocId, 8) + "...)" : CmsColor.red("NO")));
+        if (assocId != null) {
+            System.out.println("  Secure: " + (client.isSecurityEnabled() ? CmsColor.green("YES") : CmsColor.gray("NO")));
+        }
     }
 }

@@ -35,7 +35,7 @@ public class AbortHandler implements CommandHandler {
         }
         int reason = Integer.parseInt(values.get("reason"));
         CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
-        System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         client.abort(reason);
         System.out.println(CmsColor.green("  Abort sent"));
     }

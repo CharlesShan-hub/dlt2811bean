@@ -27,10 +27,10 @@ public class TestHandler implements CommandHandler {
             return;
         }
         CmsTest reqAsdu = new CmsTest(MessageType.REQUEST);
-        System.out.println(CmsColor.gray("  >> Request PDU:\n" + reqAsdu.toString().indent(4).stripTrailing()));
+        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         CmsApdu response = client.test();
-        if (response != null) {
-            System.out.println(CmsColor.gray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing()));
+        if (response != null && ctx.getConfig().getCli().isTracePdu()) {
+            ctx.printGrayPdu("  << Response PDU:", response);
         }
         System.out.println("  Test " + (response != null ? CmsColor.green("OK") : CmsColor.red("failed")));
     }
