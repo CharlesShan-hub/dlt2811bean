@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -73,10 +74,10 @@ public class CmsRelease extends CmsAsdu<CmsRelease> {
 
     // ==================== Fields based on Table 20 ====================
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE})
     public CmsOctetString associationId = new CmsOctetString().size(ASSOC_ID_SIZE);
 
-    @CmsField(only = {"RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ============================ Constructor =========================

@@ -58,8 +58,6 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
             }
             System.out.println(sb.toString());
         }
-        if (resp.moreFollows.get()) {
-            System.out.println(CmsColor.gray("  (more data available)"));
-        }
+        printMoreFollows(resp.moreFollows.get());
     }
 }

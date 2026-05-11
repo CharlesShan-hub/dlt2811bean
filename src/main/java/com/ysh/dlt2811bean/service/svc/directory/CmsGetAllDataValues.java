@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsReference;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -91,22 +92,22 @@ public class CmsGetAllDataValues extends CmsAsdu<CmsGetAllDataValues> {
 
     // ==================== Fields based on Table 27 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsReference reference = new CmsReference();
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsFC fc = new CmsFC();
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsDataEntry> data = new CmsArray<>(CmsDataEntry::new).capacity(100);
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

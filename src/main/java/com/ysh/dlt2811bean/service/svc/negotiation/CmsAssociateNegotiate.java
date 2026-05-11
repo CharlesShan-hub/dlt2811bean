@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -81,19 +82,19 @@ public class CmsAssociateNegotiate extends CmsAsdu<CmsAssociateNegotiate> {
 
     // ==================== Fields based on Table 82 ====================
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE})
     public CmsInt16U apduSize = new CmsInt16U();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE})
     public CmsInt32U asduSize = new CmsInt32U();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE})
     public CmsInt32U protocolVersion = new CmsInt32U();
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsVisibleString modelVersion = new CmsVisibleString().max(255);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

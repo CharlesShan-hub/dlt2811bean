@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -78,13 +79,13 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
 
     // ==================== Fields based on Table 45 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsArray<CmsObjectReference> sgcbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsErrorSgcbChoice> errorSgcb = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

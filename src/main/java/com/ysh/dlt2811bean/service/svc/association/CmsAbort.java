@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -58,7 +59,7 @@ public class CmsAbort extends CmsAsdu<CmsAbort> {
 
     // ==================== Fields based on Table 21 ====================
 
-    @CmsField(only = {"REQUEST", "INDICATION"})
+    @CmsField(only = {REQUEST, INDICATION})
     public AbortReason reason = new AbortReason();
 
     // ==================== Constructor ====================

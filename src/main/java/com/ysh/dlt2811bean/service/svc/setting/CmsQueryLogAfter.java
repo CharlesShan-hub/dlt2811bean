@@ -12,6 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -83,22 +84,22 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
 
     // ==================== Fields based on Table 55 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsObjectReference logReference = new CmsObjectReference();
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsBinaryTime startTime = new CmsBinaryTime();
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsEntryID entry = new CmsEntryID();
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsLogEntry> logEntry = new CmsArray<>(CmsLogEntry::new).capacity(100);
     
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

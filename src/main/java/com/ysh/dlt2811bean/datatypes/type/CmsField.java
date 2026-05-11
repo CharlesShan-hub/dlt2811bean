@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.datatypes.type;
 
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -9,7 +11,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface CmsField {
     boolean optional() default false;
-    /** Message type names this field belongs to.
-     *  Empty = all types. E.g. {"REQUEST"}, {"RESPONSE_POSITIVE"} */
-    String[] only() default {};
+    /** Message types this field belongs to.
+     *  Empty = all types. E.g. {REQUEST}, {RESPONSE_POSITIVE} */
+    MessageType[] only() default {};
 }

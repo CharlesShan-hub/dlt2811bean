@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -73,7 +74,7 @@ public class CmsSelect extends CmsAsdu<CmsSelect> {
 
     // ==================== Fields based on Table 65 ====================
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsObjectReference reference = new CmsObjectReference();
 
     // ========================= Constructor ============================

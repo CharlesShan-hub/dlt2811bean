@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
@@ -78,28 +79,28 @@ public class CmsCancel extends CmsAsdu<CmsCancel> {
 
     // ==================== Fields based on Table 68 ====================
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsObjectReference reference = new CmsObjectReference();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsData<?> ctlVal = new CmsData<>();
 
-    @CmsField(optional = true, only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(optional = true, only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsUtcTime operTm = new CmsUtcTime();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsOriginator origin = new CmsOriginator();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsInt8U ctlNum = new CmsInt8U();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsUtcTime t = new CmsUtcTime();
 
-    @CmsField(only = {"REQUEST", "RESPONSE_POSITIVE", "RESPONSE_NEGATIVE"})
+    @CmsField(only = {REQUEST, RESPONSE_POSITIVE, RESPONSE_NEGATIVE})
     public CmsBoolean test = new CmsBoolean();
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================

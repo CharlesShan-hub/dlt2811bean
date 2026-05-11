@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.cli.handler;
 
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
@@ -45,9 +44,7 @@ public class GetAllCbHandler extends AbstractServiceHandler {
         reqAsdu.acsiClass = new CmsACSIClass(acsiClass);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
-        if (asdu.cbValue().isEmpty()) {
-            System.out.println(CmsColor.gray("  无数据"));
-        } else {
+        if (!printIfEmpty(asdu.cbValue().isEmpty())) {
             System.out.println("  CB values (" + asdu.cbValue().size() + " entries):");
             for (int i = 0; i < asdu.cbValue().size(); i++) {
                 CmsCBValueEntry entry = asdu.cbValue().get(i);

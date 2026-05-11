@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.cli.handler;
 
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
@@ -25,9 +24,7 @@ public class ServerDirHandler extends AbstractServiceHandler {
                 .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
-        if (resAsdu.reference().isEmpty()) {
-            System.out.println(CmsColor.gray("  无数据"));
-        } else {
+        if (!printIfEmpty(resAsdu.reference().isEmpty())) {
             System.out.println("  Logical devices:");
             for (int i = 0; i < resAsdu.reference().size(); i++) {
                 System.out.println("    [" + i + "] " + resAsdu.reference().get(i).get());

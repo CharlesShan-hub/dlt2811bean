@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -84,19 +85,19 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
 
     // ==================== Fields based on Table 33 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsObjectReference dataReference = new CmsObjectReference();
     
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
     
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsGetDataDirectoryEntry> dataAttribute = new CmsArray<>(CmsGetDataDirectoryEntry::new).capacity(100);
     
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

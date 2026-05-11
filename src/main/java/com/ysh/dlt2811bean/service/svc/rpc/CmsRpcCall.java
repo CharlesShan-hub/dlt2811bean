@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
@@ -87,19 +88,19 @@ public class CmsRpcCall extends CmsAsdu<CmsRpcCall> {
 
     // ==================== Fields based on Table 81 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsVisibleString method = new CmsVisibleString().max(255);
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsReqDataChoice reqDataCallID = new CmsReqDataChoice();
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsData<?> rspData = new CmsData<>();
 
-    @CmsField(optional = true, only = {"RESPONSE_POSITIVE"})
+    @CmsField(optional = true, only = {RESPONSE_POSITIVE})
     public CmsOctetString nextCallID = new CmsOctetString().max(255);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

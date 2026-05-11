@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -82,25 +83,25 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
 
     // ==================== Fields based on Table 76 ====================
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsVisibleString pathName = new CmsVisibleString().max(255);
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsUtcTime startTime = new CmsUtcTime();
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsUtcTime stopTime = new CmsUtcTime();
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsVisibleString fileAfter = new CmsVisibleString().max(255);
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsFileEntry> fileEntry = new CmsArray<>(CmsFileEntry::new).capacity(100);
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

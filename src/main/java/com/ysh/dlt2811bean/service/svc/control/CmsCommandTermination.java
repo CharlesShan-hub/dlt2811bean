@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -84,28 +85,28 @@ public class CmsCommandTermination extends CmsAsdu<CmsCommandTermination> {
     // ==================== Fields based on Table 69 ====================
 
     // --- Common fields ---
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsObjectReference reference = new CmsObjectReference();
 
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsData<?> ctlVal = new CmsData<>();
 
-    @CmsField(optional = true, only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(optional = true, only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsUtcTime operTm = new CmsUtcTime();
 
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})  
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})  
     public CmsOriginator origin = new CmsOriginator();
 
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsInt8U ctlNum = new CmsInt8U();
 
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsUtcTime t = new CmsUtcTime();
 
-    @CmsField(only = {"REQUEST_POSITIVE", "REQUEST_NEGATIVE"})
+    @CmsField(only = {REQUEST_POSITIVE, REQUEST_NEGATIVE})
     public CmsBoolean test = new CmsBoolean();
 
-    @CmsField(optional = true, only = {"REQUEST_NEGATIVE"})
+    @CmsField(optional = true, only = {REQUEST_NEGATIVE})
     public CmsAddCause addCause = new CmsAddCause();
 
     // ========================= Constructor ============================

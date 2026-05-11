@@ -31,9 +31,8 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
     @Override
     protected boolean acceptField(CmsField ann) {
         if (ann.only().length == 0) return true;
-        String mt = messageType.name();
-        for (String s : ann.only()) {
-            if (s.equals(mt)) return true;
+        for (MessageType mt : ann.only()) {
+            if (mt == messageType) return true;
         }
         return false;
     }

@@ -38,9 +38,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
-        if (asdu.data().isEmpty()) {
-            System.out.println(CmsColor.gray("  无数据"));
-        } else {
+        if (!printIfEmpty(asdu.data().isEmpty())) {
             System.out.println("  Data definitions (" + asdu.data().size() + " entries):");
             for (int i = 0; i < asdu.data().size(); i++) {
                 CmsDataDefinitionEntry entry = asdu.data().get(i);

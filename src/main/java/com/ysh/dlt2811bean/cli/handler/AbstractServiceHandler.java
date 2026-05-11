@@ -6,6 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
+import com.ysh.dlt2811bean.utils.CmsColor;
 
 import java.util.List;
 
@@ -32,4 +33,30 @@ public abstract class AbstractServiceHandler implements CommandHandler {
     }
 
     public List<Param> getParams() { return List.of(); }
+
+    protected void printGray(String text) {
+        System.out.println(CmsColor.gray(text));
+    }
+
+    protected void printRed(String text) {
+        System.out.println(CmsColor.red(text));
+    }
+
+    protected void printGreen(String text) {
+        System.out.println(CmsColor.green(text));
+    }
+
+    protected void printMoreFollows(boolean moreFollows) {
+        if (moreFollows) {
+            printGray("  (more data available)");
+        }
+    }
+
+    protected boolean printIfEmpty(boolean isEmpty) {
+        if (isEmpty) {
+            printGray("  无数据");
+            return true;
+        }
+        return false;
+    }
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -100,10 +101,10 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
 
     // ==================== Fields based on Table 53 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsArray<CmsSetLCBValuesEntry> lcb = new CmsArray<>(CmsSetLCBValuesEntry::new).capacity(100);
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsArray<CmsSetLCBValuesResultEntry> result = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
 
     // ========================= Constructor ============================

@@ -6,6 +6,7 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -88,22 +89,22 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
 
     // ==================== Fields based on Table 25 ====================
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsReference referenceRequest = new CmsReference();
 
-    @CmsField(only = {"REQUEST"})
+    @CmsField(only = {REQUEST})
     public CmsACSIClass acsiClass = new CmsACSIClass(CmsACSIClass.DATA_OBJECT);
 
-    @CmsField(optional = true, only = {"REQUEST"})
+    @CmsField(optional = true, only = {REQUEST})
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
-    @CmsField(only = {"RESPONSE_POSITIVE"})
+    @CmsField(only = {RESPONSE_POSITIVE})
     public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new).capacity(100);
 
-    @CmsField(optional = true, only = {"RESPONSE_POSITIVE"})
+    @CmsField(optional = true, only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean();
 
-    @CmsField(only = {"RESPONSE_NEGATIVE"})
+    @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);
 
     // ========================= Constructor ============================

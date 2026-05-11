@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 
@@ -76,34 +77,34 @@ public class CmsSendGooseMessage extends CmsAsdu<CmsSendGooseMessage> {
 
     // ==================== Fields based on Table 57 ====================
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsVisibleString goID = new CmsVisibleString().max(129);
 
-    @CmsField(optional = true, only = {"INDICATION"})
+    @CmsField(optional = true, only = {INDICATION})
     public CmsObjectReference datSet = new CmsObjectReference();
 
-    @CmsField(optional = true, only = {"INDICATION"})
+    @CmsField(optional = true, only = {INDICATION})
     public CmsObjectReference goRef = new CmsObjectReference();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsUtcTime t = new CmsUtcTime();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsInt32U stNum = new CmsInt32U();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsInt32U sqNum = new CmsInt32U();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsBoolean simulation = new CmsBoolean();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsInt32U confRev = new CmsInt32U();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsBoolean ndsCom = new CmsBoolean();
 
-    @CmsField(only = {"INDICATION"})
+    @CmsField(only = {INDICATION})
     public CmsData<?> data = new CmsData<>();
 
     // ========================= Constructor ============================

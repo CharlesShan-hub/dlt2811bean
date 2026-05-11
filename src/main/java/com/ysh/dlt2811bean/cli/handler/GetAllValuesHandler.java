@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.cli.handler;
 
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
@@ -37,9 +36,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
-        if (asdu.data().isEmpty()) {
-            System.out.println(CmsColor.gray("  无数据"));
-        } else {
+        if (!printIfEmpty(asdu.data().isEmpty())) {
             System.out.println("  Data values (" + asdu.data().size() + " entries):");
             for (int i = 0; i < asdu.data().size(); i++) {
                 CmsDataEntry entry = asdu.data().get(i);
