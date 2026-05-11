@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
+import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.info.DataTypeInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.cli.CommandHandler;
@@ -67,7 +68,7 @@ public class HelpHandler implements CommandHandler {
         }
         System.out.println("  " + CmsColor.bold(ctx.padRight("help", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 显示帮助信息");
         System.out.println("  " + CmsColor.bold(ctx.padRight("exit", 18)) + String.format("%-8s", "") + String.format("%-6s", "") + " 退出程序");
-        System.out.println(CmsColor.gray("\nUse: help <command> 查看命令详细用法  |  help datatype 查看数据类型  |  help cdc 查看公用数据类  |  Tab 键可补全命令"));
+        System.out.println(CmsColor.gray("\nUse: help <command> 查看命令详细用法  |  help datatype 查看数据类型  |  help cdc 查看公用数据类  |  help fc 查看功能约束  |  Tab 键可补全命令"));
     }
 
     private static String sectionTitle(String section) {
@@ -169,6 +170,21 @@ public class HelpHandler implements CommandHandler {
     public void printCdcHelp(CdcInfo cdc) {
         System.out.println("\n  " + CmsColor.bold(cdc.getName()) + " - " + CmsColor.cyan(cdc.getChineseName()));
         System.out.println("\n  " + CmsColor.green("英文名: ") + cdc.getDescription());
+    }
+
+    public void printFcList() {
+        System.out.println("\n" + CmsColor.bold("功能约束 (FC):") + "\n");
+        System.out.println(CmsColor.gray("  FC   中文名          说明"));
+        for (FcInfo fc : FcInfo.values()) {
+            System.out.println("  " + CmsColor.bold(ctx.padRight(fc.getName(), 4))
+                    + " " + CmsColor.cyan(ctx.padRight(fc.getChineseName(), 12))
+                    + " " + fc.getDescription());
+        }
+    }
+
+    public void printFcHelp(FcInfo fc) {
+        System.out.println("\n  " + CmsColor.bold(fc.getName()) + " - " + CmsColor.cyan(fc.getChineseName()));
+        System.out.println("\n  " + CmsColor.green("说明: ") + fc.getDescription());
     }
 
     public void printSectionCommands(String section) {

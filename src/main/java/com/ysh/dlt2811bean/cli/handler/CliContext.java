@@ -40,6 +40,16 @@ public class CliContext {
     public Set<String> getCachedLds() { return cachedLds; }
     public Set<String> getCachedValues() { return cachedValues; }
 
+    public Set<String> getCachedDaRefs() {
+        Set<String> result = new java.util.HashSet<>();
+        for (String ref : cachedRefs) {
+            if (ref.split("\\.").length >= 2 && ref.contains("/")) {
+                result.add(ref);
+            }
+        }
+        return result;
+    }
+
     public CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
         if (config.getCli().isTracePdu()) {
             printGray("  >> Request PDU:\n" + asdu.toString().indent(4).stripTrailing());

@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
+import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
@@ -23,7 +24,7 @@ public class GetDataValuesHandler implements CommandHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts"),
-            new Param("fc", "功能约束 (留空=不限制, 如 ST/MX/CO)", "")
+            new Param("fc", "功能约束 (留空=不限制)", "", FcInfo.enumChoices())
         );
     }
 

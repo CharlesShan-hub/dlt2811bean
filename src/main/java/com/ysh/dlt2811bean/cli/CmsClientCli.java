@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.DataTypeInfo;
+import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.cli.handler.*;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
@@ -102,11 +103,11 @@ public class CmsClientCli {
                                     } else if (isRefParam(cmdName, paramIdx)) {
                                         java.util.Set<String> pool;
                                         if ("ld-dir".equals(cmdName)) {
-                                             pool = cachedLds;
-                                         } else if ("get-data-values".equals(cmdName)) {
-                                             pool = cachedValues;
-                                         } else if ("set-data-values".equals(cmdName)) {
-                                             pool = cachedRefs;
+                                            pool = cachedLds;
+                                        } else if ("get-data-values".equals(cmdName)) {
+                                            pool = cachedValues;
+                                        } else if ("set-data-values".equals(cmdName)) {
+                                            pool = ctx.getCachedDaRefs();
                                         } else {
                                             pool = cachedRefs;
                                         }
@@ -220,6 +221,20 @@ public class CmsClientCli {
                         System.out.println("  " + CmsColor.red("Unknown CDC: " + cdcName));
                     } else {
                         ((HelpHandler) handlers.get("help")).printCdcHelp(cdc);
+                    }
+                    continue;
+                }
+                if (helpArg.equals("fc")) {
+                    ((HelpHandler) handlers.get("help")).printFcList();
+                    continue;
+                }
+                if (helpArg.startsWith("fc ")) {
+                    String fcName = raw.substring(5).trim().substring(3).trim().toUpperCase();
+                    FcInfo fc = FcInfo.byName(fcName);
+                    if (fc == null) {
+                        System.out.println("  " + CmsColor.red("Unknown FC: " + fcName));
+                    } else {
+                        ((HelpHandler) handlers.get("help")).printFcHelp(fc);
                     }
                     continue;
                 }

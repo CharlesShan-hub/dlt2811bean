@@ -4,6 +4,7 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
@@ -27,7 +28,7 @@ public class SetDataValuesHandler implements CommandHandler {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal"),
             new Param("value", "要设置的值", "true"),
-            new Param("fc", "功能约束 (留空=不限制, 如 ST/MX/CO)", "")
+            new Param("fc", "功能约束 (留空=不限制)", "", FcInfo.enumChoices())   
         );
     }
 
