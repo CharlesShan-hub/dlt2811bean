@@ -11,6 +11,7 @@ public class CmsConfig {
     private Protocol protocol = new Protocol();
     private Negotiate negotiate = new Negotiate();
     private File file = new File();
+    private Cli cli = new Cli();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -32,6 +33,9 @@ public class CmsConfig {
 
     public File getFile() { return file; }
     public void setFile(File file) { this.file = file; }
+
+    public Cli getCli() { return cli; }
+    public void setCli(Cli cli) { this.cli = cli; }
 
     public static class Server {
         private int port = 8102;
@@ -139,6 +143,13 @@ public class CmsConfig {
 
         public String getRootPath() { return rootPath; }
         public void setRootPath(String rootPath) { this.rootPath = rootPath; }
+    }
+
+    public static class Cli {
+        private boolean tracePdu = false;
+
+        public boolean isTracePdu() { return tracePdu; }
+        public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
     }
 
     public void merge(CmsConfig other) {
