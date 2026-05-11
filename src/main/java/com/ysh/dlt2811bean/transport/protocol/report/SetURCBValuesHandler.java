@@ -12,23 +12,18 @@ import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEn
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class SetURCBValuesHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(SetURCBValuesHandler.class);
+public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBValues> {
 
     private enum UrcbField {
         RPT_ID, RPT_ENA, DAT_SET, OPT_FLDS, BUF_TM, TRG_OPS, INTG_PD, GI, RESV
     }
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_URCB_VALUES;
+    public SetURCBValuesHandler() {
+        super(ServiceName.SET_URCB_VALUES, CmsSetURCBValues::new);
     }
 
     @Override
@@ -42,7 +37,8 @@ public class SetURCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetURCBValues asdu = (CmsSetURCBValues) request.getAsdu();
 

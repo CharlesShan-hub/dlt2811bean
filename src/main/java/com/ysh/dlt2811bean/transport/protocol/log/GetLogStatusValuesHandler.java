@@ -11,16 +11,12 @@ import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLogStatusChoice
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetLogStatusValuesHandler implements CmsServiceHandler {
+public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetLogStatusValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetLogStatusValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOG_STATUS_VALUES;
+    public GetLogStatusValuesHandler() {
+        super(ServiceName.GET_LOG_STATUS_VALUES, CmsGetLogStatusValues::new);
     }
 
     @Override
@@ -35,7 +31,8 @@ public class GetLogStatusValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogStatusValues asdu = (CmsGetLogStatusValues) request.getAsdu();
 

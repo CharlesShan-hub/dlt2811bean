@@ -10,25 +10,20 @@ import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.goose.GooseConfig;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class SetGoCBValuesHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(SetGoCBValuesHandler.class);
+public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBValues> {
 
     private final GoosePublisher goosePublisher;
 
     public SetGoCBValuesHandler() {
+        super(ServiceName.SET_GOCB_VALUES, CmsSetGoCBValues::new);
         this.goosePublisher = null;
     }
 
     public SetGoCBValuesHandler(GoosePublisher goosePublisher) {
+        super(ServiceName.SET_GOCB_VALUES, CmsSetGoCBValues::new);
         this.goosePublisher = goosePublisher;
     }
 
@@ -49,7 +44,8 @@ public class SetGoCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetGoCBValues asdu = (CmsSetGoCBValues) request.getAsdu();
 
         if (asdu.gocb == null || asdu.gocb.size() == 0) {

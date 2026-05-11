@@ -11,16 +11,12 @@ import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class QueryLogAfterHandler implements CmsServiceHandler {
+public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogAfter> {
 
-    private static final Logger log = LoggerFactory.getLogger(QueryLogAfterHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.QUERY_LOG_AFTER;
+    public QueryLogAfterHandler() {
+        super(ServiceName.QUERY_LOG_AFTER, CmsQueryLogAfter::new);
     }
 
     @Override
@@ -35,7 +31,8 @@ public class QueryLogAfterHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsQueryLogAfter asdu = (CmsQueryLogAfter) request.getAsdu();
 

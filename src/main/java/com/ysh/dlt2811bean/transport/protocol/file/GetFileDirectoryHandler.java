@@ -7,23 +7,19 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.CRC32;
 
-public class GetFileDirectoryHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetFileDirectoryHandler.class);
-
+public class GetFileDirectoryHandler extends AbstractCmsServiceHandler<CmsGetFileDirectory> {
+    
     private final List<CmsFileEntry> builtinFiles = new ArrayList<>();
 
     public GetFileDirectoryHandler() {
+        super(ServiceName.GET_FILE_DIRECTORY, CmsGetFileDirectory::new);
         long now = System.currentTimeMillis() / 1000;
         builtinFiles.add(buildEntry("/README.txt", 76, now - 86400, buildCrc32("README")));
         builtinFiles.add(buildEntry("/config.yaml", 719, now - 43200, buildCrc32("config")));
@@ -60,7 +56,8 @@ public class GetFileDirectoryHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFileDirectory asdu = (CmsGetFileDirectory) request.getAsdu();
         String pathName = asdu.pathName.get();

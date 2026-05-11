@@ -8,24 +8,20 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodDefEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcInterfaceDefinitionHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetRpcInterfaceDefinitionHandler.class);
+public class GetRpcInterfaceDefinitionHandler extends AbstractCmsServiceHandler<CmsGetRpcInterfaceDefinition> {
 
     private final Map<String, List<CmsRpcMethodDefEntry>> builtinInterfaces = new LinkedHashMap<>();
 
     public GetRpcInterfaceDefinitionHandler() {
+        super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinition::new);
         List<CmsRpcMethodDefEntry> if1 = new ArrayList<>();
         if1.add(createEntry("IF1.Method1", 1, 5000,
                 CmsDataDefinition.ofVisibleString(128),
@@ -77,7 +73,8 @@ public class GetRpcInterfaceDefinitionHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetRpcInterfaceDefinition asdu = (CmsGetRpcInterfaceDefinition) request.getAsdu();
         String ifName = asdu.interfaceName.get();

@@ -9,16 +9,12 @@ import com.ysh.dlt2811bean.service.svc.setting.CmsGetEditSGValue;
 import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetEditSGValueHandler implements CmsServiceHandler {
+public class GetEditSGValueHandler extends AbstractCmsServiceHandler<CmsGetEditSGValue> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetEditSGValueHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_EDIT_SG_VALUE;
+    public GetEditSGValueHandler() {
+        super(ServiceName.GET_EDIT_SG_VALUE, CmsGetEditSGValue::new);
     }
 
     @Override
@@ -32,7 +28,8 @@ public class GetEditSGValueHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsGetEditSGValue asdu = (CmsGetEditSGValue) request.getAsdu();
 
         log.debug("[Server] GetEditSGValue: {} entries", asdu.data.size());

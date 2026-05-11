@@ -47,6 +47,11 @@ public abstract class CmsAsdu<T extends CmsAsdu<T>> extends AbstractCmsCompound<
         return (T) this;
     }
 
+    @SuppressWarnings("unchecked")
+    public T serviceError(int errorCode) {
+        return (T) this;
+    }
+
     protected static MessageType getIndicationMessageType(boolean resp, boolean err) {
         if (!resp && !err) return MessageType.REQUEST;
         if (resp && !err) return MessageType.INDICATION;

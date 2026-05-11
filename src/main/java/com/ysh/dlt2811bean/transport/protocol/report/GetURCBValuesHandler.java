@@ -12,16 +12,12 @@ import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorUrcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetURCBValuesHandler implements CmsServiceHandler {
+public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetURCBValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_URCB_VALUES;
+    public GetURCBValuesHandler() {
+        super(ServiceName.GET_URCB_VALUES, CmsGetURCBValues::new);
     }
 
     @Override
@@ -35,7 +31,8 @@ public class GetURCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetURCBValues asdu = (CmsGetURCBValues) request.getAsdu();
 

@@ -7,12 +7,8 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -22,10 +18,9 @@ import java.nio.file.attribute.FileTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.zip.CRC32;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetFileAttributeValuesHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetFileAttributeValuesHandler.class);
+public class GetFileAttributeValuesHandler extends AbstractCmsServiceHandler<CmsGetFileAttributeValues> {
 
     private final String fileRoot;
     private final Map<String, byte[]> builtinFiles = new LinkedHashMap<>();
@@ -35,6 +30,7 @@ public class GetFileAttributeValuesHandler implements CmsServiceHandler {
     }
 
     public GetFileAttributeValuesHandler(String fileRoot) {
+        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValues::new);
         this.fileRoot = fileRoot;
         builtinFiles.put("/README.txt", buildReadme());
         builtinFiles.put("/config.yaml", buildConfigYaml());
@@ -83,7 +79,8 @@ public class GetFileAttributeValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFileAttributeValues asdu = (CmsGetFileAttributeValues) request.getAsdu();
         String fileName = asdu.fileName.get();

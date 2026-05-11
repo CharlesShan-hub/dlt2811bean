@@ -11,16 +11,12 @@ import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsErrorMethodChoice;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodValue;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcMethodDefinitionHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetRpcMethodDefinitionHandler.class);
+public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<CmsGetRpcMethodDefinition> {
 
     private final Map<String, CmsRpcMethodValue> builtinMethods = new LinkedHashMap<>();
 
@@ -74,7 +70,8 @@ public class GetRpcMethodDefinitionHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsGetRpcMethodDefinition asdu = (CmsGetRpcMethodDefinition) request.getAsdu();
 
         CmsGetRpcMethodDefinition response = new CmsGetRpcMethodDefinition(MessageType.RESPONSE_POSITIVE)

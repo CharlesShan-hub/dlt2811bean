@@ -22,41 +22,27 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-public class GetAllCBValuesHandler implements CmsServiceHandler {
+public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCBValues> {
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_ALL_CB_VALUES;
+    public GetAllCBValuesHandler() {
+        super(ServiceName.GET_ALL_CB_VALUES, CmsGetAllCBValues::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetAllCBValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetAllCBValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = null;
@@ -72,7 +58,7 @@ public class GetAllCBValuesHandler implements CmsServiceHandler {
 
         List<SclLN0> ln0s = resolveLn0s(accessPoint, ldName, lnRef);
         if (ln0s == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<CbEntry> entries = collectCBs(ln0s, acsiClass);
@@ -90,7 +76,7 @@ public class GetAllCBValuesHandler implements CmsServiceHandler {
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -283,13 +269,6 @@ public class GetAllCBValuesHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetAllCBValues request, int errorCode) {
-        CmsGetAllCBValues response = new CmsGetAllCBValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
-        return new CmsApdu(response);
     }
 
     private static class CbEntry {

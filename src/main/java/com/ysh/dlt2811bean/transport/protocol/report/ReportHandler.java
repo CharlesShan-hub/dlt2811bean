@@ -5,17 +5,13 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsReport;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class ReportHandler implements CmsServiceHandler {
+public class ReportHandler extends AbstractCmsServiceHandler<CmsReport> {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.REPORT;
+    public ReportHandler() {
+        super(ServiceName.REPORT, CmsReport::new);
     }
 
     @Override
@@ -28,7 +24,8 @@ public class ReportHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsReport asdu = (CmsReport) request.getAsdu();
 
         String rptID = asdu.rptID.get();

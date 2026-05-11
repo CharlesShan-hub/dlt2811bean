@@ -8,51 +8,43 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-public class GetLogicalDeviceDirectoryHandler implements CmsServiceHandler {
+public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<CmsGetLogicalDeviceDirectory> {
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOGIC_DEVICE_DIRECTORY;
+    public GetLogicalDeviceDirectoryHandler() {
+        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, CmsGetLogicalDeviceDirectory::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        // Resolve ldName: if not specified, read all LDevices
         String ldName = asdu.ldName != null ? asdu.ldName.get() : null;
         List<SclIED.SclLDevice> targetDevices = new ArrayList<>();
 
         if (ldName != null && !ldName.isEmpty()) {
-            // §8.3.2.2 a: specified ldName — find that specific LDevice
             SclIED.SclLDevice device = findLDevice(accessPoint, ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             targetDevices.add(device);
         } else {
-            // §8.3.2.2 a: no ldName — read all logical devices
             targetDevices.addAll(accessPoint.getServer().getLDevices());
         }
 
-        // Collect logical node references
         List<String> lnRefs = new ArrayList<>();
         for (SclIED.SclLDevice device : targetDevices) {
             SclIED.SclLN0 ln0 = device.getLn0();
@@ -64,7 +56,6 @@ public class GetLogicalDeviceDirectoryHandler implements CmsServiceHandler {
             }
         }
 
-        // Handle referenceAfter pagination (§8.3.2.2 b/c)
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
         int startIndex = 0;
         if (after != null && !after.isEmpty()) {
@@ -101,12 +92,5 @@ public class GetLogicalDeviceDirectoryHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetLogicalDeviceDirectory request, int errorCode) {
-        CmsGetLogicalDeviceDirectory response = new CmsGetLogicalDeviceDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
-        return new CmsApdu(response);
     }
 }

@@ -8,53 +8,37 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDirectory;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDirectoryEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataDirectoryHandler implements CmsServiceHandler {
+public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDataDirectory> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataDirectoryHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_DIRECTORY;
+    public GetDataDirectoryHandler() {
+        super(ServiceName.GET_DATA_DIRECTORY, CmsGetDataDirectory::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetDataDirectory: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetDataDirectory) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetDataDirectory asdu = (CmsGetDataDirectory) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ref = asdu.dataReference.get();
         if (ref == null || ref.isEmpty()) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = ref.substring(0, slashIdx);
@@ -63,11 +47,11 @@ public class GetDataDirectoryHandler implements CmsServiceHandler {
 
         SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
         if (device == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (parts.length < 1) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String lnName = parts[0];
@@ -75,7 +59,7 @@ public class GetDataDirectoryHandler implements CmsServiceHandler {
 
         SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
         if (doi == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String afterRef = asdu.referenceAfter.get();
@@ -85,7 +69,7 @@ public class GetDataDirectoryHandler implements CmsServiceHandler {
         if (skipUntilAfter) {
             allEntries = filterAfter(allEntries, afterRef);
             if (allEntries == null) {
-                return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
 
@@ -180,12 +164,5 @@ public class GetDataDirectoryHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetDataDirectory request, int errorCode) {
-        CmsGetDataDirectory response = new CmsGetDataDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

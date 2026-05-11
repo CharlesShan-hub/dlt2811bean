@@ -22,47 +22,30 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-public class GetAllDataValuesHandler implements CmsServiceHandler {
+public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAllDataValues> {
 
     private final SclDocument sclDocument;
 
     public GetAllDataValuesHandler(SclDocument sclDocument) {
+        super(ServiceName.GET_ALL_DATA_VALUES, CmsGetAllDataValues::new);
         this.sclDocument = sclDocument;
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_ALL_DATA_VALUES;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetAllDataValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetAllDataValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = null;
@@ -85,7 +68,7 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
 
         List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
         if (targets == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<DataValue> values = collectDataValues(targets, !useLdName, fcFilter);
@@ -103,7 +86,7 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -280,13 +263,6 @@ public class GetAllDataValuesHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetAllDataValues request, int errorCode) {
-        CmsGetAllDataValues response = new CmsGetAllDataValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
-        return new CmsApdu(response);
     }
 
     private static class TargetLn {

@@ -19,18 +19,13 @@ import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsErrorMsvcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.List;
 
-public class GetMSVCBValuesHandler implements CmsServiceHandler {
+public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCBValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetMSVCBValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_MSVCB_VALUES;
+    public GetMSVCBValuesHandler() {
+        super(ServiceName.GET_MSVCB_VALUES, CmsGetMSVCBValues::new);
     }
 
     @Override
@@ -44,7 +39,8 @@ public class GetMSVCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetMSVCBValues asdu = (CmsGetMSVCBValues) request.getAsdu();
 

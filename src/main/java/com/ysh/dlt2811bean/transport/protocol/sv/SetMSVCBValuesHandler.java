@@ -9,17 +9,13 @@ import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class SetMSVCBValuesHandler implements CmsServiceHandler {
+public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCBValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(SetMSVCBValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_MSVCB_VALUES;
-    }
+    public SetMSVCBValuesHandler() {
+        super(ServiceName.SET_MSVCB_VALUES, CmsSetMSVCBValues::new);
+       }
 
     @Override
     public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
@@ -33,7 +29,8 @@ public class SetMSVCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetMSVCBValues asdu = (CmsSetMSVCBValues) request.getAsdu();
 
         if (asdu.msvcb == null || asdu.msvcb.size() == 0) {

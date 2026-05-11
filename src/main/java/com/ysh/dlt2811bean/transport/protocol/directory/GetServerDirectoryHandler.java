@@ -9,42 +9,35 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.List;
 
-@Slf4j
-public class GetServerDirectoryHandler implements CmsServiceHandler {
+public class GetServerDirectoryHandler extends AbstractCmsServiceHandler<CmsGetServerDirectory> {
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_SERVER_DIRECTORY;
+    public GetServerDirectoryHandler() {
+        super(ServiceName.GET_SERVER_DIRECTORY, CmsGetServerDirectory::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetServerDirectory asdu = (CmsGetServerDirectory) request.getAsdu();
 
-        // §8.3.1.2 c: objectClass must be logical-device
         if (asdu.objectClass.get() != CmsObjectClass.LOGICAL_DEVICE) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<SclIED.SclLDevice> lDevices = accessPoint.getServer().getLDevices();
 
-        // §8.3.1.2 a/b: handle referenceAfter
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
         int startIndex = 0;
         if (after != null && !after.isEmpty()) {
@@ -58,7 +51,7 @@ public class GetServerDirectoryHandler implements CmsServiceHandler {
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -73,13 +66,6 @@ public class GetServerDirectoryHandler implements CmsServiceHandler {
         response.moreFollows.set(false);
 
         log.debug("[Server] GetServerDirectory: {} entries", refs.size());
-        return new CmsApdu(response);
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetServerDirectory request, int errorCode) {
-        CmsGetServerDirectory response = new CmsGetServerDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
         return new CmsApdu(response);
     }
 }

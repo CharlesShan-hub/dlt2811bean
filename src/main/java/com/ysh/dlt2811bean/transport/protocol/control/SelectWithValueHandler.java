@@ -5,38 +5,23 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class SelectWithValueHandler implements CmsServiceHandler {
+public class SelectWithValueHandler extends AbstractCmsServiceHandler<CmsSelectWithValue> {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectWithValueHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT_WITH_VALUE;
+    public SelectWithValueHandler() {
+        super(ServiceName.SELECT_WITH_VALUE, CmsSelectWithValue::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling SelectWithValue: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsSelectWithValue) request.getAsdu(),
-                    CmsAddCause.SELECT_FAILED);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSelectWithValue asdu = (CmsSelectWithValue) request.getAsdu();
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] SelectWithValue: empty reference");
-            return buildNegativeResponse(asdu, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsSelectWithValue response = new CmsSelectWithValue(MessageType.RESPONSE_POSITIVE)
@@ -50,12 +35,14 @@ public class SelectWithValueHandler implements CmsServiceHandler {
         return new CmsApdu(response);
     }
 
-    private CmsApdu buildNegativeResponse(CmsSelectWithValue request, int addCauseCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+        CmsSelectWithValue asdu = (CmsSelectWithValue) request.getAsdu();
         CmsSelectWithValue response = new CmsSelectWithValue(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .reference(request.reference.get())
+                .reqId(asdu.reqId().get())
+                .reference(asdu.reference.get())
                 .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
-                .addCause(addCauseCode);
+                .addCause(errorCode);
         return new CmsApdu(response);
     }
 }

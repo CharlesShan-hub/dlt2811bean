@@ -7,23 +7,17 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.List;
 
-public class GetRpcInterfaceDirectoryHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetRpcInterfaceDirectoryHandler.class);
+public class GetRpcInterfaceDirectoryHandler extends AbstractCmsServiceHandler<CmsGetRpcInterfaceDirectory> {
 
     private static final List<String> INTERFACES = List.of("IF1", "IF2");
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_RPC_INTERFACE_DIRECTORY;
+    public GetRpcInterfaceDirectoryHandler() {
+        super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectory::new);
     }
 
-    @Override
     public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
         try {
             return doHandle(session, request);
@@ -34,7 +28,8 @@ public class GetRpcInterfaceDirectoryHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsGetRpcInterfaceDirectory asdu = (CmsGetRpcInterfaceDirectory) request.getAsdu();
 
         String after = asdu.referenceAfter.get();

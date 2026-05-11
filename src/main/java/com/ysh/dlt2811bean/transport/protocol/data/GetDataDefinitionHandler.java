@@ -10,43 +10,27 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDefinition;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataDefinitionHandler implements CmsServiceHandler {
+public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDataDefinition> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataDefinitionHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_DEFINITION;
+    public GetDataDefinitionHandler() {
+        super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinition::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetDataDefinition: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetDataDefinition) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetDataDefinition asdu = (CmsGetDataDefinition) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new).capacity(100);
@@ -198,12 +182,5 @@ public class GetDataDefinitionHandler implements CmsServiceHandler {
             if (device.getInst().equals(ldName)) return device;
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetDataDefinition request, int errorCode) {
-        CmsGetDataDefinition response = new CmsGetDataDefinition(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

@@ -8,16 +8,12 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetEditSGValue;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class SetEditSGValueHandler implements CmsServiceHandler {
+public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditSGValue> {
 
-    private static final Logger log = LoggerFactory.getLogger(SetEditSGValueHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_EDIT_SG_VALUE;
+    public SetEditSGValueHandler() {
+        super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSGValue::new);
     }
 
     @Override
@@ -31,7 +27,8 @@ public class SetEditSGValueHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSetEditSGValue asdu = (CmsSetEditSGValue) request.getAsdu();
 
         if (asdu.data == null || asdu.data.size() == 0) {

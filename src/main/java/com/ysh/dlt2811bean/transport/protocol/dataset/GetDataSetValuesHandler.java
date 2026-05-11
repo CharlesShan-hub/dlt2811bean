@@ -9,51 +9,35 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetValues;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-@SuppressWarnings("rawtypes")
-public class GetDataSetValuesHandler implements CmsServiceHandler {
+public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDataSetValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataSetValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_DATA_SET_VALUES;
+    public GetDataSetValuesHandler() {
+        super(ServiceName.GET_DATA_SET_VALUES, CmsGetDataSetValues::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetDataSetValues: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetDataSetValues) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetDataSetValues asdu = (CmsGetDataSetValues) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -61,12 +45,12 @@ public class GetDataSetValuesHandler implements CmsServiceHandler {
 
         SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
         if (device == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         SclIED.SclDataSet dataSet = findDataSet(device, rest);
         if (dataSet == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String afterRef = asdu.referenceAfter.get();
@@ -91,7 +75,7 @@ public class GetDataSetValuesHandler implements CmsServiceHandler {
         }
 
         if (skipUntilAfter && !foundAfter) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsGetDataSetValues response = new CmsGetDataSetValues(MessageType.RESPONSE_POSITIVE)
@@ -156,12 +140,5 @@ public class GetDataSetValuesHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetDataSetValues request, int errorCode) {
-        CmsGetDataSetValues response = new CmsGetDataSetValues(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
     }
 }

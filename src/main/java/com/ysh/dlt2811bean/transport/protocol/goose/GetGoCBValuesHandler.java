@@ -9,19 +9,14 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsErrorGocbChoice;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetGoCBValuesHandler implements CmsServiceHandler {
+public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(GetGoCBValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_GOCB_VALUES;
+    public GetGoCBValuesHandler() {
+        super(ServiceName.GET_GOCB_VALUES, CmsGetGoCBValues::new);
     }
 
     @Override
@@ -35,7 +30,8 @@ public class GetGoCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetGoCBValues asdu = (CmsGetGoCBValues) request.getAsdu();
 

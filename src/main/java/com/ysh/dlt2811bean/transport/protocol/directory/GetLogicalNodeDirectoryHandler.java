@@ -17,40 +17,32 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
+public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<CmsGetLogicalNodeDirectory> {
 
     private final SclDocument sclDocument;
 
     public GetLogicalNodeDirectoryHandler(SclDocument sclDocument) {
+        super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectory::new);
         this.sclDocument = sclDocument;
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_LOGIC_NODE_DIRECTORY;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        // Resolve reference: either ldName or lnReference
         String ldName = null;
         String lnRef = null;
         boolean useLdName = asdu.referenceRequest.getSelectedIndex() == 0;
@@ -60,16 +52,13 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             lnRef = asdu.referenceRequest.lnReference.get();
         }
 
-        // Resolve target LNs
         List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
         if (targets == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        // Resolve acsiClass
         int acsiClass = asdu.acsiClass.get();
 
-        // Collect SubReferences based on acsiClass
         List<String> entries = new ArrayList<>();
         switch (acsiClass) {
             case CmsACSIClass.DATA_OBJECT:
@@ -98,13 +87,12 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
                 break;
             case CmsACSIClass.SGCB:
                 log.warn("[Server] ACSI class SGCB not supported in current SCL model");
-                return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             default:
                 log.warn("[Server] Unknown ACSI class: {}", acsiClass);
-                return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        // Handle referenceAfter pagination
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
         int startIndex = 0;
         if (after != null && !after.isEmpty()) {
@@ -118,7 +106,7 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -309,13 +297,6 @@ public class GetLogicalNodeDirectoryHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetLogicalNodeDirectory request, int errorCode) {
-        CmsGetLogicalNodeDirectory response = new CmsGetLogicalNodeDirectory(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
-        return new CmsApdu(response);
     }
 
     private static class TargetLn {

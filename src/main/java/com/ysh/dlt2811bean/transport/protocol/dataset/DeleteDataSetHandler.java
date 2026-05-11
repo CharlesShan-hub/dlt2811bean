@@ -6,50 +6,35 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsDeleteDataSet;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class DeleteDataSetHandler implements CmsServiceHandler {
+public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDataSet> {
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteDataSetHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.DELETE_DATA_SET;
+    public DeleteDataSetHandler() {
+        super(ServiceName.DELETE_DATA_SET, CmsDeleteDataSet::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling DeleteDataSet: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsDeleteDataSet) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsDeleteDataSet asdu = (CmsDeleteDataSet) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -57,11 +42,11 @@ public class DeleteDataSetHandler implements CmsServiceHandler {
 
         SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
         if (device == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (device.getLn0() == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         int dotIdx = rest.indexOf('.');
@@ -77,7 +62,7 @@ public class DeleteDataSetHandler implements CmsServiceHandler {
 
         if (toRemove == null) {
             log.warn("[Server] DeleteDataSet: data set not found: {}", dsRef);
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         device.getLn0().getDataSets().remove(toRemove);
@@ -96,10 +81,4 @@ public class DeleteDataSetHandler implements CmsServiceHandler {
         return null;
     }
 
-    private CmsApdu buildNegativeResponse(CmsDeleteDataSet request, int errorCode) {
-        CmsDeleteDataSet response = new CmsDeleteDataSet(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
-    }
 }

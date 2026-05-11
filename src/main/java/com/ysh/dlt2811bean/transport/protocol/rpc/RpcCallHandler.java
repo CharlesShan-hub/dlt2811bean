@@ -11,20 +11,15 @@ import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class RpcCallHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(RpcCallHandler.class);
+public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
 
     private final AtomicInteger callIdSeq = new AtomicInteger(1);
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.RPC_CALL;
+    public RpcCallHandler() {
+        super(ServiceName.RPC_CALL, CmsRpcCall::new);
     }
 
     @Override
@@ -38,7 +33,8 @@ public class RpcCallHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsRpcCall asdu = (CmsRpcCall) request.getAsdu();
         String method = asdu.method.get();

@@ -7,54 +7,39 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsCreateDataSet;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class CreateDataSetHandler implements CmsServiceHandler {
+public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDataSet> {
 
-    private static final Logger log = LoggerFactory.getLogger(CreateDataSetHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CREATE_DATA_SET;
+    public CreateDataSetHandler() {
+        super(ServiceName.CREATE_DATA_SET, CmsCreateDataSet::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling CreateDataSet: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsCreateDataSet) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsCreateDataSet asdu = (CmsCreateDataSet) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (asdu.memberData == null || asdu.memberData.size() == 0) {
-            return buildNegativeResponse(asdu, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -62,31 +47,31 @@ public class CreateDataSetHandler implements CmsServiceHandler {
 
         SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
         if (device == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (device.getLn0() == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String afterRef = asdu.referenceAfter.get();
         boolean isAppend = afterRef != null && !afterRef.isEmpty();
 
         if (isAppend) {
-            return handleAppend(asdu, device, afterRef);
+            return handleAppend(request, asdu, device, afterRef);
         } else {
-            return handleCreate(asdu, device, rest);
+            return handleCreate(request, asdu, device, rest);
         }
     }
 
-    private CmsApdu handleCreate(CmsCreateDataSet asdu, SclIED.SclLDevice device, String rest) {
+    private CmsApdu handleCreate(CmsApdu request, CmsCreateDataSet asdu, SclIED.SclLDevice device, String rest) {
         int dotIdx = rest.indexOf('.');
         String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
 
         for (SclIED.SclDataSet existing : device.getLn0().getDataSets()) {
             if (existing.getName().equals(dsName)) {
                 log.warn("[Server] CreateDataSet: data set already exists: {}", dsName);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -104,7 +89,7 @@ public class CreateDataSetHandler implements CmsServiceHandler {
                 .reqId(asdu.reqId().get()));
     }
 
-    private CmsApdu handleAppend(CmsCreateDataSet asdu, SclIED.SclLDevice device, String afterRef) {
+    private CmsApdu handleAppend(CmsApdu request, CmsCreateDataSet asdu, SclIED.SclLDevice device, String afterRef) {
         int dotIdx = afterRef.indexOf('.');
         String dsName = dotIdx >= 0 ? afterRef.substring(dotIdx + 1) : afterRef;
 
@@ -118,7 +103,7 @@ public class CreateDataSetHandler implements CmsServiceHandler {
 
         if (existing == null) {
             log.warn("[Server] CreateDataSet: data set not found for append: {}", dsName);
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         for (CmsCreateDataSetEntry entry : asdu.memberData) {
@@ -166,10 +151,4 @@ public class CreateDataSetHandler implements CmsServiceHandler {
         return null;
     }
 
-    private CmsApdu buildNegativeResponse(CmsCreateDataSet request, int errorCode) {
-        CmsCreateDataSet response = new CmsCreateDataSet(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .serviceError(errorCode);
-        return new CmsApdu(response);
-    }
 }

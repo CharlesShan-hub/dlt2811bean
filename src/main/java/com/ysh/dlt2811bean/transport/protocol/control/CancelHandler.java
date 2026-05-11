@@ -5,38 +5,23 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class CancelHandler implements CmsServiceHandler {
+public class CancelHandler extends AbstractCmsServiceHandler<CmsCancel> {
 
-    private static final Logger log = LoggerFactory.getLogger(CancelHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CANCEL;
+    public CancelHandler() {
+        super(ServiceName.CANCEL, CmsCancel::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling Cancel: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsCancel) request.getAsdu(),
-                    CmsAddCause.NOT_SUPPORTED);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsCancel asdu = (CmsCancel) request.getAsdu();
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] Cancel: empty reference");
-            return buildNegativeResponse(asdu, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsCancel response = new CmsCancel(MessageType.RESPONSE_POSITIVE)
@@ -50,12 +35,14 @@ public class CancelHandler implements CmsServiceHandler {
         return new CmsApdu(response);
     }
 
-    private CmsApdu buildNegativeResponse(CmsCancel request, int addCauseCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+        CmsCancel asdu = (CmsCancel) request.getAsdu();
         CmsCancel response = new CmsCancel(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .reference(request.reference.get())
+                .reqId(asdu.reqId().get())
+                .reference(asdu.reference.get())
                 .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
-                .addCause(addCauseCode);
+                .addCause(errorCode);
         return new CmsApdu(response);
     }
 }

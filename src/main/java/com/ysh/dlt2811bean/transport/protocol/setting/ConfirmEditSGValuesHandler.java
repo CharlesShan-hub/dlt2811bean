@@ -7,17 +7,13 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsConfirmEditSGValues;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class ConfirmEditSGValuesHandler implements CmsServiceHandler {
+public class ConfirmEditSGValuesHandler extends AbstractCmsServiceHandler<CmsConfirmEditSGValues> {
 
-    private static final Logger log = LoggerFactory.getLogger(ConfirmEditSGValuesHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.CONFIRM_EDIT_SG_VALUES;
-    }
+    public ConfirmEditSGValuesHandler() {
+        super(ServiceName.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSGValues::new);
+       }
 
     @Override
     public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
@@ -30,7 +26,8 @@ public class ConfirmEditSGValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsConfirmEditSGValues asdu = (CmsConfirmEditSGValues) request.getAsdu();
 
         String ref = asdu.sgcbReference.get();

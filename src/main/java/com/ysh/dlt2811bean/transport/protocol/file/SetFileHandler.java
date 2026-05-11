@@ -5,21 +5,15 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.io.ByteArrayOutputStream;
 
-public class SetFileHandler implements CmsServiceHandler {
+public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
 
-    private static final Logger log = LoggerFactory.getLogger(SetFileHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_FILE;
+    public SetFileHandler() {
+        super(ServiceName.SET_FILE, CmsSetFile::new);
     }
 
     @Override
@@ -33,7 +27,8 @@ public class SetFileHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetFile asdu = (CmsSetFile) request.getAsdu();
         String fileName = asdu.fileName.get();

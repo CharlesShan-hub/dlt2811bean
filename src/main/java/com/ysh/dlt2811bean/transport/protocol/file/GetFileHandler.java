@@ -5,12 +5,8 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,10 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetFileHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(GetFileHandler.class);
+public class GetFileHandler extends AbstractCmsServiceHandler<CmsGetFile> {
 
     private static final int MAX_CHUNK_SIZE = 4096;
 
@@ -34,6 +29,7 @@ public class GetFileHandler implements CmsServiceHandler {
     }
 
     public GetFileHandler(String fileRoot) {
+        super(ServiceName.GET_FILE, CmsGetFile::new);
         this.fileRoot = fileRoot;
         builtinFiles.put("/README.txt", buildReadme());
         builtinFiles.put("/config.yaml", buildConfigYaml());
@@ -91,7 +87,8 @@ public class GetFileHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetFile asdu = (CmsGetFile) request.getAsdu();
         String fileName = asdu.fileName.get();

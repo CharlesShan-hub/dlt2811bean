@@ -13,25 +13,20 @@ import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEn
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
-public class SetLCBValuesHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(SetLCBValuesHandler.class);
+public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValues> {
 
     private enum LcbField {
         LOG_ENA, DAT_SET, TRG_OPS, INTG_PD, LOG_REF, OPT_FLDS, BUF_TM
     }
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_LCB_VALUES;
+    public SetLCBValuesHandler() {
+        super(ServiceName.SET_LCB_VALUES, CmsSetLCBValues::new);
     }
 
     @Override
@@ -46,7 +41,8 @@ public class SetLCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetLCBValues asdu = (CmsSetLCBValues) request.getAsdu();
 

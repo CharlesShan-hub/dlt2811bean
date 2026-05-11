@@ -7,16 +7,12 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSelectActiveSG;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class SelectActiveSGHandler implements CmsServiceHandler {
+public class SelectActiveSGHandler extends AbstractCmsServiceHandler<CmsSelectActiveSG> {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectActiveSGHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SELECT_ACTIVE_SG;
+    public SelectActiveSGHandler() {
+        super(ServiceName.SELECT_ACTIVE_SG, CmsSelectActiveSG::new);
     }
 
     @Override
@@ -30,7 +26,8 @@ public class SelectActiveSGHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsSelectActiveSG asdu = (CmsSelectActiveSG) request.getAsdu();
 
         String ref = asdu.sgcbReference.get();

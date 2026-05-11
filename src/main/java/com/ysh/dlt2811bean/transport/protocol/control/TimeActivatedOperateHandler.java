@@ -5,38 +5,23 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class TimeActivatedOperateHandler implements CmsServiceHandler {
+public class TimeActivatedOperateHandler extends AbstractCmsServiceHandler<CmsTimeActivatedOperate> {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeActivatedOperateHandler.class);
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.TIME_ACTIVATED_OPERATE;
+    public TimeActivatedOperateHandler() {
+        super(ServiceName.TIME_ACTIVATED_OPERATE, CmsTimeActivatedOperate::new);
     }
 
     @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling TimeActivatedOperate: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsTimeActivatedOperate) request.getAsdu(),
-                    CmsAddCause.NOT_SUPPORTED);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsTimeActivatedOperate asdu = (CmsTimeActivatedOperate) request.getAsdu();
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] TimeActivatedOperate: empty reference");
-            return buildNegativeResponse(asdu, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsTimeActivatedOperate response = new CmsTimeActivatedOperate(MessageType.RESPONSE_POSITIVE)
@@ -50,12 +35,14 @@ public class TimeActivatedOperateHandler implements CmsServiceHandler {
         return new CmsApdu(response);
     }
 
-    private CmsApdu buildNegativeResponse(CmsTimeActivatedOperate request, int addCauseCode) {
+    @Override
+    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+        CmsTimeActivatedOperate asdu = (CmsTimeActivatedOperate) request.getAsdu();
         CmsTimeActivatedOperate response = new CmsTimeActivatedOperate(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get())
-                .reference(request.reference.get())
+                .reqId(asdu.reqId().get())
+                .reference(asdu.reference.get())
                 .ctlVal(new com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean(false))
-                .addCause(addCauseCode);
+                .addCause(errorCode);
         return new CmsApdu(response);
     }
 }

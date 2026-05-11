@@ -7,12 +7,9 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class AssociateNegotiateHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(AssociateNegotiateHandler.class);
+public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAssociateNegotiate> {
 
     /** APDU 最大长度（FL + 4字节APCH） */
     public static final int MAX_APDU_SIZE = 65535;
@@ -30,6 +27,7 @@ public class AssociateNegotiateHandler implements CmsServiceHandler {
 
     public AssociateNegotiateHandler(int serverApduSize, int serverAsduSize,
                                      int serverProtocolVersion, String serverModelVersion) {
+        super(ServiceName.ASSOCIATE_NEGOTIATE, CmsAssociateNegotiate::new);
         if (serverApduSize <= 0 || serverApduSize > MAX_APDU_SIZE) {
             throw new IllegalArgumentException(
                 "serverApduSize must be between 1 and " + MAX_APDU_SIZE + ", got " + serverApduSize);
@@ -42,11 +40,6 @@ public class AssociateNegotiateHandler implements CmsServiceHandler {
         this.serverAsduSize = serverAsduSize;
         this.serverProtocolVersion = serverProtocolVersion;
         this.serverModelVersion = serverModelVersion;
-    }
-
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.ASSOCIATE_NEGOTIATE;
     }
 
     @Override

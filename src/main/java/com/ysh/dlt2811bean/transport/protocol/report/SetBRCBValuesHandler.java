@@ -11,23 +11,18 @@ import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
 import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class SetBRCBValuesHandler implements CmsServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(SetBRCBValuesHandler.class);
+public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBValues> {
 
     private enum BrcbField {
         RPT_ID, RPT_ENA, DAT_SET, OPT_FLDS, BUF_TM, TRG_OPS, INTG_PD, GI, PURGE_BUF, ENTRY_ID, RESV_TMS
     }
 
-    @Override
-    public ServiceName getServiceName() {
-        return ServiceName.SET_BRCB_VALUES;
+    public SetBRCBValuesHandler() {
+        super(ServiceName.SET_BRCB_VALUES, CmsSetBRCBValues::new);
     }
 
     @Override
@@ -41,7 +36,8 @@ public class SetBRCBValuesHandler implements CmsServiceHandler {
         }
     }
 
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    @Override
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetBRCBValues asdu = (CmsSetBRCBValues) request.getAsdu();
 

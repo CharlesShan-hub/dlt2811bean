@@ -22,47 +22,30 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
-import com.ysh.dlt2811bean.transport.protocol.CmsServiceHandler;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
-import lombok.extern.slf4j.Slf4j;
-
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-@Slf4j
-public class GetAllDataDefinitionHandler implements CmsServiceHandler {
+public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetAllDataDefinition> {
 
     private final SclDocument sclDocument;
 
     public GetAllDataDefinitionHandler(SclDocument sclDocument) {
+        super(ServiceName.GET_ALL_DATA_DEFINITION, CmsGetAllDataDefinition::new);
         this.sclDocument = sclDocument;
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.GET_ALL_DATA_DEFINITION;
-    }
-
-    @Override
-    public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
-        try {
-            return doHandle(session, request);
-        } catch (Exception e) {
-            log.error("[Server] Error handling GetAllDataDefinition: {}", e.getMessage(), e);
-            return buildNegativeResponse((CmsGetAllDataDefinition) request.getAsdu(),
-                    CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
         CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) request.getAsdu();
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
         if (accessPoint == null || accessPoint.getServer() == null) {
             log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = null;
@@ -81,7 +64,7 @@ public class GetAllDataDefinitionHandler implements CmsServiceHandler {
 
         List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
         if (targets == null) {
-            return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<DoEntry> entries = collectDoDefinitions(targets, !useLdName, fcFilter);
@@ -99,7 +82,7 @@ public class GetAllDataDefinitionHandler implements CmsServiceHandler {
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(asdu, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 
@@ -325,13 +308,6 @@ public class GetAllDataDefinitionHandler implements CmsServiceHandler {
             }
         }
         return null;
-    }
-
-    private CmsApdu buildNegativeResponse(CmsGetAllDataDefinition request, int errorCode) {
-        CmsGetAllDataDefinition response = new CmsGetAllDataDefinition(MessageType.RESPONSE_NEGATIVE)
-                .reqId(request.reqId().get());
-        response.serviceError.set(errorCode);
-        return new CmsApdu(response);
     }
 
     private static class TargetLn {
