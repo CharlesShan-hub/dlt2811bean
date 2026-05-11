@@ -1,7 +1,12 @@
 package com.ysh.dlt2811bean.cli;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.List;
 
+@Getter
+@AllArgsConstructor
 public class Param {
     private final String name;
     private final String prompt;
@@ -9,13 +14,11 @@ public class Param {
     private final boolean required;
     private final List<EnumChoice> enumChoices;
 
+    @Getter
+    @AllArgsConstructor
     public static class EnumChoice {
         public final String value;
         public final String label;
-        public EnumChoice(String value, String label) {
-            this.value = value;
-            this.label = label;
-        }
     }
 
     public Param(String name, String prompt, String defaultValue) {
@@ -30,17 +33,11 @@ public class Param {
         this(name, prompt, defaultValue, false, enumChoices);
     }
 
-    public Param(String name, String prompt, String defaultValue, boolean required, List<EnumChoice> enumChoices) {
-        this.name = name;
-        this.prompt = prompt;
-        this.defaultValue = defaultValue;
-        this.required = required;
-        this.enumChoices = enumChoices;
+    public static Param fc() {
+        return fc("功能约束 (留空=不限制)");
     }
 
-    public String getName() { return name; }
-    public String getPrompt() { return prompt; }
-    public String getDefaultValue() { return defaultValue; }
-    public boolean isRequired() { return required; }
-    public List<EnumChoice> getEnumChoices() { return enumChoices; }
+    public static Param fc(String prompt) {
+        return new Param("fc", prompt, "XX", com.ysh.dlt2811bean.service.info.FcInfo.enumChoices());
+    }
 }

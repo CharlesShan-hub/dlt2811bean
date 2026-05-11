@@ -22,21 +22,14 @@ public class MethodDefHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String refs = values.get("refs");
         CmsGetRpcMethodDefinition asdu = new CmsGetRpcMethodDefinition(MessageType.REQUEST);
         for (String ref : refs.split(",")) {
             asdu.addReference(ref);
         }
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetRpcMethodDefinition rpc = (CmsGetRpcMethodDefinition) response.getAsdu();
         System.out.println("  Method definitions: " + rpc.errorMethod.size() + " entries");

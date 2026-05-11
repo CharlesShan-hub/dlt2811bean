@@ -22,10 +22,7 @@ public class SelectHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String ref = values.get("reference");
         CmsSelect asdu = new CmsSelect(MessageType.REQUEST).reference(ref);

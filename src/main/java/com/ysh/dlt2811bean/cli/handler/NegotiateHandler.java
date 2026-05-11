@@ -25,10 +25,7 @@ public class NegotiateHandler extends AbstractServiceHandler {
         );
     }
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
-            return;
-        }
+        requireConnected(client);
         int asduSize = Integer.parseInt(values.get("asduSize"));
         int apduSize = asduSize + 4;
         long protocolVersion = Long.parseLong(values.get("protocolVersion"));

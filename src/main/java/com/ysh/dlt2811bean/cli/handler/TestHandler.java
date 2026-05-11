@@ -19,10 +19,7 @@ public class TestHandler extends AbstractServiceHandler {
     public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
-            return;
-        }
+        requireConnected(client);
         CmsTest reqAsdu = new CmsTest(MessageType.REQUEST);
         ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         CmsApdu response = client.test();

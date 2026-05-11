@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.transport.goose;
 
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.svc.goose.CmsSendGooseMessage;
@@ -49,7 +50,8 @@ public class GooseFrameBuilder {
 
         Instant now = Instant.now();
         gooseMsg.t.secondsSinceEpoch(now.getEpochSecond());
-        gooseMsg.t.fractionOfSecond(now.getNano());
+        int fraction = (int) ((now.getNano() / 1000L) * 16777215L / 1000000L);
+        gooseMsg.t.fractionOfSecond(Math.min(fraction, 16777215));
 
         gooseMsg.stNum(state.getCurrentStNum());
         gooseMsg.sqNum(state.getCurrentSqNum());
@@ -59,6 +61,8 @@ public class GooseFrameBuilder {
 
         if (dataValue != null) {
             gooseMsg.data = dataValue;
+        } else {
+            gooseMsg.data(new CmsBoolean(false));
         }
 
         PerOutputStream pos = new PerOutputStream();

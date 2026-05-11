@@ -25,10 +25,7 @@ public class GetDataDirectoryHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String ref = values.get("ref");
         String after = values.get("after");
@@ -39,11 +36,7 @@ public class GetDataDirectoryHandler extends AbstractServiceHandler {
             asdu.referenceAfter(after);
         }
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetDataDirectory resp = (CmsGetDataDirectory) response.getAsdu();
         System.out.println("  Directory (" + resp.dataAttribute.size() + " entries):");

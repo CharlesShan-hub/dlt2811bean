@@ -23,22 +23,14 @@ public class FileDirHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String path = values.get("path");
         String after = values.get("after");
         CmsGetFileDirectory asdu = new CmsGetFileDirectory(MessageType.REQUEST);
         if (!path.isEmpty()) asdu.pathName(path);
         if (!after.isEmpty()) asdu.fileAfter(after);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetFileDirectory dir = (CmsGetFileDirectory) response.getAsdu();
         System.out.println("  Files: " + dir.fileEntry.size());

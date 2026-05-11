@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
@@ -21,15 +20,12 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-            new Param("fc", "功能约束 (留空=全部)", "XX", FcInfo.enumChoices())
+            Param.fc("功能约束 (留空=全部)")
         );
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
         String target = values.get("target");
         String fc = values.get("fc");
         CmsGetAllDataValues reqAsdu = new CmsGetAllDataValues(MessageType.REQUEST);
@@ -39,10 +35,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
-        CmsApdu response = ctx.sendAndPrint(client, reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed"); return;
-        }
+        CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
         if (asdu.data().isEmpty()) {
             System.out.println(CmsColor.gray("  无数据"));

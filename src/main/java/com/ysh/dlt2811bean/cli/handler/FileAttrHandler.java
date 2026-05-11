@@ -22,18 +22,11 @@ public class FileAttrHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String fileName = values.get("fileName");
         CmsGetFileAttributeValues asdu = new CmsGetFileAttributeValues(MessageType.REQUEST).fileName(fileName);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetFileAttributeValues attr = (CmsGetFileAttributeValues) response.getAsdu();
         System.out.println("  File: " + attr.fileEntry.fileName.get());

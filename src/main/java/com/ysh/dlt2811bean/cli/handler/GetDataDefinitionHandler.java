@@ -2,7 +2,6 @@ package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
-import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDefinition;
@@ -22,15 +21,12 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts"),
-            new Param("fc", "功能约束 (留空=不限制)", "XX", FcInfo.enumChoices())
+            Param.fc()
         );
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String refs = values.get("refs");
         String fc = values.get("fc");
@@ -44,11 +40,7 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
             asdu.data.add(entry);
         }
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetDataDefinition resp = (CmsGetDataDefinition) response.getAsdu();
         System.out.println("  Data definitions (" + resp.definition.size() + " entries):");

@@ -26,10 +26,7 @@ public class AssociateHandler extends AbstractServiceHandler {
         );
     }
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
-            return;
-        }
+        requireConnected(client);
         if (Boolean.parseBoolean(values.get("secure"))) {
             client.enableSecurity();
             System.out.println(CmsColor.gray("  GM security enabled"));

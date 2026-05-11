@@ -19,10 +19,7 @@ public class ReleaseHandler extends AbstractServiceHandler {
     public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println(CmsColor.gray("  Not connected. Type 'connect' first."));
-            return;
-        }
+        requireConnected(client);
         CmsRelease reqAsdu = new CmsRelease(MessageType.REQUEST);
         ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
         CmsApdu response = client.release();

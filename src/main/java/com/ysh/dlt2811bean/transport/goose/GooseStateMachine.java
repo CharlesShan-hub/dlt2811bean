@@ -24,7 +24,7 @@ public class GooseStateMachine {
     }
 
     public boolean isInFastRetransmit() {
-        return fastRetransmitIndex < FAST_RETRANSMIT_DELAYS_MS.length;
+        return stNum.get() > 0 && fastRetransmitIndex < FAST_RETRANSMIT_DELAYS_MS.length;
     }
 
     public long getCurrentStNum() {

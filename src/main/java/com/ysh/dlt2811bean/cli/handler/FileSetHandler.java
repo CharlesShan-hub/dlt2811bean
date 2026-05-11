@@ -25,10 +25,7 @@ public class FileSetHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String fileName = values.get("fileName");
         long start = Long.parseLong(values.get("start"));
@@ -37,11 +34,7 @@ public class FileSetHandler extends AbstractServiceHandler {
 
         CmsSetFile asdu = new CmsSetFile(MessageType.REQUEST).fileName(fileName).startPosition(start)
                 .fileData(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)).endOfFile(eof);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         System.out.println("  Written " + text.length() + " bytes to " + fileName + (eof ? " (complete)" : ""));
     }

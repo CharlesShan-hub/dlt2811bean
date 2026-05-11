@@ -22,10 +22,7 @@ public class FileDeleteHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String fileName = values.get("fileName");
         CmsDeleteFile asdu = new CmsDeleteFile(MessageType.REQUEST).fileName(fileName);

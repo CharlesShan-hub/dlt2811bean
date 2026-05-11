@@ -29,11 +29,7 @@ public class MsvcbValHandler extends AbstractServiceHandler {
         for (String ref : refs) {
             asduReq.addReference(ref);
         }
-        CmsApdu response = ctx.sendAndPrint(client, asduReq);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asduReq);
 
         CmsGetMSVCBValues asdu = (CmsGetMSVCBValues) response.getAsdu();
         System.out.println("  MSVCB entries (" + asdu.errorMsvcb.size() + "):");

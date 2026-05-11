@@ -26,10 +26,7 @@ public class AbortHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println(CmsColor.gray("  Not connected."));
-            return;
-        }
+        requireConnected(client);
         int reason = Integer.parseInt(values.get("reason"));
         CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
         ctx.printGrayPdu("  >> Request PDU:", reqAsdu);

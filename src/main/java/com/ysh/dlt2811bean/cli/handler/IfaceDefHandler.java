@@ -23,10 +23,7 @@ public class IfaceDefHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String iface = values.get("iface");
         String after = values.get("after");
@@ -34,12 +31,7 @@ public class IfaceDefHandler extends AbstractServiceHandler {
         if (!after.isEmpty()) {
             asdu.referenceAfter(after);
         }
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetRpcInterfaceDefinition def = (CmsGetRpcInterfaceDefinition) response.getAsdu();
         System.out.println("  Interface: " + iface + ", methods: " + def.method.size());

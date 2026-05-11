@@ -5,19 +5,17 @@ import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
-import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class RpcHandler implements CommandHandler {
+public class RpcHandler extends AbstractServiceHandler {
 
-    private final CliContext ctx;
     private final java.util.Map<String, byte[]> lastCallIds = new java.util.HashMap<>();
 
-    public RpcHandler(CliContext ctx) { this.ctx = ctx; }
+    public RpcHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "rpc"; }
     public String getDescription() { return "远程过程调用 (ping/echo/iterate)"; }
@@ -33,10 +31,7 @@ public class RpcHandler implements CommandHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String method = values.get("method");
         String data = values.get("data");

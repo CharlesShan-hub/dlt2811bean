@@ -23,19 +23,12 @@ public class FileGetHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String fileName = values.get("fileName");
         long start = Long.parseLong(values.get("start"));
         CmsGetFile asdu = new CmsGetFile(MessageType.REQUEST).fileName(fileName).startPosition(start);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed");
-            return;
-        }
+        CmsApdu response = sendAndVerify(client, asdu);
 
         CmsGetFile file = (CmsGetFile) response.getAsdu();
         byte[] data = file.fileData.get();

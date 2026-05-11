@@ -24,10 +24,7 @@ public class TimeActOperateHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
 
         String ref = values.get("reference");
         boolean val = Boolean.parseBoolean(values.get("value"));

@@ -20,16 +20,10 @@ public class ServerDirHandler extends AbstractServiceHandler {
     public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
         CmsGetServerDirectory reqAsdu = new CmsGetServerDirectory(MessageType.REQUEST)
                 .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
-        CmsApdu response = ctx.sendAndPrint(client, reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed"); return;
-        }
+        CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
         if (resAsdu.reference().isEmpty()) {
             System.out.println(CmsColor.gray("  无数据"));

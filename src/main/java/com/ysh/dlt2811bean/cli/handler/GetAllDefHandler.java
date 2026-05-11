@@ -26,10 +26,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
         String target = values.get("target");
         String fc = values.get("fc");
         CmsGetAllDataDefinition reqAsdu = new CmsGetAllDataDefinition(MessageType.REQUEST);
@@ -39,10 +36,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
-        CmsApdu response = ctx.sendAndPrint(client, reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed"); return;
-        }
+        CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
         if (asdu.data().isEmpty()) {
             System.out.println(CmsColor.gray("  无数据"));

@@ -35,10 +35,7 @@ public class LnDirHandler extends AbstractServiceHandler {
     }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        if (!client.isConnected()) {
-            System.out.println("  Not connected. Type 'connect' first.");
-            return;
-        }
+        requireConnected(client);
         String target = values.get("target");
         int acsiClass = parseAcsi(values.get("acsi"));
         CmsGetLogicalNodeDirectory reqAsdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST);
@@ -48,10 +45,7 @@ public class LnDirHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         reqAsdu.acsiClass(new CmsACSIClass(acsiClass));
-        CmsApdu response = ctx.sendAndPrint(client, reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            System.out.println("  Request failed"); return;
-        }
+        CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
         if (asdu.referenceResponse().isEmpty()) {
             System.out.println(CmsColor.gray("  无数据"));
