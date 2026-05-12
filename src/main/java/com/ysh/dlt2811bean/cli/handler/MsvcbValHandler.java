@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class MsvcbValHandler extends AbstractServiceHandler {
 
-    public MsvcbValHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "msvcb-val"; }
-    public String getDescription() { return "读多播采样值控制块值"; }
+    public MsvcbValHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_MSVCB_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "MSVCB 引用 (逗号分隔)", "C1/LLN0.Volt")

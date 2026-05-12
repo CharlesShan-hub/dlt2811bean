@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 import com.ysh.dlt2811bean.per.types.PerInteger;
@@ -17,6 +18,7 @@ public abstract class AbstractCmsCollection<T extends AbstractCmsCollection<T, E
 
     protected AbstractCmsCollection(String typeName) {
         super(typeName, new ArrayList<>());
+        this.capacity = CmsConfigLoader.load().getProtocol().getDefaultArrayCapacity();
     }
 
     @Override

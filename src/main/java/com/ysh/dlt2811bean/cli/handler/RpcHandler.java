@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
@@ -15,10 +16,7 @@ public class RpcHandler extends AbstractServiceHandler {
 
     private final java.util.Map<String, byte[]> lastCallIds = new java.util.HashMap<>();
 
-    public RpcHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "rpc"; }
-    public String getDescription() { return "远程过程调用 (ping/echo/iterate)"; }
+    public RpcHandler(CliContext ctx) { super(ctx, ServiceInfo.RPC_CALL); }
     public List<Param> getParams() {
         return List.of(
             new Param("method", "RPC 方法", "ping", List.of(

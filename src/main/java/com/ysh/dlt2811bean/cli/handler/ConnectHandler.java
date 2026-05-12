@@ -29,8 +29,8 @@ public class ConnectHandler implements CommandHandler {
             new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getPort())),
             new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
             new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
-            new Param("ap", "AccessPoint", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
-            new Param("ep", "Endpoint", CmsConfigLoader.load().getClient().getDefaultEp()),
+            new Param("iedName", "IED名称", CmsConfigLoader.load().getClient().getDefaultIedName()),
+            new Param("accessPoint", "访问点", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
             new Param("secure", "携带证书认证 (true/false)", "false")
         );
     }

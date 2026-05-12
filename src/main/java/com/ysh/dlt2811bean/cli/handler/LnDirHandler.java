@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
@@ -12,10 +13,7 @@ import java.util.Map;
 
 public class LnDirHandler extends AbstractServiceHandler {
 
-    public LnDirHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "ln-dir"; }
-    public String getDescription() { return "读逻辑节点目录"; }
+    public LnDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_NODE_DIRECTORY); }
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),

@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
@@ -13,10 +14,7 @@ import java.util.Map;
 
 public class NegotiateHandler extends AbstractServiceHandler {
 
-    public NegotiateHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "negotiate"; }
-    public String getDescription() { return "协商服务参数 (连接后、关联前)"; }
+    public NegotiateHandler(CliContext ctx) { super(ctx, ServiceInfo.ASSOCIATE_NEGOTIATE); }
     public List<Param> getParams() {
         CmsConfigLoader config = new CmsConfigLoader();
         return List.of(
@@ -33,9 +31,9 @@ public class NegotiateHandler extends AbstractServiceHandler {
                 .apduSize(apduSize)
                 .asduSize(asduSize)
                 .protocolVersion(protocolVersion);
-        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
+        printRequestPdu(reqAsdu);
         CmsApdu response = client.associateNegotiate(apduSize, asduSize, protocolVersion);
-        ctx.printGrayPdu("  << Response PDU:", response);
+        printResponsePdu(response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Negotiated!"));
         } else {

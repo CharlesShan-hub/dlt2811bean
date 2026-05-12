@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -12,10 +13,7 @@ import java.util.Map;
 
 public class CancelHandler extends AbstractServiceHandler {
 
-    public CancelHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "cancel"; }
-    public String getDescription() { return "取消控制操作 (撤销 select/operate)"; }
+    public CancelHandler(CliContext ctx) { super(ctx, ServiceInfo.CANCEL); }
     public List<Param> getParams() {
         return List.of(
             new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),

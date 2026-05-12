@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
@@ -11,11 +12,7 @@ import java.util.Map;
 
 public class IfaceDirHandler extends AbstractServiceHandler {
 
-    public IfaceDirHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "iface-dir"; }
-    public String getDescription() { return "获取RPC接口目录 (IF1, IF2)"; }
-    public List<Param> getParams() { return List.of(); }
+    public IfaceDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_RPC_INTERFACE_DIRECTORY); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);

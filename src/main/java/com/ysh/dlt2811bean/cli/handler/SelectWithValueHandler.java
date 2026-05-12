@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
@@ -12,10 +13,7 @@ import java.util.Map;
 
 public class SelectWithValueHandler extends AbstractServiceHandler {
 
-    public SelectWithValueHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "select-with-value"; }
-    public String getDescription() { return "带值选择控制对象"; }
+    public SelectWithValueHandler(CliContext ctx) { super(ctx, ServiceInfo.SELECT_WITH_VALUE); }
     public List<Param> getParams() {
         return List.of(
             new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),

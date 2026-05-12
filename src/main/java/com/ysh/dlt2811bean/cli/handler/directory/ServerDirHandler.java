@@ -1,22 +1,19 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
-import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
-import java.util.List;
 import java.util.Map;
 
 public class ServerDirHandler extends AbstractServiceHandler {
 
-    public ServerDirHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "server-dir"; }
-    public String getDescription() { return "读服务器目录"; }
-    public List<Param> getParams() { return List.of(); }
+    public ServerDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_SERVER_DIRECTORY); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);

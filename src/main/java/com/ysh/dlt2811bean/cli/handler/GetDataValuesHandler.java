@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
@@ -13,10 +14,7 @@ import java.util.Map;
 
 public class GetDataValuesHandler extends AbstractServiceHandler {
 
-    public GetDataValuesHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "get-data-values"; }
-    public String getDescription() { return "读数据值"; }
+    public GetDataValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts"),

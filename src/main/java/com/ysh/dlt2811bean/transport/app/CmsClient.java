@@ -81,11 +81,11 @@ public class CmsClient {
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
-    @CmsValue("client.defaultAccessPoint")
-    private String defaultAp = "E1Q1SB1";
+    @CmsValue("client.defaultIedName")
+    private String defaultIedName = "E1Q1SB1";
 
-    @CmsValue("client.defaultEp")
-    private String defaultEp = "S1";
+    @CmsValue("client.defaultAccessPoint")
+    private String defaultAccessPoint = "S1";
 
     public CmsClient() {
         CmsConfigInjector.inject(this);
@@ -146,9 +146,9 @@ public class CmsClient {
         return transport.isTlsEnabled();
     }
 
-    public CmsClient setAccessPoint(String ap, String ep) {
-        this.defaultAp = ap;
-        this.defaultEp = ep;
+    public CmsClient setAccessPoint(String iedName, String accessPoint) {
+        this.defaultIedName = iedName;
+        this.defaultAccessPoint = accessPoint;
         return this;
     }
 
@@ -328,9 +328,9 @@ public class CmsClient {
         // Use microseconds as fractionOfSecond (fits in INT24U: max 999999 < 16777215)
         int fractionOfSecond = (int) ((now % 1000) * 1000); // milliseconds to microseconds
 
-        // Create signed data: serverAccessPointReference (full format: AP.EP) + timestamp
+        // Create signed data: serverAccessPointReference (full format: IEDName.AccessPoint) + timestamp
         // This must match AssociateHandler.prepareSignedData()
-        String fullSap = defaultAp + "." + defaultEp;
+        String fullSap = defaultIedName + "." + defaultAccessPoint;
         byte[] sapBytes = fullSap.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         byte[] timeBytes = String.valueOf(seconds).getBytes();
         
@@ -377,7 +377,7 @@ public class CmsClient {
         }
 
         CmsAssociate asdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(defaultAp, defaultEp);
+                .serverAccessPointReference(defaultIedName, defaultAccessPoint);
 
         if (securityEnabled && securityKeyPair != null) {
             AuthenticationParameter authParam = createAuthenticationParameter();

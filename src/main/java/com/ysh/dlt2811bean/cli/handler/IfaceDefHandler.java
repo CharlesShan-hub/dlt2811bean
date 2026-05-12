@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class IfaceDefHandler extends AbstractServiceHandler {
 
-    public IfaceDefHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "iface-def"; }
-    public String getDescription() { return "获取RPC接口定义 (IF1/IF2)"; }
+    public IfaceDefHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_RPC_INTERFACE_DEFINITION); }
     public List<Param> getParams() {
         return List.of(
             new Param("iface", "接口名", "IF1"),

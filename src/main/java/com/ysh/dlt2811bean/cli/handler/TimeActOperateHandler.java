@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -12,10 +13,7 @@ import java.util.Map;
 
 public class TimeActOperateHandler extends AbstractServiceHandler {
 
-    public TimeActOperateHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "time-act"; }
-    public String getDescription() { return "定时执行控制操作"; }
+    public TimeActOperateHandler(CliContext ctx) { super(ctx, ServiceInfo.TIME_ACTIVATED_OPERATE); }
     public List<Param> getParams() {
         return List.of(
             new Param("reference", "对象引用", "E1Q1SB1/XCBR1.Pos"),

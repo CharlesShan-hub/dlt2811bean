@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDirectory;
@@ -13,14 +14,12 @@ import java.util.Map;
 
 public class GetDataDirectoryHandler extends AbstractServiceHandler {
 
-    public GetDataDirectoryHandler(CliContext ctx) { super(ctx); }
+    public GetDataDirectoryHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_DIRECTORY); }
 
-    public String getName() { return "get-data-dir"; }
-    public String getDescription() { return "读数据目录"; }
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "数据引用", "C1/LPHD1.Proxy"),
-            new Param("after", "起始引用 (留空=从头)", "")
+            new Param("ref", "数据引用 [string]", "C1/LPHD1.Proxy"),
+            new Param("after", "起始引用 (留空=从头) [string]", "")
         );
     }
 

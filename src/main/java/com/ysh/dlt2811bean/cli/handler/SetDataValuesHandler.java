@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli.handler;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
@@ -15,10 +16,7 @@ import java.util.Map;
 
 public class SetDataValuesHandler extends AbstractServiceHandler {
 
-    public SetDataValuesHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "set-data-values"; }
-    public String getDescription() { return "写数据值"; }
+    public SetDataValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.SET_DATA_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal"),

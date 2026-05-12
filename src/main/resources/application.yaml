@@ -4,15 +4,21 @@ server:
   sclFile: config/sample-scd-full.scd
 
 client:
-  defaultAccessPoint: E1Q1SB1
-  defaultEp: S1
+  defaultIedName: E1Q1SB1
+  defaultAccessPoint: S1
+  defaultSecure: false
   connectTimeoutMs: 5000
   requestTimeoutMs: 5000
 
 keepalive:
-  idleTimeoutMs: 60000 # 1-5 minutes
+  idleTimeoutMs: 60000
   retryIntervalMs: 5000
   maxRetries: 4
+
+protocol:
+  pi: 1
+  maxAsduSize: 65531
+  defaultArrayCapacity: 256
 
 security:
   enabled: false
@@ -22,10 +28,6 @@ security:
   truststore:
     path: certs/ca.cer
     password: changeit
-
-protocol:
-  pi: 1
-  maxAsduSize: 65531
 
 negotiate:
   apduSize: 65535

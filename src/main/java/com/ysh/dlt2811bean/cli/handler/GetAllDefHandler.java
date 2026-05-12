@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
@@ -14,9 +15,7 @@ import java.util.Map;
 
 public class GetAllDefHandler extends AbstractServiceHandler {
 
-    public GetAllDefHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "get-all-def"; }
+    public GetAllDefHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_DEFINITION); }
     public String getDescription() { return "读所有数据定义"; }
     public List<Param> getParams() {
         return List.of(

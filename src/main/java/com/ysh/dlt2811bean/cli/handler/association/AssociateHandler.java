@@ -1,7 +1,10 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.association;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
@@ -13,16 +16,13 @@ import java.util.Map;
 
 public class AssociateHandler extends AbstractServiceHandler {
 
-    public AssociateHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "associate"; }
-    public String getDescription() { return "建立关联"; }
+    public AssociateHandler(CliContext ctx) { super(ctx, ServiceInfo.ASSOCIATE); }
     public List<Param> getParams() {
         var config = CmsConfigLoader.load();
         return List.of(
-            new Param("ap", "访问点 (AccessPoint)", config.getClient().getDefaultAccessPoint()),
-            new Param("ep", "EP", config.getClient().getDefaultEp()),
-            new Param("secure", "携带证书认证 (true/false)", "false")
+            new Param("iedName", "IED名称 [string]", config.getClient().getDefaultIedName()),
+            new Param("accessPoint", "访问点 [string]", config.getClient().getDefaultAccessPoint()),
+            new Param("secure", "携带证书认证 [boolean]", String.valueOf(config.getClient().isDefaultSecure()))
         );
     }
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
@@ -31,15 +31,13 @@ public class AssociateHandler extends AbstractServiceHandler {
             client.enableSecurity();
             System.out.println(CmsColor.gray("  GM security enabled"));
         }
-        String ap = values.get("ap");
-        String ep = values.get("ep");
+        String iedName = values.get("iedName");
+        String accessPoint = values.get("accessPoint");
         CmsAssociate reqAsdu = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(ap, ep);
-        ctx.printGrayPdu("  >> Request PDU:", reqAsdu);
-        CmsApdu response = "E1Q1SB1".equals(ap) && "S1".equals(ep)
-            ? client.associate()
-            : client.associate(ap, ep);
-        ctx.printGrayPdu("  << Response PDU:", response);
+                .serverAccessPointReference(iedName, accessPoint);
+        printRequestPdu(reqAsdu);
+        CmsApdu response = client.associate(iedName, accessPoint);
+        printResponsePdu(response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Associated!"));
         } else {

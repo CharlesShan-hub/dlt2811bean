@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class FileGetHandler extends AbstractServiceHandler {
 
-    public FileGetHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "file-get"; }
-    public String getDescription() { return "读文件 (startPosition=0 取消)"; }
+    public FileGetHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_FILE); }
     public List<Param> getParams() {
         return List.of(
             new Param("fileName", "文件路径", "/README.txt"),

@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.cli;
 
+import com.ysh.dlt2811bean.cli.handler.association.AbortHandler;
+import com.ysh.dlt2811bean.cli.handler.association.AssociateHandler;
+import com.ysh.dlt2811bean.cli.handler.association.ReleaseHandler;
+import com.ysh.dlt2811bean.cli.handler.directory.ServerDirHandler;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;

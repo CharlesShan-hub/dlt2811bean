@@ -51,15 +51,18 @@ public class CmsConfig {
     }
 
     public static class Client {
-        private String defaultAccessPoint = "E1Q1SB1";
-        private String defaultEp = "S1";
+        private String defaultIedName = "E1Q1SB1";
+        private String defaultAccessPoint = "S1";
+        private boolean defaultSecure = false;
         private int connectTimeoutMs = 5000;
         private int requestTimeoutMs = 5000;
 
+        public String getDefaultIedName() { return defaultIedName; }
+        public void setDefaultIedName(String defaultIedName) { this.defaultIedName = defaultIedName; }
         public String getDefaultAccessPoint() { return defaultAccessPoint; }
         public void setDefaultAccessPoint(String defaultAccessPoint) { this.defaultAccessPoint = defaultAccessPoint; }
-        public String getDefaultEp() { return defaultEp; }
-        public void setDefaultEp(String defaultEp) { this.defaultEp = defaultEp; }
+        public boolean isDefaultSecure() { return defaultSecure; }
+        public void setDefaultSecure(boolean defaultSecure) { this.defaultSecure = defaultSecure; }
         public int getConnectTimeoutMs() { return connectTimeoutMs; }
         public void setConnectTimeoutMs(int connectTimeoutMs) { this.connectTimeoutMs = connectTimeoutMs; }
         public int getRequestTimeoutMs() { return requestTimeoutMs; }
@@ -115,11 +118,14 @@ public class CmsConfig {
     public static class Protocol {
         private int pi = 0x01;
         private int maxAsduSize = 65531;
+        private int defaultArrayCapacity = 256;
 
         public int getPi() { return pi; }
         public void setPi(int pi) { this.pi = pi; }
         public int getMaxAsduSize() { return maxAsduSize; }
         public void setMaxAsduSize(int maxAsduSize) { this.maxAsduSize = maxAsduSize; }
+        public int getDefaultArrayCapacity() { return defaultArrayCapacity; }
+        public void setDefaultArrayCapacity(int defaultArrayCapacity) { this.defaultArrayCapacity = defaultArrayCapacity; }
     }
 
     public static class Negotiate {

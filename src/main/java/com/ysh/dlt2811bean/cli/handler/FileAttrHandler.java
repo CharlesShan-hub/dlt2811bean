@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class FileAttrHandler extends AbstractServiceHandler {
 
-    public FileAttrHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "file-attr"; }
-    public String getDescription() { return "读文件属性 (大小、时间、校验和)"; }
+    public FileAttrHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_FILE_ATTRIBUTE_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("fileName", "文件路径", "/README.txt")

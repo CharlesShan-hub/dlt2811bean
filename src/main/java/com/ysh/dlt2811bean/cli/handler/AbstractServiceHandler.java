@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
@@ -13,10 +14,18 @@ import java.util.List;
 public abstract class AbstractServiceHandler implements CommandHandler {
 
     protected final CliContext ctx;
+    private final ServiceInfo serviceInfo;
 
-    protected AbstractServiceHandler(CliContext ctx) {
+    protected AbstractServiceHandler(CliContext ctx, ServiceInfo serviceInfo) {
         this.ctx = ctx;
+        this.serviceInfo = serviceInfo;
     }
+
+    @Override
+    public String getName() { return serviceInfo.getCliName(); }
+
+    @Override
+    public String getDescription() { return serviceInfo.getDescription(); }
 
     protected void requireConnected(CmsClient client) {
         if (!client.isConnected()) {
@@ -33,6 +42,14 @@ public abstract class AbstractServiceHandler implements CommandHandler {
     }
 
     public List<Param> getParams() { return List.of(); }
+
+    protected void printRequestPdu(Object pdu) {
+        ctx.printGrayPdu("  >> Request PDU:", pdu);
+    }
+
+    protected void printResponsePdu(Object pdu) {
+        ctx.printGrayPdu("  << Response PDU:", pdu);
+    }
 
     protected void printGray(String text) {
         System.out.println(CmsColor.gray(text));

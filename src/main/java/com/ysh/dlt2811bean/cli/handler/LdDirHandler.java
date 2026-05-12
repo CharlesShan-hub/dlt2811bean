@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class LdDirHandler extends AbstractServiceHandler {
 
-    public LdDirHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "ld-dir"; }
-    public String getDescription() { return "读逻辑设备目录"; }
+    public LdDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_DEVICE_DIRECTORY); }
     public List<Param> getParams() {
         return List.of(new Param("ldName", "逻辑设备名 (留空=全部)", "C1"));
     }

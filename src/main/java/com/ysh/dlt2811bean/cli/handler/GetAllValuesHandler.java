@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
@@ -12,10 +13,7 @@ import java.util.Map;
 
 public class GetAllValuesHandler extends AbstractServiceHandler {
 
-    public GetAllValuesHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "get-all-values"; }
-    public String getDescription() { return "读所有数据值"; }
+    public GetAllValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),

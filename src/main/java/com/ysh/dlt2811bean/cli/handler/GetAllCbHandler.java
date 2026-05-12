@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
@@ -13,10 +14,7 @@ import java.util.Map;
 
 public class GetAllCbHandler extends AbstractServiceHandler {
 
-    public GetAllCbHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "get-all-cb"; }
-    public String getDescription() { return "读所有控制块值"; }
+    public GetAllCbHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_CB_VALUES); }
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),

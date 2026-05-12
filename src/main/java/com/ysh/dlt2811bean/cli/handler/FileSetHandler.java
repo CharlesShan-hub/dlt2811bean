@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
+import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
@@ -11,10 +12,7 @@ import java.util.Map;
 
 public class FileSetHandler extends AbstractServiceHandler {
 
-    public FileSetHandler(CliContext ctx) { super(ctx); }
-
-    public String getName() { return "file-set"; }
-    public String getDescription() { return "写文件 (endOfFile=true 完成)"; }
+    public FileSetHandler(CliContext ctx) { super(ctx, ServiceInfo.SET_FILE); }
     public List<Param> getParams() {
         return List.of(
             new Param("fileName", "文件路径", "/upload.txt"),
