@@ -2,9 +2,13 @@ package com.ysh.dlt2811bean.transport.protocol.dataset;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.scl.model.SclIED.SclDAI;
+import com.ysh.dlt2811bean.scl.model.SclIED.SclDOI;
+import com.ysh.dlt2811bean.scl.model.SclIED.SclSDI;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -71,7 +75,7 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
                 }
             }
 
-            values.add(resolveValue(accessPoint.getServer(), memberRef));
+            values.add(resolveValue(accessPoint.getServer(), serverSession.getSclDataTypeTemplates(), memberRef));
         }
 
         if (skipUntilAfter && !foundAfter) {
@@ -104,7 +108,7 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
         return sb.toString();
     }
 
-    private CmsType resolveValue(SclIED.SclServer server, String ref) {
+    private CmsType resolveValue(SclIED.SclServer server, SclDataTypeTemplates templates, String ref) {
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
             return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -114,10 +118,96 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
 
         SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
-            return new CmsVisibleString("").max(255);
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        return new CmsVisibleString(ref).max(255);
+        String[] parts = rest.split("\\.");
+        if (parts.length < 1) {
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        String lnName = parts[0];
+        SclDOI doi = findDoiInDevice(device, lnName, parts.length > 1 ? parts[1] : null);
+        if (doi == null) {
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        // DO-level reference (e.g. C1/MMXU1.Volts) — return first DAI with a value
+        if (parts.length == 2) {
+            for (SclDAI dai : doi.getDais()) {
+                if (dai.getValue() != null && !dai.getValue().isEmpty()) {
+                    String bType = SclTypeResolver.resolveBType(server, templates, ldName, lnName, parts[1], dai.getName());
+                    return SclTypeResolver.createTypedValue(bType, dai.getValue());
+                }
+            }
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        String daName = parts[parts.length - 1];
+
+        // DA-level reference (e.g. C1/TVTR1.Vol.instMag)
+        if (parts.length == 3) {
+            for (SclDAI dai : doi.getDais()) {
+                if (dai.getName().equals(daName) && dai.getValue() != null && !dai.getValue().isEmpty()) {
+                    String bType = SclTypeResolver.resolveBType(server, templates, ldName, lnName, parts[1], daName);
+                    return SclTypeResolver.createTypedValue(bType, dai.getValue());
+                }
+            }
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        // SDI.BDA-level reference (e.g. C1/MMXU1.Volts.sVC.offset)
+        if (parts.length == 4) {
+            String sdiName = parts[2];
+            String bdaName = parts[3];
+            SclSDI sdi = findSdi(doi, sdiName);
+            if (sdi == null) {
+                return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            for (SclDAI dai : sdi.getDais()) {
+                if (dai.getName().equals(bdaName) && dai.getValue() != null && !dai.getValue().isEmpty()) {
+                    String bType = SclTypeResolver.resolveSdiBType(server, templates, ldName, lnName, parts[1], sdiName, bdaName);
+                    return SclTypeResolver.createTypedValue(bType, dai.getValue());
+                }
+            }
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+    }
+
+    private SclDOI findDoiInDevice(SclIED.SclLDevice device, String lnName, String doName) {
+        if (device.getLn0() != null) {
+            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
+            if (ln0Name.equals(lnName)) {
+                if (doName == null) return null;
+                for (SclDOI doi : device.getLn0().getDois()) {
+                    if (doi.getName().equals(doName)) return doi;
+                }
+                return null;
+            }
+        }
+        for (SclIED.SclLN ln : device.getLns()) {
+            String curLnName = ln.getLnClass() + ln.getInst();
+            if (curLnName.equals(lnName)) {
+                if (doName == null) return null;
+                for (SclDOI doi : ln.getDois()) {
+                    if (doi.getName().equals(doName)) return doi;
+                }
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private SclSDI findSdi(SclDOI doi, String sdiName) {
+        if (doi.getSdis() == null) return null;
+        for (SclSDI sdi : doi.getSdis()) {
+            if (sdi.getName().equals(sdiName)) {
+                return sdi;
+            }
+        }
+        return null;
     }
 
     private SclIED.SclDataSet findDataSet(SclIED.SclLDevice device, String ref) {

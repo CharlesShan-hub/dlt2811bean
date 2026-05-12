@@ -7,6 +7,11 @@ import com.ysh.dlt2811bean.cli.handler.data.GetDataDefinitionHandler;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataDirectoryHandler;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.data.SetDataValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.dataset.GetDataSetDirectoryHandler;
+import com.ysh.dlt2811bean.cli.handler.dataset.GetDataSetValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.dataset.SetDataSetValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.dataset.CreateDataSetHandler;
+import com.ysh.dlt2811bean.cli.handler.dataset.DeleteDataSetHandler;
 import com.ysh.dlt2811bean.cli.handler.directory.*;
 import com.ysh.dlt2811bean.cli.handler.negotiation.NegotiateHandler;
 import com.ysh.dlt2811bean.cli.handler.test.TestHandler;
@@ -120,6 +125,10 @@ public class CmsClientCli {
                                             pool = cachedValues;
                                         } else if ("set-data-values".equals(cmdName)) {
                                             pool = ctx.getCachedDaRefs();
+                                        } else if ("get-dataset-values".equals(cmdName) || "get-dataset-dir".equals(cmdName)
+                                                || "create-dataset".equals(cmdName) || "delete-dataset".equals(cmdName)
+                                                || "set-dataset-values".equals(cmdName)) {
+                                            pool = cachedRefs;
                                         } else {
                                             pool = cachedRefs;
                                         }
@@ -182,6 +191,11 @@ public class CmsClientCli {
         register(new SetDataValuesHandler(ctx));
         register(new GetDataDirectoryHandler(ctx));
         register(new GetDataDefinitionHandler(ctx));
+        register(new GetDataSetValuesHandler(ctx));
+        register(new SetDataSetValuesHandler(ctx));
+        register(new CreateDataSetHandler(ctx));
+        register(new DeleteDataSetHandler(ctx));
+        register(new GetDataSetDirectoryHandler(ctx));
         register(new CliSettingHandler(ctx));
         register(new ClearHandler(ctx));
     }
@@ -382,6 +396,7 @@ public class CmsClientCli {
             case "ld-dir" -> paramIdx == 0;
             case "ln-dir", "get-all-values", "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
             case "get-data-values", "set-data-values" -> paramIdx == 0;
+            case "get-dataset-values", "set-dataset-values", "get-dataset-dir", "create-dataset", "delete-dataset" -> paramIdx == 0;
             default -> false;
         };
     }
