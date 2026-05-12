@@ -6,9 +6,11 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
+import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.sv.GetMSVCBValuesHandler.svEnaState;
 
 public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCBValues> {
 
@@ -26,8 +28,13 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
 
         CmsArray<CmsSetMSVCBValuesResultEntry> results = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new);
         for (int i = 0; i < asdu.msvcb.size(); i++) {
+            CmsSetMSVCBValuesEntry entry = asdu.msvcb.get(i);
             CmsSetMSVCBValuesResultEntry result = new CmsSetMSVCBValuesResultEntry();
-            // Accept all fields as successful
+
+            if (entry.svEna.isPresent()) {
+                svEnaState.put(entry.reference.get(), entry.svEna.get());
+            }
+
             results.add(result);
         }
 

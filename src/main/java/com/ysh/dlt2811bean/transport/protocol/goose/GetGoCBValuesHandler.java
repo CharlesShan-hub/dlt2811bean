@@ -15,6 +15,8 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBValues> {
 
+    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> goEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+
     public GetGoCBValuesHandler() {
         super(ServiceName.GET_GOCB_VALUES, CmsGetGoCBValues::new);
     }
@@ -68,7 +70,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
                     if (gse.getConfRev() != null) {
                         gocb.confRev.set(Long.parseLong(gse.getConfRev()));
                     }
-                    gocb.goEna.set(false);
+                    gocb.goEna.set(goEnaState.getOrDefault(gseRef, false));
                     gocb.ndsCom.set(false);
                     gocb.dstAddress.addr(new byte[]{0x01, 0x0C, (byte)0xCD, 0x01, 0x00, 0x01})
                             .priority(4).vid(0).appid(0x0001);

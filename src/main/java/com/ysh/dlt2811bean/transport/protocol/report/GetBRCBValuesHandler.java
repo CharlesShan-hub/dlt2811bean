@@ -15,6 +15,8 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBValues> {
 
+    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> rptEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+
     public GetBRCBValuesHandler() {
         super(ServiceName.GET_BRCB_VALUES, CmsGetBRCBValues::new);
     }
@@ -73,7 +75,7 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
                     if (rc.getConfRev() != null) {
                         brcb.confRev.set(Long.parseLong(rc.getConfRev()));
                     }
-                    brcb.rptEna.set(false);
+                    brcb.rptEna.set(rptEnaState.getOrDefault(rcRef, false));
                     brcb.purgeBuf.set(false);
                     brcb.gi.set(false);
                     choice.selectBrcb().brcb = brcb;

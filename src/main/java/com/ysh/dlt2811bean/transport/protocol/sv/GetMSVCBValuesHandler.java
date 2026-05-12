@@ -16,6 +16,8 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCBValues> {
 
+    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> svEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+
     public GetMSVCBValuesHandler() {
         super(ServiceName.GET_MSVCB_VALUES, CmsGetMSVCBValues::new);
     }
@@ -68,7 +70,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
                     msvcb.datSet.set(svc.getDatSet() != null ? svc.getDatSet() : "");
                     msvcb.confRev.set(svc.getConfRev() != null ? Long.parseLong(svc.getConfRev()) : 1L);
                     msvcb.smpRate.set(svc.getSmpRate());
-                    msvcb.svEna.set(false);
+                    msvcb.svEna.set(svEnaState.getOrDefault(svcRef, false));
                     msvcb.smpMod.set(CmsSmpMod.SAMPLES_PER_NOMINAL_PERIOD);
                     msvcb.dstAddress.addr(new byte[]{0x01, 0x0C, (byte)0xCD, 0x01, 0x00, 0x01})
                             .priority(4).vid(0).appid(0x0001);

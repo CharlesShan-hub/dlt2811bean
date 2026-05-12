@@ -12,6 +12,25 @@ import com.ysh.dlt2811bean.cli.handler.dataset.GetDataSetValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.dataset.SetDataSetValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.dataset.CreateDataSetHandler;
 import com.ysh.dlt2811bean.cli.handler.dataset.DeleteDataSetHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.SelectActiveSGHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.SelectEditSGHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.SetEditSGValueHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.ConfirmEditSGValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.GetEditSGValueHandler;
+import com.ysh.dlt2811bean.cli.handler.setting.GetSGCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.report.GetBRCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.report.SetBRCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.report.GetURCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.report.SetURCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.log.GetLCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.log.SetLCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.log.QueryLogByTimeHandler;
+import com.ysh.dlt2811bean.cli.handler.log.QueryLogAfterHandler;
+import com.ysh.dlt2811bean.cli.handler.log.GetLogStatusValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.goose.GetGoCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.goose.SetGoCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.sv.GetMSVCBValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.sv.SetMSVCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.directory.*;
 import com.ysh.dlt2811bean.cli.handler.negotiation.NegotiateHandler;
 import com.ysh.dlt2811bean.cli.handler.test.TestHandler;
@@ -127,7 +146,17 @@ public class CmsClientCli {
                                             pool = ctx.getCachedDaRefs();
                                         } else if ("get-dataset-values".equals(cmdName) || "get-dataset-dir".equals(cmdName)
                                                 || "create-dataset".equals(cmdName) || "delete-dataset".equals(cmdName)
-                                                || "set-dataset-values".equals(cmdName)) {
+                                                || "set-dataset-values".equals(cmdName)
+                                                || "select-active-sg".equals(cmdName) || "select-edit-sg".equals(cmdName)
+                                                || "set-edit-sg-value".equals(cmdName) || "confirm-edit-sg".equals(cmdName)
+                                                || "get-edit-sg-value".equals(cmdName) || "get-sgcb-values".equals(cmdName)
+                                                 || "get-brcb-values".equals(cmdName) || "set-brcb-values".equals(cmdName)
+                                                 || "get-urcb-values".equals(cmdName) || "set-urcb-values".equals(cmdName)
+                                                  || "get-lcb-values".equals(cmdName) || "set-lcb-values".equals(cmdName)
+                                                   || "query-log-by-time".equals(cmdName) || "query-log-after".equals(cmdName)
+                                                   || "get-log-status".equals(cmdName)
+                                                   || "get-gocb-values".equals(cmdName) || "set-gocb-values".equals(cmdName)
+                                                    || "msvcb-val".equals(cmdName) || "set-msvcb".equals(cmdName)) {
                                             pool = cachedRefs;
                                         } else {
                                             pool = cachedRefs;
@@ -196,6 +225,25 @@ public class CmsClientCli {
         register(new CreateDataSetHandler(ctx));
         register(new DeleteDataSetHandler(ctx));
         register(new GetDataSetDirectoryHandler(ctx));
+        register(new SelectActiveSGHandler(ctx));
+        register(new SelectEditSGHandler(ctx));
+        register(new SetEditSGValueHandler(ctx));
+        register(new ConfirmEditSGValuesHandler(ctx));
+        register(new GetEditSGValueHandler(ctx));
+        register(new GetSGCBValuesHandler(ctx));
+        register(new GetBRCBValuesHandler(ctx));
+        register(new SetBRCBValuesHandler(ctx));
+        register(new GetURCBValuesHandler(ctx));
+        register(new SetURCBValuesHandler(ctx));
+        register(new GetLCBValuesHandler(ctx));
+        register(new SetLCBValuesHandler(ctx));
+        register(new QueryLogByTimeHandler(ctx));
+        register(new QueryLogAfterHandler(ctx));
+        register(new GetLogStatusValuesHandler(ctx));
+        register(new GetGoCBValuesHandler(ctx));
+        register(new SetGoCBValuesHandler(ctx));
+        register(new GetMSVCBValuesHandler(ctx));
+        register(new SetMSVCBValuesHandler(ctx));
         register(new CliSettingHandler(ctx));
         register(new ClearHandler(ctx));
     }
@@ -397,6 +445,11 @@ public class CmsClientCli {
             case "ln-dir", "get-all-values", "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
             case "get-data-values", "set-data-values" -> paramIdx == 0;
             case "get-dataset-values", "set-dataset-values", "get-dataset-dir", "create-dataset", "delete-dataset" -> paramIdx == 0;
+            case "select-active-sg", "select-edit-sg", "set-edit-sg-value", "confirm-edit-sg", "get-edit-sg-value", "get-sgcb-values" -> paramIdx == 0;
+            case "get-brcb-values", "set-brcb-values", "get-urcb-values", "set-urcb-values" -> paramIdx == 0;
+            case "get-lcb-values", "set-lcb-values", "query-log-by-time", "query-log-after", "get-log-status" -> paramIdx == 0;
+            case "get-gocb-values", "set-gocb-values" -> paramIdx == 0;
+            case "msvcb-val", "set-msvcb" -> paramIdx == 0;
             default -> false;
         };
     }

@@ -15,6 +15,8 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValues> {
 
+    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> logEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+
     public GetLCBValuesHandler() {
         super(ServiceName.GET_LCB_VALUES, CmsGetLCBValues::new);
     }
@@ -69,7 +71,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
                     if (lc.getLogName() != null) {
                         lcb.logRef.set(lc.getLogName());
                     }
-                    lcb.logEna.set(false);
+                    lcb.logEna.set(logEnaState.getOrDefault(lcRef, false));
                     choice.selectValue().value = lcb;
                     return choice;
                 }

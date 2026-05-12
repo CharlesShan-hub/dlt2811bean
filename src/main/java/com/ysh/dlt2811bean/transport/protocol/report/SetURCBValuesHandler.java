@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEn
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -78,6 +79,10 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
         CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
 
         Set<UrcbField> requested = getRequestedFields(entry);
+
+        if (requested.contains(UrcbField.RPT_ENA)) {
+            rptEnaState.put(entry.reference.get(), entry.rptEna.get());
+        }
 
         if (requested.contains(UrcbField.RPT_ENA) && !entry.rptEna.get()) {
             result.rptEna.set(CmsServiceError.NO_ERROR);

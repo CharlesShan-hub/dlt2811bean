@@ -60,6 +60,8 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
                 String lcRef = ld.getInst() + "/LLN0." + lc.getName();
                 if (lcRef.equals(ref)) {
                     choice.selectValue();
+                    choice.value.oldEntr.set(new byte[8]);
+                    choice.value.newEntr.set(new byte[8]);
                     return choice;
                 }
             }

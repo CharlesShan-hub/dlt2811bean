@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.transport.goose.GooseConfig;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.goose.GetGoCBValuesHandler.goEnaState;
 
 public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBValues> {
 
@@ -40,19 +41,22 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
             CmsSetGoCBValuesEntry entry = asdu.gocb.get(i);
             CmsSetGoCBValuesResultEntry result = new CmsSetGoCBValuesResultEntry();
 
-            if (entry.goEna.isPresent() && goosePublisher != null) {
+            if (entry.goEna.isPresent()) {
                 String goCBRef = entry.reference.get();
                 boolean goEna = entry.goEna.get();
-                if (goEna) {
-                    GooseConfig config = GooseConfig.builder()
-                            .goCBRef(goCBRef)
-                            .goID(entry.goID.isPresent() ? entry.goID.get() : goCBRef)
-                            .build();
-                    goosePublisher.start(config);
-                    log.info("GOOSE publishing started via SetGoCBValues: {}", goCBRef);
-                } else {
-                    goosePublisher.stop(goCBRef);
-                    log.info("GOOSE publishing stopped via SetGoCBValues: {}", goCBRef);
+                goEnaState.put(goCBRef, goEna);
+                if (goosePublisher != null) {
+                    if (goEna) {
+                        GooseConfig config = GooseConfig.builder()
+                                .goCBRef(goCBRef)
+                                .goID(entry.goID.isPresent() ? entry.goID.get() : goCBRef)
+                                .build();
+                        goosePublisher.start(config);
+                        log.info("GOOSE publishing started via SetGoCBValues: {}", goCBRef);
+                    } else {
+                        goosePublisher.stop(goCBRef);
+                        log.info("GOOSE publishing stopped via SetGoCBValues: {}", goCBRef);
+                    }
                 }
             }
 

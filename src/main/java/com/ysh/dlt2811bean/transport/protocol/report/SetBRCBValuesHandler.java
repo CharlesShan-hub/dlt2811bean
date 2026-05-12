@@ -11,6 +11,7 @@ import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.report.GetBRCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -73,6 +74,10 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
 
     private int processEntry(CmsSetBRCBValuesEntry entry) {
         Set<BrcbField> requested = getRequestedFields(entry);
+
+        if (requested.contains(BrcbField.RPT_ENA)) {
+            rptEnaState.put(entry.reference.get(), entry.rptEna.get());
+        }
 
         if (requested.contains(BrcbField.RPT_ENA) && !entry.rptEna.get()) {
             requested.remove(BrcbField.RPT_ENA);

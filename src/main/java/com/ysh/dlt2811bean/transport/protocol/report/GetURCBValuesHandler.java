@@ -15,6 +15,8 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBValues> {
 
+    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> rptEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+
     public GetURCBValuesHandler() {
         super(ServiceName.GET_URCB_VALUES, CmsGetURCBValues::new);
     }
@@ -73,7 +75,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
                     if (rc.getConfRev() != null) {
                         urcb.confRev.set(Long.parseLong(rc.getConfRev()));
                     }
-                    urcb.rptEna.set(false);
+                    urcb.rptEna.set(rptEnaState.getOrDefault(rcRef, false));
                     urcb.resv.set(false);
                     urcb.gi.set(false);
                     choice.selectValue().value = urcb;

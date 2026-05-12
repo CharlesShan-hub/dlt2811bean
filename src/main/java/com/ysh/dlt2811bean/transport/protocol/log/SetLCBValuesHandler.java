@@ -12,6 +12,7 @@ import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEn
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.log.GetLCBValuesHandler.logEnaState;
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -88,6 +89,10 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
         CmsSetLCBValuesResultEntry result = new CmsSetLCBValuesResultEntry();
 
         Set<LcbField> requested = getRequestedFields(entry);
+
+        if (requested.contains(LcbField.LOG_ENA)) {
+            logEnaState.put(entry.reference.get(), entry.logEna.get());
+        }
 
         if (requested.contains(LcbField.LOG_ENA) && !entry.logEna.get()) {
             // logEna=False: set logEna first

@@ -11,6 +11,13 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.info.LnInfo;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.scl.SclReader;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.SclDocument;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclIED;
 import java.util.List;
 import java.util.function.Function;
 
@@ -110,5 +117,58 @@ public abstract class AbstractServiceHandler implements CommandHandler {
         for (int i = 0; i < items.size(); i++) {
             System.out.println("    " + cyan("[" + i + "]") + " " + formatter.apply(items.get(i)));
         }
+    }
+
+    protected CmsType<?> parseControlValue(String ref, String value) {
+        try {
+            String sclPath = config.getServer().getSclFile();
+            SclDocument doc = new SclReader().read(sclPath);
+            SclIED.SclServer server = findFirstServer(doc);
+            SclDataTypeTemplates templates = doc != null ? doc.getDataTypeTemplates() : null;
+            if (server == null || templates == null) {
+                return new CmsBoolean(value.equalsIgnoreCase("true"));
+            }
+            String bType = resolveBType(ref, server, templates);
+            if (bType != null) {
+                return SclTypeResolver.createTypedValue(bType, value);
+            }
+        } catch (Exception e) {
+            // fall through
+        }
+        return new CmsBoolean(value.equalsIgnoreCase("true"));
+    }
+
+    private SclIED.SclServer findFirstServer(SclDocument sclDocument) {
+        if (sclDocument == null || sclDocument.getIeds() == null) return null;
+        for (SclIED ied : sclDocument.getIeds()) {
+            if (ied.getAccessPoints() != null) {
+                for (SclIED.SclAccessPoint ap : ied.getAccessPoints()) {
+                    if (ap.getServer() != null) {
+                        return ap.getServer();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private String resolveBType(String ref, SclIED.SclServer server, SclDataTypeTemplates templates) {
+        if (server == null || templates == null) return null;
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        String[] parts = rest.split("\\.");
+        if (parts.length < 2) return null;
+        String lnName = parts[0];
+        String doName = parts[1];
+        if (parts.length >= 3) {
+            return SclTypeResolver.resolveBType(server, templates, ldName, lnName, doName, parts[2]);
+        }
+        var das = SclTypeResolver.listDasFromType(server, templates, ldName, lnName, doName);
+        if (das != null && !das.isEmpty()) {
+            return SclTypeResolver.resolveBType(server, templates, ldName, lnName, doName, das.get(0).getName());
+        }
+        return null;
     }
 }
