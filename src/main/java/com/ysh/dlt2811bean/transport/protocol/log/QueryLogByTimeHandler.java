@@ -43,7 +43,7 @@ public class QueryLogByTimeHandler extends AbstractCmsServiceHandler<CmsQueryLog
 
         CmsQueryLogByTime response = new CmsQueryLogByTime(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get());
-        response.logEntry = new CmsArray<>(CmsLogEntry::new).capacity(100);
+        response.logEntry = new CmsArray<>(CmsLogEntry::new);
         response.moreFollows.set(false);
 
         return new CmsApdu(response);

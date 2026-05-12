@@ -55,7 +55,7 @@ public class GetDataSetDirectoryHandler extends AbstractCmsServiceHandler<CmsGet
         String afterRef = asdu.referenceAfter.get();
         boolean skipUntilAfter = afterRef != null && !afterRef.isEmpty();
 
-        CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+        CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new);
         boolean foundAfter = false;
 
         for (SclIED.SclFCDA fcda : dataSet.getFcdaList()) {

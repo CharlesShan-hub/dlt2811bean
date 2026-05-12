@@ -24,7 +24,7 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
             return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        CmsArray<CmsSetMSVCBValuesResultEntry> results = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new).capacity(100);
+        CmsArray<CmsSetMSVCBValuesResultEntry> results = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new);
         for (int i = 0; i < asdu.msvcb.size(); i++) {
             CmsSetMSVCBValuesResultEntry result = new CmsSetMSVCBValuesResultEntry();
             // Accept all fields as successful

@@ -30,7 +30,7 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorBrcbChoice> choices = new CmsArray<>(CmsErrorBrcbChoice::new).capacity(100);
+        CmsArray<CmsErrorBrcbChoice> choices = new CmsArray<>(CmsErrorBrcbChoice::new);
 
         for (int i = 0; i < asdu.brcbReference.size(); i++) {
             String ref = asdu.brcbReference.get(i).get();

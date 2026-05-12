@@ -38,7 +38,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
 
-        CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(100);
+        CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.urcb.size(); i++) {

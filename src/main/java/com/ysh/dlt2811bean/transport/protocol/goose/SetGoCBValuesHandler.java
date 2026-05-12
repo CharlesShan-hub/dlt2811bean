@@ -35,7 +35,7 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
             return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        CmsArray<CmsSetGoCBValuesResultEntry> results = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(100);
+        CmsArray<CmsSetGoCBValuesResultEntry> results = new CmsArray<>(CmsSetGoCBValuesResultEntry::new);
         for (int i = 0; i < asdu.gocb.size(); i++) {
             CmsSetGoCBValuesEntry entry = asdu.gocb.get(i);
             CmsSetGoCBValuesResultEntry result = new CmsSetGoCBValuesResultEntry();

@@ -56,7 +56,7 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
         String afterRef = asdu.referenceAfter.get();
         boolean skipUntilAfter = afterRef != null && !afterRef.isEmpty();
 
-        CmsStructure values = new CmsStructure().capacity(100);
+        CmsStructure values = new CmsStructure();
         boolean foundAfter = false;
 
         for (SclIED.SclFCDA fcda : dataSet.getFcdaList()) {

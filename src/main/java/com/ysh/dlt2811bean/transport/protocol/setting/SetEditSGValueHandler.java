@@ -24,7 +24,7 @@ public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditS
                     .reqId(asdu.reqId().get()));
         }
 
-        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new).capacity(100);
+        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.data.size(); i++) {

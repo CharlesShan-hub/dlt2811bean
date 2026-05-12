@@ -31,7 +31,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorMsvcbChoice> choices = new CmsArray<>(CmsErrorMsvcbChoice::new).capacity(100);
+        CmsArray<CmsErrorMsvcbChoice> choices = new CmsArray<>(CmsErrorMsvcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();

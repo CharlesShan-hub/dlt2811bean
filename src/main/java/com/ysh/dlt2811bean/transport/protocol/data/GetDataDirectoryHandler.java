@@ -73,7 +73,7 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             }
         }
 
-        CmsArray<CmsGetDataDirectoryEntry> responseEntries = new CmsArray<>(CmsGetDataDirectoryEntry::new).capacity(100);
+        CmsArray<CmsGetDataDirectoryEntry> responseEntries = new CmsArray<>(CmsGetDataDirectoryEntry::new);
         for (CmsGetDataDirectoryEntry entry : allEntries) {
             responseEntries.add(entry);
         }

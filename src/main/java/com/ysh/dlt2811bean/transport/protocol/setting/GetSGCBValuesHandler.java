@@ -30,7 +30,7 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorSgcbChoice> choices = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
+        CmsArray<CmsErrorSgcbChoice> choices = new CmsArray<>(CmsErrorSgcbChoice::new);
 
         for (int i = 0; i < asdu.sgcbReference.size(); i++) {
             String ref = asdu.sgcbReference.get(i).get();

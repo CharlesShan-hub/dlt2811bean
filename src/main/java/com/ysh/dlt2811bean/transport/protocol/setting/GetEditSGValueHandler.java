@@ -22,7 +22,7 @@ public class GetEditSGValueHandler extends AbstractCmsServiceHandler<CmsGetEditS
 
         CmsGetEditSGValue response = new CmsGetEditSGValue(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get());
-        response.value = new CmsStructure().capacity(100);
+        response.value = new CmsStructure();
         response.moreFollows.set(false);
 
         return new CmsApdu(response);

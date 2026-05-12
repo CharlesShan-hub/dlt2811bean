@@ -55,7 +55,7 @@ public class GetServerDirectoryHandler extends AbstractCmsServiceHandler<CmsGetS
             }
         }
 
-        CmsArray<CmsObjectReference> refs = new CmsArray<>(CmsObjectReference::new).capacity(100);
+        CmsArray<CmsObjectReference> refs = new CmsArray<>(CmsObjectReference::new);
         for (int i = startIndex; i < lDevices.size(); i++) {
             refs.add(new CmsObjectReference(lDevices.get(i).getInst()));
         }

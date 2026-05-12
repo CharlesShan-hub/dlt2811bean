@@ -38,7 +38,7 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
 
-        CmsArray<CmsSetLCBValuesResultEntry> results = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
+        CmsArray<CmsSetLCBValuesResultEntry> results = new CmsArray<>(CmsSetLCBValuesResultEntry::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.lcb.size(); i++) {

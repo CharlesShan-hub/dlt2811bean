@@ -29,7 +29,7 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorLogStatusChoice> choices = new CmsArray<>(CmsErrorLogStatusChoice::new).capacity(100);
+        CmsArray<CmsErrorLogStatusChoice> choices = new CmsArray<>(CmsErrorLogStatusChoice::new);
 
         for (int i = 0; i < asdu.logReference.size(); i++) {
             String ref = asdu.logReference.get(i).get();

@@ -30,7 +30,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorUrcbChoice> choices = new CmsArray<>(CmsErrorUrcbChoice::new).capacity(100);
+        CmsArray<CmsErrorUrcbChoice> choices = new CmsArray<>(CmsErrorUrcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();

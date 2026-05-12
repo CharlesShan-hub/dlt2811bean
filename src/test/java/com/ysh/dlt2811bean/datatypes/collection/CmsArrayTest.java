@@ -97,24 +97,6 @@ class CmsArrayTest {
     }
 
     @Test
-    @DisplayName("encode without capacity throws exception")
-    void encodeWithoutCapacity() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32::new);
-        array.add(new CmsInt32(1));
-
-        PerOutputStream pos = new PerOutputStream();
-        assertThrows(IllegalStateException.class, () -> array.encode(pos));
-    }
-
-    @Test
-    @DisplayName("decode without capacity throws exception")
-    void decodeWithoutCapacity() {
-        CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32::new);
-        PerInputStream pis = new PerInputStream(new byte[0]);
-        assertThrows(IllegalStateException.class, () -> array.decode(pis));
-    }
-
-    @Test
     @DisplayName("add null throws exception")
     void addNull() {
         CmsArray<CmsInt32> array = new CmsArray<>(CmsInt32::new).capacity(10);

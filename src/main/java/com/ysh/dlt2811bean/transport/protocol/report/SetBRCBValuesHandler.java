@@ -37,7 +37,7 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
 
         SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
 
-        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new).capacity(100);
+        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.brcb.size(); i++) {

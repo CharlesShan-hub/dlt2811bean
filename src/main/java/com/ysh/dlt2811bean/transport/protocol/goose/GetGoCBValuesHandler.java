@@ -30,7 +30,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorGocbChoice> choices = new CmsArray<>(CmsErrorGocbChoice::new).capacity(100);
+        CmsArray<CmsErrorGocbChoice> choices = new CmsArray<>(CmsErrorGocbChoice::new);
 
         for (int i = 0; i < asdu.gocbReference.size(); i++) {
             String ref = asdu.gocbReference.get(i).get();

@@ -72,7 +72,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
                     memberCount, availableMembers, startIndex);
         }
 
-        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new).capacity(100);
+        CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < memberCount; i++) {

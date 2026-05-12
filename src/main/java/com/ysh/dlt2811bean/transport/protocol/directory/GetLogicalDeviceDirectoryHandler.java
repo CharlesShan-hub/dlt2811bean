@@ -67,7 +67,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
             }
         }
 
-        CmsArray<CmsSubReference> refs = new CmsArray<>(CmsSubReference::new).capacity(100);
+        CmsArray<CmsSubReference> refs = new CmsArray<>(CmsSubReference::new);
         for (int i = startIndex; i < lnRefs.size(); i++) {
             refs.add(new CmsSubReference(lnRefs.get(i)));
         }

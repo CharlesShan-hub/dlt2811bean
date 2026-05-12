@@ -30,7 +30,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsErrorLcbChoice> choices = new CmsArray<>(CmsErrorLcbChoice::new).capacity(100);
+        CmsArray<CmsErrorLcbChoice> choices = new CmsArray<>(CmsErrorLcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();
