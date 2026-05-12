@@ -3,6 +3,9 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -33,6 +36,9 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        SclIED.SclServer server = accessPoint.getServer();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
+
         CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new);
 
         for (int i = 0; i < asdu.data.size(); i++) {
@@ -45,7 +51,7 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
                 continue;
             }
 
-            CmsGetDataDefinitionEntry defEntry = buildDefinition(accessPoint.getServer(), ref, fc);
+            CmsGetDataDefinitionEntry defEntry = buildDefinition(server, templates, ref, fc);
             definitions.add(defEntry);
         }
 
@@ -65,7 +71,8 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
         return defEntry.definition(def);
     }
 
-    private CmsGetDataDefinitionEntry buildDefinition(SclIED.SclServer server, String ref, String fc) {
+    private CmsGetDataDefinitionEntry buildDefinition(SclIED.SclServer server, SclDataTypeTemplates templates,
+                                                        String ref, String fc) {
         CmsGetDataDefinitionEntry defEntry = new CmsGetDataDefinitionEntry();
 
         int slashIdx = ref.indexOf('/');
@@ -91,32 +98,133 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
 
         String doName = parts[1];
         SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
-        if (doi == null) {
-            return defEntry.definition(buildErrorDef());
-        }
 
         boolean isDataAttribute = parts.length > 2;
 
         if (isDataAttribute) {
-            defEntry.cdcType("");
+            String cdc = (templates != null)
+                ? SclTypeResolver.resolveCdc(server, templates, ldName, lnName, doName)
+                : null;
+            defEntry.cdcType(cdc != null ? cdc : "");
+
             String daName = parts[parts.length - 1];
             if (parts.length == 3) {
-                defEntry.definition(buildDaDefinition(doi.getDais(), daName));
-            } else {
-                String sdiName = parts[2];
-                SclIED.SclSDI sdi = findSdi(doi, sdiName);
-                if (sdi == null) {
-                    defEntry.definition(buildErrorDef());
+                // Always use type template for bType
+                if (templates != null) {
+                    defEntry.definition(buildDaDefinitionFromType(server, templates, ldName, lnName, doName, daName));
                 } else {
-                    defEntry.definition(buildDaDefinition(sdi.getDais(), daName));
+                    defEntry.definition(buildErrorDef());
                 }
+            } else if (parts.length == 4) {
+                String sdiName = parts[2];
+                // For SDI/DA (e.g. sVC.offset), use resolveSdiBType
+                if (templates != null) {
+                    String bType = SclTypeResolver.resolveSdiBType(server, templates, ldName, lnName, doName, sdiName, daName);
+                    if (bType != null) {
+                        defEntry.definition(bTypeToDataDefinition(bType));
+                    } else {
+                        defEntry.definition(buildErrorDef());
+                    }
+                } else {
+                    defEntry.definition(buildErrorDef());
+                }
+            } else {
+                defEntry.definition(buildErrorDef());
             }
         } else {
-            defEntry.cdcType("SPC");
-            defEntry.definition(buildDoDefinition(doi));
+            String cdc = (templates != null)
+                ? SclTypeResolver.resolveCdc(server, templates, ldName, lnName, doName)
+                : "SPC";
+            defEntry.cdcType(cdc != null ? cdc : "SPC");
+
+            // Always use type template for DO definition
+            if (templates != null) {
+                defEntry.definition(buildDoDefinitionFromType(server, templates, ldName, lnName, doName));
+            } else {
+                defEntry.definition(buildErrorDef());
+            }
         }
 
         return defEntry;
+    }
+
+    /**
+     * Builds a DO definition from type templates (when no instance DOI exists).
+     */
+    private CmsDataDefinition buildDoDefinitionFromType(SclIED.SclServer server, SclDataTypeTemplates templates,
+                                                         String ldName, String lnName, String doName) {
+        List<SclDA> das = SclTypeResolver.listDasFromType(server, templates, ldName, lnName, doName);
+        if (das == null || das.isEmpty()) {
+            return buildErrorDef();
+        }
+        List<CmsDataDefinition.StructureEntry> entries = new ArrayList<>();
+        for (SclDA da : das) {
+            entries.add(new CmsDataDefinition.StructureEntry(
+                    da.getName(), bTypeToDataDefinition(da.getBType())));
+        }
+        // Also add SDOs
+        SclDataTypeTemplates.SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, doName);
+        if (doObj != null) {
+            SclDataTypeTemplates.SclDOType dot = templates.findDoTypeById(doObj.getType());
+            if (dot != null) {
+                for (SclDataTypeTemplates.SclSDO sdo : dot.getSdos()) {
+                    entries.add(new CmsDataDefinition.StructureEntry(
+                            sdo.getName(), CmsDataDefinition.ofBoolean()));
+                }
+            }
+        }
+        return CmsDataDefinition.ofStructure(entries);
+    }
+
+    /**
+     * Builds a DA definition from type templates (when no instance DAI exists).
+     */
+    private CmsDataDefinition buildDaDefinitionFromType(SclIED.SclServer server, SclDataTypeTemplates templates,
+                                                         String ldName, String lnName, String doName, String daName) {
+        String bType = SclTypeResolver.resolveBType(server, templates, ldName, lnName, doName, daName);
+        if (bType == null) {
+            return buildErrorDef();
+        }
+        return bTypeToDataDefinition(bType);
+    }
+
+    /**
+     * Converts an SCL bType string to a CmsDataDefinition.
+     */
+    private CmsDataDefinition bTypeToDataDefinition(String bType) {
+        if (bType == null) return CmsDataDefinition.ofBoolean();
+        switch (bType.toUpperCase()) {
+            case "BOOLEAN": return CmsDataDefinition.ofBoolean();
+            case "INT8": return CmsDataDefinition.ofInt8();
+            case "INT16": return CmsDataDefinition.ofInt16();
+            case "INT32": return CmsDataDefinition.ofInt32();
+            case "INT64": return CmsDataDefinition.ofInt64();
+            case "INT8U": return CmsDataDefinition.ofInt8U();
+            case "INT16U": return CmsDataDefinition.ofInt16U();
+            case "INT32U": return CmsDataDefinition.ofInt32U();
+            case "INT64U": return CmsDataDefinition.ofInt64U();
+            case "FLOAT32": return CmsDataDefinition.ofFloat32();
+            case "FLOAT64": return CmsDataDefinition.ofFloat64();
+            case "BIT_STRING":
+            case "BITSTRING": return CmsDataDefinition.ofBitString(0);
+            case "OCTET_STRING":
+            case "OCTETSTRING": return CmsDataDefinition.ofOctetString(-255);
+            case "VISSTRING255":
+            case "VISIBLE_STRING": return CmsDataDefinition.ofVisibleString(-255);
+            case "UNICODE_STRING":
+            case "UNICODESTRING": return CmsDataDefinition.ofUnicodeString(-255);
+            case "UTC_TIME":
+            case "UTCTIME": return CmsDataDefinition.ofUtcTime();
+            case "BINARY_TIME":
+            case "BINARYTIME":
+            case "ENTRYTIME": return CmsDataDefinition.ofBinaryTime();
+            case "QUALITY": return CmsDataDefinition.ofQuality();
+            case "DBPOS": return CmsDataDefinition.ofDbpos();
+            case "TCMD": return CmsDataDefinition.ofTcmd();
+            case "CHECK": return CmsDataDefinition.ofCheck();
+            case "STRUCT": return CmsDataDefinition.ofBoolean(); // fallback for struct
+            default: return CmsDataDefinition.ofBoolean();
+        }
     }
 
     private CmsDataDefinition buildErrorDef() {

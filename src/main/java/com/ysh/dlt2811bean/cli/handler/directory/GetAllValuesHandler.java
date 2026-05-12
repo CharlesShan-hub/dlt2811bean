@@ -38,5 +38,12 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         List<CmsDataEntry> entries = asdu.data().toList();
         printList("Data values (" + entries.size() + " entries)", entries,
                 item -> item.reference().get() + " = " + item.value());
+
+        // Refresh cachedValues for Tab completion
+        java.util.Set<String> cachedValues = ctx.getCachedValues();
+        String prefix = target.contains("/") ? target + "." : target + "/";
+        for (CmsDataEntry entry : entries) {
+            cachedValues.add(prefix + entry.reference().get());
+        }
     }
 }

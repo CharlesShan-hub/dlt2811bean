@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.session;
 
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 
@@ -27,6 +28,7 @@ public class CmsServerSession extends CmsSession {
     private volatile String iedName;
     private volatile String accessPointName;
     private volatile SclIED.SclAccessPoint sclAccessPoint;
+    private volatile SclDataTypeTemplates sclDataTypeTemplates;
 
     public CmsServerSession(CmsConnection connection) {
         super("srv-" + connection.getSocket().getPort(), connection);
@@ -95,6 +97,14 @@ public class CmsServerSession extends CmsSession {
      */
     public SclIED.SclAccessPoint getSclAccessPoint() {
         return sclAccessPoint;
+    }
+
+    public SclDataTypeTemplates getSclDataTypeTemplates() {
+        return sclDataTypeTemplates;
+    }
+
+    public void setSclDataTypeTemplates(SclDataTypeTemplates templates) {
+        this.sclDataTypeTemplates = templates;
     }
 
     // ==================== Attributes ====================

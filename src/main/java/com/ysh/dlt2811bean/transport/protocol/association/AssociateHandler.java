@@ -104,6 +104,10 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
 
             // Save AccessPoint info to session
             serverSession.setAccessPoint(sapRef, iedName, apName, accessPoint);
+            // Save DataTypeTemplates for type resolution
+            if (sclDocument != null) {
+                serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
+            }
         }
 
         // 3. Validate authentication parameter if required

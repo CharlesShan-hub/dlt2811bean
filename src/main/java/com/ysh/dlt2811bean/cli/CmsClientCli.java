@@ -8,6 +8,8 @@ import com.ysh.dlt2811bean.cli.handler.data.GetDataDirectoryHandler;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.data.SetDataValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.directory.*;
+import com.ysh.dlt2811bean.cli.handler.negotiation.NegotiateHandler;
+import com.ysh.dlt2811bean.cli.handler.test.TestHandler;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;

@@ -2,6 +2,9 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -12,7 +15,9 @@ import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDataDirectory> {
 
@@ -31,6 +36,9 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        SclIED.SclServer server = accessPoint.getServer();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
+
         String ref = asdu.dataReference.get();
         if (ref == null || ref.isEmpty()) {
             return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -45,7 +53,7 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
         String rest = ref.substring(slashIdx + 1);
         String[] parts = rest.split("\\.");
 
-        SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
+        SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -62,22 +70,25 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
 
         List<CmsGetDataDirectoryEntry> allEntries;
         if (doName == null) {
-            // LN level: list all DOIs under this LN
-            List<SclIED.SclDOI> dois = findDoisInLn(device, lnName);
-            if (dois == null) {
+            // LN level: list all DOs (merge instance + type templates)
+            allEntries = buildLnDirectoryEntries(device, server, templates, lnName);
+            if (allEntries == null) {
                 return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-            allEntries = new ArrayList<>();
-            for (SclIED.SclDOI doi : dois) {
-                allEntries.addAll(buildDirectoryEntries(doi, ""));
             }
         } else {
-            // DO level: find specific DOI and list its DAIs/SDIs
+            // DO level: find specific DOI or use type templates
             SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
-            if (doi == null) {
+            if (doi == null && templates != null) {
+                // Try to list DAs from type templates
+                allEntries = buildDoDirectoryEntriesFromType(server, templates, ldName, lnName, doName);
+                if (allEntries == null) {
+                    return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                }
+            } else if (doi == null) {
                 return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            } else {
+                allEntries = buildDirectoryEntries(doi, "");
             }
-            allEntries = buildDirectoryEntries(doi, "");
         }
         if (skipUntilAfter) {
             allEntries = filterAfter(allEntries, afterRef);
@@ -128,6 +139,68 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             entries.add(entry);
         }
 
+        return entries;
+    }
+
+    /**
+     * Builds directory entries for an LN by merging instance DOs with type template DOs.
+     */
+    private List<CmsGetDataDirectoryEntry> buildLnDirectoryEntries(SclIED.SclLDevice device,
+                                                                     SclIED.SclServer server,
+                                                                     SclDataTypeTemplates templates,
+                                                                     String lnName) {
+        // Get instance DOs
+        List<SclIED.SclDOI> dois = findDoisInLn(device, lnName);
+
+        // Get type template DOs
+        List<String> typeDoNames = (templates != null)
+            ? SclTypeResolver.listDoNamesFromType(server, templates, device.getInst(), lnName)
+            : List.of();
+
+        // Merge: instance DOs take priority, add missing type DOs
+        Set<String> seen = new HashSet<>();
+        List<CmsGetDataDirectoryEntry> entries = new ArrayList<>();
+
+        if (dois != null) {
+            for (SclIED.SclDOI doi : dois) {
+                String name = doi.getName();
+                seen.add(name);
+                CmsGetDataDirectoryEntry entry = new CmsGetDataDirectoryEntry();
+                entry.reference.set(name);
+                entries.add(entry);
+            }
+        }
+
+        for (String doName : typeDoNames) {
+            if (!seen.contains(doName)) {
+                seen.add(doName);
+                CmsGetDataDirectoryEntry entry = new CmsGetDataDirectoryEntry();
+                entry.reference.set(doName);
+                entries.add(entry);
+            }
+        }
+
+        return entries;
+    }
+
+    /**
+     * Builds directory entries for a DO from type templates (when no instance DOI exists).
+     */
+    private List<CmsGetDataDirectoryEntry> buildDoDirectoryEntriesFromType(SclIED.SclServer server,
+                                                                            SclDataTypeTemplates templates,
+                                                                            String ldName, String lnName,
+                                                                            String doName) {
+        // Verify DO exists in type templates
+        SclDataTypeTemplates.SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, doName);
+        if (doObj == null) return null;
+
+        List<String> daNames = SclTypeResolver.listDaNamesFromType(server, templates, ldName, lnName, doName);
+        List<CmsGetDataDirectoryEntry> entries = new ArrayList<>();
+        for (String daName : daNames) {
+            CmsGetDataDirectoryEntry entry = new CmsGetDataDirectoryEntry();
+            entry.reference.set(daName);
+            entries.add(entry);
+        }
         return entries;
     }
 

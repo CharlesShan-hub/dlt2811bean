@@ -4,6 +4,8 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclDAI;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclDOI;
@@ -16,6 +18,7 @@ import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
 
 @SuppressWarnings("rawtypes")
 public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataValues> {
@@ -36,11 +39,12 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         }
 
         SclIED.SclServer server = accessPoint.getServer();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         CmsStructure values = new CmsStructure();
         for (CmsGetDataValuesEntry entry : asdu.data) {
             String ref = entry.reference.get();
-            values.add(resolveValue(server, ref));
+            values.add(resolveValue(server, templates, ref));
         }
 
         CmsGetDataValues response = new CmsGetDataValues(MessageType.RESPONSE_POSITIVE)
@@ -52,7 +56,7 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         return new CmsApdu(response);
     }
 
-    private CmsType resolveValue(SclIED.SclServer server, String ref) {
+    private CmsType resolveValue(SclIED.SclServer server, SclDataTypeTemplates templates, String ref) {
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
             return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -73,6 +77,14 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         String lnName = parts[0];
         SclDOI doi = findDoiInDevice(device, lnName, parts.length > 1 ? parts[1] : null);
         if (doi == null) {
+            // Check if the DO exists in type templates
+            if (templates != null && parts.length > 1) {
+                SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, parts[1]);
+                if (doObj != null) {
+                    // DO exists in type but has no instance value
+                    return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                }
+            }
             return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
