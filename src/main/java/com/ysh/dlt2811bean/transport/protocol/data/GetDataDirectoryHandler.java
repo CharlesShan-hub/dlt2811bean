@@ -57,15 +57,28 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
         String lnName = parts[0];
         String doName = parts.length > 1 ? parts[1] : null;
 
-        SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
-        if (doi == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-
         String afterRef = asdu.referenceAfter.get();
         boolean skipUntilAfter = afterRef != null && !afterRef.isEmpty();
 
-        List<CmsGetDataDirectoryEntry> allEntries = buildDirectoryEntries(doi, "");
+        List<CmsGetDataDirectoryEntry> allEntries;
+        if (doName == null) {
+            // LN level: list all DOIs under this LN
+            List<SclIED.SclDOI> dois = findDoisInLn(device, lnName);
+            if (dois == null) {
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            allEntries = new ArrayList<>();
+            for (SclIED.SclDOI doi : dois) {
+                allEntries.addAll(buildDirectoryEntries(doi, ""));
+            }
+        } else {
+            // DO level: find specific DOI and list its DAIs/SDIs
+            SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
+            if (doi == null) {
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            allEntries = buildDirectoryEntries(doi, "");
+        }
         if (skipUntilAfter) {
             allEntries = filterAfter(allEntries, afterRef);
             if (allEntries == null) {
@@ -132,6 +145,22 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             result.add(entry);
         }
         return found ? result : null;
+    }
+
+    private List<SclIED.SclDOI> findDoisInLn(SclIED.SclLDevice device, String lnName) {
+        if (device.getLn0() != null) {
+            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
+            if (ln0Name.equals(lnName)) {
+                return device.getLn0().getDois();
+            }
+        }
+        for (SclIED.SclLN ln : device.getLns()) {
+            String curLnName = ln.getLnClass() + ln.getInst();
+            if (curLnName.equals(lnName)) {
+                return ln.getDois();
+            }
+        }
+        return null;
     }
 
     private SclIED.SclDOI findDoiInDevice(SclIED.SclLDevice device, String lnName, String doName) {

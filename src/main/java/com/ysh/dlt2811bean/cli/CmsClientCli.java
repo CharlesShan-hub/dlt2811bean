@@ -112,9 +112,9 @@ public class CmsClientCli {
                                         java.util.Set<String> pool;
                                         if ("ld-dir".equals(cmdName)) {
                                             pool = cachedLds;
-                                        } else if ("ln-dir".equals(cmdName) || "get-all-def".equals(cmdName) || "get-all-values".equals(cmdName) || "get-all-cb".equals(cmdName) || "get-data-dir".equals(cmdName) || "get-data-def".equals(cmdName)) {
+                                        } else if ("ln-dir".equals(cmdName) || "get-all-def".equals(cmdName) || "get-all-values".equals(cmdName) || "get-all-cb".equals(cmdName) || "get-data-def".equals(cmdName)) {
                                             pool = ctx.getCachedLnRefs();
-                                        } else if ("get-data-values".equals(cmdName)) {
+                                        } else if ("get-data-dir".equals(cmdName) || "get-data-values".equals(cmdName)) {
                                             pool = cachedValues;
                                         } else if ("set-data-values".equals(cmdName)) {
                                             pool = ctx.getCachedDaRefs();

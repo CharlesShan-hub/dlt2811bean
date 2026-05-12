@@ -36,11 +36,15 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
         String val = values.get("value");
         String fc = values.get("fc");
 
+        String[] refArr = refs.split(",");
+        String[] valArr = val.split(",");
+
         CmsSetDataValues asdu = new CmsSetDataValues(MessageType.REQUEST);
-        for (String ref : refs.split(",")) {
+        for (int i = 0; i < refArr.length; i++) {
+            String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
             CmsSetDataValuesEntry entry = new CmsSetDataValuesEntry()
-                .reference(ref.trim())
-                .value(new CmsVisibleString(val).max(255));
+                .reference(refArr[i].trim())
+                .value(new CmsVisibleString(v).max(255));
             if (!fc.isEmpty()) {
                 entry.fc(fc);
             }
@@ -52,7 +56,6 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             System.out.println(CmsColor.green("  All data values set successfully"));
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             CmsSetDataValues resp = (CmsSetDataValues) response.getAsdu();
-            String[] refArr = refs.split(",");
             List<String> failures = new ArrayList<>();
             for (int i = 0; i < resp.result.size() && i < refArr.length; i++) {
                 int errorCode = resp.result.get(i).get();

@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclDAI;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclDOI;
+import com.ysh.dlt2811bean.scl.model.SclIED.SclSDI;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -86,7 +87,16 @@ public class SetDataValuesHandler extends AbstractCmsServiceHandler<CmsSetDataVa
         }
 
         String daName = parts[parts.length - 1];
-        SclDAI dai = findDaiByName(doi.getDais(), daName);
+        SclDAI dai = null;
+        if (parts.length == 4) {
+            String sdiName = parts[2];
+            SclSDI sdi = findSdi(doi, sdiName);
+            if (sdi != null) {
+                dai = findDaiByName(sdi.getDais(), daName);
+            }
+        } else {
+            dai = findDaiByName(doi.getDais(), daName);
+        }
         if (dai == null) {
             if (parts.length == 2) {
                 return CmsServiceError.NO_ERROR;
@@ -130,6 +140,15 @@ public class SetDataValuesHandler extends AbstractCmsServiceHandler<CmsSetDataVa
                     if (doi.getName().equals(doName)) return doi;
                 }
                 return null;
+            }
+        }
+        return null;
+    }
+
+    private SclSDI findSdi(SclDOI doi, String sdiName) {
+        for (SclSDI sdi : doi.getSdis()) {
+            if (sdi.getName().equals(sdiName)) {
+                return sdi;
             }
         }
         return null;
