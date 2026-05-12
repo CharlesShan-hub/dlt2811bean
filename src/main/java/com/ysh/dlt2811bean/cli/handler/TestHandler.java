@@ -12,7 +12,6 @@ import java.util.Map;
 public class TestHandler extends AbstractServiceHandler {
 
     public TestHandler(CliContext ctx) { super(ctx, ServiceInfo.TEST); }
-    public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);

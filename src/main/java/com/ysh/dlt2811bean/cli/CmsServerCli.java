@@ -80,6 +80,7 @@ public class CmsServerCli {
                     case "status" -> printStatus();
                     case "list" -> listSessions();
                     case "load-scl" -> handleLoadScl(parts);
+                    case "reload-config" -> handleReloadConfig();
                     case "push" -> handlePush(parts);
                     default -> System.out.println(CmsColor.red("  Unknown command: " + cmd));
                 }
@@ -111,6 +112,7 @@ public class CmsServerCli {
             case "status" -> System.out.println("  " + CmsColor.bold("status") + " - 查看服务器运行状态\n    " + CmsColor.green("用法: ") + "status");
             case "list" -> System.out.println("  " + CmsColor.bold("list") + " - 列出所有已连接的客户端会话\n    " + CmsColor.green("用法: ") + "list");
             case "load-scl" -> System.out.println("  " + CmsColor.bold("load-scl") + " - 重新/切换 SCL 配置文件\n    " + CmsColor.green("用法: ") + "load-scl [path]\n    不指定路径则重新加载当前文件");
+            case "reload-config" -> System.out.println("  " + CmsColor.bold("reload-config") + " - 重新加载配置文件（JSON/YAML）\n    " + CmsColor.green("用法: ") + "reload-config");
             case "push" -> System.out.println("  " + CmsColor.bold("push") + " - 向客户端推送主动通知\n"
                     + "    " + CmsColor.green("用法: ") + "push cmd-term <reference> <value>       推送命令终止通知\n"
                     + "          push time-act-term <reference> <value>  推送定时激活终止通知\n"
@@ -143,6 +145,11 @@ public class CmsServerCli {
         }
         server.loadScl(path);
         System.out.println(CmsColor.green("  SCL loaded: " + path));
+    }
+
+    private void handleReloadConfig() {
+        CmsConfigLoader.reload();
+        System.out.println(CmsColor.green("  Config reloaded"));
     }
 
     private void listSessions() {

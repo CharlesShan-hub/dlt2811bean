@@ -102,10 +102,10 @@ public class CmsSetLCBValues extends CmsAsdu<CmsSetLCBValues> {
     // ==================== Fields based on Table 53 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetLCBValuesEntry> lcb = new CmsArray<>(CmsSetLCBValuesEntry::new).capacity(100);
+    public CmsArray<CmsSetLCBValuesEntry> lcb = new CmsArray<>(CmsSetLCBValuesEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsSetLCBValuesResultEntry> result = new CmsArray<>(CmsSetLCBValuesResultEntry::new).capacity(100);
+    public CmsArray<CmsSetLCBValuesResultEntry> result = new CmsArray<>(CmsSetLCBValuesResultEntry::new);
 
     // ========================= Constructor ============================
 

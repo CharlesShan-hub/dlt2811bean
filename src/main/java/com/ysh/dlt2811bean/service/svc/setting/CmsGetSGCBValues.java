@@ -80,10 +80,10 @@ public class CmsGetSGCBValues extends CmsAsdu<CmsGetSGCBValues> {
     // ==================== Fields based on Table 45 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> sgcbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> sgcbReference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorSgcbChoice> errorSgcb = new CmsArray<>(CmsErrorSgcbChoice::new).capacity(100);
+    public CmsArray<CmsErrorSgcbChoice> errorSgcb = new CmsArray<>(CmsErrorSgcbChoice::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);

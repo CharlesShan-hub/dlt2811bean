@@ -29,10 +29,10 @@ public class CmsSetGoCBValues extends CmsAsdu<CmsSetGoCBValues> {
     // ==================== Fields based on Table 61 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetGoCBValuesEntry> gocb = new CmsArray<>(CmsSetGoCBValuesEntry::new).capacity(100);
+    public CmsArray<CmsSetGoCBValuesEntry> gocb = new CmsArray<>(CmsSetGoCBValuesEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsSetGoCBValuesResultEntry> result = new CmsArray<>(CmsSetGoCBValuesResultEntry::new).capacity(100);
+    public CmsArray<CmsSetGoCBValuesResultEntry> result = new CmsArray<>(CmsSetGoCBValuesResultEntry::new);
 
     // ========================= Constructor ============================
 

@@ -90,10 +90,10 @@ public class CmsGetDataDefinition extends CmsAsdu<CmsGetDataDefinition> {
     // ==================== Fields based on Table 34 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new).capacity(100);
+    public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsGetDataDefinitionEntry> definition = new CmsArray<>(CmsGetDataDefinitionEntry::new).capacity(100);
+    public CmsArray<CmsGetDataDefinitionEntry> definition = new CmsArray<>(CmsGetDataDefinitionEntry::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

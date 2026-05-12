@@ -101,7 +101,7 @@ public class CmsGetRpcInterfaceDefinition extends CmsAsdu<CmsGetRpcInterfaceDefi
     public CmsVisibleString referenceAfter = new CmsVisibleString().max(255);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsRpcMethodDefEntry> method = new CmsArray<>(CmsRpcMethodDefEntry::new).capacity(100);
+    public CmsArray<CmsRpcMethodDefEntry> method = new CmsArray<>(CmsRpcMethodDefEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

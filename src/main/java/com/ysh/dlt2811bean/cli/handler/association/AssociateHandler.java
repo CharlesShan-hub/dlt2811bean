@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.cli.handler.association;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -18,7 +17,6 @@ public class AssociateHandler extends AbstractServiceHandler {
 
     public AssociateHandler(CliContext ctx) { super(ctx, ServiceInfo.ASSOCIATE); }
     public List<Param> getParams() {
-        var config = CmsConfigLoader.load();
         return List.of(
             new Param("iedName", "IED名称 [string]", config.getClient().getDefaultIedName()),
             new Param("accessPoint", "访问点 [string]", config.getClient().getDefaultAccessPoint()),

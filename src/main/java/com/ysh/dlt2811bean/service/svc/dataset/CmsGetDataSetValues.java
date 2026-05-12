@@ -73,7 +73,7 @@ public class CmsGetDataSetValues extends CmsAsdu<CmsGetDataSetValues> {
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsStructure value = new CmsStructure().capacity(100);
+    public CmsStructure value = new CmsStructure();
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

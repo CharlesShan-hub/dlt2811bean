@@ -67,10 +67,10 @@ public class CmsSetDataValues extends CmsAsdu<CmsSetDataValues> {
     // ==================== Fields based on Table 32====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetDataValuesEntry> data = new CmsArray<>(CmsSetDataValuesEntry::new).capacity(100);
+    public CmsArray<CmsSetDataValuesEntry> data = new CmsArray<>(CmsSetDataValuesEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new);
 
     // ========================= Constructor ============================
 

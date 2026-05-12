@@ -87,7 +87,7 @@ public class CmsGetLogicalDeviceDirectory extends CmsAsdu<CmsGetLogicalDeviceDir
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsSubReference> lnReference = new CmsArray<>(CmsSubReference::new).capacity(100);
+    public CmsArray<CmsSubReference> lnReference = new CmsArray<>(CmsSubReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

@@ -92,7 +92,7 @@ public class CmsGetDataDirectory extends CmsAsdu<CmsGetDataDirectory> {
     public CmsObjectReference referenceAfter = new CmsObjectReference();
     
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsGetDataDirectoryEntry> dataAttribute = new CmsArray<>(CmsGetDataDirectoryEntry::new).capacity(100);
+    public CmsArray<CmsGetDataDirectoryEntry> dataAttribute = new CmsArray<>(CmsGetDataDirectoryEntry::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

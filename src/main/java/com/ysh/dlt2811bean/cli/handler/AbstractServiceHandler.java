@@ -8,6 +8,8 @@ import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.utils.CmsColor;
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 
 import java.util.List;
 
@@ -15,6 +17,7 @@ public abstract class AbstractServiceHandler implements CommandHandler {
 
     protected final CliContext ctx;
     private final ServiceInfo serviceInfo;
+    protected CmsConfig config;
 
     protected AbstractServiceHandler(CliContext ctx, ServiceInfo serviceInfo) {
         this.ctx = ctx;
@@ -26,6 +29,17 @@ public abstract class AbstractServiceHandler implements CommandHandler {
 
     @Override
     public String getDescription() { return serviceInfo.getDescription(); }
+
+    @Override
+    public CmsConfig config() { return CmsConfigLoader.load(); }
+
+    @Override
+    public List<Param> updateConfigAndGetParams() {
+        config = CmsConfigLoader.load();
+        return getParams();
+    }
+
+    public List<Param> getParams() { return List.of(); }
 
     protected void requireConnected(CmsClient client) {
         if (!client.isConnected()) {
@@ -40,8 +54,6 @@ public abstract class AbstractServiceHandler implements CommandHandler {
         }
         return response;
     }
-
-    public List<Param> getParams() { return List.of(); }
 
     protected void printRequestPdu(Object pdu) {
         ctx.printGrayPdu("  >> Request PDU:", pdu);

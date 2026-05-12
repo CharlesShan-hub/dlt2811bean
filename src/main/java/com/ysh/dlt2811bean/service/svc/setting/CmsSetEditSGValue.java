@@ -84,10 +84,10 @@ public class CmsSetEditSGValue extends CmsAsdu<CmsSetEditSGValue> {
     // ==================== Fields based on Table 42 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetEditSGValueEntry> data = new CmsArray<>(CmsSetEditSGValueEntry::new).capacity(100);
+    public CmsArray<CmsSetEditSGValueEntry> data = new CmsArray<>(CmsSetEditSGValueEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new);
 
     // ========================= Constructor ============================
 

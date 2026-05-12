@@ -84,10 +84,10 @@ public class CmsGetDataValues extends CmsAsdu<CmsGetDataValues> {
     // ==================== Fields based on Table 31 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new).capacity(100);
+    public CmsArray<CmsGetDataValuesEntry> data = new CmsArray<>(CmsGetDataValuesEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsStructure value = new CmsStructure().capacity(100);
+    public CmsStructure value = new CmsStructure();
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

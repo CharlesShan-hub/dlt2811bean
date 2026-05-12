@@ -95,10 +95,10 @@ public class CmsGetLogStatusValues extends CmsAsdu<CmsGetLogStatusValues> {
     // ==================== Fields based on Table 56 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> logReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> logReference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorLogStatusChoice> log = new CmsArray<>(CmsErrorLogStatusChoice::new).capacity(100);
+    public CmsArray<CmsErrorLogStatusChoice> log = new CmsArray<>(CmsErrorLogStatusChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

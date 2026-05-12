@@ -117,7 +117,7 @@ public class CmsGetAllCBValues extends CmsAsdu<CmsGetAllCBValues> {
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsCBValueEntry> cbValue = new CmsArray<>(CmsCBValueEntry::new).capacity(100);
+    public CmsArray<CmsCBValueEntry> cbValue = new CmsArray<>(CmsCBValueEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

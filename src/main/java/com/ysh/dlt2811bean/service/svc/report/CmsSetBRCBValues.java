@@ -95,10 +95,10 @@ public class CmsSetBRCBValues extends CmsAsdu<CmsSetBRCBValues> {
     // ==================== Fields based on Table 48 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetBRCBValuesEntry> brcb = new CmsArray<>(CmsSetBRCBValuesEntry::new).capacity(100);
+    public CmsArray<CmsSetBRCBValuesEntry> brcb = new CmsArray<>(CmsSetBRCBValuesEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new);
 
     // ========================= Constructor ============================
 

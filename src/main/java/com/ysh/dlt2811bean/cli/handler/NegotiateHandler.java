@@ -16,10 +16,9 @@ public class NegotiateHandler extends AbstractServiceHandler {
 
     public NegotiateHandler(CliContext ctx) { super(ctx, ServiceInfo.ASSOCIATE_NEGOTIATE); }
     public List<Param> getParams() {
-        CmsConfigLoader config = new CmsConfigLoader();
         return List.of(
-            new Param("asduSize", "ASDU 大小", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
-            new Param("protocolVersion", "协议版本号", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion()))
+            new Param("asduSize", "ASDU 大小", String.valueOf(config().getNegotiate().getAsduSize())),
+            new Param("protocolVersion", "协议版本号", String.valueOf(config().getNegotiate().getProtocolVersion()))
         );
     }
     public void execute(CmsClient client, Map<String, String> values) throws Exception {

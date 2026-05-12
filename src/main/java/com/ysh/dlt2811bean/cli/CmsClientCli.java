@@ -43,18 +43,18 @@ public class CmsClientCli {
                         String[] parts = buffer.split("\\s+", 2);
                         String cmd = parts[0].toLowerCase();
                         CommandHandler h = handlers.get(cmd);
-                        if (h == null || h.getParams().isEmpty()) {
+                        if (h == null || h.updateConfigAndGetParams().isEmpty()) {
                             return new org.jline.utils.AttributedStringBuilder().append(buffer).toAttributedString();
                         }
                         int argsCount = buffer.trim().isEmpty() ? 0 : buffer.trim().split("\\s+").length - 1;
-                        if (argsCount >= h.getParams().size()) {
+                        if (argsCount >= h.updateConfigAndGetParams().size()) {
                             return new org.jline.utils.AttributedStringBuilder().append(buffer).toAttributedString();
                         }
                         org.jline.utils.AttributedStringBuilder asb = new org.jline.utils.AttributedStringBuilder();
                         asb.append(buffer);
-                        for (int i = argsCount; i < h.getParams().size(); i++) {
+                        for (int i = argsCount; i < h.updateConfigAndGetParams().size(); i++) {
                             asb.style(org.jline.utils.AttributedStyle.DEFAULT.foreground(org.jline.utils.AttributedStyle.BRIGHT));
-                            asb.append(" <" + h.getParams().get(i).getName() + ">");
+                            asb.append(" <" + h.updateConfigAndGetParams().get(i).getName() + ">");
                         }
                         return asb.toAttributedString();
                     }
@@ -96,8 +96,8 @@ public class CmsClientCli {
                             CommandHandler h = handlers.get(cmdName);
                             if (h != null) {
                                 int paramIdx = parts.length - 1;
-                                if (paramIdx < h.getParams().size()) {
-                                    Param param = h.getParams().get(paramIdx);
+                                if (paramIdx < h.updateConfigAndGetParams().size()) {
+                                    Param param = h.updateConfigAndGetParams().get(paramIdx);
                                     if (!param.getEnumChoices().isEmpty()) {
                                         for (Param.EnumChoice ec : param.getEnumChoices()) {
                                             if (ec.value.toLowerCase().startsWith(word.toLowerCase())) {
@@ -108,6 +108,8 @@ public class CmsClientCli {
                                         java.util.Set<String> pool;
                                         if ("ld-dir".equals(cmdName)) {
                                             pool = cachedLds;
+                                        } else if ("ln-dir".equals(cmdName)) {
+                                            pool = ctx.getCachedLnRefs();
                                         } else if ("get-data-values".equals(cmdName)) {
                                             pool = cachedValues;
                                         } else if ("set-data-values".equals(cmdName)) {
@@ -281,15 +283,15 @@ public class CmsClientCli {
                     ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
                     : new java.util.ArrayList<>();
 
-                if (inlineTokens.isEmpty() && !handler.getParams().isEmpty()) {
+                if (inlineTokens.isEmpty() && !handler.updateConfigAndGetParams().isEmpty()) {
                     StringBuilder hint = new StringBuilder();
                     hint.append(CmsColor.gray("  Usage: " + cmdName));
-                    for (Param p : handler.getParams()) {
+                    for (Param p : handler.updateConfigAndGetParams()) {
                         hint.append(" <" + p.getName() + ">");
                     }
                     System.out.println(hint.toString());
                 }
-                for (Param param : handler.getParams()) {
+                for (Param param : handler.updateConfigAndGetParams()) {
                     if (!inlineTokens.isEmpty()) {
                         String token = inlineTokens.remove(0);
                         if (!param.getEnumChoices().isEmpty()) {

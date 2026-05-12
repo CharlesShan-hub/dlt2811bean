@@ -96,10 +96,10 @@ public class CmsGetRpcMethodDefinition extends CmsAsdu<CmsGetRpcMethodDefinition
     // ==================== Fields based on Table 80 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255)).capacity(100);
+    public CmsArray<CmsVisibleString> reference = new CmsArray<>(() -> new CmsVisibleString().max(255));
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorMethodChoice> errorMethod = new CmsArray<>(CmsErrorMethodChoice::new).capacity(100);
+    public CmsArray<CmsErrorMethodChoice> errorMethod = new CmsArray<>(CmsErrorMethodChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

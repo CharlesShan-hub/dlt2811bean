@@ -94,7 +94,7 @@ public class CmsQueryLogAfter extends CmsAsdu<CmsQueryLogAfter> {
     public CmsEntryID entry = new CmsEntryID();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsLogEntry> logEntry = new CmsArray<>(CmsLogEntry::new).capacity(100);
+    public CmsArray<CmsLogEntry> logEntry = new CmsArray<>(CmsLogEntry::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

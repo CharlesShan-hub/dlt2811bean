@@ -74,10 +74,10 @@ public class CmsSetDataSetValues extends CmsAsdu<CmsSetDataSetValues> {
     public CmsObjectReference referenceAfter = new CmsObjectReference();
     
     @CmsField(only = {REQUEST})
-    public CmsStructure memberValue = new CmsStructure().capacity(100);
+    public CmsStructure memberValue = new CmsStructure();
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new).capacity(100);
+    public CmsArray<CmsServiceError> result = new CmsArray<>(CmsServiceError::new);
 
     // ========================= Constructor ============================
 

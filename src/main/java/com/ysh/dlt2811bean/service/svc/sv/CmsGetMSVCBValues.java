@@ -83,10 +83,10 @@ public class CmsGetMSVCBValues extends CmsAsdu<CmsGetMSVCBValues> {
     // ==================== Fields based on Table 63 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorMsvcbChoice> errorMsvcb = new CmsArray<>(CmsErrorMsvcbChoice::new).capacity(100);
+    public CmsArray<CmsErrorMsvcbChoice> errorMsvcb = new CmsArray<>(CmsErrorMsvcbChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

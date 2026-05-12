@@ -111,10 +111,10 @@ public class CmsSetURCBValues extends CmsAsdu<CmsSetURCBValues> {
     // ==================== Fields based on Table 50 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsSetURCBValuesEntry> urcb = new CmsArray<>(CmsSetURCBValuesEntry::new).capacity(100);
+    public CmsArray<CmsSetURCBValuesEntry> urcb = new CmsArray<>(CmsSetURCBValuesEntry::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
-    public CmsArray<CmsSetURCBValuesResultEntry> result = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(100);
+    public CmsArray<CmsSetURCBValuesResultEntry> result = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
     
     // ========================= Constructor ============================
 

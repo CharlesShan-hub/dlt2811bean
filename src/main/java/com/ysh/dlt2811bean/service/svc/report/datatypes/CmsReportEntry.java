@@ -13,7 +13,7 @@ public class CmsReportEntry extends AbstractCmsCompound<CmsReportEntry> {
 
     public CmsBinaryTime timeOfEntry = new CmsBinaryTime();
     public CmsEntryID entryID = new CmsEntryID();
-    public CmsArray<CmsReportEntryData> entryData = new CmsArray<>(CmsReportEntryData::new).capacity(100);
+    public CmsArray<CmsReportEntryData> entryData = new CmsArray<>(CmsReportEntryData::new);
 
     public CmsReportEntry() {
         super("ReportEntry");

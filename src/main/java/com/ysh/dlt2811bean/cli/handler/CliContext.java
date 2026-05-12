@@ -40,10 +40,20 @@ public class CliContext {
     public Set<String> getCachedLds() { return cachedLds; }
     public Set<String> getCachedValues() { return cachedValues; }
 
+    public Set<String> getCachedLnRefs() {
+        Set<String> result = new java.util.HashSet<>();
+        for (String ref : cachedRefs) {
+            if (ref.contains("/") && !ref.contains(".")) {
+                result.add(ref);
+            }
+        }
+        return result;
+    }
+
     public Set<String> getCachedDaRefs() {
         Set<String> result = new java.util.HashSet<>();
         for (String ref : cachedRefs) {
-            if (ref.split("\\.").length >= 2 && ref.contains("/")) {
+            if (ref.contains("/") && ref.contains(".")) {
                 result.add(ref);
             }
         }
@@ -117,7 +127,10 @@ public class CliContext {
                 for (int i = 0; i < asdu.lnReference().size(); i++) {
                     String lnRef = ldName + "/" + asdu.lnReference().get(i).get();
                     cachedRefs.add(lnRef);
-                    System.out.println(CmsColor.gray("      LN[" + i + "] " + lnRef));
+                    String lnClassName = lnRef.substring(lnRef.lastIndexOf("/") + 1, lnRef.lastIndexOf("/") + 5);
+                    String chineseName = com.ysh.dlt2811bean.service.info.LnInfo.byName(lnClassName) != null
+                        ? " - " + com.ysh.dlt2811bean.service.info.LnInfo.byName(lnClassName).getChineseName() : "";
+                    System.out.println(CmsColor.gray("      LN[" + i + "] " + lnRef + chineseName));
                     discoverDataRefs(client, lnRef);
                 }
             }

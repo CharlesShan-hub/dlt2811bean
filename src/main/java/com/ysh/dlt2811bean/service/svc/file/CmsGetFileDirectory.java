@@ -96,7 +96,7 @@ public class CmsGetFileDirectory extends CmsAsdu<CmsGetFileDirectory> {
     public CmsVisibleString fileAfter = new CmsVisibleString().max(255);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsFileEntry> fileEntry = new CmsArray<>(CmsFileEntry::new).capacity(100);
+    public CmsArray<CmsFileEntry> fileEntry = new CmsArray<>(CmsFileEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

@@ -93,7 +93,7 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     public CmsObjectReference gocbReference = new CmsObjectReference();
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+    public CmsArray<CmsCreateDataSetEntry> memberData = new CmsArray<>(CmsCreateDataSetEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsObjectReference gocbRefResp = new CmsObjectReference();
@@ -105,7 +105,7 @@ public class CmsGetGooseElementNumber extends CmsAsdu<CmsGetGooseElementNumber> 
     public CmsObjectReference datSet = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new).capacity(100);
+    public CmsArray<CmsInt16U> memberOffset = new CmsArray<>(CmsInt16U::new);
 
     @CmsField(only = {RESPONSE_NEGATIVE})
     public CmsServiceError serviceError = new CmsServiceError(CmsServiceError.NO_ERROR);

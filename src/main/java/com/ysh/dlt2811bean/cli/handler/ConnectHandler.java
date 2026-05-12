@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler;
 
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
@@ -26,11 +25,11 @@ public class ConnectHandler implements CommandHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("host", "服务器 IP", "127.0.0.1"),
-            new Param("port", "服务器端口", String.valueOf(CmsConfigLoader.load().getServer().getPort())),
-            new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(CmsConfigLoader.load().getNegotiate().getAsduSize())),
-            new Param("protocolVersion", "协议版本", String.valueOf(CmsConfigLoader.load().getNegotiate().getProtocolVersion())),
-            new Param("iedName", "IED名称", CmsConfigLoader.load().getClient().getDefaultIedName()),
-            new Param("accessPoint", "访问点", CmsConfigLoader.load().getClient().getDefaultAccessPoint()),
+            new Param("port", "服务器端口", String.valueOf(config().getServer().getPort())),
+            new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(config().getNegotiate().getAsduSize())),
+            new Param("protocolVersion", "协议版本", String.valueOf(config().getNegotiate().getProtocolVersion())),
+            new Param("iedName", "IED名称", config().getClient().getDefaultIedName()),
+            new Param("accessPoint", "访问点", config().getClient().getDefaultAccessPoint()),
             new Param("secure", "携带证书认证 (true/false)", "false")
         );
     }
@@ -45,10 +44,10 @@ public class ConnectHandler implements CommandHandler {
             int asduSize = Integer.parseInt(asduSizeStr);
             int apduSize = asduSize + 4;
             long protocolVersion = Long.parseLong(values.get("protocolVersion"));
-            String ap = values.get("ap");
-            String ep = values.get("ep");
+            String accessPoint = values.get("accessPoint");
+            String iedName = values.get("iedName");
 
-            client.setAccessPoint(ap, ep);
+            client.setAccessPoint(iedName, accessPoint);
 
             CmsAssociateNegotiate negReq = new CmsAssociateNegotiate(MessageType.REQUEST)
                     .apduSize(apduSize).asduSize(asduSize).protocolVersion(protocolVersion);
@@ -72,7 +71,7 @@ public class ConnectHandler implements CommandHandler {
             }
 
             CmsAssociate assocReq = new CmsAssociate(MessageType.REQUEST)
-                    .serverAccessPointReference(ap, ep);
+                    .serverAccessPointReference(iedName, accessPoint);
             if (ctx.getConfig().getCli().isTracePdu()) {
                 System.out.println(CmsColor.gray("  >> Request PDU:\n" + assocReq.toString().indent(4).stripTrailing()));
             }

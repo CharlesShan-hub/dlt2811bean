@@ -91,10 +91,10 @@ public class CmsGetLCBValues extends CmsAsdu<CmsGetLCBValues> {
     // ==================== Fields based on Table 52 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorLcbChoice> lcb = new CmsArray<>(CmsErrorLcbChoice::new).capacity(100);
+    public CmsArray<CmsErrorLcbChoice> lcb = new CmsArray<>(CmsErrorLcbChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

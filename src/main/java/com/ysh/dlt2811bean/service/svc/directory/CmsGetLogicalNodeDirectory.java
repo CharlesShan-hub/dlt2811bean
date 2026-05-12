@@ -99,7 +99,7 @@ public class CmsGetLogicalNodeDirectory extends CmsAsdu<CmsGetLogicalNodeDirecto
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new).capacity(100);
+    public CmsArray<CmsSubReference> referenceResponse = new CmsArray<>(CmsSubReference::new);
 
     @CmsField(optional = true, only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean();

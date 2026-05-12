@@ -85,10 +85,10 @@ public class CmsGetEditSGValue extends CmsAsdu<CmsGetEditSGValue> {
     // ==================== Fields based on Table 44 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsCreateDataSetEntry> data = new CmsArray<>(CmsCreateDataSetEntry::new).capacity(100);
+    public CmsArray<CmsCreateDataSetEntry> data = new CmsArray<>(CmsCreateDataSetEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsStructure value = new CmsStructure().capacity(100);
+    public CmsStructure value = new CmsStructure();
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

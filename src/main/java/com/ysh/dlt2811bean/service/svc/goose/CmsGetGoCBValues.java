@@ -91,10 +91,10 @@ public class CmsGetGoCBValues extends CmsAsdu<CmsGetGoCBValues> {
     // ==================== Fields based on Table 60 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> gocbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> gocbReference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorGocbChoice> errorGocb = new CmsArray<>(CmsErrorGocbChoice::new).capacity(100);
+    public CmsArray<CmsErrorGocbChoice> errorGocb = new CmsArray<>(CmsErrorGocbChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

@@ -98,10 +98,10 @@ public class CmsGetURCBValues extends CmsAsdu<CmsGetURCBValues> {
     // ==================== Fields based on Table 49 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> reference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorUrcbChoice> urcb = new CmsArray<>(CmsErrorUrcbChoice::new).capacity(100);
+    public CmsArray<CmsErrorUrcbChoice> urcb = new CmsArray<>(CmsErrorUrcbChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

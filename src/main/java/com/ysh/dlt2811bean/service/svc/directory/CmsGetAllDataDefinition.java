@@ -104,7 +104,7 @@ public class CmsGetAllDataDefinition extends CmsAsdu<CmsGetAllDataDefinition> {
     public CmsObjectReference referenceAfter = new CmsObjectReference();
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsDataDefinitionEntry> data = new CmsArray<>(CmsDataDefinitionEntry::new).capacity(100);
+    public CmsArray<CmsDataDefinitionEntry> data = new CmsArray<>(CmsDataDefinitionEntry::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

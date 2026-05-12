@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
+import com.ysh.dlt2811bean.utils.CmsColor;
 
 import java.util.Map;
 
@@ -22,9 +23,9 @@ public class ServerDirHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
         if (!printIfEmpty(resAsdu.reference().isEmpty())) {
-            System.out.println("  Logical devices:");
+            System.out.println(CmsColor.green("  Logical devices:"));
             for (int i = 0; i < resAsdu.reference().size(); i++) {
-                System.out.println("    [" + i + "] " + resAsdu.reference().get(i).get());
+                System.out.println("    " + CmsColor.cyan("[" + i + "]") + " " + resAsdu.reference().get(i).get());
             }
         }
     }

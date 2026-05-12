@@ -83,10 +83,10 @@ public class CmsGetBRCBValues extends CmsAsdu<CmsGetBRCBValues> {
     // ==================== Fields based on Table 47 ====================
 
     @CmsField(only = {REQUEST})
-    public CmsArray<CmsObjectReference> brcbReference = new CmsArray<>(CmsObjectReference::new).capacity(100);
+    public CmsArray<CmsObjectReference> brcbReference = new CmsArray<>(CmsObjectReference::new);
 
     @CmsField(only = {RESPONSE_POSITIVE})
-    public CmsArray<CmsErrorBrcbChoice> errorBrcb = new CmsArray<>(CmsErrorBrcbChoice::new).capacity(100);
+    public CmsArray<CmsErrorBrcbChoice> errorBrcb = new CmsArray<>(CmsErrorBrcbChoice::new);
     
     @CmsField(only = {RESPONSE_POSITIVE})
     public CmsBoolean moreFollows = new CmsBoolean(true);

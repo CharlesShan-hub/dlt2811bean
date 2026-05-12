@@ -120,7 +120,7 @@ public class HelpHandler implements CommandHandler {
             }
             System.out.println("\n  " + CmsColor.green("用法: ") + info.getUsage());
         }
-        for (Param param : h.getParams()) {
+        for (Param param : h.updateConfigAndGetParams()) {
             System.out.println("    " + CmsColor.cyan(param.getName()) + "  " + param.getPrompt()
                     + (param.getDefaultValue() != null && !param.getDefaultValue().isEmpty() ? CmsColor.gray(" (默认: " + param.getDefaultValue() + ")") : ""));
         }

@@ -13,7 +13,7 @@ public class CmsLogEntry extends AbstractCmsCompound<CmsLogEntry> {
 
     public CmsBinaryTime timeOfEntry = new CmsBinaryTime();
     public CmsEntryID entryID = new CmsEntryID();
-    public CmsArray<CmsLogEntryData> entryData = new CmsArray<>(CmsLogEntryData::new).capacity(100);
+    public CmsArray<CmsLogEntryData> entryData = new CmsArray<>(CmsLogEntryData::new);
 
     public CmsLogEntry() {
         super("LogEntry");
