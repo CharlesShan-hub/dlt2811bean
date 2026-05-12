@@ -1,5 +1,9 @@
 package com.ysh.dlt2811bean.scl;
 
+import com.ysh.dlt2811bean.datatypes.numeric.*;
+import com.ysh.dlt2811bean.datatypes.string.CmsUtf8String;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
@@ -386,6 +390,43 @@ public class SclTypeResolver {
         @Override
         public List<SclIED.SclInputs> getInputs() {
             return null;
+        }
+    }
+
+    /**
+     * Creates a typed CmsType value from a string value and its bType.
+     * Falls back to CmsVisibleString for unknown types or parse failures.
+     */
+    public static CmsType<?> createTypedValue(String bType, String value) {
+        if (bType == null || value == null) {
+            return new CmsVisibleString(value != null ? value : "").max(255);
+        }
+        try {
+            switch (bType) {
+                case "BOOLEAN":
+                case "BOOL":            return new CmsBoolean(Boolean.parseBoolean(value.trim()));
+                case "INT8":            return new CmsInt8(Integer.parseInt(value.trim()));
+                case "INT16":           return new CmsInt16(Integer.parseInt(value.trim()));
+                case "INT32":           return new CmsInt32(Integer.parseInt(value.trim()));
+                case "INT64":           return new CmsInt64(Long.parseLong(value.trim()));
+                case "INT8U":           return new CmsInt8U(Integer.parseInt(value.trim()));
+                case "INT16U":          return new CmsInt16U(Integer.parseInt(value.trim()));
+                case "INT32U":          return new CmsInt32U(Long.parseLong(value.trim()));
+                case "INT64U":          return new CmsInt64U(new java.math.BigInteger(value.trim()));
+                case "FLOAT32":         return new CmsFloat32(Float.parseFloat(value.trim()));
+                case "FLOAT64":         return new CmsFloat64(Double.parseDouble(value.trim()));
+                case "Enum":
+                case "Dbpos":
+                case "Tcmd":            return new CmsInt32(Integer.parseInt(value.trim()));
+                case "VisString255":
+                case "VISIBLE STRING":  return new CmsVisibleString(value).max(255);
+                case "Unicode255":
+                case "UNICODE STRING":  return new CmsUtf8String(value).max(255);
+                case "Check":           return new CmsInt32(Integer.parseInt(value.trim()));
+                default:                return new CmsVisibleString(value).max(255);
+            }
+        } catch (Exception e) {
+            return new CmsVisibleString(value).max(255);
         }
     }
 }

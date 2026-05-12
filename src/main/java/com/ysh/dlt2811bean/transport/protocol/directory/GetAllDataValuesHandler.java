@@ -2,12 +2,11 @@ package com.ysh.dlt2811bean.transport.protocol.directory;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.numeric.*;
-import com.ysh.dlt2811bean.datatypes.string.CmsUtf8String;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.scl.SclDocument;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclBDA;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDOType;
@@ -198,7 +197,8 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
                 for (SclSDI sdi : doi.getSdis()) {
                     String sdiPrefix = doiPrefix + "." + sdi.getName();
                     SclDOType sdiDoType = resolveSdiDoType(doType, sdi.getName(), templates);
-                    collectDaiValues(sdi.getDais(), sdiPrefix, sdiDoType, fcFilter, result);
+                    collectDaiValues(sdi.getDais(), sdiPrefix, sdiDoType, fcFilter, result,
+                            templates, doType, sdi.getName());
                 }
             }
         }
@@ -207,6 +207,12 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
 
     private void collectDaiValues(List<SclDAI> dais, String prefix, SclDOType doType,
                                    String fcFilter, List<DataValue> result) {
+        collectDaiValues(dais, prefix, doType, fcFilter, result, null, null, null);
+    }
+
+    private void collectDaiValues(List<SclDAI> dais, String prefix, SclDOType doType,
+                                   String fcFilter, List<DataValue> result,
+                                   SclDataTypeTemplates templates, SclDOType parentDoType, String sdiName) {
         if (dais == null || dais.isEmpty()) {
             return;
         }
@@ -220,6 +226,16 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             }
             String ref = prefix + "." + dai.getName();
             String bType = findDaBType(doType, dai.getName());
+            if (bType == null && templates != null && parentDoType != null && sdiName != null) {
+                bType = findBdaBType(templates, parentDoType, sdiName, dai.getName());
+                if (daFc == null) {
+                    daFc = findDaFc(parentDoType, sdiName);
+                }
+                if (bType == null) {
+                    log.debug("[Server] bType not found for {}.{} in {}.{}", sdiName, dai.getName(),
+                            parentDoType != null ? parentDoType.getId() : "?", prefix);
+                }
+            }
             result.add(new DataValue(ref, dai.getValue(), bType));
         }
     }
@@ -229,6 +245,23 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         for (SclDA da : doType.getDas()) {
             if (da.getName().equals(daName)) {
                 return da.getBType();
+            }
+        }
+        return null;
+    }
+
+    private String findBdaBType(SclDataTypeTemplates templates, SclDOType parentDoType, String sdiName, String bdaName) {
+        if (templates == null || parentDoType == null) return null;
+        for (SclDA da : parentDoType.getDas()) {
+            if (da.getName().equals(sdiName) && "Struct".equals(da.getBType()) && da.getType() != null) {
+                SclDataTypeTemplates.SclDAType dat = templates.findDaTypeById(da.getType());
+                if (dat != null) {
+                    for (SclBDA bda : dat.getBdas()) {
+                        if (bda.getName().equals(bdaName)) {
+                            return bda.getBType();
+                        }
+                    }
+                }
             }
         }
         return null;
@@ -308,50 +341,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         }
     }
 
-    /**
-     * Creates a typed CmsType value from a string based on the bType.
-     * Falls back to CmsVisibleString for unknown or complex types.
-     */
     private CmsType<?> createTypedValue(String bType, String value) {
-        if (bType == null || value == null) {
-            return new CmsVisibleString(value != null ? value : "").max(255);
-        }
-        try {
-            switch (bType) {
-                case "BOOLEAN":
-                    return new CmsBoolean(Boolean.parseBoolean(value.trim()));
-                case "INT8":
-                    return new CmsInt8(Integer.parseInt(value.trim()));
-                case "INT16":
-                    return new CmsInt16(Integer.parseInt(value.trim()));
-                case "INT32":
-                    return new CmsInt32(Integer.parseInt(value.trim()));
-                case "INT64":
-                    return new CmsInt64(Long.parseLong(value.trim()));
-                case "INT8U":
-                    return new CmsInt8U(Integer.parseInt(value.trim()));
-                case "INT16U":
-                    return new CmsInt16U(Integer.parseInt(value.trim()));
-                case "INT32U":
-                    return new CmsInt32U(Long.parseLong(value.trim()));
-                case "INT64U":
-                    return new CmsInt64U(new java.math.BigInteger(value.trim()));
-                case "FLOAT32":
-                    return new CmsFloat32(Float.parseFloat(value.trim()));
-                case "FLOAT64":
-                    return new CmsFloat64(Double.parseDouble(value.trim()));
-                case "VisString255":
-                case "VISIBLE STRING":
-                    return new CmsVisibleString(value).max(255);
-                case "Unicode255":
-                case "UNICODE STRING":
-                    return new CmsUtf8String(value).max(255);
-                default:
-                    return new CmsVisibleString(value).max(255);
-            }
-        } catch (Exception e) {
-            log.warn("Failed to parse '{}' as bType={}, using string", value, bType);
-            return new CmsVisibleString(value).max(255);
-        }
+        return SclTypeResolver.createTypedValue(bType, value);
     }
 }

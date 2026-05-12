@@ -2,7 +2,6 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
@@ -77,11 +76,9 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         String lnName = parts[0];
         SclDOI doi = findDoiInDevice(device, lnName, parts.length > 1 ? parts[1] : null);
         if (doi == null) {
-            // Check if the DO exists in type templates
             if (templates != null && parts.length > 1) {
                 SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, parts[1]);
                 if (doObj != null) {
-                    // DO exists in type but has no instance value
                     return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
                 }
             }
@@ -89,42 +86,77 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         }
 
         if (parts.length == 2) {
-            return resolveDoiValue(doi);
+            return resolveDoiValue(doi, server, templates, ref);
         }
 
         String daName = parts[parts.length - 1];
         if (parts.length == 3) {
-            return resolveDaiValue(doi.getDais(), daName);
+            return resolveDaiValue(doi.getDais(), daName, server, templates, ref);
         }
 
         if (parts.length == 4) {
             String sdiName = parts[2];
+            String bdaName = parts[3];
             SclSDI sdi = findSdi(doi, sdiName);
             if (sdi == null) {
                 return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
-            return resolveDaiValue(sdi.getDais(), daName);
+            String bType = SclTypeResolver.resolveSdiBType(server, templates, ldName, lnName, parts[1], sdiName, bdaName);
+            for (SclDAI dai : sdi.getDais()) {
+                if (dai.getName().equals(bdaName) && dai.getValue() != null && !dai.getValue().isEmpty()) {
+                    return (CmsType) createTypedValue(bType, dai.getValue());
+                }
+            }
+            return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
     }
 
-    private CmsType resolveDoiValue(SclDOI doi) {
+    private CmsType resolveDoiValue(SclDOI doi, SclIED.SclServer server, SclDataTypeTemplates templates, String ref) {
         for (SclDAI dai : doi.getDais()) {
             if (dai.getValue() != null && !dai.getValue().isEmpty()) {
-                return new CmsVisibleString(dai.getValue()).max(255);
+                String bType = SclTypeResolver.resolveBType(server, templates, parseLdName(ref), parseLnName(ref), doi.getName(), dai.getName());
+                return (CmsType) createTypedValue(bType, dai.getValue());
             }
         }
         return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
     }
 
-    private CmsType resolveDaiValue(java.util.List<SclDAI> dais, String daName) {
+    private CmsType resolveDaiValue(java.util.List<SclDAI> dais, String daName,
+                                     SclIED.SclServer server, SclDataTypeTemplates templates, String ref) {
         for (SclDAI dai : dais) {
             if (dai.getName().equals(daName) && dai.getValue() != null && !dai.getValue().isEmpty()) {
-                return new CmsVisibleString(dai.getValue()).max(255);
+                String bType = SclTypeResolver.resolveBType(server, templates, parseLdName(ref), parseLnName(ref), parseDoName(ref), daName);
+                return (CmsType) createTypedValue(bType, dai.getValue());
             }
         }
         return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+    }
+
+    private static String parseLdName(String ref) {
+        int slash = ref.indexOf('/');
+        return slash >= 0 ? ref.substring(0, slash) : "";
+    }
+
+    private static String parseLnName(String ref) {
+        int slash = ref.indexOf('/');
+        if (slash < 0) return "";
+        String rest = ref.substring(slash + 1);
+        int dot = rest.indexOf('.');
+        return dot >= 0 ? rest.substring(0, dot) : rest;
+    }
+
+    private static String parseDoName(String ref) {
+        int slash = ref.indexOf('/');
+        if (slash < 0) return "";
+        String rest = ref.substring(slash + 1);
+        String[] parts = rest.split("\\.");
+        return parts.length > 1 ? parts[1] : "";
+    }
+
+    private CmsType<?> createTypedValue(String bType, String value) {
+        return SclTypeResolver.createTypedValue(bType, value);
     }
 
     private SclSDI findSdi(SclDOI doi, String sdiName) {
