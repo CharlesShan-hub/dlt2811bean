@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -10,6 +12,7 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LnDirHandler extends AbstractServiceHandler {
 
@@ -44,13 +47,13 @@ public class LnDirHandler extends AbstractServiceHandler {
         reqAsdu.acsiClass(new CmsACSIClass(acsiClass));
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
-        if (!printIfEmpty(asdu.referenceResponse().isEmpty())) {
-            System.out.println("  Entries:");
-            for (int i = 0; i < asdu.referenceResponse().size(); i++) {
-                System.out.println("    [" + i + "] " + asdu.referenceResponse().get(i).get());
-            }
+        List<String> refs = asdu.referenceResponse().stream().map(r -> r.get()).collect(Collectors.toList());
+        printList("Entries", refs, item -> item);
+        if (acsiClass == CmsACSIClass.SGCB) {
+            printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
         }
     }
+    
     private int parseAcsi(String s) {
         switch (s.toUpperCase()) {
             case "DATA_SET": return CmsACSIClass.DATA_SET;

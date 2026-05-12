@@ -10,8 +10,9 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
-
+import com.ysh.dlt2811bean.service.info.LnInfo;
 import java.util.List;
+import java.util.function.Function;
 
 public abstract class AbstractServiceHandler implements CommandHandler {
 
@@ -55,6 +56,12 @@ public abstract class AbstractServiceHandler implements CommandHandler {
         return response;
     }
 
+    protected String lnClassName(String lnRef) {
+        String className = lnRef.substring(lnRef.lastIndexOf("/") + 1, lnRef.lastIndexOf("/") + 5);
+        LnInfo info = LnInfo.byName(className);
+        return info != null ? " - " + info.getChineseName() : "";
+    }
+
     protected void printRequestPdu(Object pdu) {
         ctx.printGrayPdu("  >> Request PDU:", pdu);
     }
@@ -75,6 +82,14 @@ public abstract class AbstractServiceHandler implements CommandHandler {
         System.out.println(CmsColor.green(text));
     }
 
+    protected void printCyan(String text) {
+        System.out.println(CmsColor.cyan(text));
+    }
+
+    protected String cyan(String text) {
+        return CmsColor.cyan(text);
+    }
+
     protected void printMoreFollows(boolean moreFollows) {
         if (moreFollows) {
             printGray("  (more data available)");
@@ -87,5 +102,13 @@ public abstract class AbstractServiceHandler implements CommandHandler {
             return true;
         }
         return false;
+    }
+
+    protected <T> void printList(String title, List<T> items, Function<T, String> formatter) {
+        if (printIfEmpty(items.isEmpty())) return;
+        printGreen("  " + title + ":");
+        for (int i = 0; i < items.size(); i++) {
+            System.out.println("    " + cyan("[" + i + "]") + " " + formatter.apply(items.get(i)));
+        }
     }
 }

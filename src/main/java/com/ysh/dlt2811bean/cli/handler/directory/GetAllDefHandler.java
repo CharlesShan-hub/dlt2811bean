@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -16,11 +18,11 @@ import java.util.Map;
 public class GetAllDefHandler extends AbstractServiceHandler {
 
     public GetAllDefHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_DEFINITION); }
-    public String getDescription() { return "读所有数据定义"; }
+    
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-            new Param("fc", "功能约束 (留空=全部)", "")
+            Param.fc("功能约束")
         );
     }
 
@@ -37,18 +39,14 @@ public class GetAllDefHandler extends AbstractServiceHandler {
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
-        if (!printIfEmpty(asdu.data().isEmpty())) {
-            System.out.println("  Data definitions (" + asdu.data().size() + " entries):");
-            for (int i = 0; i < asdu.data().size(); i++) {
-                CmsDataDefinitionEntry entry = asdu.data().get(i);
-                String cdc = entry.cdcType().get();
-                String cdcDisplay = "";
-                if (cdc != null) {
-                    CdcInfo cdcInfo = CdcInfo.byName(cdc);
-                    cdcDisplay = "  cdc=" + cdc + (cdcInfo != null ? CmsColor.gray(" (" + cdcInfo.getChineseName() + ")") : "");
-                }
-                System.out.println("    [" + i + "] " + entry.reference().get() + cdcDisplay);
-            }
-        }
+        List<CmsDataDefinitionEntry> entries = asdu.data().toList();
+        printList("Data definitions (" + entries.size() + " entries)", entries, entry -> {
+            String cdc = entry.cdcType().get();
+            String ref = entry.reference().get();
+            if (cdc == null) return ref;
+            CdcInfo cdcInfo = CdcInfo.byName(cdc);
+            String cdcDisplay = "  cdc=" + cdc + (cdcInfo != null ? CmsColor.gray(" (" + cdcInfo.getChineseName() + ")") : "");
+            return ref + cdcDisplay;
+        });
     }
 }

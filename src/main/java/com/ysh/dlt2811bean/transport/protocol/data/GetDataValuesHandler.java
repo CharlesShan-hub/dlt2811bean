@@ -37,7 +37,7 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
 
         SclIED.SclServer server = accessPoint.getServer();
 
-        CmsStructure values = new CmsStructure().capacity(100);
+        CmsStructure values = new CmsStructure();
         for (CmsGetDataValuesEntry entry : asdu.data) {
             String ref = entry.reference.get();
             values.add(resolveValue(server, ref));

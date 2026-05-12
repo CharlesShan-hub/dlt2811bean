@@ -34,7 +34,7 @@ public class Param {
     }
 
     public static Param fc() {
-        return fc("功能约束 (留空=不限制)");
+        return fc("功能约束");
     }
 
     public static Param fc(String prompt) {

@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.data;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
@@ -11,17 +13,19 @@ import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class SetDataValuesHandler extends AbstractServiceHandler {
 
     public SetDataValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.SET_DATA_VALUES); }
+    
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal"),
             new Param("value", "要设置的值", "true"),
-            Param.fc()  
+            Param.fc()
         );
     }
 
@@ -48,14 +52,15 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             System.out.println(CmsColor.green("  All data values set successfully"));
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             CmsSetDataValues resp = (CmsSetDataValues) response.getAsdu();
-            System.out.println(CmsColor.red("  Some or all values failed:"));
             String[] refArr = refs.split(",");
+            List<String> failures = new ArrayList<>();
             for (int i = 0; i < resp.result.size() && i < refArr.length; i++) {
                 int errorCode = resp.result.get(i).get();
                 if (errorCode != CmsServiceError.NO_ERROR) {
-                    System.out.println("    " + CmsColor.red(refArr[i].trim()) + " -> error " + errorCode);
+                    failures.add(refArr[i].trim() + " -> error " + errorCode);
                 }
             }
+            printList("Some or all values failed", failures, item -> CmsColor.red(item));
         }
     }
 }

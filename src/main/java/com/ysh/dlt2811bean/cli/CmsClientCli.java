@@ -3,7 +3,11 @@ package com.ysh.dlt2811bean.cli;
 import com.ysh.dlt2811bean.cli.handler.association.AbortHandler;
 import com.ysh.dlt2811bean.cli.handler.association.AssociateHandler;
 import com.ysh.dlt2811bean.cli.handler.association.ReleaseHandler;
-import com.ysh.dlt2811bean.cli.handler.directory.ServerDirHandler;
+import com.ysh.dlt2811bean.cli.handler.data.GetDataDefinitionHandler;
+import com.ysh.dlt2811bean.cli.handler.data.GetDataDirectoryHandler;
+import com.ysh.dlt2811bean.cli.handler.data.GetDataValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.data.SetDataValuesHandler;
+import com.ysh.dlt2811bean.cli.handler.directory.*;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
@@ -108,7 +112,7 @@ public class CmsClientCli {
                                         java.util.Set<String> pool;
                                         if ("ld-dir".equals(cmdName)) {
                                             pool = cachedLds;
-                                        } else if ("ln-dir".equals(cmdName)) {
+                                        } else if ("ln-dir".equals(cmdName) || "get-all-def".equals(cmdName) || "get-all-values".equals(cmdName) || "get-all-cb".equals(cmdName) || "get-data-dir".equals(cmdName) || "get-data-def".equals(cmdName)) {
                                             pool = ctx.getCachedLnRefs();
                                         } else if ("get-data-values".equals(cmdName)) {
                                             pool = cachedValues;

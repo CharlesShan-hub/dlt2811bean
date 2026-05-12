@@ -33,7 +33,7 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new).capacity(100);
+        CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new);
 
         for (int i = 0; i < asdu.data.size(); i++) {
             CmsGetDataValuesEntry entry = asdu.data.get(i);

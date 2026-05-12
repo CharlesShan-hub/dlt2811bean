@@ -8,9 +8,10 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
-import com.ysh.dlt2811bean.utils.CmsColor;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ServerDirHandler extends AbstractServiceHandler {
 
@@ -22,11 +23,7 @@ public class ServerDirHandler extends AbstractServiceHandler {
                 .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
-        if (!printIfEmpty(resAsdu.reference().isEmpty())) {
-            System.out.println(CmsColor.green("  Logical devices:"));
-            for (int i = 0; i < resAsdu.reference().size(); i++) {
-                System.out.println("    " + CmsColor.cyan("[" + i + "]") + " " + resAsdu.reference().get(i).get());
-            }
-        }
+        List<String> refs = resAsdu.reference().toList().stream().map(r -> r.get()).collect(Collectors.toList());
+        printList("Logical devices", refs, item -> item);
     }
 }

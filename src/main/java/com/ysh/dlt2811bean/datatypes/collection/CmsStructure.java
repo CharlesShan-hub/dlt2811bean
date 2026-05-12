@@ -5,6 +5,9 @@ import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCollection;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -45,6 +48,10 @@ public class CmsStructure extends AbstractCmsCollection<CmsStructure, CmsData<?>
 
     public CmsData<?> get(int index) {
         return value.get(index);
+    }
+
+    public List<CmsData<?>> toList() {
+        return new ArrayList<>(value);
     }
 
     @Override

@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -7,7 +9,6 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
-
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-            Param.fc("功能约束 (留空=全部)")
+            Param.fc("功能约束")
         );
     }
 
@@ -34,12 +35,8 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
-        if (!printIfEmpty(asdu.data().isEmpty())) {
-            System.out.println("  Data values (" + asdu.data().size() + " entries):");
-            for (int i = 0; i < asdu.data().size(); i++) {
-                CmsDataEntry entry = asdu.data().get(i);
-                System.out.println("    [" + i + "] " + entry.reference().get() + " = " + entry.value());
-            }
-        }
+        List<CmsDataEntry> entries = asdu.data().toList();
+        printList("Data values (" + entries.size() + " entries)", entries,
+                item -> item.reference().get() + " = " + item.value());
     }
 }

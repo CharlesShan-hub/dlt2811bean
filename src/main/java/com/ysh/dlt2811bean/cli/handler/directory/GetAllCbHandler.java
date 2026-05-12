@@ -1,5 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -15,6 +17,7 @@ import java.util.Map;
 public class GetAllCbHandler extends AbstractServiceHandler {
 
     public GetAllCbHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_CB_VALUES); }
+
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
@@ -39,17 +42,14 @@ public class GetAllCbHandler extends AbstractServiceHandler {
         } else {
             reqAsdu.ldName(target);
         }
-        reqAsdu.acsiClass = new CmsACSIClass(acsiClass);
+        reqAsdu.acsiClass.set(acsiClass);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
-        if (!printIfEmpty(asdu.cbValue().isEmpty())) {
-            System.out.println("  CB values (" + asdu.cbValue().size() + " entries):");
-            for (int i = 0; i < asdu.cbValue().size(); i++) {
-                CmsCBValueEntry entry = asdu.cbValue().get(i);
-                System.out.println("    [" + i + "] " + entry.reference().get() + " = " + entry.value());
-            }
-        }
+        List<CmsCBValueEntry> entries = asdu.cbValue().toList();
+        printList("CB values (" + entries.size() + " entries)", entries,
+                item -> item.reference().get() + " = " + item.value());
     }
+    
     private int parseAcsi(String s) {
         switch (s.toUpperCase()) {
             case "BRCB": return CmsACSIClass.BRCB;

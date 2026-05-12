@@ -86,8 +86,8 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
                 collectSvControls(targets, entries);
                 break;
             case CmsACSIClass.SGCB:
-                log.warn("[Server] ACSI class SGCB not supported in current SCL model");
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                collectSgcbNames(targets, entries);
+                break;
             default:
                 log.warn("[Server] Unknown ACSI class: {}", acsiClass);
                 return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -287,6 +287,13 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             for (SclIED.SclSampledValueControl sv : t.ln0.getSampledValueControls()) {
                 entries.add(sv.getName());
             }
+        }
+    }
+
+    private void collectSgcbNames(List<TargetLn> targets, List<String> entries) {
+        for (TargetLn t : targets) {
+            if (t.ln0 == null) continue;
+            entries.add("SG1");
         }
     }
 
