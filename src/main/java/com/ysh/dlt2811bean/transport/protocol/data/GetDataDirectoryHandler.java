@@ -255,7 +255,9 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             }
         }
         for (SclIED.SclLN ln : device.getLns()) {
-            String curLnName = ln.getLnClass() + ln.getInst();
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
             if (curLnName.equals(lnName)) {
                 return ln.getDois();
             }
@@ -275,7 +277,9 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             }
         }
         for (SclIED.SclLN ln : device.getLns()) {
-            String curLnName = ln.getLnClass() + ln.getInst();
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
             if (curLnName.equals(lnName)) {
                 for (SclIED.SclDOI doi : ln.getDois()) {
                     if (doi.getName().equals(doName)) return doi;

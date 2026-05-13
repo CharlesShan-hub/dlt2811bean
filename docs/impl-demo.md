@@ -40,9 +40,22 @@ ln-dir LD0/ALMGGIO1 DATA_OBJECT; # 数据对象
 ln-dir CTRL/LLN0 DATA_SET; # 数据集只有LLN0才有
 ```
 
-## 8.4 数据对象获取
+## 8.3 整体数据
 ```bash
-# 获取某一个设备下的数据对象
-# ld-dir LD0 ALMGGIO1 DATA_OBJECT; # 数据对象
-# ld-dir CTRL/LLN0 DATA_SET; # 数据集只有LLN0才有
+# 获取数据值
+get-all-values CTRL/ALMGGIO1 XX; 
+# 获取数据定义
+get-all-def CTRL/ALMGGIO1 XX; 
+# 获取cb (BRCB,GO_CB,LCB,MSV_CB,SGCB,URCB)
+get-all-cb CTRL/LLN0 BRCB;
+get-all-cb CTRL/LLN0 GO_CB;
+get-all-cb CTRL/LLN0 LCB;
+get-all-cb CTRL/LLN0 MSV_CB;
+get-all-cb CTRL/LLN0 SGCB;
+get-all-cb CTRL/LLN0 URCB;
+```
+
+# 8.4 单个数据
+```bash
+#
 ```

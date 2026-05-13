@@ -192,20 +192,27 @@ public class HelpHandler implements CommandHandler {
         System.out.println("\n" + CmsColor.bold("章节 " + section + " " + sectionTitle(section) + " 下的命令:") + "\n");
         System.out.println(CmsColor.gray("  " + ctx.padRight("命令", 17) + String.format("%-7s", "章节") + String.format("%-5s", "服务码") + " 描述"));
         String prefix = section + ".";
-        boolean found = false;
+        List<CommandHandler> matched = new ArrayList<>();
         for (CommandHandler h : ctx.getHandlers().values()) {
             if (h.getName().equals("help") || h.getName().equals("exit")) continue;
             ServiceInfo info = ServiceInfo.byCliName(h.getName());
             if (info != null && info.getSection().startsWith(prefix)) {
-                found = true;
+                matched.add(h);
+            }
+        }
+        matched.sort((a, b) -> compareSection(
+                ServiceInfo.byCliName(a.getName()).getSection(),
+                ServiceInfo.byCliName(b.getName()).getSection()));
+        if (matched.isEmpty()) {
+            System.out.println(CmsColor.gray("  无命令"));
+        } else {
+            for (CommandHandler h : matched) {
+                ServiceInfo info = ServiceInfo.byCliName(h.getName());
                 System.out.println("  " + CmsColor.bold(ctx.padRight(h.getName(), 18))
                         + CmsColor.cyan(String.format("%-8s", "[" + info.getSection() + "]"))
                         + " " + CmsColor.yellow(String.format("0x%02X", info.getServiceCode()))
                         + " " + info.getDescription());
             }
-        }
-        if (!found) {
-            System.out.println(CmsColor.gray("  无命令"));
         }
     }
 }

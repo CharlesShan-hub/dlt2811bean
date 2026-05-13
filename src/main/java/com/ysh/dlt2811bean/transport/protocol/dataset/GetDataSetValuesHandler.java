@@ -188,7 +188,9 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
             }
         }
         for (SclIED.SclLN ln : device.getLns()) {
-            String curLnName = ln.getLnClass() + ln.getInst();
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
             if (curLnName.equals(lnName)) {
                 if (doName == null) return null;
                 for (SclDOI doi : ln.getDois()) {

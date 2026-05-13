@@ -102,6 +102,11 @@ public class CmsCliCompleter implements Completer {
             return;
         }
 
+        if (isHierarchicalRefType(param.getType())) {
+            completeHierarchicalRef(param.getType(), word, candidates);
+            return;
+        }
+
         Collection<String> pool = poolForType(param.getType(), parts);
         if (pool != null) {
             for (String ref : pool) {
@@ -111,6 +116,70 @@ public class CmsCliCompleter implements Completer {
             }
         } else if (param.getDefaultValue() != null && !param.getDefaultValue().isEmpty()) {
             candidates.add(new Candidate(param.getDefaultValue()));
+        }
+    }
+
+    private static boolean isHierarchicalRefType(Param.Type type) {
+        return type == Param.Type.DA_REF || type == Param.Type.DA_TARGET
+            || type == Param.Type.REFERENCE || type == Param.Type.DS_REF
+            || type == Param.Type.LN_REF;
+    }
+
+    private void completeHierarchicalRef(Param.Type type, String word, List<Candidate> candidates) {
+        Map<String, Map<String, Map<String, Map<String, Object>>>> h = ctx.getCachedHierarchy();
+        if (h.isEmpty()) return;
+
+        int slashIdx = word.indexOf('/');
+        int dotIdx = word.indexOf('.');
+
+        if (slashIdx < 0) {
+            for (String ld : h.keySet()) {
+                if (ld.toLowerCase().startsWith(word.toLowerCase())) {
+                    candidates.add(new Candidate(ld));
+                }
+            }
+        } else if (dotIdx < 0 && (type != Param.Type.LN_REF || slashIdx >= 0)) {
+            String ldPart = word.substring(0, slashIdx);
+            Map<String, Map<String, Map<String, Object>>> lnMap = h.get(ldPart);
+            if (lnMap != null) {
+                for (String ln : lnMap.keySet()) {
+                    String candidate = ldPart + "/" + ln;
+                    if (candidate.toLowerCase().startsWith(word.toLowerCase())) {
+                        candidates.add(new Candidate(candidate));
+                    }
+                }
+            }
+        } else if (dotIdx >= 0 && type != Param.Type.LN_REF) {
+            String ldPart = word.substring(0, slashIdx);
+            String rest = word.substring(slashIdx + 1);
+            int dotInRest = rest.indexOf('.');
+            String lnPart = rest.substring(0, dotInRest);
+
+            Map<String, Map<String, Map<String, Object>>> lnMap = h.get(ldPart);
+            if (lnMap != null) {
+                Map<String, Map<String, Object>> acs = lnMap.get(lnPart);
+                if (acs != null) {
+                    Set<String> acsiClasses;
+                    if (type == Param.Type.DS_REF) {
+                        acsiClasses = Set.of("DATA_SET");
+                    } else if (type == Param.Type.DA_REF || type == Param.Type.DA_TARGET) {
+                        acsiClasses = Set.of("DATA_OBJECT");
+                    } else {
+                        acsiClasses = acs.keySet();
+                    }
+                    for (String ac : acsiClasses) {
+                        Map<String, Object> members = acs.get(ac);
+                        if (members != null) {
+                            for (String member : members.keySet()) {
+                                String candidate = ldPart + "/" + lnPart + "." + member;
+                                if (candidate.toLowerCase().startsWith(word.toLowerCase())) {
+                                    candidates.add(new Candidate(candidate));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
