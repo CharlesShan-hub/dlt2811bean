@@ -29,7 +29,7 @@ public class SclCommunication {
         private String name;
         private String type;
         private String desc;
-        private Double bitRate;
+        private String bitRate;
         private List<SclConnectedAP> connectedAPs = new ArrayList<>();
 
         public SclSubNetwork(String name) {

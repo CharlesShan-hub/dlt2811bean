@@ -76,7 +76,7 @@ public class CmsServerCli {
                             printHelp();
                         }
                     }
-                    case "exit", "quit" -> { server.stop(); running = false; }
+                    case "exit", "quit" -> { server.stop(); running = false; System.exit(0); }
                     case "status" -> printStatus();
                     case "list" -> listSessions();
                     case "load-scl" -> handleLoadScl(parts);
@@ -137,6 +137,12 @@ public class CmsServerCli {
         String path;
         if (parts.length > 1) {
             path = parts[1];
+            if (path.startsWith("\"") && path.endsWith("\"")) {
+                path = path.substring(1, path.length() - 1);
+            }
+            if (path.startsWith("./")) {
+                path = Paths.get(System.getProperty("user.dir"), path).normalize().toString();
+            }
         } else {
             path = server.getSclFilePath();
             if (path == null) {

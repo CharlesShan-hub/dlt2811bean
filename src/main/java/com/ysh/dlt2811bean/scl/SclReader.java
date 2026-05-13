@@ -6,8 +6,10 @@ import com.ysh.dlt2811bean.scl.model.SclCommunication.*;
 import com.ysh.dlt2811bean.scl.model.SclIED.*;
 import com.ysh.dlt2811bean.scl.model.SclSubstation.*;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.*;
-import org.w3c.dom.*;
-import javax.xml.parsers.*;
+
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -18,10 +20,6 @@ public class SclReader {
 
     private boolean strictMode = false;
 
-    /**
-     * Enables strict validation mode that checks SCL file content against
-     * its detected type. For example, ICD files must not contain a Substation element.
-     */
     public SclReader setStrictMode(boolean strictMode) {
         this.strictMode = strictMode;
         return this;
@@ -36,884 +34,1106 @@ public class SclReader {
     }
 
     public SclDocument read(Path filePath) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(filePath.toFile());
-        SclDocument scl = parseDocument(doc);
-        scl.setOriginalFilePath(filePath.toString());
-        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
-            scl.setFileType(detectFileType(doc));
+        XMLInputFactory factory = newFactory();
+        try (InputStream is = new FileInputStream(filePath.toFile())) {
+            XMLStreamReader reader = factory.createXMLStreamReader(is);
+            SclDocument scl = parseDocument(reader);
+            scl.setOriginalFilePath(filePath.toString());
+            return scl;
         }
-        if (strictMode) {
-            validateStrict(scl, doc);
-        }
-        return scl;
     }
 
     public SclDocument read(InputStream inputStream) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(inputStream);
-        SclDocument scl = parseDocument(doc);
-        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
-            scl.setFileType(detectFileType(doc));
-        }
-        if (strictMode) {
-            validateStrict(scl, doc);
-        }
-        return scl;
+        XMLInputFactory factory = newFactory();
+        XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+        return parseDocument(reader);
     }
 
     public SclDocument read(InputStream inputStream, String pathHint) throws Exception {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(inputStream);
-        SclDocument scl = parseDocument(doc);
+        XMLInputFactory factory = newFactory();
+        XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+        SclDocument scl = parseDocument(reader);
         scl.setOriginalFilePath(pathHint);
-        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
-            scl.setFileType(detectFileType(doc));
-        }
-        if (strictMode) {
-            validateStrict(scl, doc);
-        }
         return scl;
     }
 
-    private SclDocument parseDocument(Document doc) {
+    private static XMLInputFactory newFactory() {
+        XMLInputFactory factory = XMLInputFactory.newInstance();
+        factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+        factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+        return factory;
+    }
+
+    private SclDocument parseDocument(XMLStreamReader reader) throws Exception {
         SclDocument scl = new SclDocument();
-        Element root = doc.getDocumentElement();
-        scl.setXmlns(root.getAttribute("xmlns"));
-        String schemaLocation = root.getAttribute("xsi:schemaLocation");
-        if (schemaLocation != null && !schemaLocation.isEmpty()) {
-            scl.setXsiSchemaLocation(schemaLocation);
-        }
-        scl.setHeader(parseHeader(getChild(root, "Header")));
-        scl.setSubstation(parseSubstation(getChild(root, "Substation")));
-        scl.setCommunication(parseCommunication(getChild(root, "Communication")));
-        NodeList iedNodes = root.getElementsByTagName("IED");
-        for (int i = 0; i < iedNodes.getLength(); i++) {
-            Element iedElem = (Element) iedNodes.item(i);
-            scl.addIed(parseIED(iedElem));
-        }
-        scl.setDataTypeTemplates(parseDataTypeTemplates(getChild(root, "DataTypeTemplates")));
+        boolean hasSubstation = false;
+        boolean hasCommunication = false;
+        int iedCount = 0;
 
-        // Detect unsupported SCL elements (Line, Process, etc.)
-        NodeList children = root.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if (tag.equals("Line") || tag.equals("Process")) {
-                String name = child.getAttribute("name");
-                String msg = "Unsupported SCL element <%s name=\"%s\"> encountered, it will be ignored"
-                        .formatted(tag, name);
-                log.warn("{}", msg);
-                scl.addUnsupportedElement(tag);
-            }
-        }
-
-        return scl;
-    }
-
-    private SclHeader parseHeader(Element elem) {
-        if (elem == null) return null;
-        SclHeader header = new SclHeader();
-        header.setId(elem.getAttribute("id"));
-        header.setVersion(elem.getAttribute("version"));
-        header.setRevision(elem.getAttribute("revision"));
-        header.setToolId(elem.getAttribute("toolID"));
-        header.setNameStructure(elem.getAttribute("nameStructure"));
-
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("Text".equals(tag)) {
-                header.setText(child.getTextContent());
-            } else if ("History".equals(tag)) {
-                NodeList hitems = child.getChildNodes();
-                for (int j = 0; j < hitems.getLength(); j++) {
-                    if (!(hitems.item(j) instanceof Element)) continue;
-                    Element hitemElem = (Element) hitems.item(j);
-                    if ("Hitem".equals(hitemElem.getTagName())) {
-                        header.addHitem(parseHitem(hitemElem));
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                switch (tag) {
+                    case "SCL" -> {
+                        scl.setXmlns(getAttr(reader, "xmlns"));
+                        String schemaLocation = getAttr(reader, "xsi:schemaLocation");
+                        if (schemaLocation != null && !schemaLocation.isEmpty()) {
+                            scl.setXsiSchemaLocation(schemaLocation);
+                        }
+                    }
+                    case "Header" -> scl.setHeader(parseHeader(reader));
+                    case "Substation" -> {
+                        hasSubstation = true;
+                        scl.setSubstation(parseSubstation(reader));
+                    }
+                    case "Communication" -> {
+                        hasCommunication = true;
+                        scl.setCommunication(parseCommunication(reader));
+                    }
+                    case "IED" -> {
+                        iedCount++;
+                        scl.addIed(parseIED(reader));
+                    }
+                    case "DataTypeTemplates" -> scl.setDataTypeTemplates(parseDataTypeTemplates(reader));
+                    case "Line", "Process" -> {
+                        String name = getAttr(reader, "name");
+                        log.warn("Unsupported SCL element <{} name=\"{}\"> encountered, it will be ignored", tag, name);
+                        scl.addUnsupportedElement(tag);
+                        skipElement(reader);
                     }
                 }
             }
         }
 
+        if (scl.getFileType() == SclDocument.SclFileType.UNKNOWN) {
+            scl.setFileType(detectFileType(hasSubstation, hasCommunication, iedCount));
+        }
+        if (strictMode) {
+            validateStrict(scl, hasSubstation, hasCommunication, iedCount);
+        }
+        return scl;
+    }
+
+    // ──────────────────────────────────────────────
+    //  Header
+    // ──────────────────────────────────────────────
+
+    private SclHeader parseHeader(XMLStreamReader reader) throws Exception {
+        SclHeader header = new SclHeader();
+        header.setId(getAttr(reader, "id"));
+        header.setVersion(getAttr(reader, "version"));
+        header.setRevision(getAttr(reader, "revision"));
+        header.setToolId(getAttr(reader, "toolID"));
+        header.setNameStructure(getAttr(reader, "nameStructure"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Text".equals(tag)) {
+                    header.setText(reader.getElementText().trim());
+                } else if ("History".equals(tag)) {
+                    parseHistory(reader, header);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Header".equals(reader.getLocalName())) break;
+            }
+        }
         return header;
     }
 
-    private SclHitem parseHitem(Element elem) {
+    private void parseHistory(XMLStreamReader reader, SclHeader header) throws Exception {
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Hitem".equals(reader.getLocalName())) {
+                    header.addHitem(parseHitem(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("History".equals(reader.getLocalName())) break;
+            }
+        }
+    }
+
+    private SclHitem parseHitem(XMLStreamReader reader) throws Exception {
         SclHitem hitem = new SclHitem();
-        hitem.setVersion(elem.getAttribute("version"));
-        hitem.setRevision(elem.getAttribute("revision"));
-        hitem.setWhen(elem.getAttribute("when"));
-        hitem.setWho(elem.getAttribute("who"));
-        hitem.setWhat(elem.getAttribute("what"));
-        hitem.setWhy(elem.getAttribute("why"));
+        hitem.setVersion(getAttr(reader, "version"));
+        hitem.setRevision(getAttr(reader, "revision"));
+        hitem.setWhen(getAttr(reader, "when"));
+        hitem.setWho(getAttr(reader, "who"));
+        hitem.setWhat(getAttr(reader, "what"));
+        hitem.setWhy(getAttr(reader, "why"));
+        skipElement(reader);
         return hitem;
     }
 
-    private SclSubstation parseSubstation(Element elem) {
-        if (elem == null) return null;
+    // ──────────────────────────────────────────────
+    //  Substation
+    // ──────────────────────────────────────────────
+
+    private SclSubstation parseSubstation(XMLStreamReader reader) throws Exception {
         SclSubstation substation = new SclSubstation();
-        substation.setName(elem.getAttribute("name"));
-        substation.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("VoltageLevel".equals(tag)) {
-                substation.addVoltageLevel(parseVoltageLevel(child));
-            } else if ("PowerTransformer".equals(tag)) {
-                substation.getVoltageLevels().stream().findFirst().ifPresent(
-                    vl -> vl.addPowerTransformer(parsePowerTransformer(child)));
+        substation.setName(getAttr(reader, "name"));
+        substation.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("VoltageLevel".equals(tag)) {
+                    substation.addVoltageLevel(parseVoltageLevel(reader));
+                } else if ("PowerTransformer".equals(tag)) {
+                    if (!substation.getVoltageLevels().isEmpty()) {
+                        substation.getVoltageLevels().get(0).addPowerTransformer(parsePowerTransformer(reader));
+                    }
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Substation".equals(reader.getLocalName())) break;
             }
         }
         return substation;
     }
 
-    private SclVoltageLevel parseVoltageLevel(Element elem) {
+    private SclVoltageLevel parseVoltageLevel(XMLStreamReader reader) throws Exception {
         SclVoltageLevel vl = new SclVoltageLevel();
-        vl.setName(elem.getAttribute("name"));
-        vl.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("Voltage".equals(tag)) {
-                vl.setVoltage(Double.parseDouble(child.getTextContent().trim()));
-                vl.setVoltageUnit(child.getAttribute("unit"));
-                vl.setVoltageMultiplier(child.getAttribute("multiplier"));
-            } else if ("Bay".equals(tag)) {
-                vl.addBay(parseBay(child));
-            } else if ("PowerTransformer".equals(tag)) {
-                vl.addPowerTransformer(parsePowerTransformer(child));
+        vl.setName(getAttr(reader, "name"));
+        vl.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Voltage".equals(tag)) {
+                    String unit = getAttr(reader, "unit");
+                    String multiplier = getAttr(reader, "multiplier");
+                    vl.setVoltage(Double.parseDouble(reader.getElementText().trim()));
+                    vl.setVoltageUnit(unit);
+                    vl.setVoltageMultiplier(multiplier);
+                } else if ("Bay".equals(tag)) {
+                    vl.addBay(parseBay(reader));
+                } else if ("PowerTransformer".equals(tag)) {
+                    vl.addPowerTransformer(parsePowerTransformer(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("VoltageLevel".equals(reader.getLocalName())) break;
             }
         }
         return vl;
     }
 
-    private SclBay parseBay(Element elem) {
+    private SclBay parseBay(XMLStreamReader reader) throws Exception {
         SclBay bay = new SclBay();
-        bay.setName(elem.getAttribute("name"));
-        bay.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("ConductingEquipment".equals(tag)) {
-                bay.addConductingEquipment(parseConductingEquipment(child));
-            } else if ("ConnectivityNode".equals(tag)) {
-                bay.addConnectivityNode(parseConnectivityNode(child));
-            } else if ("LNode".equals(tag)) {
-                bay.addLNode(parseLNode(child));
+        bay.setName(getAttr(reader, "name"));
+        bay.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("ConductingEquipment".equals(tag)) {
+                    bay.addConductingEquipment(parseConductingEquipment(reader));
+                } else if ("ConnectivityNode".equals(tag)) {
+                    bay.addConnectivityNode(parseConnectivityNode(reader));
+                } else if ("LNode".equals(tag)) {
+                    bay.addLNode(parseLNode(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Bay".equals(reader.getLocalName())) break;
             }
         }
         return bay;
     }
 
-    private SclPowerTransformer parsePowerTransformer(Element elem) {
+    private SclPowerTransformer parsePowerTransformer(XMLStreamReader reader) throws Exception {
         SclPowerTransformer pt = new SclPowerTransformer();
-        pt.setName(elem.getAttribute("name"));
-        pt.setType(elem.getAttribute("type"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("TransformerWinding".equals(tag)) {
-                pt.addWinding(parseTransformerWinding(child));
-            } else if ("LNode".equals(tag)) {
-                pt.addLNode(parseLNode(child));
+        pt.setName(getAttr(reader, "name"));
+        pt.setType(getAttr(reader, "type"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("TransformerWinding".equals(tag)) {
+                    pt.addWinding(parseTransformerWinding(reader));
+                } else if ("LNode".equals(tag)) {
+                    pt.addLNode(parseLNode(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("PowerTransformer".equals(reader.getLocalName())) break;
             }
         }
         return pt;
     }
 
-    private SclTransformerWinding parseTransformerWinding(Element elem) {
+    private SclTransformerWinding parseTransformerWinding(XMLStreamReader reader) throws Exception {
         SclTransformerWinding tw = new SclTransformerWinding();
-        tw.setName(elem.getAttribute("name"));
-        tw.setType(elem.getAttribute("type"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            if ("Terminal".equals(child.getTagName())) {
-                tw.addTerminal(parseTerminal(child));
+        tw.setName(getAttr(reader, "name"));
+        tw.setType(getAttr(reader, "type"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Terminal".equals(reader.getLocalName())) {
+                    tw.addTerminal(parseTerminal(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("TransformerWinding".equals(reader.getLocalName())) break;
             }
         }
         return tw;
     }
 
-    private SclConductingEquipment parseConductingEquipment(Element elem) {
+    private SclConductingEquipment parseConductingEquipment(XMLStreamReader reader) throws Exception {
         SclConductingEquipment ce = new SclConductingEquipment();
-        ce.setName(elem.getAttribute("name"));
-        ce.setType(elem.getAttribute("type"));
-        ce.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("Terminal".equals(tag)) {
-                ce.addTerminal(parseTerminal(child));
-            } else if ("SubEquipment".equals(tag)) {
-                ce.addSubEquipment(parseSubEquipment(child));
-            } else if ("LNode".equals(tag)) {
-                ce.addLNode(parseLNode(child));
+        ce.setName(getAttr(reader, "name"));
+        ce.setType(getAttr(reader, "type"));
+        ce.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Terminal".equals(tag)) {
+                    ce.addTerminal(parseTerminal(reader));
+                } else if ("SubEquipment".equals(tag)) {
+                    ce.addSubEquipment(parseSubEquipment(reader));
+                } else if ("LNode".equals(tag)) {
+                    ce.addLNode(parseLNode(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("ConductingEquipment".equals(reader.getLocalName())) break;
             }
         }
         return ce;
     }
 
-    private SclSubEquipment parseSubEquipment(Element elem) {
+    private SclSubEquipment parseSubEquipment(XMLStreamReader reader) throws Exception {
         SclSubEquipment se = new SclSubEquipment();
-        se.setName(elem.getAttribute("name"));
-        se.setPhase(elem.getAttribute("phase"));
-        se.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            if ("LNode".equals(child.getTagName())) {
-                se.addLNode(parseLNode(child));
+        se.setName(getAttr(reader, "name"));
+        se.setPhase(getAttr(reader, "phase"));
+        se.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("LNode".equals(reader.getLocalName())) {
+                    se.addLNode(parseLNode(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("SubEquipment".equals(reader.getLocalName())) break;
             }
         }
         return se;
     }
 
-    private SclTerminal parseTerminal(Element elem) {
+    private SclTerminal parseTerminal(XMLStreamReader reader) throws Exception {
         SclTerminal terminal = new SclTerminal();
-        terminal.setConnectivityNode(elem.getAttribute("connectivityNode"));
-        terminal.setSubstationName(elem.getAttribute("substationName"));
-        terminal.setVoltageLevelName(elem.getAttribute("voltageLevelName"));
-        terminal.setBayName(elem.getAttribute("bayName"));
-        terminal.setCNodeName(elem.getAttribute("cNodeName"));
+        terminal.setConnectivityNode(getAttr(reader, "connectivityNode"));
+        terminal.setSubstationName(getAttr(reader, "substationName"));
+        terminal.setVoltageLevelName(getAttr(reader, "voltageLevelName"));
+        terminal.setBayName(getAttr(reader, "bayName"));
+        terminal.setCNodeName(getAttr(reader, "cNodeName"));
+        skipElement(reader);
         return terminal;
     }
 
-    private SclConnectivityNode parseConnectivityNode(Element elem) {
+    private SclConnectivityNode parseConnectivityNode(XMLStreamReader reader) throws Exception {
         SclConnectivityNode cn = new SclConnectivityNode();
-        cn.setName(elem.getAttribute("name"));
-        cn.setPathName(elem.getAttribute("pathName"));
+        cn.setName(getAttr(reader, "name"));
+        cn.setPathName(getAttr(reader, "pathName"));
+        skipElement(reader);
         return cn;
     }
 
-    private SclLNode parseLNode(Element elem) {
+    private SclLNode parseLNode(XMLStreamReader reader) throws Exception {
         SclLNode lNode = new SclLNode();
-        lNode.setIedName(elem.getAttribute("iedName"));
-        lNode.setLdInst(elem.getAttribute("ldInst"));
-        lNode.setLnClass(elem.getAttribute("lnClass"));
-        lNode.setLnInst(elem.getAttribute("lnInst"));
-        lNode.setPrefix(elem.getAttribute("prefix"));
-        lNode.setDesc(elem.getAttribute("desc"));
+        lNode.setIedName(getAttr(reader, "iedName"));
+        lNode.setLdInst(getAttr(reader, "ldInst"));
+        lNode.setLnClass(getAttr(reader, "lnClass"));
+        lNode.setLnInst(getAttr(reader, "lnInst"));
+        lNode.setPrefix(getAttr(reader, "prefix"));
+        lNode.setDesc(getAttr(reader, "desc"));
+        skipElement(reader);
         return lNode;
     }
 
-    private SclCommunication parseCommunication(Element elem) {
-        if (elem == null) return null;
+    // ──────────────────────────────────────────────
+    //  Communication
+    // ──────────────────────────────────────────────
+
+    private SclCommunication parseCommunication(XMLStreamReader reader) throws Exception {
         SclCommunication comm = new SclCommunication();
-        NodeList subNetworkNodes = elem.getElementsByTagName("SubNetwork");
-        for (int i = 0; i < subNetworkNodes.getLength(); i++) {
-            comm.addSubNetwork(parseSubNetwork((Element) subNetworkNodes.item(i)));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("SubNetwork".equals(reader.getLocalName())) {
+                    comm.addSubNetwork(parseSubNetwork(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Communication".equals(reader.getLocalName())) break;
+            }
         }
         return comm;
     }
 
-    private SclSubNetwork parseSubNetwork(Element elem) {
+    private SclSubNetwork parseSubNetwork(XMLStreamReader reader) throws Exception {
         SclSubNetwork sn = new SclSubNetwork();
-        sn.setName(elem.getAttribute("name"));
-        sn.setType(elem.getAttribute("type"));
-        sn.setDesc(getTextContent(getChild(elem, "Text")));
-        Element bitRateElem = getChild(elem, "BitRate");
-        if (bitRateElem != null) {
-            sn.setBitRate(Double.parseDouble(bitRateElem.getTextContent().trim()));
-        }
-        NodeList apNodes = elem.getElementsByTagName("ConnectedAP");
-        for (int i = 0; i < apNodes.getLength(); i++) {
-            sn.addConnectedAP(parseConnectedAP((Element) apNodes.item(i)));
+        sn.setName(getAttr(reader, "name"));
+        sn.setType(getAttr(reader, "type"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Text".equals(tag)) {
+                    sn.setDesc(reader.getElementText().trim());
+                } else if ("BitRate".equals(tag)) {
+                    sn.setBitRate(reader.getElementText().trim());
+                } else if ("ConnectedAP".equals(tag)) {
+                    sn.addConnectedAP(parseConnectedAP(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("SubNetwork".equals(reader.getLocalName())) break;
+            }
         }
         return sn;
     }
 
-    private SclConnectedAP parseConnectedAP(Element elem) {
+    private SclConnectedAP parseConnectedAP(XMLStreamReader reader) throws Exception {
         SclConnectedAP cap = new SclConnectedAP();
-        cap.setIedName(elem.getAttribute("iedName"));
-        cap.setApName(elem.getAttribute("apName"));
-        Element addressElem = getChild(elem, "Address");
-        if (addressElem != null) {
-            cap.setAddress(parseAddress(addressElem));
-        }
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("GSE".equals(tag)) {
-                cap.addGse(parseGSE(child));
-            } else if ("SMV".equals(tag)) {
-                cap.addSmv(parseSMV(child));
-            } else if ("PhysConn".equals(tag)) {
-                cap.setPhysConn(parsePhysConn(child));
+        cap.setIedName(getAttr(reader, "iedName"));
+        cap.setApName(getAttr(reader, "apName"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Address".equals(tag)) {
+                    cap.setAddress(parseAddress(reader));
+                } else if ("GSE".equals(tag)) {
+                    cap.addGse(parseGSE(reader));
+                } else if ("SMV".equals(tag)) {
+                    cap.addSmv(parseSMV(reader));
+                } else if ("PhysConn".equals(tag)) {
+                    cap.setPhysConn(parsePhysConn(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("ConnectedAP".equals(reader.getLocalName())) break;
             }
         }
         return cap;
     }
 
-    private SclAddress parseAddress(Element elem) {
+    private SclAddress parseAddress(XMLStreamReader reader) throws Exception {
         SclAddress addr = new SclAddress();
-        NodeList pNodes = elem.getElementsByTagName("P");
-        for (int i = 0; i < pNodes.getLength(); i++) {
-            Element pElem = (Element) pNodes.item(i);
-            String type = pElem.getAttribute("type");
-            String value = pElem.getTextContent().trim();
-            addr.addParam(type, value);
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("P".equals(reader.getLocalName())) {
+                    String type = getAttr(reader, "type");
+                    String value = reader.getElementText().trim();
+                    addr.addParam(type, value);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Address".equals(reader.getLocalName())) break;
+            }
         }
         return addr;
     }
 
-    private SclGSE parseGSE(Element elem) {
+    private SclGSE parseGSE(XMLStreamReader reader) throws Exception {
         SclGSE gse = new SclGSE();
-        gse.setLdInst(elem.getAttribute("ldInst"));
-        gse.setCbName(elem.getAttribute("cbName"));
-        Element addrElem = getChild(elem, "Address");
-        if (addrElem != null) {
-            gse.setAddress(parseAddress(addrElem));
+        gse.setLdInst(getAttr(reader, "ldInst"));
+        gse.setCbName(getAttr(reader, "cbName"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Address".equals(reader.getLocalName())) {
+                    gse.setAddress(parseAddress(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("GSE".equals(reader.getLocalName())) break;
+            }
         }
         return gse;
     }
 
-    private SclSMV parseSMV(Element elem) {
+    private SclSMV parseSMV(XMLStreamReader reader) throws Exception {
         SclSMV smv = new SclSMV();
-        smv.setLdInst(elem.getAttribute("ldInst"));
-        smv.setCbName(elem.getAttribute("cbName"));
-        Element addrElem = getChild(elem, "Address");
-        if (addrElem != null) {
-            smv.setAddress(parseAddress(addrElem));
+        smv.setLdInst(getAttr(reader, "ldInst"));
+        smv.setCbName(getAttr(reader, "cbName"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Address".equals(reader.getLocalName())) {
+                    smv.setAddress(parseAddress(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("SMV".equals(reader.getLocalName())) break;
+            }
         }
         return smv;
     }
 
-    private SclPhysConn parsePhysConn(Element elem) {
+    private SclPhysConn parsePhysConn(XMLStreamReader reader) throws Exception {
         SclPhysConn pc = new SclPhysConn();
-        pc.setType(elem.getAttribute("type"));
-        NodeList pNodes = elem.getElementsByTagName("P");
-        for (int i = 0; i < pNodes.getLength(); i++) {
-            Element pElem = (Element) pNodes.item(i);
-            String type = pElem.getAttribute("type");
-            String value = pElem.getTextContent().trim();
-            if ("Type".equals(type)) pc.setPlugType(value);
-            else if ("Plug".equals(type)) pc.setPlug(value);
+        pc.setType(getAttr(reader, "type"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("P".equals(reader.getLocalName())) {
+                    String type = getAttr(reader, "type");
+                    String value = reader.getElementText().trim();
+                    if ("Type".equals(type)) pc.setPlugType(value);
+                    else if ("Plug".equals(type)) pc.setPlug(value);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("PhysConn".equals(reader.getLocalName())) break;
+            }
         }
         return pc;
     }
 
-    private SclIED parseIED(Element elem) {
+    // ──────────────────────────────────────────────
+    //  IED
+    // ──────────────────────────────────────────────
+
+    private SclIED parseIED(XMLStreamReader reader) throws Exception {
         SclIED ied = new SclIED();
-        ied.setName(elem.getAttribute("name"));
-        ied.setDesc(elem.getAttribute("desc"));
-        Element servicesElem = getChild(elem, "Services");
-        if (servicesElem != null) {
-            ied.setServices(parseServices(servicesElem));
-        }
-        NodeList apNodes = elem.getElementsByTagName("AccessPoint");
-        for (int i = 0; i < apNodes.getLength(); i++) {
-            ied.addAccessPoint(parseAccessPoint((Element) apNodes.item(i)));
+        ied.setName(getAttr(reader, "name"));
+        ied.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("Services".equals(tag)) {
+                    ied.setServices(parseServices(reader));
+                } else if ("AccessPoint".equals(tag)) {
+                    ied.addAccessPoint(parseAccessPoint(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("IED".equals(reader.getLocalName())) break;
+            }
         }
         return ied;
     }
 
-    private SclServices parseServices(Element elem) {
+    private SclServices parseServices(XMLStreamReader reader) throws Exception {
         SclServices svc = new SclServices();
-        svc.setDynAssociation(hasChild(elem, "DynAssociation"));
-        svc.setGetDirectory(hasChild(elem, "GetDirectory"));
-        svc.setGetDataObjectDefinition(hasChild(elem, "GetDataObjectDefinition"));
-        svc.setGetDataSetValue(hasChild(elem, "GetDataSetValue"));
-        svc.setDataSetDirectory(hasChild(elem, "DataSetDirectory"));
-        svc.setReadWrite(hasChild(elem, "ReadWrite"));
-        svc.setFileHandling(hasChild(elem, "FileHandling"));
-        svc.setGetCBValues(hasChild(elem, "GetCBValues"));
-        svc.setGSEDir(hasChild(elem, "GSEDir"));
-        svc.setTimerActivatedControl(hasChild(elem, "TimerActivatedControl"));
-        Element confDataSet = getChild(elem, "ConfDataSet");
-        if (confDataSet != null) {
-            String max = confDataSet.getAttribute("max");
-            if (!max.isEmpty()) svc.setConfDataSetMax(Integer.parseInt(max));
-            String maxAttr = confDataSet.getAttribute("maxAttributes");
-            if (!maxAttr.isEmpty()) svc.setConfDataSetMaxAttributes(Integer.parseInt(maxAttr));
-        }
-        Element confReport = getChild(elem, "ConfReportControl");
-        if (confReport != null) {
-            String max = confReport.getAttribute("max");
-            if (!max.isEmpty()) svc.setConfReportControlMax(Integer.parseInt(max));
-        }
-        Element confLog = getChild(elem, "ConfLogControl");
-        if (confLog != null) {
-            String max = confLog.getAttribute("max");
-            if (!max.isEmpty()) svc.setConfLogControlMax(Integer.parseInt(max));
-        }
-        Element goose = getChild(elem, "GOOSE");
-        if (goose != null) {
-            String max = goose.getAttribute("max");
-            if (!max.isEmpty()) svc.setGooseMax(Integer.parseInt(max));
-        }
-        Element gsse = getChild(elem, "GSSE");
-        if (gsse != null) {
-            String max = gsse.getAttribute("max");
-            if (!max.isEmpty()) svc.setGsseMax(Integer.parseInt(max));
-        }
-        Element confLNs = getChild(elem, "ConfLNs");
-        if (confLNs != null) {
-            String fixPrefix = confLNs.getAttribute("fixPrefix");
-            if (!fixPrefix.isEmpty()) svc.setConfLNsFixPrefix(Boolean.parseBoolean(fixPrefix));
-            String fixLnInst = confLNs.getAttribute("fixLnInst");
-            if (!fixLnInst.isEmpty()) svc.setConfLNsFixLnInst(Boolean.parseBoolean(fixLnInst));
-        }
-        Element rptSettings = getChild(elem, "ReportSettings");
-        if (rptSettings != null) {
-            SclReportSettings rs = new SclReportSettings();
-            rs.setBufTime(rptSettings.getAttribute("bufTime"));
-            rs.setCbName(rptSettings.getAttribute("cbName"));
-            rs.setRptID(rptSettings.getAttribute("rptID"));
-            rs.setDatSet(rptSettings.getAttribute("datSet"));
-            rs.setIntgPd(rptSettings.getAttribute("intgPd"));
-            rs.setOptFields(rptSettings.getAttribute("optFields"));
-            svc.setReportSettings(rs);
-        }
-        Element gseSettings = getChild(elem, "GSESettings");
-        if (gseSettings != null) {
-            SclGSESettings gs = new SclGSESettings();
-            gs.setAppID(gseSettings.getAttribute("appID"));
-            gs.setCbName(gseSettings.getAttribute("cbName"));
-            gs.setDatSet(gseSettings.getAttribute("datSet"));
-            svc.setGseSettings(gs);
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                switch (tag) {
+                    case "DynAssociation" -> svc.setDynAssociation(true);
+                    case "GetDirectory" -> svc.setGetDirectory(true);
+                    case "GetDataObjectDefinition" -> svc.setGetDataObjectDefinition(true);
+                    case "GetDataSetValue" -> svc.setGetDataSetValue(true);
+                    case "DataSetDirectory" -> svc.setDataSetDirectory(true);
+                    case "ReadWrite" -> svc.setReadWrite(true);
+                    case "FileHandling" -> svc.setFileHandling(true);
+                    case "GetCBValues" -> svc.setGetCBValues(true);
+                    case "GSEDir" -> svc.setGSEDir(true);
+                    case "TimerActivatedControl" -> svc.setTimerActivatedControl(true);
+                    case "ConfDataSet" -> {
+                        String max = getAttr(reader, "max");
+                        if (!max.isEmpty()) svc.setConfDataSetMax(Integer.parseInt(max));
+                        String maxAttr = getAttr(reader, "maxAttributes");
+                        if (!maxAttr.isEmpty()) svc.setConfDataSetMaxAttributes(Integer.parseInt(maxAttr));
+                    }
+                    case "ConfReportControl" -> {
+                        String max = getAttr(reader, "max");
+                        if (!max.isEmpty()) svc.setConfReportControlMax(Integer.parseInt(max));
+                    }
+                    case "ConfLogControl" -> {
+                        String max = getAttr(reader, "max");
+                        if (!max.isEmpty()) svc.setConfLogControlMax(Integer.parseInt(max));
+                    }
+                    case "GOOSE" -> {
+                        String max = getAttr(reader, "max");
+                        if (!max.isEmpty()) svc.setGooseMax(Integer.parseInt(max));
+                    }
+                    case "GSSE" -> {
+                        String max = getAttr(reader, "max");
+                        if (!max.isEmpty()) svc.setGsseMax(Integer.parseInt(max));
+                    }
+                    case "ConfLNs" -> {
+                        String fixPrefix = getAttr(reader, "fixPrefix");
+                        if (!fixPrefix.isEmpty()) svc.setConfLNsFixPrefix(Boolean.parseBoolean(fixPrefix));
+                        String fixLnInst = getAttr(reader, "fixLnInst");
+                        if (!fixLnInst.isEmpty()) svc.setConfLNsFixLnInst(Boolean.parseBoolean(fixLnInst));
+                    }
+                    case "ReportSettings" -> {
+                        SclReportSettings rs = new SclReportSettings();
+                        rs.setBufTime(getAttr(reader, "bufTime"));
+                        rs.setCbName(getAttr(reader, "cbName"));
+                        rs.setRptID(getAttr(reader, "rptID"));
+                        rs.setDatSet(getAttr(reader, "datSet"));
+                        rs.setIntgPd(getAttr(reader, "intgPd"));
+                        rs.setOptFields(getAttr(reader, "optFields"));
+                        svc.setReportSettings(rs);
+                    }
+                    case "GSESettings" -> {
+                        SclGSESettings gs = new SclGSESettings();
+                        gs.setAppID(getAttr(reader, "appID"));
+                        gs.setCbName(getAttr(reader, "cbName"));
+                        gs.setDatSet(getAttr(reader, "datSet"));
+                        svc.setGseSettings(gs);
+                    }
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Services".equals(reader.getLocalName())) break;
+            }
         }
         return svc;
     }
 
-    private SclAccessPoint parseAccessPoint(Element elem) {
+    private SclAccessPoint parseAccessPoint(XMLStreamReader reader) throws Exception {
         SclAccessPoint ap = new SclAccessPoint();
-        ap.setName(elem.getAttribute("name"));
-        Element serverElem = getChild(elem, "Server");
-        if (serverElem != null) {
-            ap.setServer(parseServer(serverElem));
+        ap.setName(getAttr(reader, "name"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Server".equals(reader.getLocalName())) {
+                    ap.setServer(parseServer(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("AccessPoint".equals(reader.getLocalName())) break;
+            }
         }
         return ap;
     }
 
-    private SclServer parseServer(Element elem) {
+    private SclServer parseServer(XMLStreamReader reader) throws Exception {
         SclServer server = new SclServer();
-        NodeList lDeviceNodes = elem.getElementsByTagName("LDevice");
-        for (int i = 0; i < lDeviceNodes.getLength(); i++) {
-            server.addLDevice(parseLDevice((Element) lDeviceNodes.item(i)));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("LDevice".equals(reader.getLocalName())) {
+                    server.addLDevice(parseLDevice(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Server".equals(reader.getLocalName())) break;
+            }
         }
         return server;
     }
 
-    private SclLDevice parseLDevice(Element elem) {
+    private SclLDevice parseLDevice(XMLStreamReader reader) throws Exception {
         SclLDevice ld = new SclLDevice();
-        ld.setInst(elem.getAttribute("inst"));
-        ld.setDesc(elem.getAttribute("desc"));
-        Element ln0Elem = getChild(elem, "LN0");
-        if (ln0Elem != null) {
-            ld.setLn0(parseLN0(ln0Elem));
-        }
-        NodeList lnNodes = elem.getElementsByTagName("LN");
-        for (int i = 0; i < lnNodes.getLength(); i++) {
-            ld.addLn(parseLN((Element) lnNodes.item(i)));
+        ld.setInst(getAttr(reader, "inst"));
+        ld.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("LN0".equals(tag)) {
+                    ld.setLn0(parseLN0(reader));
+                } else if ("LN".equals(tag)) {
+                    ld.addLn(parseLN(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("LDevice".equals(reader.getLocalName())) break;
+            }
         }
         return ld;
     }
 
-    private SclLN0 parseLN0(Element elem) {
+    private SclLN0 parseLN0(XMLStreamReader reader) throws Exception {
         SclLN0 ln0 = new SclLN0();
-        ln0.setLnType(elem.getAttribute("lnType"));
-        ln0.setLnClass(elem.getAttribute("lnClass"));
-        ln0.setInst(elem.getAttribute("inst"));
-        ln0.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("DataSet".equals(tag)) {
-                ln0.addDataSet(parseDataSet(child));
-            } else if ("ReportControl".equals(tag)) {
-                ln0.addReportControl(parseReportControl(child));
-            } else if ("LogControl".equals(tag)) {
-                ln0.addLogControl(parseLogControl(child));
-            } else if ("GSEControl".equals(tag)) {
-                ln0.addGseControl(parseGSEControl(child));
-            } else if ("SampledValueControl".equals(tag)) {
-                ln0.addSampledValueControl(parseSampledValueControl(child));
-            } else if ("DOI".equals(tag)) {
-                ln0.addDoi(parseDOI(child));
+        ln0.setLnType(getAttr(reader, "lnType"));
+        ln0.setLnClass(getAttr(reader, "lnClass"));
+        ln0.setInst(getAttr(reader, "inst"));
+        ln0.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                switch (tag) {
+                    case "DataSet" -> ln0.addDataSet(parseDataSet(reader));
+                    case "ReportControl" -> ln0.addReportControl(parseReportControl(reader));
+                    case "LogControl" -> ln0.addLogControl(parseLogControl(reader));
+                    case "GSEControl" -> ln0.addGseControl(parseGSEControl(reader));
+                    case "SampledValueControl" -> ln0.addSampledValueControl(parseSampledValueControl(reader));
+                    case "DOI" -> ln0.addDoi(parseDOI(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("LN0".equals(reader.getLocalName())) break;
             }
         }
         return ln0;
     }
 
-    private SclLN parseLN(Element elem) {
+    private SclLN parseLN(XMLStreamReader reader) throws Exception {
         SclLN ln = new SclLN();
-        ln.setLnType(elem.getAttribute("lnType"));
-        ln.setLnClass(elem.getAttribute("lnClass"));
-        ln.setInst(elem.getAttribute("inst"));
-        ln.setPrefix(elem.getAttribute("prefix"));
-        ln.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("DOI".equals(tag)) {
-                ln.addDoi(parseDOI(child));
-            } else if ("Inputs".equals(tag)) {
-                List<SclInputs> inputsList = new ArrayList<>();
-                inputsList.add(parseInputs(child));
-                ln.setInputs(inputsList);
+        ln.setLnType(getAttr(reader, "lnType"));
+        ln.setLnClass(getAttr(reader, "lnClass"));
+        ln.setInst(getAttr(reader, "inst"));
+        ln.setPrefix(getAttr(reader, "prefix"));
+        ln.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("DOI".equals(tag)) {
+                    ln.addDoi(parseDOI(reader));
+                } else if ("Inputs".equals(tag)) {
+                    List<SclInputs> inputsList = new ArrayList<>();
+                    inputsList.add(parseInputs(reader));
+                    ln.setInputs(inputsList);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("LN".equals(reader.getLocalName())) break;
             }
         }
         return ln;
     }
 
-    private SclDataSet parseDataSet(Element elem) {
+    private SclDataSet parseDataSet(XMLStreamReader reader) throws Exception {
         SclDataSet ds = new SclDataSet();
-        ds.setName(elem.getAttribute("name"));
-        ds.setDesc(elem.getAttribute("desc"));
-        NodeList fcdaNodes = elem.getElementsByTagName("FCDA");
-        for (int i = 0; i < fcdaNodes.getLength(); i++) {
-            ds.addFcda(parseFCDA((Element) fcdaNodes.item(i)));
+        ds.setName(getAttr(reader, "name"));
+        ds.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("FCDA".equals(reader.getLocalName())) {
+                    ds.addFcda(parseFCDA(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DataSet".equals(reader.getLocalName())) break;
+            }
         }
         return ds;
     }
 
-    private SclFCDA parseFCDA(Element elem) {
+    private SclFCDA parseFCDA(XMLStreamReader reader) throws Exception {
         SclFCDA fcda = new SclFCDA();
-        fcda.setLdInst(elem.getAttribute("ldInst"));
-        fcda.setLnClass(elem.getAttribute("lnClass"));
-        fcda.setLnInst(elem.getAttribute("lnInst"));
-        fcda.setPrefix(elem.getAttribute("prefix"));
-        fcda.setDoName(elem.getAttribute("doName"));
-        fcda.setDaName(elem.getAttribute("daName"));
-        fcda.setFc(elem.getAttribute("fc"));
+        fcda.setLdInst(getAttr(reader, "ldInst"));
+        fcda.setLnClass(getAttr(reader, "lnClass"));
+        fcda.setLnInst(getAttr(reader, "lnInst"));
+        fcda.setPrefix(getAttr(reader, "prefix"));
+        fcda.setDoName(getAttr(reader, "doName"));
+        fcda.setDaName(getAttr(reader, "daName"));
+        fcda.setFc(getAttr(reader, "fc"));
+        skipElement(reader);
         return fcda;
     }
 
-    private SclReportControl parseReportControl(Element elem) {
+    private SclReportControl parseReportControl(XMLStreamReader reader) throws Exception {
         SclReportControl rc = new SclReportControl();
-        rc.setName(elem.getAttribute("name"));
-        rc.setDesc(elem.getAttribute("desc"));
-        rc.setRptID(elem.getAttribute("rptID"));
-        rc.setDatSet(elem.getAttribute("datSet"));
-        rc.setConfRev(elem.getAttribute("confRev"));
-        rc.setBuffered("true".equals(elem.getAttribute("buffered")));
-        rc.setBufTime(elem.getAttribute("bufTime"));
-        rc.setIntgPd(elem.getAttribute("intgPd"));
-        Element trgOpsElem = getChild(elem, "TrgOps");
-        if (trgOpsElem != null) {
-            rc.setTrgOps(parseTrgOps(trgOpsElem));
-        }
-        Element optFieldsElem = getChild(elem, "OptFields");
-        if (optFieldsElem != null) {
-            rc.setOptFields(parseOptFields(optFieldsElem));
-        }
-        Element rptEnabledElem = getChild(elem, "RptEnabled");
-        if (rptEnabledElem != null) {
-            rc.setRptEnabled(parseRptEnabled(rptEnabledElem));
+        rc.setName(getAttr(reader, "name"));
+        rc.setDesc(getAttr(reader, "desc"));
+        rc.setRptID(getAttr(reader, "rptID"));
+        rc.setDatSet(getAttr(reader, "datSet"));
+        rc.setConfRev(getAttr(reader, "confRev"));
+        rc.setBuffered("true".equals(getAttr(reader, "buffered")));
+        rc.setBufTime(getAttr(reader, "bufTime"));
+        rc.setIntgPd(getAttr(reader, "intgPd"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("TrgOps".equals(tag)) {
+                    rc.setTrgOps(parseTrgOps(reader));
+                } else if ("OptFields".equals(tag)) {
+                    rc.setOptFields(parseOptFields(reader));
+                } else if ("RptEnabled".equals(tag)) {
+                    rc.setRptEnabled(parseRptEnabled(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("ReportControl".equals(reader.getLocalName())) break;
+            }
         }
         return rc;
     }
 
-    private SclTrgOps parseTrgOps(Element elem) {
+    private SclTrgOps parseTrgOps(XMLStreamReader reader) throws Exception {
         SclTrgOps trgOps = new SclTrgOps();
-        trgOps.setDchg("true".equals(elem.getAttribute("dchg")));
-        trgOps.setQchg("true".equals(elem.getAttribute("qchg")));
-        trgOps.setDupd("true".equals(elem.getAttribute("dupd")));
-        trgOps.setPeriod("true".equals(elem.getAttribute("period")));
-        trgOps.setGi("true".equals(elem.getAttribute("gi")));
+        trgOps.setDchg("true".equals(getAttr(reader, "dchg")));
+        trgOps.setQchg("true".equals(getAttr(reader, "qchg")));
+        trgOps.setDupd("true".equals(getAttr(reader, "dupd")));
+        trgOps.setPeriod("true".equals(getAttr(reader, "period")));
+        trgOps.setGi("true".equals(getAttr(reader, "gi")));
+        skipElement(reader);
         return trgOps;
     }
 
-    private SclOptFields parseOptFields(Element elem) {
+    private SclOptFields parseOptFields(XMLStreamReader reader) throws Exception {
         SclOptFields opt = new SclOptFields();
-        opt.setDataSet("true".equals(elem.getAttribute("dataSet")));
-        opt.setBufOvfl("true".equals(elem.getAttribute("bufOvfl")));
-        opt.setConfigRef("true".equals(elem.getAttribute("configRef")));
-        opt.setDataRef("true".equals(elem.getAttribute("dataRef")));
-        opt.setEntryID("true".equals(elem.getAttribute("entryID")));
-        opt.setReasonCode("true".equals(elem.getAttribute("reasonCode")));
-        opt.setTimeStamp("true".equals(elem.getAttribute("timeStamp")));
-        opt.setSeqNum("true".equals(elem.getAttribute("seqNum")));
+        opt.setDataSet("true".equals(getAttr(reader, "dataSet")));
+        opt.setBufOvfl("true".equals(getAttr(reader, "bufOvfl")));
+        opt.setConfigRef("true".equals(getAttr(reader, "configRef")));
+        opt.setDataRef("true".equals(getAttr(reader, "dataRef")));
+        opt.setEntryID("true".equals(getAttr(reader, "entryID")));
+        opt.setReasonCode("true".equals(getAttr(reader, "reasonCode")));
+        opt.setTimeStamp("true".equals(getAttr(reader, "timeStamp")));
+        opt.setSeqNum("true".equals(getAttr(reader, "seqNum")));
+        skipElement(reader);
         return opt;
     }
 
-    private SclRptEnabled parseRptEnabled(Element elem) {
+    private SclRptEnabled parseRptEnabled(XMLStreamReader reader) throws Exception {
         SclRptEnabled rptEnabled = new SclRptEnabled();
-        String max = elem.getAttribute("max");
+        String max = getAttr(reader, "max");
         if (!max.isEmpty()) {
             rptEnabled.setMax(Integer.parseInt(max));
         }
-        NodeList clientLNNodes = elem.getElementsByTagName("ClientLN");
-        for (int i = 0; i < clientLNNodes.getLength(); i++) {
-            Element clientLNElem = (Element) clientLNNodes.item(i);
-            SclClientLN clientLN = new SclClientLN();
-            clientLN.setIedName(clientLNElem.getAttribute("iedName"));
-            clientLN.setLdInst(clientLNElem.getAttribute("ldInst"));
-            clientLN.setLnClass(clientLNElem.getAttribute("lnClass"));
-            clientLN.setLnInst(clientLNElem.getAttribute("lnInst"));
-            rptEnabled.addClientLN(clientLN);
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("ClientLN".equals(reader.getLocalName())) {
+                    SclClientLN clientLN = new SclClientLN();
+                    clientLN.setIedName(getAttr(reader, "iedName"));
+                    clientLN.setLdInst(getAttr(reader, "ldInst"));
+                    clientLN.setLnClass(getAttr(reader, "lnClass"));
+                    clientLN.setLnInst(getAttr(reader, "lnInst"));
+                    rptEnabled.addClientLN(clientLN);
+                    skipElement(reader);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("RptEnabled".equals(reader.getLocalName())) break;
+            }
         }
         return rptEnabled;
     }
 
-    private SclLogControl parseLogControl(Element elem) {
+    private SclLogControl parseLogControl(XMLStreamReader reader) throws Exception {
         SclLogControl lc = new SclLogControl();
-        lc.setName(elem.getAttribute("name"));
-        lc.setDatSet(elem.getAttribute("datSet"));
-        lc.setLogName(elem.getAttribute("logName"));
-        lc.setDesc(elem.getAttribute("desc"));
-        Element trgOpsElem = getChild(elem, "TrgOps");
-        if (trgOpsElem != null) {
-            lc.setTrgOps(parseTrgOps(trgOpsElem));
+        lc.setName(getAttr(reader, "name"));
+        lc.setDatSet(getAttr(reader, "datSet"));
+        lc.setLogName(getAttr(reader, "logName"));
+        lc.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("TrgOps".equals(reader.getLocalName())) {
+                    lc.setTrgOps(parseTrgOps(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("LogControl".equals(reader.getLocalName())) break;
+            }
         }
         return lc;
     }
 
-    private SclGSEControl parseGSEControl(Element elem) {
+    private SclGSEControl parseGSEControl(XMLStreamReader reader) throws Exception {
         SclGSEControl gse = new SclGSEControl();
-        gse.setName(elem.getAttribute("name"));
-        gse.setDatSet(elem.getAttribute("datSet"));
-        gse.setAppID(elem.getAttribute("appID"));
-        gse.setConfRev(elem.getAttribute("confRev"));
-        gse.setType(elem.getAttribute("type"));
+        gse.setName(getAttr(reader, "name"));
+        gse.setDatSet(getAttr(reader, "datSet"));
+        gse.setAppID(getAttr(reader, "appID"));
+        gse.setConfRev(getAttr(reader, "confRev"));
+        gse.setType(getAttr(reader, "type"));
+        skipElement(reader);
         return gse;
     }
 
-    private SclSampledValueControl parseSampledValueControl(Element elem) {
+    private SclSampledValueControl parseSampledValueControl(XMLStreamReader reader) throws Exception {
         SclSampledValueControl sv = new SclSampledValueControl();
-        sv.setName(elem.getAttribute("name"));
-        sv.setDatSet(elem.getAttribute("datSet"));
-        sv.setSmvID(elem.getAttribute("smvID"));
-        String smpRate = elem.getAttribute("smpRate");
+        sv.setName(getAttr(reader, "name"));
+        sv.setDatSet(getAttr(reader, "datSet"));
+        sv.setSmvID(getAttr(reader, "smvID"));
+        String smpRate = getAttr(reader, "smpRate");
         if (!smpRate.isEmpty()) sv.setSmpRate(Integer.parseInt(smpRate));
-        String nofASDU = elem.getAttribute("nofASDU");
+        String nofASDU = getAttr(reader, "nofASDU");
         if (!nofASDU.isEmpty()) sv.setNofASDU(Integer.parseInt(nofASDU));
-        sv.setMulticast("true".equals(elem.getAttribute("multicast")));
-        sv.setConfRev(elem.getAttribute("confRev"));
-        Element smvOptsElem = getChild(elem, "SmvOpts");
-        if (smvOptsElem != null) {
-            sv.setSmvOpts(parseSmvOpts(smvOptsElem));
+        sv.setMulticast("true".equals(getAttr(reader, "multicast")));
+        sv.setConfRev(getAttr(reader, "confRev"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("SmvOpts".equals(reader.getLocalName())) {
+                    sv.setSmvOpts(parseSmvOpts(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("SampledValueControl".equals(reader.getLocalName())) break;
+            }
         }
         return sv;
     }
 
-    private SclSmvOpts parseSmvOpts(Element elem) {
+    private SclSmvOpts parseSmvOpts(XMLStreamReader reader) throws Exception {
         SclSmvOpts opts = new SclSmvOpts();
-        opts.setSampleRate("true".equals(elem.getAttribute("sampleRate")));
-        opts.setRefreshTime("true".equals(elem.getAttribute("refreshTime")));
-        opts.setSampleSynchronized("true".equals(elem.getAttribute("sampleSynchronized")));
+        opts.setSampleRate("true".equals(getAttr(reader, "sampleRate")));
+        opts.setRefreshTime("true".equals(getAttr(reader, "refreshTime")));
+        opts.setSampleSynchronized("true".equals(getAttr(reader, "sampleSynchronized")));
+        skipElement(reader);
         return opts;
     }
 
-    private SclDOI parseDOI(Element elem) {
+    private SclDOI parseDOI(XMLStreamReader reader) throws Exception {
         SclDOI doi = new SclDOI();
-        doi.setName(elem.getAttribute("name"));
-        doi.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("DAI".equals(tag)) {
-                doi.addDai(parseDAI(child));
-            } else if ("SDI".equals(tag)) {
-                doi.addSdi(parseSDI(child));
+        doi.setName(getAttr(reader, "name"));
+        doi.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("DAI".equals(tag)) {
+                    doi.addDai(parseDAI(reader));
+                } else if ("SDI".equals(tag)) {
+                    doi.addSdi(parseSDI(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DOI".equals(reader.getLocalName())) break;
             }
         }
         return doi;
     }
 
-    private SclDAI parseDAI(Element elem) {
+    private SclDAI parseDAI(XMLStreamReader reader) throws Exception {
         SclDAI dai = new SclDAI();
-        dai.setName(elem.getAttribute("name"));
-        dai.setSAddr(elem.getAttribute("sAddr"));
-        Element valElem = getChild(elem, "Val");
-        if (valElem != null) {
-            dai.setValue(valElem.getTextContent().trim());
+        dai.setName(getAttr(reader, "name"));
+        dai.setSAddr(getAttr(reader, "sAddr"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("Val".equals(reader.getLocalName())) {
+                    dai.setValue(reader.getElementText().trim());
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DAI".equals(reader.getLocalName())) break;
+            }
         }
         return dai;
     }
 
-    private SclSDI parseSDI(Element elem) {
+    private SclSDI parseSDI(XMLStreamReader reader) throws Exception {
         SclSDI sdi = new SclSDI();
-        sdi.setName(elem.getAttribute("name"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            if ("DAI".equals(child.getTagName())) {
-                sdi.addDai(parseDAI(child));
+        sdi.setName(getAttr(reader, "name"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("DAI".equals(reader.getLocalName())) {
+                    sdi.addDai(parseDAI(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("SDI".equals(reader.getLocalName())) break;
             }
         }
         return sdi;
     }
 
-    private SclInputs parseInputs(Element elem) {
+    private SclInputs parseInputs(XMLStreamReader reader) throws Exception {
         SclInputs inputs = new SclInputs();
-        NodeList extRefNodes = elem.getElementsByTagName("ExtRef");
-        for (int i = 0; i < extRefNodes.getLength(); i++) {
-            inputs.addExtRef(parseExtRef((Element) extRefNodes.item(i)));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("ExtRef".equals(reader.getLocalName())) {
+                    inputs.addExtRef(parseExtRef(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("Inputs".equals(reader.getLocalName())) break;
+            }
         }
         return inputs;
     }
 
-    private SclExtRef parseExtRef(Element elem) {
+    private SclExtRef parseExtRef(XMLStreamReader reader) throws Exception {
         SclExtRef extRef = new SclExtRef();
-        extRef.setIntAddr(elem.getAttribute("intAddr"));
-        extRef.setDesc(elem.getAttribute("desc"));
-        extRef.setIedName(elem.getAttribute("iedName"));
-        extRef.setLdInst(elem.getAttribute("ldInst"));
-        extRef.setLnClass(elem.getAttribute("lnClass"));
-        extRef.setLnInst(elem.getAttribute("lnInst"));
-        extRef.setDoName(elem.getAttribute("doName"));
-        extRef.setDaName(elem.getAttribute("daName"));
-        extRef.setServiceType(elem.getAttribute("serviceType"));
+        extRef.setIntAddr(getAttr(reader, "intAddr"));
+        extRef.setDesc(getAttr(reader, "desc"));
+        extRef.setIedName(getAttr(reader, "iedName"));
+        extRef.setLdInst(getAttr(reader, "ldInst"));
+        extRef.setLnClass(getAttr(reader, "lnClass"));
+        extRef.setLnInst(getAttr(reader, "lnInst"));
+        extRef.setDoName(getAttr(reader, "doName"));
+        extRef.setDaName(getAttr(reader, "daName"));
+        extRef.setServiceType(getAttr(reader, "serviceType"));
+        skipElement(reader);
         return extRef;
     }
 
-    private SclDataTypeTemplates parseDataTypeTemplates(Element elem) {
-        if (elem == null) return null;
+    // ──────────────────────────────────────────────
+    //  DataTypeTemplates
+    // ──────────────────────────────────────────────
+
+    private SclDataTypeTemplates parseDataTypeTemplates(XMLStreamReader reader) throws Exception {
+        if (reader == null) return null;
         SclDataTypeTemplates templates = new SclDataTypeTemplates();
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("LNodeType".equals(tag)) {
-                templates.addLNodeType(parseLNodeType(child));
-            } else if ("DOType".equals(tag)) {
-                templates.addDoType(parseDOType(child));
-            } else if ("DAType".equals(tag)) {
-                templates.addDaType(parseDAType(child));
-            } else if ("EnumType".equals(tag)) {
-                templates.addEnumType(parseEnumType(child));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("LNodeType".equals(tag)) {
+                    templates.addLNodeType(parseLNodeType(reader));
+                } else if ("DOType".equals(tag)) {
+                    templates.addDoType(parseDOType(reader));
+                } else if ("DAType".equals(tag)) {
+                    templates.addDaType(parseDAType(reader));
+                } else if ("EnumType".equals(tag)) {
+                    templates.addEnumType(parseEnumType(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DataTypeTemplates".equals(reader.getLocalName())) break;
             }
         }
         return templates;
     }
 
-    private SclLNodeType parseLNodeType(Element elem) {
+    private SclLNodeType parseLNodeType(XMLStreamReader reader) throws Exception {
         SclLNodeType lnt = new SclLNodeType();
-        lnt.setId(elem.getAttribute("id"));
-        lnt.setLnClass(elem.getAttribute("lnClass"));
-        lnt.setDesc(elem.getAttribute("desc"));
-        NodeList doNodes = elem.getElementsByTagName("DO");
-        for (int i = 0; i < doNodes.getLength(); i++) {
-            Element doElem = (Element) doNodes.item(i);
-            SclDO doObj = new SclDO();
-            doObj.setName(doElem.getAttribute("name"));
-            doObj.setType(doElem.getAttribute("type"));
-            lnt.addDo(doObj);
+        lnt.setId(getAttr(reader, "id"));
+        lnt.setLnClass(getAttr(reader, "lnClass"));
+        lnt.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("DO".equals(reader.getLocalName())) {
+                    SclDO doObj = new SclDO();
+                    doObj.setName(getAttr(reader, "name"));
+                    doObj.setType(getAttr(reader, "type"));
+                    lnt.addDo(doObj);
+                    skipElement(reader);
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("LNodeType".equals(reader.getLocalName())) break;
+            }
         }
         return lnt;
     }
 
-    private SclDOType parseDOType(Element elem) {
+    private SclDOType parseDOType(XMLStreamReader reader) throws Exception {
         SclDOType dot = new SclDOType();
-        dot.setId(elem.getAttribute("id"));
-        dot.setCdc(elem.getAttribute("cdc"));
-        dot.setDesc(elem.getAttribute("desc"));
-        NodeList children = elem.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (!(children.item(i) instanceof Element)) continue;
-            Element child = (Element) children.item(i);
-            String tag = child.getTagName();
-            if ("DA".equals(tag)) {
-                dot.addDa(parseDA(child));
-            } else if ("SDO".equals(tag)) {
-                dot.addSdo(parseSDO(child));
+        dot.setId(getAttr(reader, "id"));
+        dot.setCdc(getAttr(reader, "cdc"));
+        dot.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                String tag = reader.getLocalName();
+                if ("DA".equals(tag)) {
+                    dot.addDa(parseDA(reader));
+                } else if ("SDO".equals(tag)) {
+                    dot.addSdo(parseSDO(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DOType".equals(reader.getLocalName())) break;
             }
         }
         return dot;
     }
 
-    private SclDA parseDA(Element elem) {
+    private SclDA parseDA(XMLStreamReader reader) throws Exception {
         SclDA da = new SclDA();
-        da.setName(elem.getAttribute("name"));
-        da.setType(elem.getAttribute("type"));
-        da.setBType(elem.getAttribute("bType"));
-        da.setFc(elem.getAttribute("fc"));
-        da.setDchg("true".equals(elem.getAttribute("dchg")));
-        da.setQchg("true".equals(elem.getAttribute("qchg")));
-        da.setDupd("true".equals(elem.getAttribute("dupd")));
-        String count = elem.getAttribute("count");
+        da.setName(getAttr(reader, "name"));
+        da.setType(getAttr(reader, "type"));
+        da.setBType(getAttr(reader, "bType"));
+        da.setFc(getAttr(reader, "fc"));
+        da.setDchg("true".equals(getAttr(reader, "dchg")));
+        da.setQchg("true".equals(getAttr(reader, "qchg")));
+        da.setDupd("true".equals(getAttr(reader, "dupd")));
+        String count = getAttr(reader, "count");
         if (!count.isEmpty()) da.setCount(Integer.parseInt(count));
+        skipElement(reader);
         return da;
     }
 
-    private SclSDO parseSDO(Element elem) {
+    private SclSDO parseSDO(XMLStreamReader reader) throws Exception {
         SclSDO sdo = new SclSDO();
-        sdo.setName(elem.getAttribute("name"));
-        sdo.setType(elem.getAttribute("type"));
+        sdo.setName(getAttr(reader, "name"));
+        sdo.setType(getAttr(reader, "type"));
+        skipElement(reader);
         return sdo;
     }
 
-    private SclDAType parseDAType(Element elem) {
+    private SclDAType parseDAType(XMLStreamReader reader) throws Exception {
         SclDAType dat = new SclDAType();
-        dat.setId(elem.getAttribute("id"));
-        dat.setDesc(elem.getAttribute("desc"));
-        NodeList bdaNodes = elem.getElementsByTagName("BDA");
-        for (int i = 0; i < bdaNodes.getLength(); i++) {
-            dat.addBda(parseBDA((Element) bdaNodes.item(i)));
+        dat.setId(getAttr(reader, "id"));
+        dat.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("BDA".equals(reader.getLocalName())) {
+                    dat.addBda(parseBDA(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("DAType".equals(reader.getLocalName())) break;
+            }
         }
         return dat;
     }
 
-    private SclBDA parseBDA(Element elem) {
+    private SclBDA parseBDA(XMLStreamReader reader) throws Exception {
         SclBDA bda = new SclBDA();
-        bda.setName(elem.getAttribute("name"));
-        bda.setType(elem.getAttribute("type"));
-        bda.setBType(elem.getAttribute("bType"));
-        String count = elem.getAttribute("count");
+        bda.setName(getAttr(reader, "name"));
+        bda.setType(getAttr(reader, "type"));
+        bda.setBType(getAttr(reader, "bType"));
+        String count = getAttr(reader, "count");
         if (!count.isEmpty()) bda.setCount(Integer.parseInt(count));
+        skipElement(reader);
         return bda;
     }
 
-    private SclEnumType parseEnumType(Element elem) {
+    private SclEnumType parseEnumType(XMLStreamReader reader) throws Exception {
         SclEnumType et = new SclEnumType();
-        et.setId(elem.getAttribute("id"));
-        et.setDesc(elem.getAttribute("desc"));
-        NodeList enumValNodes = elem.getElementsByTagName("EnumVal");
-        for (int i = 0; i < enumValNodes.getLength(); i++) {
-            et.addEnumVal(parseEnumVal((Element) enumValNodes.item(i)));
+        et.setId(getAttr(reader, "id"));
+        et.setDesc(getAttr(reader, "desc"));
+
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) {
+                if ("EnumVal".equals(reader.getLocalName())) {
+                    et.addEnumVal(parseEnumVal(reader));
+                }
+            } else if (event == XMLStreamConstants.END_ELEMENT) {
+                if ("EnumType".equals(reader.getLocalName())) break;
+            }
         }
         return et;
     }
 
-    private SclEnumVal parseEnumVal(Element elem) {
+    private SclEnumVal parseEnumVal(XMLStreamReader reader) throws Exception {
         SclEnumVal ev = new SclEnumVal();
-        String ord = elem.getAttribute("ord");
+        String ord = getAttr(reader, "ord");
         if (!ord.isEmpty()) ev.setOrd(Integer.parseInt(ord));
-        ev.setValue(elem.getTextContent().trim());
+        ev.setValue(reader.getElementText().trim());
         return ev;
     }
 
-    private void validateStrict(SclDocument scl, Document doc) {
-        Element root = doc.getDocumentElement();
-        boolean hasSubstation = hasChild(root, "Substation");
-        boolean hasCommunication = hasChild(root, "Communication");
-        int iedCount = root.getElementsByTagName("IED").getLength();
+    // ──────────────────────────────────────────────
+    //  Validation & detection (no more DOM needed)
+    // ──────────────────────────────────────────────
 
+    private SclDocument.SclFileType detectFileType(boolean hasSubstation, boolean hasCommunication, int iedCount) {
+        if (hasSubstation && hasCommunication && iedCount >= 1) {
+            return SclDocument.SclFileType.SCD;
+        }
+        if (!hasSubstation && hasCommunication && iedCount == 1) {
+            return SclDocument.SclFileType.CID;
+        }
+        if (!hasSubstation && !hasCommunication && iedCount == 1) {
+            return SclDocument.SclFileType.ICD;
+        }
+        return SclDocument.SclFileType.UNKNOWN;
+    }
+
+    private void validateStrict(SclDocument scl, boolean hasSubstation, boolean hasCommunication, int iedCount) {
         switch (scl.getFileType()) {
             case ICD:
                 if (hasSubstation) {
@@ -937,47 +1157,26 @@ public class SclReader {
                         "SCD file must contain at least 1 IED");
                 }
                 break;
+            case UNKNOWN:
+                break;
         }
     }
 
-    private SclDocument.SclFileType detectFileType(Document doc) {
-        Element root = doc.getDocumentElement();
-        boolean hasSubstation = hasChild(root, "Substation");
-        boolean hasCommunication = hasChild(root, "Communication");
-        int iedCount = root.getElementsByTagName("IED").getLength();
+    // ──────────────────────────────────────────────
+    //  Helpers
+    // ──────────────────────────────────────────────
 
-        if (hasSubstation && hasCommunication && iedCount >= 1) {
-            return SclDocument.SclFileType.SCD;
-        }
-        if (!hasSubstation && hasCommunication && iedCount == 1) {
-            return SclDocument.SclFileType.CID;
-        }
-        if (!hasSubstation && !hasCommunication && iedCount == 1) {
-            return SclDocument.SclFileType.ICD;
-        }
-        return SclDocument.SclFileType.UNKNOWN;
+    private static String getAttr(XMLStreamReader reader, String name) {
+        String val = reader.getAttributeValue(null, name);
+        return val != null ? val : "";
     }
 
-    private Element getChild(Element parent, String tagName) {
-        if (parent == null) return null;
-        NodeList children = parent.getChildNodes();
-        for (int i = 0; i < children.getLength(); i++) {
-            if (children.item(i) instanceof Element) {
-                Element child = (Element) children.item(i);
-                if (child.getTagName().equals(tagName)) {
-                    return child;
-                }
-            }
+    private static void skipElement(XMLStreamReader reader) throws Exception {
+        int depth = 1;
+        while (depth > 0 && reader.hasNext()) {
+            int event = reader.next();
+            if (event == XMLStreamConstants.START_ELEMENT) depth++;
+            else if (event == XMLStreamConstants.END_ELEMENT) depth--;
         }
-        return null;
-    }
-
-    private boolean hasChild(Element parent, String tagName) {
-        return getChild(parent, tagName) != null;
-    }
-
-    private String getTextContent(Element elem) {
-        if (elem == null) return null;
-        return elem.getTextContent().trim();
     }
 }

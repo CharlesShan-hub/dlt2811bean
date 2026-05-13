@@ -177,6 +177,10 @@
                         </goals>
                         <configuration>
                             <mainClass>com.ysh.dlt2811bean.cli.CmsServerCli</mainClass>
+                            <jvmArgs>
+                                <jvmArg>-Xms256m</jvmArg>
+                                <jvmArg>-Xmx2g</jvmArg>
+                            </jvmArgs>
                         </configuration>
                     </execution>
                 </executions>

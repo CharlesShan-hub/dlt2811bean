@@ -224,6 +224,9 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             if (fcFilter != null && !fcFilter.equals(daFc)) {
                 continue;
             }
+            if (fcFilter == null && "SE".equals(daFc)) {
+                continue;
+            }
             String ref = prefix + "." + dai.getName();
             String bType = findDaBType(doType, dai.getName());
             if (bType == null && templates != null && parentDoType != null && sdiName != null) {

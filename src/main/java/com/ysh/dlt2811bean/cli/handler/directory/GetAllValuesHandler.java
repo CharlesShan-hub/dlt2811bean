@@ -22,7 +22,8 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1"),
-            Param.fc("功能约束")
+            Param.fc("功能约束"),
+            new Param("referenceAfter", "起始引用 (留空=从头)", "")
         );
     }
 
@@ -30,6 +31,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         requireConnected(client);
         String target = values.get("target");
         String fc = values.get("fc");
+        String after = values.get("referenceAfter");
         CmsGetAllDataValues reqAsdu = new CmsGetAllDataValues(MessageType.REQUEST);
         if (target.contains("/")) {
             reqAsdu.lnReference(target);
@@ -37,6 +39,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
+        if (!after.isEmpty()) reqAsdu.referenceAfter(after);
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
         List<CmsDataEntry> entries = asdu.data().toList();

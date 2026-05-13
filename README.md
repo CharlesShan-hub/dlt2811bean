@@ -348,3 +348,32 @@ ld-dir --ldName C1;
 // 仅referenceAfter（全部LD中跳过第一个匹配的）
 ld-dir --referenceAfter CSWI1;
 ```
+### 8.3.3 ln-dir
+
+```
+connect 127.0.0.1 8102 65531 1 E1Q1SB1 S1 true;
+// —— 位置参数 ——
+// 按 ldName + DATA_OBJECT
+ln-dir C1 DATA_OBJECT;
+// 按 lnReference + DATA_OBJECT
+ln-dir C1/CSWI1 DATA_OBJECT;
+// DATA_SET
+ln-dir C1/LLN0 DATA_SET;
+// BRCB / URCB
+ln-dir C1/LLN0 BRCB;
+ln-dir C1/LLN0 URCB;
+// SGCB / GO_CB / MSV_CB / LCB
+ln-dir C1/LLN0 SGCB;
+ln-dir C1/LLN0 GO_CB;
+ln-dir C1/LLN0 MSV_CB;
+ln-dir C1/LLN0 LCB;
+// 不存在的目标 — Response-
+ln-dir nonexistent DATA_OBJECT;
+// referenceAfter 分页
+ln-dir C1 DATA_OBJECT CSWI1.Mod;
+// referenceAfter 不存在 — Response-
+ln-dir C1 DATA_OBJECT nonexistent_do;
+// —— 命名参数 ——
+ln-dir --target C1 --acsi DATA_OBJECT;
+ln-dir --target C1/CSWI1 --acsi DATA_OBJECT --referenceAfter Pos;
+```

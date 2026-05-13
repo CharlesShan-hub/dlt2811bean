@@ -30,7 +30,8 @@ public class LnDirHandler extends AbstractServiceHandler {
                 new Param.EnumChoice("SGCB", "定值组控制块"),
                 new Param.EnumChoice("GO_CB", "GOOSE 控制块"),
                 new Param.EnumChoice("MSV_CB", "采样值控制块")
-            ))
+            )),
+            new Param("referenceAfter", "起始引用 (留空=从头)", "")
         );
     }
 
@@ -38,6 +39,8 @@ public class LnDirHandler extends AbstractServiceHandler {
         requireConnected(client);
         String target = values.get("target");
         int acsiClass = parseAcsi(values.get("acsi"));
+        String after = values.get("referenceAfter");
+
         CmsGetLogicalNodeDirectory reqAsdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST);
         if (target.contains("/")) {
             reqAsdu.lnReference(target);
@@ -45,6 +48,8 @@ public class LnDirHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         reqAsdu.acsiClass(new CmsACSIClass(acsiClass));
+        if (!after.isEmpty()) reqAsdu.referenceAfter(after);
+
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
         List<String> refs = asdu.referenceResponse().stream().map(r -> r.get()).collect(Collectors.toList());

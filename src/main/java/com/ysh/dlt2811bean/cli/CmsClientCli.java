@@ -544,7 +544,9 @@ public class CmsClientCli {
     private static boolean isRefParam(String cmdName, int paramIdx) {
         return switch (cmdName) {
             case "ld-dir", "server-dir" -> paramIdx == 0 || paramIdx == 1;
-            case "ln-dir", "get-all-values", "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
+            case "ln-dir" -> paramIdx == 0 || paramIdx == 2;
+            case "get-all-values" -> paramIdx == 0 || paramIdx == 2;
+            case "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
             case "get-data-values", "set-data-values" -> paramIdx == 0;
             case "get-dataset-values", "set-dataset-values", "get-dataset-dir", "create-dataset", "delete-dataset" -> paramIdx == 0;
             case "select-active-sg", "select-edit-sg", "set-edit-sg-value", "confirm-edit-sg", "get-edit-sg-value", "get-sgcb-values" -> paramIdx == 0;
