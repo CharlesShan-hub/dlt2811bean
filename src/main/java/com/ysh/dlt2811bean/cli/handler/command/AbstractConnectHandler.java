@@ -67,7 +67,9 @@ public abstract class AbstractConnectHandler implements CommandHandler {
         String host = values.get("host");
         int port = Integer.parseInt(values.get("port"));
 
+        ctx.getAutoTestHeartbeat().stop();
         doConnect(client, host, port);
+        ctx.getAutoTestHeartbeat().start(client, 25);
         System.out.println(CmsColor.green("  Connected to " + host + ":" + port + connectionSuffix()));
 
         String asduSizeStr = values.get("asduSize");

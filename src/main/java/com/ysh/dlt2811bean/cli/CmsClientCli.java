@@ -112,37 +112,42 @@ public class CmsClientCli {
 
             if (raw.isEmpty()) continue;
 
-            if (raw.startsWith("#") || raw.startsWith("//")) continue;
+            // Split on newlines to handle multi-line paste
+            for (String cliLine : raw.split("\n")) {
+                String line = cliLine.trim();
+                if (line.isEmpty()) continue;
+                if (line.startsWith("#") || line.startsWith("//")) continue;
 
-            // Strip inline comments
-            int commentIdx = findCommentStart(raw);
-            if (commentIdx >= 0) {
-                raw = raw.substring(0, commentIdx).trim();
-                if (raw.isEmpty()) continue;
-            }
-
-            boolean isEndOfBatch = raw.endsWith(";");
-            if (isEndOfBatch) {
-                raw = raw.substring(0, raw.length() - 1).trim();
-            }
-
-            if (!raw.isEmpty()) {
-                batchBuffer.add(raw);
-            }
-
-            if (isEndOfBatch) {
-                java.util.List<String> batch = new java.util.ArrayList<>(batchBuffer);
-                batchBuffer.clear();
-                boolean stop = false;
-                for (String cmdLine : batch) {
-                    if (stop || !running) break;
-                    if (!executeLine(cmdLine, false)) {
-                        stop = true;
-                    }
+                // Strip inline comments
+                int commentIdx = findCommentStart(line);
+                if (commentIdx >= 0) {
+                    line = line.substring(0, commentIdx).trim();
+                    if (line.isEmpty()) continue;
                 }
-            } else if (batchBuffer.size() == 1) {
-                String singleLine = batchBuffer.remove(0);
-                executeLine(singleLine);
+
+                boolean isEndOfBatch = line.endsWith(";");
+                if (isEndOfBatch) {
+                    line = line.substring(0, line.length() - 1).trim();
+                }
+
+                if (!line.isEmpty()) {
+                    batchBuffer.add(line);
+                }
+
+                if (isEndOfBatch) {
+                    java.util.List<String> batch = new java.util.ArrayList<>(batchBuffer);
+                    batchBuffer.clear();
+                    boolean stop = false;
+                    for (String cmdLine : batch) {
+                        if (stop || !running) break;
+                        if (!executeLine(cmdLine, false)) {
+                            stop = true;
+                        }
+                    }
+                } else if (batchBuffer.size() == 1) {
+                    String singleLine = batchBuffer.remove(0);
+                    executeLine(singleLine);
+                }
             }
         }
         System.exit(0);

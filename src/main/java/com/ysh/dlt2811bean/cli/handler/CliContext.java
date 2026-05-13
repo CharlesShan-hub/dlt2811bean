@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
+import com.ysh.dlt2811bean.cli.AutoTestHeartbeat;
 import com.ysh.dlt2811bean.cli.CommandHandler;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -15,6 +16,7 @@ public class CliContext {
 
     private final CmsConfig config;
     private final Map<String, CommandHandler> handlers;
+    private final AutoTestHeartbeat autoTestHeartbeat = new AutoTestHeartbeat();
 
     private final Map<String, Map<String, Map<String, Map<String, Object>>>> cachedHierarchy;
 
@@ -27,6 +29,7 @@ public class CliContext {
 
     public CmsConfig getConfig() { return config; }
     public Map<String, CommandHandler> getHandlers() { return handlers; }
+    public AutoTestHeartbeat getAutoTestHeartbeat() { return autoTestHeartbeat; }
     public Map<String, Map<String, Map<String, Map<String, Object>>>> getCachedHierarchy() { return cachedHierarchy; }
 
     /** Ensures an LD entry exists, returns its LN map. */

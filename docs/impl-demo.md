@@ -39,3 +39,10 @@ ld-dir LD0 ALMGGIO12; # 指定LN开始的位置
 ln-dir LD0/ALMGGIO1 DATA_OBJECT; # 数据对象
 ln-dir CTRL/LLN0 DATA_SET; # 数据集只有LLN0才有
 ```
+
+## 8.4 数据对象获取
+```bash
+# 获取某一个设备下的数据对象
+# ld-dir LD0 ALMGGIO1 DATA_OBJECT; # 数据对象
+# ld-dir CTRL/LLN0 DATA_SET; # 数据集只有LLN0才有
+```

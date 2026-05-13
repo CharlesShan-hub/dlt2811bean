@@ -18,6 +18,7 @@ public class ReleaseHandler extends AbstractServiceHandler {
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);
+        ctx.getAutoTestHeartbeat().stop();
         CmsRelease reqAsdu = new CmsRelease(MessageType.REQUEST);
         CliPrinter.printRequestPdu(ctx, reqAsdu);
         CmsApdu response = client.release();

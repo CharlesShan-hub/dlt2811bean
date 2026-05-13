@@ -20,6 +20,7 @@ public class CloseHandler implements CommandHandler {
     public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) {
+        ctx.getAutoTestHeartbeat().stop();
         client.close();
         System.out.println(CmsColor.green("  Disconnected"));
     }

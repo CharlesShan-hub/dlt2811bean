@@ -30,6 +30,7 @@ public class AbortHandler extends AbstractServiceHandler {
 
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);
+        ctx.getAutoTestHeartbeat().stop();
         int reason = Integer.parseInt(values.get("reason"));
         CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
         CliPrinter.printRequestPdu(ctx, reqAsdu);

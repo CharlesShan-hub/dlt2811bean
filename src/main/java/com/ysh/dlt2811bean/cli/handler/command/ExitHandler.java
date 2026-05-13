@@ -21,6 +21,7 @@ public class ExitHandler implements CommandHandler {
     public List<Param> getParams() { return List.of(); }
 
     public void execute(CmsClient client, Map<String, String> values) {
+        ctx.getAutoTestHeartbeat().stop();
         if (client.isConnected()) {
             try { client.release(); } catch (Exception ignored) {}
             client.close();
