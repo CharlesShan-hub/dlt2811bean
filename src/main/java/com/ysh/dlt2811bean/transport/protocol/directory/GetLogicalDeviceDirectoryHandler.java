@@ -59,11 +59,17 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
         int startIndex = 0;
         if (after != null && !after.isEmpty()) {
+            boolean found = false;
             for (int i = 0; i < lnRefs.size(); i++) {
                 if (lnRefs.get(i).equals(after)) {
                     startIndex = i + 1;
+                    found = true;
                     break;
                 }
+            }
+            if (!found) {
+                log.warn("[Server] referenceAfter not found: {}", after);
+                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

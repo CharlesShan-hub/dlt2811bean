@@ -1,9 +1,7 @@
-package com.ysh.dlt2811bean.cli.handler;
+package com.ysh.dlt2811bean.cli.handler.command;
 
+import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.config.CmsConfig;
-import com.ysh.dlt2811bean.config.CmsConfigLoader;
-import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
@@ -15,20 +13,20 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectTlsHandler implements CommandHandler {
+public class ConnectHandler implements CommandHandler {
 
     private final CliContext ctx;
 
-    public ConnectTlsHandler(CliContext ctx) {
+    public ConnectHandler(CliContext ctx) {
         this.ctx = ctx;
     }
 
-    public String getName() { return "connect-tls"; }
-    public String getDescription() { return "TLS 连接服务器（自动协商与关联）"; }
+    public String getName() { return "connect"; }
+    public String getDescription() { return "连接服务器（自动协商与关联）"; }
     public List<Param> getParams() {
         return List.of(
             new Param("host", "服务器 IP", "127.0.0.1"),
-            new Param("port", "服务器端口", String.valueOf(config().getServer().getSslPort())),
+            new Param("port", "服务器端口", String.valueOf(config().getServer().getPort())),
             new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", String.valueOf(config().getNegotiate().getAsduSize())),
             new Param("protocolVersion", "协议版本", String.valueOf(config().getNegotiate().getProtocolVersion())),
             new Param("iedName", "IED名称", config().getClient().getDefaultIedName()),
@@ -39,22 +37,8 @@ public class ConnectTlsHandler implements CommandHandler {
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         String host = values.get("host");
         int port = Integer.parseInt(values.get("port"));
-
-        CmsConfig config = CmsConfigLoader.load();
-        GmSslContext sslContext = GmSslContext.forClient()
-                .keyStore(config.getSecurity().getKeystore().getPath(), config.getSecurity().getKeystore().getPassword())
-                .trustManager(new javax.net.ssl.X509TrustManager[]{
-                    new javax.net.ssl.X509TrustManager() {
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
-                    }
-                })
-                .useStandardTls()
-                .build();
-        client.sslContext(sslContext);
-        client.connectTls(host, port);
-        System.out.println(CmsColor.green("  Connected to " + host + ":" + port + " (TLS)"));
+        client.connect(host, port);
+        System.out.println(CmsColor.green("  Connected to " + host + ":" + port));
 
         String asduSizeStr = values.get("asduSize");
         if (!asduSizeStr.isEmpty()) {
@@ -82,7 +66,6 @@ public class ConnectTlsHandler implements CommandHandler {
             System.out.println(CmsColor.green("  Negotiated OK") + " (asduSize=" + asduSize + ")");
 
             boolean secure = Boolean.parseBoolean(values.get("secure"));
-
             if (secure) {
                 client.enableSecurity();
                 System.out.println(CmsColor.gray("  GM security enabled"));

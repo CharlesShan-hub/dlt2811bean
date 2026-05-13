@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli;
 import com.ysh.dlt2811bean.cli.handler.association.AbortHandler;
 import com.ysh.dlt2811bean.cli.handler.association.AssociateHandler;
 import com.ysh.dlt2811bean.cli.handler.association.ReleaseHandler;
+import com.ysh.dlt2811bean.cli.handler.command.*;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataDefinitionHandler;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataDirectoryHandler;
 import com.ysh.dlt2811bean.cli.handler.data.GetDataValuesHandler;
@@ -22,11 +23,11 @@ import com.ysh.dlt2811bean.cli.handler.report.GetBRCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.report.SetBRCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.report.GetURCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.report.SetURCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.log.GetLCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.log.SetLCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.log.QueryLogByTimeHandler;
-import com.ysh.dlt2811bean.cli.handler.log.QueryLogAfterHandler;
-import com.ysh.dlt2811bean.cli.handler.log.GetLogStatusValuesHandler;
+// import com.ysh.dlt2811bean.cli.handler.log.GetLCBValuesHandler;
+// import com.ysh.dlt2811bean.cli.handler.log.SetLCBValuesHandler;
+// import com.ysh.dlt2811bean.cli.handler.log.QueryLogByTimeHandler;
+// import com.ysh.dlt2811bean.cli.handler.log.QueryLogAfterHandler;
+// import com.ysh.dlt2811bean.cli.handler.log.GetLogStatusValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.goose.GetGoCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.goose.SetGoCBValuesHandler;
 import com.ysh.dlt2811bean.cli.handler.sv.GetMSVCBValuesHandler;
@@ -136,7 +137,7 @@ public class CmsClientCli {
                                         }
                                     } else if (isRefParam(cmdName, paramIdx)) {
                                         java.util.Set<String> pool;
-                                        if ("ld-dir".equals(cmdName)) {
+                                        if ("ld-dir".equals(cmdName) || "server-dir".equals(cmdName)) {
                                             pool = cachedLds;
                                         } else if ("ln-dir".equals(cmdName) || "get-all-def".equals(cmdName) || "get-all-values".equals(cmdName) || "get-all-cb".equals(cmdName) || "get-data-def".equals(cmdName)) {
                                             pool = ctx.getCachedLnRefs();
@@ -235,11 +236,11 @@ public class CmsClientCli {
         register(new SetBRCBValuesHandler(ctx));
         register(new GetURCBValuesHandler(ctx));
         register(new SetURCBValuesHandler(ctx));
-        register(new GetLCBValuesHandler(ctx));
-        register(new SetLCBValuesHandler(ctx));
-        register(new QueryLogByTimeHandler(ctx));
-        register(new QueryLogAfterHandler(ctx));
-        register(new GetLogStatusValuesHandler(ctx));
+        // register(new GetLCBValuesHandler(ctx));
+        // register(new SetLCBValuesHandler(ctx));
+        // register(new QueryLogByTimeHandler(ctx));
+        // register(new QueryLogAfterHandler(ctx));
+        // register(new GetLogStatusValuesHandler(ctx));
         register(new GetGoCBValuesHandler(ctx));
         register(new SetGoCBValuesHandler(ctx));
         register(new GetMSVCBValuesHandler(ctx));
@@ -255,6 +256,7 @@ public class CmsClientCli {
     public void run() {
         java.util.logging.Logger.getLogger("org.bouncycastle").setLevel(java.util.logging.Level.SEVERE);
         System.out.println("CMS CLI v1.0 — Type 'help' for commands, 'exit' to quit");
+        java.util.List<String> batchBuffer = new java.util.ArrayList<>();
         while (running) {
             System.out.println();
             String raw;
@@ -266,160 +268,260 @@ public class CmsClientCli {
                 }
                 continue;
             }
-            String line = raw.toLowerCase();
 
-            if (line.isEmpty()) continue;
+            if (raw.isEmpty()) continue;
 
-            if (line.startsWith("help ")) {
-                String helpArg = line.substring(5).trim().toLowerCase();
-                if (helpArg.equals("datatype")) {
-                    ((HelpHandler) handlers.get("help")).printDatatypeList();
-                    continue;
-                }
-                if (helpArg.startsWith("datatype ")) {
-                    String dtName = raw.substring(5).trim().substring(9).trim();
-                    DataTypeInfo dt = DataTypeInfo.byTypeName(dtName);
-                    if (dt == null) {
-                        System.out.println("  " + CmsColor.red("Unknown datatype: " + dtName));
-                    } else {
-                        ((HelpHandler) handlers.get("help")).printDatatypeHelp(dt);
-                    }
-                    continue;
-                }
-                if (helpArg.equals("cdc")) {
-                    ((HelpHandler) handlers.get("help")).printCdcList();
-                    continue;
-                }
-                if (helpArg.startsWith("cdc ")) {
-                    String cdcName = raw.substring(5).trim().substring(4).trim().toUpperCase();
-                    CdcInfo cdc = CdcInfo.byName(cdcName);
-                    if (cdc == null) {
-                        System.out.println("  " + CmsColor.red("Unknown CDC: " + cdcName));
-                    } else {
-                        ((HelpHandler) handlers.get("help")).printCdcHelp(cdc);
-                    }
-                    continue;
-                }
-                if (helpArg.equals("fc")) {
-                    ((HelpHandler) handlers.get("help")).printFcList();
-                    continue;
-                }
-                if (helpArg.startsWith("fc ")) {
-                    String fcName = raw.substring(5).trim().substring(3).trim().toUpperCase();
-                    FcInfo fc = FcInfo.byName(fcName);
-                    if (fc == null) {
-                        System.out.println("  " + CmsColor.red("Unknown FC: " + fcName));
-                    } else {
-                        ((HelpHandler) handlers.get("help")).printFcHelp(fc);
-                    }
-                    continue;
-                }
-                CommandHandler h = handlers.get(helpArg);
-                String helpCmdName = helpArg;
-                if (h == null) {
-                    ServiceInfo sectionInfo = ServiceInfo.bySection(helpArg);
-                    if (sectionInfo != null) {
-                        helpCmdName = sectionInfo.getCliName();
-                        h = handlers.get(helpCmdName);
-                    }
-                }
-                if (h == null && helpArg.matches("8\\.\\d+")) {
-                    ((HelpHandler) handlers.get("help")).printSectionCommands(helpArg);
-                    continue;
-                }
-                if (h == null) {
-                    System.out.println("  " + CmsColor.red("Unknown command: " + helpArg));
-                } else {
-                    ((HelpHandler) handlers.get("help")).printCommandHelp(helpCmdName, h);
-                }
-                continue;
+            if (raw.startsWith("#") || raw.startsWith("//")) continue;
+
+            boolean isEndOfBatch = raw.endsWith(";");
+            if (isEndOfBatch) {
+                raw = raw.substring(0, raw.length() - 1).trim();
             }
 
-            String[] inputParts = raw.split("\\s+", 2);
-            String cmdName = inputParts[0].toLowerCase();
-            String inlineArgs = inputParts.length > 1 ? inputParts[1].trim() : null;
-
-            CommandHandler handler = handlers.get(cmdName);
-            if (handler == null) {
-                System.out.println(CmsColor.red("Unknown command: " + cmdName) + "  (type 'help' for available commands)");
-                continue;
+            if (!raw.isEmpty()) {
+                batchBuffer.add(raw);
             }
 
-            try {
-                Map<String, String> values = new HashMap<>();
-                java.util.List<String> inlineTokens = inlineArgs != null && !inlineArgs.isEmpty()
-                    ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
-                    : new java.util.ArrayList<>();
-
-                if (inlineTokens.isEmpty() && !handler.updateConfigAndGetParams().isEmpty()) {
-                    StringBuilder hint = new StringBuilder();
-                    hint.append(CmsColor.gray("  Usage: " + cmdName));
-                    for (Param p : handler.updateConfigAndGetParams()) {
-                        hint.append(" <" + p.getName() + ">");
-                    }
-                    System.out.println(hint.toString());
-                }
-                for (Param param : handler.updateConfigAndGetParams()) {
-                    if (!inlineTokens.isEmpty()) {
-                        String token = inlineTokens.remove(0);
-                        if (!param.getEnumChoices().isEmpty()) {
-                            String matched = matchEnum(token, param);
-                            if (matched == null) {
-                                System.out.println(CmsColor.red("  无效选项: " + token + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
-                                continue;
-                            }
-                            values.put(param.getName(), matched);
-                        } else {
-                            values.put(param.getName(), token);
-                        }
-                        continue;
-                    }
-
-                    if (!param.getEnumChoices().isEmpty()) {
-                        System.out.println("  " + param.getPrompt() + ":");
-                        int maxLen = param.getEnumChoices().stream().mapToInt(ec -> ec.value.length()).max().orElse(0);
-                        for (Param.EnumChoice ec : param.getEnumChoices()) {
-                            System.out.println("    " + padRight(ec.value, maxLen) + "  " + ec.label);
-                        }
-                    }
-                    String simplePrompt = param.getEnumChoices().isEmpty() ? param.getPrompt() : "  值";
-                    if (param.getDefaultValue() != null) {
-                        simplePrompt += " [" + param.getDefaultValue() + "]";
-                    }
-                    String input = reader.readLine(simplePrompt + ": ").trim();
-
-                    if (input.isEmpty()) {
-                        if (param.getDefaultValue() != null) {
-                            values.put(param.getName(), param.getDefaultValue());
-                        } else if (param.isRequired()) {
-                            System.out.println(CmsColor.gray("  (skipped, using empty)"));
-                            values.put(param.getName(), "");
-                        } else {
-                            values.put(param.getName(), "");
-                        }
-                    } else {
-                        if (!param.getEnumChoices().isEmpty()) {
-                            String matched = matchEnum(input, param);
-                            if (matched == null) {
-                                System.out.println(CmsColor.red("  无效选项: " + input + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
-                                continue;
-                            }
-                            values.put(param.getName(), matched);
-                        } else {
-                            values.put(param.getName(), input);
-                        }
+            if (isEndOfBatch) {
+                java.util.List<String> batch = new java.util.ArrayList<>(batchBuffer);
+                batchBuffer.clear();
+                boolean stop = false;
+                for (String cmdLine : batch) {
+                    if (stop || !running) break;
+                    if (!executeLine(cmdLine, false)) {
+                        stop = true;
                     }
                 }
-                handler.execute(client, values);
-                ServiceInfo si = ServiceInfo.byCliName(cmdName);
-                if (si != null && !client.isConnected()) {
-                    System.out.println(CmsColor.red("  Connection lost. Type 'connect' to reconnect."));
-                }
-            } catch (Exception e) {
-                System.out.println(CmsColor.red("  ERROR: " + e.getMessage()));
+            } else if (batchBuffer.size() == 1) {
+                String singleLine = batchBuffer.remove(0);
+                executeLine(singleLine);
             }
         }
         System.exit(0);
+    }
+
+    private boolean executeLine(String raw) {
+        return executeLine(raw, true);
+    }
+
+    private boolean executeLine(String raw, boolean interactive) {
+        String[] commands = raw.split(";");
+        for (int i = 0; i < commands.length; i++) {
+            String cmd = commands[i].trim();
+            if (cmd.isEmpty() || cmd.startsWith("#") || cmd.startsWith("//")) continue;
+            if (!executeSingle(cmd, interactive)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean executeSingle(String raw) {
+        return executeSingle(raw, true);
+    }
+
+    private boolean executeSingle(String raw, boolean interactive) {
+        String line = raw.toLowerCase();
+
+        if (line.isEmpty()) return true;
+
+        if (line.startsWith("help ")) {
+            String helpArg = line.substring(5).trim().toLowerCase();
+            if (helpArg.equals("datatype")) {
+                ((HelpHandler) handlers.get("help")).printDatatypeList();
+                return true;
+            }
+            if (helpArg.startsWith("datatype ")) {
+                String dtName = raw.substring(5).trim().substring(9).trim();
+                DataTypeInfo dt = DataTypeInfo.byTypeName(dtName);
+                if (dt == null) {
+                    System.out.println("  " + CmsColor.red("Unknown datatype: " + dtName));
+                } else {
+                    ((HelpHandler) handlers.get("help")).printDatatypeHelp(dt);
+                }
+                return true;
+            }
+            if (helpArg.equals("cdc")) {
+                ((HelpHandler) handlers.get("help")).printCdcList();
+                return true;
+            }
+            if (helpArg.startsWith("cdc ")) {
+                String cdcName = raw.substring(5).trim().substring(4).trim().toUpperCase();
+                CdcInfo cdc = CdcInfo.byName(cdcName);
+                if (cdc == null) {
+                    System.out.println("  " + CmsColor.red("Unknown CDC: " + cdcName));
+                } else {
+                    ((HelpHandler) handlers.get("help")).printCdcHelp(cdc);
+                }
+                return true;
+            }
+            if (helpArg.equals("fc")) {
+                ((HelpHandler) handlers.get("help")).printFcList();
+                return true;
+            }
+            if (helpArg.startsWith("fc ")) {
+                String fcName = raw.substring(5).trim().substring(3).trim().toUpperCase();
+                FcInfo fc = FcInfo.byName(fcName);
+                if (fc == null) {
+                    System.out.println("  " + CmsColor.red("Unknown FC: " + fcName));
+                } else {
+                    ((HelpHandler) handlers.get("help")).printFcHelp(fc);
+                }
+                return true;
+            }
+            CommandHandler h = handlers.get(helpArg);
+            String helpCmdName = helpArg;
+            if (h == null) {
+                ServiceInfo sectionInfo = ServiceInfo.bySection(helpArg);
+                if (sectionInfo != null) {
+                    helpCmdName = sectionInfo.getCliName();
+                    h = handlers.get(helpCmdName);
+                }
+            }
+            if (h == null && helpArg.matches("8\\.\\d+")) {
+                ((HelpHandler) handlers.get("help")).printSectionCommands(helpArg);
+                return true;
+            }
+            if (h == null) {
+                System.out.println("  " + CmsColor.red("Unknown command: " + helpArg));
+            } else {
+                ((HelpHandler) handlers.get("help")).printCommandHelp(helpCmdName, h);
+            }
+            return true;
+        }
+
+        String[] inputParts = raw.split("\\s+", 2);
+        String cmdName = inputParts[0].toLowerCase();
+        String inlineArgs = inputParts.length > 1 ? inputParts[1].trim() : null;
+
+        CommandHandler handler = handlers.get(cmdName);
+        if (handler == null) {
+            System.out.println(CmsColor.red("Unknown command: " + cmdName) + "  (type 'help' for available commands)");
+            return true;
+        }
+
+        try {
+            Map<String, String> values = new HashMap<>();
+            java.util.List<String> inlineTokens = inlineArgs != null && !inlineArgs.isEmpty()
+                ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
+                : new java.util.ArrayList<>();
+
+            if (inlineTokens.isEmpty() && !handler.updateConfigAndGetParams().isEmpty() && interactive) {
+                StringBuilder hint = new StringBuilder();
+                hint.append(CmsColor.gray("  Usage: " + cmdName));
+                for (Param p : handler.updateConfigAndGetParams()) {
+                    hint.append(" <" + p.getName() + ">");
+                }
+                System.out.println(hint.toString());
+            }
+
+            boolean namedMode = !inlineTokens.isEmpty() && inlineTokens.get(0).startsWith("--");
+
+            if (namedMode) {
+                java.util.Map<String, Param> paramMap = new java.util.LinkedHashMap<>();
+                for (Param p : handler.updateConfigAndGetParams()) {
+                    paramMap.put(p.getName(), p);
+                }
+                while (!inlineTokens.isEmpty()) {
+                    String token = inlineTokens.remove(0);
+                    if (!token.startsWith("--")) continue;
+                    String paramName = token.substring(2);
+                    Param param = paramMap.get(paramName);
+                    if (param == null) {
+                        System.out.println(CmsColor.red("  Unknown parameter: --" + paramName));
+                        return false;
+                    }
+                    String value = !inlineTokens.isEmpty() && !inlineTokens.get(0).startsWith("--")
+                        ? inlineTokens.remove(0)
+                        : (param.getDefaultValue() != null ? param.getDefaultValue() : "");
+                    if (!param.getEnumChoices().isEmpty()) {
+                        String matched = matchEnum(value, param);
+                        if (matched == null) {
+                            System.out.println(CmsColor.red("  无效选项: " + value + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                            return false;
+                        }
+                        values.put(param.getName(), matched);
+                    } else {
+                        values.put(param.getName(), value);
+                    }
+                }
+                for (Param param : handler.updateConfigAndGetParams()) {
+                    if (!values.containsKey(param.getName())) {
+                        values.put(param.getName(), param.getDefaultValue() != null ? param.getDefaultValue() : "");
+                    }
+                }
+            } else {
+                for (Param param : handler.updateConfigAndGetParams()) {
+                if (!inlineTokens.isEmpty()) {
+                    String token = inlineTokens.remove(0);
+                    if (!param.getEnumChoices().isEmpty()) {
+                        String matched = matchEnum(token, param);
+                        if (matched == null) {
+                            System.out.println(CmsColor.red("  无效选项: " + token + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                            continue;
+                        }
+                        values.put(param.getName(), matched);
+                    } else {
+                        values.put(param.getName(), token);
+                    }
+                    continue;
+                }
+
+                if (!interactive) {
+                    if (param.getDefaultValue() != null) {
+                        values.put(param.getName(), param.getDefaultValue());
+                    } else {
+                        values.put(param.getName(), "");
+                    }
+                    continue;
+                }
+
+                if (!param.getEnumChoices().isEmpty()) {
+                    System.out.println("  " + param.getPrompt() + ":");
+                    int maxLen = param.getEnumChoices().stream().mapToInt(ec -> ec.value.length()).max().orElse(0);
+                    for (Param.EnumChoice ec : param.getEnumChoices()) {
+                        System.out.println("    " + padRight(ec.value, maxLen) + "  " + ec.label);
+                    }
+                }
+                String simplePrompt = param.getEnumChoices().isEmpty() ? param.getPrompt() : "  值";
+                if (param.getDefaultValue() != null) {
+                    simplePrompt += " [" + param.getDefaultValue() + "]";
+                }
+                String input = reader.readLine(simplePrompt + ": ").trim();
+
+                if (input.isEmpty()) {
+                    if (param.getDefaultValue() != null) {
+                        values.put(param.getName(), param.getDefaultValue());
+                    } else if (param.isRequired()) {
+                        System.out.println(CmsColor.gray("  (skipped, using empty)"));
+                        values.put(param.getName(), "");
+                    } else {
+                        values.put(param.getName(), "");
+                    }
+                } else {
+                    if (!param.getEnumChoices().isEmpty()) {
+                        String matched = matchEnum(input, param);
+                        if (matched == null) {
+                            System.out.println(CmsColor.red("  无效选项: " + input + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                            continue;
+                        }
+                        values.put(param.getName(), matched);
+                    } else {
+                        values.put(param.getName(), input);
+                    }
+                }
+            }
+            }
+            handler.execute(client, values);
+            ServiceInfo si = ServiceInfo.byCliName(cmdName);
+            if (si != null && !client.isConnected()) {
+                System.out.println(CmsColor.red("  Connection lost. Type 'connect' to reconnect."));
+            }
+        } catch (Exception e) {
+            System.out.println(CmsColor.red("  ERROR: " + e.getMessage()));
+            return false;
+        }
+        return true;
     }
 
     private String padRight(String s, int n) {
@@ -441,7 +543,7 @@ public class CmsClientCli {
 
     private static boolean isRefParam(String cmdName, int paramIdx) {
         return switch (cmdName) {
-            case "ld-dir" -> paramIdx == 0;
+            case "ld-dir", "server-dir" -> paramIdx == 0 || paramIdx == 1;
             case "ln-dir", "get-all-values", "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
             case "get-data-values", "set-data-values" -> paramIdx == 0;
             case "get-dataset-values", "set-dataset-values", "get-dataset-dir", "create-dataset", "delete-dataset" -> paramIdx == 0;

@@ -296,4 +296,55 @@ mvn test -Dtest=GooseFrameBuilderTest
 
 ---
 
+### 交互模式案例
 
+#### 8.3.1 serverdir
+
+```
+connect 127.0.0.1 8102 65531 1 E1Q1SB1 S1 true;
+// 正常请求
+server-dir;
+
+// 错误referenceAfter — 应返回 Response-
+server-dir nonexistent_ref;
+
+// 正常referenceAfter — 从指定位置开始
+server-dir C1;
+server-dir --referenceAfter C1;
+```
+
+### 8.3.2 ln-dir
+
+```
+connect 127.0.0.1 8102 65531 1 E1Q1SB1 S1 true;
+// —— 位置参数 ——
+
+// 不指定ldName — 所有LD的所有LN（裸名）
+ld-dir;
+
+// 指定ldName=C1 — 仅C1的LN
+ld-dir C1;
+
+// ldName + referenceAfter — 从指定LN之后开始
+ld-dir C1 CSWI1;
+
+// 快捷写法：自动拆分 ldName/referenceAfter
+ld-dir C1/CSWI1;
+
+// 不存在的ldName — Response-
+ld-dir nonexistent;
+
+// referenceAfter 不存在 — Response-
+ld-dir C1 nonexistent_node;
+
+// —— 命名参数 ——
+
+// 全命名参数
+ld-dir --ldName C1 --referenceAfter CSWI1;
+
+// 仅ldName
+ld-dir --ldName C1;
+
+// 仅referenceAfter（全部LD中跳过第一个匹配的）
+ld-dir --referenceAfter CSWI1;
+```
