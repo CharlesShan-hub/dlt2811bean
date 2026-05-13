@@ -66,11 +66,18 @@ public class CacheHandler implements CommandHandler {
                 System.out.println("  (empty)");
                 return;
             }
-            for (Object key : map.keySet()) {
-                System.out.println("  " + key);
+            for (Map.Entry<?, ?> entry : map.entrySet()) {
+                Object v = entry.getValue();
+                if (v == null) {
+                    System.out.println("  " + entry.getKey() + " = (no value)");
+                } else if (v instanceof Map) {
+                    System.out.println("  " + entry.getKey() + "/");
+                } else {
+                    System.out.println("  " + entry.getKey() + " = " + v);
+                }
             }
         } else {
-            System.out.println("  " + value);
+            System.out.println("  " + (value == null ? "(no value)" : value));
         }
     }
 }

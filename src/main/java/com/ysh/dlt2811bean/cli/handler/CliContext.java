@@ -129,12 +129,22 @@ public class CliContext {
             Map<String, Map<String, Map<String, Object>>> lnMap = cachedHierarchy.get(ldName);
             if (lnMap == null) continue;
             for (String lnName : lnMap.keySet()) {
+                String lnRef = ldName + "/" + lnName;
                 CommandHandler getAllDef = handlers.get("get-all-def");
-                if (getAllDef == null) continue;
-                try {
-                    getAllDef.execute(client, Map.of("target", ldName + "/" + lnName, "fc", "XX"));
-                } catch (Exception e) {
-                    System.out.println(CmsColor.red("  Auto-discovery failed at get-all-def " + ldName + "/" + lnName + ": " + e.getMessage()));
+                if (getAllDef != null) {
+                    try {
+                        getAllDef.execute(client, Map.of("target", lnRef, "fc", "XX"));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-all-def " + lnRef + ": " + e.getMessage()));
+                    }
+                }
+                CommandHandler getAllValues = handlers.get("get-all-values");
+                if (getAllValues != null) {
+                    try {
+                        getAllValues.execute(client, Map.of("target", lnRef, "fc", "", "referenceAfter", ""));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-all-values " + lnRef + ": " + e.getMessage()));
+                    }
                 }
             }
         }

@@ -51,6 +51,27 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
                     String valueStr = formatCmsDataValue(data);
                     return ref + " = " + valueStr;
                 });
+        if (target.contains("/")) {
+            String[] parts = target.split("/", 2);
+            Map<String, Object> das = ctx.lnEntry(parts[0], parts[1]).get("DATA_OBJECT");
+            if (das == null) {
+                das = new java.util.LinkedHashMap<>();
+                ctx.putAcdEntry(parts[0], parts[1], "DATA_OBJECT", das);
+            }
+            for (CmsDataEntry entry : entries) {
+                String fullRef = entry.reference().get();
+                int dotIdx = fullRef.indexOf('.');
+                if (dotIdx > 0) {
+                    String doName = fullRef.substring(0, dotIdx);
+                    String daName = fullRef.substring(dotIdx + 1);
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> doMap = (Map<String, Object>) das.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
+                    doMap.put(daName, formatCmsDataValue(entry.value()));
+                } else {
+                    das.put(fullRef, formatCmsDataValue(entry.value()));
+                }
+            }
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -44,14 +45,23 @@ public class GetAllCbHandler extends AbstractServiceHandler {
             reqAsdu.ldName(target);
         }
         reqAsdu.acsiClass.set(acsiClass);
-        CmsApdu response = sendAndVerify(client, reqAsdu);
-        CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
-        List<CmsCBValueEntry> entries = asdu.cbValue().toList();
-        CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
-                item -> item.reference().get() + " = " + item.value());
+        try {
+            CmsApdu response = sendAndVerify(client, reqAsdu);
+            CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
+            List<CmsCBValueEntry> entries = asdu.cbValue().toList();
+            CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
+                    item -> item.reference().get() + " = " + item.value());
+        } catch (Exception e) {
+             System.out.print(CmsColor.red("  Request failed"));
+             if (target.contains("/") && !target.toUpperCase().contains("/LLN0")) {
+                 System.out.print(CmsColor.gray(" — 控制块只能在 LLN0 下查询"));
+             }
+             System.out.println();
+         }
     }
     
     private int parseAcsi(String s) {
+        if (s == null || s.isEmpty()) return CmsACSIClass.URCB;
         switch (s.toUpperCase()) {
             case "BRCB": return CmsACSIClass.BRCB;
             case "URCB": return CmsACSIClass.URCB;

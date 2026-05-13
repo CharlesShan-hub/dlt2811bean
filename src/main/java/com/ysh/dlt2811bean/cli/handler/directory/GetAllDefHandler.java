@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
@@ -55,11 +56,19 @@ public class GetAllDefHandler extends AbstractServiceHandler {
             String lnName = parts[1];
             java.util.Map<String, Object> existing = ctx.lnEntry(ldName, lnName).get("DATA_OBJECT");
             if (existing == null) {
-                java.util.Map<String, Object> daMap = new java.util.LinkedHashMap<>();
+                java.util.Map<String, Object> doMap = new java.util.LinkedHashMap<>();
                 for (CmsDataDefinitionEntry entry : entries) {
-                    daMap.put(entry.reference().get(), null);
+                    String doName = entry.reference().get();
+                    CmsDataDefinition def = entry.definition();
+                    java.util.Map<String, Object> daMap = new java.util.LinkedHashMap<>();
+                    if (def != null && def.getStructureEntries() != null) {
+                        for (CmsDataDefinition.StructureEntry se : def.getStructureEntries()) {
+                            daMap.put(se.name.get(), null);
+                        }
+                    }
+                    doMap.put(doName, daMap);
                 }
-                ctx.putAcdEntry(ldName, lnName, "DATA_OBJECT", daMap);
+                ctx.putAcdEntry(ldName, lnName, "DATA_OBJECT", doMap);
             }
         }
     }
