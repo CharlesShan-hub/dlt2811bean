@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.report;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -28,7 +29,7 @@ public class GetURCBValuesHandler extends AbstractServiceHandler {
         CmsApdu response = client.getURCBValues(ref);
         CmsGetURCBValues resp = (CmsGetURCBValues) response.getAsdu();
         List<CmsErrorUrcbChoice> choices = resp.urcb.toList();
-        printList("URCB values (" + choices.size() + " entries)", choices, item -> {
+        CliPrinter.printList("URCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }
@@ -36,6 +37,6 @@ public class GetURCBValuesHandler extends AbstractServiceHandler {
                     + "  datSet=" + item.value.datSet.get()
                     + "  intgPd=" + item.value.intgPd.get();
         });
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

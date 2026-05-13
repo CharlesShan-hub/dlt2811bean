@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -46,7 +47,7 @@ public class GetAllCbHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
         List<CmsCBValueEntry> entries = asdu.cbValue().toList();
-        printList("CB values (" + entries.size() + " entries)", entries,
+        CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
                 item -> item.reference().get() + " = " + item.value());
     }
     

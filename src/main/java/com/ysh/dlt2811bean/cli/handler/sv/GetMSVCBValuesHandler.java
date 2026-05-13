@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.sv;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -28,7 +29,7 @@ public class GetMSVCBValuesHandler extends AbstractServiceHandler {
         CmsApdu response = client.getMSVCBValues(ref);
         CmsGetMSVCBValues resp = (CmsGetMSVCBValues) response.getAsdu();
         List<CmsErrorMsvcbChoice> choices = resp.errorMsvcb.toList();
-        printList("MSVCB values (" + choices.size() + " entries)", choices, item -> {
+        CliPrinter.printList("MSVCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }
@@ -37,6 +38,6 @@ public class GetMSVCBValuesHandler extends AbstractServiceHandler {
                     + "  datSet=" + item.msvcb.datSet.get()
                     + "  smpRate=" + item.msvcb.smpRate.get();
         });
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

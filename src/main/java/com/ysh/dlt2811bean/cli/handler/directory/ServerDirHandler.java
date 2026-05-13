@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.cli.Param;
@@ -35,6 +36,6 @@ public class ServerDirHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
         List<String> refs = resAsdu.reference().toList().stream().map(r -> r.get()).collect(Collectors.toList());
-        printList("Logical devices", refs, item -> item);
+        CliPrinter.printList("Logical devices", refs, item -> item);
     }
 }

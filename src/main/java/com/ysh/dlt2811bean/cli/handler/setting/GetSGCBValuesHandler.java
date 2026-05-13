@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.setting;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -28,7 +29,7 @@ public class GetSGCBValuesHandler extends AbstractServiceHandler {
         CmsApdu response = client.getSGCBValues(ref);
         CmsGetSGCBValues resp = (CmsGetSGCBValues) response.getAsdu();
         List<CmsErrorSgcbChoice> choices = resp.errorSgcb.toList();
-        printList("SGCB values (" + choices.size() + " entries)", choices, item -> {
+        CliPrinter.printList("SGCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }

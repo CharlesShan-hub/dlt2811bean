@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.data;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -45,13 +46,13 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
 
         CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();
         List<CmsData<?>> dataList = resp.value.toList();
-        printList("Data values (" + dataList.size() + " entries)", dataList, item -> {
+        CliPrinter.printList("Data values (" + dataList.size() + " entries)", dataList, item -> {
             String raw = item.toString();
             if (raw.contains("CmsServiceError")) {
                 return CmsColor.red("Error: " + raw.replaceAll(".*=(CmsServiceError) ", "ServiceError "));
             }
             return raw;
         });
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

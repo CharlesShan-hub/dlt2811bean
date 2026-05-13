@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.negotiation;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -31,9 +32,9 @@ public class NegotiateHandler extends AbstractServiceHandler {
                 .apduSize(apduSize)
                 .asduSize(asduSize)
                 .protocolVersion(protocolVersion);
-        printRequestPdu(reqAsdu);
+        CliPrinter.printRequestPdu(ctx, reqAsdu);
         CmsApdu response = client.associateNegotiate(apduSize, asduSize, protocolVersion);
-        printResponsePdu(response);
+        CliPrinter.printResponsePdu(ctx, response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Negotiated!"));
         } else {

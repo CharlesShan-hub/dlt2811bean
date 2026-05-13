@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.dataset;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -28,8 +29,8 @@ public class GetDataSetDirectoryHandler extends AbstractServiceHandler {
         CmsApdu response = client.getDataSetDirectory(dsRef);
         CmsGetDataSetDirectory resp = (CmsGetDataSetDirectory) response.getAsdu();
         List<CmsCreateDataSetEntry> entries = resp.memberData.toList();
-        printList("Dataset members (" + entries.size() + " entries)", entries,
+        CliPrinter.printList("Dataset members (" + entries.size() + " entries)", entries,
                 item -> item.reference.get() + (item.fc.get().isEmpty() ? "" : "  fc=" + item.fc.get()));
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

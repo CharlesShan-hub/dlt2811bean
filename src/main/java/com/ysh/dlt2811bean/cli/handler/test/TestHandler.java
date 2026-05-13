@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.test;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -18,10 +19,10 @@ public class TestHandler extends AbstractServiceHandler {
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);
         CmsTest reqAsdu = new CmsTest(MessageType.REQUEST);
-        printRequestPdu(reqAsdu);
+        CliPrinter.printRequestPdu(ctx, reqAsdu);
         CmsApdu response = client.test();
         if (response != null) {
-            printResponsePdu(response);
+            CliPrinter.printResponsePdu(ctx, response);
         }
         System.out.println("  Test " + (response != null ? CmsColor.green("OK") : CmsColor.red("failed")));
     }

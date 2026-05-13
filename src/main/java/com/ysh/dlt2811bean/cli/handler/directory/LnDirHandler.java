@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -53,9 +54,9 @@ public class LnDirHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
         List<String> refs = asdu.referenceResponse().stream().map(r -> r.get()).collect(Collectors.toList());
-        printList("Entries", refs, item -> item);
+        CliPrinter.printList("Entries", refs, item -> item);
         if (acsiClass == CmsACSIClass.SGCB) {
-            printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
+            CliPrinter.printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
         }
     }
     

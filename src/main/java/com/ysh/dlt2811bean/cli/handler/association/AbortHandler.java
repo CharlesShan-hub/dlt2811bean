@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.association;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -30,7 +31,7 @@ public class AbortHandler extends AbstractServiceHandler {
         requireConnected(client);
         int reason = Integer.parseInt(values.get("reason"));
         CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
-        printRequestPdu(reqAsdu);
+        CliPrinter.printRequestPdu(ctx, reqAsdu);
         client.abort(reason);
         System.out.println(CmsColor.green("  Abort sent"));
     }

@@ -1,9 +1,9 @@
 package com.ysh.dlt2811bean.cli.handler.dataset;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetValues;
 import com.ysh.dlt2811bean.cli.Param;
@@ -29,13 +29,13 @@ public class GetDataSetValuesHandler extends AbstractServiceHandler {
         CmsApdu response = client.getDataSetValues(dsRef);
         CmsGetDataSetValues resp = (CmsGetDataSetValues) response.getAsdu();
         List<CmsData<?>> dataList = resp.value.toList();
-        printList("Dataset values (" + dataList.size() + " entries)", dataList, item -> {
+        CliPrinter.printList("Dataset values (" + dataList.size() + " entries)", dataList, item -> {
             String raw = item.toString();
             if (raw.contains("CmsServiceError")) {
                 return "Error: " + raw.replaceAll(".*=(CmsServiceError) ", "ServiceError ");
             }
             return raw;
         });
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -45,12 +46,12 @@ public class LdDirHandler extends AbstractServiceHandler {
 
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) response.getAsdu();
-        if (!printIfEmpty(asdu.lnReference().isEmpty())) {
+        if (!CliPrinter.printIfEmpty(asdu.lnReference().isEmpty())) {
             List<String> lnNames = asdu.lnReference().stream().map(r -> r.get()).collect(Collectors.toList());
             String titlePrefix = ldName.isEmpty() ? "" : " under " + ldName;
             String displayPrefix = ldName.isEmpty() ? "" : ldName + "/";
-            printList("Logical nodes" + titlePrefix, lnNames,
-                    item -> displayPrefix + item + lnClassName(displayPrefix + item));
+            CliPrinter.printList("Logical nodes" + titlePrefix, lnNames,
+                    item -> displayPrefix + item + CliPrinter.lnClassName(displayPrefix + item));
         }
     }
 }

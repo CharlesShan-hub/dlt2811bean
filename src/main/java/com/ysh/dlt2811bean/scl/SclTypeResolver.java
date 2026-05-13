@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.scl;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.datatypes.numeric.*;
 import com.ysh.dlt2811bean.datatypes.string.CmsUtf8String;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
@@ -391,6 +392,112 @@ public class SclTypeResolver {
         public List<SclIED.SclInputs> getInputs() {
             return null;
         }
+    }
+
+    // ==================== CLI convenience ====================
+
+    /**
+     * Finds the first server from any IED in the SCL document.
+     */
+    public static SclServer findFirstServer(SclDocument sclDocument) {
+        if (sclDocument == null || sclDocument.getIeds() == null) return null;
+        for (SclIED ied : sclDocument.getIeds()) {
+            if (ied.getAccessPoints() != null) {
+                for (SclIED.SclAccessPoint ap : ied.getAccessPoints()) {
+                    if (ap.getServer() != null) {
+                        return ap.getServer();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Parses a reference string to resolve its bType from SCL templates.
+     * Supports formats:
+     * <ul>
+     *   <li>LD/LN.DO (DO-level, uses first DA's type)
+     *   <li>LD/LN.DO.DA (direct DA)
+     *   <li>LD/LN.DO.SDI.BDA (sub-structure BDA, via DAType)
+     * </ul>
+     */
+    public static String resolveBType(String ref, SclServer server, SclDataTypeTemplates templates) {
+        if (server == null || templates == null) return null;
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        String[] parts = rest.split("\\.");
+        if (parts.length < 2) return null;
+        String lnName = parts[0];
+        String doName = parts[1];
+        if (parts.length == 4) {
+            // LD/LN.DO.SDI.BDA — e.g. sVC.offset
+            return resolveSdiBType(server, templates, ldName, lnName, doName, parts[2], parts[3]);
+        }
+        if (parts.length >= 3) {
+            // LD/LN.DO.DA — direct DA
+            return resolveBType(server, templates, ldName, lnName, doName, parts[2]);
+        }
+        // LD/LN.DO — DO-level, use first DA's type
+        var das = listDasFromType(server, templates, ldName, lnName, doName);
+        if (das != null && !das.isEmpty()) {
+            return resolveBType(server, templates, ldName, lnName, doName, das.get(0).getName());
+        }
+        return null;
+    }
+
+    /**
+     * Resolves a value into the appropriate CmsType by looking up the bType from SCL.
+     * Falls back to CmsVisibleString if type resolution fails.
+     *
+     * <p>This is the data-value variant (for SetDataValues), using a string fallback.
+     * For control operations, see {@link #parseControlValue(CmsConfig, String, String)}.
+     */
+    public static CmsType<?> resolveTypedValue(CmsConfig config, String ref, String value) {
+        try {
+            String sclPath = config.getServer().getSclFile();
+            SclDocument doc = new SclReader().read(sclPath);
+            SclServer server = findFirstServer(doc);
+            SclDataTypeTemplates templates = doc != null ? doc.getDataTypeTemplates() : null;
+            if (server == null || templates == null) {
+                return new CmsVisibleString(value).max(255);
+            }
+            String bType = resolveBType(ref, server, templates);
+            if (bType != null) {
+                return createTypedValue(bType, value);
+            }
+        } catch (Exception e) {
+            // fall through
+        }
+        return new CmsVisibleString(value).max(255);
+    }
+
+    /**
+     * Parses a control value string into the appropriate CmsType based on SCL type resolution.
+     * Falls back to CmsBoolean if SCL resolution fails.
+     *
+     * <p>This is the control variant (for Operate/Select/Cancel), using a boolean fallback.
+     * For data values, see {@link #resolveTypedValue(CmsConfig, String, String)}.
+     */
+    public static CmsType<?> parseControlValue(CmsConfig config, String ref, String value) {
+        try {
+            String sclPath = config.getServer().getSclFile();
+            SclDocument doc = new SclReader().read(sclPath);
+            SclServer server = findFirstServer(doc);
+            SclDataTypeTemplates templates = doc != null ? doc.getDataTypeTemplates() : null;
+            if (server == null || templates == null) {
+                return new CmsBoolean(value.equalsIgnoreCase("true"));
+            }
+            String bType = resolveBType(ref, server, templates);
+            if (bType != null) {
+                return createTypedValue(bType, value);
+            }
+        } catch (Exception e) {
+            // fall through
+        }
+        return new CmsBoolean(value.equalsIgnoreCase("true"));
     }
 
     /**

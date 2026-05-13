@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
@@ -43,7 +44,7 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
         List<CmsDataEntry> entries = asdu.data().toList();
-        printList("Data values (" + entries.size() + " entries)", entries,
+        CliPrinter.printList("Data values (" + entries.size() + " entries)", entries,
                 item -> {
                     String ref = item.reference().get();
                     CmsData<?> data = item.value();

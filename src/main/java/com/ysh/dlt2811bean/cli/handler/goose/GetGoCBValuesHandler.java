@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.goose;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -28,7 +29,7 @@ public class GetGoCBValuesHandler extends AbstractServiceHandler {
         CmsApdu response = client.getGoCBValues(ref);
         CmsGetGoCBValues resp = (CmsGetGoCBValues) response.getAsdu();
         List<CmsErrorGocbChoice> choices = resp.errorGocb.toList();
-        printList("GoCB values (" + choices.size() + " entries)", choices, item -> {
+        CliPrinter.printList("GoCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }
@@ -36,6 +37,6 @@ public class GetGoCBValuesHandler extends AbstractServiceHandler {
                     + "  datSet=" + item.gocb.datSet.get()
                     + "  goEna=" + item.gocb.goEna.get();
         });
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
 }

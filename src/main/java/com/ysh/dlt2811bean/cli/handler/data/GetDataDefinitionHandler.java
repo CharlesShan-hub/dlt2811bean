@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.data;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -69,8 +70,8 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
             
             lines.add(sb.toString());
         }
-        printList("Data definitions (" + lines.size() + " entries)", lines, item -> item);
-        printMoreFollows(resp.moreFollows.get());
+        CliPrinter.printList("Data definitions (" + lines.size() + " entries)", lines, item -> item);
+        CliPrinter.printMoreFollows(resp.moreFollows.get());
     }
     
     private String formatDefinition(CmsDataDefinition def, String indent) {

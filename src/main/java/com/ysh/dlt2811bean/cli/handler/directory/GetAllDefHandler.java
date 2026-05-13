@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -40,7 +41,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
         CmsApdu response = sendAndVerify(client, reqAsdu);
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
         List<CmsDataDefinitionEntry> entries = asdu.data().toList();
-        printList("Data definitions (" + entries.size() + " entries)", entries, entry -> {
+        CliPrinter.printList("Data definitions (" + entries.size() + " entries)", entries, entry -> {
             String cdc = entry.cdcType().get();
             String ref = entry.reference().get();
             if (cdc == null) return ref;

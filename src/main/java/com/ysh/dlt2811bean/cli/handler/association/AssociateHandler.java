@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.association;
 
+import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -33,9 +34,9 @@ public class AssociateHandler extends AbstractServiceHandler {
         String accessPoint = values.get("accessPoint");
         CmsAssociate reqAsdu = new CmsAssociate(MessageType.REQUEST)
                 .serverAccessPointReference(iedName, accessPoint);
-        printRequestPdu(reqAsdu);
+        CliPrinter.printRequestPdu(ctx, reqAsdu);
         CmsApdu response = client.associate(iedName, accessPoint);
-        printResponsePdu(response);
+        CliPrinter.printResponsePdu(ctx, response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Associated!"));
         } else {
