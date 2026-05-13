@@ -17,7 +17,7 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.REFERENCE),
+            new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.DS_REF),
             new Param("ref", "成员引用", "C1/MMXU1.Volts").type(Param.Type.REFERENCE),
             Param.fc("功能约束"),
             new Param("after", "追加位置 (可选, 为空则新建)", "", false)

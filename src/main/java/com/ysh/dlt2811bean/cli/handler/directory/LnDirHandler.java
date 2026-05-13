@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class LnDirHandler extends AbstractServiceHandler {
 
     public LnDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_NODE_DIRECTORY); }
+    
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
@@ -58,6 +59,18 @@ public class LnDirHandler extends AbstractServiceHandler {
         if (acsiClass == CmsACSIClass.SGCB) {
             CliPrinter.printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
         }
+        if (!refs.isEmpty() && target.contains("/")) {
+             String[] parts = target.split("/", 2);
+             String acsiKey = values.get("acsi");
+             java.util.Map<String, Object> existing = ctx.lnEntry(parts[0], parts[1]).get(acsiKey);
+             if (existing == null) {
+                 java.util.Map<String, Object> memberMap = new java.util.LinkedHashMap<>();
+                 for (String r : refs) {
+                     memberMap.put(r, null);
+                 }
+                 ctx.lnEntry(parts[0], parts[1]).put(acsiKey, memberMap);
+             }
+         }
     }
     
     private int parseAcsi(String s) {

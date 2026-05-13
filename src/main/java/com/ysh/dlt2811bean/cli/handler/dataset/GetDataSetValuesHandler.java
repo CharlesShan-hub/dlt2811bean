@@ -18,7 +18,7 @@ public class GetDataSetValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.REFERENCE)
+            new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.DS_REF)
         );
     }
 

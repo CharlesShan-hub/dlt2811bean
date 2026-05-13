@@ -49,5 +49,18 @@ public class GetAllDefHandler extends AbstractServiceHandler {
             String cdcDisplay = "  cdc=" + cdc + (cdcInfo != null ? CmsColor.gray(" (" + cdcInfo.getChineseName() + ")") : "");
             return ref + cdcDisplay;
         });
+        if (target.contains("/")) {
+            String[] parts = target.split("/", 2);
+            String ldName = parts[0];
+            String lnName = parts[1];
+            java.util.Map<String, Object> existing = ctx.lnEntry(ldName, lnName).get("DATA_OBJECT");
+            if (existing == null) {
+                java.util.Map<String, Object> daMap = new java.util.LinkedHashMap<>();
+                for (CmsDataDefinitionEntry entry : entries) {
+                    daMap.put(entry.reference().get(), null);
+                }
+                ctx.putAcdEntry(ldName, lnName, "DATA_OBJECT", daMap);
+            }
+        }
     }
 }

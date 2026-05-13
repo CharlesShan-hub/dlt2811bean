@@ -1,7 +1,6 @@
 package com.ysh.dlt2811bean.cli;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.cli.handler.command.HelpHandler;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.DataTypeInfo;
 import org.jline.reader.Candidate;
@@ -10,7 +9,6 @@ import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,18 +17,10 @@ public class CmsCliCompleter implements Completer {
 
     private final Map<String, CommandHandler> handlers;
     private final CliContext ctx;
-    private final Set<String> cachedLds;
-    private final Set<String> cachedValues;
-    private final Set<String> cachedRefs;
 
-    public CmsCliCompleter(Map<String, CommandHandler> handlers, CliContext ctx,
-                            Set<String> cachedLds, Set<String> cachedValues,
-                            Set<String> cachedRefs) {
+    public CmsCliCompleter(Map<String, CommandHandler> handlers, CliContext ctx) {
         this.handlers = handlers;
         this.ctx = ctx;
-        this.cachedLds = cachedLds;
-        this.cachedValues = cachedValues;
-        this.cachedRefs = cachedRefs;
     }
 
     @Override
@@ -95,7 +85,9 @@ public class CmsCliCompleter implements Completer {
         CommandHandler h = handlers.get(cmdName);
         if (h == null) return;
 
-        int paramIdx = parts.length - 1;
+        boolean hasTrailingSpace = buffer.endsWith(" ");
+        int paramIdx = hasTrailingSpace ? parts.length - 1 : parts.length - 2;
+        paramIdx = Math.max(0, paramIdx);
         List<Param> params = h.updateConfigAndGetParams();
         if (paramIdx >= params.size()) return;
 
@@ -110,7 +102,7 @@ public class CmsCliCompleter implements Completer {
             return;
         }
 
-        Collection<String> pool = poolForType(param.getType());
+        Collection<String> pool = poolForType(param.getType(), parts);
         if (pool != null) {
             for (String ref : pool) {
                 if (ref.toLowerCase().startsWith(word.toLowerCase())) {
@@ -122,13 +114,87 @@ public class CmsCliCompleter implements Completer {
         }
     }
 
-    private Collection<String> poolForType(Param.Type type) {
+    private Collection<String> poolForType(Param.Type type, String[] parts) {
+        Map<String, Map<String, Map<String, Map<String, Object>>>> h = ctx.getCachedHierarchy();
         return switch (type) {
-            case LD_NAME -> cachedLds;
-            case LN_REF -> ctx.getCachedLnRefs();
-            case DA_REF -> cachedValues;
-            case DA_TARGET -> ctx.getCachedDaRefs();
-            case REFERENCE -> cachedRefs;
+            case LD_NAME -> h.keySet();
+            case LN_NAME -> {
+                 Set<String> refs = new java.util.LinkedHashSet<>();
+                 String ldName = parts.length > 1 ? parts[1] : "";
+                 if (!ldName.isEmpty()) {
+                     java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> lnMap = h.get(ldName);
+                     if (lnMap != null) refs.addAll(lnMap.keySet());
+                 }
+                 yield refs;
+             }
+            case LN_REF -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (String ln : h.get(ld).keySet()) {
+                        refs.add(ld + "/" + ln);
+                    }
+                }
+                yield refs;
+            }
+            case DA_REF -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : h.get(ld).entrySet()) {
+                        Map<String, Object> das = lnEntry.getValue().get("DATA_OBJECT");
+                        if (das != null) {
+                            for (String da : das.keySet()) {
+                                refs.add(ld + "/" + lnEntry.getKey() + "." + da);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
+            case DS_REF -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : h.get(ld).entrySet()) {
+                        Map<String, Object> datasets = lnEntry.getValue().get("DATA_SET");
+                        if (datasets != null) {
+                            for (String ds : datasets.keySet()) {
+                                refs.add(ld + "/" + lnEntry.getKey() + "." + ds);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
+            case REFERENCE -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    refs.add(ld);
+                    for (String ln : h.get(ld).keySet()) {
+                        String lnRef = ld + "/" + ln;
+                        refs.add(lnRef);
+                        Map<String, Map<String, Object>> acs = h.get(ld).get(ln);
+                        for (String ac : acs.keySet()) {
+                            for (String member : acs.get(ac).keySet()) {
+                                refs.add(lnRef + "." + member);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
+            case DA_TARGET -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : h.get(ld).entrySet()) {
+                        Map<String, Object> das = lnEntry.getValue().get("DATA_OBJECT");
+                        if (das != null) {
+                            for (String da : das.keySet()) {
+                                refs.add(ld + "/" + lnEntry.getKey() + "." + da);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
             case ENUM, PLAIN -> null;
         };
     }

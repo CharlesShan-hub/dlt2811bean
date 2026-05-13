@@ -11,9 +11,11 @@ public class Param {
         PLAIN,
         ENUM,
         LD_NAME,
+        LN_NAME,
         LN_REF,
         DA_REF,
         DA_TARGET,
+        DS_REF,
         REFERENCE
     }
 

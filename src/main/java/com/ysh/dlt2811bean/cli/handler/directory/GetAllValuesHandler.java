@@ -51,13 +51,6 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
                     String valueStr = formatCmsDataValue(data);
                     return ref + " = " + valueStr;
                 });
-
-        // Refresh cachedValues for Tab completion
-        java.util.Set<String> cachedValues = ctx.getCachedValues();
-        String prefix = target.contains("/") ? target + "." : target + "/";
-        for (CmsDataEntry entry : entries) {
-            cachedValues.add(prefix + entry.reference().get());
-        }
     }
 
     /**

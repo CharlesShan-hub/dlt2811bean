@@ -17,6 +17,7 @@ import java.util.Map;
 public class AssociateHandler extends AbstractServiceHandler {
 
     public AssociateHandler(CliContext ctx) { super(ctx, ServiceInfo.ASSOCIATE); }
+
     public List<Param> getParams() {
         return List.of(
             new Param("iedName", "IED名称 [string]", config.getClient().getDefaultIedName()),
@@ -24,6 +25,7 @@ public class AssociateHandler extends AbstractServiceHandler {
             new Param("secure", "携带证书认证 [boolean]", String.valueOf(config.getClient().isDefaultSecure()))
         );
     }
+    
     public void execute(CmsClient client, Map<String, String> values) throws Exception {
         requireConnected(client);
         if (Boolean.parseBoolean(values.get("secure"))) {

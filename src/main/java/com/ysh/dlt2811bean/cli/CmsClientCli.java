@@ -25,12 +25,11 @@ public class CmsClientCli {
     private final CliContext ctx;
     private CmsConfig config = CmsConfigLoader.load();
     private boolean running = true;
-    private final java.util.Set<String> cachedRefs = new java.util.HashSet<>();
-    private final java.util.Set<String> cachedLds = new java.util.HashSet<>();
-    private final java.util.Set<String> cachedValues = new java.util.HashSet<>();
+    private final java.util.Map<String, java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>>> cachedHierarchy
+            = new java.util.LinkedHashMap<>();
 
     public CmsClientCli() {
-        ctx = new CliContext(config, handlers, cachedRefs, cachedLds, cachedValues);
+        ctx = new CliContext(config, handlers, cachedHierarchy);
         reader = LineReaderBuilder.builder()
                 .highlighter(new org.jline.reader.Highlighter() {
                     public org.jline.utils.AttributedString highlight(org.jline.reader.LineReader rdr, String buffer) {
@@ -55,7 +54,7 @@ public class CmsClientCli {
                     public void setErrorPattern(java.util.regex.Pattern errorPattern) {}
                     public void setErrorIndex(int errorIndex) {}
                 })
-                .completer(new CmsCliCompleter(handlers, ctx, cachedLds, cachedValues, cachedRefs))
+                .completer(new CmsCliCompleter(handlers, ctx))
                 .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_cli_history"))
                 .build();
         register(new RpcHandler(ctx));
@@ -219,6 +218,12 @@ public class CmsClientCli {
         String[] inputParts = raw.split("\\s+", 2);
         String cmdName = inputParts[0].toLowerCase();
         String inlineArgs = inputParts.length > 1 ? inputParts[1].trim() : null;
+
+        int dotIdx = inputParts[0].indexOf('.');
+        if (dotIdx > 0 && inlineArgs == null) {
+            inlineArgs = inputParts[0].substring(dotIdx + 1);
+            cmdName = inputParts[0].substring(0, dotIdx).toLowerCase();
+        }
 
         CommandHandler handler = handlers.get(cmdName);
         if (handler == null) {

@@ -21,7 +21,7 @@ public class ServerDirHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.LD_NAME)
         );
     }
 
@@ -37,5 +37,8 @@ public class ServerDirHandler extends AbstractServiceHandler {
         CmsGetServerDirectory resAsdu = (CmsGetServerDirectory) response.getAsdu();
         List<String> refs = resAsdu.reference().toList().stream().map(r -> r.get()).collect(Collectors.toList());
         CliPrinter.printList("Logical devices", refs, item -> item);
+        for (String ref : refs) {
+            ctx.ldEntry(ref);
+        }
     }
 }

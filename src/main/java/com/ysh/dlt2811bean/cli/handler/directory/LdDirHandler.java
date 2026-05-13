@@ -21,7 +21,7 @@ public class LdDirHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("ldName", "逻辑设备名 (留空=全部)", "").type(Param.Type.LD_NAME),
-            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.LN_NAME)
         );
     }
 
@@ -52,6 +52,15 @@ public class LdDirHandler extends AbstractServiceHandler {
             String displayPrefix = ldName.isEmpty() ? "" : ldName + "/";
             CliPrinter.printList("Logical nodes" + titlePrefix, lnNames,
                     item -> displayPrefix + item + CliPrinter.lnClassName(displayPrefix + item));
+        }
+        if (!ldName.isEmpty()) {
+            java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> lnMap = ctx.ldEntry(ldName);
+            boolean hasExistingData = lnMap.values().stream().anyMatch(m -> !m.isEmpty());
+            if (!hasExistingData) {
+                for (int i = 0; i < asdu.lnReference().size(); i++) {
+                    lnMap.putIfAbsent(asdu.lnReference().get(i).get(), new java.util.LinkedHashMap<>());
+                }
+            }
         }
     }
 }

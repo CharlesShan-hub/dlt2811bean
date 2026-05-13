@@ -60,10 +60,6 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
         CmsApdu response = ctx.sendAndPrint(client, asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  All data values set successfully"));
-            java.util.Set<String> cachedValues = ctx.getCachedValues();
-            for (String ref : refArr) {
-                cachedValues.add(ref.trim());
-            }
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             CmsSetDataValues resp = (CmsSetDataValues) response.getAsdu();
             List<String> failures = new ArrayList<>();
