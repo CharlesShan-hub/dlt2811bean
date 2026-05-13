@@ -16,7 +16,7 @@ public class SetMsvcbHandler extends AbstractServiceHandler {
     public SetMsvcbHandler(CliContext ctx) { super(ctx, ServiceInfo.SET_MSVCB_VALUES); }
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "MSVCB 引用", "C1/LLN0.Volt"),
+            new Param("ref", "MSVCB 引用", "C1/LLN0.Volt").type(Param.Type.REFERENCE),
             new Param("svEna", "启用 (true/false)", "true"),
             new Param("msvID", "SV ID (留空不修改)", ""),
             new Param("smpRate", "采样率", "4000")

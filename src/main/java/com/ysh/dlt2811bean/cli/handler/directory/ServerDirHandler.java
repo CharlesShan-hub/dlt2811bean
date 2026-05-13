@@ -21,7 +21,7 @@ public class ServerDirHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("referenceAfter", "起始引用 (留空=从头)", "")
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
         );
     }
 

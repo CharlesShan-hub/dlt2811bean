@@ -19,7 +19,7 @@ public class SelectWithValueHandler extends AbstractServiceHandler {
     public SelectWithValueHandler(CliContext ctx) { super(ctx, ServiceInfo.SELECT_WITH_VALUE); }
     public List<Param> getParams() {
         return List.of(
-            new Param("reference", "对象引用", "C1/CSWI1.Pos"),
+            new Param("reference", "对象引用", "C1/CSWI1.Pos").type(Param.Type.REFERENCE),
             new Param("value", "控制值", "true")
         );
     }

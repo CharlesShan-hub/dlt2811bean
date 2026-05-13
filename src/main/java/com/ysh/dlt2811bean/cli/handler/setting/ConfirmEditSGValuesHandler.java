@@ -17,7 +17,7 @@ public class ConfirmEditSGValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("sgRef", "定值组控制块引用", "C1/LLN0.SGCB")
+            new Param("sgRef", "定值组控制块引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE)
         );
     }
 

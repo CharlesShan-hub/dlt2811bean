@@ -18,7 +18,7 @@ public class GetEditSGValueHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "数据引用", "C1/LLN0.SGCB"),
+            new Param("ref", "数据引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE),
             Param.fc()
         );
     }

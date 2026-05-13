@@ -19,7 +19,7 @@ public class OperateHandler extends AbstractServiceHandler {
     public OperateHandler(CliContext ctx) { super(ctx, ServiceInfo.OPERATE); }
     public List<Param> getParams() {
         return List.of(
-            new Param("reference", "对象引用", "C1/CSWI1.Pos"),
+            new Param("reference", "对象引用", "C1/CSWI1.Pos").type(Param.Type.REFERENCE),
             new Param("value", "控制值", "true")
         );
     }

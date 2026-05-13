@@ -20,8 +20,8 @@ public class LdDirHandler extends AbstractServiceHandler {
     
     public List<Param> getParams() {
         return List.of(
-            new Param("ldName", "逻辑设备名 (留空=全部)", ""),
-            new Param("referenceAfter", "起始引用 (留空=从头)", "")
+            new Param("ldName", "逻辑设备名 (留空=全部)", "").type(Param.Type.LD_NAME),
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
         );
     }
 

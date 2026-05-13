@@ -22,7 +22,7 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts"),
+            new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts").type(Param.Type.DA_REF),
             Param.fc()
         );
     }

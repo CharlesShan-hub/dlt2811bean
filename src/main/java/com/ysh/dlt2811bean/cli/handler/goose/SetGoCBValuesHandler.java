@@ -18,7 +18,7 @@ public class SetGoCBValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "GoCB 引用", "C1/LLN0.ItlPositions"),
+            new Param("ref", "GoCB 引用", "C1/LLN0.ItlPositions").type(Param.Type.REFERENCE),
             new Param("goEna", "启用 GOOSE (true/false)", "true")
         );
     }

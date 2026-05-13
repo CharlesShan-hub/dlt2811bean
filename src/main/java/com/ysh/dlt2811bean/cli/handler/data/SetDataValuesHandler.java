@@ -25,7 +25,7 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal"),
+            new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal").type(Param.Type.DA_TARGET),
             new Param("value", "要设置的值", "true"),
             Param.fc()
         );

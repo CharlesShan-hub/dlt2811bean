@@ -1,40 +1,6 @@
 package com.ysh.dlt2811bean.cli;
 
-import com.ysh.dlt2811bean.cli.handler.association.AbortHandler;
-import com.ysh.dlt2811bean.cli.handler.association.AssociateHandler;
-import com.ysh.dlt2811bean.cli.handler.association.ReleaseHandler;
-import com.ysh.dlt2811bean.cli.handler.command.*;
-import com.ysh.dlt2811bean.cli.handler.data.GetDataDefinitionHandler;
-import com.ysh.dlt2811bean.cli.handler.data.GetDataDirectoryHandler;
-import com.ysh.dlt2811bean.cli.handler.data.GetDataValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.data.SetDataValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.dataset.GetDataSetDirectoryHandler;
-import com.ysh.dlt2811bean.cli.handler.dataset.GetDataSetValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.dataset.SetDataSetValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.dataset.CreateDataSetHandler;
-import com.ysh.dlt2811bean.cli.handler.dataset.DeleteDataSetHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.SelectActiveSGHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.SelectEditSGHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.SetEditSGValueHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.ConfirmEditSGValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.GetEditSGValueHandler;
-import com.ysh.dlt2811bean.cli.handler.setting.GetSGCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.report.GetBRCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.report.SetBRCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.report.GetURCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.report.SetURCBValuesHandler;
-// import com.ysh.dlt2811bean.cli.handler.log.GetLCBValuesHandler;
-// import com.ysh.dlt2811bean.cli.handler.log.SetLCBValuesHandler;
-// import com.ysh.dlt2811bean.cli.handler.log.QueryLogByTimeHandler;
-// import com.ysh.dlt2811bean.cli.handler.log.QueryLogAfterHandler;
-// import com.ysh.dlt2811bean.cli.handler.log.GetLogStatusValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.goose.GetGoCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.goose.SetGoCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.sv.GetMSVCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.sv.SetMSVCBValuesHandler;
-import com.ysh.dlt2811bean.cli.handler.directory.*;
-import com.ysh.dlt2811bean.cli.handler.negotiation.NegotiateHandler;
-import com.ysh.dlt2811bean.cli.handler.test.TestHandler;
+import com.ysh.dlt2811bean.cli.handler.command.HelpHandler;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
@@ -45,11 +11,8 @@ import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.cli.handler.*;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
-import org.jline.reader.Candidate;
-import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
-import org.jline.reader.ParsedLine;
 
 import java.nio.file.Paths;
 import java.util.*;
@@ -92,108 +55,9 @@ public class CmsClientCli {
                     public void setErrorPattern(java.util.regex.Pattern errorPattern) {}
                     public void setErrorIndex(int errorIndex) {}
                 })
-                .completer(new Completer() {
-                    @Override
-                    public void complete(LineReader rdr, ParsedLine parsedLine, java.util.List<Candidate> candidates) {
-                        String buffer = parsedLine.line();
-                        String word = parsedLine.word();
-                        if (buffer.toLowerCase().startsWith("help datatype ")) {
-                            for (DataTypeInfo dt : DataTypeInfo.values()) {
-                                if (dt.getTypeName().toLowerCase().startsWith(word.toLowerCase())) {
-                                    candidates.add(new Candidate(dt.getTypeName()));
-                                }
-                            }
-                        } else if (buffer.toLowerCase().startsWith("help cdc ")) {
-                            for (CdcInfo cdc : CdcInfo.values()) {
-                                if (cdc.getName().toLowerCase().startsWith(word.toLowerCase())) {
-                                    candidates.add(new Candidate(cdc.getName()));
-                                }
-                            }
-                        } else if (buffer.toLowerCase().startsWith("help ")) {
-                            for (String cmd : handlers.keySet()) {
-                                if (cmd.startsWith(word.toLowerCase())) {
-                                    candidates.add(new Candidate(cmd));
-                                }
-                            }
-                            if ("datatype".startsWith(word.toLowerCase())) {
-                                candidates.add(new Candidate("datatype"));
-                            }
-                            if ("cdc".startsWith(word.toLowerCase())) {
-                                candidates.add(new Candidate("cdc"));
-                            }
-                        } else if (buffer.contains(" ")) {
-                            String[] parts = buffer.trim().split("\\s+");
-                            String cmdName = parts[0].toLowerCase();
-                            CommandHandler h = handlers.get(cmdName);
-                            if (h != null) {
-                                int paramIdx = parts.length - 1;
-                                if (paramIdx < h.updateConfigAndGetParams().size()) {
-                                    Param param = h.updateConfigAndGetParams().get(paramIdx);
-                                    if (!param.getEnumChoices().isEmpty()) {
-                                        for (Param.EnumChoice ec : param.getEnumChoices()) {
-                                            if (ec.value.toLowerCase().startsWith(word.toLowerCase())) {
-                                                candidates.add(new Candidate(ec.value));
-                                            }
-                                        }
-                                    } else if (isRefParam(cmdName, paramIdx)) {
-                                        java.util.Set<String> pool;
-                                        if ("ld-dir".equals(cmdName) || "server-dir".equals(cmdName)) {
-                                            pool = cachedLds;
-                                        } else if ("ln-dir".equals(cmdName) || "get-all-def".equals(cmdName) || "get-all-values".equals(cmdName) || "get-all-cb".equals(cmdName) || "get-data-def".equals(cmdName)) {
-                                            pool = ctx.getCachedLnRefs();
-                                        } else if ("get-data-dir".equals(cmdName) || "get-data-values".equals(cmdName)) {
-                                            pool = cachedValues;
-                                        } else if ("set-data-values".equals(cmdName)) {
-                                            pool = ctx.getCachedDaRefs();
-                                        } else if ("get-dataset-values".equals(cmdName) || "get-dataset-dir".equals(cmdName)
-                                                || "create-dataset".equals(cmdName) || "delete-dataset".equals(cmdName)
-                                                || "set-dataset-values".equals(cmdName)
-                                                || "select-active-sg".equals(cmdName) || "select-edit-sg".equals(cmdName)
-                                                || "set-edit-sg-value".equals(cmdName) || "confirm-edit-sg".equals(cmdName)
-                                                || "get-edit-sg-value".equals(cmdName) || "get-sgcb-values".equals(cmdName)
-                                                 || "get-brcb-values".equals(cmdName) || "set-brcb-values".equals(cmdName)
-                                                 || "get-urcb-values".equals(cmdName) || "set-urcb-values".equals(cmdName)
-                                                  || "get-lcb-values".equals(cmdName) || "set-lcb-values".equals(cmdName)
-                                                   || "query-log-by-time".equals(cmdName) || "query-log-after".equals(cmdName)
-                                                   || "get-log-status".equals(cmdName)
-                                                   || "get-gocb-values".equals(cmdName) || "set-gocb-values".equals(cmdName)
-                                                    || "msvcb-val".equals(cmdName) || "set-msvcb".equals(cmdName)) {
-                                            pool = cachedRefs;
-                                        } else {
-                                            pool = cachedRefs;
-                                        }
-                                        for (String ref : pool) {
-                                            if (ref.toLowerCase().startsWith(word.toLowerCase())) {
-                                                candidates.add(new Candidate(ref));
-                                            }
-                                        }
-                                    } else if (param.getDefaultValue() != null && !param.getDefaultValue().isEmpty()) {
-                                        candidates.add(new Candidate(param.getDefaultValue()));
-                                    }
-                                }
-                            }
-                        } else {
-                            for (String cmd : handlers.keySet()) {
-                                if (cmd.startsWith(word.toLowerCase())) {
-                                    candidates.add(new Candidate(cmd));
-                                }
-                            }
-                        }
-                    }
-                })
+                .completer(new CmsCliCompleter(handlers, ctx, cachedLds, cachedValues, cachedRefs))
                 .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_cli_history"))
                 .build();
-        register(new HelpHandler(ctx));
-        register(new ExitHandler(ctx));
-        register(new ConnectHandler(ctx));
-        register(new ConnectTlsHandler(ctx));
-        register(new CloseHandler(ctx));
-        register(new StatusHandler(ctx));
-        register(new NegotiateHandler(ctx));
-        register(new AssociateHandler(ctx));
-        register(new ReleaseHandler(ctx));
-        register(new AbortHandler(ctx));
-        register(new TestHandler(ctx));
         register(new RpcHandler(ctx));
         register(new IfaceDirHandler(ctx));
         register(new IfaceDefHandler(ctx));
@@ -211,42 +75,8 @@ public class CmsClientCli {
         register(new TimeActOperateHandler(ctx));
         register(new MsvcbValHandler(ctx));
         register(new SetMsvcbHandler(ctx));
-        register(new ServerDirHandler(ctx));
-        register(new LdDirHandler(ctx));
-        register(new LnDirHandler(ctx));
-        register(new GetAllValuesHandler(ctx));
-        register(new GetAllDefHandler(ctx));
-        register(new GetAllCbHandler(ctx));
-        register(new GetDataValuesHandler(ctx));
-        register(new SetDataValuesHandler(ctx));
-        register(new GetDataDirectoryHandler(ctx));
-        register(new GetDataDefinitionHandler(ctx));
-        register(new GetDataSetValuesHandler(ctx));
-        register(new SetDataSetValuesHandler(ctx));
-        register(new CreateDataSetHandler(ctx));
-        register(new DeleteDataSetHandler(ctx));
-        register(new GetDataSetDirectoryHandler(ctx));
-        register(new SelectActiveSGHandler(ctx));
-        register(new SelectEditSGHandler(ctx));
-        register(new SetEditSGValueHandler(ctx));
-        register(new ConfirmEditSGValuesHandler(ctx));
-        register(new GetEditSGValueHandler(ctx));
-        register(new GetSGCBValuesHandler(ctx));
-        register(new GetBRCBValuesHandler(ctx));
-        register(new SetBRCBValuesHandler(ctx));
-        register(new GetURCBValuesHandler(ctx));
-        register(new SetURCBValuesHandler(ctx));
-        // register(new GetLCBValuesHandler(ctx));
-        // register(new SetLCBValuesHandler(ctx));
-        // register(new QueryLogByTimeHandler(ctx));
-        // register(new QueryLogAfterHandler(ctx));
-        // register(new GetLogStatusValuesHandler(ctx));
-        register(new GetGoCBValuesHandler(ctx));
-        register(new SetGoCBValuesHandler(ctx));
-        register(new GetMSVCBValuesHandler(ctx));
-        register(new SetMSVCBValuesHandler(ctx));
-        register(new CliSettingHandler(ctx));
-        register(new ClearHandler(ctx));
+
+        HandlerRegistry.autoRegister(ctx, handlers);
     }
 
     private void register(CommandHandler handler) {
@@ -314,10 +144,6 @@ public class CmsClientCli {
             }
         }
         return true;
-    }
-
-    private boolean executeSingle(String raw) {
-        return executeSingle(raw, true);
     }
 
     private boolean executeSingle(String raw, boolean interactive) {
@@ -539,23 +365,6 @@ public class CmsClientCli {
             if (ec.value.equalsIgnoreCase(input)) return ec.value;
         }
         return null;
-    }
-
-    private static boolean isRefParam(String cmdName, int paramIdx) {
-        return switch (cmdName) {
-            case "ld-dir", "server-dir" -> paramIdx == 0 || paramIdx == 1;
-            case "ln-dir" -> paramIdx == 0 || paramIdx == 2;
-            case "get-all-values" -> paramIdx == 0 || paramIdx == 2;
-            case "get-all-def", "get-all-cb", "get-data-dir", "get-data-def" -> paramIdx == 0;
-            case "get-data-values", "set-data-values" -> paramIdx == 0;
-            case "get-dataset-values", "set-dataset-values", "get-dataset-dir", "create-dataset", "delete-dataset" -> paramIdx == 0;
-            case "select-active-sg", "select-edit-sg", "set-edit-sg-value", "confirm-edit-sg", "get-edit-sg-value", "get-sgcb-values" -> paramIdx == 0;
-            case "get-brcb-values", "set-brcb-values", "get-urcb-values", "set-urcb-values" -> paramIdx == 0;
-            case "get-lcb-values", "set-lcb-values", "query-log-by-time", "query-log-after", "get-log-status" -> paramIdx == 0;
-            case "get-gocb-values", "set-gocb-values" -> paramIdx == 0;
-            case "msvcb-val", "set-msvcb" -> paramIdx == 0;
-            default -> false;
-        };
     }
 
     public static void main(String[] args) {

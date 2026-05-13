@@ -15,7 +15,7 @@ public class SelectHandler extends AbstractServiceHandler {
     public SelectHandler(CliContext ctx) { super(ctx, ServiceInfo.SELECT); }
     public List<Param> getParams() {
         return List.of(
-            new Param("reference", "对象引用", "C1/CSWI1.Pos")
+            new Param("reference", "对象引用", "C1/CSWI1.Pos").type(Param.Type.REFERENCE)
         );
     }
 

@@ -21,7 +21,7 @@ public class GetAllCbHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("target", "引用 (ldName 或 lnReference)", "C1"),
+            new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             new Param("type", "控制块类型", "URCB", List.of(
                 new Param.EnumChoice("BRCB", "报告控制块（缓存）"),
                 new Param.EnumChoice("URCB", "报告控制块（非缓存）"),

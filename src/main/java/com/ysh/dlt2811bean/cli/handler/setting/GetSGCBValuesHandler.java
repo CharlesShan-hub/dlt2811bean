@@ -18,7 +18,7 @@ public class GetSGCBValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "定值组控制块引用", "C1/LLN0.SGCB")
+            new Param("ref", "定值组控制块引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE)
         );
     }
 

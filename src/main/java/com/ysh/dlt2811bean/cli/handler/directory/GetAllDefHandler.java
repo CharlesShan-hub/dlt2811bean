@@ -22,7 +22,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
     
     public List<Param> getParams() {
         return List.of(
-            new Param("target", "引用 (ldName 或 lnReference)", "C1"),
+            new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             Param.fc("功能约束")
         );
     }

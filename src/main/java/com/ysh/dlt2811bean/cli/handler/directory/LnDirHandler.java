@@ -20,7 +20,7 @@ public class LnDirHandler extends AbstractServiceHandler {
     public LnDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_NODE_DIRECTORY); }
     public List<Param> getParams() {
         return List.of(
-            new Param("target", "引用 (ldName 或 lnReference)", "C1"),
+            new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             new Param("acsi", "ACSI 类", "DATA_OBJECT", List.of(
                 new Param.EnumChoice("DATA_OBJECT", "数据对象"),
                 new Param.EnumChoice("DATA_SET", "数据集"),
@@ -32,7 +32,7 @@ public class LnDirHandler extends AbstractServiceHandler {
                 new Param.EnumChoice("GO_CB", "GOOSE 控制块"),
                 new Param.EnumChoice("MSV_CB", "采样值控制块")
             )),
-            new Param("referenceAfter", "起始引用 (留空=从头)", "")
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
         );
     }
 

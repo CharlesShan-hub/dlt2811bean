@@ -18,7 +18,7 @@ public class SetMSVCBValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "MSVCB 引用", "C1/LLN0.Volt"),
+            new Param("ref", "MSVCB 引用", "C1/LLN0.Volt").type(Param.Type.REFERENCE),
             new Param("svEna", "启用采样值 (true/false)", "true")
         );
     }

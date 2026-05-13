@@ -15,7 +15,7 @@ public class MsvcbValHandler extends AbstractServiceHandler {
     public MsvcbValHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_MSVCB_VALUES); }
     public List<Param> getParams() {
         return List.of(
-            new Param("refs", "MSVCB 引用 (逗号分隔)", "C1/LLN0.Volt")
+            new Param("refs", "MSVCB 引用 (逗号分隔)", "C1/LLN0.Volt").type(Param.Type.REFERENCE)
         );
     }
 

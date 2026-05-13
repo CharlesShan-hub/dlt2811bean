@@ -22,9 +22,9 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
     public GetAllValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_VALUES); }
     public List<Param> getParams() {
         return List.of(
-            new Param("target", "引用 (ldName 或 lnReference)", "C1"),
+            new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             Param.fc("功能约束"),
-            new Param("referenceAfter", "起始引用 (留空=从头)", "")
+            new Param("referenceAfter", "起始引用 (留空=从头)", "").type(Param.Type.REFERENCE)
         );
     }
 
