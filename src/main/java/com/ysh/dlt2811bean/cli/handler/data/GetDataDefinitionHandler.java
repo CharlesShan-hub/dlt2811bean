@@ -34,44 +34,68 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
         String refs = values.get("refs");
         String fc = values.get("fc");
 
-        CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST);
-        for (String ref : refs.split(",")) {
-            CmsGetDataValuesEntry entry = new CmsGetDataValuesEntry().reference(ref.trim());
-            if (!fc.isEmpty() && !"XX".equals(fc)) {
-                entry.fc(fc);
-            }
-            asdu.data.add(entry);
-        }
+        String[] allRefs = refs.split(",");
+        int startIndex = 0;
+        List<String> allLines = new ArrayList<>();
+        int batchCount = 0;
 
-        CmsApdu response = sendAndVerify(client, asdu);
-
-        CmsGetDataDefinition resp = (CmsGetDataDefinition) response.getAsdu();
-        List<String> lines = new ArrayList<>();
-        for (int i = 0; i < resp.definition.size(); i++) {
-            var entry = resp.definition.get(i);
-            String cdc = entry.cdcType().get();
-            CmsDataDefinition def = entry.definition();
-            
-            StringBuilder sb = new StringBuilder();
-            
-            // Format: [0] FLOAT32  cdc=MC (测量值)
-            String defStr = formatDefinition(def, "");
-            if (!defStr.isEmpty()) {
-                sb.append(" ").append(CmsColor.green(defStr));
-            }
-            
-            if (cdc != null && !cdc.isEmpty()) {
-                CdcInfo cdcInfo = CdcInfo.byName(cdc);
-                sb.append("  cdc=").append(cdc);
-                if (cdcInfo != null) {
-                    sb.append(CmsColor.gray(" (")).append(cdcInfo.getChineseName()).append(")");
+        while (startIndex < allRefs.length) {
+            CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST);
+            for (int i = startIndex; i < allRefs.length; i++) {
+                CmsGetDataValuesEntry entry = new CmsGetDataValuesEntry().reference(allRefs[i].trim());
+                if (!fc.isEmpty() && !"XX".equals(fc)) {
+                    entry.fc(fc);
                 }
+                asdu.data.add(entry);
             }
-            
-            lines.add(sb.toString());
+
+            if (batchCount == 0) {
+                CliPrinter.printRequestPdu(ctx, asdu);
+            }
+            CmsApdu response = client.send(asdu);
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                throw new IllegalStateException("Request failed");
+            }
+            if (batchCount == 0) {
+                CliPrinter.printResponsePdu(ctx, response);
+            }
+
+            CmsGetDataDefinition resp = (CmsGetDataDefinition) response.getAsdu();
+            for (int i = 0; i < resp.definition.size(); i++) {
+                var entry = resp.definition.get(i);
+                String cdc = entry.cdcType().get();
+                CmsDataDefinition def = entry.definition();
+
+                StringBuilder sb = new StringBuilder();
+                String defStr = formatDefinition(def, "");
+                if (!defStr.isEmpty()) {
+                    sb.append(" ").append(CmsColor.green(defStr));
+                }
+
+                if (cdc != null && !cdc.isEmpty()) {
+                    CdcInfo cdcInfo = CdcInfo.byName(cdc);
+                    sb.append("  cdc=").append(cdc);
+                    if (cdcInfo != null) {
+                        sb.append(CmsColor.gray(" (")).append(cdcInfo.getChineseName()).append(")");
+                    }
+                }
+
+                allLines.add(sb.toString());
+            }
+
+            startIndex += resp.definition.size();
+            batchCount++;
+
+            if (!resp.moreFollows.get()) {
+                break;
+            }
         }
-        CliPrinter.printList("Data definitions (" + lines.size() + " entries)", lines, item -> item);
-        CliPrinter.printMoreFollows(resp.moreFollows.get());
+
+        CliPrinter.printList("Data definitions (" + allLines.size() + " entries)", allLines, item -> item);
+
+        if (batchCount > 1) {
+            CliPrinter.printGray("  (fetched in " + batchCount + " batches)");
+        }
     }
     
     private String formatDefinition(CmsDataDefinition def, String indent) {

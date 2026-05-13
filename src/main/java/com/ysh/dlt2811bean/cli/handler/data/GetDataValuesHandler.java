@@ -13,6 +13,7 @@ import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,32 +34,58 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
         String refs = values.get("refs");
         String fc = values.get("fc");
 
-        CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
-        for (String ref : refs.split(",")) {
-            CmsGetDataValuesEntry entry = new CmsGetDataValuesEntry().reference(ref.trim());
-            if (!fc.isEmpty()) {
-                entry.fc(fc);
+        String[] allRefs = refs.split(",");
+        int startIndex = 0;
+        List<CmsData<?>> allData = new ArrayList<>();
+        int batchCount = 0;
+
+        while (startIndex < allRefs.length) {
+            CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
+            for (int i = startIndex; i < allRefs.length; i++) {
+                CmsGetDataValuesEntry entry = new CmsGetDataValuesEntry().reference(allRefs[i].trim());
+                if (!fc.isEmpty() && !"XX".equals(fc)) {
+                    entry.fc(fc);
+                }
+                asdu.data.add(entry);
             }
-            asdu.data.add(entry);
+
+            if (batchCount == 0) {
+                CliPrinter.printRequestPdu(ctx, asdu);
+            }
+            CmsApdu response = client.send(asdu);
+            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+                throw new IllegalStateException("Request failed");
+            }
+            if (batchCount == 0) {
+                CliPrinter.printResponsePdu(ctx, response);
+            }
+
+            CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();
+            List<CmsData<?>> dataList = resp.value.toList();
+            allData.addAll(dataList);
+            startIndex += dataList.size();
+            batchCount++;
+
+            if (!resp.moreFollows.get()) {
+                break;
+            }
         }
 
-        CmsApdu response = sendAndVerify(client, asdu);
-
-        CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();
-        List<CmsData<?>> dataList = resp.value.toList();
-        CliPrinter.printList("Data values (" + dataList.size() + " entries)", dataList, item -> {
+        CliPrinter.printList("Data values (" + allData.size() + " entries)", allData, item -> {
             String raw = item.toString();
             if (raw.contains("CmsServiceError")) {
                 return CmsColor.red("Error: " + raw.replaceAll(".*=(CmsServiceError) ", "ServiceError "));
             }
             return raw;
         });
-        CliPrinter.printMoreFollows(resp.moreFollows.get());
 
-        String[] refArr = refs.split(",");
-        for (int i = 0; i < refArr.length && i < dataList.size(); i++) {
-            String ref = refArr[i].trim();
-            CmsData<?> data = dataList.get(i);
+        if (batchCount > 1) {
+            CliPrinter.printGray("  (fetched in " + batchCount + " batches)");
+        }
+
+        for (int i = 0; i < allRefs.length && i < allData.size(); i++) {
+            String ref = allRefs[i].trim();
+            CmsData<?> data = allData.get(i);
             updateCache(ref, data);
         }
     }

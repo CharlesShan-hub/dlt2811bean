@@ -153,9 +153,12 @@ public class CmsConfig {
 
     public static class Cli {
         private boolean tracePdu = false;
+        private String autoExec = "";
 
         public boolean isTracePdu() { return tracePdu; }
         public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
+        public String getAutoExec() { return autoExec; }
+        public void setAutoExec(String autoExec) { this.autoExec = autoExec; }
     }
 
     public void merge(CmsConfig other) {
@@ -192,6 +195,10 @@ public class CmsConfig {
         if (other.file != null) {
             if (other.file.rootPath != null && !other.file.rootPath.equals("config/files"))
                 file.rootPath = other.file.rootPath;
+        }
+        if (other.cli != null) {
+            if (other.cli.autoExec != null && !other.cli.autoExec.isEmpty())
+                cli.autoExec = other.cli.autoExec;
         }
     }
 }

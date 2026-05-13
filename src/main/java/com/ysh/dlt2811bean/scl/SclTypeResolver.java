@@ -36,7 +36,7 @@ public class SclTypeResolver {
     // ==================== LN lookup ====================
 
     /**
-     * Finds an LN (SclLN or SclLN0) in a device by its combined name (lnClass + inst).
+     * Finds an LN (SclLN or SclLN0) in a device by its combined name (prefix + lnClass + inst).
      */
     public static SclIED.SclLN findLnInDevice(SclLDevice device, String lnName) {
         if (device.getLn0() != null) {
@@ -47,7 +47,9 @@ public class SclTypeResolver {
             }
         }
         for (SclLN ln : device.getLns()) {
-            String curLnName = ln.getLnClass() + ln.getInst();
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
             if (curLnName.equals(lnName)) {
                 return ln;
             }

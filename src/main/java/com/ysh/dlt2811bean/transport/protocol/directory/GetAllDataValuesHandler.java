@@ -121,10 +121,10 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             List<TargetLn> result = new ArrayList<>();
             SclLN0 ln0 = device.getLn0();
             if (ln0 != null) {
-                result.add(new TargetLn(ldName, ln0.getLnClass(), ln0.getInst(), ln0.getLnType(), ln0, null));
+                result.add(new TargetLn(ldName, "", ln0.getLnClass(), ln0.getInst(), ln0.getLnType(), ln0, null));
             }
             for (SclLN ln : device.getLns()) {
-                result.add(new TargetLn(ldName, ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
+                result.add(new TargetLn(ldName, ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
             }
             return result;
         }
@@ -149,16 +149,18 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
             if (ln0Name.equals(targetLnName)) {
                 List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), device.getLn0().getLnClass(),
+                result.add(new TargetLn(device.getInst(), "", device.getLn0().getLnClass(),
                         device.getLn0().getInst(), device.getLn0().getLnType(), device.getLn0(), null));
                 return result;
             }
         }
         for (SclLN ln : device.getLns()) {
-            String lnName = ln.getLnClass() + ln.getInst();
+            String lnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
             if (lnName.equals(targetLnName)) {
                 List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
+                result.add(new TargetLn(device.getInst(), ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
                 return result;
             }
         }
@@ -171,7 +173,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         List<DataValue> result = new ArrayList<>();
 
         for (TargetLn t : targets) {
-            String prefix = relative ? "" : (t.lnClass + t.inst + ".");
+            String prefix = relative ? "" : (t.fullName() + ".");
             List<SclDOI> dois;
             if (t.ln0 != null) {
                 dois = t.ln0.getDois();
@@ -316,19 +318,25 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
 
     private static class TargetLn {
         final String ldInst;
+        final String prefix;
         final String lnClass;
         final String inst;
         final String lnType;
         final SclLN0 ln0;
         final SclLN ln;
 
-        TargetLn(String ldInst, String lnClass, String inst, String lnType, SclLN0 ln0, SclLN ln) {
+        TargetLn(String ldInst, String prefix, String lnClass, String inst, String lnType, SclLN0 ln0, SclLN ln) {
             this.ldInst = ldInst;
+            this.prefix = prefix;
             this.lnClass = lnClass;
             this.inst = inst;
             this.lnType = lnType;
             this.ln0 = ln0;
             this.ln = ln;
+        }
+
+        String fullName() {
+            return (prefix == null || prefix.isEmpty()) ? lnClass + inst : prefix + lnClass + inst;
         }
     }
 

@@ -49,10 +49,10 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
         for (SclIED.SclLDevice device : targetDevices) {
             SclIED.SclLN0 ln0 = device.getLn0();
             if (ln0 != null) {
-                lnRefs.add(buildLnReference(ln0.getLnClass(), ln0.getInst()));
+                lnRefs.add(buildLnReference("", ln0.getLnClass(), ln0.getInst()));
             }
             for (SclIED.SclLN ln : device.getLns()) {
-                lnRefs.add(buildLnReference(ln.getLnClass(), ln.getInst()));
+                lnRefs.add(buildLnReference(ln.getPrefix(), ln.getLnClass(), ln.getInst()));
             }
         }
 
@@ -87,8 +87,8 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
         return new CmsApdu(response);
     }
 
-    private String buildLnReference(String lnClass, String inst) {
-        return lnClass + inst;
+    private String buildLnReference(String prefix, String lnClass, String inst) {
+        return (prefix == null || prefix.isEmpty()) ? lnClass + inst : prefix + lnClass + inst;
     }
 
     private SclIED.SclLDevice findLDevice(SclIED.SclAccessPoint accessPoint, String ldName) {

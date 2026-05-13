@@ -85,6 +85,18 @@ public class CmsClientCli {
     public void run() {
         java.util.logging.Logger.getLogger("org.bouncycastle").setLevel(java.util.logging.Level.SEVERE);
         System.out.println("CMS CLI v1.0 — Type 'help' for commands, 'exit' to quit");
+
+        String autoExec = config.getCli().getAutoExec();
+        if (autoExec != null && !autoExec.isEmpty()) {
+            System.out.println(CmsColor.gray("  Auto-exec: " + autoExec));
+            for (String cmdLine : autoExec.split("\\|")) {
+                String trimmed = cmdLine.trim();
+                if (!trimmed.isEmpty()) {
+                    executeLine(trimmed, false);
+                }
+            }
+        }
+
         java.util.List<String> batchBuffer = new java.util.ArrayList<>();
         while (running) {
             System.out.println();
@@ -101,6 +113,13 @@ public class CmsClientCli {
             if (raw.isEmpty()) continue;
 
             if (raw.startsWith("#") || raw.startsWith("//")) continue;
+
+            // Strip inline comments
+            int commentIdx = findCommentStart(raw);
+            if (commentIdx >= 0) {
+                raw = raw.substring(0, commentIdx).trim();
+                if (raw.isEmpty()) continue;
+            }
 
             boolean isEndOfBatch = raw.endsWith(";");
             if (isEndOfBatch) {
@@ -357,6 +376,18 @@ public class CmsClientCli {
 
     private String padRight(String s, int n) {
         return String.format("%-" + n + "s", s);
+    }
+
+    private static int findCommentStart(String s) {
+        boolean inQuote = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"') { inQuote = !inQuote; continue; }
+            if (inQuote) continue;
+            if (c == '#' && (i == 0 || s.charAt(i - 1) != '\\')) return i;
+            if (c == '/' && i + 1 < s.length() && s.charAt(i + 1) == '/') return i;
+        }
+        return -1;
     }
 
     private static java.util.List<String> tokenize(String s) {

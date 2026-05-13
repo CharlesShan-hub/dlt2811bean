@@ -11,6 +11,10 @@ client:
   connectTimeoutMs: 5000
   requestTimeoutMs: 5000
 
+cli:
+  tracePdu: false
+  autoExec: "connect 127.0.0.1 8102 65531 1 C_B5041X S1 true;|clear|status"
+
 keepalive:
   idleTimeoutMs: 60000
   retryIntervalMs: 5000
@@ -38,3 +42,4 @@ negotiate:
 
 file:
   rootPath: config/files
+

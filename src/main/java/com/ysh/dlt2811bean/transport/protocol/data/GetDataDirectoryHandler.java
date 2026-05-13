@@ -5,6 +5,8 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDOType;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclSDO;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -87,7 +89,7 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             } else if (doi == null) {
                 return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             } else {
-                allEntries = buildDirectoryEntries(doi, "");
+                allEntries = buildDirectoryEntries(doi, "", server, templates, ldName, lnName, doName);
             }
         }
         if (skipUntilAfter) {
@@ -111,13 +113,19 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
         return new CmsApdu(response);
     }
 
-    private List<CmsGetDataDirectoryEntry> buildDirectoryEntries(SclIED.SclDOI doi, String prefix) {
+    private List<CmsGetDataDirectoryEntry> buildDirectoryEntries(SclIED.SclDOI doi, String prefix,
+                                                                   SclIED.SclServer server, SclDataTypeTemplates templates,
+                                                                   String ldName, String lnName, String doName) {
         List<CmsGetDataDirectoryEntry> entries = new ArrayList<>();
 
         for (SclIED.SclDAI dai : doi.getDais()) {
             CmsGetDataDirectoryEntry entry = new CmsGetDataDirectoryEntry();
             String entryRef = prefix + dai.getName();
             entry.reference.set(entryRef);
+            String fc = SclTypeResolver.resolveFc(server, templates, ldName, lnName, doName, dai.getName());
+            if (fc != null && !fc.isEmpty()) {
+                entry.fc(fc);
+            }
             entries.add(entry);
         }
 
@@ -190,18 +198,37 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
                                                                             SclDataTypeTemplates templates,
                                                                             String ldName, String lnName,
                                                                             String doName) {
-        // Verify DO exists in type templates
+        SclDOType doType = resolveDoType(server, templates, ldName, lnName, doName);
+        if (doType == null) return null;
+
+        List<CmsGetDataDirectoryEntry> entries = new ArrayList<>();
+        buildDoDirectoryEntriesRecursive(templates, doType, "", entries);
+        return entries;
+    }
+
+    private SclDOType resolveDoType(SclIED.SclServer server, SclDataTypeTemplates templates, String ldName, String lnName, String doName) {
         SclDataTypeTemplates.SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, doName);
         if (doObj == null) return null;
+        return templates.findDoTypeById(doObj.getType());
+    }
 
-        List<String> daNames = SclTypeResolver.listDaNamesFromType(server, templates, ldName, lnName, doName);
-        List<CmsGetDataDirectoryEntry> entries = new ArrayList<>();
-        for (String daName : daNames) {
+    private void buildDoDirectoryEntriesRecursive(SclDataTypeTemplates templates, SclDOType doType,
+                                                   String prefix, List<CmsGetDataDirectoryEntry> entries) {
+        for (SclDA da : doType.getDas()) {
             CmsGetDataDirectoryEntry entry = new CmsGetDataDirectoryEntry();
-            entry.reference.set(daName);
+            entry.reference.set(prefix + da.getName());
+            if (da.getFc() != null && !da.getFc().isEmpty()) {
+                entry.fc(da.getFc());
+            }
             entries.add(entry);
         }
-        return entries;
+        for (SclSDO sdo : doType.getSdos()) {
+            SclDOType sdoDoType = templates.findDoTypeById(sdo.getType());
+            if (sdoDoType != null) {
+                buildDoDirectoryEntriesRecursive(templates, sdoDoType,
+                    prefix + sdo.getName() + ".", entries);
+            }
+        }
     }
 
     private List<CmsGetDataDirectoryEntry> filterAfter(List<CmsGetDataDirectoryEntry> all, String afterRef) {

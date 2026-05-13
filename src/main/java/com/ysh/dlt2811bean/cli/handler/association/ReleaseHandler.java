@@ -24,6 +24,7 @@ public class ReleaseHandler extends AbstractServiceHandler {
         CliPrinter.printResponsePdu(ctx, response);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Released"));
+            ctx.getCachedHierarchy().clear();
         } else {
             System.out.println(CmsColor.red("  Release failed"));
         }

@@ -25,6 +25,7 @@ public class ExitHandler implements CommandHandler {
             try { client.release(); } catch (Exception ignored) {}
             client.close();
         }
+        ctx.getCachedHierarchy().clear();
         System.out.println("Bye!");
         System.exit(0);
     }

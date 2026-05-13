@@ -35,5 +35,6 @@ public class AbortHandler extends AbstractServiceHandler {
         CliPrinter.printRequestPdu(ctx, reqAsdu);
         client.abort(reason);
         System.out.println(CmsColor.green("  Abort sent"));
+        ctx.getCachedHierarchy().clear();
     }
 }

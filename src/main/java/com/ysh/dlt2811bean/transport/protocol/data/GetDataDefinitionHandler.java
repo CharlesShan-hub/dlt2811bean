@@ -21,6 +21,8 @@ import java.util.List;
 
 public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDataDefinition> {
 
+    private static final int MAX_ENTRIES_PER_RESPONSE = 50;
+
     public GetDataDefinitionHandler() {
         super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinition::new);
     }
@@ -40,27 +42,36 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
         SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new);
+        int processedCount = 0;
 
         for (int i = 0; i < asdu.data.size(); i++) {
+            if (processedCount >= MAX_ENTRIES_PER_RESPONSE) {
+                break;
+            }
+
             CmsGetDataValuesEntry entry = asdu.data.get(i);
             String ref = entry.reference.get();
             String fc = entry.fc.get();
 
             if (ref == null || ref.isEmpty()) {
                 definitions.add(buildErrorEntry());
+                processedCount++;
                 continue;
             }
 
             CmsGetDataDefinitionEntry defEntry = buildDefinition(server, templates, ref, fc);
             definitions.add(defEntry);
+            processedCount++;
         }
+
+        boolean moreFollows = processedCount < asdu.data.size();
 
         CmsGetDataDefinition response = new CmsGetDataDefinition(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get());
         response.definition = definitions;
-        response.moreFollows.set(false);
+        response.moreFollows.set(moreFollows);
 
-        log.debug("[Server] GetDataDefinition: {} entries", definitions.size());
+        log.debug("[Server] GetDataDefinition: {} entries, moreFollows={}", definitions.size(), moreFollows);
         return new CmsApdu(response);
     }
 
@@ -99,13 +110,35 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
         String doName = parts[1];
         SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
 
+        if (fc != null && !fc.isEmpty() && !"XX".equals(fc)) {
+            if (templates == null) {
+                return defEntry.definition(buildErrorDef());
+            }
+            if (parts.length > 2) {
+                String daName = parts[parts.length - 1];
+                String daFc = SclTypeResolver.resolveFc(server, templates, ldName, lnName, doName, daName);
+                if (daFc == null || !daFc.equals(fc)) {
+                    return defEntry.definition(buildErrorDef());
+                }
+            } else {
+                List<SclDA> das = SclTypeResolver.listDasFromType(server, templates, ldName, lnName, doName);
+                boolean hasFc = false;
+                for (SclDA da : das) {
+                    if (fc.equals(da.getFc())) {
+                        hasFc = true;
+                        break;
+                    }
+                }
+                if (!hasFc) {
+                    return defEntry.definition(buildErrorDef());
+                }
+            }
+        }
+
         boolean isDataAttribute = parts.length > 2;
 
         if (isDataAttribute) {
-            String cdc = (templates != null)
-                ? SclTypeResolver.resolveCdc(server, templates, ldName, lnName, doName)
-                : null;
-            defEntry.cdcType(cdc != null ? cdc : "");
+            defEntry.cdcType("");
 
             String daName = parts[parts.length - 1];
             if (parts.length == 3) {
