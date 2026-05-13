@@ -54,5 +54,38 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
             return raw;
         });
         CliPrinter.printMoreFollows(resp.moreFollows.get());
+
+        String[] refArr = refs.split(",");
+        for (int i = 0; i < refArr.length && i < dataList.size(); i++) {
+            String ref = refArr[i].trim();
+            CmsData<?> data = dataList.get(i);
+            updateCache(ref, data);
+        }
+    }
+
+    private void updateCache(String ref, CmsData<?> data) {
+        if (!ref.contains("/") || !ref.contains(".")) return;
+        String[] parts = ref.split("\\.");
+        if (parts.length < 2) return;
+        String[] ldLn = parts[0].split("/", 2);
+        if (ldLn.length < 2) return;
+        String ld = ldLn[0], ln = ldLn[1];
+        String doName = parts[1];
+        java.util.Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
+        if (das == null) return;
+        if (parts.length >= 3) {
+            String daName = parts[2];
+            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+            if (doMap != null) {
+                doMap.put(daName, data.toString());
+            }
+        } else {
+            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+            if (doMap == null) {
+                doMap = new java.util.LinkedHashMap<>();
+                das.put(doName, doMap);
+            }
+            doMap.put("value", data.toString());
+        }
     }
 }

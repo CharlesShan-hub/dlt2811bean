@@ -223,7 +223,12 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
             case "TCMD": return CmsDataDefinition.ofTcmd();
             case "CHECK": return CmsDataDefinition.ofCheck();
             case "STRUCT": return CmsDataDefinition.ofBoolean(); // fallback for struct
-            default: return CmsDataDefinition.ofBoolean();
+            case "TIMESTAMP": return CmsDataDefinition.ofUtcTime();
+            case "VISSTRING64": return CmsDataDefinition.ofVisibleString(-64);
+            case "UNICODE255": return CmsDataDefinition.ofUnicodeString(-255);
+            default:
+                log.warn("[Server] Unknown bType: {}", bType);
+                return CmsDataDefinition.ofBoolean();
         }
     }
 

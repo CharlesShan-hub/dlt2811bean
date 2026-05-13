@@ -60,6 +60,7 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
         CmsApdu response = ctx.sendAndPrint(client, asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  All data values set successfully"));
+            updateCache(refArr, valArr);
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             CmsSetDataValues resp = (CmsSetDataValues) response.getAsdu();
             List<String> failures = new ArrayList<>();
@@ -70,6 +71,36 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
                 }
             }
             CliPrinter.printList("Some or all values failed", failures, item -> CmsColor.red(item));
+        }
+    }
+
+    private void updateCache(String[] refArr, String[] valArr) {
+        for (int i = 0; i < refArr.length; i++) {
+            String ref = refArr[i].trim();
+            if (!ref.contains("/") || !ref.contains(".")) continue;
+            String[] parts = ref.split("\\.");
+            if (parts.length < 2) continue;
+            String[] ldLn = parts[0].split("/", 2);
+            if (ldLn.length < 2) continue;
+            String ld = ldLn[0], ln = ldLn[1];
+            String doName = parts[1];
+            java.util.Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
+            if (das == null) continue;
+            String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
+            if (parts.length >= 3) {
+                String daName = parts[2];
+                java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+                if (doMap != null) {
+                    doMap.put(daName, v);
+                }
+            } else {
+                java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+                if (doMap == null) {
+                    doMap = new java.util.LinkedHashMap<>();
+                    das.put(doName, doMap);
+                }
+                doMap.put("value", v);
+            }
         }
     }
 }

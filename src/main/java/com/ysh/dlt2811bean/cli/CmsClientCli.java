@@ -234,7 +234,7 @@ public class CmsClientCli {
         try {
             Map<String, String> values = new HashMap<>();
             java.util.List<String> inlineTokens = inlineArgs != null && !inlineArgs.isEmpty()
-                ? new java.util.ArrayList<>(java.util.Arrays.asList(inlineArgs.split("\\s+")))
+                ? tokenize(inlineArgs)
                 : new java.util.ArrayList<>();
 
             if (inlineTokens.isEmpty() && !handler.updateConfigAndGetParams().isEmpty() && interactive) {
@@ -357,6 +357,29 @@ public class CmsClientCli {
 
     private String padRight(String s, int n) {
         return String.format("%-" + n + "s", s);
+    }
+
+    private static java.util.List<String> tokenize(String s) {
+        java.util.List<String> tokens = new java.util.ArrayList<>();
+        StringBuilder buf = new StringBuilder();
+        boolean inQuote = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"') {
+                inQuote = !inQuote;
+            } else if (Character.isWhitespace(c) && !inQuote) {
+                if (buf.length() > 0) {
+                    tokens.add(buf.toString());
+                    buf.setLength(0);
+                }
+            } else {
+                buf.append(c);
+            }
+        }
+        if (buf.length() > 0) {
+            tokens.add(buf.toString());
+        }
+        return tokens;
     }
 
     private static String matchEnum(String input, Param param) {

@@ -456,6 +456,13 @@ public class SclTypeResolver {
      * For control operations, see {@link #parseControlValue(CmsConfig, String, String)}.
      */
     public static CmsType<?> resolveTypedValue(CmsConfig config, String ref, String value) {
+        // DO-level ref (LD/LN.DO, no DA specified) — use VisibleString, no single type fits all DAs
+        if (ref != null) {
+            String[] dotParts = ref.split("\\.");
+            if (dotParts.length == 2) {
+                return new CmsVisibleString(value).max(255);
+            }
+        }
         try {
             String sclPath = config.getServer().getSclFile();
             SclDocument doc = new SclReader().read(sclPath);
