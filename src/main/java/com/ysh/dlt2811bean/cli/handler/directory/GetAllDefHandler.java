@@ -14,6 +14,7 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntr
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -63,7 +64,10 @@ public class GetAllDefHandler extends AbstractServiceHandler {
                     java.util.Map<String, Object> daMap = new java.util.LinkedHashMap<>();
                     if (def != null && def.getStructureEntries() != null) {
                         for (CmsDataDefinition.StructureEntry se : def.getStructureEntries()) {
-                            daMap.put(se.name.get(), null);
+                            Map<String, Object> daValue = new LinkedHashMap<>();
+                            daValue.put("type", choiceIndexToTypeName(se.type.getChoiceIndex()));
+                            daValue.put("value", null);
+                            daMap.put(se.name.get(), daValue);
                         }
                     }
                     doMap.put(doName, daMap);
@@ -71,5 +75,34 @@ public class GetAllDefHandler extends AbstractServiceHandler {
                 ctx.putAcdEntry(ldName, lnName, "DATA_OBJECT", doMap);
             }
         }
+    }
+
+    private static String choiceIndexToTypeName(int choiceIndex) {
+        return switch (choiceIndex) {
+            case CmsDataDefinition.BOOLEAN -> "BOOLEAN";
+            case CmsDataDefinition.INT8 -> "INT8";
+            case CmsDataDefinition.INT16 -> "INT16";
+            case CmsDataDefinition.INT32 -> "INT32";
+            case CmsDataDefinition.INT64 -> "INT64";
+            case CmsDataDefinition.INT8U -> "INT8U";
+            case CmsDataDefinition.INT16U -> "INT16U";
+            case CmsDataDefinition.INT32U -> "INT32U";
+            case CmsDataDefinition.INT64U -> "INT64U";
+            case CmsDataDefinition.FLOAT32 -> "FLOAT32";
+            case CmsDataDefinition.FLOAT64 -> "FLOAT64";
+            case CmsDataDefinition.BIT_STRING -> "BIT STRING";
+            case CmsDataDefinition.OCTET_STRING -> "OCTET STRING";
+            case CmsDataDefinition.VISIBLE_STRING -> "VISIBLE STRING";
+            case CmsDataDefinition.UNICODE_STRING -> "UNICODE STRING";
+            case CmsDataDefinition.UTC_TIME -> "Timestamp";
+            case CmsDataDefinition.BINARY_TIME -> "BinaryTime";
+            case CmsDataDefinition.QUALITY -> "Quality";
+            case CmsDataDefinition.DBPOS -> "Dbpos";
+            case CmsDataDefinition.TCMD -> "Tcmd";
+            case CmsDataDefinition.CHECK -> "Check";
+            case CmsDataDefinition.STRUCTURE -> "Struct";
+            case CmsDataDefinition.ARRAY -> "Array";
+            default -> "Unknown(" + choiceIndex + ")";
+        };
     }
 }

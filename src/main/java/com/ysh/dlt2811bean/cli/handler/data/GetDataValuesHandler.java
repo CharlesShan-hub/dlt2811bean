@@ -100,19 +100,35 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
         String doName = parts[1];
         java.util.Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
         if (das == null) return;
+        java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+        if (doMap == null) {
+            doMap = new java.util.LinkedHashMap<>();
+            das.put(doName, doMap);
+        }
+        String formatted = data.toString();
         if (parts.length >= 3) {
             String daName = parts[2];
-            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
-            if (doMap != null) {
-                doMap.put(daName, data.toString());
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get(daName);
+            if (existing != null) {
+                existing.put("value", formatted);
+            } else {
+                java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                daValue.put("type", "?");
+                daValue.put("value", formatted);
+                doMap.put(daName, daValue);
             }
         } else {
-            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
-            if (doMap == null) {
-                doMap = new java.util.LinkedHashMap<>();
-                das.put(doName, doMap);
+            @SuppressWarnings("unchecked")
+            java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get("value");
+            if (existing instanceof Map) {
+                existing.put("value", formatted);
+            } else {
+                java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                daValue.put("type", "?");
+                daValue.put("value", formatted);
+                doMap.put("value", daValue);
             }
-            doMap.put("value", data.toString());
         }
     }
 }

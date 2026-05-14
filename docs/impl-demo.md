@@ -82,6 +82,7 @@ get-data-def LD0/RSYN1.Beh XX;
 
 ## 8.5 数据集
 ```bash
-# 查看数据集里边的值
+# 查看数据集里边的值: 这里边会给出DO和FC，通过FC就知道是哪个DO下的哪个DA
 get-dataset-dir MEAS/LLN0.dsAin1;
+# 
 ```

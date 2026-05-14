@@ -7,6 +7,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.cli.AutoTestHeartbeat;
 import com.ysh.dlt2811bean.cli.CommandHandler;
+import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.Map;
@@ -155,6 +156,55 @@ public class CliContext {
                         lnDir.execute(client, Map.of("target", lnRef, "acsi", "DATA_SET", "referenceAfter", ""));
                     } catch (Exception e) {
                         System.out.println(CmsColor.red("  Auto-discovery failed at ln-dir DATA_SET " + lnRef + ": " + e.getMessage()));
+                    }
+                }
+            }
+        }
+        resolveDataSetMembers(client);
+    }
+
+    private void resolveDataSetMembers(CmsClient client) {
+        for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> ldEntry : cachedHierarchy.entrySet()) {
+            String ldName = ldEntry.getKey();
+            for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : ldEntry.getValue().entrySet()) {
+                String lnName = lnEntry.getKey();
+                Map<String, Object> dataSetMap = lnEntry.getValue().get("DATA_SET");
+                if (dataSetMap == null) continue;
+                for (String dsName : dataSetMap.keySet()) {
+                    String dsRef = ldName + "/" + lnName + "." + dsName;
+                    try {
+                        CmsApdu dsDirResp = client.getDataSetDirectory(dsRef);
+                        if (dsDirResp.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+                            com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory dsDir =
+                                (com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory) dsDirResp.getAsdu();
+                            java.util.List<CmsCreateDataSetEntry> members = dsDir.memberData.toList();
+                            Map<String, Object> orderedMembers = new java.util.LinkedHashMap<>();
+                            for (int i = 0; i < members.size(); i++) {
+                                CmsCreateDataSetEntry member = members.get(i);
+                                String memberRef = member.reference.get();
+                                String memberFc = member.fc.get();
+                                Map<String, Object> memberMap = new java.util.LinkedHashMap<>();
+                                memberMap.put("FC", memberFc);
+                                int slashIdx = memberRef.indexOf('/');
+                                int dotIdx = memberRef.indexOf('.');
+                                if (slashIdx >= 0 && dotIdx > slashIdx) {
+                                    String targetLd = memberRef.substring(0, slashIdx);
+                                    String targetLn = memberRef.substring(slashIdx + 1, dotIdx);
+                                    String targetDo = memberRef.substring(dotIdx + 1);
+                                    Map<String, Object> targetDoMap = lnEntry(targetLd, targetLn).get("DATA_OBJECT");
+                                    if (targetDoMap != null) {
+                                        Object ref = targetDoMap.get(targetDo);
+                                        if (ref instanceof Map) {
+                                            memberMap.put("DO", ref);
+                                        }
+                                    }
+                                }
+                                orderedMembers.put(String.valueOf(i), memberMap);
+                            }
+                            dataSetMap.put(dsName, orderedMembers);
+                        }
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-dataset-dir " + dsRef + ": " + e.getMessage()));
                     }
                 }
             }

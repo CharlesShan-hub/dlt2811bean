@@ -312,8 +312,11 @@ public class CmsCliCompleter implements Completer {
                                      Object doMap = das.get(doName);
                                      if (doMap instanceof Map) {
                                          for (Map.Entry<String, ?> entry : ((Map<String, ?>) doMap).entrySet()) {
-                                             if (entry.getValue() != null) {
-                                                 refs.add(entry.getKey());
+                                             if (entry.getValue() instanceof Map) {
+                                                 Object val = ((Map<?, ?>) entry.getValue()).get("value");
+                                                 if (val != null) {
+                                                     refs.add(entry.getKey());
+                                                 }
                                              }
                                          }
                                      }

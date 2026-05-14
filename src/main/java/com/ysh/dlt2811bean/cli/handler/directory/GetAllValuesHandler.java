@@ -66,9 +66,21 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
                     String daName = fullRef.substring(dotIdx + 1);
                     @SuppressWarnings("unchecked")
                     Map<String, Object> doMap = (Map<String, Object>) das.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
-                    doMap.put(daName, formatCmsDataValue(entry.value()));
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> existing = (Map<String, Object>) doMap.get(daName);
+                    if (existing != null) {
+                        existing.put("value", formatCmsDataValue(entry.value()));
+                    } else {
+                        Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                        daValue.put("type", "?");
+                        daValue.put("value", formatCmsDataValue(entry.value()));
+                        doMap.put(daName, daValue);
+                    }
                 } else {
-                    das.put(fullRef, formatCmsDataValue(entry.value()));
+                    Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                    daValue.put("type", "?");
+                    daValue.put("value", formatCmsDataValue(entry.value()));
+                    das.put(fullRef, daValue);
                 }
             }
         }

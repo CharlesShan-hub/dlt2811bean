@@ -75,7 +75,7 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
                 }
             }
 
-            values.add(resolveValue(accessPoint.getServer(), serverSession.getSclDataTypeTemplates(), memberRef));
+            values.add(resolveValue(accessPoint.getServer(), serverSession.getSclDataTypeTemplates(), memberRef, fcda.getFc()));
         }
 
         if (skipUntilAfter && !foundAfter) {
@@ -108,7 +108,7 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
         return sb.toString();
     }
 
-    private CmsType resolveValue(SclIED.SclServer server, SclDataTypeTemplates templates, String ref) {
+    private CmsType<?> resolveValue(SclIED.SclServer server, SclDataTypeTemplates templates, String ref, String fc) {
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
             return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -132,8 +132,17 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
             return new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        // DO-level reference (e.g. C1/MMXU1.Volts) — return first DAI with a value
+        // DO-level reference (e.g. C1/MMXU1.Volts) — return DA matching the FC
         if (parts.length == 2) {
+            String expectedDa = fcToDefaultDa(fc);
+            if (expectedDa != null) {
+                for (SclDAI dai : doi.getDais()) {
+                    if (dai.getName().equals(expectedDa) && dai.getValue() != null && !dai.getValue().isEmpty()) {
+                        String bType = SclTypeResolver.resolveBType(server, templates, ldName, lnName, parts[1], dai.getName());
+                        return SclTypeResolver.createTypedValue(bType, dai.getValue());
+                    }
+                }
+            }
             for (SclDAI dai : doi.getDais()) {
                 if (dai.getValue() != null && !dai.getValue().isEmpty()) {
                     String bType = SclTypeResolver.resolveBType(server, templates, ldName, lnName, parts[1], dai.getName());
@@ -200,6 +209,24 @@ public class GetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsGetDat
             }
         }
         return null;
+    }
+
+    private String fcToDefaultDa(String fc) {
+        if (fc == null) return null;
+        return switch (fc) {
+            case "ST" -> "stVal";
+            case "MX" -> "mag";
+            case "DC" -> "dU";
+            case "CF" -> "setVal";
+            case "SP" -> "setVal";
+            case "SG" -> "setVal";
+            case "SV" -> "setVal";
+            case "CO" -> "ctlVal";
+            case "RP" -> "rptEna";
+            case "LG" -> "logEna";
+            case "BR" -> "cbNum";
+            default -> null;
+        };
     }
 
     private SclSDI findSdi(SclDOI doi, String sdiName) {

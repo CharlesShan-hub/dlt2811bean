@@ -11,6 +11,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
+import com.ysh.dlt2811bean.cli.CacheTypeResolver;
 import com.ysh.dlt2811bean.cli.Param;
 import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
@@ -46,7 +47,10 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             String ref = refArr[i].trim();
             String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
 
-            CmsType<?> typedValue = SclTypeResolver.resolveTypedValue(config, ref, v);
+            CmsType<?> typedValue = CacheTypeResolver.resolveFromCache(ctx, ref, v);
+            if (typedValue == null) {
+                typedValue = SclTypeResolver.resolveTypedValue(config, ref, v);
+            }
 
             CmsSetDataValuesEntry entry = new CmsSetDataValuesEntry()
                 .reference(ref)
@@ -87,19 +91,34 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             java.util.Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
             if (das == null) continue;
             String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
+            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
+            if (doMap == null) {
+                doMap = new java.util.LinkedHashMap<>();
+                das.put(doName, doMap);
+            }
             if (parts.length >= 3) {
                 String daName = parts[2];
-                java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
-                if (doMap != null) {
-                    doMap.put(daName, v);
+                @SuppressWarnings("unchecked")
+                java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get(daName);
+                if (existing != null) {
+                    existing.put("value", v);
+                } else {
+                    java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                    daValue.put("type", "?");
+                    daValue.put("value", v);
+                    doMap.put(daName, daValue);
                 }
             } else {
-                java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
-                if (doMap == null) {
-                    doMap = new java.util.LinkedHashMap<>();
-                    das.put(doName, doMap);
+                @SuppressWarnings("unchecked")
+                java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get("value");
+                if (existing instanceof Map) {
+                    existing.put("value", v);
+                } else {
+                    java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                    daValue.put("type", "?");
+                    daValue.put("value", v);
+                    doMap.put("value", daValue);
                 }
-                doMap.put("value", v);
             }
         }
     }

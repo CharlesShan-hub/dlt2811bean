@@ -66,9 +66,25 @@ public final class CliPrinter {
         if (lnRef == null) return "";
         int lastSlash = lnRef.lastIndexOf("/");
         if (lastSlash < 0) return "";
-        if (lastSlash + 5 > lnRef.length()) return "";
-        String className = lnRef.substring(lastSlash + 1, lastSlash + 5);
-        LnInfo info = LnInfo.byName(className);
-        return info != null ? " - " + info.getChineseName() : "";
+        String name = lnRef.substring(lastSlash + 1);
+        StringBuilder letters = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (Character.isLetter(c)) {
+                letters.append(c);
+            } else {
+                break;
+            }
+        }
+        if (letters.isEmpty()) return "";
+        String letterPart = letters.toString();
+        LnInfo info = LnInfo.byName(letterPart);
+        if (info != null) return " - " + info.getChineseName();
+        for (int i = letterPart.length() - 4; i >= 0; i--) {
+            String candidate = letterPart.substring(i);
+            info = LnInfo.byName(candidate);
+            if (info != null) return " - " + info.getChineseName();
+        }
+        return "";
     }
 }
