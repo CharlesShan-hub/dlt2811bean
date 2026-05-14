@@ -105,4 +105,9 @@ delete-dataset MEAS/LLN0.dsAin1;
 # 再看一下是否有这个数据集
 get-dataset-dir MEAS/LLN0.dsAin1;
 # 可以看到没有了
+
+# 创建数据集，然后引用一个DA
+create-dataset MEAS/MMXU1.MyNewDS2 MEAS/MMXU1.TotW DC;
+# 查看确实存在
+get-dataset-values MEAS/MMXU1.MyNewDS2;
 ```

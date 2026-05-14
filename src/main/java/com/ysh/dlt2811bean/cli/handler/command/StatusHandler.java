@@ -30,5 +30,6 @@ public class StatusHandler implements CommandHandler {
         if (assocId != null) {
             System.out.println("  Secure: " + (client.isSecurityEnabled() ? CmsColor.green("YES") : CmsColor.gray("NO")));
         }
+        System.out.println("  IED: " + CmsColor.cyan(client.getDefaultIedName()) + "  AccessPoint: " + CmsColor.cyan(client.getDefaultAccessPoint()));
     }
 }

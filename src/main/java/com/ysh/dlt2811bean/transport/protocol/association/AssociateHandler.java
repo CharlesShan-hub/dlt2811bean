@@ -1,5 +1,6 @@
 package com.ysh.dlt2811bean.transport.protocol.association;
 
+import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.SclDocument;
 import com.ysh.dlt2811bean.scl.model.SclIED;
@@ -35,7 +36,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
     private boolean requireAuthentication = false;
     private final SclDocument sclDocument;
     private byte[] serverCertificateBytes;
-    private String serverAccessPointReference;
+    private ServerAccessPointReference sapr;
 
     public AssociateHandler(SclDocument sclDocument) {
         super(ServiceName.ASSOCIATE, CmsAssociate::new, false);
@@ -59,8 +60,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
         }
 
         // 2. Resolve serverAccessPointReference
-        if(asdu.serverAccessPointReference() != null) 
-            serverAccessPointReference = asdu.serverAccessPointReference().get();
+        sapr = asdu.serverAccessPointReference();
         int error = validateSapRef();
         if (error != CmsServiceError.NO_ERROR) return buildNegativeResponse(error);
 
@@ -85,31 +85,33 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
                 .signatureCertificate(serverCertificateBytes));
 
         log.debug("[Server] Association accepted, assocId={}, SAP={}",
-                 hex(assocId), serverAccessPointReference);
+                 hex(assocId), sapr.get());
         return new CmsApdu(response);
     }
 
     private int validateSapRef(){
-        if (serverAccessPointReference == null || serverAccessPointReference.isEmpty()) {
+
+        if (sapr == null) {
+            sapr = new ServerAccessPointReference();
+        }
+        if (sapr.get() == null || sapr.get().isEmpty()) {
             if (sclDocument != null) {
-                serverAccessPointReference = sclDocument.getDefaultAccessPointReference();
-                log.debug("[Server] Using default access point: {}", serverAccessPointReference);
+                sapr.set(sclDocument.getDefaultAccessPointReference());
+                log.debug("[Server] Using default access point: {}", sapr.get());
             }
-            if (serverAccessPointReference == null || serverAccessPointReference.isEmpty()) {
+            if (sapr.get() == null || sapr.get().isEmpty()) {
                 log.warn("[Server] No serverAccessPointReference and no default available");
                 return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
             }
         }
 
         if (sclDocument != null) {
-            String[] parts = serverAccessPointReference.split("\\.");
-            if (parts.length != 2) {
-                log.warn("[Server] Invalid serverAccessPointReference format: {}", serverAccessPointReference);
+            String iedName = sapr.getIedName();
+            String apName = sapr.getAccessPoint();
+            if (iedName.isEmpty() || apName.isEmpty()) {
+                log.warn("[Server] Invalid serverAccessPointReference format: {}", sapr.get());
                 return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
             }
-
-            String iedName = parts[0];
-            String apName = parts[1];
 
             SclIED ied = sclDocument.findIedByName(iedName);
             if (ied == null) {
@@ -124,11 +126,9 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
             }
 
             // Save AccessPoint info to session
-            serverSession.setAccessPoint(serverAccessPointReference, iedName, apName, accessPoint);
+            serverSession.setAccessPoint(sapr.get(), iedName, apName, accessPoint);
             // Save DataTypeTemplates for type resolution
-            if (sclDocument != null) {
-                serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
-            }
+            serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
         }
 
         return CmsServiceError.NO_ERROR;
@@ -141,14 +141,15 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
             return CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE;
         }
         if (authenticator != null && authParam != null && authParam.signatureCertificate() != null) {
-            byte[] signedData = prepareSignedData(asdu);
+            byte[] signedData = prepareSignedData();
 
             Optional<CmsServiceError> authError = authenticator.validate(authParam, signedData);
+
             if (authError.isPresent()) {
                 log.warn("[Server] Authentication failed: {}", authError.get());
                 return authError.get().get();
             }
-            log.debug("[Server] GM authentication successful for {}", serverAccessPointReference);
+            log.debug("[Server] GM authentication successful for {}", sapr.get());
         }
         return CmsServiceError.NO_ERROR;
     }
@@ -161,13 +162,11 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
         return new CmsApdu(response);
     }
 
-    private byte[] prepareSignedData(CmsAssociate asdu) {
-        String sap = asdu.serverAccessPointReference().get();
-        byte[] sapBytes = sap.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+    private byte[] prepareSignedData() {
+        byte[] sapBytes = sapr.get().getBytes(java.nio.charset.StandardCharsets.UTF_8);
 
         if (asdu.authenticationParameter() != null &&
             asdu.authenticationParameter().signedTime() != null) {
-            // Append timestamp bytes
             byte[] timeBytes = String.valueOf(asdu.authenticationParameter()
                 .signedTime().secondsSinceEpoch.get()).getBytes();
             byte[] result = new byte[sapBytes.length + timeBytes.length];

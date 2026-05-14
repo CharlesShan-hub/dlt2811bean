@@ -22,7 +22,6 @@ public class AbortHandler extends AbstractCmsServiceHandler<CmsAbort> {
     protected CmsApdu doServerHandle() {
         serverSession.clearAssociationId();
         serverSession.setState(SessionState.CLOSED);
-
         log.debug("Association aborted, reason={}", asdu.reason().get());
         serverSession.close();
         return null;

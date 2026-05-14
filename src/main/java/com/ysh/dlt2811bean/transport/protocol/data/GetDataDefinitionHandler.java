@@ -181,7 +181,7 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
         List<CmsDataDefinition.StructureEntry> entries = new ArrayList<>();
         for (SclDA da : das) {
             entries.add(new CmsDataDefinition.StructureEntry(
-                    da.getName(), bTypeToDataDefinition(da.getBType())));
+                    da.getName(), da.getFc(), bTypeToDataDefinition(da.getBType())));
         }
         // Also add SDOs
         SclDataTypeTemplates.SclDO doObj = SclTypeResolver.findDoInType(server, templates, ldName, lnName, doName);

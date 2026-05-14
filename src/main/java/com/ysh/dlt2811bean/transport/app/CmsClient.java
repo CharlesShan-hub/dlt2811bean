@@ -146,6 +146,14 @@ public class CmsClient {
         return transport.isTlsEnabled();
     }
 
+    public String getDefaultIedName() {
+        return defaultIedName;
+    }
+
+    public String getDefaultAccessPoint() {
+        return defaultAccessPoint;
+    }
+
     public CmsClient setAccessPoint(String iedName, String accessPoint) {
         this.defaultIedName = iedName;
         this.defaultAccessPoint = accessPoint;

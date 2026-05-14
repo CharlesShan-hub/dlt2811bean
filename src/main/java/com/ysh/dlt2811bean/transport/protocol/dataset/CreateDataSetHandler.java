@@ -28,20 +28,18 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
             return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        int slashIdx = dsRef.indexOf('/');
-        if (slashIdx < 0) {
+        SclTypeResolver.SclDsRef parsed = SclTypeResolver.parseDsRef(dsRef);
+        if (parsed == null) {
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        String ldName = dsRef.substring(0, slashIdx);
-        String rest = dsRef.substring(slashIdx + 1);
-
-        SclIED.SclLDevice device = findLDevice(server, ldName);
+        SclIED.SclLDevice device = findLDevice(server, parsed.getLdName());
         if (device == null) {
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        if (device.getLn0() == null) {
+        SclIED.SclLN targetLn = SclTypeResolver.findLnInDevice(device, parsed.getLnName());
+        if (targetLn == null) {
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -49,17 +47,14 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
         boolean isAppend = afterRef != null && !afterRef.isEmpty();
 
         if (isAppend) {
-            return handleAppend(request, asdu, device, afterRef);
+            return handleAppend(targetLn, parsed.getDsName(), afterRef);
         } else {
-            return handleCreate(request, asdu, device, rest);
+            return handleCreate(targetLn, parsed.getDsName());
         }
     }
 
-    private CmsApdu handleCreate(CmsApdu request, CmsCreateDataSet asdu, SclIED.SclLDevice device, String rest) {
-        int dotIdx = rest.indexOf('.');
-        String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
-
-        for (SclIED.SclDataSet existing : device.getLn0().getDataSets()) {
+    private CmsApdu handleCreate(SclIED.SclLN targetLn, String dsName) {
+        for (SclIED.SclDataSet existing : targetLn.getDataSets()) {
             if (existing.getName().equals(dsName)) {
                 log.warn("[Server] CreateDataSet: data set already exists: {}", dsName);
                 return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -74,7 +69,7 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
                 newDs.addFcda(fcda);
             }
         }
-        device.getLn0().addDataSet(newDs);
+        targetLn.addDataSet(newDs);
 
         log.debug("[Server] CreateDataSet: created '{}' with {} members", dsName, asdu.memberData.size());
 
@@ -82,12 +77,9 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
                 .reqId(asdu.reqId().get()));
     }
 
-    private CmsApdu handleAppend(CmsApdu request, CmsCreateDataSet asdu, SclIED.SclLDevice device, String afterRef) {
-        int dotIdx = afterRef.indexOf('.');
-        String dsName = dotIdx >= 0 ? afterRef.substring(dotIdx + 1) : afterRef;
-
+    private CmsApdu handleAppend(SclIED.SclLN targetLn, String dsName, String afterRef) {
         SclIED.SclDataSet existing = null;
-        for (SclIED.SclDataSet ds : device.getLn0().getDataSets()) {
+        for (SclIED.SclDataSet ds : targetLn.getDataSets()) {
             if (ds.getName().equals(dsName)) {
                 existing = ds;
                 break;

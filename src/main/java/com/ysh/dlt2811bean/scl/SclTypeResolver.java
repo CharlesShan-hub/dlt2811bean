@@ -33,6 +33,77 @@ public class SclTypeResolver {
         // utility class
     }
 
+    /**
+     * Pure string parsing result for a dataset reference like "MEAS/LLN0.dsAin1".
+     * No SCL model lookup is performed.
+     */
+    @lombok.Data
+    @lombok.AllArgsConstructor
+    public static class SclDsRef {
+        private final String ldName;
+        private final String lnName;
+        private final String dsName;
+    }
+
+    /**
+     * Pure string parsing result for a data reference like "CTRL/ALMGGIO1.TotW.stVal".
+     * The lnPart is the raw LN identifier (e.g. "ALMGGIO1") and has not been resolved
+     * against the SCL model. No SCL model lookup is performed.
+     */
+    @lombok.Data
+    @lombok.AllArgsConstructor
+    public static class SclDataRef {
+        private final String ldName;
+        private final String lnPart;
+        private final String doName;
+        private final String daName;
+    }
+
+    /**
+     * Parses a dataset reference string (e.g. "MEAS/LLN0.dsAin1") into an SclDsRef.
+     * This is a pure string operation and does not require an SCL model.
+     *
+     * @return the parsed SclDsRef, or null if the format is invalid
+     */
+    public static SclDsRef parseDsRef(String ref) {
+        if (ref == null || ref.isEmpty()) return null;
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return null;
+        String lnName = rest.substring(0, dotIdx);
+        String dsName = rest.substring(dotIdx + 1);
+        if (lnName.isEmpty() || dsName.isEmpty()) return null;
+        return new SclDsRef(ldName, lnName, dsName);
+    }
+
+    /**
+     * Parses a data reference string (e.g. "CTRL/ALMGGIO1.TotW.stVal") into an SclDataRef.
+     * This is a pure string operation and does not require an SCL model.
+     * The lnPart is the raw LN identifier (e.g. "ALMGGIO1") and has not been resolved
+     * against the SCL model.
+     *
+     * @return the parsed SclDataRef, or null if the format is invalid
+     */
+    public static SclDataRef parseDataRef(String ref) {
+        if (ref == null || ref.isEmpty()) return null;
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return null;
+        String lnPart = rest.substring(0, dotIdx);
+        String doDaPart = rest.substring(dotIdx + 1);
+        if (lnPart.isEmpty() || doDaPart.isEmpty()) return null;
+        int daDotIdx = doDaPart.indexOf('.');
+        String doName = daDotIdx >= 0 ? doDaPart.substring(0, daDotIdx) : doDaPart;
+        String daName = daDotIdx >= 0 ? doDaPart.substring(daDotIdx + 1) : null;
+        return new SclDataRef(ldName, lnPart, doName, daName);
+    }
+
     // ==================== LN lookup ====================
 
     /**

@@ -40,6 +40,23 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
         }
 
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            // 更新本地 cache
+            int slashIdx = dsRef.indexOf('/');
+            if (slashIdx >= 0) {
+                String ldName = dsRef.substring(0, slashIdx);
+                String rest = dsRef.substring(slashIdx + 1);
+                int dotIdx = rest.indexOf('.');
+                String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
+                String lnName = dotIdx >= 0 ? rest.substring(0, dotIdx) : rest;
+                Map<String, Object> dataSetMap = ctx.lnEntry(ldName, lnName).get("DATA_SET");
+                if (dataSetMap == null) {
+                    dataSetMap = new java.util.LinkedHashMap<>();
+                    ctx.lnEntry(ldName, lnName).put("DATA_SET", dataSetMap);
+                }
+                if (!dataSetMap.containsKey(dsName)) {
+                    dataSetMap.put(dsName, null);
+                }
+            }
             System.out.println(CmsColor.green("  Dataset created successfully"));
         }
     }
