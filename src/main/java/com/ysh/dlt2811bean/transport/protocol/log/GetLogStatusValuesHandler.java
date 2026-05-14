@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetLogStatusValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLogStatusChoice;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -20,20 +19,13 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogStatusValues asdu = (CmsGetLogStatusValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         CmsArray<CmsErrorLogStatusChoice> choices = new CmsArray<>(CmsErrorLogStatusChoice::new);
 
         for (int i = 0; i < asdu.logReference.size(); i++) {
             String ref = asdu.logReference.get(i).get();
-            CmsErrorLogStatusChoice choice = buildStatusChoice(accessPoint, ref);
+            CmsErrorLogStatusChoice choice = buildStatusChoice(ref);
             choices.add(choice);
         }
 
@@ -46,7 +38,7 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
         return new CmsApdu(response);
     }
 
-    private CmsErrorLogStatusChoice buildStatusChoice(SclIED.SclAccessPoint accessPoint, String ref) {
+    private CmsErrorLogStatusChoice buildStatusChoice(String ref) {
         CmsErrorLogStatusChoice choice = new CmsErrorLogStatusChoice();
 
         if (ref == null || ref.isEmpty()) {
@@ -54,7 +46,7 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
             return choice;
         }
 
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclLogControl lc : ld.getLn0().getLogControls()) {
                 String lcRef = ld.getInst() + "/LLN0." + lc.getName();

@@ -29,17 +29,9 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetDataDefinition asdu = (CmsGetDataDefinition) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-
-        SclIED.SclServer server = accessPoint.getServer();
-        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
 
         CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new);
         int processedCount = 0;

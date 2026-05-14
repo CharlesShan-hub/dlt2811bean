@@ -23,7 +23,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +38,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String ldName = null;
         String lnRef = null;
@@ -66,7 +58,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             fcFilter = null;
         }
 
-        List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
+        List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -110,8 +102,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         return new CmsApdu(response);
     }
 
-    private List<TargetLn> resolveTargets(SclIED.SclAccessPoint accessPoint, String ldName, String lnRef) {
-        SclIED.SclServer server = accessPoint.getServer();
+    private List<TargetLn> resolveTargets(String ldName, String lnRef) {
         if (ldName != null && !ldName.isEmpty()) {
             SclIED.SclLDevice device = findLDevice(server, ldName);
             if (device == null) {

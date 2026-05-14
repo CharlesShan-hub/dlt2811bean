@@ -39,12 +39,11 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
     private byte[] serverCertificateBytes;
 
     public AssociateHandler() {
-        super(ServiceName.ASSOCIATE, CmsAssociate::new);
-        this.sclDocument = null;
+        this(null);
     }
 
     public AssociateHandler(SclDocument sclDocument) {
-        super(ServiceName.ASSOCIATE, CmsAssociate::new);
+        super(ServiceName.ASSOCIATE, CmsAssociate::new, false);
         this.sclDocument = sclDocument;
     }
 

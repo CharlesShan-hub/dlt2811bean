@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
@@ -28,7 +27,6 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetURCBValues asdu = (CmsSetURCBValues) request.getAsdu();
 
         if (asdu.urcb == null || asdu.urcb.size() == 0) {
@@ -37,15 +35,13 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
                     .reqId(asdu.reqId().get()));
         }
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-
         CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.urcb.size(); i++) {
             CmsSetURCBValuesEntry entry = asdu.urcb.get(i);
 
-            int refError = validateReference(accessPoint, entry.reference.get());
+            int refError = validateReference(entry.reference.get());
             if (refError != CmsServiceError.NO_ERROR) {
                 CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
                 result.error.set(refError);
@@ -167,14 +163,11 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
                 || result.resv.get() != CmsServiceError.NO_ERROR;
     }
 
-    private int validateReference(SclIED.SclAccessPoint accessPoint, String ref) {
+    private int validateReference(String ref) {
         if (ref == null || ref.isEmpty()) {
             return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
         }
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            return CmsServiceError.INSTANCE_NOT_AVAILABLE;
-        }
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclReportControl rc : ld.getLn0().getReportControls()) {
                 if (rc.isBuffered()) continue;

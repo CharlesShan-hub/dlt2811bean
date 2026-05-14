@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.datatypes.compound.CmsURCB;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclGSEControl;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclLN0;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclLogControl;
 import com.ysh.dlt2811bean.scl.model.SclIED.SclReportControl;
@@ -23,7 +22,6 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,14 +34,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String ldName = null;
         String lnRef = null;
@@ -56,7 +47,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
 
         int acsiClass = asdu.acsiClass.get();
 
-        List<SclLN0> ln0s = resolveLn0s(accessPoint, ldName, lnRef);
+        List<SclLN0> ln0s = resolveLn0s(ldName, lnRef);
         if (ln0s == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -95,8 +86,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         return new CmsApdu(response);
     }
 
-    private List<SclLN0> resolveLn0s(SclIED.SclAccessPoint accessPoint, String ldName, String lnRef) {
-        SclIED.SclServer server = accessPoint.getServer();
+    private List<SclLN0> resolveLn0s(String ldName, String lnRef) {
         if (ldName != null && !ldName.isEmpty()) {
             SclIED.SclLDevice device = findLDevice(server, ldName);
             if (device == null) {

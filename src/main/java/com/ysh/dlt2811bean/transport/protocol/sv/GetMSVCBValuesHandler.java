@@ -11,7 +11,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsErrorMsvcbChoice;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCBValues> {
@@ -24,20 +23,13 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetMSVCBValues asdu = (CmsGetMSVCBValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         CmsArray<CmsErrorMsvcbChoice> choices = new CmsArray<>(CmsErrorMsvcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();
-            CmsErrorMsvcbChoice choice = buildMsvcbChoice(accessPoint, ref);
+            CmsErrorMsvcbChoice choice = buildMsvcbChoice(ref);
             choices.add(choice);
         }
 
@@ -50,7 +42,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
         return new CmsApdu(response);
     }
 
-    private CmsErrorMsvcbChoice buildMsvcbChoice(SclIED.SclAccessPoint accessPoint, String ref) {
+    private CmsErrorMsvcbChoice buildMsvcbChoice(String ref) {
         CmsErrorMsvcbChoice choice = new CmsErrorMsvcbChoice();
 
         if (ref == null || ref.isEmpty()) {
@@ -58,7 +50,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
             return choice;
         }
 
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclSampledValueControl svc : ld.getLn0().getSampledValueControls()) {
                 String svcRef = ld.getInst() + "/LLN0." + svc.getName();

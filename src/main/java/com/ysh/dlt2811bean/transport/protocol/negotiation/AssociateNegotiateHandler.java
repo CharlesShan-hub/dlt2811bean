@@ -26,7 +26,7 @@ public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAsso
 
     public AssociateNegotiateHandler(int serverApduSize, int serverAsduSize,
                                      int serverProtocolVersion, String serverModelVersion) {
-        super(ServiceName.ASSOCIATE_NEGOTIATE, CmsAssociateNegotiate::new);
+        super(ServiceName.ASSOCIATE_NEGOTIATE, CmsAssociateNegotiate::new, false);
         if (serverApduSize <= 0 || serverApduSize > MAX_APDU_SIZE) {
             throw new IllegalArgumentException(
                 "serverApduSize must be between 1 and " + MAX_APDU_SIZE + ", got " + serverApduSize);

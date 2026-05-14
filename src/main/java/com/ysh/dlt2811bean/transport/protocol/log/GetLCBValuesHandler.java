@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLcbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -23,20 +22,13 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLCBValues asdu = (CmsGetLCBValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         CmsArray<CmsErrorLcbChoice> choices = new CmsArray<>(CmsErrorLcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();
-            CmsErrorLcbChoice choice = buildLcbChoice(accessPoint, ref);
+            CmsErrorLcbChoice choice = buildLcbChoice(ref);
             choices.add(choice);
         }
 
@@ -49,7 +41,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
         return new CmsApdu(response);
     }
 
-    private CmsErrorLcbChoice buildLcbChoice(SclIED.SclAccessPoint accessPoint, String ref) {
+    private CmsErrorLcbChoice buildLcbChoice(String ref) {
         CmsErrorLcbChoice choice = new CmsErrorLcbChoice();
 
         if (ref == null || ref.isEmpty()) {
@@ -57,7 +49,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
             return choice;
         }
 
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclLogControl lc : ld.getLn0().getLogControls()) {
                 String lcRef = ld.getInst() + "/LLN0." + lc.getName();

@@ -18,7 +18,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +33,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String ldName = null;
         String lnRef = null;
@@ -52,7 +44,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             lnRef = asdu.referenceRequest.lnReference.get();
         }
 
-        List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
+        List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -124,8 +116,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
         return new CmsApdu(response);
     }
 
-    private List<TargetLn> resolveTargets(SclIED.SclAccessPoint accessPoint, String ldName, String lnRef) {
-        SclIED.SclServer server = accessPoint.getServer();
+    private List<TargetLn> resolveTargets(String ldName, String lnRef) {
 
         if (ldName != null && !ldName.isEmpty()) {
             // ldName: iterate all LNs in the specified LD

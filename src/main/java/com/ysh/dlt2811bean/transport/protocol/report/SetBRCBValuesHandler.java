@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.report.GetBRCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
@@ -27,7 +26,6 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetBRCBValues asdu = (CmsSetBRCBValues) request.getAsdu();
 
         if (asdu.brcb == null || asdu.brcb.size() == 0) {
@@ -36,15 +34,13 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
                     .reqId(asdu.reqId().get()));
         }
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-
         CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new);
         boolean hasAnyError = false;
 
         for (int i = 0; i < asdu.brcb.size(); i++) {
             CmsSetBRCBValuesEntry entry = asdu.brcb.get(i);
 
-            int refError = validateReference(accessPoint, entry.reference.get());
+            int refError = validateReference(entry.reference.get());
             if (refError != CmsServiceError.NO_ERROR) {
                 results.add(new CmsServiceError(refError));
                 hasAnyError = true;
@@ -152,14 +148,11 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
         return fields;
     }
 
-    private int validateReference(SclIED.SclAccessPoint accessPoint, String ref) {
+    private int validateReference(String ref) {
         if (ref == null || ref.isEmpty()) {
             return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
         }
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            return CmsServiceError.INSTANCE_NOT_AVAILABLE;
-        }
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclReportControl rc : ld.getLn0().getReportControls()) {
                 if (!rc.isBuffered()) continue;

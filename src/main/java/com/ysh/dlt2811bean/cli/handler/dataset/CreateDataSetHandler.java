@@ -20,7 +20,7 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
             new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.DS_REF),
             new Param("ref", "成员引用", "C1/MMXU1.Volts").type(Param.Type.REFERENCE),
             Param.fc("功能约束"),
-            new Param("after", "追加位置 (可选, 为空则新建)", "", false)
+            new Param("referenceAfter", "追加位置 (可选, 为空则新建)", "", false)
         );
     }
 
@@ -30,11 +30,11 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
         String dsRef = values.get("dsRef");
         String ref = values.get("ref");
         String fc = values.get("fc");
-        String after = values.get("after");
+        String referenceAfter = values.get("referenceAfter");
 
         CmsApdu response;
-        if (after != null && !after.isEmpty()) {
-            response = client.createDataSet(dsRef, after, ref, fc);
+        if (referenceAfter != null && !referenceAfter.isEmpty()) {
+            response = client.createDataSet(dsRef, referenceAfter, ref, fc);
         } else {
             response = client.createDataSet(dsRef, ref, fc);
         }

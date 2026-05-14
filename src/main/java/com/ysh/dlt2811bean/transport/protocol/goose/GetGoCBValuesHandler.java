@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsErrorGocbChoice;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBValues> {
@@ -23,20 +22,13 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetGoCBValues asdu = (CmsGetGoCBValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         CmsArray<CmsErrorGocbChoice> choices = new CmsArray<>(CmsErrorGocbChoice::new);
 
         for (int i = 0; i < asdu.gocbReference.size(); i++) {
             String ref = asdu.gocbReference.get(i).get();
-            CmsErrorGocbChoice choice = buildGocbChoice(accessPoint, ref);
+            CmsErrorGocbChoice choice = buildGocbChoice(ref);
             choices.add(choice);
         }
 
@@ -49,7 +41,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
         return new CmsApdu(response);
     }
 
-    private CmsErrorGocbChoice buildGocbChoice(SclIED.SclAccessPoint accessPoint, String ref) {
+    private CmsErrorGocbChoice buildGocbChoice(String ref) {
         CmsErrorGocbChoice choice = new CmsErrorGocbChoice();
 
         if (ref == null || ref.isEmpty()) {
@@ -57,7 +49,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
             return choice;
         }
 
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclGSEControl gse : ld.getLn0().getGseControls()) {
                 String gseRef = ld.getInst() + "/LLN0." + gse.getName();

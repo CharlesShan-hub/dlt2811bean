@@ -58,6 +58,81 @@ public class SclTypeResolver {
     }
 
     /**
+     * Parses a full reference string (e.g. "CTRL/ALMGGIO1.TotW") into an SclFCDA by
+     * matching the LN part against actual LNs in the device.
+     *
+     * <p>This is more reliable than string parsing because LN names like "ALMGGIO1"
+     * have ambiguous boundaries between prefix, lnClass, and lnInst.
+     *
+     * @param server the SCL server model
+     * @param ref    the full reference string (e.g. "CTRL/ALMGGIO1.TotW" or "CTRL/ALMGGIO1.TotW.stVal")
+     * @return the resolved SclFCDA, or null if the LN cannot be found
+     */
+    public static SclIED.SclFCDA parseRefToFcda(SclIED.SclServer server, String ref) {
+        if (ref == null || ref.isEmpty()) return null;
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return null;
+        String lnPart = rest.substring(0, dotIdx);
+        String doDaPart = rest.substring(dotIdx + 1);
+
+        SclIED.SclLDevice device = findLDevice(server, ldName);
+        if (device == null) return null;
+
+        SclIED.SclFCDA fcda = new SclIED.SclFCDA();
+        fcda.setLdInst(ldName);
+
+        // Try LN0 first
+        if (device.getLn0() != null) {
+            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
+            if (ln0Name.equals(lnPart)) {
+                fcda.setLnClass(device.getLn0().getLnClass());
+                fcda.setLnInst(device.getLn0().getInst());
+                fcda.setPrefix("");
+                return resolveDoDaName(fcda, doDaPart);
+            }
+        }
+
+        // Try each LN — match prefix + lnClass + lnInst against lnPart
+        for (SclLN ln : device.getLns()) {
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
+            if (curLnName.equals(lnPart)) {
+                fcda.setLnClass(ln.getLnClass());
+                fcda.setLnInst(ln.getInst());
+                fcda.setPrefix(ln.getPrefix() != null ? ln.getPrefix() : "");
+                return resolveDoDaName(fcda, doDaPart);
+            }
+        }
+
+        return null;
+    }
+
+    private static SclIED.SclFCDA resolveDoDaName(SclIED.SclFCDA fcda, String doDaPart) {
+        int dotIdx = doDaPart.indexOf('.');
+        if (dotIdx >= 0) {
+            fcda.setDoName(doDaPart.substring(0, dotIdx));
+            fcda.setDaName(doDaPart.substring(dotIdx + 1));
+        } else {
+            fcda.setDoName(doDaPart);
+        }
+        return fcda;
+    }
+
+    private static SclIED.SclLDevice findLDevice(SclIED.SclServer server, String ldName) {
+        for (SclIED.SclLDevice device : server.getLDevices()) {
+            if (device.getInst().equals(ldName)) {
+                return device;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Gets the lnType from an LN (handles both SclLN and SclLN0).
      */
     public static String getLnType(SclIED.SclLN ln) {
@@ -340,15 +415,6 @@ public class SclTypeResolver {
     }
 
     // ==================== Helper ====================
-
-    private static SclLDevice findLDevice(SclServer server, String ldName) {
-        for (SclLDevice ld : server.getLDevices()) {
-            if (ld.getInst().equals(ldName)) {
-                return ld;
-            }
-        }
-        return null;
-    }
 
     /**
      * Wraps SclLN0 as SclLN for uniform lnType access.

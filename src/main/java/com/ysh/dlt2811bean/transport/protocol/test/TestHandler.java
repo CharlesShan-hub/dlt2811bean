@@ -15,7 +15,7 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 public class TestHandler extends AbstractCmsServiceHandler<CmsTest> {
     
     public TestHandler() {
-        super(ServiceName.TEST, CmsTest::new);
+        super(ServiceName.TEST, CmsTest::new, false);
     }
 
     @Override

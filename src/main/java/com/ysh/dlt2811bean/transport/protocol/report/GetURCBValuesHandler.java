@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorUrcbChoice;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBValues> {
@@ -23,20 +22,13 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetURCBValues asdu = (CmsGetURCBValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         CmsArray<CmsErrorUrcbChoice> choices = new CmsArray<>(CmsErrorUrcbChoice::new);
 
         for (int i = 0; i < asdu.reference.size(); i++) {
             String ref = asdu.reference.get(i).get();
-            CmsErrorUrcbChoice choice = buildUrcbChoice(accessPoint, ref);
+            CmsErrorUrcbChoice choice = buildUrcbChoice(ref);
             choices.add(choice);
         }
 
@@ -49,7 +41,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
         return new CmsApdu(response);
     }
 
-    private CmsErrorUrcbChoice buildUrcbChoice(SclIED.SclAccessPoint accessPoint, String ref) {
+    private CmsErrorUrcbChoice buildUrcbChoice(String ref) {
         CmsErrorUrcbChoice choice = new CmsErrorUrcbChoice();
 
         if (ref == null || ref.isEmpty()) {
@@ -57,7 +49,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
             return choice;
         }
 
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclReportControl rc : ld.getLn0().getReportControls()) {
                 if (rc.isBuffered()) continue;

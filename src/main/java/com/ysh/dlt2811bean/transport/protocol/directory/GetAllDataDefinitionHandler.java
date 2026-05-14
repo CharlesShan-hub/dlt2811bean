@@ -23,7 +23,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,14 +38,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String ldName = null;
         String lnRef = null;
@@ -64,7 +56,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
 
         log.debug("[Server] GetAllDataDefinition: lnRef={}, ldName={}, fc={}", lnRef, ldName, fcFilter);
 
-        List<TargetLn> targets = resolveTargets(accessPoint, ldName, lnRef);
+        List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
             log.warn("[Server] resolveTargets returned null for ldName={} lnRef={}", ldName, lnRef);
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -249,8 +241,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
         return lnt != null ? lnt.getDos() : null;
     }
 
-    private List<TargetLn> resolveTargets(SclIED.SclAccessPoint accessPoint, String ldName, String lnRef) {
-        SclIED.SclServer server = accessPoint.getServer();
+    private List<TargetLn> resolveTargets(String ldName, String lnRef) {
         if (ldName != null && !ldName.isEmpty()) {
             SclIED.SclLDevice device = findLDevice(server, ldName);
             if (device == null) {

@@ -1,6 +1,7 @@
 package com.ysh.dlt2811bean.transport.protocol.dataset;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -8,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsCreateDataSet;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDataSet> {
@@ -19,14 +19,7 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsCreateDataSet asdu = (CmsCreateDataSet) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
@@ -45,7 +38,7 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
         String ldName = dsRef.substring(0, slashIdx);
         String rest = dsRef.substring(slashIdx + 1);
 
-        SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
+        SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -78,8 +71,10 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
         SclIED.SclDataSet newDs = new SclIED.SclDataSet(dsName);
         newDs.setDesc("dynamically created");
         for (CmsCreateDataSetEntry entry : asdu.memberData) {
-            SclIED.SclFCDA fcda = buildFcda(entry);
-            newDs.addFcda(fcda);
+            SclIED.SclFCDA fcda = buildFcda(entry, server);
+            if (fcda != null) {
+                newDs.addFcda(fcda);
+            }
         }
         device.getLn0().addDataSet(newDs);
 
@@ -107,8 +102,10 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
         }
 
         for (CmsCreateDataSetEntry entry : asdu.memberData) {
-            SclIED.SclFCDA fcda = buildFcda(entry);
-            existing.addFcda(fcda);
+            SclIED.SclFCDA fcda = buildFcda(entry, server);
+            if (fcda != null) {
+                existing.addFcda(fcda);
+            }
         }
 
         log.debug("[Server] CreateDataSet: appended {} members to '{}'", asdu.memberData.size(), dsName);
@@ -117,24 +114,13 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
                 .reqId(asdu.reqId().get()));
     }
 
-    private SclIED.SclFCDA buildFcda(CmsCreateDataSetEntry entry) {
-        SclIED.SclFCDA fcda = new SclIED.SclFCDA();
+    private SclIED.SclFCDA buildFcda(CmsCreateDataSetEntry entry, SclIED.SclServer server) {
         String ref = entry.reference.get();
-        if (ref != null) {
-            int slashIdx = ref.indexOf('/');
-            if (slashIdx >= 0) {
-                fcda.setLdInst(ref.substring(0, slashIdx));
-                String fcdaRest = ref.substring(slashIdx + 1);
-                int dotIdx = fcdaRest.indexOf('.');
-                if (dotIdx >= 0) {
-                    fcda.setLnClass(fcdaRest.substring(0, dotIdx));
-                    fcda.setDoName(fcdaRest.substring(dotIdx + 1));
-                } else {
-                    fcda.setLnClass(fcdaRest);
-                }
-            } else {
-                fcda.setLnClass(ref);
-            }
+        if (ref == null) return null;
+        SclIED.SclFCDA fcda = SclTypeResolver.parseRefToFcda(server, ref);
+        if (fcda == null) {
+            log.warn("[Server] CreateDataSet: cannot resolve reference: {}", ref);
+            return null;
         }
         if (entry.fc != null) {
             fcda.setFc(entry.fc.get());

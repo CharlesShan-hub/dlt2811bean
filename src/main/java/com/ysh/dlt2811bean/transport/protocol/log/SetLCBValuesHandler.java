@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.log.GetLCBValuesHandler.logEnaState;
@@ -28,7 +27,6 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetLCBValues asdu = (CmsSetLCBValues) request.getAsdu();
 
         if (asdu.lcb == null || asdu.lcb.size() == 0) {
@@ -37,8 +35,6 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
                     .reqId(asdu.reqId().get()));
         }
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-
         CmsArray<CmsSetLCBValuesResultEntry> results = new CmsArray<>(CmsSetLCBValuesResultEntry::new);
         boolean hasAnyError = false;
 
@@ -46,7 +42,7 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
             CmsSetLCBValuesEntry entry = asdu.lcb.get(i);
 
             // Validate reference exists
-            int refError = validateReference(accessPoint, entry.reference.get());
+            int refError = validateReference(entry.reference.get());
             if (refError != CmsServiceError.NO_ERROR) {
                 CmsSetLCBValuesResultEntry result = new CmsSetLCBValuesResultEntry();
                 result.error.set(refError);
@@ -170,14 +166,11 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
                 || result.bufTm.get() != CmsServiceError.NO_ERROR;
     }
 
-    private int validateReference(SclIED.SclAccessPoint accessPoint, String ref) {
+    private int validateReference(String ref) {
         if (ref == null || ref.isEmpty()) {
             return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
         }
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            return CmsServiceError.INSTANCE_NOT_AVAILABLE;
-        }
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclLogControl lc : ld.getLn0().getLogControls()) {
                 String lcRef = ld.getInst() + "/LLN0." + lc.getName();

@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,14 +21,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String ldName = asdu.ldName != null ? asdu.ldName.get() : null;
         List<SclIED.SclLDevice> targetDevices = new ArrayList<>();
@@ -42,7 +34,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
             }
             targetDevices.add(device);
         } else {
-            targetDevices.addAll(accessPoint.getServer().getLDevices());
+            targetDevices.addAll(server.getLDevices());
         }
 
         List<String> lnRefs = new ArrayList<>();

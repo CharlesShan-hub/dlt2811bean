@@ -28,17 +28,9 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsGetDataValues asdu = (CmsGetDataValues) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-
-        SclIED.SclServer server = accessPoint.getServer();
-        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
 
         CmsStructure values = new CmsStructure();
         for (CmsGetDataValuesEntry entry : asdu.data) {

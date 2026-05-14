@@ -27,17 +27,9 @@ public class SetDataValuesHandler extends AbstractCmsServiceHandler<CmsSetDataVa
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetDataValues asdu = (CmsSetDataValues) request.getAsdu();
 
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return null;
-        }
-
-        SclIED.SclServer server = accessPoint.getServer();
-        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
 
         CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new).capacity(asdu.data.size());
         boolean allSuccess = true;

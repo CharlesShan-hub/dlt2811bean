@@ -23,14 +23,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsSetDataSetValues asdu = (CmsSetDataSetValues) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
@@ -45,7 +38,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
         String ldName = dsRef.substring(0, slashIdx);
         String rest = dsRef.substring(slashIdx + 1);
 
-        SclIED.SclLDevice device = findLDevice(accessPoint.getServer(), ldName);
+        SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -86,7 +79,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
                 hasAnyError = true;
             } else {
                 SclIED.SclFCDA fcda = dataSet.getFcdaList().get(fcdaIndex);
-                int error = setValueOnFcda(accessPoint.getServer(), ldName, fcda, asdu.memberValue.get(i));
+                int error = setValueOnFcda(server, ldName, fcda, asdu.memberValue.get(i));
                 results.add(new CmsServiceError(error));
                 if (error != CmsServiceError.NO_ERROR) {
                     hasAnyError = true;

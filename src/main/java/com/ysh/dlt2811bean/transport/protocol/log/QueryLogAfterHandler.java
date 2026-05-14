@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -20,21 +19,14 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
 
     @Override
     protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
         CmsQueryLogAfter asdu = (CmsQueryLogAfter) request.getAsdu();
-
-        SclIED.SclAccessPoint accessPoint = serverSession.getSclAccessPoint();
-        if (accessPoint == null || accessPoint.getServer() == null) {
-            log.warn("[Server] No SCL model for session");
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         String logRef = asdu.logReference.get();
         if (logRef == null || logRef.isEmpty()) {
             return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        if (!validateLogReference(accessPoint, logRef)) {
+        if (!validateLogReference(logRef)) {
             return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -48,8 +40,8 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
         return new CmsApdu(response);
     }
 
-    private boolean validateLogReference(SclIED.SclAccessPoint accessPoint, String logRef) {
-        for (SclIED.SclLDevice ld : accessPoint.getServer().getLDevices()) {
+    private boolean validateLogReference(String logRef) {
+        for (SclIED.SclLDevice ld : server.getLDevices()) {
             if (ld.getLn0() == null) continue;
             for (SclIED.SclLogControl lc : ld.getLn0().getLogControls()) {
                 String lcRef = ld.getInst() + "/LLN0." + lc.getName();
