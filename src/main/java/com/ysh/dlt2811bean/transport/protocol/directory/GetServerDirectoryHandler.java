@@ -25,28 +25,24 @@ public class GetServerDirectoryHandler extends AbstractCmsServiceHandler<CmsGetS
             return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        List<SclIED.SclLDevice> lDevices = server.getLDevices();
+        List<String> ldNames = server.getLDevices().stream()
+            .map(SclIED.SclLDevice::getInst)
+            .toList();
 
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
         int startIndex = 0;
         if (after != null && !after.isEmpty()) {
-            boolean found = false;
-            for (int i = 0; i < lDevices.size(); i++) {
-                if (lDevices.get(i).getInst().equals(after)) {
-                    startIndex = i + 1;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
+            startIndex = ldNames.indexOf(after);
+            if (startIndex < 0) {
                 log.warn("[Server] referenceAfter not found: {}", after);
                 return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
+            startIndex++;
         }
 
         CmsArray<CmsObjectReference> refs = new CmsArray<>(CmsObjectReference::new);
-        for (int i = startIndex; i < lDevices.size(); i++) {
-            refs.add(new CmsObjectReference(lDevices.get(i).getInst()));
+        for (int i = startIndex; i < ldNames.size(); i++) {
+            refs.add(new CmsObjectReference(ldNames.get(i)));
         }
 
         CmsGetServerDirectory response = new CmsGetServerDirectory(MessageType.RESPONSE_POSITIVE)

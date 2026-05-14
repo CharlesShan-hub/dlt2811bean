@@ -6,12 +6,6 @@ import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-/**
- * Handler for Abort service (SC=3).
- *
- * <p>Abort is a one-way service with no response.
- * Clears the association ID and lets the connection close naturally.
- */
 public class AbortHandler extends AbstractCmsServiceHandler<CmsAbort> {
 
     public AbortHandler() {

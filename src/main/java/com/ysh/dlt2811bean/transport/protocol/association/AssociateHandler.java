@@ -16,20 +16,6 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
-/**
- * Handler for Associate service (SC=1).
- *
- * <p>Generates a 64-byte association ID for the client and returns it
- * in a positive response. Supports GM (Guomi) authentication per DL/T 2811-2024.
- *
- * <p>Authentication flow:
- * <ol>
- *   <li>Validate serverAccessPointReference</li>
- *   <li>If authenticationParameter present, verify SM2 signature</li>
- *   <li>Generate association ID</li>
- *   <li>Return positive/negative response</li>
- * </ol>
- */
 public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
 
     private GmAuthenticator authenticator;
