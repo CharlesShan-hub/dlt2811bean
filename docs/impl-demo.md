@@ -80,7 +80,7 @@ get-data-def LD0/RSYN1.SynCatmms XX;
 get-data-def LD0/RSYN1.Beh XX;
 ```
 
-## 8.5 数据集
+## 8.5 数据集的读写
 ```bash
 # 查看数据集字段dir: 这里边会给出DO和FC，通过FC就知道是哪个DO下的哪个DA
 get-dataset-dir MEAS/LLN0.dsAin1;
@@ -94,4 +94,15 @@ set-dataset-values MEAS/LLN0.dsAin1 Bay1_P1; # 从头写，一个值
 set-dataset-values MEAS/LLN0.dsAin1 Bay1_P1,Bay1_Q1,Bay1_S1; # 从头写，多个值
 set-dataset-values MEAS/LLN0.dsAin1 Bay1_Q2,Bay1_S2 MEAS/MMXU1.TotW; # 从第一个后边写，多个值
 set-dataset-values MEAS/LLN0.dsAin1 Bay1_Q3 --referenceAfter MEAS/MMXU1.TotW; # 可以指定参数
+```
+
+## 8.6 数据集的创建与删除
+```bash
+# 先看一下是有这个数据集的
+get-dataset-dir MEAS/LLN0.dsAin1;
+# 然后删除
+delete-dataset MEAS/LLN0.dsAin1;
+# 再看一下是否有这个数据集
+get-dataset-dir MEAS/LLN0.dsAin1;
+# 可以看到没有了
 ```
