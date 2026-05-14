@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.CmsGetGoCBValues;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsErrorGocbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBValues> {
@@ -21,8 +20,7 @@ public class GetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsGetGoCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetGoCBValues asdu = (CmsGetGoCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorGocbChoice> choices = new CmsArray<>(CmsErrorGocbChoice::new);
 

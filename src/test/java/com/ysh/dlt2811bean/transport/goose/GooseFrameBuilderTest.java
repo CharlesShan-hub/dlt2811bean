@@ -3,8 +3,6 @@ package com.ysh.dlt2811bean.transport.goose;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("GooseFrameBuilder Unit Test")

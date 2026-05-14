@@ -4,7 +4,6 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
-import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
 import com.ysh.dlt2811bean.scl.SclDocument;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclBDA;
@@ -37,8 +36,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
-        CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ldName = null;
         String lnRef = null;
@@ -59,7 +57,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
         List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
             log.warn("[Server] resolveTargets returned null for ldName={} lnRef={}", ldName, lnRef);
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<DoEntry> entries = collectDoDefinitions(targets, !useLdName, fcFilter);
@@ -78,7 +76,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

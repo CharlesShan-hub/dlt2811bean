@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAssociateNegotiate> {
@@ -42,8 +41,7 @@ public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAsso
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsAssociateNegotiate asdu = (CmsAssociateNegotiate) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         int clientApduSize = asdu.apduSize.get();
         long clientAsduSize = asdu.asduSize.get();
@@ -54,24 +52,24 @@ public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAsso
 
         if (clientApduSize <= 0 || clientApduSize > MAX_APDU_SIZE) {
             log.warn("[Server] Client apduSize out of range: {}", clientApduSize);
-            return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
         if (clientAsduSize <= 0 || clientAsduSize > MAX_ASDU_SIZE) {
             log.warn("[Server] Client asduSize out of range: {}", clientAsduSize);
-            return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
         if (clientProtocolVersion != serverProtocolVersion) {
             log.warn("[Server] Protocol version mismatch: client={}, server={}",
                     clientProtocolVersion, serverProtocolVersion);
-            return buildNegativeResponse(request, CmsServiceError.TYPE_CONFLICT);
+            return buildNegativeResponse(CmsServiceError.TYPE_CONFLICT);
         }
 
         int negotiatedApduSize = Math.min(clientApduSize, serverApduSize);
 
-        session.setNegotiated(true);
-        session.setNegotiatedApduSize(negotiatedApduSize);
-        session.setPeerAsduSize((int) clientAsduSize);
-        session.setPeerProtocolVersion((int) clientProtocolVersion);
+        serverSession.setNegotiated(true);
+        serverSession.setNegotiatedApduSize(negotiatedApduSize);
+        serverSession.setPeerAsduSize((int) clientAsduSize);
+        serverSession.setPeerProtocolVersion((int) clientProtocolVersion);
 
         CmsAssociateNegotiate response = new CmsAssociateNegotiate(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get())

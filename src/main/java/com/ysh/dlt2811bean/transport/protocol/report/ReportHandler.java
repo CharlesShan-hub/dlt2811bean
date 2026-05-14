@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.transport.protocol.report;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsReport;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -14,8 +13,7 @@ public class ReportHandler extends AbstractCmsServiceHandler<CmsReport> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsReport asdu = (CmsReport) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String rptID = asdu.rptID.get();
         if (rptID == null || rptID.isEmpty()) {

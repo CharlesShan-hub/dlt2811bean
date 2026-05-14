@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.io.ByteArrayOutputStream;
@@ -17,15 +16,14 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
+    protected CmsApdu doServerHandle() {
         CmsSetFile asdu = (CmsSetFile) request.getAsdu();
         String fileName = asdu.fileName.get();
         long startPosition = asdu.startPosition.get();
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] SetFile: empty filename");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (startPosition == 0) {
@@ -37,7 +35,7 @@ public class SetFileHandler extends AbstractCmsServiceHandler<CmsSetFile> {
 
         if (startPosition < 1) {
             log.warn("[Server] SetFile: invalid startPosition {}", startPosition);
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         PendingFile pf = pendingFile(serverSession, fileName);

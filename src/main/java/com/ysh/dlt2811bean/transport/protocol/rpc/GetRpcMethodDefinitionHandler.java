@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsErrorMethodChoice;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodValue;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,8 +43,7 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetRpcMethodDefinition asdu = (CmsGetRpcMethodDefinition) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsGetRpcMethodDefinition response = new CmsGetRpcMethodDefinition(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get());
@@ -80,7 +78,7 @@ public class GetRpcMethodDefinitionHandler extends AbstractCmsServiceHandler<Cms
 
         if (response.errorMethod.size() == 0) {
             log.warn("[Server] GetRpcMethodDefinition: no references provided");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         log.debug("[Server] GetRpcMethodDefinition: {} entries, moreFollows={}",

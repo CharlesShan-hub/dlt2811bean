@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.goose.GooseConfig;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.goose.GetGoCBValuesHandler.goEnaState;
 
@@ -29,11 +28,11 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doServerHandle() {
         CmsSetGoCBValues asdu = (CmsSetGoCBValues) request.getAsdu();
 
         if (asdu.gocb == null || asdu.gocb.size() == 0) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsArray<CmsSetGoCBValuesResultEntry> results = new CmsArray<>(CmsSetGoCBValuesResultEntry::new);
@@ -82,7 +81,7 @@ public class SetGoCBValuesHandler extends AbstractCmsServiceHandler<CmsSetGoCBVa
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetGoCBValues response = new CmsSetGoCBValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId());
         CmsSetGoCBValuesResultEntry entry = new CmsSetGoCBValuesResultEntry();

@@ -21,7 +21,6 @@ import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +32,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetAllCBValues asdu = (CmsGetAllCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ldName = null;
         String lnRef = null;
@@ -49,7 +47,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
 
         List<SclLN0> ln0s = resolveLn0s(ldName, lnRef);
         if (ln0s == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<CbEntry> entries = collectCBs(ln0s, acsiClass);
@@ -67,7 +65,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

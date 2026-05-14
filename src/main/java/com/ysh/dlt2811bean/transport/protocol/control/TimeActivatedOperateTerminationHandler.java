@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperateTermination;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class TimeActivatedOperateTerminationHandler extends AbstractCmsServiceHandler<CmsTimeActivatedOperateTermination> {
@@ -15,13 +14,12 @@ public class TimeActivatedOperateTerminationHandler extends AbstractCmsServiceHa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsTimeActivatedOperateTermination asdu = (CmsTimeActivatedOperateTermination) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] TimeActivatedOperateTermination: empty reference");
-            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsTimeActivatedOperateTermination response = new CmsTimeActivatedOperateTermination(MessageType.RESPONSE_POSITIVE)

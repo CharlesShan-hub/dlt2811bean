@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsSelectWithValue;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class SelectWithValueHandler extends AbstractCmsServiceHandler<CmsSelectWithValue> {
@@ -15,13 +14,12 @@ public class SelectWithValueHandler extends AbstractCmsServiceHandler<CmsSelectW
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSelectWithValue asdu = (CmsSelectWithValue) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] SelectWithValue: empty reference");
-            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsSelectWithValue response = new CmsSelectWithValue(MessageType.RESPONSE_POSITIVE)
@@ -36,8 +34,7 @@ public class SelectWithValueHandler extends AbstractCmsServiceHandler<CmsSelectW
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
-        CmsSelectWithValue asdu = (CmsSelectWithValue) request.getAsdu();
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSelectWithValue response = new CmsSelectWithValue(MessageType.RESPONSE_NEGATIVE)
                 .reqId(asdu.reqId().get())
                 .reference(asdu.reference.get())

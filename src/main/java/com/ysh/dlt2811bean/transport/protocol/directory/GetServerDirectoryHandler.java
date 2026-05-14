@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsObjectClass;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.List;
 
@@ -20,11 +19,10 @@ public class GetServerDirectoryHandler extends AbstractCmsServiceHandler<CmsGetS
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetServerDirectory asdu = (CmsGetServerDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.objectClass.get() != CmsObjectClass.LOGICAL_DEVICE) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         List<SclIED.SclLDevice> lDevices = server.getLDevices();
@@ -42,7 +40,7 @@ public class GetServerDirectoryHandler extends AbstractCmsServiceHandler<CmsGetS
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

@@ -44,7 +44,7 @@ class CmsDispatcherTest {
     @BeforeEach
     void setUp() {
         dispatcher = new CmsDispatcher();
-        dispatcher.registerHandler(new AssociateHandler());
+        dispatcher.registerHandler(new AssociateHandler(null));
         dispatcher.registerHandler(new ReleaseHandler());
         dispatcher.registerHandler(new AbortHandler());
         dispatcher.registerHandler(new TestHandler());

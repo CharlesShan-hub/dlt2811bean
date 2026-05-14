@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsOperate;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class OperateHandler extends AbstractCmsServiceHandler<CmsOperate> {
@@ -15,13 +14,12 @@ public class OperateHandler extends AbstractCmsServiceHandler<CmsOperate> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsOperate asdu = (CmsOperate) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] Operate: empty reference");
-            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsOperate response = new CmsOperate(MessageType.RESPONSE_POSITIVE)
@@ -36,8 +34,7 @@ public class OperateHandler extends AbstractCmsServiceHandler<CmsOperate> {
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
-        CmsOperate asdu = (CmsOperate) request.getAsdu();
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsOperate response = new CmsOperate(MessageType.RESPONSE_NEGATIVE)
                 .reqId(asdu.reqId().get())
                 .reference(asdu.reference.get())

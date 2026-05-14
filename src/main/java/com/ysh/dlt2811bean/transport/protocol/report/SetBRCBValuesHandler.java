@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.report.GetBRCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
@@ -25,8 +24,7 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetBRCBValues asdu = (CmsSetBRCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.brcb == null || asdu.brcb.size() == 0) {
             log.debug("[Server] SetBRCBValues: empty sequence, returning Response+");
@@ -166,7 +164,7 @@ public class SetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsSetBRCBVa
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetBRCBValues response = new CmsSetBRCBValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId())
                 .addResult(errorCode);

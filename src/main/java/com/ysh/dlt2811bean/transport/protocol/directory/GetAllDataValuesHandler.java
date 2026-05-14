@@ -22,7 +22,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +36,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
-        CmsGetAllDataValues asdu = (CmsGetAllDataValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ldName = null;
         String lnRef = null;
@@ -60,7 +58,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
 
         List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         List<DataValue> values = collectDataValues(targets, !useLdName, fcFilter);
@@ -78,7 +76,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

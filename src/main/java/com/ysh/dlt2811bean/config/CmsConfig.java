@@ -1,7 +1,5 @@
 package com.ysh.dlt2811bean.config;
 
-import java.util.List;
-
 public class CmsConfig {
 
     private Server server = new Server();

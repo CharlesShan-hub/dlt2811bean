@@ -20,6 +20,9 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
     protected SclIED.SclAccessPoint accessPoint;
     protected SclIED.SclServer server;
     private final boolean needAccessPoint;
+    protected CmsServerSession serverSession;
+    protected CmsApdu request;
+    protected T asdu;
 
     protected AbstractCmsServiceHandler(ServiceName serviceName, Supplier<T> factory) {
         this(serviceName, factory, true);
@@ -38,23 +41,34 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
 
     @Override
     public CmsApdu handleRequest(CmsSession session, CmsApdu request) {
+        this.request = request;
         try {
+            // build SCL model
             if (session instanceof CmsServerSession && needAccessPoint) {
                 accessPoint = ((CmsServerSession) session).getSclAccessPoint();
                 if (accessPoint == null) {
                     log.warn("[Server] No SCL model for session: accessPoint is null");
-                    return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                    return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
                 }
                 server = accessPoint.getServer();
                 if (server == null) {
                     log.warn("[Server] No SCL model for session: server is null");
-                    return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                    return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
                 }
             }
-            return doHandle(session, request);
+            // build server session
+            if (session instanceof CmsServerSession) {
+                serverSession = ((CmsServerSession) session);
+                @SuppressWarnings("unchecked")
+                T typedAsdu = (T) request.getAsdu();
+                asdu = typedAsdu;
+                return doServerHandle();
+            }else{
+                return doHandle(session, request);
+            }
         } catch (Exception e) {
             log.error("[Server] Error handling {}: {}", serviceName, e.getMessage(), e);
-            return buildNegativeResponse(request);
+            return buildNegativeResponse();
         }
     }
 
@@ -62,13 +76,21 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
         return server;
     }
 
-    protected abstract CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception;
-
-    protected CmsApdu buildNegativeResponse(CmsApdu request) {
-        return buildNegativeResponse(request, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception{
+        log.error("No implementation for {}: {}", serviceName, request);
+        return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
     }
 
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu doServerHandle() throws Exception{
+        log.error("No implementation for {}: {}", serviceName, request);
+        return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+    }
+
+    protected CmsApdu buildNegativeResponse() {
+        return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+    }
+
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         T asdu = factory.get();
         asdu.messageType(MessageType.RESPONSE_NEGATIVE);
         asdu.reqId(request.getReqId());

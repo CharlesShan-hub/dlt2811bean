@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,8 +19,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ldName = asdu.ldName != null ? asdu.ldName.get() : null;
         List<SclIED.SclLDevice> targetDevices = new ArrayList<>();
@@ -30,7 +28,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
             SclIED.SclLDevice device = findLDevice(accessPoint, ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             targetDevices.add(device);
         } else {
@@ -61,7 +59,7 @@ public class GetLogicalDeviceDirectoryHandler extends AbstractCmsServiceHandler<
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

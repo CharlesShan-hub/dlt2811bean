@@ -6,7 +6,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetEditSGValue;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditSGValue> {
@@ -16,8 +15,7 @@ public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditS
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetEditSGValue asdu = (CmsSetEditSGValue) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.data == null || asdu.data.size() == 0) {
             return new CmsApdu(new CmsSetEditSGValue(MessageType.RESPONSE_POSITIVE)
@@ -49,7 +47,7 @@ public class SetEditSGValueHandler extends AbstractCmsServiceHandler<CmsSetEditS
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         return new CmsApdu(new CmsSetEditSGValue(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId())
                 .addResult(errorCode));

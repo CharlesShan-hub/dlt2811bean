@@ -10,8 +10,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.transport.session.AssociationIdGenerator;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.security.cert.X509Certificate;
@@ -37,10 +35,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
     private boolean requireAuthentication = false;
     private final SclDocument sclDocument;
     private byte[] serverCertificateBytes;
-
-    public AssociateHandler() {
-        this(null);
-    }
+    private String serverAccessPointReference;
 
     public AssociateHandler(SclDocument sclDocument) {
         super(ServiceName.ASSOCIATE, CmsAssociate::new, false);
@@ -55,81 +50,28 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        CmsAssociate asdu = (CmsAssociate) request.getAsdu();
+    protected CmsApdu doServerHandle() throws Exception {
 
-        if (!session.isNegotiated()) {
+        // 1. Check session state
+        if (!serverSession.isNegotiated()) {
             log.warn("[Server] Association rejected: negotiation not completed");
-            return buildNegativeResponse(request, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
+            return buildNegativeResponse(CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
         }
 
-        // 1. Resolve serverAccessPointReference
-        String sapRef = asdu.serverAccessPointReference() != null
-            ? asdu.serverAccessPointReference().get() : null;
-        if (sapRef == null || sapRef.isEmpty()) {
-            if (sclDocument != null) {
-                sapRef = sclDocument.getDefaultAccessPointReference();
-                log.debug("[Server] Using default access point: {}", sapRef);
-            }
-            if (sapRef == null || sapRef.isEmpty()) {
-                log.warn("[Server] No serverAccessPointReference and no default available");
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-            }
-        }
-
-        // 2. Validate against SCL model if loaded
-        if (sclDocument != null) {
-            String[] parts = sapRef.split("\\.");
-            if (parts.length != 2) {
-                log.warn("[Server] Invalid serverAccessPointReference format: {}", sapRef);
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-            }
-
-            String iedName = parts[0];
-            String apName = parts[1];
-
-            SclIED ied = sclDocument.findIedByName(iedName);
-            if (ied == null) {
-                log.warn("[Server] IED not found in SCL model: {}", iedName);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-
-            SclIED.SclAccessPoint accessPoint = ied.findAccessPointByName(apName);
-            if (accessPoint == null) {
-                log.warn("[Server] AccessPoint not found in IED {}: {}", iedName, apName);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-
-            // Save AccessPoint info to session
-            serverSession.setAccessPoint(sapRef, iedName, apName, accessPoint);
-            // Save DataTypeTemplates for type resolution
-            if (sclDocument != null) {
-                serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
-            }
-        }
+        // 2. Resolve serverAccessPointReference
+        if(asdu.serverAccessPointReference() != null) 
+            serverAccessPointReference = asdu.serverAccessPointReference().get();
+        int error = validateSapRef();
+        if (error != CmsServiceError.NO_ERROR) return buildNegativeResponse(error);
 
         // 3. Validate authentication parameter if required
-        AuthenticationParameter authParam = asdu.authenticationParameter();
-        if (requireAuthentication && (authParam == null || authParam.signatureCertificate() == null)) {
-            log.warn("[Server] Authentication required but no certificate provided");
-            return buildNegativeResponse(request, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
-        }
-        if (authenticator != null && authParam != null && authParam.signatureCertificate() != null) {
-            byte[] signedData = prepareSignedData(asdu);
-
-            Optional<CmsServiceError> authError = authenticator.validate(authParam, signedData);
-            if (authError.isPresent()) {
-                log.warn("[Server] Authentication failed: {}", authError.get());
-                return buildNegativeResponse(request, authError.get().get());
-            }
-            log.debug("[Server] GM authentication successful for {}", sapRef);
-        }
+        error = validateAuthParam();
+        if (error != CmsServiceError.NO_ERROR) return buildNegativeResponse(error);
 
         // 4. Generate association ID
         byte[] assocId = AssociationIdGenerator.generate();
-        session.setAssociationId(assocId);
-        session.setState(SessionState.ASSOCIATED);
+        serverSession.setAssociationId(assocId);
+        serverSession.setState(SessionState.ASSOCIATED);
 
         // 5. Build positive response
         CmsAssociate response = new CmsAssociate(MessageType.RESPONSE_POSITIVE)
@@ -138,19 +80,81 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
                 .serviceError(CmsServiceError.NO_ERROR);
 
         // 6. Add server certificate in response for bidirectional auth
-        if (serverCertificateBytes != null) {
+        if (serverCertificateBytes != null) 
             response.authenticationParameter(new AuthenticationParameter()
                 .signatureCertificate(serverCertificateBytes));
-        }
 
         log.debug("[Server] Association accepted, assocId={}, SAP={}",
-                 hex(assocId), sapRef);
+                 hex(assocId), serverAccessPointReference);
         return new CmsApdu(response);
     }
 
+    private int validateSapRef(){
+        if (serverAccessPointReference == null || serverAccessPointReference.isEmpty()) {
+            if (sclDocument != null) {
+                serverAccessPointReference = sclDocument.getDefaultAccessPointReference();
+                log.debug("[Server] Using default access point: {}", serverAccessPointReference);
+            }
+            if (serverAccessPointReference == null || serverAccessPointReference.isEmpty()) {
+                log.warn("[Server] No serverAccessPointReference and no default available");
+                return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
+            }
+        }
+
+        if (sclDocument != null) {
+            String[] parts = serverAccessPointReference.split("\\.");
+            if (parts.length != 2) {
+                log.warn("[Server] Invalid serverAccessPointReference format: {}", serverAccessPointReference);
+                return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
+            }
+
+            String iedName = parts[0];
+            String apName = parts[1];
+
+            SclIED ied = sclDocument.findIedByName(iedName);
+            if (ied == null) {
+                log.warn("[Server] IED not found in SCL model: {}", iedName);
+                return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+            }
+
+            SclIED.SclAccessPoint accessPoint = ied.findAccessPointByName(apName);
+            if (accessPoint == null) {
+                log.warn("[Server] AccessPoint not found in IED {}: {}", iedName, apName);
+                return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+            }
+
+            // Save AccessPoint info to session
+            serverSession.setAccessPoint(serverAccessPointReference, iedName, apName, accessPoint);
+            // Save DataTypeTemplates for type resolution
+            if (sclDocument != null) {
+                serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
+            }
+        }
+
+        return CmsServiceError.NO_ERROR;
+    }
+
+    private int validateAuthParam(){
+        AuthenticationParameter authParam = asdu.authenticationParameter();
+        if (requireAuthentication && (authParam == null || authParam.signatureCertificate() == null)) {
+            log.warn("[Server] Authentication required but no certificate provided");
+            return CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE;
+        }
+        if (authenticator != null && authParam != null && authParam.signatureCertificate() != null) {
+            byte[] signedData = prepareSignedData(asdu);
+
+            Optional<CmsServiceError> authError = authenticator.validate(authParam, signedData);
+            if (authError.isPresent()) {
+                log.warn("[Server] Authentication failed: {}", authError.get());
+                return authError.get().get();
+            }
+            log.debug("[Server] GM authentication successful for {}", serverAccessPointReference);
+        }
+        return CmsServiceError.NO_ERROR;
+    }
+
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
-        CmsAssociate asdu = (CmsAssociate) request.getAsdu();
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsAssociate response = new CmsAssociate(MessageType.RESPONSE_NEGATIVE)
                 .reqId(asdu.reqId().get())
                 .serviceError(errorCode);

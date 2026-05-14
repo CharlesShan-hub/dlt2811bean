@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsRpcCall;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -22,14 +21,13 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
+    protected CmsApdu doServerHandle() {
         CmsRpcCall asdu = (CmsRpcCall) request.getAsdu();
         String method = asdu.method.get();
 
         if (method == null || method.isEmpty()) {
             log.warn("[Server] RpcCall with empty method");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int selected = asdu.reqDataCallID.getSelectedIndex();
@@ -42,7 +40,7 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
             RpcContinuationState state = (RpcContinuationState) serverSession.getAttribute(callIdKey(callId));
             if (state == null) {
                 log.warn("[Server] RpcCall continuation not found: callId={}", bytesToHex(callId));
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
 
             serverSession.removeAttribute(callIdKey(callId));
@@ -74,7 +72,7 @@ public class RpcCallHandler extends AbstractCmsServiceHandler<CmsRpcCall> {
         }
 
         log.warn("[Server] RpcCall unknown method: {}", method);
-        return buildNegativeResponse(request, CmsServiceError.CLASS_NOT_SUPPORTED);
+        return buildNegativeResponse(CmsServiceError.CLASS_NOT_SUPPORTED);
     }
 
     private CmsApdu respondWithPong(CmsRpcCall asdu) {

@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorBrcbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBValues> {
@@ -21,8 +20,7 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetBRCBValues asdu = (CmsGetBRCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorBrcbChoice> choices = new CmsArray<>(CmsErrorBrcbChoice::new);
 

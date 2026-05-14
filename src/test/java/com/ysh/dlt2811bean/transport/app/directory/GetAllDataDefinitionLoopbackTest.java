@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.transport.app.directory;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
-import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 
 import org.junit.jupiter.api.*;

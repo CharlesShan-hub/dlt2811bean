@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
 import java.util.EnumSet;
@@ -26,8 +25,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetURCBValues asdu = (CmsSetURCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.urcb == null || asdu.urcb.size() == 0) {
             log.debug("[Server] SetURCBValues: empty sequence, returning Response+");
@@ -181,7 +179,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId());
         CmsSetURCBValuesResultEntry entry = new CmsSetURCBValuesResultEntry();

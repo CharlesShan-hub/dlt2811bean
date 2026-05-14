@@ -7,7 +7,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsDeleteDataSet;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDataSet> {
@@ -22,12 +21,12 @@ public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDat
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -35,11 +34,11 @@ public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDat
 
         SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (device.getLn0() == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         int dotIdx = rest.indexOf('.');
@@ -55,7 +54,7 @@ public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDat
 
         if (toRemove == null) {
             log.warn("[Server] DeleteDataSet: data set not found: {}", dsRef);
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         device.getLn0().getDataSets().remove(toRemove);
@@ -73,5 +72,4 @@ public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDat
         }
         return null;
     }
-
 }

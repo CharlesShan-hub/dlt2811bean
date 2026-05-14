@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsCancel;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class CancelHandler extends AbstractCmsServiceHandler<CmsCancel> {
@@ -15,13 +14,12 @@ public class CancelHandler extends AbstractCmsServiceHandler<CmsCancel> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsCancel asdu = (CmsCancel) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ref = asdu.reference.get();
 
         if (ref == null || ref.isEmpty()) {
             log.warn("[Server] Cancel: empty reference");
-            return buildNegativeResponse(request, CmsAddCause.NOT_SUPPORTED);
+            return buildNegativeResponse(CmsAddCause.NOT_SUPPORTED);
         }
 
         CmsCancel response = new CmsCancel(MessageType.RESPONSE_POSITIVE)
@@ -36,8 +34,7 @@ public class CancelHandler extends AbstractCmsServiceHandler<CmsCancel> {
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
-        CmsCancel asdu = (CmsCancel) request.getAsdu();
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsCancel response = new CmsCancel(MessageType.RESPONSE_NEGATIVE)
                 .reqId(asdu.reqId().get())
                 .reference(asdu.reference.get())

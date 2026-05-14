@@ -6,7 +6,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileDirectory;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,8 +38,7 @@ public class GetFileDirectoryHandler extends AbstractCmsServiceHandler<CmsGetFil
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetFileDirectory asdu = (CmsGetFileDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String pathName = asdu.pathName.get();
         String fileAfter = asdu.fileAfter.get();
         long startTime = asdu.startTime.secondsSinceEpoch.get();

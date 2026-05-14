@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDefinition;
 import com.ysh.dlt2811bean.service.svc.rpc.datatypes.CmsRpcMethodDefEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -57,19 +56,18 @@ public class GetRpcInterfaceDefinitionHandler extends AbstractCmsServiceHandler<
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetRpcInterfaceDefinition asdu = (CmsGetRpcInterfaceDefinition) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ifName = asdu.interfaceName.get();
 
         if (ifName == null || ifName.isEmpty()) {
             log.warn("[Server] GetRpcInterfaceDefinition: empty interface name");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         List<CmsRpcMethodDefEntry> allMethods = builtinInterfaces.get(ifName);
         if (allMethods == null) {
             log.warn("[Server] GetRpcInterfaceDefinition: interface not found: {}", ifName);
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String after = asdu.referenceAfter.get();

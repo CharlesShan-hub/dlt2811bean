@@ -7,7 +7,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.svc.goose.CmsSendGooseMessage;
 
 import java.time.Instant;
-import java.util.List;
 
 public class GooseFrameBuilder {
 

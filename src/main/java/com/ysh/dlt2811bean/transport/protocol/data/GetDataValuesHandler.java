@@ -14,8 +14,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
 
@@ -27,10 +25,9 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetDataValues asdu = (CmsGetDataValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
-        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         CmsStructure values = new CmsStructure();
         for (CmsGetDataValuesEntry entry : asdu.data) {
@@ -194,5 +191,4 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         }
         return null;
     }
-
 }

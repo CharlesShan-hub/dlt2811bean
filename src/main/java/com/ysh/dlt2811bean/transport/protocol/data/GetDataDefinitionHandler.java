@@ -2,7 +2,6 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
-import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.SclTypeResolver;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
@@ -13,8 +12,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDefinition;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,10 +25,9 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetDataDefinition asdu = (CmsGetDataDefinition) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
-        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         CmsArray<CmsGetDataDefinitionEntry> definitions = new CmsArray<>(CmsGetDataDefinitionEntry::new);
         int processedCount = 0;
@@ -100,7 +96,7 @@ public class GetDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetDa
         }
 
         String doName = parts[1];
-        SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
+        //SclIED.SclDOI doi = findDoiInDevice(device, lnName, doName);
 
         if (fc != null && !fc.isEmpty() && !"XX".equals(fc)) {
             if (templates == null) {

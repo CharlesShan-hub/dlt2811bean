@@ -27,7 +27,6 @@ import com.ysh.dlt2811bean.transport.protocol.test.*;
 import com.ysh.dlt2811bean.transport.protocol.control.*;
 import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.protocol.sv.*;
-import com.ysh.dlt2811bean.transport.goose.GooseDataProvider;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 import com.ysh.dlt2811bean.transport.protocol.goose.*;
 import com.ysh.dlt2811bean.transport.protocol.log.*;
@@ -334,7 +333,6 @@ public class CmsServer {
     /**
      * Pushes a TimeActivatedOperateTermination notification to a specific client session.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public void pushTimeActivatedOperateTermination(CmsServerSession session, String ref, CmsType<?> ctlVal) throws Exception {
         CmsTimeActivatedOperateTermination asdu = new CmsTimeActivatedOperateTermination(MessageType.REQUEST_POSITIVE)
                 .reference(ref)

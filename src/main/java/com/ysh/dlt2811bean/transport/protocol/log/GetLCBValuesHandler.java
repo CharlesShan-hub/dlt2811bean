@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLcbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValues> {
@@ -21,8 +20,7 @@ public class GetLCBValuesHandler extends AbstractCmsServiceHandler<CmsGetLCBValu
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetLCBValues asdu = (CmsGetLCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorLcbChoice> choices = new CmsArray<>(CmsErrorLcbChoice::new);
 

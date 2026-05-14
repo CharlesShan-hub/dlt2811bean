@@ -17,7 +17,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +31,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ldName = null;
         String lnRef = null;
@@ -46,7 +44,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
 
         List<TargetLn> targets = resolveTargets(ldName, lnRef);
         if (targets == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         int acsiClass = asdu.acsiClass.get();
@@ -82,7 +80,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
                 break;
             default:
                 log.warn("[Server] Unknown ACSI class: {}", acsiClass);
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
@@ -98,7 +96,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             }
             if (!found) {
                 log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

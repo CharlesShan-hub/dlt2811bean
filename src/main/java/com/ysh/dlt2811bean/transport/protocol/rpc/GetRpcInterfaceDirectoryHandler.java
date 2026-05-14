@@ -4,7 +4,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcInterfaceDirectory;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.List;
 
@@ -17,8 +16,7 @@ public class GetRpcInterfaceDirectoryHandler extends AbstractCmsServiceHandler<C
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetRpcInterfaceDirectory asdu = (CmsGetRpcInterfaceDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String after = asdu.referenceAfter.get();
         int startIdx = 0;

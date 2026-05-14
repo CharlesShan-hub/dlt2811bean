@@ -11,7 +11,6 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CacheHandler implements CommandHandler {
 
@@ -27,7 +26,6 @@ public class CacheHandler implements CommandHandler {
         );
     }
 
-    @SuppressWarnings("unchecked")
     public void execute(CmsClient client, Map<String, String> values) {
         String path = values.get("path");
         Map<String, Map<String, Map<String, Map<String, Object>>>> h = ctx.getCachedHierarchy();
@@ -62,7 +60,6 @@ public class CacheHandler implements CommandHandler {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void printKeys(Object value) {
         if (value instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) value;

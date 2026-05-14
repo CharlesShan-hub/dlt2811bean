@@ -14,8 +14,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
 
@@ -26,10 +24,9 @@ public class SetDataValuesHandler extends AbstractCmsServiceHandler<CmsSetDataVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetDataValues asdu = (CmsSetDataValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
-        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         CmsArray<CmsServiceError> results = new CmsArray<>(CmsServiceError::new).capacity(asdu.data.size());
         boolean allSuccess = true;

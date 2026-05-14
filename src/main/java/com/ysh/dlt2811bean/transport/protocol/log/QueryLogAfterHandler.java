@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsQueryLogAfter;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsLogEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogAfter> {
@@ -18,16 +17,15 @@ public class QueryLogAfterHandler extends AbstractCmsServiceHandler<CmsQueryLogA
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsQueryLogAfter asdu = (CmsQueryLogAfter) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String logRef = asdu.logReference.get();
         if (logRef == null || logRef.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (!validateLogReference(logRef)) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         log.debug("[Server] QueryLogAfter: logRef={}, startPresent={}", logRef, asdu.startTime != null);

@@ -13,8 +13,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDirectory;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDirectoryEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,19 +26,18 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetDataDirectory asdu = (CmsGetDataDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
-        SclDataTypeTemplates templates = ((CmsServerSession) session).getSclDataTypeTemplates();
+        SclDataTypeTemplates templates = serverSession.getSclDataTypeTemplates();
 
         String ref = asdu.dataReference.get();
         if (ref == null || ref.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = ref.substring(0, slashIdx);
@@ -49,11 +46,11 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
 
         SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (parts.length < 1) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String lnName = parts[0];
@@ -67,7 +64,7 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
             // LN level: list all DOs (merge instance + type templates)
             allEntries = buildLnDirectoryEntries(device, server, templates, lnName);
             if (allEntries == null) {
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         } else {
             // DO level: find specific DOI or use type templates
@@ -76,10 +73,10 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
                 // Try to list DAs from type templates
                 allEntries = buildDoDirectoryEntriesFromType(server, templates, ldName, lnName, doName);
                 if (allEntries == null) {
-                    return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                    return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
                 }
             } else if (doi == null) {
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             } else {
                 allEntries = buildDirectoryEntries(doi, "", server, templates, ldName, lnName, doName);
             }
@@ -87,7 +84,7 @@ public class GetDataDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDat
         if (skipUntilAfter) {
             allEntries = filterAfter(allEntries, afterRef);
             if (allEntries == null) {
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
 

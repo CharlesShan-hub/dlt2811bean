@@ -7,7 +7,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFileAttributeValues;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -63,19 +62,18 @@ public class GetFileAttributeValuesHandler extends AbstractCmsServiceHandler<Cms
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetFileAttributeValues asdu = (CmsGetFileAttributeValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String fileName = asdu.fileName.get();
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] GetFileAttributeValues: empty filename");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsFileEntry entry = resolveFileAttributes(fileName);
         if (entry == null) {
             log.warn("[Server] GetFileAttributeValues: file not found {}", fileName);
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         CmsGetFileAttributeValues response = new CmsGetFileAttributeValues(MessageType.RESPONSE_POSITIVE)

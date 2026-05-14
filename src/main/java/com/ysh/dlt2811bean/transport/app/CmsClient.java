@@ -978,7 +978,6 @@ public class CmsClient {
      * @return the response APDU (positive or negative)
      * @throws Exception if not connected or timeout
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
     public CmsApdu operate(String reference, com.ysh.dlt2811bean.datatypes.type.CmsType<?> ctlVal) throws Exception {
         CmsOperate asdu = new CmsOperate(MessageType.REQUEST)
                 .reference(reference)

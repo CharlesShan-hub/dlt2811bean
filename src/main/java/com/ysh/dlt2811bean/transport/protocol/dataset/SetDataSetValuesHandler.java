@@ -11,8 +11,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsSetDataSetValues;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDataSetValues> {
@@ -22,17 +20,16 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetDataSetValues asdu = (CmsSetDataSetValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -40,12 +37,12 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
 
         SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         SclIED.SclDataSet dataSet = findDataSet(device, rest);
         if (dataSet == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         int memberCount = asdu.memberValue.size();
@@ -59,7 +56,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
         if (afterRef != null && !afterRef.isEmpty()) {
             startIndex = findStartIndex(dataSet, afterRef);
             if (startIndex < 0) {
-                return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
 
@@ -286,7 +283,7 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetDataSetValues response = new CmsSetDataSetValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId())
                 .addResult(errorCode);

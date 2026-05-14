@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSelectEditSG;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class SelectEditSGHandler extends AbstractCmsServiceHandler<CmsSelectEditSG> {
@@ -15,12 +14,11 @@ public class SelectEditSGHandler extends AbstractCmsServiceHandler<CmsSelectEdit
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSelectEditSG asdu = (CmsSelectEditSG) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String ref = asdu.sgcbReference.get();
         if (ref == null || ref.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int sgNum = asdu.settingGroupNumber.get() & 0xFF;

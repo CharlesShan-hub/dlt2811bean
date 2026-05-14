@@ -10,7 +10,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsGetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsErrorMsvcbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCBValues> {
@@ -22,8 +21,7 @@ public class GetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsGetMSVCB
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetMSVCBValues asdu = (CmsGetMSVCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorMsvcbChoice> choices = new CmsArray<>(CmsErrorMsvcbChoice::new);
 

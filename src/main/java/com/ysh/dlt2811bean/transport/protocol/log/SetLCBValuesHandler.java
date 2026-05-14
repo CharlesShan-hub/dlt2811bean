@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsSetLCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsSetLCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.log.GetLCBValuesHandler.logEnaState;
 import java.util.EnumSet;
@@ -26,8 +25,7 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetLCBValues asdu = (CmsSetLCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.lcb == null || asdu.lcb.size() == 0) {
             log.debug("[Server] SetLCBValues: empty sequence, returning Response+");
@@ -183,7 +181,7 @@ public class SetLCBValuesHandler extends AbstractCmsServiceHandler<CmsSetLCBValu
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetLCBValues response = new CmsSetLCBValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId());
         CmsSetLCBValuesResultEntry entry = new CmsSetLCBValuesResultEntry();

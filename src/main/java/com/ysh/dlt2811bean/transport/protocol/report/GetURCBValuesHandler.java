@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorUrcbChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBValues> {
@@ -21,8 +20,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetURCBValues asdu = (CmsGetURCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorUrcbChoice> choices = new CmsArray<>(CmsErrorUrcbChoice::new);
 

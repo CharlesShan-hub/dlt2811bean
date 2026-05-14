@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.sv.CmsSetMSVCBValues;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.sv.datatypes.CmsSetMSVCBValuesResultEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import static com.ysh.dlt2811bean.transport.protocol.sv.GetMSVCBValuesHandler.svEnaState;
 
@@ -19,11 +18,10 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
        }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsSetMSVCBValues asdu = (CmsSetMSVCBValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         if (asdu.msvcb == null || asdu.msvcb.size() == 0) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsArray<CmsSetMSVCBValuesResultEntry> results = new CmsArray<>(CmsSetMSVCBValuesResultEntry::new);
@@ -58,7 +56,7 @@ public class SetMSVCBValuesHandler extends AbstractCmsServiceHandler<CmsSetMSVCB
     }
 
     @Override
-    protected CmsApdu buildNegativeResponse(CmsApdu request, int errorCode) {
+    protected CmsApdu buildNegativeResponse(int errorCode) {
         CmsSetMSVCBValues response = new CmsSetMSVCBValues(MessageType.RESPONSE_NEGATIVE)
                 .reqId(request.getReqId());
         CmsSetMSVCBValuesResultEntry entry = new CmsSetMSVCBValuesResultEntry();

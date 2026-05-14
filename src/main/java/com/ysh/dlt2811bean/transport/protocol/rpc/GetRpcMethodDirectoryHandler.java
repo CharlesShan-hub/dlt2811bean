@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.rpc.CmsGetRpcMethodDirectory;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,8 +26,7 @@ public class GetRpcMethodDirectoryHandler extends AbstractCmsServiceHandler<CmsG
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetRpcMethodDirectory asdu = (CmsGetRpcMethodDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
         String ifName = asdu.interfaceName.get();
 
         List<String> allMethods;
@@ -41,7 +39,7 @@ public class GetRpcMethodDirectoryHandler extends AbstractCmsServiceHandler<CmsG
             allMethods = builtinInterfaces.get(ifName);
             if (allMethods == null) {
                 log.warn("[Server] GetRpcMethodDirectory: interface not found: {}", ifName);
-                return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
         }
 

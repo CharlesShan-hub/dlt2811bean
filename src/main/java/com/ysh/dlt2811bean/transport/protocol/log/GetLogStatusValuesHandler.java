@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetLogStatusValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorLogStatusChoice;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetLogStatusValues> {
@@ -18,8 +17,7 @@ public class GetLogStatusValuesHandler extends AbstractCmsServiceHandler<CmsGetL
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetLogStatusValues asdu = (CmsGetLogStatusValues) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         CmsArray<CmsErrorLogStatusChoice> choices = new CmsArray<>(CmsErrorLogStatusChoice::new);
 

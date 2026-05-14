@@ -9,7 +9,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class GetDataSetDirectoryHandler extends AbstractCmsServiceHandler<CmsGetDataSetDirectory> {
@@ -19,17 +18,16 @@ public class GetDataSetDirectoryHandler extends AbstractCmsServiceHandler<CmsGet
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsGetDataSetDirectory asdu = (CmsGetDataSetDirectory) request.getAsdu();
+    protected CmsApdu doServerHandle() {
 
         String dsRef = asdu.datasetReference.get();
         if (dsRef == null || dsRef.isEmpty()) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int slashIdx = dsRef.indexOf('/');
         if (slashIdx < 0) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String ldName = dsRef.substring(0, slashIdx);
@@ -37,12 +35,12 @@ public class GetDataSetDirectoryHandler extends AbstractCmsServiceHandler<CmsGet
 
         SclIED.SclLDevice device = findLDevice(server, ldName);
         if (device == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         SclIED.SclDataSet dataSet = findDataSet(device, rest);
         if (dataSet == null) {
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         String afterRef = asdu.referenceAfter.get();
@@ -70,7 +68,7 @@ public class GetDataSetDirectoryHandler extends AbstractCmsServiceHandler<CmsGet
         }
 
         if (skipUntilAfter && !foundAfter) {
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         CmsGetDataSetDirectory response = new CmsGetDataSetDirectory(MessageType.RESPONSE_POSITIVE)

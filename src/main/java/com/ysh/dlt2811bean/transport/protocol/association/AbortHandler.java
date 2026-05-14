@@ -3,8 +3,6 @@ package com.ysh.dlt2811bean.transport.protocol.association;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsAbort;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -21,10 +19,7 @@ public class AbortHandler extends AbstractCmsServiceHandler<CmsAbort> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
-        CmsAbort asdu = (CmsAbort) request.getAsdu();
-
+    protected CmsApdu doServerHandle() {
         serverSession.clearAssociationId();
         serverSession.setState(SessionState.CLOSED);
 

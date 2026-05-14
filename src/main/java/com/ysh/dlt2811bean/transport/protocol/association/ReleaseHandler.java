@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
@@ -22,12 +21,11 @@ public class ReleaseHandler extends AbstractCmsServiceHandler<CmsRelease> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsRelease asdu = (CmsRelease) request.getAsdu();
-        byte[] localId = session.getAssociationId();
+    protected CmsApdu doServerHandle() {
+        byte[] localId = serverSession.getAssociationId();
 
-        session.clearAssociationId();
-        session.setState(SessionState.DISCONNECTED);
+        serverSession.clearAssociationId();
+        serverSession.setState(SessionState.DISCONNECTED);
 
         CmsRelease response = new CmsRelease(MessageType.RESPONSE_POSITIVE)
                 .reqId(asdu.reqId().get())

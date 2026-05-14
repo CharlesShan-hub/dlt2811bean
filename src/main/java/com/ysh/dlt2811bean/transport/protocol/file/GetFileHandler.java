@@ -5,8 +5,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.file.CmsGetFile;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
-import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -72,33 +70,32 @@ public class GetFileHandler extends AbstractCmsServiceHandler<CmsGetFile> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
-        CmsServerSession serverSession = (CmsServerSession) session;
+    protected CmsApdu doServerHandle() {
         CmsGetFile asdu = (CmsGetFile) request.getAsdu();
         String fileName = asdu.fileName.get();
         long startPosition = asdu.startPosition.get();
 
         if (fileName == null || fileName.isEmpty()) {
             log.warn("[Server] GetFile: empty filename");
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         if (startPosition == 0) {
             log.debug("[Server] GetFile: cancel read for {}", fileName);
             serverSession.removeAttribute(fileKey(fileName));
-            return buildNegativeResponse(request, CmsServiceError.NO_ERROR);
+            return buildNegativeResponse(CmsServiceError.NO_ERROR);
         }
 
         byte[] fileData = resolveFile(fileName);
         if (fileData == null) {
             log.warn("[Server] GetFile: file not found: {}", fileName);
-            return buildNegativeResponse(request, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         if (startPosition < 1 || startPosition > fileData.length + 1) {
             log.warn("[Server] GetFile: invalid startPosition {} for file {} (size={})",
                     startPosition, fileName, fileData.length);
-            return buildNegativeResponse(request, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
         int offset = (int) (startPosition - 1);

@@ -4,7 +4,6 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.test.CmsTest;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 /**
@@ -19,7 +18,7 @@ public class TestHandler extends AbstractCmsServiceHandler<CmsTest> {
     }
 
     @Override
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) {
+    protected CmsApdu doServerHandle() {
         CmsTest response = new CmsTest(MessageType.RESPONSE_POSITIVE);
         log.debug("Test received");
         return new CmsApdu(response);
