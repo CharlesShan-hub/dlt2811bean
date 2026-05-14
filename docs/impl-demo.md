@@ -82,7 +82,16 @@ get-data-def LD0/RSYN1.Beh XX;
 
 ## 8.5 数据集
 ```bash
-# 查看数据集里边的值: 这里边会给出DO和FC，通过FC就知道是哪个DO下的哪个DA
+# 查看数据集字段dir: 这里边会给出DO和FC，通过FC就知道是哪个DO下的哪个DA
 get-dataset-dir MEAS/LLN0.dsAin1;
-# 
+# 查看数据集里边的值
+get-dataset-values MEAS/LLN0.dsAin1;
+# 这里可以看到很多字段是error，这是因为没有初始值，可以通过cache查看
+cache.MEAS.LLN0.DATA_SET.dsAin1.12.DO;
+
+# 数据集写入
+set-dataset-values MEAS/LLN0.dsAin1 Bay1_P1; # 从头写，一个值
+set-dataset-values MEAS/LLN0.dsAin1 Bay1_P1,Bay1_Q1,Bay1_S1; # 从头写，多个值
+set-dataset-values MEAS/LLN0.dsAin1 Bay1_Q2,Bay1_S2 MEAS/MMXU1.TotW; # 从第一个后边写，多个值
+set-dataset-values MEAS/LLN0.dsAin1 Bay1_Q3 --referenceAfter MEAS/MMXU1.TotW; # 可以指定参数
 ```

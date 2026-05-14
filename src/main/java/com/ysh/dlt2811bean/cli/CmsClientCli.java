@@ -277,16 +277,37 @@ public class CmsClientCli {
                 System.out.println(hint.toString());
             }
 
-            boolean namedMode = !inlineTokens.isEmpty() && inlineTokens.get(0).startsWith("--");
+            boolean hasNamedParams = false;
+            for (String t : inlineTokens) {
+                if (t.startsWith("--")) { hasNamedParams = true; break; }
+            }
 
-            if (namedMode) {
+            if (hasNamedParams) {
                 java.util.Map<String, Param> paramMap = new java.util.LinkedHashMap<>();
-                for (Param p : handler.updateConfigAndGetParams()) {
+                java.util.List<Param> orderedParams = handler.updateConfigAndGetParams();
+                for (Param p : orderedParams) {
                     paramMap.put(p.getName(), p);
                 }
+                int positionalIdx = 0;
                 while (!inlineTokens.isEmpty()) {
                     String token = inlineTokens.remove(0);
-                    if (!token.startsWith("--")) continue;
+                    if (!token.startsWith("--")) {
+                        if (positionalIdx < orderedParams.size()) {
+                            Param param = orderedParams.get(positionalIdx);
+                            if (!param.getEnumChoices().isEmpty()) {
+                                String matched = matchEnum(token, param);
+                                if (matched == null) {
+                                    System.out.println(CmsColor.red("  无效选项: " + token + ", 可选: " + param.getEnumChoices().stream().map(ec -> ec.value).collect(java.util.stream.Collectors.joining("/"))));
+                                    return false;
+                                }
+                                values.put(param.getName(), matched);
+                            } else {
+                                values.put(param.getName(), token);
+                            }
+                            positionalIdx++;
+                        }
+                        continue;
+                    }
                     String paramName = token.substring(2);
                     Param param = paramMap.get(paramName);
                     if (param == null) {
@@ -307,7 +328,7 @@ public class CmsClientCli {
                         values.put(param.getName(), value);
                     }
                 }
-                for (Param param : handler.updateConfigAndGetParams()) {
+                for (Param param : orderedParams) {
                     if (!values.containsKey(param.getName())) {
                         values.put(param.getName(), param.getDefaultValue() != null ? param.getDefaultValue() : "");
                     }
