@@ -16,6 +16,8 @@ public class Param {
         DA_REF,
         DA_TARGET,
         DS_REF,
+        DA_NAME,
+        DA_NAME_NOT_NULL,
         REFERENCE
     }
 

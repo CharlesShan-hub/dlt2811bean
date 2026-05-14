@@ -28,6 +28,6 @@ public class ExitHandler implements CommandHandler {
         }
         ctx.getCachedHierarchy().clear();
         System.out.println("Bye!");
-        System.exit(0);
+        Runtime.getRuntime().halt(0);
     }
 }

@@ -21,7 +21,7 @@ public class GetDataDirectoryHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("ref", "数据引用 [string]", "C1/LPHD1.Proxy").type(Param.Type.DA_REF),
-            new Param("after", "起始引用 (留空=从头) [string]", "").type(Param.Type.REFERENCE)
+            new Param("after", "起始引用 (留空=从头) [string]", "").type(Param.Type.DA_NAME_NOT_NULL)
         );
     }
 

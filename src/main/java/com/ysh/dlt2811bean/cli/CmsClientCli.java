@@ -103,6 +103,13 @@ public class CmsClientCli {
             String raw;
             try {
                 raw = reader.readLine("cms> ").trim();
+            } catch (org.jline.reader.UserInterruptException e) {
+                continue;
+            } catch (org.jline.reader.EndOfFileException e) {
+                if (running) {
+                    System.out.println(CmsColor.gray("\n  Type 'exit' to quit"));
+                }
+                continue;
             } catch (Exception e) {
                 if (running) {
                     System.out.println(CmsColor.red("\n  Connection lost. Type 'connect' to reconnect."));

@@ -264,6 +264,66 @@ public class CmsCliCompleter implements Completer {
                 }
                 yield refs;
             }
+            case DA_NAME -> {
+                 Set<String> refs = new java.util.LinkedHashSet<>();
+                 String ref = parts.length > 1 ? parts[1] : "";
+                 int slashIdx = ref.indexOf('/');
+                 int dotIdx = ref.indexOf('.');
+                 if (slashIdx >= 0 && dotIdx >= 0) {
+                     String ld = ref.substring(0, slashIdx);
+                     int dotInRest = ref.indexOf('.', slashIdx + 1);
+                     if (dotInRest >= 0) {
+                         String ln = ref.substring(slashIdx + 1, dotInRest);
+                         String doName = ref.substring(dotInRest + 1);
+                         Map<String, Map<String, Map<String, Object>>> lnMap = h.get(ld);
+                         if (lnMap != null) {
+                             Map<String, Map<String, Object>> acs = lnMap.get(ln);
+                             if (acs != null) {
+                                 Map<String, Object> das = acs.get("DATA_OBJECT");
+                                 if (das != null) {
+                                     Object doMap = das.get(doName);
+                                     if (doMap instanceof Map) {
+                                         refs.addAll(((Map<String, ?>) doMap).keySet());
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 }
+                 yield refs;
+             }
+            case DA_NAME_NOT_NULL -> {
+                 Set<String> refs = new java.util.LinkedHashSet<>();
+                 String ref = parts.length > 1 ? parts[1] : "";
+                 int slashIdx = ref.indexOf('/');
+                 int dotIdx = ref.indexOf('.');
+                 if (slashIdx >= 0 && dotIdx >= 0) {
+                     String ld = ref.substring(0, slashIdx);
+                     int dotInRest = ref.indexOf('.', slashIdx + 1);
+                     if (dotInRest >= 0) {
+                         String ln = ref.substring(slashIdx + 1, dotInRest);
+                         String doName = ref.substring(dotInRest + 1);
+                         Map<String, Map<String, Map<String, Object>>> lnMap = h.get(ld);
+                         if (lnMap != null) {
+                             Map<String, Map<String, Object>> acs = lnMap.get(ln);
+                             if (acs != null) {
+                                 Map<String, Object> das = acs.get("DATA_OBJECT");
+                                 if (das != null) {
+                                     Object doMap = das.get(doName);
+                                     if (doMap instanceof Map) {
+                                         for (Map.Entry<String, ?> entry : ((Map<String, ?>) doMap).entrySet()) {
+                                             if (entry.getValue() != null) {
+                                                 refs.add(entry.getKey());
+                                             }
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                     }
+                 }
+                 yield refs;
+             }
             case ENUM, PLAIN -> null;
         };
     }
