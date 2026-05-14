@@ -125,13 +125,40 @@ public class SetDataSetValuesHandler extends AbstractCmsServiceHandler<CmsSetDat
     }
 
     private SclIED.SclDataSet findDataSet(SclIED.SclLDevice device, String ref) {
-        if (device.getLn0() == null) return null;
         int dotIdx = ref.indexOf('.');
-        if (dotIdx < 0) return null;
+        if (dotIdx < 0) {
+            if (device.getLn0() == null) return null;
+            for (SclIED.SclDataSet ds : device.getLn0().getDataSets()) {
+                if (ds.getName().equals(ref)) {
+                    return ds;
+                }
+            }
+            return null;
+        }
+        String lnName = ref.substring(0, dotIdx);
         String dsName = ref.substring(dotIdx + 1);
-        for (SclIED.SclDataSet ds : device.getLn0().getDataSets()) {
-            if (ds.getName().equals(dsName)) {
-                return ds;
+        if (device.getLn0() != null) {
+            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
+            if (ln0Name.equals(lnName)) {
+                for (SclIED.SclDataSet ds : device.getLn0().getDataSets()) {
+                    if (ds.getName().equals(dsName)) {
+                        return ds;
+                    }
+                }
+                return null;
+            }
+        }
+        for (SclIED.SclLN ln : device.getLns()) {
+            String curLnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
+                    ? ln.getLnClass() + ln.getInst()
+                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
+            if (curLnName.equals(lnName)) {
+                for (SclIED.SclDataSet ds : ln.getDataSets()) {
+                    if (ds.getName().equals(dsName)) {
+                        return ds;
+                    }
+                }
+                return null;
             }
         }
         return null;

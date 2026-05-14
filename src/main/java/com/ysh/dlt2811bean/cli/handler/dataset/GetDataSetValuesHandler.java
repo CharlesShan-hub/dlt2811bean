@@ -27,6 +27,12 @@ public class GetDataSetValuesHandler extends AbstractServiceHandler {
 
         String dsRef = values.get("dsRef");
         CmsApdu response = client.getDataSetValues(dsRef);
+        CliPrinter.printRequestPdu(ctx, new com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetValues(com.ysh.dlt2811bean.service.protocol.enums.MessageType.REQUEST).datasetReference(dsRef));
+        CliPrinter.printResponsePdu(ctx, response);
+        if (response.getMessageType() != com.ysh.dlt2811bean.service.protocol.enums.MessageType.RESPONSE_POSITIVE) {
+            System.out.println(com.ysh.dlt2811bean.utils.CmsColor.red("  Server error: dataset '" + dsRef + "' not found"));
+            return;
+        }
         CmsGetDataSetValues resp = (CmsGetDataSetValues) response.getAsdu();
         List<CmsData<?>> dataList = resp.value.toList();
         CliPrinter.printList("Dataset values (" + dataList.size() + " entries)", dataList, item -> {

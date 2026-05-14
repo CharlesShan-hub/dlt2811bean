@@ -82,5 +82,6 @@ get-data-def LD0/RSYN1.Beh XX;
 
 ## 8.5 数据集
 ```bash
-
+# 查看数据集里边的值
+get-dataset-dir MEAS/LLN0.dsAin1;
 ```

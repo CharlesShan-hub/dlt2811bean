@@ -121,7 +121,7 @@ public class CmsCliCompleter implements Completer {
 
     private static boolean isHierarchicalRefType(Param.Type type) {
         return type == Param.Type.DA_REF || type == Param.Type.DA_TARGET
-            || type == Param.Type.REFERENCE || type == Param.Type.DS_REF
+            || type == Param.Type.REFERENCE
             || type == Param.Type.LN_REF;
     }
 

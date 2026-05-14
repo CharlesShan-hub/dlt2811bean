@@ -185,9 +185,14 @@ public class SclIED {
         private String desc;
         private List<SclDOI> dois = new ArrayList<>();
         private List<SclInputs> inputs;
+        private List<SclDataSet> dataSets = new ArrayList<>();
 
         public void addDoi(SclDOI doi) {
             this.dois.add(doi);
+        }
+
+        public void addDataSet(SclDataSet dataSet) {
+            this.dataSets.add(dataSet);
         }
     }
 

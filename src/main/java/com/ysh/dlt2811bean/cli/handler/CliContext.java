@@ -149,6 +149,14 @@ public class CliContext {
                         System.out.println(CmsColor.red("  Auto-discovery failed at get-all-values " + lnRef + ": " + e.getMessage()));
                     }
                 }
+                CommandHandler lnDir = handlers.get("ln-dir");
+                if (lnDir != null) {
+                    try {
+                        lnDir.execute(client, Map.of("target", lnRef, "acsi", "DATA_SET", "referenceAfter", ""));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at ln-dir DATA_SET " + lnRef + ": " + e.getMessage()));
+                    }
+                }
             }
         }
     }

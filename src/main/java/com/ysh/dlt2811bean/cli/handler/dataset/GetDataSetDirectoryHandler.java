@@ -29,6 +29,8 @@ public class GetDataSetDirectoryHandler extends AbstractServiceHandler {
 
         String dsRef = values.get("dsRef");
         CmsApdu response = client.getDataSetDirectory(dsRef);
+        CliPrinter.printRequestPdu(ctx, new com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory(com.ysh.dlt2811bean.service.protocol.enums.MessageType.REQUEST).datasetReference(dsRef));
+        CliPrinter.printResponsePdu(ctx, response);
         if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             System.out.println(CmsColor.red("  Server error: dataset '" + dsRef + "' not found or inappropriate"));
             return;

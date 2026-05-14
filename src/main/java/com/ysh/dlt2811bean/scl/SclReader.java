@@ -694,6 +694,8 @@ public class SclReader {
                     List<SclInputs> inputsList = new ArrayList<>();
                     inputsList.add(parseInputs(reader));
                     ln.setInputs(inputsList);
+                } else if ("DataSet".equals(tag)) {
+                    ln.addDataSet(parseDataSet(reader));
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if ("LN".equals(reader.getLocalName())) break;
