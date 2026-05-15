@@ -102,4 +102,8 @@ public class SclServer {
     public SclDataDefinitionEntry resolveDataDefinition(String ref, String fc, SclDataTypeTemplates templates) {
         return com.ysh.dlt2811bean.scl2.util.SclDataDefinitionResolver.resolveDataDefinition(this, ref, fc, templates);
     }
+
+    public SclFCDA parseRefToFcda(String ref) {
+        return com.ysh.dlt2811bean.scl2.util.SclDataSetResolver.parseRefToFcda(this, ref);
+    }
 }

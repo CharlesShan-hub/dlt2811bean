@@ -32,7 +32,7 @@ import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 // import com.ysh.dlt2811bean.transport.protocol.log.*;
 // import com.ysh.dlt2811bean.transport.protocol.report.*;
 // import com.ysh.dlt2811bean.transport.protocol.setting.*;
-// import com.ysh.dlt2811bean.transport.protocol.dataset.*;
+import com.ysh.dlt2811bean.transport.protocol.dataset.*;
 // import com.ysh.dlt2811bean.transport.protocol.file.*;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.*;
 // import com.ysh.dlt2811bean.transport.protocol.rpc.*;
@@ -381,11 +381,11 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetDataDirectoryHandler());// 8.4.3
         dispatcher.registerDefaultHandler(new GetDataDefinitionHandler());// 8.4.4
         // 8.5 dataset handlers
-        // dispatcher.registerDefaultHandler(new GetDataSetValuesHandler());// 8.5.1
-        // dispatcher.registerDefaultHandler(new SetDataSetValuesHandler());// 8.5.2
-        // dispatcher.registerDefaultHandler(new CreateDataSetHandler());// 8.5.3
-        // dispatcher.registerDefaultHandler(new DeleteDataSetHandler());// 8.5.4
-        // dispatcher.registerDefaultHandler(new GetDataSetDirectoryHandler());// 8.5.5
+        dispatcher.registerDefaultHandler(new GetDataSetValuesHandler());// 8.5.1
+        dispatcher.registerDefaultHandler(new SetDataSetValuesHandler());// 8.5.2
+        dispatcher.registerDefaultHandler(new CreateDataSetHandler());// 8.5.3
+        dispatcher.registerDefaultHandler(new DeleteDataSetHandler());// 8.5.4
+        dispatcher.registerDefaultHandler(new GetDataSetDirectoryHandler());// 8.5.5
         // 8.6 value handlers
         // dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
         // dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2

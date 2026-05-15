@@ -110,4 +110,6 @@ get-dataset-dir MEAS/LLN0.dsAin1;
 create-dataset MEAS/MMXU1.MyNewDS2 MEAS/MMXU1.TotW DC;
 # 查看确实存在
 get-dataset-values MEAS/MMXU1.MyNewDS2;
+# 删除刚才创建的数据集
+delete-dataset MEAS/MMXU1.MyNewDS2;
 ```
