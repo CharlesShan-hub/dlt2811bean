@@ -9,9 +9,9 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
 public class AssociateNegotiateHandler extends AbstractCmsServiceHandler<CmsAssociateNegotiate> {
 
-    /** APDU 最大长度（FL + 4字节APCH） */
+    /** APDU max size = FL + APCH(4bytes) */
     public static final int MAX_APDU_SIZE = 65535;
-    /** ASDU 最大长度 = MAX_APDU_SIZE - APCH(4字节) = FL 最大值 */
+    /** ASDU max size = MAX_APDU_SIZE - APCH(4bytes) = FL max */
     public static final int MAX_ASDU_SIZE = CmsApdu.MAX_ASDU_SIZE;
 
     private final int serverApduSize;

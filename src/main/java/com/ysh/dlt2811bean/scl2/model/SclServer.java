@@ -90,4 +90,16 @@ public class SclServer {
         if (ln == null) return null;
         return List.of(ln);
     }
+
+    public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates) {
+        return com.ysh.dlt2811bean.scl2.util.SclDataValueResolver.resolveDataValue(this, ref, templates);
+    }
+
+    public int setDataValue(String ref, String value, SclDataTypeTemplates templates) {
+        return com.ysh.dlt2811bean.scl2.util.SclSetSetDataValueResolver.setDataValue(this, ref, value, templates);
+    }
+
+    public SclDataDefinitionEntry resolveDataDefinition(String ref, String fc, SclDataTypeTemplates templates) {
+        return com.ysh.dlt2811bean.scl2.util.SclDataDefinitionResolver.resolveDataDefinition(this, ref, fc, templates);
+    }
 }

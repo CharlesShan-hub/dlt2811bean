@@ -499,4 +499,40 @@ public class SclLN {
         sgb.sgcbName.set("SG1");
         return new CmsCBValue().selectSgb();
     }
+
+    // -------------------------------------------------------------------------
+    // Data directory collection (for GetDataDirectory service)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Collects data directory entries at the LN level: lists all DO names.
+     * <p>Merges instance DOIs with type template DOs, instance takes priority.
+     *
+     * @param templates the data type templates for type-based DO listing
+     * @return list of directory entries (ref = DO name, fc = null)
+     */
+    public List<SclDataDirectoryEntry> collectDataDirectory(SclDataTypeTemplates templates) {
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        List<SclDataDirectoryEntry> entries = new ArrayList<>();
+
+        for (SclDOI doi : dois) {
+            String name = doi.getName();
+            seen.add(name);
+            entries.add(new SclDataDirectoryEntry(name, null));
+        }
+
+        if (templates != null && lnType != null && !lnType.isEmpty()) {
+            SclLNodeType lnt = templates.findLNodeTypeById(lnType);
+            if (lnt != null) {
+                for (SclDO doDef : lnt.getDos()) {
+                    if (!seen.contains(doDef.getName())) {
+                        seen.add(doDef.getName());
+                        entries.add(new SclDataDirectoryEntry(doDef.getName(), null));
+                    }
+                }
+            }
+        }
+
+        return entries;
+    }
 }
