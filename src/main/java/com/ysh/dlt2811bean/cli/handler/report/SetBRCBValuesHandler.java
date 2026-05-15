@@ -19,7 +19,7 @@ public class SetBRCBValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "BRCB 引用", "C1/LLN0.PosReport").type(Param.Type.REFERENCE),
+            new Param("ref", "BRCB 引用", "C1/LLN0.PosReport").type(Param.Type.BRCB_REF),
             new Param("rptEna", "启用报告 (true/false)", "true")
         );
     }

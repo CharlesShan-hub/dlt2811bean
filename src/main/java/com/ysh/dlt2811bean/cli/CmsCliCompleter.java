@@ -122,7 +122,9 @@ public class CmsCliCompleter implements Completer {
     private static boolean isHierarchicalRefType(Param.Type type) {
         return type == Param.Type.DA_REF || type == Param.Type.DA_TARGET
             || type == Param.Type.REFERENCE
-            || type == Param.Type.LN_REF;
+            || type == Param.Type.LN_REF
+            || type == Param.Type.BRCB_REF
+            || type == Param.Type.URCB_REF;
     }
 
     private void completeHierarchicalRef(Param.Type type, String word, List<Candidate> candidates) {
@@ -164,6 +166,10 @@ public class CmsCliCompleter implements Completer {
                         acsiClasses = Set.of("DATA_SET");
                     } else if (type == Param.Type.DA_REF || type == Param.Type.DA_TARGET) {
                         acsiClasses = Set.of("DATA_OBJECT");
+                    } else if (type == Param.Type.BRCB_REF) {
+                        acsiClasses = Set.of("BRCB");
+                    } else if (type == Param.Type.URCB_REF) {
+                        acsiClasses = Set.of("URCB");
                     } else {
                         acsiClasses = acs.keySet();
                     }
@@ -327,6 +333,34 @@ public class CmsCliCompleter implements Completer {
                  }
                  yield refs;
              }
+            case BRCB_REF -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : h.get(ld).entrySet()) {
+                        Map<String, Object> brcbs = lnEntry.getValue().get("BRCB");
+                        if (brcbs != null) {
+                            for (String cb : brcbs.keySet()) {
+                                refs.add(ld + "/" + lnEntry.getKey() + "." + cb);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
+            case URCB_REF -> {
+                Set<String> refs = new java.util.LinkedHashSet<>();
+                for (String ld : h.keySet()) {
+                    for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : h.get(ld).entrySet()) {
+                        Map<String, Object> urcbs = lnEntry.getValue().get("URCB");
+                        if (urcbs != null) {
+                            for (String cb : urcbs.keySet()) {
+                                refs.add(ld + "/" + lnEntry.getKey() + "." + cb);
+                            }
+                        }
+                    }
+                }
+                yield refs;
+            }
             case ENUM, PLAIN -> null;
         };
     }

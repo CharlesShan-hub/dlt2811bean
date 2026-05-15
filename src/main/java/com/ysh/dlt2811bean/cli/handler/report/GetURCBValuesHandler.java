@@ -18,7 +18,7 @@ public class GetURCBValuesHandler extends AbstractServiceHandler {
 
     public List<Param> getParams() {
         return List.of(
-            new Param("ref", "URCB 引用", "C1/LLN0.PosReport")
+            new Param("ref", "URCB 引用", "C1/LLN0.PosReport").type(Param.Type.URCB_REF)
         );
     }
 

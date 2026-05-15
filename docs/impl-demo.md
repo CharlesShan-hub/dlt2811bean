@@ -113,3 +113,19 @@ get-dataset-values MEAS/MMXU1.MyNewDS2;
 # 删除刚才创建的数据集
 delete-dataset MEAS/MMXU1.MyNewDS2;
 ```
+
+# 报告
+
+```bash
+# brcb
+ln-dir LD0/LLN0 BRCB; # 这里可以看到有三个BRCB块
+get-brcb-values  LD0/LLN0.brcbAlarm;
+get-brcb-values  LD0/LLN0.brcbWarning;
+get-brcb-values  LD0/LLN0.brcbCommState;
+
+# urcb
+ln-dir MEAS/LLN0 URCB; # 也是有三个urcb块
+get-urcb-values MEAS/LLN0.urcbAinA;
+get-urcb-values MEAS/LLN0.urcbAinB;
+get-urcb-values MEAS/LLN0.urcbAinD;
+```

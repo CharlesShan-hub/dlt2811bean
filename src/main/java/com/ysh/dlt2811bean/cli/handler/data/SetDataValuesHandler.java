@@ -13,7 +13,7 @@ import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
 import com.ysh.dlt2811bean.cli.CacheTypeResolver;
 import com.ysh.dlt2811bean.cli.Param;
-import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
 
             CmsType<?> typedValue = CacheTypeResolver.resolveFromCache(ctx, ref, v);
             if (typedValue == null) {
-                typedValue = SclTypeResolver.resolveTypedValue(config, ref, v);
+                typedValue = new CmsVisibleString(v).max(255);
             }
 
             CmsSetDataValuesEntry entry = new CmsSetDataValuesEntry()

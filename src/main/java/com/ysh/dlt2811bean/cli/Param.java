@@ -18,7 +18,9 @@ public class Param {
         DS_REF,
         DA_NAME,
         DA_NAME_NOT_NULL,
-        REFERENCE
+        REFERENCE,
+        BRCB_REF,
+        URCB_REF
     }
 
     private final String name;

@@ -31,6 +31,8 @@ import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 // import com.ysh.dlt2811bean.transport.protocol.goose.*;
 // import com.ysh.dlt2811bean.transport.protocol.log.*;
 // import com.ysh.dlt2811bean.transport.protocol.report.*;
+import com.ysh.dlt2811bean.transport.protocol.report.GetBRCBValuesHandler;
+import com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler;
 // import com.ysh.dlt2811bean.transport.protocol.setting.*;
 import com.ysh.dlt2811bean.transport.protocol.dataset.*;
 // import com.ysh.dlt2811bean.transport.protocol.file.*;
@@ -394,9 +396,9 @@ public class CmsServer {
         // dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
         // dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
         // 8.7 report handlers
-        // dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
+        dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
         // dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
-        // dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
+        dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
         // dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
         // 8.8 log handlers
         // dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
