@@ -662,12 +662,22 @@ public class SclReader {
             if (event == XMLStreamConstants.START_ELEMENT) {
                 if ("DA".equals(reader.getLocalName())) {
                     doType.addDa(parseDa(reader));
+                } else if ("SDO".equals(reader.getLocalName())) {
+                    doType.addSdo(parseSdo(reader));
                 }
             } else if (event == XMLStreamConstants.END_ELEMENT) {
                 if ("DOType".equals(reader.getLocalName())) break;
             }
         }
         return doType;
+    }
+
+    private SclSDO parseSdo(XMLStreamReader reader) {
+        SclSDO sdo = new SclSDO();
+        sdo.setName(getAttr(reader, "name"));
+        sdo.setType(getAttr(reader, "type"));
+        skipElement(reader);
+        return sdo;
     }
 
     private SclDA parseDa(XMLStreamReader reader) {

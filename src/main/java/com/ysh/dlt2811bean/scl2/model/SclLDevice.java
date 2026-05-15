@@ -17,9 +17,15 @@ public class SclLDevice {
     private final List<SclLN> lns = new ArrayList<>();
     private final List<SclLN> subLns = new ArrayList<>();
 
-    public void addLn(SclLN ln) { this.lns.add(ln); }
+    public void addLn(SclLN ln) {
+        ln.setParent(this);
+        this.lns.add(ln);
+    }
 
-    public void addSubLn(SclLN subLn) { this.subLns.add(subLn); }
+    public void addSubLn(SclLN subLn) {
+        subLn.setParent(this);
+        this.subLns.add(subLn);
+    }
 
     public SclLN findLnByPrefixAndClass(String prefix, String lnClass) {
         for (SclLN ln : lns) {

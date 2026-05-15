@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.transport.protocol;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
+import com.ysh.dlt2811bean.scl2.model.SclDocument;
 import com.ysh.dlt2811bean.scl2.model.SclServer;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -20,6 +21,7 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
     private final Supplier<T> factory;
     protected SclAccessPoint accessPoint;
     protected SclServer server;
+    protected SclDocument sclDocument;
     private final boolean needAccessPoint;
     protected CmsServerSession serverSession;
     protected CmsApdu request;
@@ -46,7 +48,8 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
         try {
             // build SCL model
             if (session instanceof CmsServerSession && needAccessPoint) {
-                accessPoint = ((CmsServerSession) session).getSclAccessPoint();
+                serverSession = (CmsServerSession) session;
+                accessPoint = serverSession.getSclAccessPoint();
                 if (accessPoint == null) {
                     log.warn("[Server] No SCL model for session: accessPoint is null");
                     return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -56,15 +59,18 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
                     log.warn("[Server] No SCL model for session: server is null");
                     return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
                 }
+                sclDocument = serverSession.getSclDocument();
+            } else if (session instanceof CmsServerSession) {
+                serverSession = (CmsServerSession) session;
+                sclDocument = serverSession.getSclDocument();
             }
-            // build server session
+            
             if (session instanceof CmsServerSession) {
-                serverSession = ((CmsServerSession) session);
                 @SuppressWarnings("unchecked")
                 T typedAsdu = (T) request.getAsdu();
                 asdu = typedAsdu;
                 return doServerHandle();
-            }else{
+            } else {
                 return doHandle(session, request);
             }
         } catch (Exception e) {
@@ -77,12 +83,16 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
         return server;
     }
 
-    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception{
+    protected SclDocument getSclDocument() {
+        return sclDocument;
+    }
+
+    protected CmsApdu doHandle(CmsSession session, CmsApdu request) throws Exception {
         log.error("No implementation for {}: {}", serviceName, request);
         return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
     }
 
-    protected CmsApdu doServerHandle() throws Exception{
+    protected CmsApdu doServerHandle() throws Exception {
         log.error("No implementation for {}: {}", serviceName, request);
         return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
     }

@@ -4,35 +4,20 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
-import com.ysh.dlt2811bean.scl.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclBDA;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDA;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDAType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDOType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclLNodeType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclSDO;
-import com.ysh.dlt2811bean.scl.model.SclIED;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN0;
+import com.ysh.dlt2811bean.scl2.model.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
-import com.ysh.dlt2811bean.transport.session.CmsSession;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGetAllDataDefinition> {
 
-    private final SclDocument sclDocument;
-
-    public GetAllDataDefinitionHandler(SclDocument sclDocument) {
+    public GetAllDataDefinitionHandler() {
         super(ServiceName.GET_ALL_DATA_DEFINITION, CmsGetAllDataDefinition::new);
-        this.sclDocument = sclDocument;
     }
 
     @Override
@@ -240,19 +225,18 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
     }
 
     private List<TargetLn> resolveTargets(String ldName, String lnRef) {
+        SclServer server = findServer();
+        if (server == null) return null;
+
         if (ldName != null && !ldName.isEmpty()) {
-            SclLDevice device = findLDevice(server, ldName);
+            SclLDevice device = server.findLDeviceByInst(ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
                 return null;
             }
             List<TargetLn> result = new ArrayList<>();
-            SclLN0 ln0 = device.getLn0();
-            if (ln0 != null) {
-                result.add(new TargetLn(ldName, "", ln0.getLnClass(), ln0.getInst(), ln0.getLnType(), ln0, null));
-            }
             for (SclLN ln : device.getLns()) {
-                result.add(new TargetLn(ldName, ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
+                result.add(new TargetLn(ldName, ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), ln));
             }
             return result;
         }
@@ -268,47 +252,32 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
         String targetLd = lnRef.substring(0, slashIdx);
         String targetLnName = lnRef.substring(slashIdx + 1);
 
-        SclLDevice device = findLDevice(server, targetLd);
+        SclLDevice device = server.findLDeviceByInst(targetLd);
         if (device == null) {
             log.warn("[Server] LDevice not found: {}", targetLd);
             return null;
         }
-        if (device.getLn0() != null) {
-            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
-            if (ln0Name.equals(targetLnName)) {
-                List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), "", device.getLn0().getLnClass(),
-                        device.getLn0().getInst(), device.getLn0().getLnType(), device.getLn0(), null));
-                return result;
-            }
-        }
         for (SclLN ln : device.getLns()) {
-            String lnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
-                    ? ln.getLnClass() + ln.getInst()
-                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
-            if (lnName.equals(targetLnName)) {
+            if (ln.getFullName().equals(targetLnName)) {
                 List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
+                result.add(new TargetLn(device.getInst(), ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), ln));
                 return result;
             }
         }
         log.warn("[Server] LN not found: {} in LDevice {}. Available LNs:", targetLnName, targetLd);
-        if (device.getLn0() != null) {
-            log.warn("[Server]   {}", device.getLn0().getLnClass() + device.getLn0().getInst() + " (LN0)");
-        }
         for (SclLN ln : device.getLns()) {
-            String full = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
-                    ? ln.getLnClass() + ln.getInst()
-                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
-            log.warn("[Server]   {} (lnType={})", full, ln.getLnType());
+            log.warn("[Server]   {} (lnType={})", ln.getFullName(), ln.getLnType());
         }
         return null;
     }
 
-    private SclIED.SclLDevice findLDevice(SclIED.SclServer server, String ldName) {
-        for (SclIED.SclLDevice ld : server.getLDevices()) {
-            if (ld.getInst().equals(ldName)) {
-                return ld;
+    private SclServer findServer() {
+        if (sclDocument == null) return null;
+        for (SclIED ied : sclDocument.getIeds()) {
+            for (SclAccessPoint ap : ied.getAccessPoints()) {
+                if (ap.getServer() != null) {
+                    return ap.getServer();
+                }
             }
         }
         return null;
@@ -320,16 +289,14 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
         final String lnClass;
         final String inst;
         final String lnType;
-        final SclLN0 ln0;
         final SclLN ln;
 
-        TargetLn(String ldInst, String prefix, String lnClass, String inst, String lnType, SclLN0 ln0, SclLN ln) {
+        TargetLn(String ldInst, String prefix, String lnClass, String inst, String lnType, SclLN ln) {
             this.ldInst = ldInst;
             this.prefix = prefix;
             this.lnClass = lnClass;
             this.inst = inst;
             this.lnType = lnType;
-            this.ln0 = ln0;
             this.ln = ln;
         }
 

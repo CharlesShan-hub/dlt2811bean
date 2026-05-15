@@ -16,8 +16,11 @@ public class SclDOType {
     private String desc;
     private String cdc;
     private final List<SclDA> das = new ArrayList<>();
+    private final List<SclSDO> sdos = new ArrayList<>();
 
     public void addDa(SclDA da) { this.das.add(da); }
+
+    public void addSdo(SclSDO sdo) { this.sdos.add(sdo); }
 
     public SclDA findDaByName(String name) {
         for (SclDA da : das) {

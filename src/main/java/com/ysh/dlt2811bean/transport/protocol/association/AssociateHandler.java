@@ -3,7 +3,6 @@ package com.ysh.dlt2811bean.transport.protocol.association;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl2.model.SclDocument;
 import com.ysh.dlt2811bean.scl2.model.SclIED;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
@@ -21,13 +20,11 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
 
     private GmAuthenticator authenticator;
     private boolean requireAuthentication = false;
-    private final SclDocument sclDocument;
     private byte[] serverCertificateBytes;
     private ServerAccessPointReference sapr;
 
-    public AssociateHandler(SclDocument sclDocument) {
+    public AssociateHandler() {
         super(ServiceName.ASSOCIATE, CmsAssociate::new, false);
-        this.sclDocument = sclDocument;
     }
 
     public AssociateHandler enableSecurity(GmAuthenticator authenticator, X509Certificate serverCert) throws Exception {
@@ -114,7 +111,6 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
 
             // Save AccessPoint info to session
             serverSession.setAccessPoint(sapr.get(), iedName, apName, accessPoint);
-            // Save DataTypeTemplates for type resolution
             serverSession.setSclDataTypeTemplates(sclDocument.getDataTypeTemplates());
         }
 

@@ -3,8 +3,7 @@ package com.ysh.dlt2811bean.transport.protocol.directory;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.scl2.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl2.model.SclLDevice;
+import com.ysh.dlt2811bean.scl2.util.SclFilters;
 import com.ysh.dlt2811bean.scl2.model.SclLN;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -17,11 +16,8 @@ import java.util.List;
 
 public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<CmsGetLogicalNodeDirectory> {
 
-    private final SclDataTypeTemplates templates;
-
-    public GetLogicalNodeDirectoryHandler(SclDataTypeTemplates templates) {
+    public GetLogicalNodeDirectoryHandler() {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectory::new);
-        this.templates = templates;
     }
 
     @Override
@@ -33,6 +29,7 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        // resolve data object under each logic node
         List<String> entries = new ArrayList<>();
         for (SclLN ln : lns) {
             List<String> collected = collectEntries(ln, asdu.acsiClass.get());
@@ -42,13 +39,15 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             entries.addAll(collected);
         }
 
+        // resolve after
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
-        List<String> filtered = filterAfter(entries, after);
+        List<String> filtered = SclFilters.filterAfter(entries, after);
         if (filtered == null) {
             log.warn("[Server] referenceAfter not found: {}", after);
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        // build positive response
         CmsArray<CmsSubReference> refs = new CmsArray<>(CmsSubReference::new);
         for (String name : filtered) {
             refs.add(new CmsSubReference(name));
@@ -64,49 +63,19 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
     }
 
     private List<SclLN> resolveLns() {
-
-        String ldName = null;
-        String lnRef = null;
         boolean useLdName = asdu.referenceRequest.getSelectedIndex() == 0;
-        if (useLdName) {
-            ldName = asdu.referenceRequest.ldName.get();
-        } else {
-            lnRef = asdu.referenceRequest.lnReference.get();
+        String ldName = useLdName ? asdu.referenceRequest.ldName.get() : null;
+        String lnRef = useLdName ? null : asdu.referenceRequest.lnReference.get();
+        List<SclLN> lns = server.resolveLns(ldName, lnRef);
+        if (lns == null) {
+            log.warn("[Server] LN not found: ldName={}, lnReference={}", ldName, lnRef);
         }
-
-        if (ldName != null && !ldName.isEmpty()) {
-            SclLDevice device = server.findLDeviceByInst(ldName);
-            if (device == null) {
-                log.warn("[Server] LDevice not found: {}", ldName);
-                return null;
-            }
-            return device.getLns();
-        }
-        if (lnRef == null || lnRef.isEmpty()) {
-            log.warn("[Server] No ldName or lnReference provided");
-            return null;
-        }
-        int slashIdx = lnRef.indexOf('/');
-        if (slashIdx < 0) {
-            log.warn("[Server] Invalid lnReference (no '/'): {}", lnRef);
-            return null;
-        }
-        SclLDevice device = server.findLDeviceByInst(lnRef.substring(0, slashIdx));
-        if (device == null) {
-            log.warn("[Server] LDevice not found: {}", lnRef.substring(0, slashIdx));
-            return null;
-        }
-        SclLN ln = device.findLnByFullName(lnRef.substring(slashIdx + 1));
-        if (ln == null) {
-            log.warn("[Server] LN not found: {}", lnRef);
-            return null;
-        }
-        return List.of(ln);
+        return lns;
     }
 
     private List<String> collectEntries(SclLN ln, int acsiClass) {
         return switch (acsiClass) {
-            case CmsACSIClass.DATA_OBJECT -> ln.getDataObjectNames(templates);
+            case CmsACSIClass.DATA_OBJECT -> ln.getDataObjectNames(sclDocument.getDataTypeTemplates());
             case CmsACSIClass.DATA_SET -> ln.getDataSetNames();
             case CmsACSIClass.BRCB -> ln.getReportControlNames(true);
             case CmsACSIClass.URCB -> ln.getReportControlNames(false);
@@ -117,12 +86,5 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             case CmsACSIClass.SGCB -> List.of("SG1");
             default -> null;
         };
-    }
-
-    private List<String> filterAfter(List<String> entries, String after) {
-        if (after == null || after.isEmpty()) return entries;
-        int idx = entries.indexOf(after);
-        if (idx < 0) return null;
-        return entries.subList(idx + 1, entries.size());
     }
 }

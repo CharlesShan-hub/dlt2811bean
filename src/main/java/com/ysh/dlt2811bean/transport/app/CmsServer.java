@@ -22,9 +22,7 @@ import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
 import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.association.*;
-import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalDeviceDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalNodeDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.directory.GetServerDirectoryHandler;
+import com.ysh.dlt2811bean.transport.protocol.directory.*;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
 // import com.ysh.dlt2811bean.transport.protocol.control.*;
 // import com.ysh.dlt2811bean.transport.protocol.data.*;
@@ -222,14 +220,11 @@ public class CmsServer {
     }
 
     private void reRegisterSclHandlers() throws Exception {
-        dispatcher.registerHandler(new GetLogicalNodeDirectoryHandler(sclDocument.getDataTypeTemplates()));
-        // dispatcher.registerHandler(new GetAllDataValuesHandler(sclDocument.getDataTypeTemplates()));
-        // dispatcher.registerHandler(new GetAllDataDefinitionHandler(sclDocument.getDataTypeTemplates()));
         if (securityEnabled && securityAuthenticator != null && serverCertificate != null) {
             dispatcher.registerHandler(
-                new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator, serverCertificate));
+                new AssociateHandler().enableSecurity(securityAuthenticator, serverCertificate));
         } else {
-            dispatcher.registerHandler(new AssociateHandler(sclDocument));
+            dispatcher.registerHandler(new AssociateHandler());
         }
         log.info("SCL-dependent handlers re-registered");
     }
@@ -286,7 +281,7 @@ public class CmsServer {
         this.securityAuthenticator = new GmAuthenticator(trustManager);
 
         dispatcher.registerHandler(
-            new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator, serverCertificate));
+            new AssociateHandler().enableSecurity(securityAuthenticator, serverCertificate));
 
         this.securityEnabled = true;
         log.info("GM security enabled");
@@ -370,15 +365,15 @@ public class CmsServer {
         CmsConfig.Negotiate negCfg = config.getNegotiate();
         
         // 8.2 association handlers
-        dispatcher.registerDefaultHandler(new AssociateHandler(sclDocument));// 8.2.1
+        dispatcher.registerDefaultHandler(new AssociateHandler());// 8.2.1
         dispatcher.registerDefaultHandler(new AbortHandler());// 8.2.2
         dispatcher.registerDefaultHandler(new ReleaseHandler());// 8.2.3
         // 8.3 directory handlers
         dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());// 8.3.1
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());// 8.3.2
-        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument.getDataTypeTemplates()));// 8.3.3
-        // dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));// 8.3.4
-        // dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));// 8.3.5
+        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler());// 8.3.3
+        dispatcher.registerDefaultHandler(new GetAllDataValuesHandler());// 8.3.4
+        // dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler());// 8.3.5
         // dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
         // 8.4 data handlers
         // dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
@@ -448,6 +443,7 @@ public class CmsServer {
         @Override
         public void onConnected(CmsConnection conn) {
             CmsServerSession session = new CmsServerSession(conn);
+            session.setSclDocument(sclDocument);
             sessions.put(conn, session);
             log.debug("[{}] Client connected from {}", session, session.getClientAddress());
         }

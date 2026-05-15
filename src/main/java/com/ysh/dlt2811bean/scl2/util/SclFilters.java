@@ -54,4 +54,39 @@ public class SclFilters {
     public static <T> Predicate<T> alwaysTrue() {
         return t -> true;
     }
+
+    /**
+     * Filters a list of strings to return only entries after the given reference.
+     * Used for referenceAfter (分页) logic in directory services.
+     *
+     * @param entries the full list of entries
+     * @param after   the reference after which to return entries, or null/empty for all
+     * @return sublist after the reference, or null if the reference is not found
+     */
+    public static List<String> filterAfter(List<String> entries, String after) {
+        if (after == null || after.isEmpty()) return entries;
+        int idx = entries.indexOf(after);
+        if (idx < 0) return null;
+        return entries.subList(idx + 1, entries.size());
+    }
+
+    /**
+     * Filters a list of objects to return only entries after the given reference.
+     * The reference is matched against a key extracted from each entry.
+     *
+     * @param <T>     the entry type
+     * @param entries the full list of entries
+     * @param after   the reference after which to return entries, or null/empty for all
+     * @param keyExtractor function to extract the reference key from an entry
+     * @return sublist after the reference, or null if the reference is not found
+     */
+    public static <T> List<T> filterAfter(List<T> entries, String after, java.util.function.Function<T, String> keyExtractor) {
+        if (after == null || after.isEmpty()) return entries;
+        for (int i = 0; i < entries.size(); i++) {
+            if (keyExtractor.apply(entries.get(i)).equals(after)) {
+                return entries.subList(i + 1, entries.size());
+            }
+        }
+        return null;
+    }
 }

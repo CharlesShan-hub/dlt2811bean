@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class SclLN {
 
+    private SclLDevice parent;
     private String prefix = "";
     private String lnClass;
     private String inst = "";
@@ -122,5 +123,110 @@ public class SclLN {
 
     public List<String> getSvControlNames() {
         return svControls.stream().map(SclSampledValueControl::getName).toList();
+    }
+
+    /**
+     * Collects all data values (DAI) under this LN, resolving bType from the data type templates.
+     *
+     * @param templates the data type templates for type resolution
+     * @param fcFilter  optional FC filter, null for no filter, "XX" treated as no filter
+     * @param relative  if true, omit the LN prefix from the reference path
+     * @return list of data values
+     */
+    public List<SclDataValue> collectDataValues(SclDataTypeTemplates templates, String fcFilter, boolean relative) {
+        List<SclDataValue> result = new ArrayList<>();
+        String prefix = relative ? "" : (getFullName() + ".");
+
+        SclLNodeType lnt = null;
+        if (templates != null && lnType != null && !lnType.isEmpty()) {
+            lnt = templates.findLNodeTypeById(lnType);
+        }
+
+        for (SclDOI doi : dois) {
+            String doiPrefix = prefix + doi.getName();
+            SclDOType doType = resolveDoType(templates, lnt, doi.getName());
+
+            collectDaiValues(doi.getDais(), doiPrefix, doType, fcFilter, result);
+            for (SclSDI sdi : doi.getSdis()) {
+                String sdiPrefix = doiPrefix + "." + sdi.getName();
+                SclDOType sdiDoType = resolveSdiDoType(doType, sdi.getName(), templates);
+                collectDaiValues(sdi.getDais(), sdiPrefix, sdiDoType, fcFilter, result,
+                        templates, doType, sdi.getName());
+            }
+        }
+        return result;
+    }
+
+    private void collectDaiValues(List<SclDAI> dais, String prefix, SclDOType doType,
+                                   String fcFilter, List<SclDataValue> result) {
+        collectDaiValues(dais, prefix, doType, fcFilter, result, null, null, null);
+    }
+
+    private void collectDaiValues(List<SclDAI> dais, String prefix, SclDOType doType,
+                                   String fcFilter, List<SclDataValue> result,
+                                   SclDataTypeTemplates templates, SclDOType parentDoType, String sdiName) {
+        if (dais == null || dais.isEmpty()) return;
+        for (SclDAI dai : dais) {
+            if (dai.getVal() == null || dai.getVal().isEmpty()) continue;
+            String daFc = findDaFc(doType, dai.getName());
+            if (fcFilter != null && !fcFilter.equals(daFc)) continue;
+            if (fcFilter == null && "SE".equals(daFc)) continue;
+            String ref = prefix + "." + dai.getName();
+            String bType = findDaBType(doType, dai.getName());
+            if (bType == null && templates != null && parentDoType != null && sdiName != null) {
+                bType = findBdaBType(templates, parentDoType, sdiName, dai.getName());
+            }
+            result.add(new SclDataValue(ref, dai.getVal(), bType));
+        }
+    }
+
+    private static String findDaBType(SclDOType doType, String daName) {
+        if (doType == null) return null;
+        SclDA da = doType.findDaByName(daName);
+        return da != null ? da.getBType() : null;
+    }
+
+    private static String findBdaBType(SclDataTypeTemplates templates, SclDOType parentDoType, String sdiName, String bdaName) {
+        if (templates == null || parentDoType == null) return null;
+        for (SclDA da : parentDoType.getDas()) {
+            if (da.getName().equals(sdiName) && "Struct".equals(da.getBType()) && da.getType() != null) {
+                SclDAType dat = templates.findDaTypeById(da.getType());
+                if (dat != null) {
+                    SclBDA bda = dat.findBdaByName(bdaName);
+                    if (bda != null) return bda.getBType();
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String findDaFc(SclDOType doType, String daName) {
+        if (doType == null) return null;
+        SclDA da = doType.findDaByName(daName);
+        return da != null ? da.getFc() : null;
+    }
+
+    private static SclDOType resolveDoType(SclDataTypeTemplates templates, SclLNodeType lnt, String doName) {
+        if (templates == null || lnt == null) return null;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef != null && doDef.getType() != null) {
+            return templates.findDoTypeById(doDef.getType());
+        }
+        return null;
+    }
+
+    private static SclDOType resolveSdiDoType(SclDOType doType, String sdiName, SclDataTypeTemplates templates) {
+        if (doType == null || templates == null) return null;
+        for (SclDA da : doType.getDas()) {
+            if (da.getName().equals(sdiName) && "Struct".equals(da.getBType()) && da.getType() != null) {
+                return templates.findDoTypeById(da.getType());
+            }
+        }
+        for (SclSDO sdo : doType.getSdos()) {
+            if (sdo.getName().equals(sdiName) && sdo.getType() != null) {
+                return templates.findDoTypeById(sdo.getType());
+            }
+        }
+        return null;
     }
 }
