@@ -1,7 +1,8 @@
 package com.ysh.dlt2811bean.transport.protocol;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
+import com.ysh.dlt2811bean.scl2.model.SclServer;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -17,8 +18,8 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
     protected final Logger log = LoggerFactory.getLogger(getClass());
     private final ServiceName serviceName;
     private final Supplier<T> factory;
-    protected SclIED.SclAccessPoint accessPoint;
-    protected SclIED.SclServer server;
+    protected SclAccessPoint accessPoint;
+    protected SclServer server;
     private final boolean needAccessPoint;
     protected CmsServerSession serverSession;
     protected CmsApdu request;
@@ -72,7 +73,7 @@ public abstract class AbstractCmsServiceHandler<T extends CmsAsdu<T>> implements
         }
     }
 
-    protected SclIED.SclServer getServer() {
+    protected SclServer getServer() {
         return server;
     }
 

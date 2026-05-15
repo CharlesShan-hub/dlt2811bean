@@ -2,9 +2,9 @@ package com.ysh.dlt2811bean.transport.app;
 
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
-import com.ysh.dlt2811bean.scl.SclDocument;
-import com.ysh.dlt2811bean.scl.SclReader;
-import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.scl2.model.SclDocument;
+import com.ysh.dlt2811bean.scl2.model.SclIED;
+import com.ysh.dlt2811bean.scl2.reader.SclReader;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.security.GmSignature;
@@ -22,28 +22,22 @@ import com.ysh.dlt2811bean.transport.io.CmsServerTransport;
 import com.ysh.dlt2811bean.transport.io.CmsTransportListener;
 import com.ysh.dlt2811bean.transport.protocol.CmsDispatcher;
 import com.ysh.dlt2811bean.transport.protocol.association.*;
-import com.ysh.dlt2811bean.transport.protocol.directory.*;
+import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalDeviceDirectoryHandler;
+import com.ysh.dlt2811bean.transport.protocol.directory.GetLogicalNodeDirectoryHandler;
+import com.ysh.dlt2811bean.transport.protocol.directory.GetServerDirectoryHandler;
 import com.ysh.dlt2811bean.transport.protocol.test.*;
-import com.ysh.dlt2811bean.transport.protocol.control.*;
-import com.ysh.dlt2811bean.transport.protocol.data.*;
-import com.ysh.dlt2811bean.transport.protocol.sv.*;
+// import com.ysh.dlt2811bean.transport.protocol.control.*;
+// import com.ysh.dlt2811bean.transport.protocol.data.*;
+// import com.ysh.dlt2811bean.transport.protocol.sv.*;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
-import com.ysh.dlt2811bean.transport.protocol.goose.*;
-import com.ysh.dlt2811bean.transport.protocol.log.*;
-import com.ysh.dlt2811bean.transport.protocol.report.*;
-import com.ysh.dlt2811bean.transport.protocol.setting.*;
-import com.ysh.dlt2811bean.transport.protocol.dataset.*;
-import com.ysh.dlt2811bean.transport.protocol.file.DeleteFileHandler;
-import com.ysh.dlt2811bean.transport.protocol.file.GetFileAttributeValuesHandler;
-import com.ysh.dlt2811bean.transport.protocol.file.GetFileDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.file.GetFileHandler;
-import com.ysh.dlt2811bean.transport.protocol.file.SetFileHandler;
-import com.ysh.dlt2811bean.transport.protocol.negotiation.AssociateNegotiateHandler;
-import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcInterfaceDefinitionHandler;
-import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcInterfaceDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcMethodDefinitionHandler;
-import com.ysh.dlt2811bean.transport.protocol.rpc.GetRpcMethodDirectoryHandler;
-import com.ysh.dlt2811bean.transport.protocol.rpc.RpcCallHandler;
+// import com.ysh.dlt2811bean.transport.protocol.goose.*;
+// import com.ysh.dlt2811bean.transport.protocol.log.*;
+// import com.ysh.dlt2811bean.transport.protocol.report.*;
+// import com.ysh.dlt2811bean.transport.protocol.setting.*;
+// import com.ysh.dlt2811bean.transport.protocol.dataset.*;
+// import com.ysh.dlt2811bean.transport.protocol.file.*;
+import com.ysh.dlt2811bean.transport.protocol.negotiation.*;
+// import com.ysh.dlt2811bean.transport.protocol.rpc.*;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -201,7 +195,7 @@ public class CmsServer {
 
     public CmsServer loadScl(String filePath) throws Exception {
         this.sclFilePath = filePath;
-        this.sclDocument = new SclReader().read(filePath);
+        this.sclDocument = new SclReader().read(new java.io.File(filePath));
         log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
                  sclDocument.getFileType(), sclDocument.getIeds().size());
         reRegisterSclHandlers();
@@ -218,7 +212,7 @@ public class CmsServer {
 
         System.out.println(CmsColor.gray("\n  " + CmsColor.bold("Client connect command:")));
         for (SclIED ied : sclDocument.getIeds()) {
-            for (SclIED.SclAccessPoint accPt : ied.getAccessPoints()) {
+            for (var accPt : ied.getAccessPoints()) {
                 String iedAp = ied.getName();
                 String accPtName = accPt.getName();
                 System.out.println(CmsColor.gray("    connect 127.0.0.1 " + port + " " + asduSize + " " + protoVer + " " + iedAp + " " + accPtName));
@@ -228,9 +222,9 @@ public class CmsServer {
     }
 
     private void reRegisterSclHandlers() throws Exception {
-        dispatcher.registerHandler(new GetLogicalNodeDirectoryHandler(sclDocument));
-        dispatcher.registerHandler(new GetAllDataValuesHandler(sclDocument));
-        dispatcher.registerHandler(new GetAllDataDefinitionHandler(sclDocument));
+        dispatcher.registerHandler(new GetLogicalNodeDirectoryHandler(sclDocument.getDataTypeTemplates()));
+        // dispatcher.registerHandler(new GetAllDataValuesHandler(sclDocument.getDataTypeTemplates()));
+        // dispatcher.registerHandler(new GetAllDataDefinitionHandler(sclDocument.getDataTypeTemplates()));
         if (securityEnabled && securityAuthenticator != null && serverCertificate != null) {
             dispatcher.registerHandler(
                 new AssociateHandler(sclDocument).enableSecurity(securityAuthenticator, serverCertificate));
@@ -255,7 +249,8 @@ public class CmsServer {
     }
 
     public CmsServer loadScl(Path filePath) throws Exception {
-        this.sclDocument = new SclReader().read(filePath);
+        this.sclDocument = new SclReader().read(new java.io.File(filePath.toString()));
+        this.sclFilePath = filePath.toString();
         log.info("SCL model loaded from {}: type={}, IEDs={}", filePath,
                  sclDocument.getFileType(), sclDocument.getIeds().size());
         return this;
@@ -381,63 +376,63 @@ public class CmsServer {
         // 8.3 directory handlers
         dispatcher.registerDefaultHandler(new GetServerDirectoryHandler());// 8.3.1
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());// 8.3.2
-        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument));// 8.3.3
-        dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));// 8.3.4
-        dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));// 8.3.5
-        dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
+        dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler(sclDocument.getDataTypeTemplates()));// 8.3.3
+        // dispatcher.registerDefaultHandler(new GetAllDataValuesHandler(sclDocument));// 8.3.4
+        // dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler(sclDocument));// 8.3.5
+        // dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
         // 8.4 data handlers
-        dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
-        dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2
-        dispatcher.registerDefaultHandler(new GetDataDirectoryHandler());// 8.4.3
-        dispatcher.registerDefaultHandler(new GetDataDefinitionHandler());// 8.4.4
+        // dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
+        // dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2
+        // dispatcher.registerDefaultHandler(new GetDataDirectoryHandler());// 8.4.3
+        // dispatcher.registerDefaultHandler(new GetDataDefinitionHandler());// 8.4.4
         // 8.5 dataset handlers
-        dispatcher.registerDefaultHandler(new GetDataSetValuesHandler());// 8.5.1
-        dispatcher.registerDefaultHandler(new SetDataSetValuesHandler());// 8.5.2
-        dispatcher.registerDefaultHandler(new CreateDataSetHandler());// 8.5.3
-        dispatcher.registerDefaultHandler(new DeleteDataSetHandler());// 8.5.4
-        dispatcher.registerDefaultHandler(new GetDataSetDirectoryHandler());// 8.5.5
+        // dispatcher.registerDefaultHandler(new GetDataSetValuesHandler());// 8.5.1
+        // dispatcher.registerDefaultHandler(new SetDataSetValuesHandler());// 8.5.2
+        // dispatcher.registerDefaultHandler(new CreateDataSetHandler());// 8.5.3
+        // dispatcher.registerDefaultHandler(new DeleteDataSetHandler());// 8.5.4
+        // dispatcher.registerDefaultHandler(new GetDataSetDirectoryHandler());// 8.5.5
         // 8.6 value handlers
-        dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
-        dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2
-        dispatcher.registerDefaultHandler(new SetEditSGValueHandler());// 8.6.3
-        dispatcher.registerDefaultHandler(new ConfirmEditSGValuesHandler());// 8.6.4
-        dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
-        dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
+        // dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
+        // dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2
+        // dispatcher.registerDefaultHandler(new SetEditSGValueHandler());// 8.6.3
+        // dispatcher.registerDefaultHandler(new ConfirmEditSGValuesHandler());// 8.6.4
+        // dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
+        // dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
         // 8.7 report handlers
-        dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
-        dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
-        dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
-        dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
+        // dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
+        // dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
+        // dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
+        // dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
         // 8.8 log handlers
-        dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
-        dispatcher.registerDefaultHandler(new SetLCBValuesHandler());// 8.8.3
-        dispatcher.registerDefaultHandler(new QueryLogByTimeHandler());// 8.8.4
-        dispatcher.registerDefaultHandler(new QueryLogAfterHandler());// 8.8.5
-        dispatcher.registerDefaultHandler(new GetLogStatusValuesHandler());// 8.8.6
+        // dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
+        // dispatcher.registerDefaultHandler(new SetLCBValuesHandler());// 8.8.3
+        // dispatcher.registerDefaultHandler(new QueryLogByTimeHandler());// 8.8.4
+        // dispatcher.registerDefaultHandler(new QueryLogAfterHandler());// 8.8.5
+        // dispatcher.registerDefaultHandler(new GetLogStatusValuesHandler());// 8.8.6
         // 8.9 goose handlers
-        dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());// 8.9.4
-        dispatcher.registerDefaultHandler(new SetGoCBValuesHandler(goosePublisher));// 8.9.5
+        // dispatcher.registerDefaultHandler(new GetGoCBValuesHandler());// 8.9.4
+        // dispatcher.registerDefaultHandler(new SetGoCBValuesHandler(goosePublisher));// 8.9.5
         // 8.10 sv handlers
-        dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());// 8.10.2
-        dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());// 8.10.3
+        // dispatcher.registerDefaultHandler(new GetMSVCBValuesHandler());// 8.10.2
+        // dispatcher.registerDefaultHandler(new SetMSVCBValuesHandler());// 8.10.3
         // 8.11 control handlers
-        dispatcher.registerDefaultHandler(new SelectHandler());// 8.11.1
-        dispatcher.registerDefaultHandler(new SelectWithValueHandler());// 8.11.2
-        dispatcher.registerDefaultHandler(new OperateHandler());// 8.11.3
-        dispatcher.registerDefaultHandler(new CancelHandler());// 8.11.4
-        dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());// 8.11.6
+        // dispatcher.registerDefaultHandler(new SelectHandler());// 8.11.1
+        // dispatcher.registerDefaultHandler(new SelectWithValueHandler());// 8.11.2
+        // dispatcher.registerDefaultHandler(new OperateHandler());// 8.11.3
+        // dispatcher.registerDefaultHandler(new CancelHandler());// 8.11.4
+        // dispatcher.registerDefaultHandler(new TimeActivatedOperateHandler());// 8.11.6
         // 8.12 rpc handlers
-        dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());// 8.12.1
-        dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());// 8.12.2
-        dispatcher.registerDefaultHandler(new GetRpcMethodDirectoryHandler());// 8.12.3
-        dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());// 8.12.4
-        dispatcher.registerDefaultHandler(new RpcCallHandler());// 8.12.5
+        // dispatcher.registerDefaultHandler(new GetRpcInterfaceDirectoryHandler());// 8.12.1
+        // dispatcher.registerDefaultHandler(new GetRpcInterfaceDefinitionHandler());// 8.12.2
+        // dispatcher.registerDefaultHandler(new GetRpcMethodDirectoryHandler());// 8.12.3
+        // dispatcher.registerDefaultHandler(new GetRpcMethodDefinitionHandler());// 8.12.4
+        // dispatcher.registerDefaultHandler(new RpcCallHandler());// 8.12.5
         // 8.13 file handlers
-        dispatcher.registerDefaultHandler(new GetFileHandler());// 8.13.1
-        dispatcher.registerDefaultHandler(new SetFileHandler());// 8.13.2
-        dispatcher.registerDefaultHandler(new DeleteFileHandler());// 8.13.3
-        dispatcher.registerDefaultHandler(new GetFileAttributeValuesHandler());// 8.13.4
-        dispatcher.registerDefaultHandler(new GetFileDirectoryHandler());// 8.13.5
+        // dispatcher.registerDefaultHandler(new GetFileHandler());// 8.13.1
+        // dispatcher.registerDefaultHandler(new SetFileHandler());// 8.13.2
+        // dispatcher.registerDefaultHandler(new DeleteFileHandler());// 8.13.3
+        // dispatcher.registerDefaultHandler(new GetFileAttributeValuesHandler());// 8.13.4
+        // dispatcher.registerDefaultHandler(new GetFileDirectoryHandler());// 8.13.5
         // 8.14 test handlers
         dispatcher.registerDefaultHandler(new TestHandler());// 8.14.1
         // 8.15 negotiation handlers

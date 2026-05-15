@@ -2,8 +2,9 @@ package com.ysh.dlt2811bean.transport.protocol.association;
 
 import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
+import com.ysh.dlt2811bean.scl2.model.SclDocument;
+import com.ysh.dlt2811bean.scl2.model.SclIED;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -105,7 +106,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
                 return CmsServiceError.INSTANCE_NOT_AVAILABLE;
             }
 
-            SclIED.SclAccessPoint accessPoint = ied.findAccessPointByName(apName);
+            SclAccessPoint accessPoint = ied.findAccessPointByName(apName);
             if (accessPoint == null) {
                 log.warn("[Server] AccessPoint not found in IED {}: {}", iedName, apName);
                 return CmsServiceError.INSTANCE_NOT_AVAILABLE;

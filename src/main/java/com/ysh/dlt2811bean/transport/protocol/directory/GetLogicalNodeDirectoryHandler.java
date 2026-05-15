@@ -3,15 +3,9 @@ package com.ysh.dlt2811bean.transport.protocol.directory;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.scl.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDO;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclDOType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclLNodeType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates.SclSDO;
-import com.ysh.dlt2811bean.scl.model.SclIED;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN0;
+import com.ysh.dlt2811bean.scl2.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl2.model.SclLDevice;
+import com.ysh.dlt2811bean.scl2.model.SclLN;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -23,15 +17,53 @@ import java.util.List;
 
 public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<CmsGetLogicalNodeDirectory> {
 
-    private final SclDocument sclDocument;
+    private final SclDataTypeTemplates templates;
 
-    public GetLogicalNodeDirectoryHandler(SclDocument sclDocument) {
+    public GetLogicalNodeDirectoryHandler(SclDataTypeTemplates templates) {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectory::new);
-        this.sclDocument = sclDocument;
+        this.templates = templates;
     }
 
     @Override
     protected CmsApdu doServerHandle() {
+        
+        // resolve logic node
+        List<SclLN> lns = resolveLns();
+        if (lns == null) {
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        List<String> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            List<String> collected = collectEntries(ln, asdu.acsiClass.get());
+            if (collected == null) {
+                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            }
+            entries.addAll(collected);
+        }
+
+        String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
+        List<String> filtered = filterAfter(entries, after);
+        if (filtered == null) {
+            log.warn("[Server] referenceAfter not found: {}", after);
+            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        CmsArray<CmsSubReference> refs = new CmsArray<>(CmsSubReference::new);
+        for (String name : filtered) {
+            refs.add(new CmsSubReference(name));
+        }
+
+        CmsGetLogicalNodeDirectory response = new CmsGetLogicalNodeDirectory(MessageType.RESPONSE_POSITIVE)
+                .reqId(asdu.reqId().get())
+                .referenceResponse(refs);
+        response.moreFollows.set(false);
+
+        log.debug("[Server] GetLogicalNodeDirectory: {} entries (acsiClass={})", refs.size(), asdu.acsiClass.get());
+        return new CmsApdu(response);
+    }
+
+    private List<SclLN> resolveLns() {
 
         String ldName = null;
         String lnRef = null;
@@ -42,282 +74,55 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
             lnRef = asdu.referenceRequest.lnReference.get();
         }
 
-        List<TargetLn> targets = resolveTargets(ldName, lnRef);
-        if (targets == null) {
-            return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-
-        int acsiClass = asdu.acsiClass.get();
-
-        List<String> entries = new ArrayList<>();
-        switch (acsiClass) {
-            case CmsACSIClass.DATA_OBJECT:
-                collectDataObjects(targets, entries, !useLdName);
-                break;
-            case CmsACSIClass.DATA_SET:
-                collectDataSets(targets, entries);
-                break;
-            case CmsACSIClass.BRCB:
-                collectReportControls(targets, entries, true);
-                break;
-            case CmsACSIClass.URCB:
-                collectReportControls(targets, entries, false);
-                break;
-            case CmsACSIClass.LCB:
-                collectLogControls(targets, entries);
-                break;
-            case CmsACSIClass.LOG:
-                collectLogNames(targets, entries);
-                break;
-            case CmsACSIClass.GO_CB:
-                collectGseControls(targets, entries);
-                break;
-            case CmsACSIClass.MSV_CB:
-                collectSvControls(targets, entries);
-                break;
-            case CmsACSIClass.SGCB:
-                collectSgcbNames(targets, entries);
-                break;
-            default:
-                log.warn("[Server] Unknown ACSI class: {}", acsiClass);
-                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
-
-        String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
-        int startIndex = 0;
-        if (after != null && !after.isEmpty()) {
-            boolean found = false;
-            for (int i = 0; i < entries.size(); i++) {
-                if (entries.get(i).equals(after)) {
-                    startIndex = i + 1;
-                    found = true;
-                    break;
-                }
-            }
-            if (!found) {
-                log.warn("[Server] referenceAfter not found: {}", after);
-                return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-        }
-
-        CmsArray<CmsSubReference> refs = new CmsArray<>(CmsSubReference::new).capacity(entries.size() - startIndex + 10);
-        for (int i = startIndex; i < entries.size(); i++) {
-            refs.add(new CmsSubReference(entries.get(i)));
-        }
-
-        CmsGetLogicalNodeDirectory response = new CmsGetLogicalNodeDirectory(MessageType.RESPONSE_POSITIVE)
-                .reqId(asdu.reqId().get())
-                .referenceResponse(refs);
-        response.moreFollows.set(false);
-
-        log.debug("[Server] GetLogicalNodeDirectory: {} entries (acsiClass={})", refs.size(), acsiClass);
-        return new CmsApdu(response);
-    }
-
-    private List<TargetLn> resolveTargets(String ldName, String lnRef) {
-
         if (ldName != null && !ldName.isEmpty()) {
-            // ldName: iterate all LNs in the specified LD
-            SclIED.SclLDevice device = findLDevice(server, ldName);
+            SclLDevice device = server.findLDeviceByInst(ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
                 return null;
             }
-            List<TargetLn> result = new ArrayList<>();
-            SclLN0 ln0 = device.getLn0();
-            if (ln0 != null) {
-                result.add(new TargetLn(ldName, "", ln0.getLnClass(), ln0.getInst(), ln0.getLnType(), ln0, null));
-            }
-            for (SclLN ln : device.getLns()) {
-                result.add(new TargetLn(ldName, ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
-            }
-            return result;
+            return device.getLns();
         }
-
-        // lnReference: find specific LN by "LDInst/LNClassInst"
         if (lnRef == null || lnRef.isEmpty()) {
             log.warn("[Server] No ldName or lnReference provided");
             return null;
         }
-
         int slashIdx = lnRef.indexOf('/');
         if (slashIdx < 0) {
             log.warn("[Server] Invalid lnReference (no '/'): {}", lnRef);
             return null;
         }
-
-        String targetLd = lnRef.substring(0, slashIdx);
-        String targetLnName = lnRef.substring(slashIdx + 1);
-
-        SclIED.SclLDevice device = findLDevice(server, targetLd);
+        SclLDevice device = server.findLDeviceByInst(lnRef.substring(0, slashIdx));
         if (device == null) {
-            log.warn("[Server] LDevice not found: {}", targetLd);
+            log.warn("[Server] LDevice not found: {}", lnRef.substring(0, slashIdx));
             return null;
         }
-
-        // Find LN where prefix+lnClass+inst matches targetLnName
-        if (device.getLn0() != null) {
-            String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
-            if (ln0Name.equals(targetLnName)) {
-                List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), "", device.getLn0().getLnClass(),
-                        device.getLn0().getInst(), device.getLn0().getLnType(), device.getLn0(), null));
-                return result;
-            }
+        SclLN ln = device.findLnByFullName(lnRef.substring(slashIdx + 1));
+        if (ln == null) {
+            log.warn("[Server] LN not found: {}", lnRef);
+            return null;
         }
-        for (SclLN ln : device.getLns()) {
-            String lnName = (ln.getPrefix() == null || ln.getPrefix().isEmpty())
-                    ? ln.getLnClass() + ln.getInst()
-                    : ln.getPrefix() + ln.getLnClass() + ln.getInst();
-            if (lnName.equals(targetLnName)) {
-                List<TargetLn> result = new ArrayList<>();
-                result.add(new TargetLn(device.getInst(), ln.getPrefix(), ln.getLnClass(), ln.getInst(), ln.getLnType(), null, ln));
-                return result;
-            }
-        }
-
-        log.warn("[Server] LN not found: {} in LDevice {}", targetLnName, targetLd);
-        return null;
+        return List.of(ln);
     }
 
-    private void collectDataObjects(List<TargetLn> targets, List<String> entries, boolean relative) {
-        SclDataTypeTemplates templates = sclDocument != null ? sclDocument.getDataTypeTemplates() : null;
-
-        for (TargetLn target : targets) {
-            String prefix = relative ? "" : (target.fullName() + ".");
-
-            // Try to get DOs from LNodeType in DataTypeTemplates
-            List<SclDO> dos = null;
-            if (templates != null && target.lnType != null && !target.lnType.isEmpty()) {
-                SclLNodeType lnt = templates.findLNodeTypeById(target.lnType);
-                if (lnt != null) {
-                    dos = lnt.getDos();
-                }
-            }
-
-            if (dos != null && !dos.isEmpty()) {
-                for (SclDO doDef : dos) {
-                    String doPrefix = prefix + doDef.getName();
-                    entries.add(doPrefix);
-                    // Resolve SDOs from DOType
-                    if (templates != null && doDef.getType() != null && !doDef.getType().isEmpty()) {
-                        collectSdos(templates, doDef.getType(), doPrefix, entries);
-                    }
-                }
-            }
-        }
+    private List<String> collectEntries(SclLN ln, int acsiClass) {
+        return switch (acsiClass) {
+            case CmsACSIClass.DATA_OBJECT -> ln.getDataObjectNames(templates);
+            case CmsACSIClass.DATA_SET -> ln.getDataSetNames();
+            case CmsACSIClass.BRCB -> ln.getReportControlNames(true);
+            case CmsACSIClass.URCB -> ln.getReportControlNames(false);
+            case CmsACSIClass.LCB -> ln.getLogControlNames();
+            case CmsACSIClass.LOG -> ln.getLogNames();
+            case CmsACSIClass.GO_CB -> ln.getGseControlNames();
+            case CmsACSIClass.MSV_CB -> ln.getSvControlNames();
+            case CmsACSIClass.SGCB -> List.of("SG1");
+            default -> null;
+        };
     }
 
-    private void collectSdos(SclDataTypeTemplates templates, String doTypeId, String prefix, List<String> entries) {
-        SclDOType doType = templates.findDoTypeById(doTypeId);
-        if (doType == null) {
-            return;
-        }
-        for (SclSDO sdo : doType.getSdos()) {
-            String sdoPrefix = prefix + "." + sdo.getName();
-            entries.add(sdoPrefix);
-            // Recursively resolve nested SDOs
-            if (sdo.getType() != null && !sdo.getType().isEmpty()) {
-                collectSdos(templates, sdo.getType(), sdoPrefix, entries);
-            }
-        }
-    }
-
-    private void collectDataSets(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclDataSet ds : t.ln0.getDataSets()) {
-                entries.add(ds.getName());
-            }
-        }
-    }
-
-    private void collectReportControls(List<TargetLn> targets, List<String> entries, boolean buffered) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclReportControl rc : t.ln0.getReportControls()) {
-                if (rc.isBuffered() == buffered) {
-                    entries.add(rc.getName());
-                }
-            }
-        }
-    }
-
-    private void collectLogControls(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclLogControl lc : t.ln0.getLogControls()) {
-                entries.add(lc.getName());
-            }
-        }
-    }
-
-    private void collectLogNames(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclLogControl lc : t.ln0.getLogControls()) {
-                if (lc.getLogName() != null && !lc.getLogName().isEmpty()) {
-                    entries.add(lc.getLogName());
-                }
-            }
-        }
-    }
-
-    private void collectGseControls(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclGSEControl gse : t.ln0.getGseControls()) {
-                entries.add(gse.getName());
-            }
-        }
-    }
-
-    private void collectSvControls(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            for (SclIED.SclSampledValueControl sv : t.ln0.getSampledValueControls()) {
-                entries.add(sv.getName());
-            }
-        }
-    }
-
-    private void collectSgcbNames(List<TargetLn> targets, List<String> entries) {
-        for (TargetLn t : targets) {
-            if (t.ln0 == null) continue;
-            entries.add("SG1");
-        }
-    }
-
-    private SclIED.SclLDevice findLDevice(SclIED.SclServer server, String ldName) {
-        for (SclIED.SclLDevice ld : server.getLDevices()) {
-            if (ld.getInst().equals(ldName)) {
-                return ld;
-            }
-        }
-        return null;
-    }
-
-    private static class TargetLn {
-        final String ldInst;
-        final String prefix;
-        final String lnClass;
-        final String inst;
-        final String lnType;
-        final SclLN0 ln0;
-        final SclLN ln;
-
-        TargetLn(String ldInst, String prefix, String lnClass, String inst, String lnType, SclLN0 ln0, SclLN ln) {
-            this.ldInst = ldInst;
-            this.prefix = prefix;
-            this.lnClass = lnClass;
-            this.inst = inst;
-            this.lnType = lnType;
-            this.ln0 = ln0;
-            this.ln = ln;
-        }
-
-        String fullName() {
-            return (prefix == null || prefix.isEmpty()) ? lnClass + inst : prefix + lnClass + inst;
-        }
+    private List<String> filterAfter(List<String> entries, String after) {
+        if (after == null || after.isEmpty()) return entries;
+        int idx = entries.indexOf(after);
+        if (idx < 0) return null;
+        return entries.subList(idx + 1, entries.size());
     }
 }

@@ -241,7 +241,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
 
     private List<TargetLn> resolveTargets(String ldName, String lnRef) {
         if (ldName != null && !ldName.isEmpty()) {
-            SclIED.SclLDevice device = findLDevice(server, ldName);
+            SclLDevice device = findLDevice(server, ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
                 return null;
@@ -268,7 +268,7 @@ public class GetAllDataDefinitionHandler extends AbstractCmsServiceHandler<CmsGe
         String targetLd = lnRef.substring(0, slashIdx);
         String targetLnName = lnRef.substring(slashIdx + 1);
 
-        SclIED.SclLDevice device = findLDevice(server, targetLd);
+        SclLDevice device = findLDevice(server, targetLd);
         if (device == null) {
             log.warn("[Server] LDevice not found: {}", targetLd);
             return null;

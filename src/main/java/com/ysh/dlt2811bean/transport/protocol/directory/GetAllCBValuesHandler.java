@@ -8,12 +8,13 @@ import com.ysh.dlt2811bean.datatypes.compound.CmsMSVCB;
 import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
 import com.ysh.dlt2811bean.datatypes.compound.CmsURCB;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclIED;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclGSEControl;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLN0;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclLogControl;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclReportControl;
-import com.ysh.dlt2811bean.scl.model.SclIED.SclSampledValueControl;
+import com.ysh.dlt2811bean.scl2.model.SclGSEControl;
+import com.ysh.dlt2811bean.scl2.model.SclLN;
+import com.ysh.dlt2811bean.scl2.model.SclLogControl;
+import com.ysh.dlt2811bean.scl2.model.SclReportControl;
+import com.ysh.dlt2811bean.scl2.model.SclSampledValueControl;
+import com.ysh.dlt2811bean.scl2.model.SclServer;
+import com.ysh.dlt2811bean.scl2.model.SclLDevice;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -45,7 +46,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
 
         int acsiClass = asdu.acsiClass.get();
 
-        List<SclLN0> ln0s = resolveLn0s(ldName, lnRef);
+        List<SclLN> ln0s = resolveLn0s(ldName, lnRef);
         if (ln0s == null) {
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -84,14 +85,14 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         return new CmsApdu(response);
     }
 
-    private List<SclLN0> resolveLn0s(String ldName, String lnRef) {
+    private List<SclLN> resolveLn0s(String ldName, String lnRef) {
         if (ldName != null && !ldName.isEmpty()) {
-            SclIED.SclLDevice device = findLDevice(server, ldName);
+            SclLDevice device = findLDevice(server, ldName);
             if (device == null) {
                 log.warn("[Server] LDevice not found: {}", ldName);
                 return null;
             }
-            List<SclLN0> result = new ArrayList<>();
+            List<SclLN> result = new ArrayList<>();
             if (device.getLn0() != null) {
                 result.add(device.getLn0());
             }
@@ -108,7 +109,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         }
         String targetLd = lnRef.substring(0, slashIdx);
         String targetLnName = lnRef.substring(slashIdx + 1);
-        SclIED.SclLDevice device = findLDevice(server, targetLd);
+        SclLDevice device = findLDevice(server, targetLd);
         if (device == null) {
             log.warn("[Server] LDevice not found: {}", targetLd);
             return null;
@@ -116,7 +117,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         if (device.getLn0() != null) {
             String ln0Name = device.getLn0().getLnClass() + device.getLn0().getInst();
             if (ln0Name.equals(targetLnName)) {
-                List<SclLN0> result = new ArrayList<>();
+                List<SclLN> result = new ArrayList<>();
                 result.add(device.getLn0());
                 return result;
             }
@@ -125,9 +126,9 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         return null;
     }
 
-    private List<CbEntry> collectCBs(List<SclLN0> ln0s, int acsiClass) {
+    private List<CbEntry> collectCBs(List<SclLN> ln0s, int acsiClass) {
         List<CbEntry> result = new ArrayList<>();
-        for (SclLN0 ln0 : ln0s) {
+        for (SclLN ln0 : ln0s) {
             switch (acsiClass) {
                 case CmsACSIClass.BRCB:
                     for (SclReportControl rc : ln0.getReportControls()) {
@@ -154,7 +155,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
                     }
                     break;
                 case CmsACSIClass.MSV_CB:
-                    for (SclSampledValueControl sv : ln0.getSampledValueControls()) {
+                    for (SclSampledValueControl sv : ln0.getSvControls()) {
                         result.add(new CbEntry(sv.getName(), buildMsvcb(sv)));
                     }
                     break;
@@ -232,14 +233,14 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         if (sv.getDatSet() != null) {
             msvcb.datSet.set(sv.getDatSet());
         }
-        if (sv.getSmvID() != null) {
-            msvcb.msvID.set(sv.getSmvID());
+        if (sv.getSvID() != null) {
+            msvcb.msvID.set(sv.getSvID());
         }
         if (sv.getConfRev() != null) {
             msvcb.confRev.set(Long.parseLong(sv.getConfRev()));
         }
-        if (sv.getSmpRate() > 0) {
-            msvcb.smpRate.set(sv.getSmpRate());
+        if (sv.getSmpRate() != null && !sv.getSmpRate().isEmpty()) {
+            msvcb.smpRate.set(Integer.parseInt(sv.getSmpRate()));
         }
         return new CmsCBValue().selectMsvcb();
     }
@@ -250,8 +251,8 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         return new CmsCBValue().selectSgb();
     }
 
-    private SclIED.SclLDevice findLDevice(SclIED.SclServer server, String ldName) {
-        for (SclIED.SclLDevice ld : server.getLDevices()) {
+    private SclLDevice findLDevice(SclServer server, String ldName) {
+        for (SclLDevice ld : server.getLDevices()) {
             if (ld.getInst().equals(ldName)) {
                 return ld;
             }
