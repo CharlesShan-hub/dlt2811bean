@@ -23,6 +23,11 @@ public class CmsCBValueEntry extends AbstractCmsCompound<CmsCBValueEntry> {
         return this;
     }
 
+    public CmsCBValueEntry value(CmsCBValue val) {
+        this.value = val;
+        return this;
+    }
+
     @Override
     public CmsCBValueEntry copy() {
         CmsCBValueEntry copy = new CmsCBValueEntry();

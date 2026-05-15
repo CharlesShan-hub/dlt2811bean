@@ -373,8 +373,8 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new GetLogicalDeviceDirectoryHandler());// 8.3.2
         dispatcher.registerDefaultHandler(new GetLogicalNodeDirectoryHandler());// 8.3.3
         dispatcher.registerDefaultHandler(new GetAllDataValuesHandler());// 8.3.4
-        // dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler());// 8.3.5
-        // dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
+        dispatcher.registerDefaultHandler(new GetAllDataDefinitionHandler());// 8.3.5
+        dispatcher.registerDefaultHandler(new GetAllCBValuesHandler());// 8.3.6
         // 8.4 data handlers
         // dispatcher.registerDefaultHandler(new GetDataValuesHandler());// 8.4.1
         // dispatcher.registerDefaultHandler(new SetDataValuesHandler());// 8.4.2

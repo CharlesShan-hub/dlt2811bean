@@ -1,5 +1,15 @@
 package com.ysh.dlt2811bean.scl2.model;
 
+import com.ysh.dlt2811bean.datatypes.compound.CmsBRCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsGoCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsLCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsMSVCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsURCB;
+import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
+import com.ysh.dlt2811bean.datatypes.string.CmsFC;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -125,6 +135,10 @@ public class SclLN {
         return svControls.stream().map(SclSampledValueControl::getName).toList();
     }
 
+    // -------------------------------------------------------------------------
+    // Data Value collection (for GetAllValuesHander service)
+    // -------------------------------------------------------------------------
+
     /**
      * Collects all data values (DAI) under this LN, resolving bType from the data type templates.
      *
@@ -228,5 +242,261 @@ public class SclLN {
             }
         }
         return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Data definition collection (for GetAllDataDefinition service)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Collects all data definitions (DO type definitions) under this LN.
+     *
+     * @param templates the data type templates for type resolution
+     * @param fcFilter  optional FC filter, null for no filter
+     * @param relative  if true, omit the LN prefix from the reference path
+     * @return list of data definition entries
+     */
+    public List<SclDataDefinitionEntry> collectDataDefinitions(SclDataTypeTemplates templates, String fcFilter, boolean relative) {
+        List<SclDataDefinitionEntry> result = new ArrayList<>();
+        String prefix = relative ? "" : (getFullName() + ".");
+
+        List<SclDO> dos = getDosForType(templates, lnType);
+        if (dos == null || dos.isEmpty()) return result;
+
+        for (SclDO doDef : dos) {
+            if (templates == null || doDef.getType() == null) continue;
+            SclDOType doType = templates.findDoTypeById(doDef.getType());
+            if (doType == null) continue;
+
+            List<CmsDataDefinition.StructureEntry> daEntries = buildDaEntries(templates, doType, fcFilter);
+            if (daEntries.isEmpty()) continue;
+
+            String ref = prefix + doDef.getName();
+            CmsDataDefinition def = CmsDataDefinition.ofStructure(daEntries);
+            result.add(new SclDataDefinitionEntry(ref, doType.getCdc(), def));
+
+            collectSdoEntries(templates, doType, prefix + doDef.getName() + ".", fcFilter, result);
+        }
+        return result;
+    }
+
+    private void collectSdoEntries(SclDataTypeTemplates templates, SclDOType parentDoType,
+                                    String parentPrefix, String fcFilter, List<SclDataDefinitionEntry> result) {
+        if (templates == null) return;
+        for (SclSDO sdo : parentDoType.getSdos()) {
+            if (sdo.getType() == null) continue;
+            SclDOType sdoDoType = templates.findDoTypeById(sdo.getType());
+            if (sdoDoType == null) continue;
+
+            List<CmsDataDefinition.StructureEntry> daEntries = buildDaEntries(templates, sdoDoType, fcFilter);
+            if (daEntries.isEmpty()) continue;
+
+            String ref = parentPrefix + sdo.getName();
+            CmsDataDefinition def = CmsDataDefinition.ofStructure(daEntries);
+            result.add(new SclDataDefinitionEntry(ref, sdoDoType.getCdc(), def));
+        }
+    }
+
+    private List<CmsDataDefinition.StructureEntry> buildDaEntries(SclDataTypeTemplates templates,
+                                                                   SclDOType doType, String fcFilter) {
+        List<CmsDataDefinition.StructureEntry> entries = new ArrayList<>();
+        for (SclDA da : doType.getDas()) {
+            if (fcFilter != null && !fcFilter.equals(da.getFc())) continue;
+            if (!CmsFC.isValid(da.getFc())) continue;
+            CmsDataDefinition daDef = resolveBType(templates, da.getBType(), da.getType(), da.getCount());
+            if (daDef != null) {
+                entries.add(new CmsDataDefinition.StructureEntry(da.getName(), da.getFc(), daDef));
+            }
+        }
+        return entries;
+    }
+
+    private CmsDataDefinition resolveBType(SclDataTypeTemplates templates, String bType,
+                                            String typeRef, Integer count) {
+        if (bType == null) return CmsDataDefinition.ofInt32();
+        return switch (bType) {
+            case "BOOLEAN" -> CmsDataDefinition.ofBoolean();
+            case "INT8" -> CmsDataDefinition.ofInt8();
+            case "INT16" -> CmsDataDefinition.ofInt16();
+            case "INT32" -> CmsDataDefinition.ofInt32();
+            case "INT64" -> CmsDataDefinition.ofInt64();
+            case "INT8U" -> CmsDataDefinition.ofInt8U();
+            case "INT16U" -> CmsDataDefinition.ofInt16U();
+            case "INT32U" -> CmsDataDefinition.ofInt32U();
+            case "INT64U" -> CmsDataDefinition.ofInt64U();
+            case "FLOAT32" -> CmsDataDefinition.ofFloat32();
+            case "FLOAT64" -> CmsDataDefinition.ofFloat64();
+            case "BIT STRING" -> CmsDataDefinition.ofBitString(count != null ? count : 0);
+            case "OCTET STRING" -> CmsDataDefinition.ofOctetString(count != null ? count : 255);
+            case "VisString255", "VISIBLE STRING" -> CmsDataDefinition.ofVisibleString(count != null ? count : 255);
+            case "Unicode255", "UNICODE STRING" -> CmsDataDefinition.ofUnicodeString(count != null ? count : 255);
+            case "Struct" -> {
+                if (templates != null && typeRef != null) {
+                    yield resolveStructType(templates, typeRef);
+                }
+                yield CmsDataDefinition.ofInt32();
+            }
+            case "Enum" -> CmsDataDefinition.ofInt32U();
+            case "Quality" -> CmsDataDefinition.ofQuality();
+            case "Timestamp" -> CmsDataDefinition.ofUtcTime();
+            case "Check" -> CmsDataDefinition.ofCheck();
+            case "Dbpos" -> CmsDataDefinition.ofDbpos();
+            case "Tcmd" -> CmsDataDefinition.ofTcmd();
+            default -> {
+                yield CmsDataDefinition.ofInt32();
+            }
+        };
+    }
+
+    private CmsDataDefinition resolveStructType(SclDataTypeTemplates templates, String typeRef) {
+        SclDAType daType = templates.findDaTypeById(typeRef);
+        if (daType == null) return CmsDataDefinition.ofInt32();
+        List<CmsDataDefinition.StructureEntry> bdaEntries = new ArrayList<>();
+        for (SclBDA bda : daType.getBdas()) {
+            CmsDataDefinition bdaDef = resolveBType(templates, bda.getBType(), bda.getType(), bda.getCount());
+            if (bdaDef != null) {
+                bdaEntries.add(new CmsDataDefinition.StructureEntry(bda.getName(), bdaDef));
+            }
+        }
+        return CmsDataDefinition.ofStructure(bdaEntries);
+    }
+
+    private static List<SclDO> getDosForType(SclDataTypeTemplates templates, String lnType) {
+        if (templates == null || lnType == null || lnType.isEmpty()) return null;
+        SclLNodeType lnt = templates.findLNodeTypeById(lnType);
+        return lnt != null ? lnt.getDos() : null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Control block value collection (for GetAllCBValues service)
+    // -------------------------------------------------------------------------
+
+    /**
+     * Collects control block values from this LN based on the given ACSI class.
+     * <p>Only LLN0 typically contains control blocks, but the method is on SclLN for consistency.
+     *
+     * @param acsiClass the ACSI class filter (BRCB, URCB, LCB, GO_CB, MSV_CB, SGCB)
+     * @return list of control block entries
+     */
+    public List<SclCBEntry> collectCBValues(int acsiClass) {
+        List<SclCBEntry> result = new ArrayList<>();
+        switch (acsiClass) {
+            case CmsACSIClass.BRCB:
+                for (SclReportControl rc : reportControls) {
+                    if (rc.isBuffered()) {
+                        result.add(new SclCBEntry(rc.getName(), buildBrcb(rc)));
+                    }
+                }
+                break;
+            case CmsACSIClass.URCB:
+                for (SclReportControl rc : reportControls) {
+                    if (!rc.isBuffered()) {
+                        result.add(new SclCBEntry(rc.getName(), buildUrcb(rc)));
+                    }
+                }
+                break;
+            case CmsACSIClass.LCB:
+                for (SclLogControl lc : logControls) {
+                    result.add(new SclCBEntry(lc.getName(), buildLcb(lc)));
+                }
+                break;
+            case CmsACSIClass.GO_CB:
+                for (SclGSEControl gse : gseControls) {
+                    result.add(new SclCBEntry(gse.getName(), buildGocb(gse)));
+                }
+                break;
+            case CmsACSIClass.MSV_CB:
+                for (SclSampledValueControl sv : svControls) {
+                    result.add(new SclCBEntry(sv.getName(), buildMsvcb(sv)));
+                }
+                break;
+            case CmsACSIClass.SGCB:
+                result.add(new SclCBEntry("SG1", buildSgcb()));
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    private static CmsCBValue buildBrcb(SclReportControl rc) {
+        CmsBRCB brcb = new CmsBRCB();
+        brcb.brcbName.set(rc.getName());
+        if (rc.getDatSet() != null) {
+            brcb.datSet.set(rc.getDatSet());
+        }
+        if (rc.getRptID() != null) {
+            brcb.rptID.set(rc.getRptID());
+        }
+        if (rc.getConfRev() != null) {
+            brcb.confRev.set(Long.parseLong(rc.getConfRev()));
+        }
+        return new CmsCBValue().selectBrcb();
+    }
+
+    private static CmsCBValue buildUrcb(SclReportControl rc) {
+        CmsURCB urcb = new CmsURCB();
+        urcb.urcbName.set(rc.getName());
+        if (rc.getDatSet() != null) {
+            urcb.datSet.set(rc.getDatSet());
+        }
+        if (rc.getRptID() != null) {
+            urcb.rptID.set(rc.getRptID());
+        }
+        if (rc.getConfRev() != null) {
+            urcb.confRev.set(Long.parseLong(rc.getConfRev()));
+        }
+        return new CmsCBValue().selectUrcb();
+    }
+
+    private static CmsCBValue buildLcb(SclLogControl lc) {
+        CmsLCB lcb = new CmsLCB();
+        lcb.lcbName.set(lc.getName());
+        if (lc.getDatSet() != null) {
+            lcb.datSet.set(lc.getDatSet());
+        }
+        if (lc.getLogName() != null) {
+            lcb.logRef.set(lc.getLogName());
+        }
+        return new CmsCBValue().selectLcb();
+    }
+
+    private static CmsCBValue buildGocb(SclGSEControl gse) {
+        CmsGoCB gocb = new CmsGoCB();
+        gocb.goCBName.set(gse.getName());
+        if (gse.getDatSet() != null) {
+            gocb.datSet.set(gse.getDatSet());
+        }
+        if (gse.getAppID() != null) {
+            gocb.goID.set(gse.getAppID());
+        }
+        if (gse.getConfRev() != null) {
+            gocb.confRev.set(Long.parseLong(gse.getConfRev()));
+        }
+        return new CmsCBValue().selectGocb();
+    }
+
+    private static CmsCBValue buildMsvcb(SclSampledValueControl sv) {
+        CmsMSVCB msvcb = new CmsMSVCB();
+        msvcb.msvCBName.set(sv.getName());
+        if (sv.getDatSet() != null) {
+            msvcb.datSet.set(sv.getDatSet());
+        }
+        if (sv.getSvID() != null) {
+            msvcb.msvID.set(sv.getSvID());
+        }
+        if (sv.getConfRev() != null) {
+            msvcb.confRev.set(Long.parseLong(sv.getConfRev()));
+        }
+        if (sv.getSmpRate() != null && !sv.getSmpRate().isEmpty()) {
+            msvcb.smpRate.set(Integer.parseInt(sv.getSmpRate()));
+        }
+        return new CmsCBValue().selectMsvcb();
+    }
+
+    private static CmsCBValue buildSgcb() {
+        CmsSGCB sgb = new CmsSGCB();
+        sgb.sgcbName.set("SG1");
+        return new CmsCBValue().selectSgb();
     }
 }
