@@ -145,6 +145,16 @@ public class CmsCliCompleter implements Completer {
             Map<String, Map<String, Map<String, Object>>> lnMap = h.get(ldPart);
             if (lnMap != null) {
                 for (String ln : lnMap.keySet()) {
+                    if (type == Param.Type.BRCB_REF) {
+                        Map<String, Object> brcbs = lnMap.get(ln).get("BRCB");
+                        if (brcbs == null || brcbs.isEmpty()) continue;
+                    } else if (type == Param.Type.URCB_REF) {
+                        Map<String, Object> urcbs = lnMap.get(ln).get("URCB");
+                        if (urcbs == null || urcbs.isEmpty()) continue;
+                    } else if (type == Param.Type.DS_REF) {
+                        Map<String, Object> datasets = lnMap.get(ln).get("DATA_SET");
+                        if (datasets == null || datasets.isEmpty()) continue;
+                    }
                     String candidate = ldPart + "/" + ln;
                     if (candidate.toLowerCase().startsWith(word.toLowerCase())) {
                         candidates.add(new Candidate(candidate));

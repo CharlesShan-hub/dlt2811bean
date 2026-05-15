@@ -152,10 +152,12 @@ public class CliContext {
                 }
                 CommandHandler lnDir = handlers.get("ln-dir");
                 if (lnDir != null) {
-                    try {
-                        lnDir.execute(client, Map.of("target", lnRef, "acsi", "DATA_SET", "referenceAfter", ""));
-                    } catch (Exception e) {
-                        System.out.println(CmsColor.red("  Auto-discovery failed at ln-dir DATA_SET " + lnRef + ": " + e.getMessage()));
+                    for (String acsi : new String[]{"DATA_SET", "BRCB", "URCB", "LCB", "LOG", "SGCB", "GO_CB", "MSV_CB"}) {
+                        try {
+                            lnDir.execute(client, Map.of("target", lnRef, "acsi", acsi, "referenceAfter", ""));
+                        } catch (Exception e) {
+                            System.out.println(CmsColor.red("  Auto-discovery failed at ln-dir " + acsi + " " + lnRef + ": " + e.getMessage()));
+                        }
                     }
                 }
             }
