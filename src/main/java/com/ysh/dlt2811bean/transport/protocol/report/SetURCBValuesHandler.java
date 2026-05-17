@@ -1,191 +1,170 @@
-// package com.ysh.dlt2811bean.transport.protocol.report;
+package com.ysh.dlt2811bean.transport.protocol.report;
 
-// import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
-// import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-// import com.ysh.dlt2811bean.scl.model.SclIED;
-// import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-// import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-// import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-// import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
-// import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
-// import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
-// import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
-// import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
-// import java.util.EnumSet;
-// import java.util.Set;
+import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
+import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.scl2.model.SclLDevice;
+import com.ysh.dlt2811bean.scl2.model.SclLN;
+import com.ysh.dlt2811bean.scl2.model.SclReportControl;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
+import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
 
-// public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBValues> {
+public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBValues> {
 
-//     private enum UrcbField {
-//         RPT_ID, RPT_ENA, DAT_SET, OPT_FLDS, BUF_TM, TRG_OPS, INTG_PD, GI, RESV
-//     }
+    public SetURCBValuesHandler() {
+        super(ServiceName.SET_URCB_VALUES, CmsSetURCBValues::new);
+    }
 
-//     public SetURCBValuesHandler() {
-//         super(ServiceName.SET_URCB_VALUES, CmsSetURCBValues::new);
-//     }
+    @Override
+    protected CmsApdu doServerHandle() {
 
-//     @Override
-//     protected CmsApdu doServerHandle() {
+        if (asdu.urcb == null || asdu.urcb.isEmpty()) {
+            log.debug("[Server] SetURCBValues: empty sequence, returning Response+");
+            return new CmsApdu(new CmsSetURCBValues(MessageType.RESPONSE_POSITIVE)
+                    .reqId(asdu.reqId().get()));
+        }
 
-//         if (asdu.urcb == null || asdu.urcb.size() == 0) {
-//             log.debug("[Server] SetURCBValues: empty sequence, returning Response+");
-//             return new CmsApdu(new CmsSetURCBValues(MessageType.RESPONSE_POSITIVE)
-//                     .reqId(asdu.reqId().get()));
-//         }
+        CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
+        boolean hasAnyError = false;
 
-//         CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
-//         boolean hasAnyError = false;
+        for (CmsSetURCBValuesEntry entry : asdu.urcb) {
+            String ref = entry.reference.get();
 
-//         for (int i = 0; i < asdu.urcb.size(); i++) {
-//             CmsSetURCBValuesEntry entry = asdu.urcb.get(i);
+            int refError = validateUrcbRef(ref);
+            if (refError != CmsServiceError.NO_ERROR) {
+                CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
+                result.error.set(refError);
+                results.add(result);
+                hasAnyError = true;
+                continue;
+            }
 
-//             int refError = validateReference(entry.reference.get());
-//             if (refError != CmsServiceError.NO_ERROR) {
-//                 CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
-//                 result.error.set(refError);
-//                 results.add(result);
-//                 hasAnyError = true;
-//                 continue;
-//             }
+            CmsSetURCBValuesResultEntry result = processEntry(entry, ref);
+            results.add(result);
+            if (hasPerFieldError(result)) {
+                hasAnyError = true;
+            }
+        }
 
-//             CmsSetURCBValuesResultEntry result = processEntry(entry);
-//             results.add(result);
-//             if (hasPerFieldError(result)) {
-//                 hasAnyError = true;
-//             }
-//         }
+        if (hasAnyError) {
+            CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_NEGATIVE)
+                    .reqId(asdu.reqId().get());
+            response.result = results;
+            log.debug("[Server] SetURCBValues: {} entries with errors", results.size());
+            return new CmsApdu(response);
+        }
 
-//         if (hasAnyError) {
-//             CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_NEGATIVE)
-//                     .reqId(asdu.reqId().get());
-//             response.result = results;
-//             log.debug("[Server] SetURCBValues: {} entries with errors", results.size());
-//             return new CmsApdu(response);
-//         }
+        CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_POSITIVE)
+                .reqId(asdu.reqId().get());
+        log.debug("[Server] SetURCBValues: {} entries accepted", results.size());
+        return new CmsApdu(response);
+    }
 
-//         CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_POSITIVE)
-//                 .reqId(asdu.reqId().get());
-//         log.debug("[Server] SetURCBValues: {} entries accepted", results.size());
-//         return new CmsApdu(response);
-//     }
+    private CmsSetURCBValuesResultEntry processEntry(CmsSetURCBValuesEntry entry, String ref) {
+        CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
 
-//     private CmsSetURCBValuesResultEntry processEntry(CmsSetURCBValuesEntry entry) {
-//         CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
+        boolean hasRptEna = entry.isFieldPresent("rptEna");
+        boolean rptEnaVal = hasRptEna && entry.rptEna.get();
 
-//         Set<UrcbField> requested = getRequestedFields(entry);
+        if (hasRptEna && !rptEnaVal) {
+            rptEnaState.put(ref, false);
+            result.rptEna.set(CmsServiceError.NO_ERROR);
+            setOtherFields(result, entry);
+        } else if (hasRptEna && rptEnaVal) {
+            boolean othersOk = setOtherFields(result, entry);
+            result.rptEna.set(othersOk ? CmsServiceError.NO_ERROR : CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
+            if (othersOk) {
+                rptEnaState.put(ref, true);
+            }
+        } else {
+            setOtherFields(result, entry);
+        }
 
-//         if (requested.contains(UrcbField.RPT_ENA)) {
-//             rptEnaState.put(entry.reference.get(), entry.rptEna.get());
-//         }
+        return result;
+    }
 
-//         if (requested.contains(UrcbField.RPT_ENA) && !entry.rptEna.get()) {
-//             result.rptEna.set(CmsServiceError.NO_ERROR);
-//             requested.remove(UrcbField.RPT_ENA);
-//             setOtherFields(result, entry, requested);
-//         } else if (requested.contains(UrcbField.RPT_ENA) && entry.rptEna.get()) {
-//             requested.remove(UrcbField.RPT_ENA);
-//             boolean othersOk = setOtherFields(result, entry, requested);
-//             result.rptEna.set(othersOk ? CmsServiceError.NO_ERROR : CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
-//         } else {
-//             setOtherFields(result, entry, requested);
-//         }
+    private boolean setOtherFields(CmsSetURCBValuesResultEntry result, CmsSetURCBValuesEntry entry) {
+        boolean allOk = true;
 
-//         return result;
-//     }
+        if (entry.isFieldPresent("rptID")) {
+            if (entry.rptID.get() != null && !entry.rptID.get().isEmpty()) {
+                result.rptID.set(CmsServiceError.NO_ERROR);
+            } else {
+                result.rptID.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                allOk = false;
+            }
+        }
+        if (entry.isFieldPresent("datSet")) {
+            if (entry.datSet.get() != null && !entry.datSet.get().isEmpty()) {
+                result.datSet.set(CmsServiceError.NO_ERROR);
+            } else {
+                result.datSet.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                allOk = false;
+            }
+        }
+        if (entry.isFieldPresent("optFlds")) {
+            result.optFlds.set(CmsServiceError.NO_ERROR);
+        }
+        if (entry.isFieldPresent("bufTm")) {
+            result.bufTm.set(CmsServiceError.NO_ERROR);
+        }
+        if (entry.isFieldPresent("trgOps")) {
+            result.trgOps.set(CmsServiceError.NO_ERROR);
+        }
+        if (entry.isFieldPresent("intgPd")) {
+            result.intgPd.set(CmsServiceError.NO_ERROR);
+        }
+        if (entry.isFieldPresent("gi")) {
+            result.gi.set(CmsServiceError.NO_ERROR);
+        }
+        if (entry.isFieldPresent("resv")) {
+            result.resv.set(CmsServiceError.NO_ERROR);
+        }
 
-//     private boolean setOtherFields(CmsSetURCBValuesResultEntry result, CmsSetURCBValuesEntry entry, Set<UrcbField> fields) {
-//         boolean allOk = true;
+        return allOk;
+    }
 
-//         if (fields.contains(UrcbField.RPT_ID)) {
-//             if (entry.rptID.get() != null && !entry.rptID.get().isEmpty()) {
-//                 result.rptID.set(CmsServiceError.NO_ERROR);
-//             } else {
-//                 result.rptID.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-//                 allOk = false;
-//             }
-//         }
-//         if (fields.contains(UrcbField.DAT_SET)) {
-//             if (entry.datSet.get() != null && !entry.datSet.get().isEmpty()) {
-//                 result.datSet.set(CmsServiceError.NO_ERROR);
-//             } else {
-//                 result.datSet.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-//                 allOk = false;
-//             }
-//         }
-//         if (fields.contains(UrcbField.OPT_FLDS)) {
-//             result.optFlds.set(CmsServiceError.NO_ERROR);
-//         }
-//         if (fields.contains(UrcbField.BUF_TM)) {
-//             result.bufTm.set(CmsServiceError.NO_ERROR);
-//         }
-//         if (fields.contains(UrcbField.TRG_OPS)) {
-//             result.trgOps.set(CmsServiceError.NO_ERROR);
-//         }
-//         if (fields.contains(UrcbField.INTG_PD)) {
-//             result.intgPd.set(CmsServiceError.NO_ERROR);
-//         }
-//         if (fields.contains(UrcbField.GI)) {
-//             result.gi.set(CmsServiceError.NO_ERROR);
-//         }
-//         if (fields.contains(UrcbField.RESV)) {
-//             result.resv.set(CmsServiceError.NO_ERROR);
-//         }
+    private boolean hasPerFieldError(CmsSetURCBValuesResultEntry result) {
+        return result.error.get() != CmsServiceError.NO_ERROR
+                || result.rptID.get() != CmsServiceError.NO_ERROR
+                || result.rptEna.get() != CmsServiceError.NO_ERROR
+                || result.datSet.get() != CmsServiceError.NO_ERROR
+                || result.optFlds.get() != CmsServiceError.NO_ERROR
+                || result.bufTm.get() != CmsServiceError.NO_ERROR
+                || result.trgOps.get() != CmsServiceError.NO_ERROR
+                || result.intgPd.get() != CmsServiceError.NO_ERROR
+                || result.gi.get() != CmsServiceError.NO_ERROR
+                || result.resv.get() != CmsServiceError.NO_ERROR;
+    }
 
-//         return allOk;
-//     }
+    private int validateUrcbRef(String ref) {
+        if (ref == null || ref.isEmpty()) {
+            return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
+        }
 
-//     private Set<UrcbField> getRequestedFields(CmsSetURCBValuesEntry entry) {
-//         Set<UrcbField> fields = EnumSet.noneOf(UrcbField.class);
-//         if (entry.isFieldPresent("rptID")) fields.add(UrcbField.RPT_ID);
-//         if (entry.isFieldPresent("rptEna")) fields.add(UrcbField.RPT_ENA);
-//         if (entry.isFieldPresent("datSet")) fields.add(UrcbField.DAT_SET);
-//         if (entry.isFieldPresent("optFlds")) fields.add(UrcbField.OPT_FLDS);
-//         if (entry.isFieldPresent("bufTm")) fields.add(UrcbField.BUF_TM);
-//         if (entry.isFieldPresent("trgOps")) fields.add(UrcbField.TRG_OPS);
-//         if (entry.isFieldPresent("intgPd")) fields.add(UrcbField.INTG_PD);
-//         if (entry.isFieldPresent("gi")) fields.add(UrcbField.GI);
-//         if (entry.isFieldPresent("resv")) fields.add(UrcbField.RESV);
-//         return fields;
-//     }
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+        String lnName = rest.substring(0, dotIdx);
+        String rcName = rest.substring(dotIdx + 1);
 
-//     private boolean hasPerFieldError(CmsSetURCBValuesResultEntry result) {
-//         return result.error.get() != CmsServiceError.NO_ERROR
-//                 || result.rptID.get() != CmsServiceError.NO_ERROR
-//                 || result.rptEna.get() != CmsServiceError.NO_ERROR
-//                 || result.datSet.get() != CmsServiceError.NO_ERROR
-//                 || result.optFlds.get() != CmsServiceError.NO_ERROR
-//                 || result.bufTm.get() != CmsServiceError.NO_ERROR
-//                 || result.trgOps.get() != CmsServiceError.NO_ERROR
-//                 || result.intgPd.get() != CmsServiceError.NO_ERROR
-//                 || result.gi.get() != CmsServiceError.NO_ERROR
-//                 || result.resv.get() != CmsServiceError.NO_ERROR;
-//     }
+        SclLDevice device = server.findLDeviceByInst(ldName);
+        if (device == null) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
 
-//     private int validateReference(String ref) {
-//         if (ref == null || ref.isEmpty()) {
-//             return CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE;
-//         }
-//         for (SclIED.SclLDevice ld : server.getLDevices()) {
-//             if (ld.getLn0() == null) continue;
-//             for (SclIED.SclReportControl rc : ld.getLn0().getReportControls()) {
-//                 if (rc.isBuffered()) continue;
-//                 String rcRef = ld.getInst() + "/LLN0." + rc.getName();
-//                 if (rcRef.equals(ref)) {
-//                     return CmsServiceError.NO_ERROR;
-//                 }
-//             }
-//         }
-//         return CmsServiceError.INSTANCE_NOT_AVAILABLE;
-//     }
+        SclLN ln = device.findLnByFullName(lnName);
+        if (ln == null) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
 
-//     @Override
-//     protected CmsApdu buildNegativeResponse(int errorCode) {
-//         CmsSetURCBValues response = new CmsSetURCBValues(MessageType.RESPONSE_NEGATIVE)
-//                 .reqId(request.getReqId());
-//         CmsSetURCBValuesResultEntry entry = new CmsSetURCBValuesResultEntry();
-//         entry.error.set(errorCode);
-//         response.result = new CmsArray<>(CmsSetURCBValuesResultEntry::new).capacity(1);
-//         response.result.add(entry);
-//         return new CmsApdu(response);
-//     }
-// }
+        SclReportControl rc = ln.findReportControlByName(rcName);
+        if (rc == null || rc.isBuffered()) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
+
+        return CmsServiceError.NO_ERROR;
+    }
+}

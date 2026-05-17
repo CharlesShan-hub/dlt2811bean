@@ -20,7 +20,13 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("ref", "URCB 引用", "C1/LLN0.PosReport").type(Param.Type.URCB_REF),
-            new Param("rptEna", "启用报告 (true/false)", "true")
+            new Param("rptEna", "启用报告 (true/false)", "true"),
+            new Param("rptID", "报告 ID (留空=不设置)", ""),
+            new Param("datSet", "数据集引用 (留空=不设置)", ""),
+            new Param("intgPd", "完整性周期/ms (留空=不设置)", ""),
+            new Param("gi", "触发 GI (true/false, 留空=不设置)", ""),
+            new Param("bufTm", "缓存时间/ms (留空=不设置)", ""),
+            new Param("resv", "预留 (true/false, 留空=不设置)", "")
         );
     }
 
@@ -28,11 +34,24 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         requireConnected(client);
 
         String ref = values.get("ref");
-        boolean rptEna = Boolean.parseBoolean(values.get("rptEna"));
 
         CmsSetURCBValuesEntry entry = new CmsSetURCBValuesEntry();
         entry.reference.set(ref);
-        entry.rptEna.set(rptEna);
+
+        if (!values.getOrDefault("rptEna", "").isEmpty())
+            entry.rptEna.set(Boolean.parseBoolean(values.get("rptEna")));
+        if (!values.getOrDefault("rptID", "").isEmpty())
+            entry.rptID.set(values.get("rptID"));
+        if (!values.getOrDefault("datSet", "").isEmpty())
+            entry.datSet.set(values.get("datSet"));
+        if (!values.getOrDefault("intgPd", "").isEmpty())
+            entry.intgPd.set(Long.parseLong(values.get("intgPd")));
+        if (!values.getOrDefault("gi", "").isEmpty())
+            entry.gi.set(Boolean.parseBoolean(values.get("gi")));
+        if (!values.getOrDefault("bufTm", "").isEmpty())
+            entry.bufTm.set(Long.parseLong(values.get("bufTm")));
+        if (!values.getOrDefault("resv", "").isEmpty())
+            entry.resv.set(Boolean.parseBoolean(values.get("resv")));
 
         CmsSetURCBValues asdu = new CmsSetURCBValues(MessageType.REQUEST);
         asdu.addUrcb(entry);

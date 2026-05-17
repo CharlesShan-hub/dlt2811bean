@@ -430,6 +430,9 @@ public class CmsClientCli {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             if (c == '"') {
+                if (inQuote && buf.isEmpty()) {
+                    tokens.add("");
+                }
                 inQuote = !inQuote;
             } else if (Character.isWhitespace(c) && !inQuote) {
                 if (buf.length() > 0) {

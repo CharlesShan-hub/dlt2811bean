@@ -25,16 +25,24 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
         
         // resolve logic node
         List<SclLN> lns = resolveLns();
-        if (lns == null) {
+        if (lns == null)
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
 
         // resolve data object under each logic node
         List<String> entries = new ArrayList<>();
         for (SclLN ln : lns) {
-            List<String> collected = collectEntries(ln, asdu.acsiClass.get());
-            if (collected == null) {
-                return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            List<String> collected;
+            switch (asdu.acsiClass.get()) {
+                case CmsACSIClass.DATA_OBJECT -> collected = ln.getDataObjectNames(sclDocument.getDataTypeTemplates());
+                case CmsACSIClass.DATA_SET -> collected = ln.getDataSetNames();
+                case CmsACSIClass.BRCB -> collected = ln.getReportControlNames(true);
+                case CmsACSIClass.URCB -> collected = ln.getReportControlNames(false);
+                case CmsACSIClass.LCB -> collected = ln.getLogControlNames();
+                case CmsACSIClass.LOG -> collected = ln.getLogNames();
+                case CmsACSIClass.GO_CB -> collected = ln.getGseControlNames();
+                case CmsACSIClass.MSV_CB -> collected = ln.getSvControlNames();
+                case CmsACSIClass.SGCB -> collected = List.of("SG1");
+                default -> { return buildNegativeResponse(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE); }
             }
             entries.addAll(collected);
         }
@@ -67,24 +75,8 @@ public class GetLogicalNodeDirectoryHandler extends AbstractCmsServiceHandler<Cm
         String ldName = useLdName ? asdu.referenceRequest.ldName.get() : null;
         String lnRef = useLdName ? null : asdu.referenceRequest.lnReference.get();
         List<SclLN> lns = server.resolveLns(ldName, lnRef);
-        if (lns == null) {
+        if (lns == null) 
             log.warn("[Server] LN not found: ldName={}, lnReference={}", ldName, lnRef);
-        }
         return lns;
-    }
-
-    private List<String> collectEntries(SclLN ln, int acsiClass) {
-        return switch (acsiClass) {
-            case CmsACSIClass.DATA_OBJECT -> ln.getDataObjectNames(sclDocument.getDataTypeTemplates());
-            case CmsACSIClass.DATA_SET -> ln.getDataSetNames();
-            case CmsACSIClass.BRCB -> ln.getReportControlNames(true);
-            case CmsACSIClass.URCB -> ln.getReportControlNames(false);
-            case CmsACSIClass.LCB -> ln.getLogControlNames();
-            case CmsACSIClass.LOG -> ln.getLogNames();
-            case CmsACSIClass.GO_CB -> ln.getGseControlNames();
-            case CmsACSIClass.MSV_CB -> ln.getSvControlNames();
-            case CmsACSIClass.SGCB -> List.of("SG1");
-            default -> null;
-        };
     }
 }

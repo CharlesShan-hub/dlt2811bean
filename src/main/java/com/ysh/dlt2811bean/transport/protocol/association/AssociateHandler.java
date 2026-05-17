@@ -13,6 +13,7 @@ import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParam
 import com.ysh.dlt2811bean.transport.session.AssociationIdGenerator;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import com.ysh.dlt2811bean.utils.StringUtils;
 import java.security.cert.X509Certificate;
 import java.util.Optional;
 
@@ -69,7 +70,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
                 .signatureCertificate(serverCertificateBytes));
 
         log.debug("[Server] Association accepted, assocId={}, SAP={}",
-                 hex(assocId), sapr.get());
+                 StringUtils.hex(assocId), sapr.get());
         return new CmsApdu(response);
     }
 
@@ -159,14 +160,5 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
         }
 
         return sapBytes;
-    }
-
-    private String hex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < Math.min(bytes.length, 8); i++) {
-            sb.append(String.format("%02X", bytes[i]));
-        }
-        if (bytes.length > 8) sb.append("...");
-        return sb.toString();
     }
 }
