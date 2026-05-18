@@ -152,11 +152,17 @@ public class CmsConfig {
     public static class Cli {
         private boolean tracePdu = false;
         private String autoExec = "";
+        private boolean apiEnabled = true;
+        private int apiPort = 8080;
 
         public boolean isTracePdu() { return tracePdu; }
         public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
         public String getAutoExec() { return autoExec; }
         public void setAutoExec(String autoExec) { this.autoExec = autoExec; }
+        public boolean isApiEnabled() { return apiEnabled; }
+        public void setApiEnabled(boolean apiEnabled) { this.apiEnabled = apiEnabled; }
+        public int getApiPort() { return apiPort; }
+        public void setApiPort(int apiPort) { this.apiPort = apiPort; }
     }
 
     public void merge(CmsConfig other) {
@@ -199,6 +205,9 @@ public class CmsConfig {
         if (other.cli != null) {
             if (other.cli.autoExec != null && !other.cli.autoExec.isEmpty())
                 cli.autoExec = other.cli.autoExec;
+            if (other.cli.apiPort != 8080)
+                cli.apiPort = other.cli.apiPort;
+            cli.apiEnabled = other.cli.apiEnabled;
         }
     }
 }

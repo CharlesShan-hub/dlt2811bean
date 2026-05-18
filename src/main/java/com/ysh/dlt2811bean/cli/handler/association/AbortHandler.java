@@ -30,7 +30,7 @@ public class AbortHandler extends AbstractServiceHandler {
 
     public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         ctx.getAutoTestHeartbeat().stop();
-        client.abort(val("reason"));
+        client.abort(intVal("reason"));
         CliPrinter.success("Abort sent");
         ctx.getCachedHierarchy().clear();
     }

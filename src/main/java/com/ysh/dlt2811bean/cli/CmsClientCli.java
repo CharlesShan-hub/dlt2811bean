@@ -31,6 +31,10 @@ public class CmsClientCli {
             = new java.util.LinkedHashMap<>();
 
     public CmsClientCli() {
+        this(true);
+    }
+
+    public CmsClientCli(boolean startApi) {
         ctx = new CliContext(config, handlers, cachedHierarchy);
         client.addRequestListener(asdu -> CliPrinter.printRequestPdu(ctx, asdu));
         client.addResponseListener(response -> CliPrinter.printResponsePdu(ctx, response));
@@ -80,6 +84,16 @@ public class CmsClientCli {
         register(new SetMsvcbHandler(ctx));
 
         HandlerRegistry.autoRegister(ctx, handlers);
+
+        if (startApi && config.getCli().isApiEnabled()) {
+            try {
+                int apiPort = config.getCli().getApiPort();
+                CliApiServer apiServer = new CliApiServer(apiPort, client, handlers, ctx, this);
+                apiServer.start();
+            } catch (Exception e) {
+                System.out.println(CmsColor.yellow("  Warning: API Server not started: " + e.getMessage()));
+            }
+        }
     }
 
     private void register(CommandHandler handler) {
@@ -201,11 +215,11 @@ public class CmsClientCli {
         System.exit(0);
     }
 
-    private boolean executeLine(String raw) {
+    public boolean executeLine(String raw) {
         return executeLine(raw, true);
     }
 
-    private boolean executeLine(String raw, boolean interactive) {
+    public boolean executeLine(String raw, boolean interactive) {
         String[] commands = raw.split(";");
         for (int i = 0; i < commands.length; i++) {
             String cmd = commands[i].trim();
@@ -504,6 +518,28 @@ public class CmsClientCli {
     }
 
     public static void main(String[] args) {
-        new CmsClientCli().run();
+        if (args.length > 0) {
+            executeOnce(args);
+        } else {
+            new CmsClientCli().run();
+        }
+    }
+
+    private static void executeOnce(String[] args) {
+        CmsClientCli cli = new CmsClientCli();
+        StringBuilder sb = new StringBuilder();
+        for (String arg : args) {
+            if (sb.length() > 0) sb.append(" ");
+            if (arg.contains(" ") || arg.contains("\"")) {
+                sb.append("\"").append(arg.replace("\"", "\\\"")).append("\"");
+            } else {
+                sb.append(arg);
+            }
+        }
+        String cmdLine = sb.toString();
+        System.out.println(CmsColor.gray("  Exec: " + cmdLine));
+        cli.executeLine(cmdLine, false);
+        cli.client.close();
+        System.exit(0);
     }
 }

@@ -178,6 +178,18 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>cms-cli-exec</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.ysh.dlt2811bean.cli.CmsClientCli</mainClass>
+                            <includeProjectDependencies>true</includeProjectDependencies>
+                            <includePluginDependencies>false</includePluginDependencies>
+                            <commandlineArgs>${exec.args}</commandlineArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>cms-server</id>
                         <goals>
                             <goal>java</goal>
@@ -188,6 +200,18 @@
                                 <jvmArg>-Xms256m</jvmArg>
                                 <jvmArg>-Xmx2g</jvmArg>
                             </jvmArgs>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>cms-remote</id>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <mainClass>com.ysh.dlt2811bean.cli.CmsRemoteClient</mainClass>
+                            <includeProjectDependencies>true</includeProjectDependencies>
+                            <includePluginDependencies>false</includePluginDependencies>
+                            <commandlineArgs>${exec.args}</commandlineArgs>
                         </configuration>
                     </execution>
                 </executions>

@@ -79,6 +79,14 @@ public abstract class AbstractServiceHandler implements CommandHandler {
         return val(name);
     }
 
+    protected int intVal(String name) {
+        Object v = val(name);
+        if (v instanceof Number) {
+            return ((Number) v).intValue();
+        }
+        return Integer.parseInt(v.toString());
+    }
+
     protected String stringVal(String name) {
         String v = val(name);
         return v != null ? v : "";

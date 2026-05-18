@@ -133,12 +133,40 @@ get-sgcb-values MEAS/LLN0.SGCB;
 ```
 
 ```bash
-select-edit-sg MEAS/LLN0.SGCB 1      # 开始编辑，cnfEdit=false
-set-edit-sg-value MEAS/LLN0.SGCB 100  # 设置值
-set-edit-sg-value MEAS/LLN0.SGCB 200  # 还可以再改
-get-edit-sg-value MEAS/LLN0.SGCB SG   # 查看当前编辑的值
-confirm-edit-sg MEAS/LLN0.SGCB        # 确认编辑完成，cnfEdit=true
-select-active-sg MEAS/LLN0.SGCB 1     # 激活
+# 先查看当前定值组状态（actSG=1, numOfSG=4）
+get-sgcb-values MEAS/LLN0.SGCB;
+
+# 查看 LLN0 下有哪些数据对象
+ln-dir MEAS/LLN0;
+
+# 查看某个可编辑的定值（如 LLN0 下 SG 功能约束的数据）
+get-data-values MEAS/LLN0.SGXXX.xxx XX;
+
+# 开始编辑第1组，cnfEdit=false
+select-edit-sg MEAS/LLN0.SGCB 1;
+
+# 修改定值：将某个 SG 数据属性改为新值
+set-edit-sg-value MEAS/LLN0.SGXXX.xxx 30;
+
+# 查看当前编辑的值
+set-edit-sg-value MEAS/LLN0.SGXXX.xxx SG;
+
+# 确认编辑完成，将修改写入 SCL 模型，cnfEdit=true
+confirm-edit-sg MEAS/LLN0.SGCB;
+
+# 验证：直接读取数据值，应该能看到修改后的值（Confirm 已写入模型）
+get-data-values MEAS/LLN0.SGXXX.xxx SG;
+
+# 激活第1组（让修改生效）
+select-active-sg MEAS/LLN0.SGCB 1;
+
+# 再次验证，值仍然为修改后的值（Confirm 持久化到模型了）
+get-data-values MEAS/LLN0.SGXXX.xxx SG;
+
+# 断开重连后验证（重启服务器会恢复默认值）
+release;
+connect 127.0.0.1 8102 65531 1 C_B5041X S1 true;
+get-data-values MEAS/LLN0.SGXXX.xxx SG;  # 仍为修改后的值（会话期间持久化）
 ```
 
 # 报告
