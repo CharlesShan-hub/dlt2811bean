@@ -153,7 +153,7 @@ public class CmsConfig {
         private boolean tracePdu = false;
         private String autoExec = "";
         private boolean apiEnabled = true;
-        private int apiPort = 8080;
+        private int apiPort = 7899;
 
         public boolean isTracePdu() { return tracePdu; }
         public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
@@ -205,7 +205,7 @@ public class CmsConfig {
         if (other.cli != null) {
             if (other.cli.autoExec != null && !other.cli.autoExec.isEmpty())
                 cli.autoExec = other.cli.autoExec;
-            if (other.cli.apiPort != 8080)
+            if (other.cli.apiPort != 7899)
                 cli.apiPort = other.cli.apiPort;
             cli.apiEnabled = other.cli.apiEnabled;
         }

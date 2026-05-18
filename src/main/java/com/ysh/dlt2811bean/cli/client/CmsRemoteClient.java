@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 public class CmsRemoteClient {
 
     private static final String DEFAULT_HOST = "http://127.0.0.1";
-    private static final int DEFAULT_PORT = 8080;
+    private static final int DEFAULT_PORT = 7899;
 
     public static void main(String[] args) {
         if (args.length == 0) {

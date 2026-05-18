@@ -4,7 +4,7 @@ param(
 )
 
 $hostAddr = "http://127.0.0.1"
-$port = 8080
+$port = 7899
 $argIndex = 0
 
 if ($args.Count -eq 0) {
