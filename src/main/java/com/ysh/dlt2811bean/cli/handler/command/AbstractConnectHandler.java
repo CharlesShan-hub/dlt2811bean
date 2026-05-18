@@ -48,8 +48,7 @@ public abstract class AbstractConnectHandler implements CommandHandler {
         return List.of(
             new Param("host", "服务器 IP", "127.0.0.1"),
             new Param("port", "服务器端口", String.valueOf(defaultPort())),
-            new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）",
-                    String.valueOf(config().getNegotiate().getAsduSize())),
+            new Param("asduSize", "ASDU 大小（1~65531，留空跳过协商）", ""),
             new Param("protocolVersion", "协议版本",
                     String.valueOf(config().getNegotiate().getProtocolVersion())),
             new Param("iedName", "IED名称", config().getClient().getDefaultIedName()),
@@ -70,9 +69,6 @@ public abstract class AbstractConnectHandler implements CommandHandler {
 
         String asduSizeStr = values.get("asduSize");
         if (asduSizeStr == null || asduSizeStr.isEmpty()) return;
-
-        String defaultAsduSize = String.valueOf(config().getNegotiate().getAsduSize());
-        if (asduSizeStr.equals(defaultAsduSize)) return;
 
         int asduSize = Integer.parseInt(asduSizeStr);
         int apduSize = asduSize + 4;
