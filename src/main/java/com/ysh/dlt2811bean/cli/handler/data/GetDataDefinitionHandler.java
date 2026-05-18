@@ -1,7 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler.data;
 
-import com.ysh.dlt2811bean.cli.CliPrinter;
-import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
@@ -11,7 +11,7 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDefinition;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class GetDataDefinitionHandler extends AbstractServiceHandler {
 
     public GetDataDefinitionHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_DEFINITION); }
-    
+
     public List<Param> getParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts").type(Param.Type.DA_REF),
@@ -49,15 +49,9 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
                 asdu.data.add(entry);
             }
 
-            if (batchCount == 0) {
-                CliPrinter.printRequestPdu(ctx, asdu);
-            }
             CmsApdu response = client.send(asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 throw new IllegalStateException("Request failed");
-            }
-            if (batchCount == 0) {
-                CliPrinter.printResponsePdu(ctx, response);
             }
 
             CmsGetDataDefinition resp = (CmsGetDataDefinition) response.getAsdu();
@@ -97,7 +91,7 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
             CliPrinter.printGray("  (fetched in " + batchCount + " batches)");
         }
     }
-    
+
     private String formatDefinition(CmsDataDefinition def, String indent) {
         if (def == null) return "";
         int tag = def.get();

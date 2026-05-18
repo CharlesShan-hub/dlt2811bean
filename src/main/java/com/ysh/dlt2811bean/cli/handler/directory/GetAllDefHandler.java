@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
-import com.ysh.dlt2811bean.cli.CliPrinter;
-import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
@@ -11,7 +11,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.LinkedHashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 public class GetAllDefHandler extends AbstractServiceHandler {
 
     public GetAllDefHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_DEFINITION); }
-    
+
     public List<Param> getParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),

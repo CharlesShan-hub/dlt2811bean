@@ -1,13 +1,13 @@
 package com.ysh.dlt2811bean.cli.handler.goose;
 
-import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
 import java.util.Map;

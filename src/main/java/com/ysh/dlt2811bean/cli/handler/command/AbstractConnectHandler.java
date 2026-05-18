@@ -1,13 +1,11 @@
 package com.ysh.dlt2811bean.cli.handler.command;
 
-import com.ysh.dlt2811bean.cli.CommandHandler;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
-import com.ysh.dlt2811bean.service.svc.negotiation.CmsAssociateNegotiate;
 import com.ysh.dlt2811bean.utils.CmsColor;
 
 import java.util.List;
@@ -34,8 +32,6 @@ public abstract class AbstractConnectHandler implements CommandHandler {
     protected String connectionSuffix() {
         return "";
     }
-
-    // ── 以下为公共模板 ──
 
     @Override
     public String getName() {
@@ -73,7 +69,10 @@ public abstract class AbstractConnectHandler implements CommandHandler {
         System.out.println(CmsColor.green("  Connected to " + host + ":" + port + connectionSuffix()));
 
         String asduSizeStr = values.get("asduSize");
-        if (asduSizeStr.isEmpty()) return;
+        if (asduSizeStr == null || asduSizeStr.isEmpty()) return;
+
+        String defaultAsduSize = String.valueOf(config().getNegotiate().getAsduSize());
+        if (asduSizeStr.equals(defaultAsduSize)) return;
 
         int asduSize = Integer.parseInt(asduSizeStr);
         int apduSize = asduSize + 4;
@@ -90,15 +89,7 @@ public abstract class AbstractConnectHandler implements CommandHandler {
                                         String accessPoint, boolean secure) throws Exception {
         client.setAccessPoint(iedName, accessPoint);
 
-        CmsAssociateNegotiate negReq = new CmsAssociateNegotiate(MessageType.REQUEST)
-                .apduSize(apduSize).asduSize(asduSize).protocolVersion(protocolVersion);
-        if (ctx.getConfig().getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  >> Request PDU:\n" + negReq.toString().indent(4).stripTrailing()));
-        }
         CmsApdu negResponse = client.associateNegotiate(apduSize, asduSize, protocolVersion);
-        if (ctx.getConfig().getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  << Response PDU:\n" + negResponse.toString().indent(4).stripTrailing()));
-        }
         if (negResponse == null || negResponse.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.red("  Negotiate failed"));
             return;
@@ -110,15 +101,7 @@ public abstract class AbstractConnectHandler implements CommandHandler {
             System.out.println(CmsColor.gray("  GM security enabled"));
         }
 
-        CmsAssociate assocReq = new CmsAssociate(MessageType.REQUEST)
-                .serverAccessPointReference(iedName, accessPoint);
-        if (ctx.getConfig().getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  >> Request PDU:\n" + assocReq.toString().indent(4).stripTrailing()));
-        }
         CmsApdu assocResponse = client.associate();
-        if (assocResponse != null && ctx.getConfig().getCli().isTracePdu()) {
-            System.out.println(CmsColor.gray("  << Response PDU:\n" + assocResponse.toString().indent(4).stripTrailing()));
-        }
         if (assocResponse != null && assocResponse.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Associated") + " (ID=" + ctx.bytesToHex(client.getAssociationId(), 8) + "...)");
             ctx.discoverAfterConnect(client);

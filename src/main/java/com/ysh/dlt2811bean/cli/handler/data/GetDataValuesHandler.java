@@ -1,7 +1,7 @@
 package com.ysh.dlt2811bean.cli.handler.data;
 
-import com.ysh.dlt2811bean.cli.CliPrinter;
-import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
@@ -9,7 +9,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -49,15 +49,9 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
                 asdu.data.add(entry);
             }
 
-            if (batchCount == 0) {
-                CliPrinter.printRequestPdu(ctx, asdu);
-            }
             CmsApdu response = client.send(asdu);
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 throw new IllegalStateException("Request failed");
-            }
-            if (batchCount == 0) {
-                CliPrinter.printResponsePdu(ctx, response);
             }
 
             CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();

@@ -6,8 +6,8 @@ import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.info.DataTypeInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
-import com.ysh.dlt2811bean.cli.CommandHandler;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;

@@ -18,6 +18,11 @@ abort 4;
 exit
 ```
 
+```bash
+./cms connect 127.0.0.1 8102;
+./cms negotiate 65531 1;
+./cms associate C_B5041X S1 true;
+
 ## 8.2 服务层连接
 ```bash
 # 协商，已经在connect后自动执行

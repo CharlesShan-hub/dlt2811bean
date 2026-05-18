@@ -5,8 +5,8 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.cli.AutoTestHeartbeat;
-import com.ysh.dlt2811bean.cli.CommandHandler;
+import com.ysh.dlt2811bean.cli.util.AutoTestHeartbeat;
+import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -77,14 +77,7 @@ public class CliContext {
     }
 
     public CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
-        if (config.getCli().isTracePdu()) {
-            printGray("  >> Request PDU:\n" + asdu.toString().indent(4).stripTrailing());
-        }
-        CmsApdu response = client.send(asdu);
-        if (config.getCli().isTracePdu()) {
-            printGray("  << Response PDU:\n" + response.toString().indent(4).stripTrailing());
-        }
-        return response;
+        return client.send(asdu);
     }
 
     private void printGray(String text) {

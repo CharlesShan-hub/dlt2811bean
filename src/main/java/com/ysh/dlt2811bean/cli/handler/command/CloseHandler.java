@@ -2,8 +2,8 @@ package com.ysh.dlt2811bean.cli.handler.command;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.cli.CommandHandler;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;

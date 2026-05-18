@@ -1,12 +1,12 @@
 package com.ysh.dlt2811bean.cli.handler.association;
 
-import com.ysh.dlt2811bean.cli.CliPrinter;
-import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class AssociateHandler extends AbstractServiceHandler {
             new Param("secure", "携带证书认证", Param.ValueType.BOOLEAN, String.valueOf(cfg.isDefaultSecure()))
         );
     }
-    
+
     public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         if (booleanVal("secure")) {
             client.enableSecurity();

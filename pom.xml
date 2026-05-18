@@ -174,7 +174,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.cli.CmsClientCli</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.client.CmsClientCli</mainClass>
                         </configuration>
                     </execution>
                     <execution>
@@ -183,7 +183,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.cli.CmsClientCli</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.client.CmsClientCli</mainClass>
                             <includeProjectDependencies>true</includeProjectDependencies>
                             <includePluginDependencies>false</includePluginDependencies>
                             <commandlineArgs>${exec.args}</commandlineArgs>
@@ -195,7 +195,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.cli.CmsServerCli</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.server.CmsServerCli</mainClass>
                             <jvmArgs>
                                 <jvmArg>-Xms256m</jvmArg>
                                 <jvmArg>-Xmx2g</jvmArg>
@@ -208,7 +208,7 @@
                             <goal>java</goal>
                         </goals>
                         <configuration>
-                            <mainClass>com.ysh.dlt2811bean.cli.CmsRemoteClient</mainClass>
+                            <mainClass>com.ysh.dlt2811bean.cli.client.CmsRemoteClient</mainClass>
                             <includeProjectDependencies>true</includeProjectDependencies>
                             <includePluginDependencies>false</includePluginDependencies>
                             <commandlineArgs>${exec.args}</commandlineArgs>

@@ -309,10 +309,10 @@ mvn compile
 mvn test
 
 # 启动服务器
-mvn exec:java -Dexec.mainClass="com.ysh.dlt2811bean.cli.CmsServerCli"
+mvn exec:java -Dexec.mainClass="com.ysh.dlt2811bean.cli.server.CmsServerCli"
 
 # 启动客户端
-mvn exec:java -Dexec.mainClass="com.ysh.dlt2811bean.cli.CmsClientCli"
+mvn exec:java -Dexec.mainClass="com.ysh.dlt2811bean.cli.client.CmsClientCli"
 ```
 
 ## 依赖的外部组件

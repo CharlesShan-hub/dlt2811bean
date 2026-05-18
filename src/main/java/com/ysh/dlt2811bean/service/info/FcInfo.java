@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.service.info;
 
+import com.ysh.dlt2811bean.cli.handler.common.Param;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,10 +47,10 @@ public enum FcInfo {
         return BY_NAME.get(name);
     }
 
-    public static java.util.List<com.ysh.dlt2811bean.cli.Param.EnumChoice> enumChoices() {
-        java.util.List<com.ysh.dlt2811bean.cli.Param.EnumChoice> choices = new java.util.ArrayList<>();
+    public static java.util.List<Param.EnumChoice> enumChoices() {
+        java.util.List<Param.EnumChoice> choices = new java.util.ArrayList<>();
         for (FcInfo fc : values()) {
-            choices.add(new com.ysh.dlt2811bean.cli.Param.EnumChoice(fc.getName(), fc.getChineseName()));
+            choices.add(new Param.EnumChoice(fc.getName(), fc.getChineseName()));
         }
         return choices;
     }
