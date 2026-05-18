@@ -98,20 +98,47 @@ set-dataset-values MEAS/LLN0.dsAin1 Bay1_Q3 --referenceAfter MEAS/MMXU1.TotW; # 
 
 ## 8.6 数据集的创建与删除
 ```bash
-# 先看一下是有这个数据集的
-get-dataset-dir MEAS/LLN0.dsAin1;
-# 然后删除
+# 1. 创建新数据集 myTestDs（应该成功）
+create-dataset --dsRef MEAS/LLN0.myTestDs --ref MEAS/LLN0.AmpSv.instMag.i --fc MX;
+# 2. 验证创建成功
+get-dataset-dir MEAS/LLN0.myTestDs;
+# 3. 重复创建同名数据集（应该成功，因为会先删旧的再建新的）
+create-dataset --dsRef MEAS/LLN0.myTestDs --ref MEAS/LLN0.AmpSv.instMag.q --fc MX;
+# 4. 验证被覆盖了（只有 1 个成员 q，没有 i）
+get-dataset-dir MEAS/LLN0.myTestDs;
+# 5. 删除数据集 myTestDs（应该成功）
+delete-dataset MEAS/LLN0.myTestDs;
+# 6. 验证删除成功
+get-dataset-dir MEAS/LLN0.myTestDs;
+# 7. 删除预定义数据集 dsAin1（应该失败）
 delete-dataset MEAS/LLN0.dsAin1;
-# 再看一下是否有这个数据集
-get-dataset-dir MEAS/LLN0.dsAin1;
-# 可以看到没有了
+# 8. release 后重新 connect
+release;
+connect 127.0.0.1 8102 65531 1 C_B5041X S1 true;
+# 9. 再次创建同名数据集 myTestDs（应该成功，因为 release 时已删除）
+create-dataset --dsRef MEAS/LLN0.myTestDs --ref MEAS/LLN0.AmpSv.instMag.i --fc MX;
+```
 
-# 创建数据集，然后引用一个DA
-create-dataset MEAS/MMXU1.MyNewDS2 MEAS/MMXU1.TotW DC;
-# 查看确实存在
-get-dataset-values MEAS/MMXU1.MyNewDS2;
-# 删除刚才创建的数据集
-delete-dataset MEAS/MMXU1.MyNewDS2;
+# sg
+
+```bash
+# 先查看当前状态（actSG=1）
+get-sgcb-values MEAS/LLN0.SGCB;
+# 切换到 SG 2（应该成功，因为 numOfSG=1 所以会失败）
+select-active-sg MEAS/LLN0.SGCB 2;
+# 切换到 SG 1（应该成功）
+select-active-sg MEAS/LLN0.SGCB 1;
+# 验证 actSG 已变为 1
+get-sgcb-values MEAS/LLN0.SGCB;
+```
+
+```bash
+select-edit-sg MEAS/LLN0.SGCB 1      # 开始编辑，cnfEdit=false
+set-edit-sg-value MEAS/LLN0.SGCB 100  # 设置值
+set-edit-sg-value MEAS/LLN0.SGCB 200  # 还可以再改
+get-edit-sg-value MEAS/LLN0.SGCB SG   # 查看当前编辑的值
+confirm-edit-sg MEAS/LLN0.SGCB        # 确认编辑完成，cnfEdit=true
+select-active-sg MEAS/LLN0.SGCB 1     # 激活
 ```
 
 # 报告
@@ -128,4 +155,22 @@ ln-dir MEAS/LLN0 URCB; # 也是有三个urcb块
 get-urcb-values MEAS/LLN0.urcbAinA;
 get-urcb-values MEAS/LLN0.urcbAinB;
 get-urcb-values MEAS/LLN0.urcbAinD;
+```
+
+```bash
+# 设置 rptEna=true
+set-brcb-values MEAS/LLN0.brcbWarning rptEna=true;
+# 确认已变更
+get-brcb-values MEAS/LLN0.brcbWarning;
+# 设置 rptEna=false
+set-brcb-values MEAS/LLN0.brcbWarning rptEna=false;
+# 确认
+get-brcb-values MEAS/LLN0.brcbWarning;
+```
+
+```bash
+# 报告设置
+get-brcb-values MEAS/LLN0.brcbWarning;
+set-brcb-values MEAS/LLN0.brcbWarning --rptEna true --rptID myRptID --datSet myDataSet --optFlds 1023 --bufTm 2000 --trgOps 7 --intgPd 10000 --gi true --purgeBuf false;
+get-brcb-values MEAS/LLN0.brcbWarning;
 ```

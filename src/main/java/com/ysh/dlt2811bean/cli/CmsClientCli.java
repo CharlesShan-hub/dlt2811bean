@@ -10,6 +10,8 @@ import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.cli.handler.*;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsReportEntryData;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -85,6 +87,43 @@ public class CmsClientCli {
     public void run() {
         java.util.logging.Logger.getLogger("org.bouncycastle").setLevel(java.util.logging.Level.SEVERE);
         System.out.println("CMS CLI v1.0 — Type 'help' for commands, 'exit' to quit");
+
+        client.addReportListener(report -> {
+            StringBuilder sb = new StringBuilder();
+            sb.append(CmsColor.cyan("  ╔═══════════════════════════════════════════╗")).append("\n");
+            sb.append(CmsColor.cyan("  ║        Server Report Received             ║")).append("\n");
+            sb.append(CmsColor.cyan("  ╚═══════════════════════════════════════════╝")).append("\n");
+            String rptID = report.rptID.get();
+            sb.append("    rptID: ").append(rptID != null ? rptID : "(null)").append("\n");
+            if (report.sqNum != null) {
+                sb.append("    sqNum: ").append(report.sqNum.get()).append("\n");
+            }
+            if (report.datSet != null && report.datSet.get() != null) {
+                sb.append("    datSet: ").append(report.datSet.get()).append("\n");
+            }
+            if (report.confRev != null) {
+                sb.append("    confRev: ").append(report.confRev.get()).append("\n");
+            }
+            if (report.bufOvfl != null) {
+                sb.append("    bufOvfl: ").append(report.bufOvfl.get()).append("\n");
+            }
+            int count = report.entry.entryData.size();
+            sb.append("    entryData count: ").append(count).append("\n");
+            for (int i = 0; i < count; i++) {
+                CmsReportEntryData ed = report.entry.entryData.get(i);
+                String valStr = "";
+                if (ed.value != null) {
+                    CmsType<?> inner = ed.value.getInnerValue();
+                    valStr = inner != null ? inner.toString() : "null";
+                }
+                sb.append("    [").append(i).append("] id=").append(ed.id.get())
+                        .append(ed.reference != null && ed.reference.get() != null ? ", ref=" + ed.reference.get() : "")
+                        .append(ed.fc != null && ed.fc.get() != null ? ", fc=" + ed.fc.get() : "")
+                        .append(", val=").append(valStr).append("\n");
+            }
+            sb.append("\n");
+            reader.printAbove(sb.toString());
+        });
 
         String autoExec = config.getCli().getAutoExec();
         if (autoExec != null && !autoExec.isEmpty()) {

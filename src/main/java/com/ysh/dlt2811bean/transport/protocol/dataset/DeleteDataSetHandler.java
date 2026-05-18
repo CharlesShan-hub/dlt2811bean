@@ -55,6 +55,11 @@ public class DeleteDataSetHandler extends AbstractCmsServiceHandler<CmsDeleteDat
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        if (!toRemove.isDynamic()) {
+            log.warn("[Server] DeleteDataSet: predefined data set '{}' cannot be deleted", dsRef);
+            return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+
         targetLn.getDataSets().remove(toRemove);
         log.debug("[Server] DeleteDataSet: removed '{}'", dsRef);
 

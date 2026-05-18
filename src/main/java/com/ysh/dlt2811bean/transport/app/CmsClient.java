@@ -21,6 +21,8 @@ import com.ysh.dlt2811bean.service.svc.goose.*;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.*;
 import com.ysh.dlt2811bean.service.svc.report.*;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetBRCBValuesEntry;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.*;
 import com.ysh.dlt2811bean.service.svc.association.datatypes.*;
@@ -41,11 +43,15 @@ import com.ysh.dlt2811bean.transport.protocol.control.TimeActivatedOperateTermin
 import com.ysh.dlt2811bean.transport.protocol.report.ReportHandler;
 import com.ysh.dlt2811bean.transport.session.CmsClientSession;
 import com.ysh.dlt2811bean.transport.session.PendingRequest;
+import com.ysh.dlt2811bean.transport.session.SessionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.KeyPair;
 import java.security.cert.X509Certificate;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * CMS Client — Application layer entry point.
@@ -78,6 +84,7 @@ public class CmsClient {
     private final CmsClientTransport transport = new CmsClientTransport();
     private final ClientListener listener = new ClientListener();
     private final CmsDispatcher serverPushDispatcher = new CmsDispatcher();
+    private final List<ReportListener> reportListeners = new CopyOnWriteArrayList<>();
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
@@ -93,9 +100,17 @@ public class CmsClient {
     }
 
     private void registerDefaultClientHandlers() {
-        serverPushDispatcher.registerDefaultHandler(new ReportHandler());
+        serverPushDispatcher.registerDefaultHandler(new ReportHandler(reportListeners));
         serverPushDispatcher.registerDefaultHandler(new CommandTerminationHandler());
         serverPushDispatcher.registerDefaultHandler(new TimeActivatedOperateTerminationHandler());
+    }
+
+    public void addReportListener(ReportListener listener) {
+        reportListeners.add(listener);
+    }
+
+    public void removeReportListener(ReportListener listener) {
+        reportListeners.remove(listener);
     }
 
     // ==================== Security (GM) ====================
@@ -267,6 +282,8 @@ public class CmsClient {
                 return;
             }
 
+            log.debug("[Client] Received APDU: {}", apdu);
+
             session.onDataActivity();
 
             // Test echo: respond to keep-alive Test messages from the server
@@ -395,6 +412,7 @@ public class CmsClient {
         CmsApdu response = send(asdu);
 
         if (response != null && response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
+            session.setState(SessionState.ASSOCIATED);
             CmsAssociate responseAsdu = (CmsAssociate) response.getAsdu();
             if (responseAsdu.authenticationParameter() != null &&
                 responseAsdu.authenticationParameter().signatureCertificate() != null) {
@@ -1167,6 +1185,28 @@ public class CmsClient {
         return send(asdu);
     }
 
+    public CmsApdu setBRCBValues(String ref, Map<String, String> values) throws Exception {
+        CmsSetBRCBValuesEntry entry = new CmsSetBRCBValuesEntry();
+        entry.reference.set(ref);
+        if (!values.getOrDefault("rptEna", "").isEmpty())
+            entry.rptEna.set(Boolean.parseBoolean(values.get("rptEna")));
+        if (!values.getOrDefault("rptID", "").isEmpty())
+            entry.rptID.set(values.get("rptID"));
+        if (!values.getOrDefault("datSet", "").isEmpty())
+            entry.datSet.set(values.get("datSet"));
+        if (!values.getOrDefault("intgPd", "").isEmpty())
+            entry.intgPd.set(Long.parseLong(values.get("intgPd")));
+        if (!values.getOrDefault("gi", "").isEmpty())
+            entry.gi.set(Boolean.parseBoolean(values.get("gi")));
+        if (!values.getOrDefault("bufTm", "").isEmpty())
+            entry.bufTm.set(Long.parseLong(values.get("bufTm")));
+        if (!values.getOrDefault("purgeBuf", "").isEmpty())
+            entry.purgeBuf.set(Boolean.parseBoolean(values.get("purgeBuf")));
+        CmsSetBRCBValues asdu = new CmsSetBRCBValues(MessageType.REQUEST);
+        asdu.addBrcb(entry);
+        return send(asdu);
+    }
+
     /**
      * REPORT - getURCBValues - Service Code 0x5D
      */
@@ -1182,6 +1222,28 @@ public class CmsClient {
      * REPORT - setURCBValues - Service Code 0x5E
      */
     public CmsApdu setURCBValues(CmsSetURCBValues asdu) throws Exception {
+        return send(asdu);
+    }
+
+    public CmsApdu setURCBValues(String ref, Map<String, String> values) throws Exception {
+        CmsSetURCBValuesEntry entry = new CmsSetURCBValuesEntry();
+        entry.reference.set(ref);
+        if (!values.getOrDefault("rptEna", "").isEmpty())
+            entry.rptEna.set(Boolean.parseBoolean(values.get("rptEna")));
+        if (!values.getOrDefault("rptID", "").isEmpty())
+            entry.rptID.set(values.get("rptID"));
+        if (!values.getOrDefault("datSet", "").isEmpty())
+            entry.datSet.set(values.get("datSet"));
+        if (!values.getOrDefault("intgPd", "").isEmpty())
+            entry.intgPd.set(Long.parseLong(values.get("intgPd")));
+        if (!values.getOrDefault("gi", "").isEmpty())
+            entry.gi.set(Boolean.parseBoolean(values.get("gi")));
+        if (!values.getOrDefault("bufTm", "").isEmpty())
+            entry.bufTm.set(Long.parseLong(values.get("bufTm")));
+        if (!values.getOrDefault("resv", "").isEmpty())
+            entry.resv.set(Boolean.parseBoolean(values.get("resv")));
+        CmsSetURCBValues asdu = new CmsSetURCBValues(MessageType.REQUEST);
+        asdu.addUrcb(entry);
         return send(asdu);
     }
 

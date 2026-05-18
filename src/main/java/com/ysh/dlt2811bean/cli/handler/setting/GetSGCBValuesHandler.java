@@ -3,7 +3,9 @@ package com.ysh.dlt2811bean.cli.handler.setting;
 import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetSGCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorSgcbChoice;
@@ -27,13 +29,21 @@ public class GetSGCBValuesHandler extends AbstractServiceHandler {
 
         String ref = values.get("ref");
         CmsApdu response = client.getSGCBValues(ref);
+        if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
+            return;
+        }
         CmsGetSGCBValues resp = (CmsGetSGCBValues) response.getAsdu();
         List<CmsErrorSgcbChoice> choices = resp.errorSgcb.toList();
         CliPrinter.printList("SGCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }
-            return item.sgcb.sgcbRef.get() + "  SG=" + item.sgcb.actSG.get();
+            return item.sgcb.sgcbRef.get()
+                + "  actSG=" + item.sgcb.actSG.get()
+                + "  editSG=" + item.sgcb.editSG.get()
+                + "  numOfSG=" + item.sgcb.numOfSG.get()
+                + "  cnfEdit=" + item.sgcb.cnfEdit.get();
         });
     }
 }

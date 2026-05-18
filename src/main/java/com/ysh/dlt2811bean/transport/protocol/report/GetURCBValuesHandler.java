@@ -10,10 +10,9 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorUrcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import java.util.Map;
 
 public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBValues> {
-
-    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> rptEnaState = new java.util.concurrent.ConcurrentHashMap<>();
 
     public GetURCBValuesHandler() {
         super(ServiceName.GET_URCB_VALUES, CmsGetURCBValues::new);
@@ -80,6 +79,9 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
             return choice;
         }
 
+        Map<String, SclRCBState> rcStates = SclRCBState.getOrCreateSessionState(serverSession);
+        SclRCBState rcState = rcStates.get(ref);
+
         CmsURCB urcb = new CmsURCB();
         urcb.urcbName.set(rc.getName());
         urcb.urcbRef.set(ref);
@@ -92,9 +94,21 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
         if (rc.getConfRev() != null) {
             urcb.confRev.set(Long.parseLong(rc.getConfRev()));
         }
-        urcb.rptEna.set(rptEnaState.getOrDefault(ref, false));
+        if (rc.getOptFields() != null) {
+            urcb.optFlds.set(Long.parseLong(rc.getOptFields()));
+        }
+        if (rc.getBufTime() != null) {
+            urcb.bufTm.set(Long.parseLong(rc.getBufTime()));
+        }
+        if (rc.getTrgOps() != null) {
+            urcb.trgOps.set(Long.parseLong(rc.getTrgOps()));
+        }
+        if (rc.getIntgPd() != null) {
+            urcb.intgPd.set(Long.parseLong(rc.getIntgPd()));
+        }
+        urcb.rptEna.set(rcState != null ? rcState.isRptEna() : false);
         urcb.resv.set(false);
-        urcb.gi.set(false);
+        urcb.gi.set(rcState != null ? rcState.isGi() : false);
         choice.selectValue().value = urcb;
         return choice;
     }

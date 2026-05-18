@@ -4,10 +4,12 @@ import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorBrcbChoice;
 import com.ysh.dlt2811bean.cli.Param;
+import com.ysh.dlt2811bean.datatypes.compound.CmsBRCB;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
 import java.util.Map;
@@ -26,16 +28,29 @@ public class GetBRCBValuesHandler extends AbstractServiceHandler {
         requireConnected(client);
 
         String ref = values.get("ref");
-        CmsApdu response = client.getBRCBValues(ref);
+        CmsGetBRCBValues asdu = new CmsGetBRCBValues(MessageType.REQUEST)
+                .addBrcbReference(ref);
+
+        CmsApdu response = sendAndVerify(client, asdu);
+
         CmsGetBRCBValues resp = (CmsGetBRCBValues) response.getAsdu();
         List<CmsErrorBrcbChoice> choices = resp.errorBrcb.toList();
         CliPrinter.printList("BRCB values (" + choices.size() + " entries)", choices, item -> {
             if (item.getSelectedIndex() == 0) {
                 return "Error: " + item.error.get();
             }
-            return item.brcb.brcbRef.get() + "  rptEna=" + item.brcb.rptEna.get()
-                    + "  datSet=" + item.brcb.datSet.get()
-                    + "  intgPd=" + item.brcb.intgPd.get();
+            CmsBRCB brcb = item.brcb;
+            return brcb.brcbRef.get()
+                    + "  rptEna=" + brcb.rptEna.get()
+                    + "  rptID=" + brcb.rptID.get()
+                    + "  datSet=" + brcb.datSet.get()
+                    + "  confRev=" + brcb.confRev.get()
+                    + "  optFlds=" + brcb.optFlds.get()
+                    + "  bufTm=" + brcb.bufTm.get()
+                    + "  trgOps=" + brcb.trgOps.get()
+                    + "  intgPd=" + brcb.intgPd.get()
+                    + "  gi=" + brcb.gi.get()
+                    + "  purgeBuf=" + brcb.purgeBuf.get();
         });
         CliPrinter.printMoreFollows(resp.moreFollows.get());
     }

@@ -66,16 +66,20 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
     }
 
     private CmsApdu handleCreate(SclLN targetLn, String dsName) {
-        for (SclDataSet existing : targetLn.getDataSets()) {
-            if (existing.getName().equals(dsName)) {
-                log.warn("[Server] CreateDataSet: data set already exists: {}", dsName);
+        SclDataSet existing = targetLn.findDataSetByName(dsName);
+        if (existing != null) {
+            if (!existing.isDynamic()) {
+                log.warn("[Server] CreateDataSet: predefined data set '{}' cannot be overwritten", dsName);
                 return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
+            targetLn.getDataSets().remove(existing);
+            log.debug("[Server] CreateDataSet: removed existing dynamic data set '{}' for recreation", dsName);
         }
 
         SclDataSet newDs = new SclDataSet();
         newDs.setName(dsName);
         newDs.setDesc("dynamically created");
+        newDs.setDynamic(true);
         for (CmsCreateDataSetEntry entry : asdu.memberData) {
             SclFCDA fcda = buildFcda(entry, server);
             if (fcda != null) {
@@ -102,6 +106,18 @@ public class CreateDataSetHandler extends AbstractCmsServiceHandler<CmsCreateDat
         if (existing == null) {
             log.warn("[Server] CreateDataSet: data set not found for append: {}", dsName);
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
+        if (!existing.isDynamic()) {
+            log.warn("[Server] CreateDataSet: predefined data set '{}' cannot be modified", dsName);
+            return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+
+        for (SclReportControl rc : targetLn.getReportControls()) {
+            if (dsName.equals(rc.getDatSet())) {
+                log.warn("[Server] CreateDataSet: data set '{}' is bound to report control '{}', cannot append", dsName, rc.getName());
+                return buildNegativeResponse(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            }
         }
 
         for (CmsCreateDataSetEntry entry : asdu.memberData) {

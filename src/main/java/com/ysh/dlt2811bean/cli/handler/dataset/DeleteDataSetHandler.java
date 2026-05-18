@@ -46,6 +46,8 @@ public class DeleteDataSetHandler extends AbstractServiceHandler {
                 }
             }
             System.out.println(CmsColor.green("  Dataset deleted successfully"));
+        } else {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }
     }
 }

@@ -31,6 +31,8 @@ public class SelectActiveSGHandler extends AbstractServiceHandler {
 
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Active setting group selected: SG" + sgNum));
+        } else {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }
     }
 }

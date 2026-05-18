@@ -1,10 +1,10 @@
 package com.ysh.dlt2811bean.transport.protocol.report;
 
+import com.ysh.dlt2811bean.datatypes.code.CmsRcbOptFlds;
+import com.ysh.dlt2811bean.datatypes.code.CmsTriggerConditions;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl2.model.SclLDevice;
-import com.ysh.dlt2811bean.scl2.model.SclLN;
-import com.ysh.dlt2811bean.scl2.model.SclReportControl;
+import com.ysh.dlt2811bean.scl2.model.*;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -12,7 +12,8 @@ import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesResultEntry;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
-import static com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler.rptEnaState;
+import com.ysh.dlt2811bean.transport.report.ReportEngine;
+import java.util.Map;
 
 public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBValues> {
 
@@ -29,6 +30,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
                     .reqId(asdu.reqId().get()));
         }
 
+        Map<String, SclRCBState> rcStates = SclRCBState.getOrCreateSessionState(serverSession);
         CmsArray<CmsSetURCBValuesResultEntry> results = new CmsArray<>(CmsSetURCBValuesResultEntry::new);
         boolean hasAnyError = false;
 
@@ -44,7 +46,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
                 continue;
             }
 
-            CmsSetURCBValuesResultEntry result = processEntry(entry, ref);
+            CmsSetURCBValuesResultEntry result = processEntry(entry, ref, rcStates);
             results.add(result);
             if (hasPerFieldError(result)) {
                 hasAnyError = true;
@@ -65,34 +67,61 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
         return new CmsApdu(response);
     }
 
-    private CmsSetURCBValuesResultEntry processEntry(CmsSetURCBValuesEntry entry, String ref) {
+    private CmsSetURCBValuesResultEntry processEntry(CmsSetURCBValuesEntry entry, String ref, Map<String, SclRCBState> rcStates) {
         CmsSetURCBValuesResultEntry result = new CmsSetURCBValuesResultEntry();
+
+        SclReportControl rc = findUrcbByRef(ref);
+        if (rc == null) {
+            result.error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return result;
+        }
+
+        SclRCBState rcState = rcStates.computeIfAbsent(ref, k -> new SclRCBState());
 
         boolean hasRptEna = entry.isFieldPresent("rptEna");
         boolean rptEnaVal = hasRptEna && entry.rptEna.get();
 
         if (hasRptEna && !rptEnaVal) {
-            rptEnaState.put(ref, false);
+            rcState.setRptEna(false);
             result.rptEna.set(CmsServiceError.NO_ERROR);
-            setOtherFields(result, entry);
+            setOtherFields(result, entry, rcState, rc);
+            notifyReportEngine(false, ref, rc, entry);
         } else if (hasRptEna && rptEnaVal) {
-            boolean othersOk = setOtherFields(result, entry);
-            result.rptEna.set(othersOk ? CmsServiceError.NO_ERROR : CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
-            if (othersOk) {
-                rptEnaState.put(ref, true);
-            }
+            setOtherFields(result, entry, rcState, rc);
+            result.rptEna.set(CmsServiceError.NO_ERROR);
+            rcState.setRptEna(true);
+            notifyReportEngine(true, ref, rc, entry);
         } else {
-            setOtherFields(result, entry);
+            setOtherFields(result, entry, rcState, rc);
         }
 
         return result;
     }
 
-    private boolean setOtherFields(CmsSetURCBValuesResultEntry result, CmsSetURCBValuesEntry entry) {
+    private void notifyReportEngine(boolean enable, String ref, SclReportControl rc, CmsSetURCBValuesEntry entry) {
+        if (serverSession == null) return;
+        ReportEngine engine = (ReportEngine) serverSession.getAttribute("reportEngine");
+        if (engine == null) return;
+
+        if (enable) {
+            CmsRcbOptFlds optFlds = entry.isFieldPresent("optFlds") ?
+                    new CmsRcbOptFlds(entry.optFlds.get()) : new CmsRcbOptFlds();
+            CmsTriggerConditions trgOps = entry.isFieldPresent("trgOps") ?
+                    new CmsTriggerConditions(entry.trgOps.get()) : new CmsTriggerConditions();
+            long bufTm = entry.isFieldPresent("bufTm") ? entry.bufTm.get() : 0;
+            long intgPd = entry.isFieldPresent("intgPd") ? entry.intgPd.get() : 0;
+            engine.enableReport(serverSession, ref, rc, optFlds, trgOps, bufTm, intgPd, 0);
+        } else {
+            engine.disableReport(ref, serverSession);
+        }
+    }
+
+    private boolean setOtherFields(CmsSetURCBValuesResultEntry result, CmsSetURCBValuesEntry entry, SclRCBState rcState, SclReportControl rc) {
         boolean allOk = true;
 
         if (entry.isFieldPresent("rptID")) {
             if (entry.rptID.get() != null && !entry.rptID.get().isEmpty()) {
+                rc.setRptID(entry.rptID.get());
                 result.rptID.set(CmsServiceError.NO_ERROR);
             } else {
                 result.rptID.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -101,6 +130,7 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
         }
         if (entry.isFieldPresent("datSet")) {
             if (entry.datSet.get() != null && !entry.datSet.get().isEmpty()) {
+                rc.setDatSet(entry.datSet.get());
                 result.datSet.set(CmsServiceError.NO_ERROR);
             } else {
                 result.datSet.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -108,21 +138,27 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
             }
         }
         if (entry.isFieldPresent("optFlds")) {
+            rc.setOptFields(String.valueOf(entry.optFlds.get()));
             result.optFlds.set(CmsServiceError.NO_ERROR);
         }
         if (entry.isFieldPresent("bufTm")) {
+            rc.setBufTime(String.valueOf(entry.bufTm.get()));
             result.bufTm.set(CmsServiceError.NO_ERROR);
         }
         if (entry.isFieldPresent("trgOps")) {
+            rc.setTrgOps(String.valueOf(entry.trgOps.get()));
             result.trgOps.set(CmsServiceError.NO_ERROR);
         }
         if (entry.isFieldPresent("intgPd")) {
+            rc.setIntgPd(String.valueOf(entry.intgPd.get()));
             result.intgPd.set(CmsServiceError.NO_ERROR);
         }
         if (entry.isFieldPresent("gi")) {
+            rcState.setGi(entry.gi.get());
             result.gi.set(CmsServiceError.NO_ERROR);
         }
         if (entry.isFieldPresent("resv")) {
+            rc.setRptEnabled(String.valueOf(entry.resv.get()));
             result.resv.set(CmsServiceError.NO_ERROR);
         }
 
@@ -166,5 +202,24 @@ public class SetURCBValuesHandler extends AbstractCmsServiceHandler<CmsSetURCBVa
         if (rc == null || rc.isBuffered()) return CmsServiceError.INSTANCE_NOT_AVAILABLE;
 
         return CmsServiceError.NO_ERROR;
+    }
+
+    private SclReportControl findUrcbByRef(String ref) {
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return null;
+        String lnName = rest.substring(0, dotIdx);
+        String rcName = rest.substring(dotIdx + 1);
+
+        SclLDevice device = server.findLDeviceByInst(ldName);
+        if (device == null) return null;
+
+        SclLN ln = device.findLnByFullName(lnName);
+        if (ln == null) return null;
+
+        return ln.findReportControlByName(rcName);
     }
 }

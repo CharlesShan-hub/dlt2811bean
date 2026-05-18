@@ -168,6 +168,8 @@ public class CmsConfig {
                 server.sclFile = other.server.sclFile;
         }
         if (other.client != null) {
+            if (!other.client.defaultIedName.equals("E1Q1SB1")) client.defaultIedName = other.client.defaultIedName;
+            if (!other.client.defaultAccessPoint.equals("S1")) client.defaultAccessPoint = other.client.defaultAccessPoint;
             if (other.client.connectTimeoutMs != 5000) client.connectTimeoutMs = other.client.connectTimeoutMs;
             if (other.client.requestTimeoutMs != 5000) client.requestTimeoutMs = other.client.requestTimeoutMs;
         }

@@ -34,10 +34,8 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         requireConnected(client);
 
         String ref = values.get("ref");
-
         CmsSetURCBValuesEntry entry = new CmsSetURCBValuesEntry();
         entry.reference.set(ref);
-
         if (!values.getOrDefault("rptEna", "").isEmpty())
             entry.rptEna.set(Boolean.parseBoolean(values.get("rptEna")));
         if (!values.getOrDefault("rptID", "").isEmpty())
@@ -59,6 +57,8 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         CmsApdu response = ctx.sendAndPrint(client, asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  URCB values set successfully"));
+        } else {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }
     }
 }

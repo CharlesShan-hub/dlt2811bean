@@ -3,12 +3,17 @@ package com.ysh.dlt2811bean.transport.protocol.setting;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
+import com.ysh.dlt2811bean.scl2.model.SclLDevice;
+import com.ysh.dlt2811bean.scl2.model.SclLN;
+import com.ysh.dlt2811bean.scl2.model.SclSGCBState;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetSGCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorSgcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
+import java.util.Map;
+
 
 public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBValues> {
 
@@ -43,13 +48,43 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
             return choice;
         }
 
+        int slashIdx = ref.indexOf('/');
+        if (slashIdx < 0) {
+            choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return choice;
+        }
+        String ldName = ref.substring(0, slashIdx);
+        String rest = ref.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) {
+            choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return choice;
+        }
+        String lnName = rest.substring(0, dotIdx);
+        String sgcbName = rest.substring(dotIdx + 1);
+
+        SclLDevice device = server.findLDeviceByInst(ldName);
+        if (device == null) {
+            choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return choice;
+        }
+
+        SclLN ln = device.findLnByFullName(lnName);
+        if (ln == null) {
+            choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return choice;
+        }
+
+        Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(serverSession);
+        SclSGCBState state = sgcbStates.computeIfAbsent(ref, k -> new SclSGCBState());
+
         CmsSGCB sgcb = new CmsSGCB();
-        sgcb.sgcbName.set("SGCB");
+        sgcb.sgcbName.set(sgcbName);
         sgcb.sgcbRef.set(ref);
-        sgcb.numOfSG.set(4);
-        sgcb.actSG.set(1);
-        sgcb.editSG.set(1);
-        sgcb.cnfEdit.set(false);
+        sgcb.numOfSG.set(state.getNumOfSG());
+        sgcb.actSG.set(state.getActSG());
+        sgcb.editSG.set(state.getEditSG());
+        sgcb.cnfEdit.set(state.isCnfEdit());
         choice.selectSgcb().sgcb = sgcb;
         return choice;
     }

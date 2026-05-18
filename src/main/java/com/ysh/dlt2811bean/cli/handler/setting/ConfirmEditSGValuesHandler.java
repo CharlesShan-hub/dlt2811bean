@@ -29,6 +29,8 @@ public class ConfirmEditSGValuesHandler extends AbstractServiceHandler {
 
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Edit SG values confirmed"));
+        } else {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }
     }
 }

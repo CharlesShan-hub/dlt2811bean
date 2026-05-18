@@ -6,6 +6,7 @@ import com.ysh.dlt2811bean.datatypes.numeric.CmsInt16U;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32U;
 import com.ysh.dlt2811bean.datatypes.string.CmsObjectReference;
 import com.ysh.dlt2811bean.datatypes.string.CmsVisibleString;
+import com.ysh.dlt2811bean.datatypes.type.CmsField;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsReportEntry;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import lombok.experimental.Accessors;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
+import static com.ysh.dlt2811bean.service.protocol.enums.MessageType.*;
 
 /**
  * CMS Service Code 0x5A — Report (report service).
@@ -89,20 +91,29 @@ public class CmsReport extends CmsAsdu<CmsReport> {
     // ==================== Fields based on Table 46 ====================
 
     // --- Response+ parameters ---
+    @CmsField(only = {REQUEST})
     public CmsVisibleString rptID = new CmsVisibleString().size(129);
+    @CmsField(only = {REQUEST})
     public CmsRcbOptFlds optFlds = new CmsRcbOptFlds();
+    @CmsField(only = {REQUEST})
     public CmsInt16U sqNum = new CmsInt16U();
+    @CmsField(only = {REQUEST})
     public CmsInt16U subSqNum = new CmsInt16U();
+    @CmsField(only = {REQUEST})
     public CmsBoolean moreSegmentsFollow = new CmsBoolean();
+    @CmsField(only = {REQUEST})
     public CmsObjectReference datSet = new CmsObjectReference();
+    @CmsField(only = {REQUEST})
     public CmsBoolean bufOvfl = new CmsBoolean();
+    @CmsField(only = {REQUEST})
     public CmsInt32U confRev = new CmsInt32U();
+    @CmsField(only = {REQUEST})
     public CmsReportEntry entry = new CmsReportEntry();
 
     // ========================= Constructor ============================
 
     public CmsReport() {
-        this(MessageType.RESPONSE_POSITIVE); // default
+        this(MessageType.REQUEST); // default, server actively pushes
     }
 
     public CmsReport(MessageType messageType) {

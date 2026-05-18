@@ -30,10 +30,10 @@ import com.ysh.dlt2811bean.transport.protocol.data.*;
 import com.ysh.dlt2811bean.transport.goose.GoosePublisher;
 // import com.ysh.dlt2811bean.transport.protocol.goose.*;
 // import com.ysh.dlt2811bean.transport.protocol.log.*;
-// import com.ysh.dlt2811bean.transport.protocol.report.*;
-import com.ysh.dlt2811bean.transport.protocol.report.GetBRCBValuesHandler;
-import com.ysh.dlt2811bean.transport.protocol.report.GetURCBValuesHandler;
-// import com.ysh.dlt2811bean.transport.protocol.setting.*;
+import com.ysh.dlt2811bean.transport.report.ReportEngine;
+import com.ysh.dlt2811bean.transport.protocol.report.*;
+import com.ysh.dlt2811bean.transport.protocol.*;
+import com.ysh.dlt2811bean.transport.protocol.setting.*;
 import com.ysh.dlt2811bean.transport.protocol.dataset.*;
 // import com.ysh.dlt2811bean.transport.protocol.file.*;
 import com.ysh.dlt2811bean.transport.protocol.negotiation.*;
@@ -78,6 +78,7 @@ public class CmsServer {
     private final CmsDispatcher dispatcher;
     private final ConcurrentHashMap<CmsConnection, CmsServerSession> sessions = new ConcurrentHashMap<>();
     private final GoosePublisher goosePublisher;
+    private ReportEngine reportEngine;
     private String sclFilePath;
     private SclDocument sclDocument;
     private boolean securityEnabled = false;
@@ -89,6 +90,7 @@ public class CmsServer {
         this.transport = new CmsServerTransport(config.getServer().getPort(), new ServerListener());
         this.dispatcher = new CmsDispatcher();
         this.goosePublisher = new GoosePublisher();
+        this.reportEngine = null;
         loadSclSilently(config.getServer().getSclFile());
     }
 
@@ -104,6 +106,7 @@ public class CmsServer {
         this.transport = new CmsServerTransport(port, new ServerListener());
         this.dispatcher = new CmsDispatcher();
         this.goosePublisher = new GoosePublisher();
+        this.reportEngine = null;
     }
 
     public CmsServer(int port, String sclPath) throws Exception {
@@ -125,6 +128,7 @@ public class CmsServer {
 
     public void start() throws IOException {
         registerDefaultHandlers();
+        initReportEngine();
         try {
             goosePublisher.init();
             goosePublisher.dataProvider((goCBRef, dataSetRefs) -> null);
@@ -139,7 +143,22 @@ public class CmsServer {
         }
     }
 
+    private void initReportEngine() {
+        if (sclDocument == null || sclDocument.getIeds().isEmpty()) return;
+        var ied = sclDocument.getIeds().get(0);
+        if (ied.getAccessPoints().isEmpty()) return;
+        var ap = ied.getAccessPoints().get(0);
+        var server = ap.getServer();
+        if (server == null) return;
+        this.reportEngine = new ReportEngine(server, sclDocument.getDataTypeTemplates());
+        this.reportEngine.start();
+        log.info("ReportEngine initialized");
+    }
+
     public void stop() {
+        if (reportEngine != null) {
+            reportEngine.stop();
+        }
         goosePublisher.destroy();
         for (CmsServerSession session : sessions.values()) {
             session.getConnection().close();
@@ -298,6 +317,10 @@ public class CmsServer {
         return goosePublisher;
     }
 
+    public ReportEngine getReportEngine() {
+        return reportEngine;
+    }
+
     // ==================== Session Access ====================
 
     /**
@@ -339,7 +362,7 @@ public class CmsServer {
      * Pushes a Report to a specific client session.
      */
     public void pushReport(CmsServerSession session, String rptID, String dataRef, String fc, int intVal) throws Exception {
-        CmsReport report = new CmsReport(MessageType.RESPONSE_POSITIVE)
+        CmsReport report = new CmsReport(MessageType.REQUEST)
                 .rptID(rptID)
                 .sqNum(1);
         CmsReportEntryData entryData = new CmsReportEntryData()
@@ -389,17 +412,17 @@ public class CmsServer {
         dispatcher.registerDefaultHandler(new DeleteDataSetHandler());// 8.5.4
         dispatcher.registerDefaultHandler(new GetDataSetDirectoryHandler());// 8.5.5
         // 8.6 value handlers
-        // dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
-        // dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2
-        // dispatcher.registerDefaultHandler(new SetEditSGValueHandler());// 8.6.3
-        // dispatcher.registerDefaultHandler(new ConfirmEditSGValuesHandler());// 8.6.4
-        // dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
-        // dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
+        dispatcher.registerDefaultHandler(new SelectActiveSGHandler());// 8.6.1
+        dispatcher.registerDefaultHandler(new SelectEditSGHandler());// 8.6.2
+        dispatcher.registerDefaultHandler(new SetEditSGValueHandler());// 8.6.3
+        dispatcher.registerDefaultHandler(new ConfirmEditSGValuesHandler());// 8.6.4
+        dispatcher.registerDefaultHandler(new GetEditSGValueHandler());// 8.6.5
+        dispatcher.registerDefaultHandler(new GetSGCBValuesHandler());// 8.6.6
         // 8.7 report handlers
         dispatcher.registerDefaultHandler(new GetBRCBValuesHandler());// 8.7.2
-        // dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
+        dispatcher.registerDefaultHandler(new SetBRCBValuesHandler());// 8.7.3
         dispatcher.registerDefaultHandler(new GetURCBValuesHandler());// 8.7.4
-        // dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
+        dispatcher.registerDefaultHandler(new SetURCBValuesHandler());// 8.7.5
         // 8.8 log handlers
         // dispatcher.registerDefaultHandler(new GetLCBValuesHandler());// 8.8.2
         // dispatcher.registerDefaultHandler(new SetLCBValuesHandler());// 8.8.3
@@ -446,6 +469,9 @@ public class CmsServer {
         public void onConnected(CmsConnection conn) {
             CmsServerSession session = new CmsServerSession(conn);
             session.setSclDocument(sclDocument);
+            if (reportEngine != null) {
+                session.setAttribute("reportEngine", reportEngine);
+            }
             sessions.put(conn, session);
             log.debug("[{}] Client connected from {}", session, session.getClientAddress());
         }
@@ -481,6 +507,9 @@ public class CmsServer {
             CmsServerSession session = sessions.remove(conn);
             if (session != null) {
                 session.onDisconnected();
+                if (reportEngine != null) {
+                    reportEngine.onSessionClosed(session);
+                }
                 log.debug("[{}] Client disconnected", session);
             }
         }

@@ -11,9 +11,9 @@ import com.ysh.dlt2811bean.service.svc.report.CmsGetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorBrcbChoice;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 
-public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBValues> {
+import java.util.Map;
 
-    static final java.util.concurrent.ConcurrentHashMap<String, Boolean> rptEnaState = new java.util.concurrent.ConcurrentHashMap<>();
+public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBValues> {
 
     public GetBRCBValuesHandler() {
         super(ServiceName.GET_BRCB_VALUES, CmsGetBRCBValues::new);
@@ -80,6 +80,8 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
             return choice;
         }
 
+        Map<String, SclRCBState> rcStates = SclRCBState.getOrCreateSessionState(serverSession);
+        SclRCBState rcState = rcStates.get(ref);
         CmsBRCB brcb = new CmsBRCB();
         brcb.brcbName.set(rc.getName());
         brcb.brcbRef.set(ref);
@@ -92,9 +94,27 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
         if (rc.getConfRev() != null) {
             brcb.confRev.set(Long.parseLong(rc.getConfRev()));
         }
-        brcb.rptEna.set(rptEnaState.getOrDefault(ref, false));
-        brcb.purgeBuf.set(false);
-        brcb.gi.set(false);
+        if (rc.getOptFields() != null) {
+            brcb.optFlds.set(Long.parseLong(rc.getOptFields()));
+        }
+        if (rc.getBufTime() != null) {
+            brcb.bufTm.set(Long.parseLong(rc.getBufTime()));
+        }
+        if (rc.getTrgOps() != null) {
+            brcb.trgOps.set(Long.parseLong(rc.getTrgOps()));
+        }
+        if (rc.getIntgPd() != null) {
+            brcb.intgPd.set(Long.parseLong(rc.getIntgPd()));
+        }
+        brcb.rptEna.set(rcState != null ? rcState.isRptEna() : false);
+        brcb.purgeBuf.set(rcState != null ? rcState.isPurgeBuf() : false);
+        brcb.gi.set(rcState != null ? rcState.isGi() : false);
+        if (rcState != null && rcState.getEntryID() != null) {
+            brcb.entryID.set(rcState.getEntryID());
+        }
+        if (rcState != null) {
+            brcb.resvTms.set(rcState.getResvTms());
+        }
         choice.selectBrcb().brcb = brcb;
         return choice;
     }

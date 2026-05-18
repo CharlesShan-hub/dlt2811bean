@@ -40,7 +40,7 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
         }
 
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            // 更新本地 cache
+            // update cache
             int slashIdx = dsRef.indexOf('/');
             if (slashIdx >= 0) {
                 String ldName = dsRef.substring(0, slashIdx);
@@ -58,6 +58,8 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
                 }
             }
             System.out.println(CmsColor.green("  Dataset created successfully"));
+        } else {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }
     }
 }

@@ -14,6 +14,7 @@ public class SclDataSet {
 
     private String name;
     private String desc;
+    private boolean dynamic;
     private final List<SclFCDA> fcDas = new ArrayList<>();
 
     public void addFcda(SclFCDA fcda) { this.fcDas.add(fcda); }

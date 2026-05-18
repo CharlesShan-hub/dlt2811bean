@@ -3,7 +3,9 @@ package com.ysh.dlt2811bean.cli.handler.setting;
 import com.ysh.dlt2811bean.cli.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetEditSGValue;
 import com.ysh.dlt2811bean.cli.Param;
@@ -31,6 +33,10 @@ public class GetEditSGValueHandler extends AbstractServiceHandler {
         String fcArg = fc.isEmpty() || "XX".equals(fc) ? null : fc;
 
         CmsApdu response = client.getEditSGValue(ref, fcArg);
+        if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
+            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
+            return;
+        }
         CmsGetEditSGValue resp = (CmsGetEditSGValue) response.getAsdu();
         List<CmsData<?>> dataList = resp.value.toList();
         CliPrinter.printList("Edit SG values (" + dataList.size() + " entries)", dataList, item -> {
