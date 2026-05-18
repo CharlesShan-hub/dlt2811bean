@@ -18,13 +18,7 @@ public class SclHeader {
     private String toolId;
     private String nameStructure;
     private String text;
-    private List<SclHitem> history = new ArrayList<>();
+    private final List<SclHitem> history = new ArrayList<>();
 
-    public SclHeader(String id) {
-        this.id = id;
-    }
-
-    public void addHitem(SclHitem hitem) {
-        this.history.add(hitem);
-    }
+    public void addHitem(SclHitem hitem) { this.history.add(hitem); }
 }

@@ -3,8 +3,8 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
-import com.ysh.dlt2811bean.scl.SclTypeResolver;
-import com.ysh.dlt2811bean.scl2.model.SclDataValue;
+import com.ysh.dlt2811bean.scl.util.SclTypeMapper;
+import com.ysh.dlt2811bean.scl.model.SclDataValue;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -26,7 +26,7 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
             String ref = entry.reference.get();
             SclDataValue resolved = server.resolveDataValue(ref, sclDocument.getDataTypeTemplates());
             if (resolved != null) {
-                CmsType<?> typedValue = SclTypeResolver.createTypedValue(resolved.bType(), resolved.val());
+                CmsType<?> typedValue = SclTypeMapper.createTypedValue(resolved.bType(), resolved.val());
                 values.add(typedValue);
             } else {
                 values.add(new CmsServiceError(CmsServiceError.INSTANCE_NOT_AVAILABLE));

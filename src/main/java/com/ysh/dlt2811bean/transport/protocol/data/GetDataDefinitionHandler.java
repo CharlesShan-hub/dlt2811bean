@@ -2,8 +2,8 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
-import com.ysh.dlt2811bean.scl2.model.SclDataDefinitionEntry;
-import com.ysh.dlt2811bean.scl2.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclDataDefinitionEntry;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;

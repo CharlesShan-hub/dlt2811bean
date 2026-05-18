@@ -6,7 +6,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.control.CmsTimeActivatedOperate;
 import com.ysh.dlt2811bean.cli.Param;
-import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.util.SclTypeMapper;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import java.util.List;
@@ -27,7 +27,7 @@ public class TimeActOperateHandler extends AbstractServiceHandler {
 
         String ref = values.get("reference");
         String val = values.get("value");
-        CmsType<?> ctlVal = SclTypeResolver.parseControlValue(config, ref, val);
+        CmsType<?> ctlVal = SclTypeMapper.parseControlValue(config, ref, val);
         CmsTimeActivatedOperate asdu = new CmsTimeActivatedOperate(MessageType.REQUEST).reference(ref)
                 .ctlVal(ctlVal).ctlNum(4).test(false);
         CmsApdu response = ctx.sendAndPrint(client, asdu);

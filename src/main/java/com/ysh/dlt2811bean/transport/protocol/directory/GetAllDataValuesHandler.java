@@ -3,11 +3,11 @@ package com.ysh.dlt2811bean.transport.protocol.directory;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
-import com.ysh.dlt2811bean.scl.SclTypeResolver;
-import com.ysh.dlt2811bean.scl2.model.SclDataValue;
-import com.ysh.dlt2811bean.scl2.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl2.model.SclLN;
-import com.ysh.dlt2811bean.scl2.util.SclFilters;
+import com.ysh.dlt2811bean.scl.util.SclTypeMapper;
+import com.ysh.dlt2811bean.scl.model.SclDataValue;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclLN;
+import com.ysh.dlt2811bean.scl.util.SclFilters;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -64,7 +64,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         // build positive response
         CmsArray<CmsDataEntry> data = new CmsArray<>(CmsDataEntry::new).capacity(Math.max(1, values.size()));
         for (SclDataValue dv : values) {
-            CmsType<?> typedValue = SclTypeResolver.createTypedValue(dv.bType(), dv.val());
+            CmsType<?> typedValue = SclTypeMapper.createTypedValue(dv.bType(), dv.val());
             CmsDataEntry entry = new CmsDataEntry()
                     .reference(dv.ref())
                     .value(typedValue);

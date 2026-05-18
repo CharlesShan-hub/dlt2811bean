@@ -1,19 +1,11 @@
 package com.ysh.dlt2811bean.scl.model;
 
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-/**
- * Represents an SCL History item ({@code <Hitem>}) element.
- *
- * <pre>
- * {@code
- * <Hitem version="1" revision="A" when="2024-01-01T00:00:00"
- *        who="admin" what="created" why="initial"/>
- * }
- * </pre>
- */
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 public class SclHitem {
 

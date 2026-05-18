@@ -2,7 +2,7 @@ package com.ysh.dlt2811bean.cli;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
-import com.ysh.dlt2811bean.scl.SclTypeResolver;
+import com.ysh.dlt2811bean.scl.util.SclTypeMapper;
 
 import java.util.Map;
 
@@ -40,7 +40,7 @@ public class CacheTypeResolver {
         if (!(typeObj instanceof String)) return null;
         String bType = cacheTypeToBType((String) typeObj);
         if (bType == null) return null;
-        return SclTypeResolver.createTypedValue(bType, value);
+        return SclTypeMapper.createTypedValue(bType, value);
     }
 
     /**

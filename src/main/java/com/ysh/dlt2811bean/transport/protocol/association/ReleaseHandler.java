@@ -1,9 +1,9 @@
 package com.ysh.dlt2811bean.transport.protocol.association;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl2.model.SclDataSet;
-import com.ysh.dlt2811bean.scl2.model.SclLDevice;
-import com.ysh.dlt2811bean.scl2.model.SclLN;
+import com.ysh.dlt2811bean.scl.model.SclDataSet;
+import com.ysh.dlt2811bean.scl.model.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.SclLN;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -19,7 +19,7 @@ public class ReleaseHandler extends AbstractCmsServiceHandler<CmsRelease> {
 
     @Override
     protected CmsApdu doServerHandle() {
-        
+
         removeDynamicDataSets();
 
         serverSession.clearAssociationId();

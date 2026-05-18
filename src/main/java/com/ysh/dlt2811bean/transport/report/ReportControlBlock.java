@@ -2,7 +2,7 @@ package com.ysh.dlt2811bean.transport.report;
 
 import com.ysh.dlt2811bean.datatypes.code.CmsRcbOptFlds;
 import com.ysh.dlt2811bean.datatypes.code.CmsTriggerConditions;
-import com.ysh.dlt2811bean.scl2.model.SclReportControl;
+import com.ysh.dlt2811bean.scl.model.SclReportControl;
 import com.ysh.dlt2811bean.service.svc.report.CmsReport;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.slf4j.Logger;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ReportControlBlock {

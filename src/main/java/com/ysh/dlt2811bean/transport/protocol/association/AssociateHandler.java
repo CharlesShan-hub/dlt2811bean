@@ -2,8 +2,8 @@ package com.ysh.dlt2811bean.transport.protocol.association;
 
 import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl2.model.SclIED;
+import com.ysh.dlt2811bean.scl.model.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.SclIED;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
@@ -65,7 +65,7 @@ public class AssociateHandler extends AbstractCmsServiceHandler<CmsAssociate> {
                 .serviceError(CmsServiceError.NO_ERROR);
 
         // 6. Add server certificate in response for bidirectional auth
-        if (serverCertificateBytes != null) 
+        if (serverCertificateBytes != null)
             response.authenticationParameter(new AuthenticationParameter()
                 .signatureCertificate(serverCertificateBytes));
 

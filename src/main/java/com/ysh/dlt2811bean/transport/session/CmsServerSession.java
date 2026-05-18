@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.transport.session;
 
-import com.ysh.dlt2811bean.scl2.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl2.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl2.model.SclDocument;
+import com.ysh.dlt2811bean.scl.model.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.SclDocument;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,19 +20,19 @@ public class CmsServerSession extends CmsSession {
 
     @Setter
     private volatile String serverAccessPointReference;
-    
+
     @Setter
     private volatile String iedName;
-    
+
     @Setter
     private volatile String accessPointName;
-    
+
     @Setter
     private volatile SclDocument sclDocument;
-    
+
     @Setter
     private volatile SclAccessPoint sclAccessPoint;
-    
+
     @Setter
     private volatile SclDataTypeTemplates sclDataTypeTemplates;
 
@@ -71,16 +71,16 @@ public class CmsServerSession extends CmsSession {
         this.sclAccessPoint = null;
     }
 
-    public Object getAttribute(Object key) { 
-        return attributes.get(key); 
+    public Object getAttribute(Object key) {
+        return attributes.get(key);
     }
-    
-    public void setAttribute(Object key, Object value) { 
-        attributes.put(key, value); 
+
+    public void setAttribute(Object key, Object value) {
+        attributes.put(key, value);
     }
-    
-    public Object removeAttribute(Object key) { 
-        return attributes.remove(key); 
+
+    public Object removeAttribute(Object key) {
+        return attributes.remove(key);
     }
 
     public void close() {
