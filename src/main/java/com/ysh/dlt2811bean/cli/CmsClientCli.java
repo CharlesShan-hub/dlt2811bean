@@ -32,6 +32,8 @@ public class CmsClientCli {
 
     public CmsClientCli() {
         ctx = new CliContext(config, handlers, cachedHierarchy);
+        client.addRequestListener(asdu -> CliPrinter.printRequestPdu(ctx, asdu));
+        client.addResponseListener(response -> CliPrinter.printResponsePdu(ctx, response));
         reader = LineReaderBuilder.builder()
                 .highlighter(new org.jline.reader.Highlighter() {
                     public org.jline.utils.AttributedString highlight(org.jline.reader.LineReader rdr, String buffer) {

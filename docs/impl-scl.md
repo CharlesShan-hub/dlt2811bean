@@ -357,13 +357,3 @@ String osiApTitle = addr.getParam("OSI-AP-Title");
 | `SclCommunication.java` | 106 | `<Communication>` + 6个内部类 |
 | `SclDataTypeTemplates.java` | ~165 | `<DataTypeTemplates>` + 8个内部类 |
 | `SclIED.java` | ~400 | `<IED>` + 24个内部类 |
-
-### 模块统计
-
-| 指标 | 数值 |
-|------|------|
-| **Java 文件数** | 8 |
-| **总行数** | ~1300 |
-| **模型类数（含内部类）** | ~65 |
-| **覆盖的 SCL 元素** | ~40+ |
-````

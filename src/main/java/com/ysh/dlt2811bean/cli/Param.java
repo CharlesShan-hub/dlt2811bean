@@ -23,12 +23,27 @@ public class Param {
         URCB_REF
     }
 
+    public enum ValueType {
+        STRING,
+        BOOLEAN,
+        INTEGER
+    }
+
     private final String name;
     private final String prompt;
     private final String defaultValue;
     private final boolean required;
     private final List<EnumChoice> enumChoices;
     private Type type = Type.PLAIN;
+    private ValueType valueType = ValueType.STRING;
+    private Object value;
+
+    public void setValue(Object value) { this.value = value; }
+
+    public Param valueType(ValueType valueType) {
+        this.valueType = valueType;
+        return this;
+    }
 
     @Getter
     public static class EnumChoice {
@@ -47,23 +62,32 @@ public class Param {
     }
 
     public Param(String name, String prompt, String defaultValue) {
-        this(name, prompt, defaultValue, false, List.of());
+        this(name, prompt, defaultValue, false, List.of(), ValueType.STRING);
     }
 
     public Param(String name, String prompt, String defaultValue, boolean required) {
-        this(name, prompt, defaultValue, required, List.of());
+        this(name, prompt, defaultValue, required, List.of(), ValueType.STRING);
     }
 
     public Param(String name, String prompt, String defaultValue, List<EnumChoice> enumChoices) {
-        this(name, prompt, defaultValue, false, enumChoices);
+        this(name, prompt, defaultValue, false, enumChoices, ValueType.STRING);
     }
 
     public Param(String name, String prompt, String defaultValue, boolean required, List<EnumChoice> enumChoices) {
+        this(name, prompt, defaultValue, required, enumChoices, ValueType.STRING);
+    }
+
+    public Param(String name, String prompt, ValueType valueType, String defaultValue) {
+        this(name, prompt, defaultValue, false, List.of(), valueType);
+    }
+
+    public Param(String name, String prompt, String defaultValue, boolean required, List<EnumChoice> enumChoices, ValueType valueType) {
         this.name = name;
         this.prompt = prompt;
         this.defaultValue = defaultValue;
         this.required = required;
         this.enumChoices = enumChoices;
+        this.valueType = valueType;
     }
 
     public static Param fc() {

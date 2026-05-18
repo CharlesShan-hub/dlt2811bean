@@ -32,6 +32,18 @@ public final class CliPrinter {
         System.out.println(CmsColor.green(text));
     }
 
+    public static void info(String text) {
+        System.out.println("  " + CmsColor.gray(text));
+    }
+
+    public static void success(String text) {
+        System.out.println("  " + CmsColor.green(text));
+    }
+
+    public static void error(String text) {
+        System.out.println("  " + CmsColor.red(text));
+    }
+
     public static void printCyan(String text) {
         System.out.println(CmsColor.cyan(text));
     }

@@ -151,7 +151,7 @@ public class CliContext {
                     }
                 }
                 CommandHandler lnDir = handlers.get("ln-dir");
-                if (lnDir != null) {
+                if (lnDir != null) { // no 1 and 9 !!
                     for (String acsi : new String[]{"DATA_SET", "BRCB", "URCB", "LCB", "LOG", "SGCB", "GO_CB", "MSV_CB"}) {
                         try {
                             lnDir.execute(client, Map.of("target", lnRef, "acsi", acsi, "referenceAfter", ""));

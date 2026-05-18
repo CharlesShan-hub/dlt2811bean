@@ -17,7 +17,7 @@ public class AbortHandler extends AbstractServiceHandler {
 
     public AbortHandler(CliContext ctx) { super(ctx, ServiceInfo.ABORT); }
     
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(new Param("reason", "中止原因", "4", List.of(
             new Param.EnumChoice("0", "其他"),
             new Param.EnumChoice("1", "无法识别的服务"),
@@ -28,14 +28,10 @@ public class AbortHandler extends AbstractServiceHandler {
         )));
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         ctx.getAutoTestHeartbeat().stop();
-        int reason = Integer.parseInt(values.get("reason"));
-        CmsAbort reqAsdu = new CmsAbort(MessageType.REQUEST).reason(reason);
-        CliPrinter.printRequestPdu(ctx, reqAsdu);
-        client.abort(reason);
-        System.out.println(CmsColor.green("  Abort sent"));
+        client.abort(val("reason"));
+        CliPrinter.success("Abort sent");
         ctx.getCachedHierarchy().clear();
     }
 }

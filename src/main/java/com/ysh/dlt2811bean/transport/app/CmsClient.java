@@ -85,6 +85,8 @@ public class CmsClient {
     private final ClientListener listener = new ClientListener();
     private final CmsDispatcher serverPushDispatcher = new CmsDispatcher();
     private final List<ReportListener> reportListeners = new CopyOnWriteArrayList<>();
+    private final List<java.util.function.Consumer<CmsAsdu<?>>> requestListeners = new CopyOnWriteArrayList<>();
+    private final List<java.util.function.Consumer<CmsApdu>> responseListeners = new CopyOnWriteArrayList<>();
     private volatile CmsConnection connection;
     private volatile CmsClientSession session;
 
@@ -111,6 +113,22 @@ public class CmsClient {
 
     public void removeReportListener(ReportListener listener) {
         reportListeners.remove(listener);
+    }
+
+    public void addRequestListener(java.util.function.Consumer<CmsAsdu<?>> listener) {
+        requestListeners.add(listener);
+    }
+
+    public void removeRequestListener(java.util.function.Consumer<CmsAsdu<?>> listener) {
+        requestListeners.remove(listener);
+    }
+
+    public void addResponseListener(java.util.function.Consumer<CmsApdu> listener) {
+        responseListeners.add(listener);
+    }
+
+    public void removeResponseListener(java.util.function.Consumer<CmsApdu> listener) {
+        responseListeners.remove(listener);
     }
 
     // ==================== Security (GM) ====================
@@ -235,6 +253,7 @@ public class CmsClient {
         PendingRequest pending = session.addPendingRequest(reqId);
 
         CmsApdu request = new CmsApdu(asdu);
+        notifyRequestListeners(asdu);
         session.send(request);
         log.debug("[ReqID={}] Sent {}", reqId, asdu.getClass().getSimpleName());
 
@@ -243,14 +262,36 @@ public class CmsClient {
             session.removePendingRequest(reqId);
             throw new java.util.concurrent.TimeoutException("Request timeout");
         }
+        notifyResponseListeners(response);
         return response;
     }
 
     private void doSendWithoutResponse(CmsAsdu<?> asdu) throws Exception {
         asdu.reqId(0);
         CmsApdu request = new CmsApdu(asdu);
+        notifyRequestListeners(asdu);
         session.send(request);
         log.debug("[ReqID=0] Sent {} (one-way)", asdu.getClass().getSimpleName());
+    }
+
+    private void notifyRequestListeners(CmsAsdu<?> asdu) {
+        for (var listener : requestListeners) {
+            try {
+                listener.accept(asdu);
+            } catch (Exception e) {
+                log.warn("Request listener error: {}", e.getMessage());
+            }
+        }
+    }
+
+    private void notifyResponseListeners(CmsApdu response) {
+        for (var listener : responseListeners) {
+            try {
+                listener.accept(response);
+            } catch (Exception e) {
+                log.warn("Response listener error: {}", e.getMessage());
+            }
+        }
     }
 
     public boolean isConnected() {
@@ -480,6 +521,9 @@ public class CmsClient {
     }
 
     public CmsApdu getServerDirectory(String referenceAfter) throws Exception {
+        if (referenceAfter == null || referenceAfter.isEmpty()) {
+            return getServerDirectory();
+        }
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
                 .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
                 .referenceAfter(referenceAfter);
@@ -540,11 +584,23 @@ public class CmsClient {
     }
 
     public CmsApdu getLogicalNodeDirectoryByLd(String ldName, String referenceAfter) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .ldName(ldName);
-        if (referenceAfter != null) {
-            asdu.referenceAfter(referenceAfter);
+        if (referenceAfter == null || referenceAfter.isEmpty()) {
+            return getLogicalNodeDirectoryByLd(ldName);
         }
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .ldName(ldName)
+                .referenceAfter(referenceAfter);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, int acsiClass, String referenceAfter) throws Exception {
+        if (referenceAfter == null || referenceAfter.isEmpty()) {
+            return getLogicalNodeDirectoryByLd(ldName, acsiClass);
+        }
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .ldName(ldName)
+                .acsiClass(new CmsACSIClass(acsiClass))
+                .referenceAfter(referenceAfter);
         return send(asdu);
     }
 
@@ -562,11 +618,23 @@ public class CmsClient {
     }
 
     public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, String referenceAfter) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .lnReference(lnReference);
-        if (referenceAfter != null) {
-            asdu.referenceAfter(referenceAfter);
+        if (referenceAfter == null || referenceAfter.isEmpty()) {
+            return getLogicalNodeDirectoryByLn(lnReference);
         }
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .lnReference(lnReference)
+                .referenceAfter(referenceAfter);
+        return send(asdu);
+    }
+
+    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, int acsiClass, String referenceAfter) throws Exception {
+        if (referenceAfter == null || referenceAfter.isEmpty()) {
+            return getLogicalNodeDirectoryByLn(lnReference, acsiClass);
+        }
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+                .lnReference(lnReference)
+                .acsiClass(new CmsACSIClass(acsiClass))
+                .referenceAfter(referenceAfter);
         return send(asdu);
     }
 

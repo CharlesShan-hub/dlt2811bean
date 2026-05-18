@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.cli.handler.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.cli.Param;
@@ -19,7 +18,7 @@ public class LnDirHandler extends AbstractServiceHandler {
 
     public LnDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_NODE_DIRECTORY); }
     
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             new Param("acsi", "ACSI 类", "DATA_OBJECT", List.of(
@@ -37,22 +36,27 @@ public class LnDirHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-        String target = values.get("target");
-        int acsiClass = parseAcsi(values.get("acsi"));
-        String after = values.get("referenceAfter");
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String target = val("target");
+        int acsiClass = parseAcsi(val("acsi"));
+        String after = stringVal("referenceAfter");
 
-        CmsGetLogicalNodeDirectory reqAsdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST);
         if (target.contains("/")) {
-            reqAsdu.lnReference(target);
+            response = client.getLogicalNodeDirectoryByLn(target, acsiClass, after);
         } else {
-            reqAsdu.ldName(target);
+            response = client.getLogicalNodeDirectoryByLd(target, acsiClass, after);
         }
-        reqAsdu.acsiClass(new CmsACSIClass(acsiClass));
-        if (!after.isEmpty()) reqAsdu.referenceAfter(after);
+        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+            CliPrinter.error("GetLogicalNodeDirectory failed");
+            return;
+        }
+    }
 
-        CmsApdu response = sendAndVerify(client, reqAsdu);
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+
+        String target = val("target");
+        int acsiClass = parseAcsi(val("acsi"));
+
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
         List<String> refs = asdu.referenceResponse().stream().map(r -> r.get()).collect(Collectors.toList());
         CliPrinter.printList("Entries", refs, item -> item);
@@ -60,17 +64,17 @@ public class LnDirHandler extends AbstractServiceHandler {
             CliPrinter.printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
         }
         if (!refs.isEmpty() && target.contains("/")) {
-             String[] parts = target.split("/", 2);
-             String acsiKey = values.get("acsi");
-             java.util.Map<String, Object> existing = ctx.lnEntry(parts[0], parts[1]).get(acsiKey);
-             if (existing == null) {
-                 java.util.Map<String, Object> memberMap = new java.util.LinkedHashMap<>();
-                 for (String r : refs) {
-                     memberMap.put(r, null);
-                 }
-                 ctx.lnEntry(parts[0], parts[1]).put(acsiKey, memberMap);
-             }
-         }
+            String[] parts = target.split("/", 2);
+            String acsiKey = val("acsi");
+            java.util.Map<String, Object> existing = ctx.lnEntry(parts[0], parts[1]).get(acsiKey);
+            if (existing == null) {
+                java.util.Map<String, Object> memberMap = new java.util.LinkedHashMap<>();
+                for (String r : refs) {
+                    memberMap.put(r, null);
+                }
+                ctx.lnEntry(parts[0], parts[1]).put(acsiKey, memberMap);
+            }
+        }
     }
     
     private int parseAcsi(String s) {
