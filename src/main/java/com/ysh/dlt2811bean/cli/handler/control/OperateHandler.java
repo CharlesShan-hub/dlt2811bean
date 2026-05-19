@@ -32,7 +32,7 @@ public class OperateHandler extends AbstractServiceHandler {
         CmsType<?> ctlVal = SclTypeMapper.parseControlValue(config, ref, val);
         CmsOperate asdu = new CmsOperate(MessageType.REQUEST).reference(ref)
                 .ctlVal(ctlVal).ctlNum(1).test(false);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.red("  Operate failed"));
             return;

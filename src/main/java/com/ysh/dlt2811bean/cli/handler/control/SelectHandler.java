@@ -26,7 +26,7 @@ public class SelectHandler extends AbstractServiceHandler {
 
         String ref = values.get("reference");
         CmsSelect asdu = new CmsSelect(MessageType.REQUEST).reference(ref);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.red("  Select failed"));
             return;

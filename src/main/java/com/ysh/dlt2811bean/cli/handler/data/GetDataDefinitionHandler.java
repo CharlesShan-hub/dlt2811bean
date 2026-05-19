@@ -7,7 +7,6 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDefinition;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
@@ -21,18 +20,16 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
 
     public GetDataDefinitionHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_DEFINITION); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts").type(Param.Type.DA_REF),
             Param.fc()
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
-        String refs = values.get("refs");
-        String fc = values.get("fc");
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String refs = stringVal("refs");
+        String fc = stringVal("fc");
 
         String[] allRefs = refs.split(",");
         int startIndex = 0;
@@ -49,10 +46,7 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
                 asdu.data.add(entry);
             }
 
-            CmsApdu response = client.send(asdu);
-            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-                throw new IllegalStateException("Request failed");
-            }
+            response = sendAndVerify(client, asdu);
 
             CmsGetDataDefinition resp = (CmsGetDataDefinition) response.getAsdu();
             for (int i = 0; i < resp.definition.size(); i++) {
@@ -84,6 +78,15 @@ public class GetDataDefinitionHandler extends AbstractServiceHandler {
                 break;
             }
         }
+
+        result = allLines;
+        resultExtra = batchCount;
+    }
+
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        @SuppressWarnings("unchecked")
+        List<String> allLines = (List<String>) result;
+        int batchCount = resultExtra;
 
         CliPrinter.printList("Data definitions (" + allLines.size() + " entries)", allLines, item -> item);
 

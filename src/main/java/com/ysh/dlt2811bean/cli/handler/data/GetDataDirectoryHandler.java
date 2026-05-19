@@ -1,16 +1,14 @@
 package com.ysh.dlt2811bean.cli.handler.data;
 
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataDirectory;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataDirectoryEntry;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
-
 import java.util.List;
 import java.util.Map;
 
@@ -18,40 +16,35 @@ public class GetDataDirectoryHandler extends AbstractServiceHandler {
 
     public GetDataDirectoryHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_DIRECTORY); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("ref", "数据引用 [string]", "C1/LPHD1.Proxy").type(Param.Type.DA_REF),
             new Param("after", "起始引用 (留空=从头) [string]", "").type(Param.Type.DA_NAME_NOT_NULL)
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String ref = stringVal("ref");
+        String after = stringVal("after");
 
-        String ref = values.get("ref");
-        String after = values.get("after");
+        CmsGetDataDirectory asdu = new CmsGetDataDirectory(MessageType.REQUEST).dataReference(ref);
+        if (!after.isEmpty()) asdu.referenceAfter(after);
 
-        CmsGetDataDirectory asdu = new CmsGetDataDirectory(MessageType.REQUEST)
-                .dataReference(ref);
-        if (!after.isEmpty()) {
-            asdu.referenceAfter(after);
-        }
+        response = sendAndVerify(client, asdu);
+    }
 
-        CmsApdu response = sendAndVerify(client, asdu);
-
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetDataDirectory resp = (CmsGetDataDirectory) response.getAsdu();
-        System.out.println("  Directory (" + resp.dataAttribute.size() + " entries):");
-        for (int i = 0; i < resp.dataAttribute.size(); i++) {
-            CmsGetDataDirectoryEntry entry = resp.dataAttribute.get(i);
-            String fcStr = entry.fc.get();
-            if (fcStr != null && !fcStr.isEmpty()) {
-                System.out.println("    [" + i + "] " + CmsColor.bold(entry.reference.get()) + "  " + CmsColor.cyan("[" + fcStr + "]"));
-            } else {
-                System.out.println("    [" + i + "] " + CmsColor.bold(entry.reference.get()));
-            }
-        }
+        List<CmsGetDataDirectoryEntry> entries = resp.dataAttribute.toList();
+        CliPrinter.printList("Directory (" + entries.size() + " entries)",
+                entries, entry -> {
+                    String fcStr = entry.fc.get();
+                    if (fcStr != null && !fcStr.isEmpty()) 
+                        return entry.reference.get() + "  [" + fcStr + "]";
+                    return entry.reference.get();
+                });
         if (resp.moreFollows.get()) {
-            System.out.println(CmsColor.gray("  (more data available, use after=<last> to continue)"));
+            CliPrinter.info("more data available, use after=<last> to continue");
         }
     }
 }

@@ -8,7 +8,6 @@ import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsSetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsSetDataValuesEntry;
 import com.ysh.dlt2811bean.cli.util.CacheTypeResolver;
@@ -24,7 +23,7 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
 
     public SetDataValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.SET_DATA_VALUES); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/LPHD1.Proxy.stVal").type(Param.Type.DA_TARGET),
             new Param("value", "要设置的值", "true"),
@@ -32,12 +31,10 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
-        String refs = values.get("refs");
-        String val = values.get("value");
-        String fc = values.get("fc");
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String refs = stringVal("refs");
+        String val = stringVal("value");
+        String fc = stringVal("fc");
 
         String[] refArr = refs.split(",");
         String[] valArr = val.split(",");
@@ -61,10 +58,21 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             asdu.data.add(entry);
         }
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        response = client.send(asdu);
+    }
+
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String refs = stringVal("refs");
+        String val = stringVal("value");
+        String[] refArr = refs.split(",");
+        String[] valArr = val.split(",");
+
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            System.out.println(CmsColor.green("  All data values set successfully"));
-            updateCache(refArr, valArr);
+            CliPrinter.success("All data values set successfully");
+            for (int i = 0; i < refArr.length; i++) {
+                ctx.addDataObjectValue(refArr[i].trim(),
+                        i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim());
+            }
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
             CmsSetDataValues resp = (CmsSetDataValues) response.getAsdu();
             List<String> failures = new ArrayList<>();
@@ -75,24 +83,6 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
                 }
             }
             CliPrinter.printList("Some or all values failed", failures, item -> CmsColor.red(item));
-        }
-    }
-
-    private void updateCache(String[] refArr, String[] valArr) {
-        for (int i = 0; i < refArr.length; i++) {
-            String ref = refArr[i].trim();
-            if (!ref.contains("/") || !ref.contains(".")) continue;
-            String[] parts = ref.split("\\.");
-            if (parts.length < 2) continue;
-            String[] ldLn = parts[0].split("/", 2);
-            if (ldLn.length < 2) continue;
-            String ld = ldLn[0], ln = ldLn[1];
-            String doDa = ref.substring(ref.indexOf('.') + 1);
-            int dotIdx = doDa.indexOf('.');
-            String doName = dotIdx > 0 ? doDa.substring(0, dotIdx) : doDa;
-            String daName = dotIdx > 0 ? doDa.substring(dotIdx + 1) : "";
-            String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
-            ctx.addDataObjectValue(ctx.addDataObjectGroup(ld, ln), doName, daName, v);
         }
     }
 }

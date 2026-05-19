@@ -29,14 +29,8 @@ public class ServerDirHandler extends AbstractServiceHandler {
 
         CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
             .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
-        if (!referenceAfter.isEmpty()) {
-            asdu.referenceAfter(referenceAfter);
-        }
-        response = client.send(asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            CliPrinter.error("GetServerDirectory failed");
-            return;
-        }
+        if (!referenceAfter.isEmpty()) asdu.referenceAfter(referenceAfter);
+        response = sendAndVerify(client, asdu);
     }
 
     public void afterExecute(CmsClient client, Map<String, String> values) {

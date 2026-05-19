@@ -47,7 +47,7 @@ public class SetMsvcbHandler extends AbstractServiceHandler {
 
         CmsSetMSVCBValues asdu = new CmsSetMSVCBValues(MessageType.REQUEST);
         asdu.addMsvcb(entry);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println("  Set " + ref + " OK");
         } else {

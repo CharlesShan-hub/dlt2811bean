@@ -3,10 +3,8 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValueEntry;
@@ -20,7 +18,7 @@ public class GetAllCbHandler extends AbstractServiceHandler {
 
     public GetAllCbHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_CB_VALUES); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             new Param("type", "控制块类型", "URCB", List.of(
@@ -34,30 +32,25 @@ public class GetAllCbHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-        String target = values.get("target");
-        int acsiClass = parseAcsi(values.get("type"));
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String target = stringVal("target");
+        int acsiClass = parseAcsi(stringVal("type"));
         CmsGetAllCBValues reqAsdu = new CmsGetAllCBValues(MessageType.REQUEST);
-        if (target.contains("/")) {
-            reqAsdu.lnReference(target);
-        } else {
-            reqAsdu.ldName(target);
-        }
+        if (target.contains("/")) reqAsdu.lnReference(target);
+        else reqAsdu.ldName(target);
         reqAsdu.acsiClass.set(acsiClass);
-        try {
-            CmsApdu response = sendAndVerify(client, reqAsdu);
-            CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
-            List<CmsCBValueEntry> entries = asdu.cbValue().toList();
-            CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
-                    item -> item.reference().get() + " = " + item.value());
-        } catch (Exception e) {
-             System.out.print(CmsColor.red("  Request failed"));
-             if (target.contains("/") && !target.toUpperCase().contains("/LLN0")) {
-                 System.out.print(CmsColor.gray(" — 控制块只能在 LLN0 下查询"));
-             }
-             System.out.println();
-         }
+        response = sendAndVerify(client, reqAsdu);
+    }
+
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String target = stringVal("target");
+        CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
+        List<CmsCBValueEntry> entries = asdu.cbValue().toList();
+        CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
+                item -> item.reference().get() + " = " + item.value());
+        if (target.contains("/") && !target.toUpperCase().contains("/LLN0")) {
+            CliPrinter.info("控制块只能在 LLN0 下查询");
+        }
     }
 
     private int parseAcsi(String s) {

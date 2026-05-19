@@ -66,7 +66,7 @@ public class SetBRCBValuesHandler extends AbstractServiceHandler {
         CmsSetBRCBValues asdu = new CmsSetBRCBValues(MessageType.REQUEST);
         asdu.addBrcb(entry);
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  BRCB values set successfully"));
         } else {

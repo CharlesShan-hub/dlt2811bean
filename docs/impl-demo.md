@@ -63,7 +63,7 @@ get-all-cb CTRL/LLN0 GO_CB;
 get-all-cb CTRL/LLN0 LCB;
 get-all-cb CTRL/LLN0 MSV_CB;
 get-all-cb CTRL/LLN0 SGCB;
-get-all-cb CTRL/LLN0 URCB;
+get-all-cb LD0/LLN0 URCB;
 ```
 
 # 8.4 单个数据

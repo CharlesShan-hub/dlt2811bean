@@ -33,18 +33,13 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         target = stringVal("target");
         String fc = stringVal("fc");
         String after = stringVal("referenceAfter");
-        CmsGetAllDataValues reqAsdu = new CmsGetAllDataValues(MessageType.REQUEST);
+        CmsGetAllDataValues asdu = new CmsGetAllDataValues(MessageType.REQUEST);
 
-        if (target.contains("/")) reqAsdu.lnReference(target);
-        else reqAsdu.ldName(target);
-        if (!fc.isEmpty()) reqAsdu.fc(fc);
-        if (!after.isEmpty()) reqAsdu.referenceAfter(after);
-        response = client.send(reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            CmsGetAllDataValues errAsdu = (CmsGetAllDataValues) response.getAsdu();
-            CliPrinter.error("GetAllDataValues failed: " + errAsdu.serviceError);
-            return;
-        }
+        if (target.contains("/")) asdu.lnReference(target);
+        else asdu.ldName(target);
+        if (!fc.isEmpty()) asdu.fc(fc);
+        if (!after.isEmpty()) asdu.referenceAfter(after);
+        response = sendAndVerify(client, asdu);
     }
 
     public void afterExecute(CmsClient client, Map<String, String> values) throws Exception{

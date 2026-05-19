@@ -37,7 +37,7 @@ public class SetEditSGValueHandler extends AbstractServiceHandler {
                 .value(new CmsInt32(Integer.parseInt(val)));
         asdu.data.add(entry);
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Edit SG value set successfully"));
         } else {

@@ -6,7 +6,6 @@ import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
 import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
@@ -21,18 +20,16 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
 
     public GetDataValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_DATA_VALUES); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("refs", "数据引用 (逗号分隔)", "C1/MMXU1.Volts").type(Param.Type.DA_REF),
             Param.fc()
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
-        String refs = values.get("refs");
-        String fc = values.get("fc");
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String refs = stringVal("refs");
+        String fc = stringVal("fc");
 
         String[] allRefs = refs.split(",");
         int startIndex = 0;
@@ -49,10 +46,7 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
                 asdu.data.add(entry);
             }
 
-            CmsApdu response = client.send(asdu);
-            if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-                throw new IllegalStateException("Request failed");
-            }
+            response = sendAndVerify(client, asdu);
 
             CmsGetDataValues resp = (CmsGetDataValues) response.getAsdu();
             List<CmsData<?>> dataList = resp.value.toList();
@@ -64,6 +58,17 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
                 break;
             }
         }
+
+        result = allData;
+        resultExtra = batchCount;
+    }
+
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String refs = stringVal("refs");
+        String[] allRefs = refs.split(",");
+        @SuppressWarnings("unchecked")
+        List<CmsData<?>> allData = (List<CmsData<?>>) result;
+        int batchCount = (int) resultExtra;
 
         CliPrinter.printList("Data values (" + allData.size() + " entries)", allData, item -> {
             String raw = item.toString();
@@ -77,24 +82,7 @@ public class GetDataValuesHandler extends AbstractServiceHandler {
             CliPrinter.printGray("  (fetched in " + batchCount + " batches)");
         }
 
-        for (int i = 0; i < allRefs.length && i < allData.size(); i++) {
-            String ref = allRefs[i].trim();
-            CmsData<?> data = allData.get(i);
-            updateCache(ref, data);
-        }
-    }
-
-    private void updateCache(String ref, CmsData<?> data) {
-        if (!ref.contains("/") || !ref.contains(".")) return;
-        String[] parts = ref.split("\\.");
-        if (parts.length < 2) return;
-        String[] ldLn = parts[0].split("/", 2);
-        if (ldLn.length < 2) return;
-        String ld = ldLn[0], ln = ldLn[1];
-        String doDa = ref.substring(ref.indexOf('.') + 1);
-        int dotIdx = doDa.indexOf('.');
-        String doName = dotIdx > 0 ? doDa.substring(0, dotIdx) : doDa;
-        String daName = dotIdx > 0 ? doDa.substring(dotIdx + 1) : "";
-        ctx.addDataObjectValue(ctx.addDataObjectGroup(ld, ln), doName, daName, data.toString());
+        java.util.stream.IntStream.range(0, Math.min(allRefs.length, allData.size()))
+                .forEach(i -> ctx.addDataObjectValue(allRefs[i].trim(), allData.get(i).toString()));
     }
 }

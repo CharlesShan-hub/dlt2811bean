@@ -32,26 +32,22 @@ public class LdDirHandler extends AbstractServiceHandler {
         CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
         if (!ldName.isEmpty()) asdu.ldName(ldName);
         if (!after.isEmpty()) asdu.referenceAfter(after);
-        response = client.send(asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            CliPrinter.error("GetLogicalDeviceDirectory failed");
-            return;
-        }
+        response = sendAndVerify(client, asdu);
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ldName = stringVal("ldName");
 
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) response.getAsdu();
-        if (!CliPrinter.printIfEmpty(asdu.lnReference().isEmpty())) {
-            List<String> lnNames = asdu.lnReference().stream().map(AbstractCmsScalar::get).collect(Collectors.toList());
+        List<String> lnReferences = asdu.lnReference().stream().map(AbstractCmsScalar::get).collect(Collectors.toList());
+        if (!CliPrinter.printIfEmpty(lnReferences.isEmpty())) {
             String titlePrefix = ldName.isEmpty() ? "" : " under " + ldName;
             String displayPrefix = ldName.isEmpty() ? "" : ldName + "/";
-            CliPrinter.printList("LN(Logical Nodes)" + titlePrefix, lnNames,
+            CliPrinter.printList("LN(Logical Nodes)" + titlePrefix, lnReferences,
                     item -> displayPrefix + item + CliPrinter.lnClassName(displayPrefix + item));
         }
         if (!ldName.isEmpty()) {
-            asdu.lnReference().stream().map(r -> ldName + "/" + r.get()).forEach(ctx::addLogicNode);
+            lnReferences.stream().map(r -> ldName + "/" + r).forEach(ctx::addLogicNode);
         }
     }
 }

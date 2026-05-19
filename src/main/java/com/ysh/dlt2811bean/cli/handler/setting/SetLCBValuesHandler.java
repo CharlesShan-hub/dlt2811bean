@@ -37,7 +37,7 @@ public class SetLCBValuesHandler extends AbstractServiceHandler {
         CmsSetLCBValues asdu = new CmsSetLCBValues(MessageType.REQUEST);
         asdu.addLcb(entry);
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  LCB values set successfully"));
         }

@@ -54,11 +54,7 @@ public class LnDirHandler extends AbstractServiceHandler {
             asdu.ldName(target);
         if (!referenceAfter.isEmpty())
             asdu.referenceAfter(referenceAfter);
-        response = client.send(asdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            CliPrinter.error("GetLogicalNodeDirectory failed");
-            return;
-        }
+        response = sendAndVerify(client, asdu);
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {

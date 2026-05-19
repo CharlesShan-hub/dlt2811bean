@@ -26,7 +26,7 @@ public class FileDeleteHandler extends AbstractServiceHandler {
 
         String fileName = values.get("fileName");
         CmsDeleteFile asdu = new CmsDeleteFile(MessageType.REQUEST).fileName(fileName);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             System.out.println("  Delete failed");
             return;

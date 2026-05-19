@@ -4,9 +4,10 @@ import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.cli.util.AutoTestHeartbeat;
 import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
+import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -98,6 +99,23 @@ public class CliContext {
         }
     }
 
+    /** Adds a data definition entry into the cache under the given LN reference. */
+    public void addDataDefinition(String lnRef, CmsDataDefinitionEntry entry) {
+        String[] parts = lnRef.split("/", 2);
+        if (parts.length < 2) return;
+        Map<String, Object> dataObjectGroup = addDataObjectGroup(parts[0], parts[1]);
+        String doName = entry.reference().get();
+        CmsDataDefinition def = entry.definition();
+        if (def != null && def.getStructureEntries() != null) {
+            def.getStructureEntries().forEach(se -> {
+                String fc = se.fc.get();
+                String daName = se.name.get();
+                String typeName = se.type != null ? se.type.typeName() : "?";
+                addDataObjectType(dataObjectGroup, doName, fc, daName, typeName);
+            });
+        }
+    }
+
     /** Sets the value for a DA under DATA_OBJECT/DO/FC. Creates the {type, value} map with type=? if absent. */
     @SuppressWarnings("unchecked")
     public void addDataObjectValue(Map<String, Object> dataObjectGroup, String doName, String fc, String daName, String value) {
@@ -112,10 +130,8 @@ public class CliContext {
         daMap.put("value", value);
     }
 
-    /**
-     * Sets the value for a DA under DATA_OBJECT/DO, auto-resolving the FC
-     * by searching existing DO/FC/DA entries. If no FC is found, uses "".
-     */
+    /** Sets the value for a DA under DATA_OBJECT/DO, auto-resolving the FC
+     * by searching existing DO/FC/DA entries. If no FC is found, uses "". */
     @SuppressWarnings("unchecked")
     public void addDataObjectValue(Map<String, Object> dataObjectGroup, String doName, String daName, String value) {
         Map<String, Object> doMap = addDataObject(dataObjectGroup, doName);
@@ -128,6 +144,21 @@ public class CliContext {
             return m;
         });
         daMap.put("value", value);
+    }
+
+    /** Sets the value for a DA by full reference like "C1/MMXU1.Volts.mag.f".
+     * Parses the reference and delegates to addDataObjectValue(Map, String, String, String). */
+    public void addDataObjectValue(String ref, String value) {
+        if (!ref.contains("/") || !ref.contains(".")) return;
+        String[] parts = ref.split("\\.");
+        if (parts.length < 2) return;
+        String[] ldLn = parts[0].split("/", 2);
+        if (ldLn.length < 2) return;
+        String doDa = ref.substring(ref.indexOf('.') + 1);
+        int dotIdx = doDa.indexOf('.');
+        String doName = dotIdx > 0 ? doDa.substring(0, dotIdx) : doDa;
+        String daName = dotIdx > 0 ? doDa.substring(dotIdx + 1) : "";
+        addDataObjectValue(addDataObjectGroup(ldLn[0], ldLn[1]), doName, daName, value);
     }
 
     /** Searches a DO map for which FC contains the given DA name. Returns "" if not found. */
@@ -174,10 +205,6 @@ public class CliContext {
             }
         }
         return result;
-    }
-
-    public CmsApdu sendAndPrint(CmsClient client, CmsAsdu<?> asdu) throws Exception {
-        return client.send(asdu);
     }
 
     private void printGray(String text) {

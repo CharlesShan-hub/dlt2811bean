@@ -19,6 +19,8 @@ public abstract class AbstractServiceHandler implements CommandHandler {
     protected CmsConfig config;
     protected List<Param> cachedParams;
     protected CmsApdu response;
+    protected Object result;
+    protected int resultExtra;
 
     protected AbstractServiceHandler(CliContext ctx, ServiceInfo serviceInfo) {
         this(ctx, serviceInfo, true);
@@ -137,7 +139,7 @@ public abstract class AbstractServiceHandler implements CommandHandler {
     }
 
     protected CmsApdu sendAndVerify(CmsClient client, CmsAsdu<?> asdu) throws Exception {
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             throw new IllegalStateException("Request failed");
         }

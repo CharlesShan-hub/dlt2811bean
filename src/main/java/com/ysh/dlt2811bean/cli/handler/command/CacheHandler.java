@@ -76,6 +76,31 @@ public class CacheHandler implements CommandHandler {
                 }
                 return;
             }
+            if (isFcMap(map)) {
+                for (Map.Entry<?, ?> fcEntry : map.entrySet()) {
+                    String fcKey = (String) fcEntry.getKey();
+                    if (fcKey.isEmpty()) continue;
+                    CliPrinter.info(fcKey + "/");
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> daMap = (Map<String, Object>) fcEntry.getValue();
+                    for (Map.Entry<String, Object> daEntry : daMap.entrySet()) {
+                        Object daVal = daEntry.getValue();
+                        if (daVal instanceof Map && isDaValueMap((Map<?, ?>) daVal)) {
+                            Map<?, ?> daValueMap = (Map<?, ?>) daVal;
+                            String type = (String) daValueMap.get("type");
+                            Object val = daValueMap.get("value");
+                            if (val == null) {
+                                CliPrinter.info("  " + daEntry.getKey() + " = [" + CmsColor.green(type) + ", (no value)]");
+                            } else {
+                                CliPrinter.info("  " + daEntry.getKey() + " = [" + CmsColor.green(type) + ", " + val + "]");
+                            }
+                        } else {
+                            CliPrinter.info("  " + daEntry.getKey());
+                        }
+                    }
+                }
+                return;
+            }
             for (Map.Entry<?, ?> entry : map.entrySet()) {
                 Object v = entry.getValue();
                 if (v == null) {
@@ -93,7 +118,9 @@ public class CacheHandler implements CommandHandler {
                     } else if (isFcMap(subMap)) {
                         CliPrinter.info(entry.getKey() + "/");
                         for (Map.Entry<?, ?> fcEntry : subMap.entrySet()) {
-                            CliPrinter.info("  " + fcEntry.getKey() + "/");
+                            String fcKey = (String) fcEntry.getKey();
+                            if (fcKey.isEmpty()) continue;
+                            CliPrinter.info("  " + fcKey + "/");
                             @SuppressWarnings("unchecked")
                             Map<String, Object> daMap = (Map<String, Object>) fcEntry.getValue();
                             for (Map.Entry<String, Object> daEntry : daMap.entrySet()) {
@@ -145,7 +172,9 @@ public class CacheHandler implements CommandHandler {
     private static boolean isFcMap(Map<?, ?> map) {
         if (map.isEmpty()) return false;
         for (Object key : map.keySet()) {
-            if (!(key instanceof String) || ((String) key).length() != 2) return false;
+            if (!(key instanceof String)) return false;
+            String k = (String) key;
+            if (k.length() != 2 && !k.isEmpty()) return false;
         }
         for (Object val : map.values()) {
             if (!(val instanceof Map)) return false;

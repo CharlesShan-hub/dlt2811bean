@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.cli.handler.directory;
 
-import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
@@ -33,15 +32,11 @@ public class GetAllDefHandler extends AbstractServiceHandler {
     public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         target = stringVal("target");
         String fc = stringVal("fc");
-        CmsGetAllDataDefinition reqAsdu = new CmsGetAllDataDefinition(MessageType.REQUEST);
-        if (target.contains("/")) reqAsdu.lnReference(target);
-        else reqAsdu.ldName(target);
-        if (!fc.isEmpty()) reqAsdu.fc(fc);
-        response = client.send(reqAsdu);
-        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
-            CmsGetAllDataDefinition errAsdu = (CmsGetAllDataDefinition) response.getAsdu();
-            CliPrinter.error("GetAllDataDefinition failed: " + errAsdu.serviceError);
-        }
+        CmsGetAllDataDefinition asdu = new CmsGetAllDataDefinition(MessageType.REQUEST);
+        if (target.contains("/")) asdu.lnReference(target);
+        else asdu.ldName(target);
+        if (!fc.isEmpty()) asdu.fc(fc);
+        response = sendAndVerify(client, asdu);
     }
 
     public void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
@@ -56,23 +51,7 @@ public class GetAllDefHandler extends AbstractServiceHandler {
             return ref + cdcDisplay;
         });
         if (target.contains("/")) {
-            String[] parts = target.split("/", 2);
-            String ldName = parts[0];
-            String lnName = parts[1];
-            Map<String, Object> dataObjectGroup = ctx.addDataObjectGroup(ldName, lnName);
-            for (CmsDataDefinitionEntry entry : entries) {
-                String doName = entry.reference().get();
-                CmsDataDefinition def = entry.definition();
-                if (def != null && def.getStructureEntries() != null) {
-                    for (CmsDataDefinition.StructureEntry se : def.getStructureEntries()) {
-                        String fc = se.fc.get();
-                        String daName = se.name.get();
-                        String typeName = se.type != null ? se.type.typeName() : "?";
-                        ctx.addDataObjectType(dataObjectGroup, doName, fc, daName, typeName);
-                    }
-                }
-            }
+            entries.forEach(entry -> ctx.addDataDefinition(target, entry));
         }
     }
-
 }

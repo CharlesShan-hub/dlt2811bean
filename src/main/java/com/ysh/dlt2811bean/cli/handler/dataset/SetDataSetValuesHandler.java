@@ -49,7 +49,7 @@ public class SetDataSetValuesHandler extends AbstractServiceHandler {
             asdu.addMemberValue(new com.ysh.dlt2811bean.datatypes.string.CmsUtf8String(v.trim()).max(255));
         }
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  Dataset values set successfully"));
         } else if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {

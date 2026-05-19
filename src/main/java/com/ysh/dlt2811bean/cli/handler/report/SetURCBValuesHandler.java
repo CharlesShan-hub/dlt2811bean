@@ -54,7 +54,7 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         CmsSetURCBValues asdu = new CmsSetURCBValues(MessageType.REQUEST);
         asdu.addUrcb(entry);
 
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  URCB values set successfully"));
         } else {

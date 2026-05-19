@@ -38,7 +38,7 @@ public class RpcHandler extends AbstractServiceHandler {
 
         if (method.equals("ping") || method.equals("pong")) {
             CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST).method("ping").reqData(new CmsInt32U(0));
-            CmsApdu response = ctx.sendAndPrint(client, asdu);
+            CmsApdu response = client.send(asdu);
             System.out.println("  RPC ping: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
             return;
         }
@@ -51,7 +51,7 @@ public class RpcHandler extends AbstractServiceHandler {
             } else {
                 asdu = new CmsRpcCall(MessageType.REQUEST).method("iterate").reqData(new CmsInt32U(0));
             }
-            CmsApdu response = ctx.sendAndPrint(client, asdu);
+            CmsApdu response = client.send(asdu);
 
             if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
                 System.out.println("  RPC iterate failed");
@@ -73,7 +73,7 @@ public class RpcHandler extends AbstractServiceHandler {
         }
 
         CmsRpcCall asdu = new CmsRpcCall(MessageType.REQUEST).method("echo").reqData(new CmsVisibleString(data));
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         System.out.println("  RPC echo: " + (response.getMessageType() == MessageType.RESPONSE_POSITIVE ? "OK" : "failed"));
     }
 }

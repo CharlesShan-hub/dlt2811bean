@@ -32,7 +32,7 @@ public class SelectWithValueHandler extends AbstractServiceHandler {
         CmsType<?> ctlVal = SclTypeMapper.parseControlValue(config, ref, val);
         CmsSelectWithValue asdu = new CmsSelectWithValue(MessageType.REQUEST).reference(ref)
                 .ctlVal(ctlVal).ctlNum(0).test(false);
-        CmsApdu response = ctx.sendAndPrint(client, asdu);
+        CmsApdu response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.red("  SelectWithValue failed"));
             return;
