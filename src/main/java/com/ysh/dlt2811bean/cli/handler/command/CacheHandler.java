@@ -41,11 +41,23 @@ public class CacheHandler implements CommandHandler {
         String[] parts = path.split("\\.");
         Map<?, ?> current = h;
         for (int i = 0; i < parts.length; i++) {
+            // Try joining remaining parts first (DO names may contain dots, e.g. "A.phsA")
+            StringBuilder joined = new StringBuilder(parts[i]);
+            for (int j = i + 1; j < parts.length; j++) {
+                joined.append(".").append(parts[j]);
+            }
+            String fullKey = joined.toString();
+            if (current.containsKey(fullKey)) {
+                printKeys(current.get(fullKey));
+                return;
+            }
+            // Fall back to single-part key
             String part = parts[i];
             if (current.containsKey(part)) {
                 Object val = current.get(part);
                 if (i == parts.length - 1) {
                     printKeys(val);
+                    return;
                 } else if (val instanceof Map) {
                     current = (Map<?, ?>) val;
                 } else {
@@ -153,6 +165,15 @@ public class CacheHandler implements CommandHandler {
                                 CliPrinter.info("  [" + memberEntry.getKey() + "] fc=" + fc);
                             }
                         }
+                    } else if (isMemberInfoMap(subMap)) {
+                        String fc = (String) subMap.get("FC");
+                        Object doRef = subMap.get("DO");
+                        if (doRef instanceof Map) {
+                            String doPath = resolveDoPath((Map<?, ?>) doRef);
+                            CliPrinter.info(entry.getKey() + "  fc=" + fc + " -> " + doPath);
+                        } else {
+                            CliPrinter.info(entry.getKey() + "  fc=" + fc);
+                        }
                     } else {
                         CliPrinter.info(entry.getKey() + "/");
                     }
@@ -194,6 +215,10 @@ public class CacheHandler implements CommandHandler {
             if (!m.containsKey("FC")) return false;
         }
         return true;
+    }
+
+    private static boolean isMemberInfoMap(Map<?, ?> map) {
+        return map.containsKey("FC") && map.containsKey("DO");
     }
 
     /** Searches cachedHierarchy for the given DO map and returns its LD/LN.DO path. */

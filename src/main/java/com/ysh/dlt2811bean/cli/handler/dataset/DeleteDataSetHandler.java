@@ -2,33 +2,33 @@ package com.ysh.dlt2811bean.cli.handler.dataset;
 
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
 import java.util.Map;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
 
 public class DeleteDataSetHandler extends AbstractServiceHandler {
 
     public DeleteDataSetHandler(CliContext ctx) { super(ctx, ServiceInfo.DELETE_DATA_SET); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("dsRef", "数据集引用", "C1/LLN0.Positions").type(Param.Type.DS_REF)
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String dsRef = stringVal("dsRef");
+        response = client.deleteDataSet(dsRef);
+    }
 
-        String dsRef = values.get("dsRef");
-        CmsApdu response = client.deleteDataSet(dsRef);
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String dsRef = stringVal("dsRef");
 
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            // 清理本地 cache 中的数据集
             int slashIdx = dsRef.indexOf('/');
             if (slashIdx >= 0) {
                 String ldName = dsRef.substring(0, slashIdx);
@@ -45,9 +45,9 @@ public class DeleteDataSetHandler extends AbstractServiceHandler {
                     }
                 }
             }
-            System.out.println(CmsColor.green("  Dataset deleted successfully"));
+            CliPrinter.success("Dataset deleted successfully");
         } else {
-            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
+            CliPrinter.error("Server error: " + response.getAsdu());
         }
     }
 }
