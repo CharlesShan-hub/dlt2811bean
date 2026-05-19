@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsScalar;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalDeviceDirectory;
@@ -28,49 +29,29 @@ public class LdDirHandler extends AbstractServiceHandler {
         String ldName = stringVal("ldName");
         String after = stringVal("referenceAfter");
 
-        if (ldName.contains("/")) {
-            String[] parts = ldName.split("/", 2);
-            ldName = parts[0];
-            after = parts[1];
-        } else if (after.contains("/")) {
-            String[] parts = after.split("/", 2);
-            if (ldName.isEmpty()) ldName = parts[0];
-            after = parts[1];
-        }
-
-        response = client.getLogicalDeviceDirectory(ldName, after);
-    }
-
-    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        CmsGetLogicalDeviceDirectory asdu = new CmsGetLogicalDeviceDirectory(MessageType.REQUEST);
+        if (!ldName.isEmpty()) asdu.ldName(ldName);
+        if (!after.isEmpty()) asdu.referenceAfter(after);
+        response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             CliPrinter.error("GetLogicalDeviceDirectory failed");
             return;
         }
+    }
 
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ldName = stringVal("ldName");
-        String after = stringVal("referenceAfter");
-        if (ldName.contains("/")) {
-            ldName = ldName.split("/", 2)[0];
-        } else if (after.contains("/")) {
-            ldName = ldName.isEmpty() ? after.split("/", 2)[0] : ldName;
-        }
 
         CmsGetLogicalDeviceDirectory asdu = (CmsGetLogicalDeviceDirectory) response.getAsdu();
         if (!CliPrinter.printIfEmpty(asdu.lnReference().isEmpty())) {
-            List<String> lnNames = asdu.lnReference().stream().map(r -> r.get()).collect(Collectors.toList());
+            List<String> lnNames = asdu.lnReference().stream().map(AbstractCmsScalar::get).collect(Collectors.toList());
             String titlePrefix = ldName.isEmpty() ? "" : " under " + ldName;
             String displayPrefix = ldName.isEmpty() ? "" : ldName + "/";
-            CliPrinter.printList("Logical nodes" + titlePrefix, lnNames,
+            CliPrinter.printList("LN(Logical Nodes)" + titlePrefix, lnNames,
                     item -> displayPrefix + item + CliPrinter.lnClassName(displayPrefix + item));
         }
         if (!ldName.isEmpty()) {
-            java.util.Map<String, java.util.Map<String, java.util.Map<String, Object>>> lnMap = ctx.ldEntry(ldName);
-            boolean hasExistingData = lnMap.values().stream().anyMatch(m -> !m.isEmpty());
-            if (!hasExistingData) {
-                for (int i = 0; i < asdu.lnReference().size(); i++) {
-                    lnMap.putIfAbsent(asdu.lnReference().get(i).get(), new java.util.LinkedHashMap<>());
-                }
-            }
+            asdu.lnReference().stream().map(r -> ldName + "/" + r.get()).forEach(ctx::addLogicNode);
         }
     }
 }

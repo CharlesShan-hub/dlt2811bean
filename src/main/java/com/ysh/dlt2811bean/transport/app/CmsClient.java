@@ -506,31 +506,6 @@ public class CmsClient {
     }
 
     /**
-     * Directory - getServerDirectory - Service Code 80
-     * Sends a GetServerDirectory request to retrieve the server directory.
-     *
-     * @param referenceAfter the reference after which to continue the search (optional)
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-
-    public CmsApdu getServerDirectory() throws Exception {
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE));
-        return send(asdu);
-    }
-
-    public CmsApdu getServerDirectory(String referenceAfter) throws Exception {
-        if (referenceAfter == null || referenceAfter.isEmpty()) {
-            return getServerDirectory();
-        }
-        CmsGetServerDirectory asdu = new CmsGetServerDirectory(MessageType.REQUEST)
-                .objectClass(new CmsObjectClass(CmsObjectClass.LOGICAL_DEVICE))
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
-    /**
      * Directory - getLogicalDeviceDirectory - Service Code 81
      * Sends a GetLogicalDeviceDirectory request to retrieve the logical device directory.
      * 
@@ -559,82 +534,6 @@ public class CmsClient {
         if (referenceAfter != null) {
             asdu.referenceAfter(referenceAfter);
         }
-        return send(asdu);
-    }
-
-    /**
-     * Directory - getLogicalNodeDirectoryByLd - Service Code 82
-     * Sends a GetLogicalNodeDirectoryByLd request to retrieve the logical node directory by logical device name.
-     * 
-     * @param ldName the logical device name (optional)
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu getLogicalNodeDirectoryByLd(String ldName) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .ldName(ldName);
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, int acsiClass) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .ldName(ldName)
-                .acsiClass(new CmsACSIClass(acsiClass));
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, String referenceAfter) throws Exception {
-        if (referenceAfter == null || referenceAfter.isEmpty()) {
-            return getLogicalNodeDirectoryByLd(ldName);
-        }
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .ldName(ldName)
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLd(String ldName, int acsiClass, String referenceAfter) throws Exception {
-        if (referenceAfter == null || referenceAfter.isEmpty()) {
-            return getLogicalNodeDirectoryByLd(ldName, acsiClass);
-        }
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .ldName(ldName)
-                .acsiClass(new CmsACSIClass(acsiClass))
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .lnReference(lnReference);
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, int acsiClass) throws Exception {
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .lnReference(lnReference)
-                .acsiClass(new CmsACSIClass(acsiClass));
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, String referenceAfter) throws Exception {
-        if (referenceAfter == null || referenceAfter.isEmpty()) {
-            return getLogicalNodeDirectoryByLn(lnReference);
-        }
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .lnReference(lnReference)
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
-    public CmsApdu getLogicalNodeDirectoryByLn(String lnReference, int acsiClass, String referenceAfter) throws Exception {
-        if (referenceAfter == null || referenceAfter.isEmpty()) {
-            return getLogicalNodeDirectoryByLn(lnReference, acsiClass);
-        }
-        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
-                .lnReference(lnReference)
-                .acsiClass(new CmsACSIClass(acsiClass))
-                .referenceAfter(referenceAfter);
         return send(asdu);
     }
 

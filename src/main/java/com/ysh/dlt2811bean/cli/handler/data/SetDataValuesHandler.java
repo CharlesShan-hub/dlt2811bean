@@ -87,39 +87,9 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             String[] ldLn = parts[0].split("/", 2);
             if (ldLn.length < 2) continue;
             String ld = ldLn[0], ln = ldLn[1];
-            String doName = parts[1];
-            java.util.Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
-            if (das == null) continue;
+            String doDa = ref.substring(ref.indexOf('.') + 1);
             String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
-            java.util.Map<String, Object> doMap = (java.util.Map<String, Object>) das.get(doName);
-            if (doMap == null) {
-                doMap = new java.util.LinkedHashMap<>();
-                das.put(doName, doMap);
-            }
-            if (parts.length >= 3) {
-                String daName = parts[2];
-                @SuppressWarnings("unchecked")
-                java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get(daName);
-                if (existing != null) {
-                    existing.put("value", v);
-                } else {
-                    java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-                    daValue.put("type", "?");
-                    daValue.put("value", v);
-                    doMap.put(daName, daValue);
-                }
-            } else {
-                @SuppressWarnings("unchecked")
-                java.util.Map<String, Object> existing = (java.util.Map<String, Object>) doMap.get("value");
-                if (existing instanceof Map) {
-                    existing.put("value", v);
-                } else {
-                    java.util.Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-                    daValue.put("type", "?");
-                    daValue.put("value", v);
-                    doMap.put("value", daValue);
-                }
-            }
+            ctx.addDataAttribute(ctx.addDataObjectGroup(ld, ln), doDa, v);
         }
     }
 }

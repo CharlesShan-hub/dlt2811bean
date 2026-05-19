@@ -3,24 +3,24 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.datatypes.data.CmsData;
-import com.ysh.dlt2811bean.datatypes.type.CmsScalar;
-import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllDataValues;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataEntry;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import java.util.List;
 import java.util.Map;
 
 public class GetAllValuesHandler extends AbstractServiceHandler {
 
+    private String target;
+
     public GetAllValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_ALL_DATA_VALUES); }
-    public List<Param> getParams() {
+
+    @Override
+    protected List<Param> setParams() {
         return List.of(
             new Param("target", "引用 (ldName 或 lnReference)", "C1").type(Param.Type.LN_REF),
             Param.fc("功能约束"),
@@ -28,85 +28,40 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-        String target = values.get("target");
-        String fc = values.get("fc");
-        String after = values.get("referenceAfter");
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+
+        target = stringVal("target");
+        String fc = stringVal("fc");
+        String after = stringVal("referenceAfter");
         CmsGetAllDataValues reqAsdu = new CmsGetAllDataValues(MessageType.REQUEST);
-        if (target.contains("/")) {
-            reqAsdu.lnReference(target);
-        } else {
-            reqAsdu.ldName(target);
-        }
-        if (fc != null && !fc.isEmpty()) reqAsdu.fc(fc);
+
+        if (target.contains("/")) reqAsdu.lnReference(target);
+        else reqAsdu.ldName(target);
+        if (!fc.isEmpty()) reqAsdu.fc(fc);
         if (!after.isEmpty()) reqAsdu.referenceAfter(after);
-        CmsApdu response = sendAndVerify(client, reqAsdu);
+        response = client.send(reqAsdu);
+        if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
+            CmsGetAllDataValues errAsdu = (CmsGetAllDataValues) response.getAsdu();
+            CliPrinter.error("GetAllDataValues failed: " + errAsdu.serviceError);
+            return;
+        }
+    }
+
+    public void afterExecute(CmsClient client, Map<String, String> values) throws Exception{
+        
         CmsGetAllDataValues asdu = (CmsGetAllDataValues) response.getAsdu();
         List<CmsDataEntry> entries = asdu.data().toList();
         CliPrinter.printList("Data values (" + entries.size() + " entries)", entries,
                 item -> {
                     String ref = item.reference().get();
                     CmsData<?> data = item.value();
-                    String valueStr = formatCmsDataValue(data);
+                    String valueStr = CliPrinter.formatCmsDataValue(data);
                     return ref + " = " + valueStr;
                 });
         if (target.contains("/")) {
-            String[] parts = target.split("/", 2);
-            Map<String, Object> das = ctx.lnEntry(parts[0], parts[1]).get("DATA_OBJECT");
-            if (das == null) {
-                das = new java.util.LinkedHashMap<>();
-                ctx.putAcdEntry(parts[0], parts[1], "DATA_OBJECT", das);
-            }
-            for (CmsDataEntry entry : entries) {
-                String fullRef = entry.reference().get();
-                int dotIdx = fullRef.indexOf('.');
-                if (dotIdx > 0) {
-                    String doName = fullRef.substring(0, dotIdx);
-                    String daName = fullRef.substring(dotIdx + 1);
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> doMap = (Map<String, Object>) das.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> existing = (Map<String, Object>) doMap.get(daName);
-                    if (existing != null) {
-                        existing.put("value", formatCmsDataValue(entry.value()));
-                    } else {
-                        Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-                        daValue.put("type", "?");
-                        daValue.put("value", formatCmsDataValue(entry.value()));
-                        doMap.put(daName, daValue);
-                    }
-                } else {
-                    Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-                    daValue.put("type", "?");
-                    daValue.put("value", formatCmsDataValue(entry.value()));
-                    das.put(fullRef, daValue);
-                }
-            }
+            Map<String, Object> das = ctx.addDataObjectGroup(target);
+            entries.forEach(e -> ctx.addDataAttribute(das, e.reference().get(), CliPrinter.formatCmsDataValue(e.value())));
         }
     }
 
-    /**
-     * Formats a CmsData value for display, showing the type name and value.
-     * e.g. "FLOAT32(100.0)" or "BOOLEAN(true)"
-     */
-    private String formatCmsDataValue(CmsData<?> data) {
-        CmsType<?> inner = data.getInnerValue();
-        if (inner == null) return CmsColor.gray("null");
-
-        // Extract type name from class (e.g. "CmsInt32" -> "INT32")
-        String simpleName = inner.getClass().getSimpleName();
-        String typeName = simpleName.startsWith("Cms") ? simpleName.substring(3).toUpperCase() : simpleName.toUpperCase();
-
-        // Get the value string
-        String valStr;
-        if (inner instanceof CmsScalar) {
-            Object val = ((CmsScalar<?, ?>) inner).get();
-            valStr = val != null ? val.toString() : "null";
-        } else {
-            valStr = inner.toString();
-        }
-
-        return CmsColor.green(typeName) + "(" + valStr + ")";
-    }
 }

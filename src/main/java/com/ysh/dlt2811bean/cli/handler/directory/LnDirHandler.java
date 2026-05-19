@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsScalar;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetLogicalNodeDirectory;
@@ -15,6 +16,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class LnDirHandler extends AbstractServiceHandler {
+
+    private String target;
+    private int acsiClass;
 
     public LnDirHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_LOGIC_NODE_DIRECTORY); }
 
@@ -37,15 +41,20 @@ public class LnDirHandler extends AbstractServiceHandler {
     }
 
     public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
-        String target = val("target");
-        int acsiClass = parseAcsi(val("acsi"));
-        String after = stringVal("referenceAfter");
 
-        if (target.contains("/")) {
-            response = client.getLogicalNodeDirectoryByLn(target, acsiClass, after);
-        } else {
-            response = client.getLogicalNodeDirectoryByLd(target, acsiClass, after);
-        }
+        target = stringVal("target");
+        acsiClass = parseAcsi(stringVal("acsi"));
+        String referenceAfter = stringVal("referenceAfter");
+
+        CmsGetLogicalNodeDirectory asdu = new CmsGetLogicalNodeDirectory(MessageType.REQUEST)
+            .acsiClass(new CmsACSIClass(acsiClass));
+        if (target.contains("/"))
+            asdu.lnReference(target);
+        else
+            asdu.ldName(target);
+        if (!referenceAfter.isEmpty())
+            asdu.referenceAfter(referenceAfter);
+        response = client.send(asdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             CliPrinter.error("GetLogicalNodeDirectory failed");
             return;
@@ -54,40 +63,27 @@ public class LnDirHandler extends AbstractServiceHandler {
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
 
-        String target = val("target");
-        int acsiClass = parseAcsi(val("acsi"));
-
         CmsGetLogicalNodeDirectory asdu = (CmsGetLogicalNodeDirectory) response.getAsdu();
-        List<String> refs = asdu.referenceResponse().stream().map(r -> r.get()).collect(Collectors.toList());
+        List<String> refs = asdu.referenceResponse().stream().map(AbstractCmsScalar::get).collect(Collectors.toList());
         CliPrinter.printList("Entries", refs, item -> item);
-        if (acsiClass == CmsACSIClass.SGCB) {
-            CliPrinter.printGray("  Note: SG names are fixed (SG1/SG2...), not read from SCD file");
-        }
+        if (acsiClass == CmsACSIClass.SGCB)
+            CliPrinter.info("Note: SG names are fixed (SG1/SG2...), cannot read from SCD file");
         if (!refs.isEmpty() && target.contains("/")) {
-            String[] parts = target.split("/", 2);
-            String acsiKey = val("acsi");
-            java.util.Map<String, Object> existing = ctx.lnEntry(parts[0], parts[1]).get(acsiKey);
-            if (existing == null) {
-                java.util.Map<String, Object> memberMap = new java.util.LinkedHashMap<>();
-                for (String r : refs) {
-                    memberMap.put(r, null);
-                }
-                ctx.lnEntry(parts[0], parts[1]).put(acsiKey, memberMap);
-            }
+            refs.forEach(r -> ctx.addAcdMember(target, val("acsi"), r));
         }
     }
 
     private int parseAcsi(String s) {
-        switch (s.toUpperCase()) {
-            case "DATA_SET": return CmsACSIClass.DATA_SET;
-            case "BRCB": return CmsACSIClass.BRCB;
-            case "URCB": return CmsACSIClass.URCB;
-            case "LCB": return CmsACSIClass.LCB;
-            case "LOG": return CmsACSIClass.LOG;
-            case "SGCB": return CmsACSIClass.SGCB;
-            case "GO_CB": return CmsACSIClass.GO_CB;
-            case "MSV_CB": return CmsACSIClass.MSV_CB;
-            default: return CmsACSIClass.DATA_OBJECT;
-        }
+        return switch (s.toUpperCase()) {
+            case "DATA_SET" -> CmsACSIClass.DATA_SET;
+            case "BRCB" -> CmsACSIClass.BRCB;
+            case "URCB" -> CmsACSIClass.URCB;
+            case "LCB" -> CmsACSIClass.LCB;
+            case "LOG" -> CmsACSIClass.LOG;
+            case "SGCB" -> CmsACSIClass.SGCB;
+            case "GO_CB" -> CmsACSIClass.GO_CB;
+            case "MSV_CB" -> CmsACSIClass.MSV_CB;
+            default -> CmsACSIClass.DATA_OBJECT;
+        };
     }
 }

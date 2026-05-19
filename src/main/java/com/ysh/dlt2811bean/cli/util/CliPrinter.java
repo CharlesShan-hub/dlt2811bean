@@ -1,6 +1,9 @@
 package com.ysh.dlt2811bean.cli.util;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.datatypes.data.CmsData;
+import com.ysh.dlt2811bean.datatypes.type.CmsScalar;
+import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.service.info.LnInfo;
 import com.ysh.dlt2811bean.utils.CmsColor;
 
@@ -98,5 +101,20 @@ public final class CliPrinter {
             if (info != null) return " - " + info.getChineseName();
         }
         return "";
+    }
+
+    public static String formatCmsDataValue(CmsData<?> data) {
+        CmsType<?> inner = data.getInnerValue();
+        if (inner == null) return CmsColor.gray("null");
+        String simpleName = inner.getClass().getSimpleName();
+        String typeName = simpleName.startsWith("Cms") ? simpleName.substring(3).toUpperCase() : simpleName.toUpperCase();
+        String valStr;
+        if (inner instanceof CmsScalar) {
+            Object val = ((CmsScalar<?, ?>) inner).get();
+            valStr = val != null ? val.toString() : "null";
+        } else {
+            valStr = inner.toString();
+        }
+        return CmsColor.green(typeName) + "(" + valStr + ")";
     }
 }

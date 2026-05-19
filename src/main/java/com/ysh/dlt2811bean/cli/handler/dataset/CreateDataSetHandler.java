@@ -48,11 +48,7 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
                 int dotIdx = rest.indexOf('.');
                 String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
                 String lnName = dotIdx >= 0 ? rest.substring(0, dotIdx) : rest;
-                Map<String, Object> dataSetMap = ctx.lnEntry(ldName, lnName).get("DATA_SET");
-                if (dataSetMap == null) {
-                    dataSetMap = new java.util.LinkedHashMap<>();
-                    ctx.lnEntry(ldName, lnName).put("DATA_SET", dataSetMap);
-                }
+                Map<String, Object> dataSetMap = ctx.addDataSetGroup(ldName, lnName);
                 if (!dataSetMap.containsKey(dsName)) {
                     dataSetMap.put(dsName, null);
                 }

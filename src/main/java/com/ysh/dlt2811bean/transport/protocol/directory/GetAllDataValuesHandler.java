@@ -30,36 +30,47 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         boolean useLdName = asdu.reference.getSelectedIndex() == 0;
         String ldName = useLdName ? asdu.reference.ldName.get() : null;
         String lnRef = useLdName ? null : asdu.reference.lnReference.get();
-        log.debug("[Server] reference: ldName='{}', lnReference='{}'", ldName, lnRef);
+        log.error("[Server] reference: ldName='{}', lnReference='{}', useLdName={}", ldName, lnRef, useLdName);
 
         // resolve fc param
         String fcFilter = asdu.fc != null ? asdu.fc.get() : null;
+        log.error("[Server] fcFilter='{}'", fcFilter);
         if (fcFilter != null && (fcFilter.isEmpty() || "XX".equals(fcFilter))) {
             fcFilter = null;
         }
+        log.error("[Server] fcFilter after normalize='{}'", fcFilter);
 
         // resolve logic node list
         List<SclLN> targets = server.resolveLns(ldName, lnRef);
+        log.error("[Server] resolveLns returned: {}", targets);
         if (targets == null) {
-            log.warn("[Server] LN not found: ldName={}, lnReference={}", ldName, lnRef);
+            log.error("[Server] LN not found: ldName={}, lnReference={}", ldName, lnRef);
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
         // get data values under each logic node
         SclDataTypeTemplates templates = sclDocument != null ? sclDocument.getDataTypeTemplates() : null;
+        log.error("[Server] templates={}, sclDocument={}", templates, sclDocument);
         List<SclDataValue> values = new ArrayList<>();
         for (SclLN ln : targets) {
-            values.addAll(ln.collectDataValues(templates, fcFilter, !useLdName));
+            log.error("[Server] collecting data values for LN: {}", ln);
+            java.util.Collection<SclDataValue> collected = ln.collectDataValues(templates, fcFilter, !useLdName);
+            log.error("[Server] collected {} values", collected != null ? collected.size() : 0);
+            values.addAll(collected);
         }
+        log.error("[Server] total values collected: {}", values.size());
 
         // referenceAfter pagination
         String after = asdu.referenceAfter != null ? asdu.referenceAfter.get() : null;
+        log.error("[Server] referenceAfter='{}'", after);
         List<SclDataValue> filtered = SclFilters.filterAfter(values, after, SclDataValue::ref);
+        log.error("[Server] filtered={}, values.size={}", filtered, values.size());
         if (filtered == null && after != null && !after.isEmpty()) {
-            log.warn("[Server] referenceAfter not found: {}", after);
+            log.error("[Server] referenceAfter not found: {}", after);
             return buildNegativeResponse(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
         if (filtered != null) values = filtered;
+        log.error("[Server] final values count: {}", values.size());
 
         // build positive response
         CmsArray<CmsDataEntry> data = new CmsArray<>(CmsDataEntry::new).capacity(Math.max(1, values.size()));
@@ -76,7 +87,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
                 .data(data);
         response.moreFollows.set(false);
 
-        log.debug("[Server] GetAllDataValues: {} entries{}", data.size(),
+        log.error("[Server] GetAllDataValues: {} entries{}", data.size(),
                 fcFilter != null ? " (fc=" + fcFilter + ")" : "");
         return new CmsApdu(response);
     }

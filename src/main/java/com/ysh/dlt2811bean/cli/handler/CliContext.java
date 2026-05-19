@@ -13,6 +13,7 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.Map;
 import java.util.Set;
 
+
 public class CliContext {
 
     private final CmsConfig config;
@@ -34,19 +35,75 @@ public class CliContext {
     public Map<String, Map<String, Map<String, Map<String, Object>>>> getCachedHierarchy() { return cachedHierarchy; }
 
     /** Ensures an LD entry exists, returns its LN map. */
-    public Map<String, Map<String, Map<String, Object>>> ldEntry(String ldName) {
+    public Map<String, Map<String, Map<String, Object>>> addLogicDevice(String ldName) {
         return cachedHierarchy.computeIfAbsent(ldName, k -> new java.util.LinkedHashMap<>());
     }
 
     /** Ensures an LN entry exists under the given LD, returns its ACSI-class map. */
-    public Map<String, Map<String, Object>> lnEntry(String ldName, String lnName) {
-        return ldEntry(ldName).computeIfAbsent(lnName, k -> new java.util.LinkedHashMap<>());
+    public Map<String, Map<String, Object>> addLogicNode(String ldName, String lnName) {
+        return addLogicDevice(ldName).computeIfAbsent(lnName, k -> new java.util.LinkedHashMap<>());
     }
 
-    /** Puts member names under LD/LN/ACSI-class; does nothing if names is empty. */
-    public void putAcdEntry(String ldName, String lnName, String acsiClass, Map<String, Object> members) {
-        if (members == null || members.isEmpty()) return;
-        lnEntry(ldName, lnName).put(acsiClass, members);
+    /** Ensures an LN entry exists by full reference (LD/LN). */
+    public void addLogicNode(String lnRef) {
+        String[] parts = lnRef.split("/", 2);
+        if (parts.length < 2) return;
+        addLogicNode(parts[0], parts[1]);
+    }
+
+    /** Adds a member under LD/LN/ACSI-class if not already present. */
+    public void addAcdMember(String lnRef, String acsiClass, String member) {
+        String[] parts = lnRef.split("/", 2);
+        if (parts.length < 2) return;
+        Map<String, Map<String, Object>> acsiMap = addLogicNode(parts[0], parts[1]);
+        acsiMap.putIfAbsent(acsiClass, new java.util.LinkedHashMap<>());
+        acsiMap.get(acsiClass).putIfAbsent(member, null);
+    }
+
+    /** Ensures a DATA_OBJECT map exists under the given LN, returns it. */
+    public Map<String, Object> addDataObjectGroup(String ldName, String lnName) {
+        return addLogicNode(ldName, lnName).computeIfAbsent("DATA_OBJECT", k -> new java.util.LinkedHashMap<>());
+    }
+
+    public Map<String, Object> addDataObjectGroup(String target) {
+        String[] parts = target.split("/", 2);
+        return addDataObjectGroup(parts[0], parts[1]);
+    }
+
+    /** Ensures a DO entry exists under the given DATA_OBJECT group, returns its DA map. */
+    public Map<String, Object> addDataObject(Map<String, Object> dataObjectGroup, String doName) {
+        return (Map<String, Object>) dataObjectGroup.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
+    }
+
+    /** Ensures a DATA_SET map exists under the given LN, returns it. */
+    public Map<String, Object> addDataSetGroup(String ldName, String lnName) {
+        return addLogicNode(ldName, lnName).computeIfAbsent("DATA_SET", k -> new java.util.LinkedHashMap<>());
+    }
+
+    /** Stores a DA value into a DATA_OBJECT map. Handles both DO.DA and bare DO formats. */
+    public void addDataAttribute(Map<String, Object> das, String fullRef, String value) {
+        int dotIdx = fullRef.indexOf('.');
+        if (dotIdx > 0) {
+            String doName = fullRef.substring(0, dotIdx);
+            String daName = fullRef.substring(dotIdx + 1);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> doMap = (Map<String, Object>) das.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
+            @SuppressWarnings("unchecked")
+            Map<String, Object> existing = (Map<String, Object>) doMap.get(daName);
+            if (existing != null) {
+                existing.put("value", value);
+            } else {
+                Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+                daValue.put("type", "?");
+                daValue.put("value", value);
+                doMap.put(daName, daValue);
+            }
+        } else {
+            Map<String, Object> daValue = new java.util.LinkedHashMap<>();
+            daValue.put("type", "?");
+            daValue.put("value", value);
+            das.put(fullRef, daValue);
+        }
     }
 
     /** Gets cached LN references (LD/LN). */
@@ -186,12 +243,10 @@ public class CliContext {
                                     String targetLd = memberRef.substring(0, slashIdx);
                                     String targetLn = memberRef.substring(slashIdx + 1, dotIdx);
                                     String targetDo = memberRef.substring(dotIdx + 1);
-                                    Map<String, Object> targetDoMap = lnEntry(targetLd, targetLn).get("DATA_OBJECT");
-                                    if (targetDoMap != null) {
-                                        Object ref = targetDoMap.get(targetDo);
-                                        if (ref instanceof Map) {
-                                            memberMap.put("DO", ref);
-                                        }
+                                    Map<String, Object> targetDoMap = addDataObjectGroup(targetLd, targetLn);
+                                    Object ref = targetDoMap.get(targetDo);
+                                    if (ref instanceof Map) {
+                                        memberMap.put("DO", ref);
                                     }
                                 }
                                 orderedMembers.put(String.valueOf(i), memberMap);

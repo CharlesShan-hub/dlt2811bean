@@ -30,8 +30,7 @@ public class CacheTypeResolver {
         if (ldLn.length < 2) return null;
         String ld = ldLn[0], ln = ldLn[1];
         String doName = parts[1], daName = parts[2];
-        Map<String, Object> das = ctx.lnEntry(ld, ln).get("DATA_OBJECT");
-        if (das == null) return null;
+        Map<String, Object> das = ctx.addDataObjectGroup(ld, ln);
         Object doMap = das.get(doName);
         if (!(doMap instanceof Map)) return null;
         Object daEntry = ((Map<?, ?>) doMap).get(daName);
