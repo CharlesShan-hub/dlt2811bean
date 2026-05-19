@@ -16,7 +16,7 @@ class GetEditSGValueLoopbackTest extends LoopbackTest {
     void validRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getEditSGValue("C1/LPHD1.Proxy.stVal", "SE");
+        CmsApdu response = client.send(new CmsGetEditSGValue(MessageType.REQUEST).addData("C1/LPHD1.Proxy.stVal", "SE"));
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetEditSGValue asdu = (CmsGetEditSGValue) response.getAsdu();

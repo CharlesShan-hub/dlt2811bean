@@ -2,6 +2,8 @@ package com.ysh.dlt2811bean.transport.app.dataset;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.dataset.CmsCreateDataSet;
+import com.ysh.dlt2811bean.service.svc.dataset.CmsDeleteDataSet;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 import org.junit.jupiter.api.*;
 
@@ -15,9 +17,13 @@ class DeleteDataSetLoopbackTest extends LoopbackTest {
     void createThenDelete() throws Exception {
         associate();
 
-        client.createDataSet("C1/LLN0.TempDs", "C1/CSWI1.Pos", "ST");
+        CmsCreateDataSet createAsdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference("C1/LLN0.TempDs")
+                .addMemberData("C1/CSWI1.Pos", "ST");
+        client.send(createAsdu);
 
-        CmsApdu response = client.deleteDataSet("C1/LLN0.TempDs");
+        CmsDeleteDataSet deleteAsdu = new CmsDeleteDataSet(MessageType.REQUEST).datasetReference("C1/LLN0.TempDs");
+        CmsApdu response = client.send(deleteAsdu);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
     }
@@ -27,7 +33,8 @@ class DeleteDataSetLoopbackTest extends LoopbackTest {
     void unknownDataSet() throws Exception {
         associate();
 
-        CmsApdu response = client.deleteDataSet("C1/LLN0.Unknown");
+        CmsDeleteDataSet asdu = new CmsDeleteDataSet(MessageType.REQUEST).datasetReference("C1/LLN0.Unknown");
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }
@@ -37,7 +44,8 @@ class DeleteDataSetLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.deleteDataSet("");
+        CmsDeleteDataSet asdu = new CmsDeleteDataSet(MessageType.REQUEST).datasetReference("");
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

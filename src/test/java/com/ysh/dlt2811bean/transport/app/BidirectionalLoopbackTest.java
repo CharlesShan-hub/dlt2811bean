@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.transport.app;
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.directory.CmsGetServerDirectory;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import org.junit.jupiter.api.*;
 
@@ -54,7 +55,7 @@ class BidirectionalLoopbackTest extends LoopbackTest {
         associate();
 
         // First do a normal request
-        CmsApdu dirResponse = client.getServerDirectory();
+        CmsApdu dirResponse = client.send(new CmsGetServerDirectory(MessageType.REQUEST));
         assertEquals(MessageType.RESPONSE_POSITIVE, dirResponse.getMessageType());
 
         // Then server pushes
@@ -65,7 +66,7 @@ class BidirectionalLoopbackTest extends LoopbackTest {
         Thread.sleep(100);
 
         // Normal request still works
-        CmsApdu valResponse = client.getServerDirectory();
+        CmsApdu valResponse = client.send(new CmsGetServerDirectory(MessageType.REQUEST));
         assertEquals(MessageType.RESPONSE_POSITIVE, valResponse.getMessageType());
 
         verifyNoErrors();

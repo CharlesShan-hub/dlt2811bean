@@ -16,7 +16,8 @@ class GetDataDefinitionLoopbackTest extends LoopbackTest {
     void dataObject() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDefinition("C1/LPHD1.Proxy");
+        CmsGetDataDefinition asduReq = new CmsGetDataDefinition(MessageType.REQUEST).addData("C1/LPHD1.Proxy");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetDataDefinition asdu = (CmsGetDataDefinition) response.getAsdu();
@@ -28,7 +29,8 @@ class GetDataDefinitionLoopbackTest extends LoopbackTest {
     void dataAttribute() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDefinition("C1/LPHD1.Proxy.stVal");
+        CmsGetDataDefinition asduReq = new CmsGetDataDefinition(MessageType.REQUEST).addData("C1/LPHD1.Proxy.stVal");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetDataDefinition asdu = (CmsGetDataDefinition) response.getAsdu();
@@ -40,7 +42,8 @@ class GetDataDefinitionLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDefinition("");
+        CmsGetDataDefinition asduReq = new CmsGetDataDefinition(MessageType.REQUEST).addData("");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetDataDefinition asdu = (CmsGetDataDefinition) response.getAsdu();

@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.svc.dataset.CmsCreateDataSet;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
@@ -29,32 +30,30 @@ public class CreateDataSetHandler extends AbstractServiceHandler {
         String fc = stringVal("fc");
         String referenceAfter = stringVal("referenceAfter");
 
+        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference(dsRef)
+                .addMemberData(ref, fc);
         if (!referenceAfter.isEmpty()) {
-            response = client.createDataSet(dsRef, referenceAfter, ref, fc);
-        } else {
-            response = client.createDataSet(dsRef, ref, fc);
+            asdu.referenceAfter(referenceAfter);
         }
+        response = sendAndVerify(client, asdu);
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         String dsRef = stringVal("dsRef");
 
-        if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            int slashIdx = dsRef.indexOf('/');
-            if (slashIdx >= 0) {
-                String ldName = dsRef.substring(0, slashIdx);
-                String rest = dsRef.substring(slashIdx + 1);
-                int dotIdx = rest.indexOf('.');
-                String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
-                String lnName = dotIdx >= 0 ? rest.substring(0, dotIdx) : rest;
-                Map<String, Object> dataSetMap = ctx.addDataSetGroup(ldName, lnName);
-                if (!dataSetMap.containsKey(dsName)) {
-                    dataSetMap.put(dsName, null);
-                }
+        int slashIdx = dsRef.indexOf('/');
+        if (slashIdx >= 0) {
+            String ldName = dsRef.substring(0, slashIdx);
+            String rest = dsRef.substring(slashIdx + 1);
+            int dotIdx = rest.indexOf('.');
+            String dsName = dotIdx >= 0 ? rest.substring(dotIdx + 1) : rest;
+            String lnName = dotIdx >= 0 ? rest.substring(0, dotIdx) : rest;
+            Map<String, Object> dataSetMap = ctx.addDataSetGroup(ldName, lnName);
+            if (!dataSetMap.containsKey(dsName)) {
+                dataSetMap.put(dsName, null);
             }
-            CliPrinter.success("Dataset created successfully");
-        } else {
-            CliPrinter.error("Server error: " + response.getAsdu());
         }
+        CliPrinter.success("Dataset created successfully");
     }
 }

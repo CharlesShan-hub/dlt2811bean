@@ -3,10 +3,8 @@ package com.ysh.dlt2811bean.cli.handler.setting;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetSGCBValues;
 import com.ysh.dlt2811bean.service.svc.setting.datatypes.CmsErrorSgcbChoice;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
@@ -18,21 +16,21 @@ public class GetSGCBValuesHandler extends AbstractServiceHandler {
 
     public GetSGCBValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_SGCB_VALUES); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
-            new Param("ref", "定值组控制块引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE)
+            new Param("ref", "定值组控制块引用（多个用逗号分隔）", "C1/LLN0.SGCB").type(Param.Type.REFERENCE)
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String ref = stringVal("ref");
+        CmsGetSGCBValues asdu = new CmsGetSGCBValues(MessageType.REQUEST);
+        for (String r : ref.split(",")) 
+            asdu.addSgcbReference(r.trim());
+        response = sendAndVerify(client, asdu);
+    }
 
-        String ref = values.get("ref");
-        CmsApdu response = client.getSGCBValues(ref);
-        if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
-            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
-            return;
-        }
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetSGCBValues resp = (CmsGetSGCBValues) response.getAsdu();
         List<CmsErrorSgcbChoice> choices = resp.errorSgcb.toList();
         CliPrinter.printList("SGCB values (" + choices.size() + " entries)", choices, item -> {

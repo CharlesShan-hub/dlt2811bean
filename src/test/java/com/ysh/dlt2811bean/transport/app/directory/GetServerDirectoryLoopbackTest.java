@@ -17,7 +17,7 @@ class GetServerDirectoryLoopbackTest extends LoopbackTest {
     void getServerDirectoryPositive() throws Exception {
         associate();
 
-        CmsApdu response = client.getServerDirectory();
+        CmsApdu response = client.send(new CmsGetServerDirectory(MessageType.REQUEST));
         //log.info("Response: {}", response);
 
         assertNotNull(response);
@@ -33,7 +33,7 @@ class GetServerDirectoryLoopbackTest extends LoopbackTest {
     void getServerDirectoryPositive2() throws Exception {
         associate("D1Q1SB4", "S1");
 
-        CmsApdu response = client.getServerDirectory();
+        CmsApdu response = client.send(new CmsGetServerDirectory(MessageType.REQUEST));
         //log.info("Response: {}", response);
 
         assertNotNull(response);

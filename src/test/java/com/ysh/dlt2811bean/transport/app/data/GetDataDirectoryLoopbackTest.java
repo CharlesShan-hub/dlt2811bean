@@ -16,7 +16,8 @@ class GetDataDirectoryLoopbackTest extends LoopbackTest {
     void validRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDirectory("C1/LPHD1.Proxy");
+        CmsGetDataDirectory asduReq = new CmsGetDataDirectory(MessageType.REQUEST).dataReference("C1/LPHD1.Proxy");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetDataDirectory asdu = (CmsGetDataDirectory) response.getAsdu();
@@ -28,7 +29,8 @@ class GetDataDirectoryLoopbackTest extends LoopbackTest {
     void unknownRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDirectory("C1/LPHD1.Unknown");
+        CmsGetDataDirectory asduReq = new CmsGetDataDirectory(MessageType.REQUEST).dataReference("C1/LPHD1.Unknown");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }
@@ -38,7 +40,8 @@ class GetDataDirectoryLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataDirectory("");
+        CmsGetDataDirectory asduReq = new CmsGetDataDirectory(MessageType.REQUEST).dataReference("");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

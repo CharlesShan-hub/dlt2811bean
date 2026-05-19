@@ -18,7 +18,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void byLdName() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1");
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1"));
         //log.info("Response (ldName=C1): {}", response);
 
         assertNotNull(response);
@@ -39,7 +39,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void byLnReference() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLn("C1/CSWI1");
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).lnReference("C1/CSWI1"));
         //log.info("Response (lnReference=C1/CSWI1): {}", response);
 
         assertNotNull(response);
@@ -60,12 +60,12 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void byLnReferenceWithReferenceAfter() throws Exception {
         associate();
 
-        CmsApdu allResponse = client.getLogicalNodeDirectoryByLn("C1/CSWI1");
+        CmsApdu allResponse = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).lnReference("C1/CSWI1"));
         CmsGetLogicalNodeDirectory allAsdu = (CmsGetLogicalNodeDirectory) allResponse.getAsdu();
         int totalCount = allAsdu.referenceResponse().size();
         //log.info("Total DOs under C1/CSWI1: {}", totalCount);
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLn("C1/CSWI1", "Beh");
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).lnReference("C1/CSWI1").referenceAfter("Beh"));
         //log.info("Response (lnReference=C1/CSWI1, referenceAfter=Beh): {}", response);
 
         assertNotNull(response);
@@ -88,7 +88,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void dataSet() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.DATA_SET);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.DATA_SET)));
         //log.info("Response (DATA_SET): {}", response);
 
         assertNotNull(response);
@@ -113,7 +113,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void brcb() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.BRCB);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.BRCB)));
         //log.info("Response (BRCB): {}", response);
 
         assertNotNull(response);
@@ -128,7 +128,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void urcb() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.URCB);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.URCB)));
         //log.info("Response (URCB): {}", response);
 
         assertNotNull(response);
@@ -152,7 +152,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void lcb() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.LCB);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.LCB)));
         //log.info("Response (LCB): {}", response);
 
         assertNotNull(response);
@@ -175,7 +175,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void log() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.LOG);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.LOG)));
         //log.info("Response (LOG): {}", response);
 
         assertNotNull(response);
@@ -193,7 +193,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void goCb() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.GO_CB);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.GO_CB)));
         //log.info("Response (GO_CB): {}", response);
 
         assertNotNull(response);
@@ -211,7 +211,7 @@ class GetLogicalNodeDirectoryLoopbackTest extends LoopbackTest {
     void msvCb() throws Exception {
         associate();
 
-        CmsApdu response = client.getLogicalNodeDirectoryByLd("C1", CmsACSIClass.MSV_CB);
+        CmsApdu response = client.send(new CmsGetLogicalNodeDirectory(MessageType.REQUEST).ldName("C1").acsiClass(new CmsACSIClass(CmsACSIClass.MSV_CB)));
         //log.info("Response (MSV_CB): {}", response);
 
         assertNotNull(response);

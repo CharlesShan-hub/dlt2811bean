@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.transport.app.setting;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.setting.CmsSelectEditSG;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 import org.junit.jupiter.api.*;
 
@@ -15,7 +16,7 @@ class SelectEditSGLoopbackTest extends LoopbackTest {
     void validRequest() throws Exception {
         associate();
 
-        CmsApdu response = client.selectEditSG("C1/LLN0.SGCB", 1);
+        CmsApdu response = client.send(new CmsSelectEditSG(MessageType.REQUEST).sgcbReference("C1/LLN0.SGCB").settingGroupNumber(1));
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
     }
@@ -25,7 +26,7 @@ class SelectEditSGLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.selectEditSG("", 1);
+        CmsApdu response = client.send(new CmsSelectEditSG(MessageType.REQUEST).sgcbReference("").settingGroupNumber(1));
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

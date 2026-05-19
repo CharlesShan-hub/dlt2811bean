@@ -2,6 +2,7 @@ package com.ysh.dlt2811bean.transport.app.dataset;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.dataset.CmsCreateDataSet;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 import org.junit.jupiter.api.*;
 
@@ -15,9 +16,10 @@ class CreateDataSetLoopbackTest extends LoopbackTest {
     void createDataSet() throws Exception {
         associate();
 
-        CmsApdu response = client.createDataSet(
-                "C1/LLN0.TestDs",
-                "C1/CSWI1.Pos", "ST");
+        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference("C1/LLN0.TestDs")
+                .addMemberData("C1/CSWI1.Pos", "ST");
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
     }
@@ -27,9 +29,10 @@ class CreateDataSetLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.createDataSet(
-                "",
-                "C1/CSWI1.Pos", "ST");
+        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
+                .datasetReference("")
+                .addMemberData("C1/CSWI1.Pos", "ST");
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

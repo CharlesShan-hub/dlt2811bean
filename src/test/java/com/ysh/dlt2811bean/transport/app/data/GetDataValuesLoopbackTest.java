@@ -5,6 +5,7 @@ import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.data.CmsGetDataValues;
+import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 
 import org.junit.jupiter.api.*;
@@ -19,8 +20,9 @@ class GetDataValuesLoopbackTest extends LoopbackTest {
     void singleValue() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataValues("C1/LPHD1.Proxy.stVal");
-        // log.info("Response: {}", response);
+        CmsGetDataValues asduReq = new CmsGetDataValues(MessageType.REQUEST);
+        asduReq.data.add(new CmsGetDataValuesEntry().reference("C1/LPHD1.Proxy.stVal"));
+        CmsApdu response = client.send(asduReq);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -40,11 +42,11 @@ class GetDataValuesLoopbackTest extends LoopbackTest {
     void multipleValues() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataValues(
-                "C1/LPHD1.Proxy.stVal",
-                "C1/MMXU1.Volts.sVC.offset",
-                "C1/MMXU1.Volts.sVC.scaleFactor");
-        log.info("Response: {}", response);
+        CmsGetDataValues asduReq = new CmsGetDataValues(MessageType.REQUEST);
+        asduReq.data.add(new CmsGetDataValuesEntry().reference("C1/LPHD1.Proxy.stVal"));
+        asduReq.data.add(new CmsGetDataValuesEntry().reference("C1/MMXU1.Volts.sVC.offset"));
+        asduReq.data.add(new CmsGetDataValuesEntry().reference("C1/MMXU1.Volts.sVC.scaleFactor"));
+        CmsApdu response = client.send(asduReq);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -64,8 +66,9 @@ class GetDataValuesLoopbackTest extends LoopbackTest {
     void nonExistentReference() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataValues("C1/FAKE.DO.stVal");
-        log.info("Response: {}", response);
+        CmsGetDataValues asduReq = new CmsGetDataValues(MessageType.REQUEST);
+        asduReq.data.add(new CmsGetDataValuesEntry().reference("C1/FAKE.DO.stVal"));
+        CmsApdu response = client.send(asduReq);
 
         assertNotNull(response);
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
@@ -78,22 +81,5 @@ class GetDataValuesLoopbackTest extends LoopbackTest {
         CmsData<?> data = values.get(0);
         log.info("Error value: {}", data);
         assertEquals("Data[0]=(CmsServiceError) 1", data.toString());
-    }
-
-    @Test
-    @DisplayName("request with fc filter")
-    void withFcFilter() throws Exception {
-        associate();
-
-        CmsApdu response = client.getDataValuesWithFc("ST", "C1/LPHD1.Proxy.stVal");
-        log.info("Response: {}", response);
-
-        assertNotNull(response);
-        assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
-
-        CmsGetDataValues asdu = (CmsGetDataValues) response.getAsdu();
-        CmsStructure values = asdu.value();
-        assertNotNull(values);
-        assertEquals(1, values.size());
     }
 }

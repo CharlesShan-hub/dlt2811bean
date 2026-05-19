@@ -3,10 +3,8 @@ package com.ysh.dlt2811bean.cli.handler.setting;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.setting.CmsGetEditSGValue;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
@@ -18,25 +16,22 @@ public class GetEditSGValueHandler extends AbstractServiceHandler {
 
     public GetEditSGValueHandler(CliContext ctx) { super(ctx, ServiceInfo.GET_EDIT_SG_VALUE); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("ref", "数据引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE),
             Param.fc()
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String ref = stringVal("ref");
+        String fc = stringVal("fc");
 
-        String ref = values.get("ref");
-        String fc = values.get("fc");
-        String fcArg = fc.isEmpty() || "XX".equals(fc) ? null : fc;
+        CmsGetEditSGValue asdu = new CmsGetEditSGValue(MessageType.REQUEST).addData(ref, fc);
+        response = sendAndVerify(client, asdu);
+    }
 
-        CmsApdu response = client.getEditSGValue(ref, fcArg);
-        if (response.getMessageType() == MessageType.RESPONSE_NEGATIVE) {
-            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
-            return;
-        }
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetEditSGValue resp = (CmsGetEditSGValue) response.getAsdu();
         List<CmsData<?>> dataList = resp.value.toList();
         CliPrinter.printList("Edit SG values (" + dataList.size() + " entries)", dataList, item -> {

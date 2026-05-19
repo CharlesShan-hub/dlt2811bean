@@ -16,7 +16,7 @@ class GetSGCBValuesLoopbackTest extends LoopbackTest {
     void validRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getSGCBValues("C1/LLN0.SGCB");
+        CmsApdu response = client.send(new CmsGetSGCBValues(MessageType.REQUEST).addSgcbReference("C1/LLN0.SGCB"));
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetSGCBValues asdu = (CmsGetSGCBValues) response.getAsdu();
@@ -29,7 +29,7 @@ class GetSGCBValuesLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getSGCBValues("");
+        CmsApdu response = client.send(new CmsGetSGCBValues(MessageType.REQUEST).addSgcbReference(""));
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetSGCBValues asdu = (CmsGetSGCBValues) response.getAsdu();

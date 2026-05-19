@@ -16,7 +16,8 @@ class GetDataSetValuesLoopbackTest extends LoopbackTest {
     void validDataSet() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataSetValues("C1/LLN0.Positions");
+        CmsGetDataSetValues asduReq = new CmsGetDataSetValues(MessageType.REQUEST).datasetReference("C1/LLN0.Positions");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
         CmsGetDataSetValues asdu = (CmsGetDataSetValues) response.getAsdu();
@@ -28,7 +29,8 @@ class GetDataSetValuesLoopbackTest extends LoopbackTest {
     void unknownDataSet() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataSetValues("C1/LLN0.Unknown");
+        CmsGetDataSetValues asduReq = new CmsGetDataSetValues(MessageType.REQUEST).datasetReference("C1/LLN0.Unknown");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }
@@ -38,7 +40,8 @@ class GetDataSetValuesLoopbackTest extends LoopbackTest {
     void emptyRef() throws Exception {
         associate();
 
-        CmsApdu response = client.getDataSetValues("");
+        CmsGetDataSetValues asduReq = new CmsGetDataSetValues(MessageType.REQUEST).datasetReference("");
+        CmsApdu response = client.send(asduReq);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

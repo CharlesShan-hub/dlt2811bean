@@ -21,7 +21,7 @@ class SetDataSetValuesLoopbackTest extends LoopbackTest {
                 .datasetReference("C1/LLN0.Positions")
                 .addMemberValue(new CmsVisibleString("true").max(255));
 
-        CmsApdu response = client.setDataSetValues(asdu);
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
     }
@@ -35,7 +35,7 @@ class SetDataSetValuesLoopbackTest extends LoopbackTest {
                 .datasetReference("C1/LLN0.Unknown")
                 .addMemberValue(new CmsVisibleString("true").max(255));
 
-        CmsApdu response = client.setDataSetValues(asdu);
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

@@ -20,7 +20,7 @@ class SetEditSGValueLoopbackTest extends LoopbackTest {
         CmsSetEditSGValue asdu = new CmsSetEditSGValue(MessageType.REQUEST)
                 .addData("C1/LPHD1.Proxy.stVal", new CmsVisibleString("false").max(255));
 
-        CmsApdu response = client.setEditSGValue(asdu);
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_POSITIVE, response.getMessageType());
     }
@@ -33,7 +33,7 @@ class SetEditSGValueLoopbackTest extends LoopbackTest {
         CmsSetEditSGValue asdu = new CmsSetEditSGValue(MessageType.REQUEST)
                 .addData("", new CmsVisibleString("test").max(255));
 
-        CmsApdu response = client.setEditSGValue(asdu);
+        CmsApdu response = client.send(asdu);
 
         assertEquals(MessageType.RESPONSE_NEGATIVE, response.getMessageType());
     }

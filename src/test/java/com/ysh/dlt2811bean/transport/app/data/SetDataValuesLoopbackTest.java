@@ -22,7 +22,7 @@ class SetDataValuesLoopbackTest extends LoopbackTest {
                 .addData("C1/LPHD1.Proxy.stVal", null,
                         new CmsVisibleString("false").max(255));
 
-        CmsApdu response = client.setDataValues(asdu);
+        CmsApdu response = client.send(asdu);
         log.info("Response: {}", response);
 
         assertNotNull(response);
@@ -38,7 +38,7 @@ class SetDataValuesLoopbackTest extends LoopbackTest {
                 .addData("C1/FAKE.DO.stVal", null,
                         new CmsVisibleString("test").max(255));
 
-        CmsApdu response = client.setDataValues(asdu);
+        CmsApdu response = client.send(asdu);
         log.info("Response: {}", response);
 
         assertNotNull(response);
@@ -58,7 +58,7 @@ class SetDataValuesLoopbackTest extends LoopbackTest {
         asdu.addData("C1/MMXU1.Volts.sVC.offset", null,
                 new CmsVisibleString("20").max(255));
 
-        CmsApdu response = client.setDataValues(asdu);
+        CmsApdu response = client.send(asdu);
         log.info("Response: {}", response);
 
         assertNotNull(response);

@@ -8,6 +8,7 @@ import com.ysh.dlt2811bean.cli.util.AutoTestHeartbeat;
 import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntry;
+import com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory;
 import com.ysh.dlt2811bean.service.svc.dataset.datatypes.CmsCreateDataSetEntry;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -295,7 +296,8 @@ public class CliContext {
                 for (String dsName : dataSetMap.keySet()) {
                     String dsRef = ldName + "/" + lnName + "." + dsName;
                     try {
-                        CmsApdu dsDirResp = client.getDataSetDirectory(dsRef);
+                        CmsGetDataSetDirectory dsDirAsdu = new CmsGetDataSetDirectory(MessageType.REQUEST).datasetReference(dsRef);
+                        CmsApdu dsDirResp = client.send(dsDirAsdu);
                         if (dsDirResp.getMessageType() == MessageType.RESPONSE_POSITIVE) {
                             com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory dsDir =
                                 (com.ysh.dlt2811bean.service.svc.dataset.CmsGetDataSetDirectory) dsDirResp.getAsdu();

@@ -2,10 +2,10 @@ package com.ysh.dlt2811bean.cli.handler.setting;
 
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
-import com.ysh.dlt2811bean.utils.CmsColor;
+import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
+import com.ysh.dlt2811bean.service.svc.setting.CmsConfirmEditSGValues;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
@@ -15,22 +15,19 @@ public class ConfirmEditSGValuesHandler extends AbstractServiceHandler {
 
     public ConfirmEditSGValuesHandler(CliContext ctx) { super(ctx, ServiceInfo.CONFIRM_EDIT_SG_VALUES); }
 
-    public List<Param> getParams() {
+    protected List<Param> setParams() {
         return List.of(
             new Param("sgRef", "定值组控制块引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE)
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
+    public void doExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String sgRef = stringVal("sgRef");
+        CmsConfirmEditSGValues asdu = new CmsConfirmEditSGValues(MessageType.REQUEST).sgcbReference(sgRef);
+        response = sendAndVerify(client, asdu);
+    }
 
-        String sgRef = values.get("sgRef");
-        CmsApdu response = client.confirmEditSGValues(sgRef);
-
-        if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
-            System.out.println(CmsColor.green("  Edit SG values confirmed"));
-        } else {
-            System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
-        }
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        CliPrinter.success("Edit SG values confirmed");
     }
 }

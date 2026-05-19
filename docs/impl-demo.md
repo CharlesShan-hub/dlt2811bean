@@ -92,7 +92,7 @@ get-dataset-dir MEAS/LLN0.dsAin1;
 # 查看数据集里边的值
 get-dataset-values MEAS/LLN0.dsAin1;
 # 这里可以看到很多字段是error，这是因为没有初始值，可以通过cache查看
-cache.MEAS.LLN0.DATA_SET.dsAin1.12.DO;
+cache.MEAS.LLN0.DATA_SET.dsAin;
 
 # 数据集写入
 set-dataset-values MEAS/LLN0.dsAin1 Bay1_P1; # 从头写，一个值
@@ -119,7 +119,8 @@ get-dataset-dir MEAS/LLN0.myTestDs;
 delete-dataset MEAS/LLN0.dsAin1;
 # 8. release 后重新 connect
 release;
-connect 127.0.0.1 8102 65531 1 C_B5041X S1 true;
+#connect 127.0.0.1 8102 65531 1 C_B5041X S1 true;
+associate C_B5041X S1 false;
 # 9. 再次创建同名数据集 myTestDs（应该成功，因为 release 时已删除）
 create-dataset --dsRef MEAS/LLN0.myTestDs --ref MEAS/LLN0.AmpSv.instMag.i --fc MX;
 ```

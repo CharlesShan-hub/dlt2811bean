@@ -16,7 +16,6 @@ import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
 import com.ysh.dlt2811bean.service.svc.association.*;
 import com.ysh.dlt2811bean.service.svc.directory.*;
 import com.ysh.dlt2811bean.service.svc.data.*;
-import com.ysh.dlt2811bean.service.svc.data.datatypes.CmsGetDataValuesEntry;
 import com.ysh.dlt2811bean.service.svc.goose.*;
 import com.ysh.dlt2811bean.service.svc.goose.datatypes.CmsSetGoCBValuesEntry;
 import com.ysh.dlt2811bean.service.svc.setting.*;
@@ -635,58 +634,6 @@ public class CmsClient {
     }
 
     /**
-     * Data - getDataValues - Service Code 86
-     * Sends a GetDataValues request to retrieve data values.
-     * 
-     * @param references the references of the data values to retrieve
-     * @return the response APDU (positive or negative)
-     * @throws Exception if not connected or timeout
-     */
-    public CmsApdu getDataValues(String... references) throws Exception {
-        CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
-        for (String ref : references) {
-            asdu.data.add(new CmsGetDataValuesEntry().reference(ref));
-        }
-        return send(asdu);
-    }
-
-    public CmsApdu getDataValuesWithFc(String fc, String... references) throws Exception {
-        CmsGetDataValues asdu = new CmsGetDataValues(MessageType.REQUEST);
-        for (String ref : references) {
-            asdu.data.add(new CmsGetDataValuesEntry().reference(ref).fc(fc));
-        }
-        return send(asdu);
-    }
-
-    public CmsApdu setDataValues(CmsSetDataValues asdu) throws Exception {
-        return send(asdu);
-    }
-
-    /**
-     * DATA - getDataDirectory - Service Code 0x32
-     */
-    public CmsApdu getDataDirectory(String dataReference) throws Exception {
-        CmsGetDataDirectory asdu = new CmsGetDataDirectory(MessageType.REQUEST)
-                .dataReference(dataReference);
-        return send(asdu);
-    }
-
-    /**
-     * DATA - getDataDefinition - Service Code 0x33
-     */
-    public CmsApdu getDataDefinition(String reference) throws Exception {
-        CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST)
-                .addData(reference);
-        return send(asdu);
-    }
-
-    public CmsApdu getDataDefinition(String reference, String fc) throws Exception {
-        CmsGetDataDefinition asdu = new CmsGetDataDefinition(MessageType.REQUEST)
-                .addData(reference, fc);
-        return send(asdu);
-    }
-
-    /**
      * Association - associateNegotiate - Service Code 9A
      * Sends an AssociateNegotiate request to negotiate service parameters before association.
      * Must be called after connect() and before associate().
@@ -1211,121 +1158,6 @@ public class CmsClient {
             entry.resv.set(Boolean.parseBoolean(values.get("resv")));
         CmsSetURCBValues asdu = new CmsSetURCBValues(MessageType.REQUEST);
         asdu.addUrcb(entry);
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - selectActiveSG - Service Code 0x54
-     */
-    public CmsApdu selectActiveSG(String sgcbReference, int sgNum) throws Exception {
-        CmsSelectActiveSG asdu = new CmsSelectActiveSG(MessageType.REQUEST)
-                .sgcbReference(sgcbReference)
-                .settingGroupNumber(sgNum);
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - selectEditSG - Service Code 0x55
-     */
-    public CmsApdu selectEditSG(String sgcbReference, int sgNum) throws Exception {
-        CmsSelectEditSG asdu = new CmsSelectEditSG(MessageType.REQUEST)
-                .sgcbReference(sgcbReference)
-                .settingGroupNumber(sgNum);
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - setEditSGValue - Service Code 0x56
-     */
-    public CmsApdu setEditSGValue(CmsSetEditSGValue asdu) throws Exception {
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - confirmEditSGValues - Service Code 0x57
-     */
-    public CmsApdu confirmEditSGValues(String sgcbReference) throws Exception {
-        CmsConfirmEditSGValues asdu = new CmsConfirmEditSGValues(MessageType.REQUEST)
-                .sgcbReference(sgcbReference);
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - getEditSGValue - Service Code 0x58
-     */
-    public CmsApdu getEditSGValue(String reference, String fc) throws Exception {
-        CmsGetEditSGValue asdu = new CmsGetEditSGValue(MessageType.REQUEST)
-                .addData(reference, fc);
-        return send(asdu);
-    }
-
-    /**
-     * SETTING - getSGCBValues - Service Code 0x59
-     */
-    public CmsApdu getSGCBValues(String... references) throws Exception {
-        CmsGetSGCBValues asdu = new CmsGetSGCBValues(MessageType.REQUEST);
-        for (String ref : references) {
-            asdu.addSgcbReference(ref);
-        }
-        return send(asdu);
-    }
-
-    /**
-     * DATASET - getDataSetValues - Service Code 0x3A
-     */
-    public CmsApdu getDataSetValues(String datasetReference) throws Exception {
-        CmsGetDataSetValues asdu = new CmsGetDataSetValues(MessageType.REQUEST)
-                .datasetReference(datasetReference);
-        return send(asdu);
-    }
-
-    public CmsApdu getDataSetValues(String datasetReference, String referenceAfter) throws Exception {
-        CmsGetDataSetValues asdu = new CmsGetDataSetValues(MessageType.REQUEST)
-                .datasetReference(datasetReference)
-                .referenceAfter(referenceAfter);
-        return send(asdu);
-    }
-
-    /**
-     * DATASET - setDataSetValues - Service Code 0x3B
-     */
-    public CmsApdu setDataSetValues(CmsSetDataSetValues asdu) throws Exception {
-        return send(asdu);
-    }
-
-    /**
-     * DATASET - createDataSet - Service Code 0x36
-     */
-    public CmsApdu createDataSet(String datasetReference, String memberReference, String fc) throws Exception {
-        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
-                .datasetReference(datasetReference)
-                .addMemberData(memberReference, fc);
-        return send(asdu);
-    }
-
-    public CmsApdu createDataSet(String datasetReference, String referenceAfter, String memberReference, String fc) throws Exception {
-        CmsCreateDataSet asdu = new CmsCreateDataSet(MessageType.REQUEST)
-                .datasetReference(datasetReference)
-                .referenceAfter(referenceAfter)
-                .addMemberData(memberReference, fc);
-        return send(asdu);
-    }
-
-    /**
-     * DATASET - deleteDataSet - Service Code 0x37
-     */
-    public CmsApdu deleteDataSet(String datasetReference) throws Exception {
-        CmsDeleteDataSet asdu = new CmsDeleteDataSet(MessageType.REQUEST)
-                .datasetReference(datasetReference);
-        return send(asdu);
-    }
-
-    /**
-     * DATASET - getDataSetDirectory - Service Code 0x39
-     */
-    public CmsApdu getDataSetDirectory(String datasetReference) throws Exception {
-        CmsGetDataSetDirectory asdu = new CmsGetDataSetDirectory(MessageType.REQUEST)
-                .datasetReference(datasetReference);
         return send(asdu);
     }
 
