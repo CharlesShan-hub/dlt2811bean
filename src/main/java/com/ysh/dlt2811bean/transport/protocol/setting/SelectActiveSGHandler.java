@@ -44,6 +44,7 @@ public class SelectActiveSGHandler extends AbstractCmsServiceHandler<CmsSelectAc
         }
 
         state.setActSG(sgNum);
+        state.setActTm(System.currentTimeMillis() / 1000);
         log.debug("[Server] SelectActiveSG: activated SG {} for {}", sgNum, ref);
 
         CmsSelectActiveSG response = new CmsSelectActiveSG(MessageType.RESPONSE_POSITIVE)

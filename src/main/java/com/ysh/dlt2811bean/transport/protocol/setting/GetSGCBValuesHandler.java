@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.transport.protocol.setting;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
@@ -76,7 +78,10 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
         }
 
         Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(serverSession);
-        SclSGCBState state = sgcbStates.computeIfAbsent(ref, k -> new SclSGCBState());
+        SclSGCBState state = sgcbStates.computeIfAbsent(ref, k -> {
+            CmsConfig config = CmsConfigLoader.load();
+            return new SclSGCBState(config.getSetting().getNumOfSG());
+        });
 
         CmsSGCB sgcb = new CmsSGCB();
         sgcb.sgcbName.set(sgcbName);
@@ -85,6 +90,8 @@ public class GetSGCBValuesHandler extends AbstractCmsServiceHandler<CmsGetSGCBVa
         sgcb.actSG.set(state.getActSG());
         sgcb.editSG.set(state.getEditSG());
         sgcb.cnfEdit.set(state.isCnfEdit());
+        sgcb.lActTm.secondsSinceEpoch.set(state.getActTm());
+        sgcb.resvTms.set(state.getResvTms());
         choice.selectSgcb().sgcb = sgcb;
         return choice;
     }

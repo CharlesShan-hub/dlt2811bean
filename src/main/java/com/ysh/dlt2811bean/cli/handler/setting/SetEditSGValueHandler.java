@@ -38,6 +38,9 @@ public class SetEditSGValueHandler extends AbstractServiceHandler {
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String ref = stringVal("ref");
+        String val = stringVal("value");
+        ctx.updateSgcbAttribute(ref, "editValue", val);
         CliPrinter.success("Edit SG value set successfully");
     }
 }

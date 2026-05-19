@@ -24,7 +24,7 @@ public class GetDataValuesHandler extends AbstractCmsServiceHandler<CmsGetDataVa
         CmsStructure values = new CmsStructure();
         for (CmsGetDataValuesEntry entry : asdu.data) {
             String ref = entry.reference.get();
-            SclDataValue resolved = server.resolveDataValue(ref, sclDocument.getDataTypeTemplates());
+            SclDataValue resolved = server.resolveDataValue(ref, sclDocument.getDataTypeTemplates(), serverSession);
             if (resolved != null) {
                 CmsType<?> typedValue = SclTypeMapper.createTypedValue(resolved.bType(), resolved.val());
                 values.add(typedValue);

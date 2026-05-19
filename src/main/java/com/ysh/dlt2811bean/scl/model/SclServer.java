@@ -7,6 +7,8 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -93,6 +95,10 @@ public class SclServer {
 
     public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates) {
         return com.ysh.dlt2811bean.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates);
+    }
+
+    public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates, CmsServerSession session) {
+        return com.ysh.dlt2811bean.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates, session);
     }
 
     public int setDataValue(String ref, String value, SclDataTypeTemplates templates) {

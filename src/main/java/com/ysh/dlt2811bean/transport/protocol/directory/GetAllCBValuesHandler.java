@@ -42,7 +42,7 @@ public class GetAllCBValuesHandler extends AbstractCmsServiceHandler<CmsGetAllCB
         // collect CB values from each target LN
         List<SclCBEntry> entries = new ArrayList<>();
         for (SclLN ln : targets) {
-            entries.addAll(ln.collectCBValues(acsiClass));
+            entries.addAll(ln.collectCBValues(acsiClass, serverSession));
         }
 
         // referenceAfter pagination

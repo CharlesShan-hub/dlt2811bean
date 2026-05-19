@@ -32,7 +32,9 @@ public class SelectEditSGHandler extends AbstractServiceHandler {
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String sgRef = stringVal("sgRef");
         int sgNum = Integer.parseInt(stringVal("sgNum"));
+        ctx.updateSgcbAttribute(sgRef, "editSG", String.valueOf(sgNum));
         CliPrinter.success("Edit SG selected: SG" + sgNum);
     }
 }

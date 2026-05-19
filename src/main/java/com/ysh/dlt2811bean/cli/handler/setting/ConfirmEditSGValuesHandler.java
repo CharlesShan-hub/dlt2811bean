@@ -28,6 +28,8 @@ public class ConfirmEditSGValuesHandler extends AbstractServiceHandler {
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String sgRef = stringVal("sgRef");
+        ctx.updateSgcbAttribute(sgRef, "cnfEdit", "true");
         CliPrinter.success("Edit SG values confirmed");
     }
 }

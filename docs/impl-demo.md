@@ -56,14 +56,14 @@ get-all-values LD0/LLN0 XX YCDeadZone.dU; # 选择指定位置之后的
 # 获取数据值
 get-all-values LD0/RSYN1 XX; # 这里边有数值类型的
 # 获取数据定义
-get-all-def CTRL/ALMGGIO1 XX; 
+get-all-def MEAS/LLN0 XX; 
 # 获取cb (BRCB,GO_CB,LCB,MSV_CB,SGCB,URCB)
-get-all-cb CTRL/LLN0 BRCB;
-get-all-cb CTRL/LLN0 GO_CB;
-get-all-cb CTRL/LLN0 LCB;
-get-all-cb CTRL/LLN0 MSV_CB;
-get-all-cb CTRL/LLN0 SGCB;
-get-all-cb LD0/LLN0 URCB;
+get-all-cb MEAS/LLN0 BRCB;
+get-all-cb MEAS/LLN0 GO_CB;
+get-all-cb MEAS/LLN0 LCB;
+get-all-cb MEAS/LLN0 MSV_CB;
+get-all-cb MEAS/LLN0 SGCB;
+get-all-cb MEAS/LLN0 URCB;
 ```
 
 # 8.4 单个数据
@@ -146,7 +146,7 @@ get-sgcb-values MEAS/LLN0.SGCB;
 ln-dir MEAS/LLN0;
 
 # 查看某个可编辑的定值（如 LLN0 下 SG 功能约束的数据）
-get-data-values MEAS/LLN0.SGXXX.xxx XX;
+#get-data-values MEAS/LLN0.SGXXX.xxx XX;
 
 # 开始编辑第1组，cnfEdit=false
 select-edit-sg MEAS/LLN0.SGCB 1;

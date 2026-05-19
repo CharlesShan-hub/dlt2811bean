@@ -174,6 +174,11 @@ public class CacheHandler implements CommandHandler {
                         } else {
                             CliPrinter.info(entry.getKey() + "  fc=" + fc);
                         }
+                    } else if (isSimpleAttributeMap(subMap)) {
+                        CliPrinter.info(entry.getKey() + ":");
+                        for (Map.Entry<?, ?> attrEntry : subMap.entrySet()) {
+                            CliPrinter.info("  " + attrEntry.getKey() + " = " + attrEntry.getValue());
+                        }
                     } else {
                         CliPrinter.info(entry.getKey() + "/");
                     }
@@ -219,6 +224,14 @@ public class CacheHandler implements CommandHandler {
 
     private static boolean isMemberInfoMap(Map<?, ?> map) {
         return map.containsKey("FC") && map.containsKey("DO");
+    }
+
+    private static boolean isSimpleAttributeMap(Map<?, ?> map) {
+        if (map.isEmpty()) return false;
+        for (Object val : map.values()) {
+            if (!(val instanceof String)) return false;
+        }
+        return true;
     }
 
     /** Searches cachedHierarchy for the given DO map and returns its LD/LN.DO path. */

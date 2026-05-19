@@ -181,6 +181,25 @@ public class CliContext {
         return addLogicNode(ldName, lnName).computeIfAbsent("DATA_SET", k -> new java.util.LinkedHashMap<>());
     }
 
+    /**
+     * Updates a SGCB attribute in the cache under the LN's SGCB group.
+     * The sgcbRef format is "LD/LN.SGCB", attribute is stored as "attrName=value".
+     */
+    @SuppressWarnings("unchecked")
+    public void updateSgcbAttribute(String sgcbRef, String attrName, String value) {
+        String[] parts = sgcbRef.split("/", 2);
+        if (parts.length < 2) return;
+        String ldName = parts[0];
+        String rest = parts[1];
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return;
+        String lnName = rest.substring(0, dotIdx);
+        Map<String, Object> sgcbGroup = addLogicNode(ldName, lnName)
+                .computeIfAbsent("SGCB", k -> new java.util.LinkedHashMap<>());
+        Map<String, Object> attrMap = (Map<String, Object>) sgcbGroup.computeIfAbsent("sgcb", k -> new java.util.LinkedHashMap<>());
+        attrMap.put(attrName, value);
+    }
+
     /** Gets cached LN references (LD/LN). */
     public Set<String> getCachedLnRefs() {
         Set<String> result = new java.util.HashSet<>();

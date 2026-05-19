@@ -32,7 +32,9 @@ public class SelectActiveSGHandler extends AbstractServiceHandler {
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
+        String sgRef = stringVal("sgRef");
         int sgNum = Integer.parseInt(stringVal("sgNum"));
+        ctx.updateSgcbAttribute(sgRef, "actSG", String.valueOf(sgNum));
         CliPrinter.success("Active setting group selected: SG" + sgNum);
     }
 }

@@ -14,6 +14,10 @@ import com.ysh.dlt2811bean.scl.model.SclSDI;
 import com.ysh.dlt2811bean.scl.model.SclDA;
 import com.ysh.dlt2811bean.scl.model.SclDAType;
 import com.ysh.dlt2811bean.scl.model.SclServer;
+import com.ysh.dlt2811bean.scl.model.SclSGCBState;
+import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+
+import java.util.Map;
 
 
 public class SclDataValueResolver {
@@ -31,6 +35,10 @@ public class SclDataValueResolver {
      * @return the data value with resolved bType, or null if not found
      */
     public static SclDataValue resolveDataValue(SclServer server, String ref, SclDataTypeTemplates templates) {
+        return resolveDataValue(server, ref, templates, null);
+    }
+
+    public static SclDataValue resolveDataValue(SclServer server, String ref, SclDataTypeTemplates templates, CmsServerSession session) {
         if (ref == null || ref.isEmpty()) return null;
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) return null;
@@ -48,6 +56,31 @@ public class SclDataValueResolver {
 
         String doName = parts[1];
         SclDOI doi = ln.findDoiByName(doName);
+
+        // Dynamic SG data: if DO is SG1~SGn and not in SCL model, resolve from SGCB state
+        if (doi == null && doName.startsWith("SG") && session != null) {
+            String sgNumStr = doName.substring(2);
+            try {
+                int sgNum = Integer.parseInt(sgNumStr);
+                Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
+                String sgcbRef = lnName + ".SGCB";
+                SclSGCBState state = sgcbStates.get(sgcbRef);
+                if (state != null && sgNum >= 1 && sgNum <= state.getNumOfSG()) {
+                    if (parts.length == 3) {
+                        String daName = parts[2];
+                        String val = state.getSgValue(sgNum, daName);
+                        if (val != null) {
+                            return new SclDataValue(ref, val, "INT32");
+                        }
+                    }
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                // not a valid SG number, fall through
+            }
+            return null;
+        }
+
         if (doi == null) return null;
 
         if (parts.length == 2) {

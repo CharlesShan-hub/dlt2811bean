@@ -10,10 +10,12 @@ import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsACSIClass;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
+import com.ysh.dlt2811bean.scl.model.SclSGCBState;
+import com.ysh.dlt2811bean.transport.session.CmsServerSession;
+import java.util.Map;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,6 +150,19 @@ public class SclLN {
      * @return list of data values
      */
     public List<SclDataValue> collectDataValues(SclDataTypeTemplates templates, String fcFilter, boolean relative) {
+        return collectDataValues(templates, fcFilter, relative, null);
+    }
+
+    /**
+     * Collects all data values (DAI) under this LN, resolving bType from the data type templates.
+     *
+     * @param templates the data type templates for type resolution
+     * @param fcFilter  optional FC filter, null for no filter, "XX" treated as no filter
+     * @param relative  if true, omit the LN prefix from the reference path
+     * @param session   optional server session for dynamic SG data, may be null
+     * @return list of data values
+     */
+    public List<SclDataValue> collectDataValues(SclDataTypeTemplates templates, String fcFilter, boolean relative, CmsServerSession session) {
         List<SclDataValue> result = new ArrayList<>();
         String prefix = relative ? "" : (getFullName() + ".");
 
@@ -168,6 +183,26 @@ public class SclLN {
                         templates, doType, sdi.getName());
             }
         }
+
+        // collect dynamic SG1~SGn data from session state
+        if (session != null) {
+            String sgcbRef = getFullName() + ".SGCB";
+            Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
+            SclSGCBState state = sgcbStates.get(sgcbRef);
+            if (state != null) {
+                for (int sgNum = 1; sgNum <= state.getNumOfSG(); sgNum++) {
+                    Map<String, String> sgData = state.getSgValues(sgNum);
+                    if (sgData != null && !sgData.isEmpty()) {
+                        String sgPrefix = prefix + "SG" + sgNum;
+                        for (Map.Entry<String, String> entry : sgData.entrySet()) {
+                            String ref = sgPrefix + "." + entry.getKey();
+                            result.add(new SclDataValue(ref, entry.getValue(), "INT32"));
+                        }
+                    }
+                }
+            }
+        }
+
         return result;
     }
 
@@ -376,45 +411,38 @@ public class SclLN {
      * <p>Only LLN0 typically contains control blocks, but the method is on SclLN for consistency.
      *
      * @param acsiClass the ACSI class filter (BRCB, URCB, LCB, GO_CB, MSV_CB, SGCB)
+     * @param session   optional server session for dynamic SGCB data, may be null
      * @return list of control block entries
      */
-    public List<SclCBEntry> collectCBValues(int acsiClass) {
+    public List<SclCBEntry> collectCBValues(int acsiClass, CmsServerSession session) {
         List<SclCBEntry> result = new ArrayList<>();
-        switch (acsiClass) {
-            case CmsACSIClass.BRCB:
-                for (SclReportControl rc : reportControls) {
-                    if (rc.isBuffered()) {
-                        result.add(new SclCBEntry(rc.getName(), buildBrcb(rc)));
-                    }
+        if (acsiClass == CmsACSIClass.SGCB) {
+            String sgcbRef = getFullName() + ".SGCB";
+            result.add(new SclCBEntry(sgcbRef, buildSgcb(sgcbRef, session)));
+        } else if (acsiClass == CmsACSIClass.BRCB) {
+            for (SclReportControl rc : reportControls) {
+                if (rc.isBuffered()) {
+                    result.add(new SclCBEntry(rc.getName(), buildBrcb(rc)));
                 }
-                break;
-            case CmsACSIClass.URCB:
-                for (SclReportControl rc : reportControls) {
-                    if (!rc.isBuffered()) {
-                        result.add(new SclCBEntry(rc.getName(), buildUrcb(rc)));
-                    }
+            }
+        } else if (acsiClass == CmsACSIClass.URCB) {
+            for (SclReportControl rc : reportControls) {
+                if (!rc.isBuffered()) {
+                    result.add(new SclCBEntry(rc.getName(), buildUrcb(rc)));
                 }
-                break;
-            case CmsACSIClass.LCB:
-                for (SclLogControl lc : logControls) {
-                    result.add(new SclCBEntry(lc.getName(), buildLcb(lc)));
-                }
-                break;
-            case CmsACSIClass.GO_CB:
-                for (SclGSEControl gse : gseControls) {
-                    result.add(new SclCBEntry(gse.getName(), buildGocb(gse)));
-                }
-                break;
-            case CmsACSIClass.MSV_CB:
-                for (SclSampledValueControl sv : svControls) {
-                    result.add(new SclCBEntry(sv.getName(), buildMsvcb(sv)));
-                }
-                break;
-            case CmsACSIClass.SGCB:
-                result.add(new SclCBEntry("SG1", buildSgcb()));
-                break;
-            default:
-                break;
+            }
+        } else if (acsiClass == CmsACSIClass.LCB) {
+            for (SclLogControl lc : logControls) {
+                result.add(new SclCBEntry(lc.getName(), buildLcb(lc)));
+            }
+        } else if (acsiClass == CmsACSIClass.GO_CB) {
+            for (SclGSEControl gc : gseControls) {
+                result.add(new SclCBEntry(gc.getName(), buildGocb(gc)));
+            }
+        } else if (acsiClass == CmsACSIClass.MSV_CB) {
+            for (SclSampledValueControl svc : svControls) {
+                result.add(new SclCBEntry(svc.getName(), buildMsvcb(svc)));
+            }
         }
         return result;
     }
@@ -494,9 +522,31 @@ public class SclLN {
         return new CmsCBValue().selectMsvcb();
     }
 
-    private static CmsCBValue buildSgcb() {
+    private CmsCBValue buildSgcb(String sgcbRef, CmsServerSession session) {
         CmsSGCB sgb = new CmsSGCB();
-        sgb.sgcbName.set("SG1");
+        sgb.sgcbName.set("SGCB");
+        sgb.sgcbRef.set(sgcbRef);
+
+        if (session != null) {
+            Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
+            SclSGCBState state = sgcbStates.get(sgcbRef);
+            if (state != null) {
+                sgb.numOfSG.set(state.getNumOfSG());
+                sgb.actSG.set(state.getActSG());
+                sgb.editSG.set(state.getEditSG());
+                sgb.cnfEdit.set(state.isCnfEdit());
+                sgb.lActTm.secondsSinceEpoch.set(state.getActTm());
+                sgb.resvTms.set(state.getResvTms());
+                return new CmsCBValue().selectSgb();
+            }
+        }
+
+        sgb.numOfSG.set(4);
+        sgb.actSG.set(1);
+        sgb.editSG.set(1);
+        sgb.cnfEdit.set(true);
+        sgb.lActTm.secondsSinceEpoch.set(System.currentTimeMillis() / 1000);
+        sgb.resvTms.set(0);
         return new CmsCBValue().selectSgb();
     }
 

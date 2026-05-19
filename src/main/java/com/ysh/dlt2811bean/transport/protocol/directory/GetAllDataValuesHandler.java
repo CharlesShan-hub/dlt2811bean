@@ -48,7 +48,7 @@ public class GetAllDataValuesHandler extends AbstractCmsServiceHandler<CmsGetAll
         SclDataTypeTemplates templates = sclDocument != null ? sclDocument.getDataTypeTemplates() : null;
         List<SclDataValue> values = new ArrayList<>();
         for (SclLN ln : targets) {
-            java.util.Collection<SclDataValue> collected = ln.collectDataValues(templates, fcFilter, !useLdName);
+            java.util.Collection<SclDataValue> collected = ln.collectDataValues(templates, fcFilter, !useLdName, serverSession);
             values.addAll(collected);
         }
 

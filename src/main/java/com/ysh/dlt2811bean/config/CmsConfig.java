@@ -10,6 +10,7 @@ public class CmsConfig {
     private Negotiate negotiate = new Negotiate();
     private File file = new File();
     private Cli cli = new Cli();
+    private Setting setting = new Setting();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -34,6 +35,9 @@ public class CmsConfig {
 
     public Cli getCli() { return cli; }
     public void setCli(Cli cli) { this.cli = cli; }
+
+    public Setting getSetting() { return setting; }
+    public void setSetting(Setting setting) { this.setting = setting; }
 
     public static class Server {
         private int port = 8102;
@@ -165,6 +169,13 @@ public class CmsConfig {
         public void setApiPort(int apiPort) { this.apiPort = apiPort; }
     }
 
+    public static class Setting {
+        private int numOfSG = 4;
+
+        public int getNumOfSG() { return numOfSG; }
+        public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
+    }
+
     public void merge(CmsConfig other) {
         if (other == null) return;
         if (other.server != null) {
@@ -208,6 +219,9 @@ public class CmsConfig {
             if (other.cli.apiPort != 7899)
                 cli.apiPort = other.cli.apiPort;
             cli.apiEnabled = other.cli.apiEnabled;
+        }
+        if (other.setting != null) {
+            if (other.setting.numOfSG != 4) setting.numOfSG = other.setting.numOfSG;
         }
     }
 }

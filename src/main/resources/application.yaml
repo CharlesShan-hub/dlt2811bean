@@ -41,6 +41,9 @@ negotiate:
   protocolVersion: 1
   modelVersion: "1.0"
 
+setting:
+  numOfSG: 4
+
 file:
   rootPath: config/files
 
