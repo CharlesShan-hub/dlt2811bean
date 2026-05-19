@@ -75,6 +75,7 @@
 
 # 获取数据定义
 ./cms get-all-def CTRL/ALMGGIO1 XX
+./cms get-all-def LD0/RSYN1 XX
 
 # 获取控制块
 ./cms get-all-cb CTRL/LLN0 BRCB

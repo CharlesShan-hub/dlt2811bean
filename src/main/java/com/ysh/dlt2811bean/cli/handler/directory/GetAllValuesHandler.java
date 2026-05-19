@@ -59,8 +59,17 @@ public class GetAllValuesHandler extends AbstractServiceHandler {
                     return ref + " = " + valueStr;
                 });
         if (target.contains("/")) {
-            Map<String, Object> das = ctx.addDataObjectGroup(target);
-            entries.forEach(e -> ctx.addDataAttribute(das, e.reference().get(), CliPrinter.formatCmsDataValue(e.value())));
+            Map<String, Object> dataObjectGroup = ctx.addDataObjectGroup(target);
+            for (CmsDataEntry e : entries) {
+                String ref = e.reference().get();
+                int dotIdx = ref.indexOf('.');
+                if (dotIdx > 0) {
+                    String doName = ref.substring(0, dotIdx);
+                    String daName = ref.substring(dotIdx + 1);
+                    String value = CliPrinter.formatCmsDataValue(e.value());
+                    ctx.addDataObjectValue(dataObjectGroup, doName, daName, value);
+                }
+            }
         }
     }
 

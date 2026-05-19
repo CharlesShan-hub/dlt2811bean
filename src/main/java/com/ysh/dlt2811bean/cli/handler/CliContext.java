@@ -70,40 +70,83 @@ public class CliContext {
         return addDataObjectGroup(parts[0], parts[1]);
     }
 
-    /** Ensures a DO entry exists under the given DATA_OBJECT group, returns its DA map. */
+    /** Ensures a DO entry exists under the given DATA_OBJECT group, returns its FC map. */
+    @SuppressWarnings("unchecked")
     public Map<String, Object> addDataObject(Map<String, Object> dataObjectGroup, String doName) {
         return (Map<String, Object>) dataObjectGroup.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
+    }
+
+    /** Ensures an FC entry exists under DATA_OBJECT/DO, returns its DA map. */
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> addDataObjectFc(Map<String, Object> doMap, String fc) {
+        return (Map<String, Object>) doMap.computeIfAbsent(fc, k -> new java.util.LinkedHashMap<>());
+    }
+
+    /** Sets the type for a DA under DATA_OBJECT/DO/FC. Creates the {type, value} map if absent. */
+    @SuppressWarnings("unchecked")
+    public void addDataObjectType(Map<String, Object> dataObjectGroup, String doName, String fc, String daName, String typeName) {
+        Map<String, Object> doMap = addDataObject(dataObjectGroup, doName);
+        Map<String, Object> fcMap = addDataObjectFc(doMap, fc);
+        Map<String, Object> daMap = (Map<String, Object>) fcMap.computeIfAbsent(daName, k -> {
+            Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("type", typeName);
+            m.put("value", null);
+            return m;
+        });
+        if (daMap.get("type") == null || "?".equals(daMap.get("type"))) {
+            daMap.put("type", typeName);
+        }
+    }
+
+    /** Sets the value for a DA under DATA_OBJECT/DO/FC. Creates the {type, value} map with type=? if absent. */
+    @SuppressWarnings("unchecked")
+    public void addDataObjectValue(Map<String, Object> dataObjectGroup, String doName, String fc, String daName, String value) {
+        Map<String, Object> doMap = addDataObject(dataObjectGroup, doName);
+        Map<String, Object> fcMap = addDataObjectFc(doMap, fc);
+        Map<String, Object> daMap = (Map<String, Object>) fcMap.computeIfAbsent(daName, k -> {
+            Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("type", "?");
+            m.put("value", null);
+            return m;
+        });
+        daMap.put("value", value);
+    }
+
+    /**
+     * Sets the value for a DA under DATA_OBJECT/DO, auto-resolving the FC
+     * by searching existing DO/FC/DA entries. If no FC is found, uses "".
+     */
+    @SuppressWarnings("unchecked")
+    public void addDataObjectValue(Map<String, Object> dataObjectGroup, String doName, String daName, String value) {
+        Map<String, Object> doMap = addDataObject(dataObjectGroup, doName);
+        String fc = resolveFc(doMap, daName);
+        Map<String, Object> fcMap = addDataObjectFc(doMap, fc);
+        Map<String, Object> daMap = (Map<String, Object>) fcMap.computeIfAbsent(daName, k -> {
+            Map<String, Object> m = new java.util.LinkedHashMap<>();
+            m.put("type", "?");
+            m.put("value", null);
+            return m;
+        });
+        daMap.put("value", value);
+    }
+
+    /** Searches a DO map for which FC contains the given DA name. Returns "" if not found. */
+    private static String resolveFc(Map<String, Object> doMap, String daName) {
+        for (Map.Entry<String, Object> entry : doMap.entrySet()) {
+            Object val = entry.getValue();
+            if (val instanceof Map) {
+                Map<?, ?> fcMap = (Map<?, ?>) val;
+                if (fcMap.containsKey(daName)) {
+                    return entry.getKey();
+                }
+            }
+        }
+        return "";
     }
 
     /** Ensures a DATA_SET map exists under the given LN, returns it. */
     public Map<String, Object> addDataSetGroup(String ldName, String lnName) {
         return addLogicNode(ldName, lnName).computeIfAbsent("DATA_SET", k -> new java.util.LinkedHashMap<>());
-    }
-
-    /** Stores a DA value into a DATA_OBJECT map. Handles both DO.DA and bare DO formats. */
-    public void addDataAttribute(Map<String, Object> das, String fullRef, String value) {
-        int dotIdx = fullRef.indexOf('.');
-        if (dotIdx > 0) {
-            String doName = fullRef.substring(0, dotIdx);
-            String daName = fullRef.substring(dotIdx + 1);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> doMap = (Map<String, Object>) das.computeIfAbsent(doName, k -> new java.util.LinkedHashMap<>());
-            @SuppressWarnings("unchecked")
-            Map<String, Object> existing = (Map<String, Object>) doMap.get(daName);
-            if (existing != null) {
-                existing.put("value", value);
-            } else {
-                Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-                daValue.put("type", "?");
-                daValue.put("value", value);
-                doMap.put(daName, daValue);
-            }
-        } else {
-            Map<String, Object> daValue = new java.util.LinkedHashMap<>();
-            daValue.put("type", "?");
-            daValue.put("value", value);
-            das.put(fullRef, daValue);
-        }
     }
 
     /** Gets cached LN references (LD/LN). */

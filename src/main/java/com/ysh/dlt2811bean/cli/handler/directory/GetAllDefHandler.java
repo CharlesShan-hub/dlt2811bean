@@ -13,7 +13,6 @@ import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsDataDefinitionEntr
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,24 +34,20 @@ public class GetAllDefHandler extends AbstractServiceHandler {
         target = stringVal("target");
         String fc = stringVal("fc");
         CmsGetAllDataDefinition reqAsdu = new CmsGetAllDataDefinition(MessageType.REQUEST);
-        if (target.contains("/")) {
-            reqAsdu.lnReference(target);
-        } else {
-            reqAsdu.ldName(target);
-        }
+        if (target.contains("/")) reqAsdu.lnReference(target);
+        else reqAsdu.ldName(target);
         if (!fc.isEmpty()) reqAsdu.fc(fc);
         response = client.send(reqAsdu);
         if (response.getMessageType() != MessageType.RESPONSE_POSITIVE) {
             CmsGetAllDataDefinition errAsdu = (CmsGetAllDataDefinition) response.getAsdu();
             CliPrinter.error("GetAllDataDefinition failed: " + errAsdu.serviceError);
-            return;
         }
     }
 
     public void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetAllDataDefinition asdu = (CmsGetAllDataDefinition) response.getAsdu();
         List<CmsDataDefinitionEntry> entries = asdu.data().toList();
-        CliPrinter.printList("Data definitions (" + entries.size() + " entries)", entries, entry -> {
+        CliPrinter.printList("Data Definitions (" + entries.size() + " entries)", entries, entry -> {
             String cdc = entry.cdcType().get();
             String ref = entry.reference().get();
             if (cdc == null) return ref;
@@ -64,51 +59,20 @@ public class GetAllDefHandler extends AbstractServiceHandler {
             String[] parts = target.split("/", 2);
             String ldName = parts[0];
             String lnName = parts[1];
-            Map<String, Object> das = ctx.addDataObjectGroup(ldName, lnName);
-            if (das.isEmpty()) {
-                for (CmsDataDefinitionEntry entry : entries) {
-                    String doName = entry.reference().get();
-                    CmsDataDefinition def = entry.definition();
-                    Map<String, Object> daMap = ctx.addDataObject(das, doName);
-                    if (def != null && def.getStructureEntries() != null) {
-                        for (CmsDataDefinition.StructureEntry se : def.getStructureEntries()) {
-                            Map<String, Object> daValue = new LinkedHashMap<>();
-                            daValue.put("type", choiceIndexToTypeName(se.type.getChoiceIndex()));
-                            daValue.put("value", null);
-                            daMap.put(se.name.get(), daValue);
-                        }
+            Map<String, Object> dataObjectGroup = ctx.addDataObjectGroup(ldName, lnName);
+            for (CmsDataDefinitionEntry entry : entries) {
+                String doName = entry.reference().get();
+                CmsDataDefinition def = entry.definition();
+                if (def != null && def.getStructureEntries() != null) {
+                    for (CmsDataDefinition.StructureEntry se : def.getStructureEntries()) {
+                        String fc = se.fc.get();
+                        String daName = se.name.get();
+                        String typeName = se.type != null ? se.type.typeName() : "?";
+                        ctx.addDataObjectType(dataObjectGroup, doName, fc, daName, typeName);
                     }
                 }
             }
         }
     }
 
-    private static String choiceIndexToTypeName(int choiceIndex) {
-        return switch (choiceIndex) {
-            case CmsDataDefinition.BOOLEAN -> "BOOLEAN";
-            case CmsDataDefinition.INT8 -> "INT8";
-            case CmsDataDefinition.INT16 -> "INT16";
-            case CmsDataDefinition.INT32 -> "INT32";
-            case CmsDataDefinition.INT64 -> "INT64";
-            case CmsDataDefinition.INT8U -> "INT8U";
-            case CmsDataDefinition.INT16U -> "INT16U";
-            case CmsDataDefinition.INT32U -> "INT32U";
-            case CmsDataDefinition.INT64U -> "INT64U";
-            case CmsDataDefinition.FLOAT32 -> "FLOAT32";
-            case CmsDataDefinition.FLOAT64 -> "FLOAT64";
-            case CmsDataDefinition.BIT_STRING -> "BIT STRING";
-            case CmsDataDefinition.OCTET_STRING -> "OCTET STRING";
-            case CmsDataDefinition.VISIBLE_STRING -> "VISIBLE STRING";
-            case CmsDataDefinition.UNICODE_STRING -> "UNICODE STRING";
-            case CmsDataDefinition.UTC_TIME -> "Timestamp";
-            case CmsDataDefinition.BINARY_TIME -> "BinaryTime";
-            case CmsDataDefinition.QUALITY -> "Quality";
-            case CmsDataDefinition.DBPOS -> "Dbpos";
-            case CmsDataDefinition.TCMD -> "Tcmd";
-            case CmsDataDefinition.CHECK -> "Check";
-            case CmsDataDefinition.STRUCTURE -> "Struct";
-            case CmsDataDefinition.ARRAY -> "Array";
-            default -> "Unknown(" + choiceIndex + ")";
-        };
-    }
 }

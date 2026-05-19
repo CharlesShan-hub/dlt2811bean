@@ -88,8 +88,11 @@ public class SetDataValuesHandler extends AbstractServiceHandler {
             if (ldLn.length < 2) continue;
             String ld = ldLn[0], ln = ldLn[1];
             String doDa = ref.substring(ref.indexOf('.') + 1);
+            int dotIdx = doDa.indexOf('.');
+            String doName = dotIdx > 0 ? doDa.substring(0, dotIdx) : doDa;
+            String daName = dotIdx > 0 ? doDa.substring(dotIdx + 1) : "";
             String v = i < valArr.length ? valArr[i].trim() : valArr[valArr.length - 1].trim();
-            ctx.addDataAttribute(ctx.addDataObjectGroup(ld, ln), doDa, v);
+            ctx.addDataObjectValue(ctx.addDataObjectGroup(ld, ln), doName, daName, v);
         }
     }
 }

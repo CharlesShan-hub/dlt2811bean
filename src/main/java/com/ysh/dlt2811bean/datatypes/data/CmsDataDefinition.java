@@ -278,6 +278,42 @@ public class CmsDataDefinition extends AbstractCmsDataUnit<CmsDataDefinition, In
         }
     }
 
+    /**
+     * Returns a human-readable type name for this definition.
+     * e.g. "INT32", "VISIBLE_STRING", "DBPOS", "STRUCTURE", etc.
+     */
+    public String typeName() {
+        int idx = get();
+        switch (idx) {
+            case -1:           return "UNSET";
+            case ERROR:        return "ERROR";
+            case ARRAY:        return "ARRAY";
+            case STRUCTURE:    return "STRUCTURE";
+            case BOOLEAN:      return "BOOLEAN";
+            case INT8:         return "INT8";
+            case INT16:        return "INT16";
+            case INT32:        return "INT32";
+            case INT64:        return "INT64";
+            case INT8U:        return "INT8U";
+            case INT16U:       return "INT16U";
+            case INT32U:       return "INT32U";
+            case INT64U:       return "INT64U";
+            case FLOAT32:      return "FLOAT32";
+            case FLOAT64:      return "FLOAT64";
+            case BIT_STRING:   return "BIT_STRING";
+            case OCTET_STRING: return "OCTET_STRING";
+            case VISIBLE_STRING: return "VISIBLE_STRING";
+            case UNICODE_STRING: return "UNICODE_STRING";
+            case UTC_TIME:     return "UTC_TIME";
+            case BINARY_TIME:  return "BINARY_TIME";
+            case QUALITY:      return "QUALITY";
+            case DBPOS:        return "DBPOS";
+            case TCMD:         return "TCMD";
+            case CHECK:        return "CHECK";
+            default:           return "UNKNOWN(" + idx + ")";
+        }
+    }
+
     @Override
     public String toString() {
         int idx = get();

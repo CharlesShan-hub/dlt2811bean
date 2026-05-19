@@ -90,6 +90,42 @@ public class CacheHandler implements CommandHandler {
                         } else {
                             CliPrinter.info(entry.getKey() + " = [" + CmsColor.green(type) + ", " + val + "]");
                         }
+                    } else if (isFcMap(subMap)) {
+                        CliPrinter.info(entry.getKey() + "/");
+                        for (Map.Entry<?, ?> fcEntry : subMap.entrySet()) {
+                            CliPrinter.info("  " + fcEntry.getKey() + "/");
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> daMap = (Map<String, Object>) fcEntry.getValue();
+                            for (Map.Entry<String, Object> daEntry : daMap.entrySet()) {
+                                Object daVal = daEntry.getValue();
+                                if (daVal instanceof Map && isDaValueMap((Map<?, ?>) daVal)) {
+                                    Map<?, ?> daValueMap = (Map<?, ?>) daVal;
+                                    String type = (String) daValueMap.get("type");
+                                    Object val = daValueMap.get("value");
+                                    if (val == null) {
+                                        CliPrinter.info("    " + daEntry.getKey() + " = [" + CmsColor.green(type) + ", (no value)]");
+                                    } else {
+                                        CliPrinter.info("    " + daEntry.getKey() + " = [" + CmsColor.green(type) + ", " + val + "]");
+                                    }
+                                } else {
+                                    CliPrinter.info("    " + daEntry.getKey());
+                                }
+                            }
+                        }
+                    } else if (isDataSetMemberMap(subMap)) {
+                        CliPrinter.info(entry.getKey() + "/");
+                        for (Map.Entry<?, ?> memberEntry : subMap.entrySet()) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> memberInfo = (Map<String, Object>) memberEntry.getValue();
+                            String fc = (String) memberInfo.get("FC");
+                            Object doRef = memberInfo.get("DO");
+                            if (doRef instanceof Map) {
+                                String doPath = resolveDoPath((Map<?, ?>) doRef);
+                                CliPrinter.info("  [" + memberEntry.getKey() + "] fc=" + fc + " -> " + doPath);
+                            } else {
+                                CliPrinter.info("  [" + memberEntry.getKey() + "] fc=" + fc);
+                            }
+                        }
                     } else {
                         CliPrinter.info(entry.getKey() + "/");
                     }
@@ -106,7 +142,47 @@ public class CacheHandler implements CommandHandler {
         }
     }
 
+    private static boolean isFcMap(Map<?, ?> map) {
+        if (map.isEmpty()) return false;
+        for (Object key : map.keySet()) {
+            if (!(key instanceof String) || ((String) key).length() != 2) return false;
+        }
+        for (Object val : map.values()) {
+            if (!(val instanceof Map)) return false;
+        }
+        return true;
+    }
+
     private static boolean isDaValueMap(Map<?, ?> map) {
         return map.containsKey("type") && map.containsKey("value") && map.size() == 2;
+    }
+
+    private static boolean isDataSetMemberMap(Map<?, ?> map) {
+        if (map.isEmpty()) return false;
+        for (Object val : map.values()) {
+            if (!(val instanceof Map)) return false;
+            Map<?, ?> m = (Map<?, ?>) val;
+            if (!m.containsKey("FC")) return false;
+        }
+        return true;
+    }
+
+    /** Searches cachedHierarchy for the given DO map and returns its LD/LN.DO path. */
+    private String resolveDoPath(Map<?, ?> targetDo) {
+        Map<String, Map<String, Map<String, Map<String, Object>>>> h = ctx.getCachedHierarchy();
+        for (Map.Entry<String, Map<String, Map<String, Map<String, Object>>>> ldEntry : h.entrySet()) {
+            String ldName = ldEntry.getKey();
+            for (Map.Entry<String, Map<String, Map<String, Object>>> lnEntry : ldEntry.getValue().entrySet()) {
+                String lnName = lnEntry.getKey();
+                Map<String, Object> dataObject = lnEntry.getValue().get("DATA_OBJECT");
+                if (dataObject == null) continue;
+                for (Map.Entry<String, Object> doEntry : dataObject.entrySet()) {
+                    if (doEntry.getValue() == targetDo) {
+                        return ldName + "/" + lnName + "." + doEntry.getKey();
+                    }
+                }
+            }
+        }
+        return "?";
     }
 }
