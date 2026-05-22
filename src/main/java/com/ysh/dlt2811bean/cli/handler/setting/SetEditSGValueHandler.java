@@ -19,7 +19,7 @@ public class SetEditSGValueHandler extends AbstractServiceHandler {
 
     protected List<Param> setParams() {
         return List.of(
-            new Param("ref", "数据引用", "C1/LLN0.SGCB").type(Param.Type.REFERENCE),
+            new Param("ref", "数据引用", "C1/LLN0.SG1").type(Param.Type.REFERENCE),
             new Param("value", "定值", "100")
         );
     }
@@ -40,7 +40,21 @@ public class SetEditSGValueHandler extends AbstractServiceHandler {
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ref = stringVal("ref");
         String val = stringVal("value");
-        ctx.updateSgcbAttribute(ref, "editValue", val);
+        String sgcbRef = extractSgcbRef(ref);
+        if (sgcbRef != null) {
+            ctx.updateSgcbAttribute(sgcbRef, "editValue_" + ref, val);
+        }
         CliPrinter.success("Edit SG value set successfully");
+    }
+
+    private static String extractSgcbRef(String dataRef) {
+        int slashIdx = dataRef.indexOf('/');
+        if (slashIdx < 0) return null;
+        String ldName = dataRef.substring(0, slashIdx);
+        String rest = dataRef.substring(slashIdx + 1);
+        int dotIdx = rest.indexOf('.');
+        if (dotIdx < 0) return null;
+        String lnName = rest.substring(0, dotIdx);
+        return ldName + "/" + lnName + ".SG1";
     }
 }

@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.scl.model.lnBuilder;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
 import com.ysh.dlt2811bean.datatypes.string.CmsFC;
 import com.ysh.dlt2811bean.scl.model.template.SclSDO;
@@ -47,7 +49,9 @@ public class SclLNDataCollector {
 
         // collect dynamic SG1~SGn data from session state
         if (session != null) {
-            String sgcbRef = ln.getFullName() + ".SG1";
+            CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+            if (!setting.isSgDefaultEnabled()) return result;
+            String sgcbRef = ln.getFullName() + "." + setting.getSgDefaultName();
             Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
             SclSGCBState state = sgcbStates.get(sgcbRef);
             if (state != null) {
@@ -67,6 +71,16 @@ public class SclLNDataCollector {
         return result;
     }
 
+    private static boolean matchesSgFc(String fcFilter, String daFc) {
+        if (fcFilter == null) return !"SE".equals(daFc);
+        if (fcFilter.equals(daFc)) return true;
+        if ("SG".equals(fcFilter)) {
+            CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+            return setting.isSgDefaultEnabled() && ("CF".equals(daFc) || "DC".equals(daFc) || "SE".equals(daFc));
+        }
+        return false;
+    }
+
     private static void collectDaiValues(List<SclDAI> dais, String prefix, SclDOType doType,
                                          String fcFilter, List<SclDataValue> result) {
         collectDaiValues(dais, prefix, doType, fcFilter, result, null, null, null);
@@ -79,8 +93,7 @@ public class SclLNDataCollector {
         for (SclDAI dai : dais) {
             if (dai.getVal() == null || dai.getVal().isEmpty()) continue;
             String daFc = findDaFc(doType, dai.getName());
-            if (fcFilter != null && !fcFilter.equals(daFc)) continue;
-            if (fcFilter == null && "SE".equals(daFc)) continue;
+            if (!matchesSgFc(fcFilter, daFc)) continue;
             String ref = prefix + "." + dai.getName();
             String bType = findDaBType(doType, dai.getName());
             if (bType == null && templates != null && parentDoType != null && sdiName != null) {
@@ -197,7 +210,7 @@ public class SclLNDataCollector {
                                                                    SclDOType doType, String fcFilter) {
         List<CmsDataDefinition.StructureEntry> entries = new ArrayList<>();
         for (SclDA da : doType.getDas()) {
-            if (fcFilter != null && !fcFilter.equals(da.getFc())) continue;
+            if (!matchesSgFc(fcFilter, da.getFc())) continue;
             if (!CmsFC.isValid(da.getFc())) continue;
             CmsDataDefinition daDef = resolveBType(templates, da.getBType(), da.getType(), da.getCount());
             if (daDef != null) {

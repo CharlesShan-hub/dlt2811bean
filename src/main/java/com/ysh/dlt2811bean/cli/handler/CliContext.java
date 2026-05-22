@@ -194,9 +194,11 @@ public class CliContext {
         int dotIdx = rest.indexOf('.');
         if (dotIdx < 0) return;
         String lnName = rest.substring(0, dotIdx);
+        String sgName = rest.substring(dotIdx + 1);
+        if (sgName.isEmpty()) return;
         Map<String, Object> sgcbGroup = addLogicNode(ldName, lnName)
                 .computeIfAbsent("SGCB", k -> new java.util.LinkedHashMap<>());
-        Map<String, Object> attrMap = (Map<String, Object>) sgcbGroup.computeIfAbsent("sgcb", k -> new java.util.LinkedHashMap<>());
+        Map<String, Object> attrMap = (Map<String, Object>) sgcbGroup.computeIfAbsent(sgName, k -> new java.util.LinkedHashMap<>());
         attrMap.put(attrName, value);
     }
 
@@ -298,6 +300,14 @@ public class CliContext {
                         } catch (Exception e) {
                             System.out.println(CmsColor.red("  Auto-discovery failed at ln-dir " + acsi + " " + lnRef + ": " + e.getMessage()));
                         }
+                    }
+                }
+                CommandHandler getAllCb = handlers.get("get-all-cb");
+                if (getAllCb != null) {
+                    try {
+                        getAllCb.execute(client, Map.of("target", lnRef, "type", "SGCB"));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-all-cb SGCB " + lnRef + ": " + e.getMessage()));
                     }
                 }
             }

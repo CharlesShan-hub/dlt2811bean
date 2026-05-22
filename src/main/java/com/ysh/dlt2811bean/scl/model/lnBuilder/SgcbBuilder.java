@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.scl.model.lnBuilder;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
 import com.ysh.dlt2811bean.service.svc.directory.datatypes.CmsCBValue;
 import com.ysh.dlt2811bean.scl.model.control.SclSGCBState;
@@ -16,9 +18,11 @@ public class SgcbBuilder {
      * 构建 SGCB 控制块
      */
     public static CmsCBValue buildSgcb(String sgcbRef, CmsServerSession session) {
+        CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+
         CmsCBValue result = new CmsCBValue();
         CmsSGCB sgb = result.sgb;
-        sgb.sgcbName.set("SG1");
+        sgb.sgcbName.set(setting.getSgDefaultName());
         sgb.sgcbRef.set(sgcbRef);
 
         if (session != null) {
@@ -35,7 +39,7 @@ public class SgcbBuilder {
             }
         }
 
-        sgb.numOfSG.set(4);
+        sgb.numOfSG.set(setting.getNumOfSG());
         sgb.actSG.set(1);
         sgb.editSG.set(1);
         sgb.cnfEdit.set(true);

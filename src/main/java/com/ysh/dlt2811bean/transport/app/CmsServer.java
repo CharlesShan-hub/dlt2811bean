@@ -224,6 +224,7 @@ public class CmsServer {
     private void printConnectHint() {
         if (sclDocument == null || sclDocument.getIeds().isEmpty()) return;
         CmsConfig config = CmsConfigLoader.load();
+        if (!config.getCli().isShowConnectHint()) return;
         int port = config.getServer().getPort();
         int asduSize = config.getNegotiate().getAsduSize();
         long protoVer = config.getNegotiate().getProtocolVersion();

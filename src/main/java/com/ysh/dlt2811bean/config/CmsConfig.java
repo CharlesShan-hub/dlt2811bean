@@ -185,6 +185,8 @@ public class CmsConfig {
     public static class Cli {
         private boolean tracePdu = false;
         private String autoExec = "";
+        private boolean showAutoExec = true;
+        private boolean showConnectHint = true;
         private boolean apiEnabled = true;
         private int apiPort = 7899;
 
@@ -192,6 +194,10 @@ public class CmsConfig {
         public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
         public String getAutoExec() { return autoExec; }
         public void setAutoExec(String autoExec) { this.autoExec = autoExec; }
+        public boolean isShowAutoExec() { return showAutoExec; }
+        public void setShowAutoExec(boolean showAutoExec) { this.showAutoExec = showAutoExec; }
+        public boolean isShowConnectHint() { return showConnectHint; }
+        public void setShowConnectHint(boolean showConnectHint) { this.showConnectHint = showConnectHint; }
         public boolean isApiEnabled() { return apiEnabled; }
         public void setApiEnabled(boolean apiEnabled) { this.apiEnabled = apiEnabled; }
         public int getApiPort() { return apiPort; }
@@ -200,9 +206,17 @@ public class CmsConfig {
 
     public static class Setting {
         private int numOfSG = 4;
+        private boolean sgDefaultEnabled = true;
+        private String sgDefaultName = "SG1";
 
         public int getNumOfSG() { return numOfSG; }
         public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
+
+        public boolean isSgDefaultEnabled() { return sgDefaultEnabled; }
+        public void setSgDefaultEnabled(boolean sgDefaultEnabled) { this.sgDefaultEnabled = sgDefaultEnabled; }
+
+        public String getSgDefaultName() { return sgDefaultName; }
+        public void setSgDefaultName(String sgDefaultName) { this.sgDefaultName = sgDefaultName; }
     }
 
     public void merge(CmsConfig other) {
@@ -252,9 +266,13 @@ public class CmsConfig {
             if (other.cli.apiPort != 7899)
                 cli.apiPort = other.cli.apiPort;
             cli.apiEnabled = other.cli.apiEnabled;
+            cli.showConnectHint = other.cli.showConnectHint;
+            cli.showAutoExec = other.cli.showAutoExec;
         }
         if (other.setting != null) {
             if (other.setting.numOfSG != 4) setting.numOfSG = other.setting.numOfSG;
+            setting.sgDefaultEnabled = other.setting.sgDefaultEnabled;
+            setting.sgDefaultName = other.setting.sgDefaultName;
         }
     }
 }

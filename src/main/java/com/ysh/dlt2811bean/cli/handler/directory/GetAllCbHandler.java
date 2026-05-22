@@ -3,6 +3,7 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
@@ -44,10 +45,28 @@ public class GetAllCbHandler extends AbstractServiceHandler {
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         String target = stringVal("target");
+        String type = stringVal("type");
         CmsGetAllCBValues asdu = (CmsGetAllCBValues) response.getAsdu();
         List<CmsCBValueEntry> entries = asdu.cbValue().toList();
         CliPrinter.printList("CB values (" + entries.size() + " entries)", entries,
                 item -> item.reference().get() + " = " + item.value());
+
+        if ("SGCB".equalsIgnoreCase(type)) {
+            String ldName = target.contains("/") ? target.substring(0, target.indexOf('/')) : target;
+            for (CmsCBValueEntry entry : entries) {
+                CmsSGCB sgb = entry.value().sgb;
+                String sgcbRef = ldName + "/" + entry.reference().get();
+                ctx.updateSgcbAttribute(sgcbRef, "sgcbName", sgb.sgcbName.get());
+                ctx.updateSgcbAttribute(sgcbRef, "sgcbRef", sgb.sgcbRef.get());
+                ctx.updateSgcbAttribute(sgcbRef, "numOfSG", String.valueOf(sgb.numOfSG.get()));
+                ctx.updateSgcbAttribute(sgcbRef, "actSG", String.valueOf(sgb.actSG.get()));
+                ctx.updateSgcbAttribute(sgcbRef, "editSG", String.valueOf(sgb.editSG.get()));
+                ctx.updateSgcbAttribute(sgcbRef, "cnfEdit", String.valueOf(sgb.cnfEdit.get()));
+                ctx.updateSgcbAttribute(sgcbRef, "lActTm", String.valueOf(sgb.lActTm.secondsSinceEpoch.get()));
+                ctx.updateSgcbAttribute(sgcbRef, "resvTms", String.valueOf(sgb.resvTms.get()));
+            }
+        }
+
         if (target.contains("/") && !target.toUpperCase().contains("/LLN0")) {
             CliPrinter.info("控制块只能在 LLN0 下查询");
         }

@@ -1,5 +1,7 @@
 package com.ysh.dlt2811bean.scl.util;
 
+import com.ysh.dlt2811bean.config.CmsConfig;
+import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.scl.model.data.SclDataValue;
 import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
 import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
@@ -63,7 +65,9 @@ public class SclDataValueResolver {
             try {
                 int sgNum = Integer.parseInt(sgNumStr);
                 Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
-                String sgcbRef = lnName + ".SG1";
+                CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+                if (!setting.isSgDefaultEnabled()) return null;
+                String sgcbRef = lnName + "." + setting.getSgDefaultName();
                 SclSGCBState state = sgcbStates.get(sgcbRef);
                 if (state != null && sgNum >= 1 && sgNum <= state.getNumOfSG()) {
                     if (parts.length == 3) {
