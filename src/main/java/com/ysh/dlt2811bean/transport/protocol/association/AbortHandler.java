@@ -9,7 +9,7 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 public class AbortHandler extends AbstractCmsServiceHandler<CmsAbort> {
 
     public AbortHandler() {
-        super(ServiceName.ABORT, CmsAbort::new);
+        super(ServiceName.ABORT, CmsAbort::new, false);
     }
 
     @Override

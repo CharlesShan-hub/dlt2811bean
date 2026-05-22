@@ -13,6 +13,8 @@ import com.ysh.dlt2811bean.transport.protocol.association.ReleaseHandler;
 import com.ysh.dlt2811bean.transport.protocol.test.TestHandler;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.transport.session.SessionState;
+
+import org.jline.utils.Log;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -128,6 +130,7 @@ class CmsDispatcherTest {
         CmsApdu response = dispatcher.dispatch(session, request);
 
         // Abort is one-way, no response
+        Log.error(response);
         assertNull(response);
 
         // Association ID should be cleared

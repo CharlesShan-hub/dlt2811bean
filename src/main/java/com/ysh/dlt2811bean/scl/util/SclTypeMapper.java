@@ -43,13 +43,15 @@ public class SclTypeMapper {
 
     public static CmsType<?> parseControlValue(CmsConfig config, String ref, String value) {
         try {
-            String sclPath = config.getServer().getSclFile();
-            SclReader reader = new SclReader();
-            SclQuery query = new SclQuery(reader.read(sclPath));
-            CmsType<?> result = query.resolveBType(ref)
-                .map(bType -> createTypedValue(bType, value))
-                .orElse(null);
-            if (result != null) return result;
+            String sclPath = config.getServer().getResolvedSclFile();
+            if (sclPath != null) {
+                SclReader reader = new SclReader();
+                SclQuery query = new SclQuery(reader.read(sclPath));
+                CmsType<?> result = query.resolveBType(ref)
+                    .map(bType -> createTypedValue(bType, value))
+                    .orElse(null);
+                if (result != null) return result;
+            }
         } catch (Exception e) {
             // fall through
         }
@@ -64,13 +66,15 @@ public class SclTypeMapper {
             }
         }
         try {
-            String sclPath = config.getServer().getSclFile();
-            SclReader reader = new SclReader();
-            SclQuery query = new SclQuery(reader.read(sclPath));
-            CmsType<?> result = query.resolveBType(ref)
-                .map(bType -> createTypedValue(bType, value))
-                .orElse(null);
-            if (result != null) return result;
+            String sclPath = config.getServer().getResolvedSclFile();
+            if (sclPath != null) {
+                SclReader reader = new SclReader();
+                SclQuery query = new SclQuery(reader.read(sclPath));
+                CmsType<?> result = query.resolveBType(ref)
+                    .map(bType -> createTypedValue(bType, value))
+                    .orElse(null);
+                if (result != null) return result;
+            }
         } catch (Exception e) {
             // fall through
         }

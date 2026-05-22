@@ -1,16 +1,16 @@
 package com.ysh.dlt2811bean.scl.util;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclDO;
-import com.ysh.dlt2811bean.scl.model.SclDOType;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclLNodeType;
-import com.ysh.dlt2811bean.scl.model.SclDAI;
-import com.ysh.dlt2811bean.scl.model.SclDOI;
-import com.ysh.dlt2811bean.scl.model.SclSDI;
-import com.ysh.dlt2811bean.scl.model.SclServer;
+import com.ysh.dlt2811bean.scl.model.template.SclDO;
+import com.ysh.dlt2811bean.scl.model.template.SclDOType;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.template.SclLNodeType;
+import com.ysh.dlt2811bean.scl.model.instance.SclDAI;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
+import com.ysh.dlt2811bean.scl.model.instance.SclSDI;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
 
 public class SclSetSetDataValueResolver {
 

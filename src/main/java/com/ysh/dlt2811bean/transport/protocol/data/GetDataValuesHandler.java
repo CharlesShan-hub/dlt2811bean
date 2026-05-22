@@ -4,7 +4,7 @@ import com.ysh.dlt2811bean.datatypes.collection.CmsStructure;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.type.CmsType;
 import com.ysh.dlt2811bean.scl.util.SclTypeMapper;
-import com.ysh.dlt2811bean.scl.model.SclDataValue;
+import com.ysh.dlt2811bean.scl.model.data.SclDataValue;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;

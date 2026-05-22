@@ -1,5 +1,11 @@
 package com.ysh.dlt2811bean.config;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class CmsConfig {
 
     private Server server = new Server();
@@ -42,14 +48,37 @@ public class CmsConfig {
     public static class Server {
         private int port = 8102;
         private int sslPort = 9102;
-        private String sclFile = "config/sample-scd-full.scd";
+        private List<String> sclFiles = new ArrayList<>(Collections.singletonList("config/sample-scd-full.scd"));
 
         public int getPort() { return port; }
         public void setPort(int port) { this.port = port; }
         public int getSslPort() { return sslPort; }
         public void setSslPort(int sslPort) { this.sslPort = sslPort; }
-        public String getSclFile() { return sclFile; }
-        public void setSclFile(String sclFile) { this.sclFile = sclFile; }
+        
+        public String getSclFile() {
+            return sclFiles.isEmpty() ? null : sclFiles.get(0);
+        }
+        
+        public void setSclFile(String sclFile) {
+            this.sclFiles = new ArrayList<>(Collections.singletonList(sclFile));
+        }
+        
+        public List<String> getSclFiles() {
+            return sclFiles;
+        }
+        
+        public void setSclFiles(List<String> sclFiles) {
+            this.sclFiles = sclFiles;
+        }
+        
+        public String getResolvedSclFile() {
+            for (String path : sclFiles) {
+                if (Files.exists(Paths.get(path))) {
+                    return path;
+                }
+            }
+            return sclFiles.isEmpty() ? null : sclFiles.get(0);
+        }
     }
 
     public static class Client {
@@ -181,8 +210,12 @@ public class CmsConfig {
         if (other.server != null) {
             if (other.server.port != 8102) server.port = other.server.port;
             if (other.server.sslPort != 9102) server.sslPort = other.server.sslPort;
-            if (other.server.sclFile != null && !other.server.sclFile.equals("config/sample-scd-full.scd"))
-                server.sclFile = other.server.sclFile;
+            if (other.server.getSclFiles() != null) {
+                List<String> otherFiles = other.server.getSclFiles();
+                if (otherFiles.size() > 1 || (otherFiles.size() == 1 && !"config/sample-scd-full.scd".equals(otherFiles.get(0)))) {
+                    server.setSclFiles(new ArrayList<>(otherFiles));
+                }
+            }
         }
         if (other.client != null) {
             if (!other.client.defaultIedName.equals("E1Q1SB1")) client.defaultIedName = other.client.defaultIedName;

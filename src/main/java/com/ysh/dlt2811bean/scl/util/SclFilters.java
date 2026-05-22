@@ -1,6 +1,11 @@
 package com.ysh.dlt2811bean.scl.util;
 
-import com.ysh.dlt2811bean.scl.model.*;
+import com.ysh.dlt2811bean.scl.model.ied.SclIED;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.input.SclFCDA;
+import com.ysh.dlt2811bean.scl.model.template.SclDA;
+import com.ysh.dlt2811bean.scl.model.template.SclDOType;
 
 import java.util.List;
 import java.util.function.Predicate;

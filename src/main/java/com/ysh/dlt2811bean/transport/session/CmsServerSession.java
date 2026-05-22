@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.transport.session;
 
-import com.ysh.dlt2811bean.scl.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import lombok.Getter;
 import lombok.Setter;

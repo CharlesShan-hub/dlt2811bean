@@ -1,10 +1,10 @@
 package com.ysh.dlt2811bean.scl;
 
-import com.ysh.dlt2811bean.scl.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl.model.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclIED;
-import com.ysh.dlt2811bean.scl.model.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.SclIED;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
 import com.ysh.dlt2811bean.scl.reader.SclReader;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,6 +1,26 @@
 package com.ysh.dlt2811bean.scl.reader;
 
-import com.ysh.dlt2811bean.scl.model.*;
+import com.ysh.dlt2811bean.scl.model.communication.*;
+import com.ysh.dlt2811bean.scl.model.control.SclGSEControl;
+import com.ysh.dlt2811bean.scl.model.control.SclLogControl;
+import com.ysh.dlt2811bean.scl.model.control.SclReportControl;
+import com.ysh.dlt2811bean.scl.model.control.SclSampledValueControl;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.document.SclHeader;
+import com.ysh.dlt2811bean.scl.model.document.SclHitem;
+import com.ysh.dlt2811bean.scl.model.ied.*;
+import com.ysh.dlt2811bean.scl.model.input.SclDataSet;
+import com.ysh.dlt2811bean.scl.model.input.SclExtRef;
+import com.ysh.dlt2811bean.scl.model.input.SclFCDA;
+import com.ysh.dlt2811bean.scl.model.input.SclInput;
+import com.ysh.dlt2811bean.scl.model.instance.SclDAI;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
+import com.ysh.dlt2811bean.scl.model.instance.SclSDI;
+import com.ysh.dlt2811bean.scl.model.substation.SclBay;
+import com.ysh.dlt2811bean.scl.model.substation.SclConductingEquipment;
+import com.ysh.dlt2811bean.scl.model.substation.SclSubstation;
+import com.ysh.dlt2811bean.scl.model.substation.SclVoltageLevel;
+import com.ysh.dlt2811bean.scl.model.template.*;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.xml.stream.XMLInputFactory;

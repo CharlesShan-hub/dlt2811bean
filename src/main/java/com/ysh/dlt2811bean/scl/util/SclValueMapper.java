@@ -1,8 +1,8 @@
 package com.ysh.dlt2811bean.scl.util;
 
-import com.ysh.dlt2811bean.scl.model.SclEnumType;
-import com.ysh.dlt2811bean.scl.model.SclEnumVal;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.template.SclEnumType;
+import com.ysh.dlt2811bean.scl.model.template.SclEnumVal;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
 
 import java.util.Optional;
 

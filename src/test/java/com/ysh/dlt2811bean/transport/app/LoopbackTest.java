@@ -88,7 +88,7 @@ public class LoopbackTest {
         startServer(false);
     }
 
-    private static final String SCL_FILE = CmsConfigLoader.load().getServer().getSclFile();
+    private static final String SCL_FILE = "config/sample-scd-full.scd";
 
     public void startServer(boolean enableSecurity) throws Exception {
         if (server != null) {

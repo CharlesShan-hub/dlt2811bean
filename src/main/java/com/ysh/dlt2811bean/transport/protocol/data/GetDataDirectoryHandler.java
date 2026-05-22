@@ -2,10 +2,10 @@ package com.ysh.dlt2811bean.transport.protocol.data;
 
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclDataDirectoryEntry;
-import com.ysh.dlt2811bean.scl.model.SclDOI;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
+import com.ysh.dlt2811bean.scl.model.data.SclDataDirectoryEntry;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
 import com.ysh.dlt2811bean.scl.util.SclFilters;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;

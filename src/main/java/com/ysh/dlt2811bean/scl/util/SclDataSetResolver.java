@@ -1,9 +1,9 @@
 package com.ysh.dlt2811bean.scl.util;
 
-import com.ysh.dlt2811bean.scl.model.SclFCDA;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclServer;
+import com.ysh.dlt2811bean.scl.model.input.SclFCDA;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
 
 import java.util.Objects;
 

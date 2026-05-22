@@ -1,20 +1,20 @@
 package com.ysh.dlt2811bean.scl.util;
 
-import com.ysh.dlt2811bean.scl.model.SclDataValue;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclDOI;
-import com.ysh.dlt2811bean.scl.model.SclDAI;
-import com.ysh.dlt2811bean.scl.model.SclLNodeType;
-import com.ysh.dlt2811bean.scl.model.SclDOType;
-import com.ysh.dlt2811bean.scl.model.SclDO;
-import com.ysh.dlt2811bean.scl.model.SclBDA;
-import com.ysh.dlt2811bean.scl.model.SclSDI;
-import com.ysh.dlt2811bean.scl.model.SclDA;
-import com.ysh.dlt2811bean.scl.model.SclDAType;
-import com.ysh.dlt2811bean.scl.model.SclServer;
-import com.ysh.dlt2811bean.scl.model.SclSGCBState;
+import com.ysh.dlt2811bean.scl.model.data.SclDataValue;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
+import com.ysh.dlt2811bean.scl.model.instance.SclDAI;
+import com.ysh.dlt2811bean.scl.model.template.SclLNodeType;
+import com.ysh.dlt2811bean.scl.model.template.SclDOType;
+import com.ysh.dlt2811bean.scl.model.template.SclDO;
+import com.ysh.dlt2811bean.scl.model.template.SclBDA;
+import com.ysh.dlt2811bean.scl.model.instance.SclSDI;
+import com.ysh.dlt2811bean.scl.model.template.SclDA;
+import com.ysh.dlt2811bean.scl.model.template.SclDAType;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
+import com.ysh.dlt2811bean.scl.model.control.SclSGCBState;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 
 import java.util.Map;
@@ -63,7 +63,7 @@ public class SclDataValueResolver {
             try {
                 int sgNum = Integer.parseInt(sgNumStr);
                 Map<String, SclSGCBState> sgcbStates = SclSGCBState.getOrCreateSessionState(session);
-                String sgcbRef = lnName + ".SGCB";
+                String sgcbRef = lnName + ".SG1";
                 SclSGCBState state = sgcbStates.get(sgcbRef);
                 if (state != null && sgNum >= 1 && sgNum <= state.getNumOfSG()) {
                     if (parts.length == 3) {

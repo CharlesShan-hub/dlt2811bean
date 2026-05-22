@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ysh.dlt2811bean.datatypes.data.CmsDataDefinition;
-import com.ysh.dlt2811bean.scl.model.SclDataDefinitionEntry;
-import com.ysh.dlt2811bean.scl.model.SclDataTypeTemplates;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
-import com.ysh.dlt2811bean.scl.model.SclDOType;
-import com.ysh.dlt2811bean.scl.model.SclDA;
-import com.ysh.dlt2811bean.scl.model.SclDO;
-import com.ysh.dlt2811bean.scl.model.SclLNodeType;
-import com.ysh.dlt2811bean.scl.model.SclSDO;
-import com.ysh.dlt2811bean.scl.model.SclServer;
+import com.ysh.dlt2811bean.scl.model.data.SclDataDefinitionEntry;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.template.SclDOType;
+import com.ysh.dlt2811bean.scl.model.template.SclDA;
+import com.ysh.dlt2811bean.scl.model.template.SclDO;
+import com.ysh.dlt2811bean.scl.model.template.SclLNodeType;
+import com.ysh.dlt2811bean.scl.model.template.SclSDO;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
 
 public class SclDataDefinitionResolver {
 

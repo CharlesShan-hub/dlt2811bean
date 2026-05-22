@@ -3,7 +3,7 @@ package com.ysh.dlt2811bean.transport.protocol.directory;
 import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.string.CmsSubReference;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;

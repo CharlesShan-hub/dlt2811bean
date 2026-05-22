@@ -1,9 +1,9 @@
 package com.ysh.dlt2811bean.transport.protocol.association;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclDataSet;
-import com.ysh.dlt2811bean.scl.model.SclLDevice;
-import com.ysh.dlt2811bean.scl.model.SclLN;
+import com.ysh.dlt2811bean.scl.model.input.SclDataSet;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
@@ -14,7 +14,7 @@ import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 public class ReleaseHandler extends AbstractCmsServiceHandler<CmsRelease> {
 
     public ReleaseHandler() {
-        super(ServiceName.RELEASE, CmsRelease::new);
+        super(ServiceName.RELEASE, CmsRelease::new, false);
     }
 
     @Override

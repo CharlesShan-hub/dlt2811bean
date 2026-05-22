@@ -2,8 +2,8 @@ package com.ysh.dlt2811bean.transport.app;
 
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
-import com.ysh.dlt2811bean.scl.model.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclIED;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.SclIED;
 import com.ysh.dlt2811bean.scl.reader.SclReader;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
@@ -90,7 +90,7 @@ public class CmsServer {
         this.dispatcher = new CmsDispatcher();
         this.goosePublisher = new GoosePublisher();
         this.reportEngine = null;
-        loadSclSilently(config.getServer().getSclFile());
+        loadSclSilently(config.getServer().getResolvedSclFile());
     }
 
     private void loadSclSilently(String sclPath) {

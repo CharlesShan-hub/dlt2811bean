@@ -146,6 +146,9 @@
                 <version>3.2.5</version>
                 <configuration>
                     <argLine>-XX:+EnableDynamicAgentLoading -Djdk.instrument.traceUsage=false</argLine>
+                    <systemPropertyVariables>
+                        <cms.server.sclFile>config/sample-scd-full.scd</cms.server.sclFile>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <!-- 打包源码 -->

@@ -1,6 +1,11 @@
 package com.ysh.dlt2811bean.scl.ref;
 
-import com.ysh.dlt2811bean.scl.model.*;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.*;
+import com.ysh.dlt2811bean.scl.model.template.SclDA;
+import com.ysh.dlt2811bean.scl.model.template.SclDOType;
+import com.ysh.dlt2811bean.scl.model.template.SclDataTypeTemplates;
+import com.ysh.dlt2811bean.scl.model.template.SclLNodeType;
 
 import java.util.List;
 

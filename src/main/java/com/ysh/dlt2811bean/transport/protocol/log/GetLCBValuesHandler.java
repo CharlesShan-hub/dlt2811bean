@@ -3,7 +3,7 @@
 // import com.ysh.dlt2811bean.datatypes.collection.CmsArray;
 // import com.ysh.dlt2811bean.datatypes.compound.CmsLCB;
 // import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-// import com.ysh.dlt2811bean.scl.model.SclIED;
+// import com.ysh.dlt2811bean.scl.model.ied.SclIED;
 // import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 // import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 // import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;

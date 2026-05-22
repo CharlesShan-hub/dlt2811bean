@@ -1,6 +1,18 @@
 package com.ysh.dlt2811bean.scl.query;
 
-import com.ysh.dlt2811bean.scl.model.*;
+import com.ysh.dlt2811bean.scl.model.communication.SclCommunication;
+import com.ysh.dlt2811bean.scl.model.communication.SclConnectedAP;
+import com.ysh.dlt2811bean.scl.model.control.SclGSEControl;
+import com.ysh.dlt2811bean.scl.model.control.SclReportControl;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.ied.SclIED;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.input.SclDataSet;
+import com.ysh.dlt2811bean.scl.model.instance.SclDAI;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
+import com.ysh.dlt2811bean.scl.model.template.*;
 import com.ysh.dlt2811bean.scl.ref.SclRef;
 import com.ysh.dlt2811bean.scl.ref.SclRefParser;
 import com.ysh.dlt2811bean.scl.ref.SclRefResult;

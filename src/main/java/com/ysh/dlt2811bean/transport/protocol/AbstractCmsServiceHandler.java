@@ -1,9 +1,9 @@
 package com.ysh.dlt2811bean.transport.protocol;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.scl.model.SclAccessPoint;
-import com.ysh.dlt2811bean.scl.model.SclDocument;
-import com.ysh.dlt2811bean.scl.model.SclServer;
+import com.ysh.dlt2811bean.scl.model.ied.SclAccessPoint;
+import com.ysh.dlt2811bean.scl.model.document.SclDocument;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;

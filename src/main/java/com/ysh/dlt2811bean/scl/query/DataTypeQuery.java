@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.scl.query;
 
-import com.ysh.dlt2811bean.scl.model.*;
+import com.ysh.dlt2811bean.scl.model.template.*;
 
 import java.util.List;
 import java.util.Optional;

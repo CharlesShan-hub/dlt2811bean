@@ -146,7 +146,7 @@ public class CmsServerCli {
         } else {
             path = server.getSclFilePath();
             if (path == null) {
-                path = CmsConfigLoader.load().getServer().getSclFile();
+                path = CmsConfigLoader.load().getServer().getResolvedSclFile();
             }
         }
         server.loadScl(path);
