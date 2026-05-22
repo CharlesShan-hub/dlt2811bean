@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsSetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsSetURCBValuesEntry;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
@@ -20,7 +19,7 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
     public List<Param> getParams() {
         return List.of(
             new Param("ref", "URCB 引用", "C1/LLN0.PosReport").type(Param.Type.URCB_REF),
-            new Param("rptEna", "启用报告 (true/false)", "true"),
+            new Param("rptEna", "启用报告 (true/false)", ""),
             new Param("rptID", "报告 ID (留空=不设置)", ""),
             new Param("datSet", "数据集引用 (留空=不设置)", ""),
             new Param("intgPd", "完整性周期/ms (留空=不设置)", ""),
@@ -30,10 +29,9 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
+    protected void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ref = values.get("ref");
+        if (ref == null || ref.isEmpty()) return;
         CmsSetURCBValuesEntry entry = new CmsSetURCBValuesEntry();
         entry.reference.set(ref);
         if (!values.getOrDefault("rptEna", "").isEmpty())
@@ -54,9 +52,19 @@ public class SetURCBValuesHandler extends AbstractServiceHandler {
         CmsSetURCBValues asdu = new CmsSetURCBValues(MessageType.REQUEST);
         asdu.addUrcb(entry);
 
-        CmsApdu response = client.send(asdu);
+        response = client.send(asdu);
+    }
+
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         if (response.getMessageType() == MessageType.RESPONSE_POSITIVE) {
             System.out.println(CmsColor.green("  URCB values set successfully"));
+            String ref = values.get("ref");
+            if (!values.getOrDefault("rptEna", "").isEmpty())
+                ctx.updateUrcbAttribute(ref, "rptEna", values.get("rptEna"));
+            if (!values.getOrDefault("rptID", "").isEmpty())
+                ctx.updateUrcbAttribute(ref, "rptID", values.get("rptID"));
+            if (!values.getOrDefault("datSet", "").isEmpty())
+                ctx.updateUrcbAttribute(ref, "datSet", values.get("datSet"));
         } else {
             System.out.println(CmsColor.red("  Server error: " + response.getAsdu()));
         }

@@ -149,6 +149,22 @@ public class CmsClientCli {
             }
             sb.append("\n");
             reader.printAbove(sb.toString());
+
+            // update cache
+            for (int i = 0; i < count; i++) {
+                CmsReportEntryData ed = report.entry.entryData.get(i);
+                if (ed.reference != null && ed.reference.get() != null) {
+                    String valStr = "";
+                    if (ed.value != null) {
+                        CmsType<?> inner = ed.value.getInnerValue();
+                        valStr = inner != null ? inner.toString() : "";
+                        if (valStr.startsWith("(CmsInt32) ")) {
+                            valStr = valStr.substring("(CmsInt32) ".length());
+                        }
+                    }
+                    ctx.addDataObjectValue(ed.reference.get(), valStr);
+                }
+            }
         });
 
         String autoExec = config.getCli().getAutoExec();

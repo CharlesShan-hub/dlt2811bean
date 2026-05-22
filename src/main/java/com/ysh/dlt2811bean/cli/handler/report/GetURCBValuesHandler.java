@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetURCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorUrcbChoice;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
@@ -24,15 +23,15 @@ public class GetURCBValuesHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
+    protected void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ref = values.get("ref");
+        if (ref == null || ref.isEmpty()) return;
         CmsGetURCBValues asdu = new CmsGetURCBValues(MessageType.REQUEST)
                 .addReference(ref);
+        response = sendAndVerify(client, asdu);
+    }
 
-        CmsApdu response = sendAndVerify(client, asdu);
-
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetURCBValues resp = (CmsGetURCBValues) response.getAsdu();
         List<CmsErrorUrcbChoice> choices = resp.urcb.toList();
         CliPrinter.printList("URCB values (" + choices.size() + " entries)", choices, item -> {
@@ -53,5 +52,21 @@ public class GetURCBValuesHandler extends AbstractServiceHandler {
                     + "  resv=" + urcb.resv.get();
         });
         CliPrinter.printMoreFollows(resp.moreFollows.get());
+
+        String ref = values.get("ref");
+        for (CmsErrorUrcbChoice choice : choices) {
+            if (choice.getSelectedIndex() == 1) {
+                CmsURCB urcb = choice.value;
+                ctx.updateUrcbAttribute(ref, "rptEna", String.valueOf(urcb.rptEna.get()));
+                ctx.updateUrcbAttribute(ref, "rptID", urcb.rptID.get());
+                ctx.updateUrcbAttribute(ref, "datSet", urcb.datSet.get());
+                ctx.updateUrcbAttribute(ref, "confRev", String.valueOf(urcb.confRev.get()));
+                ctx.updateUrcbAttribute(ref, "optFlds", String.valueOf(urcb.optFlds.get()));
+                ctx.updateUrcbAttribute(ref, "bufTm", String.valueOf(urcb.bufTm.get()));
+                ctx.updateUrcbAttribute(ref, "intgPd", String.valueOf(urcb.intgPd.get()));
+                ctx.updateUrcbAttribute(ref, "gi", String.valueOf(urcb.gi.get()));
+                ctx.updateUrcbAttribute(ref, "resv", String.valueOf(urcb.resv.get()));
+            }
+        }
     }
 }

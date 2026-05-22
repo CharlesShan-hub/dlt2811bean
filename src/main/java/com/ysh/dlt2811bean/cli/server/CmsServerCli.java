@@ -1,10 +1,14 @@
 package com.ysh.dlt2811bean.cli.server;
 
 import com.ysh.dlt2811bean.datatypes.numeric.CmsBoolean;
+import com.ysh.dlt2811bean.datatypes.numeric.CmsInt32;
 import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.security.GmSslContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
+import com.ysh.dlt2811bean.service.svc.report.CmsReport;
+import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsReportEntryData;
 import com.ysh.dlt2811bean.transport.app.CmsServer;
 import com.ysh.dlt2811bean.transport.session.CmsServerSession;
 import com.ysh.dlt2811bean.utils.CmsColor;
@@ -210,15 +214,21 @@ public class CmsServerCli {
                 System.out.println("  ✓ TimeActivatedOperateTermination sent: " + ref);
             }
             case "report" -> {
-                if (parts.length < 5) {
-                    System.out.println("  Usage: push report <rptID> <reference> <value>");
+                if (parts.length < 5 || (parts.length - 3) % 2 != 0) {
+                    System.out.println("  Usage: push report <rptID> <ref1> <val1> [<ref2> <val2> ...]");
                     return;
                 }
                 String rptID = parts[2];
-                String ref = parts[3];
-                int val = Integer.parseInt(parts[4]);
-                server.pushReport(session, rptID, ref, "ST", val);
-                System.out.println("  ✓ Report sent: " + rptID);
+                CmsReport report = new CmsReport(MessageType.REQUEST).rptID(rptID).sqNum(1);
+                for (int i = 3; i < parts.length; i += 2) {
+                    String ref = parts[i];
+                    int val = Integer.parseInt(parts[i + 1]);
+                    report.entry.entryData().add(new CmsReportEntryData()
+                            .reference(ref).fc("ST").id((i - 3) / 2 + 1)
+                            .value(new CmsInt32(val)));
+                }
+                server.pushReport(session, report);
+                System.out.println("  ✓ Report sent: " + rptID + " (" + ((parts.length - 3) / 2) + " entries)");
             }
             default -> System.out.println("  Unknown push type: " + type);
         }

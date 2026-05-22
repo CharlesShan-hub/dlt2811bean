@@ -43,15 +43,18 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
     }
 
     private CmsErrorBrcbChoice buildBrcbChoice(String ref) {
+        System.out.println("  [DEBUG] GetBRCBValues: ref=" + ref);
         CmsErrorBrcbChoice choice = new CmsErrorBrcbChoice();
 
         if (ref == null || ref.isEmpty()) {
+            System.out.println("  [DEBUG] GetBRCBValues: ref is null/empty");
             choice.selectError().error.set(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             return choice;
         }
 
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
+            System.out.println("  [DEBUG] GetBRCBValues: no slash in ref '" + ref + "'");
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
@@ -59,26 +62,31 @@ public class GetBRCBValuesHandler extends AbstractCmsServiceHandler<CmsGetBRCBVa
         String rest = ref.substring(slashIdx + 1);
         int dotIdx = rest.indexOf('.');
         if (dotIdx < 0) {
+            System.out.println("  [DEBUG] GetBRCBValues: no dot in '" + rest + "'");
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
         String lnName = rest.substring(0, dotIdx);
         String rcName = rest.substring(dotIdx + 1);
 
+        System.out.println("  [DEBUG] GetBRCBValues: ldName=" + ldName + ", lnName=" + lnName + ", rcName=" + rcName);
         SclLDevice device = server.findLDeviceByInst(ldName);
         if (device == null) {
+            System.out.println("  [DEBUG] GetBRCBValues: LDevice '" + ldName + "' not found (available: " + server.getLDeviceNames() + ")");
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
 
         SclLN ln = device.findLnByFullName(lnName);
         if (ln == null) {
+            System.out.println("  [DEBUG] GetBRCBValues: LN '" + lnName + "' not found in LDevice '" + ldName + "'");
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
 
         SclReportControl rc = ln.findReportControlByName(rcName);
         if (rc == null || !rc.isBuffered()) {
+            System.out.println("  [DEBUG] GetBRCBValues: report control '" + rcName + "' found=" + (rc != null) + " buffered=" + (rc != null ? rc.isBuffered() : "N/A"));
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }

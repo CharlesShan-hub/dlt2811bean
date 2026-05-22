@@ -180,6 +180,12 @@ public class ReportEngine {
             report.sqNum(rcb.nextSqNum());
         }
 
+        if (optFlds.testBit(CmsRcbOptFlds.SEGMENTATION)) {
+            int sub = rcb.isBuffered() ? (rcb.getCurrentSqNum() & 0xFFFF) : (rcb.getCurrentSqNum() & 0xFF);
+            report.subSqNum(sub);
+            report.moreSegmentsFollow(false);
+        }
+
         if (optFlds.testBit(CmsRcbOptFlds.REPORT_TIME_STAMP)) {
             Instant now = Instant.now();
             LocalDate date = now.atZone(ZoneId.of("UTC")).toLocalDate();
@@ -197,7 +203,7 @@ public class ReportEngine {
             report.confRev(rcb.getConfRev());
         }
 
-        if (optFlds.testBit(CmsRcbOptFlds.ENTRY_ID)) {
+        if (rcb.isBuffered() && optFlds.testBit(CmsRcbOptFlds.ENTRY_ID)) {
             byte[] entryIdBytes = new byte[8];
             long sqNum = rcb.getCurrentSqNum();
             for (int i = 7; i >= 0; i--) {
@@ -207,7 +213,7 @@ public class ReportEngine {
             report.entry.entryID().set(entryIdBytes);
         }
 
-        int entryId = 0;
+        int entryId = 1;
         for (SclFCDA fcda : dataSet.getFcDas()) {
             String ref = fcda.buildFcdaRef();
             if (reasonCode == CmsReasonCode.DATA_CHANGE && changedDataRef != null && !ref.equals(changedDataRef)) {
@@ -215,15 +221,16 @@ public class ReportEngine {
             }
 
             CmsReportEntryData entryData = new CmsReportEntryData();
-            entryData.id(entryId++);
 
             if (optFlds.testBit(CmsRcbOptFlds.DATA_REFERENCE)) {
-                entryData.reference(ref);
+                entryData.reference(ref).id(0);
+                if (fcda.getFc() != null && !fcda.getFc().isEmpty()) {
+                    entryData.fc(fcda.getFc());
+                }
+            } else {
+                entryData.id(entryId);
             }
-
-            if (fcda.getFc() != null && !fcda.getFc().isEmpty()) {
-                entryData.fc(fcda.getFc());
-            }
+            entryId++;
 
             SclDataValue dataValue = sclServer.resolveDataValue(ref, templates);
             if (dataValue != null && dataValue.val() != null) {

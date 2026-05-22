@@ -51,6 +51,7 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
 
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) {
+            log.info("[Server] GetURCBValues: no slash in ref '{}'", ref);
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
@@ -58,26 +59,31 @@ public class GetURCBValuesHandler extends AbstractCmsServiceHandler<CmsGetURCBVa
         String rest = ref.substring(slashIdx + 1);
         int dotIdx = rest.indexOf('.');
         if (dotIdx < 0) {
+            log.info("[Server] GetURCBValues: no dot in '{}'", rest);
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
         String lnName = rest.substring(0, dotIdx);
         String rcName = rest.substring(dotIdx + 1);
 
+        log.info("[Server] GetURCBValues: ldName={}, lnName={}, rcName={}", ldName, lnName, rcName);
         SclLDevice device = server.findLDeviceByInst(ldName);
         if (device == null) {
+            log.info("[Server] GetURCBValues: LDevice '{}' not found (available: {})", ldName, server.getLDeviceNames());
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
 
         SclLN ln = device.findLnByFullName(lnName);
         if (ln == null) {
+            log.info("[Server] GetURCBValues: LN '{}' not found in LDevice '{}'", lnName, ldName);
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }
 
         SclReportControl rc = ln.findReportControlByName(rcName);
         if (rc == null || rc.isBuffered()) {
+            log.info("[Server] GetURCBValues: report control '{}' not found or not unbuffered in LN '{}'", rcName, lnName);
             choice.selectError().error.set(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return choice;
         }

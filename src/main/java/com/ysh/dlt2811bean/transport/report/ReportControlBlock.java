@@ -98,11 +98,13 @@ public class ReportControlBlock {
     }
 
     public int nextSqNum() {
-        return sqNum.incrementAndGet() & 0xFFFF;
+        int next = sqNum.incrementAndGet();
+        return buffered ? (next & 0xFFFF) : (next & 0xFF);
     }
 
     public int getCurrentSqNum() {
-        return sqNum.get() & 0xFFFF;
+        int cur = sqNum.get();
+        return buffered ? (cur & 0xFFFF) : (cur & 0xFF);
     }
 
     public void updateConfig(CmsRcbOptFlds optFlds, CmsTriggerConditions trgOps, long bufTm, long intgPd, long confRev) {

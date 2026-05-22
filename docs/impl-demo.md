@@ -193,11 +193,11 @@ get-urcb-values MEAS/LLN0.urcbAinD;
 
 ```bash
 # 设置 rptEna=true
-set-brcb-values MEAS/LLN0.brcbWarning rptEna=true;
+set-brcb-values MEAS/LLN0.brcbWarning --rptEna true;
 # 确认已变更
 get-brcb-values MEAS/LLN0.brcbWarning;
 # 设置 rptEna=false
-set-brcb-values MEAS/LLN0.brcbWarning rptEna=false;
+set-brcb-values MEAS/LLN0.brcbWarning --rptEna false;
 # 确认
 get-brcb-values MEAS/LLN0.brcbWarning;
 ```
@@ -207,4 +207,18 @@ get-brcb-values MEAS/LLN0.brcbWarning;
 get-brcb-values MEAS/LLN0.brcbWarning;
 set-brcb-values MEAS/LLN0.brcbWarning --rptEna true --rptID myRptID --datSet myDataSet --optFlds 1023 --bufTm 2000 --trgOps 7 --intgPd 10000 --gi true --purgeBuf false;
 get-brcb-values MEAS/LLN0.brcbWarning;
+```
+
+服务器下发报告（report）
+```bash
+# 单值推送（和之前一样）
+# 推送 Mod.stVal 的值
+push report URCB1 MEAS/LLN0.Mod.stVal 1
+# 推送 Beh.stVal 的值
+push report URCB1 MEAS/LLN0.Beh.stVal 1
+# 推送 CommTstMet.dU 的值（注意这是 DC 功能约束）
+push report URCB1 MEAS/LLN0.CommTstMet.dU 1
+
+# 多值推送（新增！）
+push report URCB1 MEAS/LLN0.Mod.stVal 2 MEAS/LLN0.Beh.stVal 2 MEAS/LLN0.Loc.stVal 2
 ```

@@ -5,7 +5,6 @@ import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.svc.report.CmsGetBRCBValues;
 import com.ysh.dlt2811bean.service.svc.report.datatypes.CmsErrorBrcbChoice;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
@@ -24,15 +23,15 @@ public class GetBRCBValuesHandler extends AbstractServiceHandler {
         );
     }
 
-    public void execute(CmsClient client, Map<String, String> values) throws Exception {
-        requireConnected(client);
-
+    protected void doExecute(CmsClient client, Map<String, String> values) throws Exception {
         String ref = values.get("ref");
+        if (ref == null || ref.isEmpty()) return;
         CmsGetBRCBValues asdu = new CmsGetBRCBValues(MessageType.REQUEST)
                 .addBrcbReference(ref);
+        response = sendAndVerify(client, asdu);
+    }
 
-        CmsApdu response = sendAndVerify(client, asdu);
-
+    protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
         CmsGetBRCBValues resp = (CmsGetBRCBValues) response.getAsdu();
         List<CmsErrorBrcbChoice> choices = resp.errorBrcb.toList();
         CliPrinter.printList("BRCB values (" + choices.size() + " entries)", choices, item -> {
@@ -53,5 +52,21 @@ public class GetBRCBValuesHandler extends AbstractServiceHandler {
                     + "  purgeBuf=" + brcb.purgeBuf.get();
         });
         CliPrinter.printMoreFollows(resp.moreFollows.get());
+
+        String ref = values.get("ref");
+        for (CmsErrorBrcbChoice choice : choices) {
+            if (choice.getSelectedIndex() == 1) {
+                CmsBRCB brcb = choice.brcb;
+                ctx.updateBrcbAttribute(ref, "rptEna", String.valueOf(brcb.rptEna.get()));
+                ctx.updateBrcbAttribute(ref, "rptID", brcb.rptID.get());
+                ctx.updateBrcbAttribute(ref, "datSet", brcb.datSet.get());
+                ctx.updateBrcbAttribute(ref, "confRev", String.valueOf(brcb.confRev.get()));
+                ctx.updateBrcbAttribute(ref, "optFlds", String.valueOf(brcb.optFlds.get()));
+                ctx.updateBrcbAttribute(ref, "bufTm", String.valueOf(brcb.bufTm.get()));
+                ctx.updateBrcbAttribute(ref, "intgPd", String.valueOf(brcb.intgPd.get()));
+                ctx.updateBrcbAttribute(ref, "gi", String.valueOf(brcb.gi.get()));
+                ctx.updateBrcbAttribute(ref, "purgeBuf", String.valueOf(brcb.purgeBuf.get()));
+            }
+        }
     }
 }

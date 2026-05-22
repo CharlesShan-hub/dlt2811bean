@@ -202,6 +202,32 @@ public class CliContext {
         attrMap.put(attrName, value);
     }
 
+    /** Updates a BRCB attribute in the cache under the LN's BRCB group. */
+    @SuppressWarnings("unchecked")
+    public void updateBrcbAttribute(String ref, String attrName, String value) {
+        String[] parts = ref.split("/", 2);
+        if (parts.length < 2) return;
+        String[] lnParts = parts[1].split("\\.");
+        if (lnParts.length < 2) return;
+        Map<String, Object> brcbGroup = addLogicNode(parts[0], lnParts[0])
+                .computeIfAbsent("BRCB", k -> new java.util.LinkedHashMap<>());
+        Map<String, Object> attrMap = (Map<String, Object>) brcbGroup.computeIfAbsent(lnParts[1], k -> new java.util.LinkedHashMap<>());
+        attrMap.put(attrName, value);
+    }
+
+    /** Updates a URCB attribute in the cache under the LN's URCB group. */
+    @SuppressWarnings("unchecked")
+    public void updateUrcbAttribute(String ref, String attrName, String value) {
+        String[] parts = ref.split("/", 2);
+        if (parts.length < 2) return;
+        String[] lnParts = parts[1].split("\\.");
+        if (lnParts.length < 2) return;
+        Map<String, Object> urcbGroup = addLogicNode(parts[0], lnParts[0])
+                .computeIfAbsent("URCB", k -> new java.util.LinkedHashMap<>());
+        Map<String, Object> attrMap = (Map<String, Object>) urcbGroup.computeIfAbsent(lnParts[1], k -> new java.util.LinkedHashMap<>());
+        attrMap.put(attrName, value);
+    }
+
     /** Gets cached LN references (LD/LN). */
     public Set<String> getCachedLnRefs() {
         Set<String> result = new java.util.HashSet<>();
@@ -308,6 +334,16 @@ public class CliContext {
                         getAllCb.execute(client, Map.of("target", lnRef, "type", "SGCB"));
                     } catch (Exception e) {
                         System.out.println(CmsColor.red("  Auto-discovery failed at get-all-cb SGCB " + lnRef + ": " + e.getMessage()));
+                    }
+                    try {
+                        getAllCb.execute(client, Map.of("target", lnRef, "type", "BRCB"));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-all-cb BRCB " + lnRef + ": " + e.getMessage()));
+                    }
+                    try {
+                        getAllCb.execute(client, Map.of("target", lnRef, "type", "URCB"));
+                    } catch (Exception e) {
+                        System.out.println(CmsColor.red("  Auto-discovery failed at get-all-cb URCB " + lnRef + ": " + e.getMessage()));
                     }
                 }
             }

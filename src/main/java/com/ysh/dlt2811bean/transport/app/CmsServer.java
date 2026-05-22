@@ -4,6 +4,11 @@ import com.ysh.dlt2811bean.config.CmsConfig;
 import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.scl.model.document.SclDocument;
 import com.ysh.dlt2811bean.scl.model.ied.SclIED;
+import com.ysh.dlt2811bean.scl.model.ied.SclLDevice;
+import com.ysh.dlt2811bean.scl.model.ied.SclLN;
+import com.ysh.dlt2811bean.scl.model.ied.SclServer;
+import com.ysh.dlt2811bean.scl.model.instance.SclDAI;
+import com.ysh.dlt2811bean.scl.model.instance.SclDOI;
 import com.ysh.dlt2811bean.scl.reader.SclReader;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.security.GmAuthenticator;
@@ -380,6 +385,52 @@ public class CmsServer {
      */
     public void pushReport(CmsServerSession session, CmsReport asdu) throws Exception {
         session.send(new CmsApdu(asdu));
+        // Also update SCL model DAI values
+        for (int i = 0; i < asdu.entry.entryData.size(); i++) {
+            CmsReportEntryData ed = asdu.entry.entryData.get(i);
+            String ref = ed.reference != null ? ed.reference.get() : null;
+            if (ref == null || ref.isEmpty()) continue;
+            int slashIdx = ref.indexOf('/');
+            if (slashIdx < 0) continue;
+            String ldName = ref.substring(0, slashIdx);
+            String rest = ref.substring(slashIdx + 1);
+            String[] parts = rest.split("\\.");
+            if (parts.length < 2) continue;
+            String lnName = parts[0];
+            SclServer sclServer = null;
+            if (sclDocument != null && !sclDocument.getIeds().isEmpty()) {
+                var ied = sclDocument.getIeds().get(0);
+                if (!ied.getAccessPoints().isEmpty()) {
+                    sclServer = ied.getAccessPoints().get(0).getServer();
+                }
+            }
+            if (sclServer == null) continue;
+            SclLDevice device = sclServer.findLDeviceByInst(ldName);
+            if (device == null) continue;
+            SclLN ln = device.findLnByFullName(lnName);
+            if (ln == null) continue;
+            SclDOI doi = ln.findDoiByName(parts[1]);
+            if (doi == null) {
+                doi = new SclDOI();
+                doi.setName(parts[1]);
+                ln.addDoi(doi);
+            }
+            String daName = parts[2];
+            SclDAI dai = doi.findDaiByName(daName);
+            if (dai == null) {
+                dai = new SclDAI();
+                dai.setName(daName);
+                if (ed.fc != null && ed.fc.get() != null) {
+                    dai.setFc(ed.fc.get());
+                }
+                doi.addDai(dai);
+            }
+            String valStr = ed.value != null ? ed.value.getInnerValue().toString() : "";
+            if (valStr.startsWith("(CmsInt32) ")) {
+                valStr = valStr.substring("(CmsInt32) ".length());
+            }
+            dai.setVal(valStr);
+        }
         log.debug("[Server] Push Report: {}", asdu.rptID.get());
     }
 

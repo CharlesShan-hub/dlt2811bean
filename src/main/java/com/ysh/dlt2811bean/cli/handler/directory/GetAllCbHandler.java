@@ -3,7 +3,9 @@ package com.ysh.dlt2811bean.cli.handler.directory;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
+import com.ysh.dlt2811bean.datatypes.compound.CmsBRCB;
 import com.ysh.dlt2811bean.datatypes.compound.CmsSGCB;
+import com.ysh.dlt2811bean.datatypes.compound.CmsURCB;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.svc.directory.CmsGetAllCBValues;
@@ -64,6 +66,42 @@ public class GetAllCbHandler extends AbstractServiceHandler {
                 ctx.updateSgcbAttribute(sgcbRef, "cnfEdit", String.valueOf(sgb.cnfEdit.get()));
                 ctx.updateSgcbAttribute(sgcbRef, "lActTm", String.valueOf(sgb.lActTm.secondsSinceEpoch.get()));
                 ctx.updateSgcbAttribute(sgcbRef, "resvTms", String.valueOf(sgb.resvTms.get()));
+            }
+        } else if ("BRCB".equalsIgnoreCase(type)) {
+            String ldName = target.contains("/") ? target.substring(0, target.indexOf('/')) : target;
+            for (CmsCBValueEntry entry : entries) {
+                CmsBRCB brcb = entry.value().brcb;
+                String ref = ldName + "/" + entry.reference().get();
+                ctx.updateBrcbAttribute(ref, "brcbName", brcb.brcbName.get());
+                ctx.updateBrcbAttribute(ref, "brcbRef", brcb.brcbRef.get());
+                ctx.updateBrcbAttribute(ref, "rptID", brcb.rptID.get());
+                ctx.updateBrcbAttribute(ref, "rptEna", String.valueOf(brcb.rptEna.get()));
+                ctx.updateBrcbAttribute(ref, "datSet", brcb.datSet.get());
+                ctx.updateBrcbAttribute(ref, "confRev", String.valueOf(brcb.confRev.get()));
+                ctx.updateBrcbAttribute(ref, "optFlds", String.valueOf(brcb.optFlds.get()));
+                ctx.updateBrcbAttribute(ref, "bufTm", String.valueOf(brcb.bufTm.get()));
+                ctx.updateBrcbAttribute(ref, "sqNum", String.valueOf(brcb.sqNum.get()));
+                ctx.updateBrcbAttribute(ref, "intgPd", String.valueOf(brcb.intgPd.get()));
+                ctx.updateBrcbAttribute(ref, "gi", String.valueOf(brcb.gi.get()));
+                ctx.updateBrcbAttribute(ref, "purgeBuf", String.valueOf(brcb.purgeBuf.get()));
+            }
+        } else if ("URCB".equalsIgnoreCase(type)) {
+            String ldName = target.contains("/") ? target.substring(0, target.indexOf('/')) : target;
+            for (CmsCBValueEntry entry : entries) {
+                CmsURCB urcb = entry.value().urcb;
+                String ref = ldName + "/" + entry.reference().get();
+                ctx.updateUrcbAttribute(ref, "urcbName", urcb.urcbName.get());
+                ctx.updateUrcbAttribute(ref, "urcbRef", urcb.urcbRef.get());
+                ctx.updateUrcbAttribute(ref, "rptID", urcb.rptID.get());
+                ctx.updateUrcbAttribute(ref, "rptEna", String.valueOf(urcb.rptEna.get()));
+                ctx.updateUrcbAttribute(ref, "resv", String.valueOf(urcb.resv.get()));
+                ctx.updateUrcbAttribute(ref, "datSet", urcb.datSet.get());
+                ctx.updateUrcbAttribute(ref, "confRev", String.valueOf(urcb.confRev.get()));
+                ctx.updateUrcbAttribute(ref, "optFlds", String.valueOf(urcb.optFlds.get()));
+                ctx.updateUrcbAttribute(ref, "bufTm", String.valueOf(urcb.bufTm.get()));
+                ctx.updateUrcbAttribute(ref, "sqNum", String.valueOf(urcb.sqNum.get()));
+                ctx.updateUrcbAttribute(ref, "intgPd", String.valueOf(urcb.intgPd.get()));
+                ctx.updateUrcbAttribute(ref, "gi", String.valueOf(urcb.gi.get()));
             }
         }
 
