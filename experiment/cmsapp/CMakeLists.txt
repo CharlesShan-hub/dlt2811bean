@@ -62,3 +62,35 @@ target_link_libraries(service_roundtrip
     ${CMS_PER_DIR}/build/libcmsper.a
     ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
 )
+
+# ---- Example 4: APDU roundtrip (APCH + ASDU) ----
+
+add_executable(apdu_roundtrip examples/apdu_roundtrip.c)
+
+target_include_directories(apdu_roundtrip
+    PRIVATE
+        ${CMS_PER_DIR}/include
+        ${CMS_GEN_DIR}/generated
+        ${CMS_GEN_DIR}/include
+)
+
+target_link_libraries(apdu_roundtrip
+    ${CMS_PER_DIR}/build/libcmsper.a
+    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
+)
+
+# ---- Example 5: FFI roundtrip (byte[] in/out for all languages) ----
+
+add_executable(ffi_roundtrip examples/ffi_roundtrip.c)
+
+target_include_directories(ffi_roundtrip
+    PRIVATE
+        ${CMS_PER_DIR}/include
+        ${CMS_GEN_DIR}/generated
+        ${CMS_GEN_DIR}/include
+)
+
+target_link_libraries(ffi_roundtrip
+    ${CMS_PER_DIR}/build/libcmsper.a
+    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
+)

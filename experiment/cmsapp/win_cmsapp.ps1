@@ -97,6 +97,12 @@ $svc = ".\examples\service_roundtrip.exe"
 if (Test-Path $svc) { & $svc }
 elseif (Test-Path ".\service_roundtrip.exe") { & ".\service_roundtrip.exe" }
 
+Write-Host ""
+Write-Host "--- run apdu_roundtrip ---" -ForegroundColor Cyan
+$apdu = ".\examples\apdu_roundtrip.exe"
+if (Test-Path $apdu) { & $apdu }
+elseif (Test-Path ".\apdu_roundtrip.exe") { & ".\apdu_roundtrip.exe" }
+
 Pop-Location
 Write-Host ""
 Write-Host "=== done ===" -ForegroundColor Cyan

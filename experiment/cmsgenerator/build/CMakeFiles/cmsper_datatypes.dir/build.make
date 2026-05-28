@@ -86,39 +86,58 @@ CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.s"
 	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\generated\gen_cms.c -o CMakeFiles\cmsper_datatypes.dir\generated\gen_cms.c.s
 
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: CMakeFiles/cmsper_datatypes.dir/flags.make
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: CMakeFiles/cmsper_datatypes.dir/includes_C.rsp
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_dlt2811b_datatypes.c
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: CMakeFiles/cmsper_datatypes.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj"
-	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj -MF CMakeFiles\cmsper_datatypes.dir\generated\gen_dlt2811b_datatypes.c.obj.d -o CMakeFiles\cmsper_datatypes.dir\generated\gen_dlt2811b_datatypes.c.obj -c D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\generated\gen_dlt2811b_datatypes.c
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj: CMakeFiles/cmsper_datatypes.dir/flags.make
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj: CMakeFiles/cmsper_datatypes.dir/includes_C.rsp
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_apdu.c
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj: CMakeFiles/cmsper_datatypes.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building C object CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj -MF CMakeFiles\cmsper_datatypes.dir\src\cms_apdu.c.obj.d -o CMakeFiles\cmsper_datatypes.dir\src\cms_apdu.c.obj -c D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_apdu.c
 
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.i"
-	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\generated\gen_dlt2811b_datatypes.c > CMakeFiles\cmsper_datatypes.dir\generated\gen_dlt2811b_datatypes.c.i
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_apdu.c > CMakeFiles\cmsper_datatypes.dir\src\cms_apdu.c.i
 
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.s"
-	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\generated\gen_dlt2811b_datatypes.c -o CMakeFiles\cmsper_datatypes.dir\generated\gen_dlt2811b_datatypes.c.s
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_apdu.c -o CMakeFiles\cmsper_datatypes.dir\src\cms_apdu.c.s
+
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj: CMakeFiles/cmsper_datatypes.dir/flags.make
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj: CMakeFiles/cmsper_datatypes.dir/includes_C.rsp
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_ffi.c
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj: CMakeFiles/cmsper_datatypes.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj -MF CMakeFiles\cmsper_datatypes.dir\src\cms_ffi.c.obj.d -o CMakeFiles\cmsper_datatypes.dir\src\cms_ffi.c.obj -c D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_ffi.c
+
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_ffi.c > CMakeFiles\cmsper_datatypes.dir\src\cms_ffi.c.i
+
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\src\cms_ffi.c -o CMakeFiles\cmsper_datatypes.dir\src\cms_ffi.c.s
 
 # Object files for target cmsper_datatypes
 cmsper_datatypes_OBJECTS = \
 "CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.obj" \
-"CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj"
+"CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj" \
+"CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj"
 
 # External object files for target cmsper_datatypes
 cmsper_datatypes_EXTERNAL_OBJECTS =
 
-libcmsper_datatypes.a: CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.obj
-libcmsper_datatypes.a: CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj
-libcmsper_datatypes.a: CMakeFiles/cmsper_datatypes.dir/build.make
-libcmsper_datatypes.a: CMakeFiles/cmsper_datatypes.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Linking C static library libcmsper_datatypes.a"
-	$(CMAKE_COMMAND) -P CMakeFiles\cmsper_datatypes.dir\cmake_clean_target.cmake
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.obj
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/build.make
+bin/libcmsper_datatypes.dll: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/../cmsper/build/libcmsper.a
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/linkLibs.rsp
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/objects1.rsp
+bin/libcmsper_datatypes.dll: CMakeFiles/cmsper_datatypes.dir/link.txt
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsgenerator\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking C shared library bin\libcmsper_datatypes.dll"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\cmsper_datatypes.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
-CMakeFiles/cmsper_datatypes.dir/build: libcmsper_datatypes.a
+CMakeFiles/cmsper_datatypes.dir/build: bin/libcmsper_datatypes.dll
 .PHONY : CMakeFiles/cmsper_datatypes.dir/build
 
 CMakeFiles/cmsper_datatypes.dir/clean:

@@ -66,6 +66,8 @@ all: CMakeFiles/sgcb_roundtrip.dir/all
 all: CMakeFiles/cmsapp_test_datatypes.dir/all
 all: CMakeFiles/seq_of_roundtrip.dir/all
 all: CMakeFiles/service_roundtrip.dir/all
+all: CMakeFiles/apdu_roundtrip.dir/all
+all: CMakeFiles/ffi_roundtrip.dir/all
 .PHONY : all
 
 # The main recursive "codegen" target.
@@ -73,6 +75,8 @@ codegen: CMakeFiles/sgcb_roundtrip.dir/codegen
 codegen: CMakeFiles/cmsapp_test_datatypes.dir/codegen
 codegen: CMakeFiles/seq_of_roundtrip.dir/codegen
 codegen: CMakeFiles/service_roundtrip.dir/codegen
+codegen: CMakeFiles/apdu_roundtrip.dir/codegen
+codegen: CMakeFiles/ffi_roundtrip.dir/codegen
 .PHONY : codegen
 
 # The main recursive "preinstall" target.
@@ -84,6 +88,8 @@ clean: CMakeFiles/sgcb_roundtrip.dir/clean
 clean: CMakeFiles/cmsapp_test_datatypes.dir/clean
 clean: CMakeFiles/seq_of_roundtrip.dir/clean
 clean: CMakeFiles/service_roundtrip.dir/clean
+clean: CMakeFiles/apdu_roundtrip.dir/clean
+clean: CMakeFiles/ffi_roundtrip.dir/clean
 .PHONY : clean
 
 #=============================================================================
@@ -93,7 +99,7 @@ clean: CMakeFiles/service_roundtrip.dir/clean
 CMakeFiles/sgcb_roundtrip.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=7,8 "Built target sgcb_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=11,12 "Built target sgcb_roundtrip"
 .PHONY : CMakeFiles/sgcb_roundtrip.dir/all
 
 # Build rule for subdir invocation for target.
@@ -110,7 +116,7 @@ sgcb_roundtrip: CMakeFiles/sgcb_roundtrip.dir/rule
 # codegen rule for target.
 CMakeFiles/sgcb_roundtrip.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=7,8 "Finished codegen for target sgcb_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=11,12 "Finished codegen for target sgcb_roundtrip"
 .PHONY : CMakeFiles/sgcb_roundtrip.dir/codegen
 
 # clean rule for target.
@@ -125,7 +131,7 @@ CMakeFiles/sgcb_roundtrip.dir/clean:
 CMakeFiles/cmsapp_test_datatypes.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsapp_test_datatypes.dir\build.make CMakeFiles/cmsapp_test_datatypes.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsapp_test_datatypes.dir\build.make CMakeFiles/cmsapp_test_datatypes.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=1,2 "Built target cmsapp_test_datatypes"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=3,4 "Built target cmsapp_test_datatypes"
 .PHONY : CMakeFiles/cmsapp_test_datatypes.dir/all
 
 # Build rule for subdir invocation for target.
@@ -142,7 +148,7 @@ cmsapp_test_datatypes: CMakeFiles/cmsapp_test_datatypes.dir/rule
 # codegen rule for target.
 CMakeFiles/cmsapp_test_datatypes.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsapp_test_datatypes.dir\build.make CMakeFiles/cmsapp_test_datatypes.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=1,2 "Finished codegen for target cmsapp_test_datatypes"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=3,4 "Finished codegen for target cmsapp_test_datatypes"
 .PHONY : CMakeFiles/cmsapp_test_datatypes.dir/codegen
 
 # clean rule for target.
@@ -157,7 +163,7 @@ CMakeFiles/cmsapp_test_datatypes.dir/clean:
 CMakeFiles/seq_of_roundtrip.dir/all: CMakeFiles/cmsapp_test_datatypes.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\seq_of_roundtrip.dir\build.make CMakeFiles/seq_of_roundtrip.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\seq_of_roundtrip.dir\build.make CMakeFiles/seq_of_roundtrip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=3,4 "Built target seq_of_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=7,8 "Built target seq_of_roundtrip"
 .PHONY : CMakeFiles/seq_of_roundtrip.dir/all
 
 # Build rule for subdir invocation for target.
@@ -174,7 +180,7 @@ seq_of_roundtrip: CMakeFiles/seq_of_roundtrip.dir/rule
 # codegen rule for target.
 CMakeFiles/seq_of_roundtrip.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\seq_of_roundtrip.dir\build.make CMakeFiles/seq_of_roundtrip.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=3,4 "Finished codegen for target seq_of_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=7,8 "Finished codegen for target seq_of_roundtrip"
 .PHONY : CMakeFiles/seq_of_roundtrip.dir/codegen
 
 # clean rule for target.
@@ -189,7 +195,7 @@ CMakeFiles/seq_of_roundtrip.dir/clean:
 CMakeFiles/service_roundtrip.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=5,6 "Built target service_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=9,10 "Built target service_roundtrip"
 .PHONY : CMakeFiles/service_roundtrip.dir/all
 
 # Build rule for subdir invocation for target.
@@ -206,13 +212,77 @@ service_roundtrip: CMakeFiles/service_roundtrip.dir/rule
 # codegen rule for target.
 CMakeFiles/service_roundtrip.dir/codegen:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/codegen
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=5,6 "Finished codegen for target service_roundtrip"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=9,10 "Finished codegen for target service_roundtrip"
 .PHONY : CMakeFiles/service_roundtrip.dir/codegen
 
 # clean rule for target.
 CMakeFiles/service_roundtrip.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/clean
 .PHONY : CMakeFiles/service_roundtrip.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/apdu_roundtrip.dir
+
+# All Build rule for target.
+CMakeFiles/apdu_roundtrip.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=1,2 "Built target apdu_roundtrip"
+.PHONY : CMakeFiles/apdu_roundtrip.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/apdu_roundtrip.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/apdu_roundtrip.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles 0
+.PHONY : CMakeFiles/apdu_roundtrip.dir/rule
+
+# Convenience name for target.
+apdu_roundtrip: CMakeFiles/apdu_roundtrip.dir/rule
+.PHONY : apdu_roundtrip
+
+# codegen rule for target.
+CMakeFiles/apdu_roundtrip.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=1,2 "Finished codegen for target apdu_roundtrip"
+.PHONY : CMakeFiles/apdu_roundtrip.dir/codegen
+
+# clean rule for target.
+CMakeFiles/apdu_roundtrip.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/clean
+.PHONY : CMakeFiles/apdu_roundtrip.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/ffi_roundtrip.dir
+
+# All Build rule for target.
+CMakeFiles/ffi_roundtrip.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=5,6 "Built target ffi_roundtrip"
+.PHONY : CMakeFiles/ffi_roundtrip.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/ffi_roundtrip.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles 2
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 CMakeFiles/ffi_roundtrip.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles 0
+.PHONY : CMakeFiles/ffi_roundtrip.dir/rule
+
+# Convenience name for target.
+ffi_roundtrip: CMakeFiles/ffi_roundtrip.dir/rule
+.PHONY : ffi_roundtrip
+
+# codegen rule for target.
+CMakeFiles/ffi_roundtrip.dir/codegen:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=D:\project\work\standard\dlt2811bean\cms\experiment\cmsapp\build\CMakeFiles --progress-num=5,6 "Finished codegen for target ffi_roundtrip"
+.PHONY : CMakeFiles/ffi_roundtrip.dir/codegen
+
+# clean rule for target.
+CMakeFiles/ffi_roundtrip.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/clean
+.PHONY : CMakeFiles/ffi_roundtrip.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

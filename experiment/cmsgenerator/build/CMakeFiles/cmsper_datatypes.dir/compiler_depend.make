@@ -43,7 +43,33 @@ CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.obj: D:/project/work/standar
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_types.h \
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_cms.h
 
-CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_dlt2811b_datatypes.c \
+CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_apdu.c \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw_mac.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw_secapi.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/corecrt.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/corecrt_memory.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/crtdefs.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/sec_api/string_s.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stddef.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stdint.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/string.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/vadefs.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_header_macro.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_max_align_t.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_null.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_offsetof.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_ptrdiff_t.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_size_t.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_wchar_t.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_wint_t.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdbool.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stddef.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdint.h \
+  C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/vadefs.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/include/cms_apdu.h
+
+CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj: D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_ffi.c \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw_mac.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/_mingw_secapi.h \
@@ -83,7 +109,9 @@ CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj: D:/proje
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_stream.h \
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_string.h \
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_types.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_dlt2811b_datatypes.h
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_cms.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/include/cms_apdu.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/include/cms_ffi.h
 
 
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_choice.h:
@@ -110,6 +138,8 @@ C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.
 
 C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/corecrt_memory.h:
 
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/include/cms_apdu.h:
+
 C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/crtdefs.h:
 
 C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/limits.h:
@@ -117,6 +147,8 @@ C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.
 C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/malloc.h:
 
 C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/sec_api/string_s.h:
+
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_apdu.c:
 
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_integer.h:
 
@@ -160,8 +192,6 @@ D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_bi
 
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_boolean.h:
 
-D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_dlt2811b_datatypes.c:
-
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_stream.h:
 
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_string.h:
@@ -170,4 +200,6 @@ D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/include/cmsper/per_ty
 
 D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_cms.h:
 
-D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/generated/gen_dlt2811b_datatypes.h:
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/src/cms_ffi.c:
+
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsgenerator/include/cms_ffi.h:

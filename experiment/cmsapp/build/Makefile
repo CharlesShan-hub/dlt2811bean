@@ -167,6 +167,80 @@ service_roundtrip/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/build
 .PHONY : service_roundtrip/fast
 
+#=============================================================================
+# Target rules for targets named apdu_roundtrip
+
+# Build rule for target.
+apdu_roundtrip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 apdu_roundtrip
+.PHONY : apdu_roundtrip
+
+# fast build rule for target.
+apdu_roundtrip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/build
+.PHONY : apdu_roundtrip/fast
+
+#=============================================================================
+# Target rules for targets named ffi_roundtrip
+
+# Build rule for target.
+ffi_roundtrip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 ffi_roundtrip
+.PHONY : ffi_roundtrip
+
+# fast build rule for target.
+ffi_roundtrip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/build
+.PHONY : ffi_roundtrip/fast
+
+examples/apdu_roundtrip.obj: examples/apdu_roundtrip.c.obj
+.PHONY : examples/apdu_roundtrip.obj
+
+# target to build an object file
+examples/apdu_roundtrip.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/examples/apdu_roundtrip.c.obj
+.PHONY : examples/apdu_roundtrip.c.obj
+
+examples/apdu_roundtrip.i: examples/apdu_roundtrip.c.i
+.PHONY : examples/apdu_roundtrip.i
+
+# target to preprocess a source file
+examples/apdu_roundtrip.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/examples/apdu_roundtrip.c.i
+.PHONY : examples/apdu_roundtrip.c.i
+
+examples/apdu_roundtrip.s: examples/apdu_roundtrip.c.s
+.PHONY : examples/apdu_roundtrip.s
+
+# target to generate assembly for a file
+examples/apdu_roundtrip.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/examples/apdu_roundtrip.c.s
+.PHONY : examples/apdu_roundtrip.c.s
+
+examples/ffi_roundtrip.obj: examples/ffi_roundtrip.c.obj
+.PHONY : examples/ffi_roundtrip.obj
+
+# target to build an object file
+examples/ffi_roundtrip.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/examples/ffi_roundtrip.c.obj
+.PHONY : examples/ffi_roundtrip.c.obj
+
+examples/ffi_roundtrip.i: examples/ffi_roundtrip.c.i
+.PHONY : examples/ffi_roundtrip.i
+
+# target to preprocess a source file
+examples/ffi_roundtrip.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/examples/ffi_roundtrip.c.i
+.PHONY : examples/ffi_roundtrip.c.i
+
+examples/ffi_roundtrip.s: examples/ffi_roundtrip.c.s
+.PHONY : examples/ffi_roundtrip.s
+
+# target to generate assembly for a file
+examples/ffi_roundtrip.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/examples/ffi_roundtrip.c.s
+.PHONY : examples/ffi_roundtrip.c.s
+
 examples/seq_of_roundtrip.obj: examples/seq_of_roundtrip.c.obj
 .PHONY : examples/seq_of_roundtrip.obj
 
@@ -271,10 +345,18 @@ help:
 	@echo ... depend
 	@echo ... edit_cache
 	@echo ... rebuild_cache
+	@echo ... apdu_roundtrip
 	@echo ... cmsapp_test_datatypes
+	@echo ... ffi_roundtrip
 	@echo ... seq_of_roundtrip
 	@echo ... service_roundtrip
 	@echo ... sgcb_roundtrip
+	@echo ... examples/apdu_roundtrip.obj
+	@echo ... examples/apdu_roundtrip.i
+	@echo ... examples/apdu_roundtrip.s
+	@echo ... examples/ffi_roundtrip.obj
+	@echo ... examples/ffi_roundtrip.i
+	@echo ... examples/ffi_roundtrip.s
 	@echo ... examples/seq_of_roundtrip.obj
 	@echo ... examples/seq_of_roundtrip.i
 	@echo ... examples/seq_of_roundtrip.s

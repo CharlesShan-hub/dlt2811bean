@@ -165,30 +165,6 @@ generated/gen_cms.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/generated/gen_cms.c.s
 .PHONY : generated/gen_cms.c.s
 
-generated/gen_dlt2811b_datatypes.obj: generated/gen_dlt2811b_datatypes.c.obj
-.PHONY : generated/gen_dlt2811b_datatypes.obj
-
-# target to build an object file
-generated/gen_dlt2811b_datatypes.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.obj
-.PHONY : generated/gen_dlt2811b_datatypes.c.obj
-
-generated/gen_dlt2811b_datatypes.i: generated/gen_dlt2811b_datatypes.c.i
-.PHONY : generated/gen_dlt2811b_datatypes.i
-
-# target to preprocess a source file
-generated/gen_dlt2811b_datatypes.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.i
-.PHONY : generated/gen_dlt2811b_datatypes.c.i
-
-generated/gen_dlt2811b_datatypes.s: generated/gen_dlt2811b_datatypes.c.s
-.PHONY : generated/gen_dlt2811b_datatypes.s
-
-# target to generate assembly for a file
-generated/gen_dlt2811b_datatypes.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/generated/gen_dlt2811b_datatypes.c.s
-.PHONY : generated/gen_dlt2811b_datatypes.c.s
-
 src/asn1_lexer.obj: src/asn1_lexer.c.obj
 .PHONY : src/asn1_lexer.obj
 
@@ -261,6 +237,54 @@ src/c_gen.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsgen.dir\build.make CMakeFiles/cmsgen.dir/src/c_gen.c.s
 .PHONY : src/c_gen.c.s
 
+src/cms_apdu.obj: src/cms_apdu.c.obj
+.PHONY : src/cms_apdu.obj
+
+# target to build an object file
+src/cms_apdu.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj
+.PHONY : src/cms_apdu.c.obj
+
+src/cms_apdu.i: src/cms_apdu.c.i
+.PHONY : src/cms_apdu.i
+
+# target to preprocess a source file
+src/cms_apdu.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.i
+.PHONY : src/cms_apdu.c.i
+
+src/cms_apdu.s: src/cms_apdu.c.s
+.PHONY : src/cms_apdu.s
+
+# target to generate assembly for a file
+src/cms_apdu.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.s
+.PHONY : src/cms_apdu.c.s
+
+src/cms_ffi.obj: src/cms_ffi.c.obj
+.PHONY : src/cms_ffi.obj
+
+# target to build an object file
+src/cms_ffi.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj
+.PHONY : src/cms_ffi.c.obj
+
+src/cms_ffi.i: src/cms_ffi.c.i
+.PHONY : src/cms_ffi.i
+
+# target to preprocess a source file
+src/cms_ffi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.i
+.PHONY : src/cms_ffi.c.i
+
+src/cms_ffi.s: src/cms_ffi.c.s
+.PHONY : src/cms_ffi.s
+
+# target to generate assembly for a file
+src/cms_ffi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.s
+.PHONY : src/cms_ffi.c.s
+
 src/main.obj: src/main.c.obj
 .PHONY : src/main.obj
 
@@ -298,9 +322,6 @@ help:
 	@echo ... generated/gen_cms.obj
 	@echo ... generated/gen_cms.i
 	@echo ... generated/gen_cms.s
-	@echo ... generated/gen_dlt2811b_datatypes.obj
-	@echo ... generated/gen_dlt2811b_datatypes.i
-	@echo ... generated/gen_dlt2811b_datatypes.s
 	@echo ... src/asn1_lexer.obj
 	@echo ... src/asn1_lexer.i
 	@echo ... src/asn1_lexer.s
@@ -310,6 +331,12 @@ help:
 	@echo ... src/c_gen.obj
 	@echo ... src/c_gen.i
 	@echo ... src/c_gen.s
+	@echo ... src/cms_apdu.obj
+	@echo ... src/cms_apdu.i
+	@echo ... src/cms_apdu.s
+	@echo ... src/cms_ffi.obj
+	@echo ... src/cms_ffi.i
+	@echo ... src/cms_ffi.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s
