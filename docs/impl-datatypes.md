@@ -4,6 +4,60 @@
 
 `datatypes` 模块实现了 DL/T 2811 协议第七章定义的所有数据类型，包括数值、字符串、枚举、位域编码、压缩列表、复合类型、集合类型以及 Data/DataDefinition 等 24 种 CHOICE 分支。模块采用分层接口设计，以 `CmsType` 为根接口，向下派生出 `CmsScalar`（标量）、`CmsCompound`（复合）等子接口，并通过 `AbstractCmsType` → `AbstractCmsScalar` → 具体抽象类的继承链，为每种类型族提供统一的 encode/decode 能力。所有类型均基于 PER 编码规则，可直接与协议二进制流互转。
 
+下边是所有的实现的内容
+| 章节            | 类型      | 类名                  | 标记  | en/de | test |
+| :-------------: | :------: | :------------------- | :---: | :---: | :--: |
+| 7.1.1 基础类型   | 布尔     | CMSBoolean           | base  |   ✅   |  ✅   |
+| 7.1.2 基础类型   | 整数     | CmsInt8              | base  |   ✅   |  ✅   |
+| 7.1.2 基础类型   | 整数     | CmsInt16             | base  |   ✅   |  ✅   |
+| 7.1.2 基础类型   | 整数     | CmsInt32             | base  |   ✅   |  ✅   |
+| 7.1.2 基础类型   | 整数     | CmsInt64             | base  |   ✅   |  ✅   |
+| 7.1.3 基础类型   | 整数     | CmsInt8U             | base  |   ✅   |  ✅   |
+| 7.1.3 基础类型   | 整数     | CmsInt16U            | base  |   ✅   |  ✅   |
+| 7.1.3 基础类型   | 整数     | CmsInt32U            | base  |   ✅   |  ✅   |
+| 7.1.3 基础类型   | 整数     | CmsInt64U            | base  |   ✅   |  ✅   |
+| 7.1.4 基础类型   | 浮点数   | CmsFloat32           | base  |   ✅   |  ✅   |
+| 7.1.4 基础类型   | 浮点数   | CmsFloat64           | base  |   ✅   |  ✅   |
+| 7.1.5 基础类型   | 字符串   | CmsOctetString       | base  |   ✅   |  ✅   |
+| 7.1.5 基础类型   | 字符串   | CmsVisibleString     | base  |   ✅   |  ✅   |
+| 7.1.5 基础类型   | 字符串   | CmsUtf8String        | base  |   ✅   |  ✅   |
+| 7.1.5 基础类型   | 字符串   | CmsBitString         | base  |   ✅   |  ✅   |
+| 7.1.6 基础类型   | 枚举     | CmsEnumerated        | base  |   ✅   |  ✅   |
+| 7.1.7 基础类型   | 编码枚举 | CmsCodedEnum         | base  |   ✅   |  ✅   |
+| 7.1.8 基础类型   | 压缩列表 | CmsPackedList        | base  |   ✅   |  ✅   |
+| 7.2.1 扩展类型   | 协调世界时 | CmsUtcTime         | bean  |   ✅   |  ✅   |
+| 7.2.1 扩展类型   | 时间质量 | CmsTimeQuality       | code  |   ✅   |  ✅   |
+| 7.2.2 扩展类型   | 二进制时间 | CmsBinaryTime      | bean  |   ✅   |  ✅   |
+| 7.3.1 公共ACSI   | 对象名   | CmsObjectName        | bean  |   ✅   |  ✅   |
+| 7.3.2 公共ACSI   | 对象引用 | CmsObjectReference   | bean  |   ✅   |  ✅   |
+| 7.3.3 公共ACSI   | 子引用   | CmsSubReference      | bean  |   ✅   |  ✅   |
+| 7.3.4 公共ACSI   | 二进制时间 | CmsTimeStamp       | copy  |   -   |  -   |
+| 7.3.5 公共ACSI   | 双点位置 | CmsDbpos             | enum  |   ✅   |  ✅   |
+| 7.3.6 公共ACSI   | 品质     | CmsQuality           | code  |   ✅   |  ✅   |
+| 7.3.7 公共ACSI   | 挡位命令 | CmsTcmd              | enum  |   ✅   |  ✅   |
+| 7.3.8 公共ACSI   | 条目标识 | CmsEntryID           | bean  |   ✅   |  ✅   |
+| 7.3.9 公共ACSI   | 条目时间 | CmsEntryTime         | copy  |   -   |  -   |
+| 7.3.10 公共ACSI  | 文件条目 | CmsFileEntry        | bean  |   ✅   |  ✅   |
+| 7.3.11 公共ACSI  | 服务错误 | CmsServiceError     | enum  |   ✅   |  ✅   |
+| 7.3.12 公共ACSI  | 物理通信地址 | CmsPhyComAddr     | bean  |   ✅   |  ✅   |
+| 7.4 功能约束     | 功能约束 | CmsFC                | bean  |   ✅   |  ✅   |
+| 7.5.1 控制对象属性| 控制对象属性 | -               |   -   |   -   |  -   |
+| 7.5.2 控制操作   | 发出者   | CmsOriginator         | bean  |   ✅   |  ✅   |
+| 7.5.2 控制操作   | 发出者-内部字段 | CmsOrCat         | enum  |   ✅   |  ✅   |
+| 7.5.3 控制操作   | 检测     | CmsCheck              | code  |   ✅   |  ✅   |
+| 7.5.4 控制操作   | 附加原因 | CmsAddCause           | enum  |   ✅   |  ✅   |
+| 7.6.1 控制块属性 | 控制块属性 | -                   |   -   |   -   |  -   |
+| 7.6.2 控制块     | 触发条件 | CmsTriggerConditions  | code  |   ✅   |  ✅   |
+| 7.6.3 控制块     | 触发原因 | CmsReasonCode         | code  |   ✅   |  ✅   |
+| 7.6.4 控制块     | 缓存报告控制块选项域 | CmsRcbOptFlds | code  |   ✅   |  ✅   |
+| 7.6.5 控制块     | 日志控制块选项域 | CmsLcbOptFlds       | code  |   ✅   |  ✅   |
+| 7.6.6 控制块     | 多播采样值控制块选项域 | CmsMsvcbOptFlds | code  |   ✅   |  ✅   |
+| 7.6.7 控制块     | 采样模式 | CmsSmpMod             | enum  |   ✅   |  ✅   |
+| 7.7.1 数据       | 数据     | CmsData               | choice|   ✅   |  ✅   |
+| 7.7.1 数据       | 内容相同的列表 | CmsArray        | array |   ✅   |  ✅   |
+| 7.7.1 数据       | 内容可不同的列表 | CmsStructure  | array |   ✅   |  ✅   |
+
+
 ## 类型系统基础
 
 包名：`com.ysh.dlt2811bean.datatypes.type`

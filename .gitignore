@@ -67,3 +67,4 @@ replay_pid*
 *.swp
 *~
 *.bak
+.svn
