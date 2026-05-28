@@ -2,18 +2,16 @@ package com.ysh.dlt2811bean.cli.handler.command;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractSystemHandler;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class StatusHandler implements CommandHandler {
+public class StatusHandler extends AbstractSystemHandler {
 
-    private final CliContext ctx;
-
-    public StatusHandler(CliContext ctx) { this.ctx = ctx; }
+    public StatusHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "status"; }
     public String getDescription() { return "查看当前连接和关联状态"; }

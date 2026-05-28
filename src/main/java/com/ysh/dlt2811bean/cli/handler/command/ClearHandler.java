@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.cli.handler.command;
 
-import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractSystemHandler;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
@@ -8,11 +8,9 @@ import com.ysh.dlt2811bean.transport.app.CmsClient;
 import java.util.List;
 import java.util.Map;
 
-public class ClearHandler implements CommandHandler {
+public class ClearHandler extends AbstractSystemHandler {
 
-    private final CliContext ctx;
-
-    public ClearHandler(CliContext ctx) { this.ctx = ctx; }
+    public ClearHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "clear"; }
     public String getDescription() { return "清空控制台"; }

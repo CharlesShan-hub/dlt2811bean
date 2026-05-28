@@ -6,19 +6,16 @@ import com.ysh.dlt2811bean.service.info.CdcInfo;
 import com.ysh.dlt2811bean.service.info.FcInfo;
 import com.ysh.dlt2811bean.service.info.DataTypeInfo;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractSystemHandler;
 import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.*;
 
-public class HelpHandler implements CommandHandler {
+public class HelpHandler extends AbstractSystemHandler {
 
-    private final CliContext ctx;
-
-    public HelpHandler(CliContext ctx) {
-        this.ctx = ctx;
-    }
+    public HelpHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "help"; }
     public String getDescription() { return "显示帮助信息"; }

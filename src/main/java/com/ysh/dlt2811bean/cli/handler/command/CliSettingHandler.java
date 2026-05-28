@@ -2,18 +2,16 @@ package com.ysh.dlt2811bean.cli.handler.command;
 
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.utils.CmsColor;
-import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractSystemHandler;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class CliSettingHandler implements CommandHandler {
+public class CliSettingHandler extends AbstractSystemHandler {
 
-    private final CliContext ctx;
-
-    public CliSettingHandler(CliContext ctx) { this.ctx = ctx; }
+    public CliSettingHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "cli-setting"; }
     public String getDescription() { return "查看/修改 CLI 运行时配置"; }

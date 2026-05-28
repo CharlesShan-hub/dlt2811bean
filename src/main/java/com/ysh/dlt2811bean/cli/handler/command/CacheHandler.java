@@ -4,18 +4,16 @@ import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.cli.util.CliPrinter;
 import com.ysh.dlt2811bean.utils.CmsColor;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
-import com.ysh.dlt2811bean.cli.handler.common.CommandHandler;
+import com.ysh.dlt2811bean.cli.handler.common.AbstractSystemHandler;
 import com.ysh.dlt2811bean.datatypes.data.CmsData;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
 import java.util.List;
 import java.util.Map;
 
-public class CacheHandler implements CommandHandler {
+public class CacheHandler extends AbstractSystemHandler {
 
-    private final CliContext ctx;
-
-    public CacheHandler(CliContext ctx) { this.ctx = ctx; }
+    public CacheHandler(CliContext ctx) { super(ctx); }
 
     public String getName() { return "cache"; }
     public String getDescription() { return "查看缓存结构 (cache / cache.LD / cache.LD.LN / cache.LD.LN.ACSI)"; }
