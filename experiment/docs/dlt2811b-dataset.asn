@@ -1,0 +1,120 @@
+--
+-- DL/T 2811 DataSet Services — CreateDataSet / DeleteDataSet / GetDataSetDirectory / GetDataSetValues / SetDataSetValues
+--
+
+DLT2811-DataSet { 1 2 156 2811 7 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    Data, ObjectReference, ServiceError
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.6.1 CreateDataSet (Service Code 0x41)
+-- ======================================================================
+
+-- Mapped to: CmsCreateDataSet (Java)
+
+CreateDataSet-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference
+}
+
+CreateDataSet-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetName                 VisibleString (SIZE(0..129)),
+    dataEntries                 SEQUENCE OF CreateDataSet-Entry
+}
+
+CreateDataSet-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+CreateDataSet-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.6.2 DeleteDataSet (Service Code 0x42)
+-- ======================================================================
+
+-- Mapped to: CmsDeleteDataSet (Java)
+
+DeleteDataSet-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetRef                  ObjectReference
+}
+
+DeleteDataSet-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+DeleteDataSet-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.6.3 GetDataSetDirectory (Service Code 0x43)
+-- ======================================================================
+
+-- Mapped to: CmsGetDataSetDirectory (Java)
+
+GetDataSetDirectory-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetRef                  ObjectReference
+}
+
+GetDataSetDirectory-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetEntries              SEQUENCE OF VisibleString (SIZE(0..129))
+}
+
+GetDataSetDirectory-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.6.4 GetDataSetValues (Service Code 0x44)
+-- ======================================================================
+
+-- Mapped to: CmsGetDataSetValues (Java)
+
+GetDataSetValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetRef                  ObjectReference
+}
+
+GetDataSetValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    values                      SEQUENCE OF Data
+}
+
+GetDataSetValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.6.5 SetDataSetValues (Service Code 0x45)
+-- ======================================================================
+
+-- Mapped to: CmsSetDataSetValues (Java)
+
+SetDataSetValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataSetRef                  ObjectReference,
+    values                      SEQUENCE OF Data
+}
+
+SetDataSetValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetDataSetValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+END

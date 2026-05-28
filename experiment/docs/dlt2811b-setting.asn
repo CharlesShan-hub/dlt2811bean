@@ -1,0 +1,297 @@
+--
+-- DL/T 2811 Setting Group Services — SGCB / LCB / EditSG / Log
+--
+
+DLT2811-Setting { 1 2 156 2811 9 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    BOOLEAN, ObjectReference, EntryID, EntryTime,
+    Quality, TriggerConditions, ServiceError, Data,
+    UtcTime, LcbOptFlds
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.8.1 GetSGCBValues (Service Code 0x61)
+-- ======================================================================
+
+-- Mapped to: CmsGetSGCBValues (Java)
+
+GetSGCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    sgcbRef                     ObjectReference
+}
+
+GetSGCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    sgcbName                    ObjectReference,
+    numOfSG                     Int8U,
+    actSG                       Int8U,
+    editSG                      Int8U,
+    cnfEdit                     BOOLEAN,
+    lActTm                      UtcTime
+}
+
+GetSGCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.2 SelectActiveSG (Service Code 0x62)
+-- ======================================================================
+
+-- Mapped to: CmsSelectActiveSG (Java)
+
+SelectActiveSG-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    sgcbRef                     ObjectReference,
+    actSG                       Int8U
+}
+
+SelectActiveSG-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    actSG                       Int8U,
+    lActTm                      UtcTime
+}
+
+SelectActiveSG-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.3 SelectEditSG (Service Code 0x63)
+-- ======================================================================
+
+-- Mapped to: CmsSelectEditSG (Java)
+
+SelectEditSG-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    sgcbRef                     ObjectReference,
+    editSG                      Int8U
+}
+
+SelectEditSG-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    editSG                      Int8U,
+    lActTm                      UtcTime
+}
+
+SelectEditSG-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.4 ConfirmEditSGValues (Service Code 0x64)
+-- ======================================================================
+
+-- Mapped to: CmsConfirmEditSGValues (Java)
+
+ConfirmEditSGValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    sgcbRef                     ObjectReference
+}
+
+ConfirmEditSGValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    lActTm                      UtcTime
+}
+
+ConfirmEditSGValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.5 GetEditSGValue (Service Code 0x65)
+-- ======================================================================
+
+-- Mapped to: CmsGetEditSGValue (Java)
+
+GetEditSGValue-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataRef                     ObjectReference
+}
+
+GetEditSGValue-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    dataValue                   Data
+}
+
+GetEditSGValue-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.6 SetEditSGValue (Service Code 0x66)
+-- ======================================================================
+
+-- Mapped to: CmsSetEditSGValue (Java)
+
+SetEditSGValue-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    dataValue                   Data
+}
+
+SetEditSGValue-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    values                      SEQUENCE OF SetEditSGValue-Entry
+}
+
+SetEditSGValue-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetEditSGValue-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.7 GetLCBValues (Service Code 0x67)
+-- ======================================================================
+
+-- Mapped to: CmsGetLCBValues (Java)
+
+GetLCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    lcbRef                      ObjectReference
+}
+
+GetLCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    lcbName                     ObjectReference,
+    rptID                       VisibleString (SIZE(0..129)),
+    logEna                      BOOLEAN,
+    datSet                      ObjectReference,
+    confRev                     Int32U,
+    optFlds                     LcbOptFlds,
+    bufTm                       Int32U,
+    trgOps                      TriggerConditions,
+    intgPd                      Int32U,
+    logRef                      ObjectReference
+}
+
+GetLCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.8 SetLCBValues (Service Code 0x68)
+-- ======================================================================
+
+-- Mapped to: CmsSetLCBValues (Java)
+
+SetLCBValues-Entry ::= SEQUENCE {
+    reference                   ObjectReference,
+    logEna                      BOOLEAN OPTIONAL,
+    rptID                       VisibleString (SIZE(0..129)) OPTIONAL,
+    datSet                      ObjectReference OPTIONAL,
+    confRev                     Int32U OPTIONAL,
+    optFlds                     LcbOptFlds OPTIONAL,
+    bufTm                       Int32U OPTIONAL,
+    trgOps                      TriggerConditions OPTIONAL,
+    intgPd                      Int32U OPTIONAL,
+    logRef                      ObjectReference OPTIONAL
+}
+
+SetLCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    lcbValues                   SEQUENCE OF SetLCBValues-Entry
+}
+
+SetLCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetLCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.9 GetLogStatusValues (Service Code 0x69)
+-- ======================================================================
+
+-- Mapped to: CmsGetLogStatusValues (Java)
+
+LogStatusValue ::= SEQUENCE {
+    ldName                      VisibleString (SIZE(0..64)),
+    oldEntr                     EntryID,
+    newEntr                     EntryID,
+    oldTm                       EntryTime,
+    newTm                       EntryTime
+}
+
+GetLogStatusValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    logRef                      ObjectReference
+}
+
+GetLogStatusValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    logs                        SEQUENCE OF LogStatusValue
+}
+
+GetLogStatusValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.10 QueryLogAfter (Service Code 0x6A)
+-- ======================================================================
+
+-- Mapped to: CmsQueryLogAfter (Java)
+
+LogEntry ::= SEQUENCE {
+    entryID                     EntryID,
+    entryTime                   EntryTime,
+    entryData                   Data
+}
+
+QueryLogAfter-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    logRef                      ObjectReference,
+    entryID                     EntryID,
+    timeOfEntry                 EntryTime
+}
+
+QueryLogAfter-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    entry                       SEQUENCE OF LogEntry
+}
+
+QueryLogAfter-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.8.11 QueryLogByTime (Service Code 0x6B)
+-- ======================================================================
+
+-- Mapped to: CmsQueryLogByTime (Java)
+
+QueryLogByTime-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    logRef                      ObjectReference,
+    startTime                   EntryTime,
+    stopTime                    EntryTime
+}
+
+QueryLogByTime-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    entry                       SEQUENCE OF LogEntry
+}
+
+QueryLogByTime-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+END

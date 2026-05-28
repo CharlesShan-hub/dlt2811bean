@@ -1,0 +1,122 @@
+--
+-- DL/T 2811 Association Services — Associate / Release / Abort
+--
+
+DLT2811-Association { 1 2 156 2811 3 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    UtcTime, ServiceError, ObjectReference
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.2.1 Associate (Service Code 0x01)
+-- ======================================================================
+
+-- Mapped to: CmsAssociate (Java)
+-- Request: serverAccessPointReference + authenticationParameter
+-- Response+: associationId + serviceError + authenticationParameter
+-- Response-: serviceError
+
+AuthenticationParameter ::= SEQUENCE {
+    signatureCertificate    OCTET STRING (SIZE(0..65535)),
+    signedTime              UtcTime,
+    signedValue             OCTET STRING (SIZE(0..65535))
+}
+
+ServerAccessPointReference ::= VisibleString (SIZE(0..129))
+
+Associate-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    serverAccessPointReference  ServerAccessPointReference,
+    authenticationParameter     AuthenticationParameter OPTIONAL
+}
+
+Associate-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    associationId               OCTET STRING (SIZE(64)),
+    serviceError                ServiceError,
+    authenticationParameter     AuthenticationParameter OPTIONAL
+}
+
+Associate-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.2.2 Release (Service Code 0x02)
+-- ======================================================================
+
+-- Mapped to: CmsRelease (Java)
+-- Request: no additional fields beyond reqId
+-- Response+: releaseResponse
+-- Response-: serviceError
+
+Release-Request ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+Release-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    releaseResponse             BOOLEAN
+}
+
+Release-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.2.3 Abort (Service Code 0x03)
+-- ======================================================================
+
+-- Mapped to: CmsAbort (Java)
+-- No request/response — unidirectional
+
+Abort ::= SEQUENCE {
+    reqId                       Int16U,
+    abortReason                 AbortReason
+}
+
+AbortReason ::= ENUMERATED {
+    noReason                    (0),
+    unrecognizedAPDU            (1),
+    unexpectedAPDU              (2),
+    unexpectedSession           (3),
+    protocolError               (4),
+    authenticationError         (5),
+    userRequest                 (6),
+    resourceLimit               (7),
+    internalError               (8)
+}
+
+-- ======================================================================
+-- 8.2.4 AssociateNegotiate (Service Code 0x04)
+-- ======================================================================
+
+-- Mapped to: CmsAssociateNegotiate (Java)
+
+NegotiationParameter ::= SEQUENCE {
+    maxReqIdSize                Int16U,
+    maxSegmentSize              Int32U,
+    supportedServices           OCTET STRING (SIZE(0..65535)),
+    protocolVersion             VisibleString (SIZE(0..32))
+}
+
+AssociateNegotiate-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    negotiationParameters       NegotiationParameter
+}
+
+AssociateNegotiate-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    negotiationParameters       NegotiationParameter
+}
+
+AssociateNegotiate-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+END

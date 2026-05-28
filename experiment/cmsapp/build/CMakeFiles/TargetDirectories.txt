@@ -1,0 +1,6 @@
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/sgcb_roundtrip.dir
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/cmsapp_test_datatypes.dir
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/seq_of_roundtrip.dir
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/service_roundtrip.dir
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/edit_cache.dir
+D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/build/CMakeFiles/rebuild_cache.dir

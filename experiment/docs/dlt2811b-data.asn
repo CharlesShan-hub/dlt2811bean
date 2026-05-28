@@ -1,0 +1,118 @@
+--
+-- DL/T 2811 Data Services — GetDataSetValues / SetDataSetValues / GetDataDefinition / GetDataDirectory
+--
+
+DLT2811-DataServices { 1 2 156 2811 4 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    Data, DataDefinition, FC, ServiceError
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.3.1 GetDataSetValues (Service Code 0x11)
+-- ======================================================================
+
+-- Mapped to: CmsGetDataValues (Java)
+-- Request: ObjectReference
+-- Response+: Data[]
+-- Response-: ServiceError
+
+GetDataValues-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    data                        Data
+}
+
+GetDataValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataRefs                    SEQUENCE OF ObjectReference
+}
+
+GetDataValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    values                      SEQUENCE OF GetDataValues-Entry
+}
+
+GetDataValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.3.2 SetDataSetValues (Service Code 0x12)
+-- ======================================================================
+
+-- Mapped to: CmsSetDataValues (Java)
+
+SetDataValues-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    data                        Data
+}
+
+SetDataValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    values                      SEQUENCE OF SetDataValues-Entry
+}
+
+SetDataValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetDataValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.3.3 GetDataDefinition (Service Code 0x13)
+-- ======================================================================
+
+-- Mapped to: CmsGetDataDefinition (Java)
+
+GetDataDefinition-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    dataDefinition              DataDefinition
+}
+
+GetDataDefinition-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataRef                     ObjectReference
+}
+
+GetDataDefinition-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    definition                  GetDataDefinition-Entry
+}
+
+GetDataDefinition-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.3.4 GetDataDirectory (Service Code 0x14)
+-- ======================================================================
+
+-- Mapped to: CmsGetDataDirectory (Java)
+
+GetDataDirectory-Entry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    fc                          FC
+}
+
+GetDataDirectory-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    dataRef                     ObjectReference
+}
+
+GetDataDirectory-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    entries                     SEQUENCE OF GetDataDirectory-Entry
+}
+
+GetDataDirectory-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+END

@@ -1,0 +1,204 @@
+--
+-- DL/T 2811 Directory Services — LogicalDevice / LogicalNode / Server / AllData / AllCBValues
+--
+
+DLT2811-Directory { 1 2 156 2811 8 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    ObjectReference, FC, ServiceError, Data
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.7.1 GetServerDirectory (Service Code 0x51)
+-- ======================================================================
+
+-- Mapped to: CmsGetServerDirectory (Java)
+
+GetServerDirectory-Request ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+GetServerDirectory-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    logicalDevices              SEQUENCE OF VisibleString (SIZE(0..64))
+}
+
+GetServerDirectory-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.2 GetLogicalDeviceDirectory (Service Code 0x52)
+-- ======================================================================
+
+-- Mapped to: CmsGetLogicalDeviceDirectory (Java)
+
+GetLogicalDeviceDirectory-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    ldName                      VisibleString (SIZE(0..64))
+}
+
+GetLogicalDeviceDirectory-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    logicalNodes                SEQUENCE OF VisibleString (SIZE(0..64))
+}
+
+GetLogicalDeviceDirectory-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.3 GetLogicalNodeDirectory (Service Code 0x53)
+-- ======================================================================
+
+-- Mapped to: CmsGetLogicalNodeDirectory (Java)
+
+ObjectClass ::= SEQUENCE {
+    classType                   VisibleString (SIZE(0..32))
+}
+
+GetLogicalNodeDirectory-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    ldName                      VisibleString (SIZE(0..64)),
+    lnName                      VisibleString (SIZE(0..64)),
+    objectClass                 ObjectClass OPTIONAL
+}
+
+GetLogicalNodeDirectory-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    objects                     SEQUENCE OF CmsReference
+}
+
+CmsReference ::= SEQUENCE {
+    reference                   ObjectReference,
+    fc                          FC
+}
+
+GetLogicalNodeDirectory-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.4 GetServerDirectory (Service Code 0x54)
+-- ======================================================================
+
+-- Mapped to: CmsGetAllDataValues (Java)
+
+GetAllDataValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    ldName                      VisibleString (SIZE(0..64))
+}
+
+GetAllDataValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    values                      SEQUENCE OF CmsDataEntry
+}
+
+CmsDataEntry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    dataValue                   Data
+}
+
+GetAllDataValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.5 GetServerDirectory (Service Code 0x55)
+-- ======================================================================
+
+-- Mapped to: CmsGetAllDataDefinition (Java)
+
+GetAllDataDefinition-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    ldName                      VisibleString (SIZE(0..64))
+}
+
+GetAllDataDefinition-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    definitions                 SEQUENCE OF CmsDataDefinitionEntry
+}
+
+CmsDataDefinitionEntry ::= SEQUENCE {
+    dataRef                     ObjectReference,
+    fc                          FC,
+    dataName                    VisibleString (SIZE(0..64)),
+    dataType                    VisibleString (SIZE(0..32))
+}
+
+GetAllDataDefinition-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.6 GetAllCBValues (Service Code 0x56)
+-- ======================================================================
+
+-- Mapped to: CmsGetAllCBValues (Java)
+
+CBType ::= ENUMERATED {
+    brcb                        (0),
+    urcb                        (1),
+    lcb                         (2),
+    gocb                        (3),
+    msvcb                       (4),
+    sgcb                        (5)
+}
+
+CmsCBValue ::= SEQUENCE {
+    cbRef                       ObjectReference,
+    cbType                      CBType
+}
+
+CmsCBValueEntry ::= SEQUENCE {
+    ldName                      VisibleString (SIZE(0..64)),
+    cbValues                    SEQUENCE OF CmsCBValue
+}
+
+GetAllCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    ldName                      VisibleString (SIZE(0..64))
+}
+
+GetAllCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    cbEntries                   SEQUENCE OF CmsCBValueEntry
+}
+
+GetAllCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.7.7 GetACSIClasses (Service Code 0x57)
+-- ======================================================================
+
+-- Mapped to: CmsGetACSIClasses (Java)
+
+CmsACSIClass ::= SEQUENCE {
+    className                   VisibleString (SIZE(0..32)),
+    classVersion                VisibleString (SIZE(0..16))
+}
+
+GetACSIClasses-Request ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+GetACSIClasses-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    acsiClasses                 SEQUENCE OF CmsACSIClass
+}
+
+GetACSIClasses-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+END

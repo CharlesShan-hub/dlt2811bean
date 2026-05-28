@@ -1,0 +1,433 @@
+--
+-- DL/T 2811 Data Types — ASN.1 Module
+--
+-- Generated from Cms* Java classes in com.ysh.dlt2811bean.datatypes
+-- All type names correspond to ASN.1 type definitions from GB/T 45906.3.
+-- Java prefix "Cms" is stripped for ASN.1 type names.
+--
+
+DLT2811-DataTypes { 1 2 156 2811 1 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+-- ======================================================================
+-- 7.1.1 BOOLEAN
+-- ======================================================================
+
+-- Mapped to: CmsBoolean (Java)
+-- PER encoding: constrained integer (0..1), 1 bit
+
+
+-- ======================================================================
+-- 7.1.2 Integer Types
+-- ======================================================================
+
+-- Mapped to: CmsInt8  (Java: -128..127)
+-- PER encoding: constrained integer, 8 bits aligned
+Int8  ::= INTEGER (-128..127)
+
+-- Mapped to: CmsInt8U (Java: 0..255)
+-- PER encoding: constrained integer, 8 bits aligned
+Int8U ::= INTEGER (0..255)
+
+-- Mapped to: CmsInt16 (Java: -32768..32767)
+-- PER encoding: constrained integer, 16 bits aligned
+Int16 ::= INTEGER (-32768..32767)
+
+-- Mapped to: CmsInt16U (Java: 0..65535)
+-- PER encoding: constrained integer, 16 bits aligned
+Int16U ::= INTEGER (0..65535)
+
+-- Mapped to: CmsInt24U (Java: 0..16777215)
+-- PER encoding: constrained integer, 24 bits aligned
+Int24U ::= INTEGER (0..16777215)
+
+-- Mapped to: CmsInt32 (Java: -2147483648..2147483647)
+-- PER encoding: constrained integer, 32 bits aligned
+Int32  ::= INTEGER (-2147483648..2147483647)
+
+-- Mapped to: CmsInt32U (Java: 0..4294967295)
+-- PER encoding: constrained integer, 32 bits aligned
+Int32U ::= INTEGER (0..4294967295)
+
+-- Mapped to: CmsInt64 (Java: -9223372036854775808..9223372036854775807)
+-- PER encoding: length determinant + content bytes
+Int64  ::= INTEGER (-9223372036854775808..9223372036854775807)
+
+-- Mapped to: CmsInt64U (Java: 0..18446744073709551615)
+-- PER encoding: length determinant + content bytes
+Int64U ::= INTEGER (0..18446744073709551615)
+
+-- ======================================================================
+-- 7.1.4 Floating-Point Types
+-- ======================================================================
+
+-- Mapped to: CmsFloat32 (Java: Float, IEEE 754 single precision)
+Float32 ::= REAL
+
+-- Mapped to: CmsFloat64 (Java: Double, IEEE 754 double precision)
+Float64 ::= REAL
+
+-- ======================================================================
+-- 7.1.5 String Types
+-- ======================================================================
+
+-- Mapped to: CmsVisibleString (Java)
+-- PER encoding: length prefix + 8-bit characters
+VisibleString ::= VisibleString (SIZE(0..255))
+
+-- Mapped to: CmsUtf8String (Java)
+-- PER encoding: length prefix + UTF-8 bytes
+UTF8String ::= UTF8String (SIZE(0..255))
+
+-- Mapped to: CmsOctetString (Java)
+-- PER encoding: length prefix + raw bytes
+OctetString ::= OCTET STRING (SIZE(0..65535))
+
+-- ======================================================================
+-- 7.2.1 ObjectName
+-- ======================================================================
+
+-- Mapped to: CmsObjectName (Java, extends VisibleString)
+-- PER encoding: VisibleString with max length 64
+ObjectName ::= VisibleString (SIZE(0..64))
+
+-- ======================================================================
+-- 7.2.2 ObjectReference
+-- ======================================================================
+
+-- Mapped to: CmsObjectReference (Java, extends VisibleString)
+-- Format: LDName/LNName[.Name[....]]
+-- PER encoding: VisibleString with max length 129
+ObjectReference ::= VisibleString (SIZE(0..129))
+
+-- ======================================================================
+-- 7.2.3-7.2.7 FC / SubReference / EntryID / BitString
+-- ======================================================================
+
+-- Mapped to: CmsFC (Java, BIT STRING)
+FC ::= BIT STRING (SIZE(16))
+
+-- Mapped to: CmsSubReference (Java, extends VisibleString)
+SubReference ::= VisibleString (SIZE(0..64))
+
+-- Mapped to: CmsEntryID (Java, OCTET STRING SIZE(8))
+EntryID ::= OCTET STRING (SIZE(8))
+
+-- Mapped to: CmsBitString (Java)
+BitString ::= BIT STRING (SIZE(0..65535))
+
+-- ======================================================================
+-- 7.3.1 BinaryTime / EntryTime
+-- ======================================================================
+
+-- Mapped to: CmsBinaryTime (Java)
+BinaryTime ::= SEQUENCE {
+    msOfDay       Int32U,          -- milliseconds since midnight (0..86399999)
+    daysSince1984 Int16U           -- days since 1984-01-01
+}
+
+-- Mapped to: CmsEntryTime (Java, alias for BinaryTime)
+EntryTime ::= BinaryTime
+
+-- ======================================================================
+-- 7.3.2 UtcTime
+-- ======================================================================
+
+-- Mapped to: CmsUtcTime (Java)
+UtcTime ::= SEQUENCE {
+    secondsSinceEpoch Int32,       -- signed seconds since Unix epoch
+    fractional        Int24U OPTIONAL -- fractional milliseconds (0..16777215)
+}
+
+-- ======================================================================
+-- 7.3.3 TimeStamp
+-- ======================================================================
+
+-- Mapped to: CmsTimeStamp (Java)
+TimeStamp ::= SEQUENCE {
+    secondsSinceEpoch Int32,
+    fractional        Int24U
+}
+
+-- ======================================================================
+-- 7.4 Originator
+-- ======================================================================
+
+-- Mapped to: CmsOriginator (Java)
+Originator ::= SEQUENCE {
+    orCat   OrCat,                 -- originator category
+    orIdent OctetString (SIZE(0..64))
+}
+
+-- ======================================================================
+-- 7.5 PhyComAddr
+-- ======================================================================
+
+-- Mapped to: CmsPhyComAddr (Java)
+PhyComAddr ::= OCTET STRING (SIZE(6))
+
+-- ======================================================================
+-- 7.6 CODED ENUM types (BIT STRING with fixed size)
+-- ======================================================================
+
+-- Mapped to: CmsCheck (Java, 16 bits)
+Check ::= BIT STRING (SIZE(16))
+
+-- Mapped to: CmsDbpos (Java, ENUMERATED)
+Dbpos ::= ENUMERATED { intermediate(0), off(1), on(2), badState(3) }
+
+-- Mapped to: CmsLcbOptFlds (Java, 6 bits)
+LcbOptFlds ::= BIT STRING (SIZE(6))
+
+-- Mapped to: CmsMsvcbOptFlds (Java, 8 bits)
+MsvcbOptFlds ::= BIT STRING (SIZE(8))
+
+-- Mapped to: CmsQuality (Java, 13 bits)
+Quality ::= BIT STRING (SIZE(13))
+
+-- Mapped to: CmsRcbOptFlds (Java, 10 bits)
+RcbOptFlds ::= BIT STRING (SIZE(10))
+
+-- Mapped to: CmsReasonCode (Java, 6 bits)
+ReasonCode ::= BIT STRING (SIZE(6))
+
+-- Mapped to: CmsTcmd (Java, ENUMERATED)
+Tcmd ::= ENUMERATED { reserved(0), select(1), operate(2), cancel(3) }
+
+-- Mapped to: CmsTimeQuality (Java, 8 bits)
+TimeQuality ::= BIT STRING (SIZE(8))
+
+-- Mapped to: CmsTriggerConditions (Java, 6 bits)
+TriggerConditions ::= BIT STRING (SIZE(6))
+
+-- Mapped to: CmsPackedListImpl (Java, generic packed list)
+PackedList ::= BIT STRING (SIZE(0..65535))
+
+-- ======================================================================
+-- 7.7 Data (CHOICE of 24 alternatives)
+-- ======================================================================
+
+-- Mapped to: CmsData (Java, generic wrapper)
+Data ::= CHOICE {
+    serviceError    [0] ServiceError,
+    array           [1] SEQUENCE OF Data,
+    structure       [2] SEQUENCE OF Data,
+    boolean         [3] BOOLEAN,
+    int8            [4] Int8,
+    int16           [5] Int16,
+    int32           [6] Int32,
+    int64           [7] Int64,
+    int8u           [8] Int8U,
+    int16u          [9] Int16U,
+    int32u          [10] Int32U,
+    int64u          [11] Int64U,
+    float32         [12] Float32,
+    float64         [13] Float64,
+    bitString       [14] BitString,
+    octetString     [15] OctetString,
+    visibleString   [16] VisibleString,
+    utf8String      [17] UTF8String,
+    utcTime         [18] UtcTime,
+    binaryTime      [19] BinaryTime,
+    quality         [20] Quality,
+    dbpos           [21] Dbpos,
+    tcmd            [22] Tcmd,
+    check           [23] Check
+}
+
+-- ======================================================================
+-- 7.8 DataDefinition
+-- ======================================================================
+
+-- Mapped to: CmsDataDefinition (Java)
+DataDefinition ::= SEQUENCE {
+    dataName    VisibleString,
+    dataType    VisibleString,
+    fc          FC,
+    data        Data
+}
+
+-- ======================================================================
+-- 7.9 ServiceError
+-- ======================================================================
+
+-- Mapped to: CmsServiceError (Java)
+ServiceError ::= ENUMERATED {
+    noError                            (0),
+    accessNotAllowedInCurrentState     (1),
+    accessViewNotSupported             (2),
+    ambiguousReference                 (3),
+    classNotSupported                  (4),
+    instanceNotAvailable               (5),
+    instanceInUse                      (6),
+    parameterValueInappropriate        (7),
+    parameterValueInvalid              (8),
+    failedDueToServerConstraint        (9),
+    failedDueToCommunicationConstraint (10),
+    typeConflict                       (11),
+    other                              (12),
+    dataSetNull                        (13),
+    dataSetLimit                       (14),
+    objectAlreadyExists                (15),
+    objectNotExist                     (16)
+}
+
+-- ======================================================================
+-- 7.10 AddCause / OrCat / SmpMod
+-- ======================================================================
+
+-- Mapped to: CmsAddCause (Java)
+AddCause ::= ENUMERATED {
+    unknown                    (0),
+    processError               (1),
+    protocolError              (2),
+    applicationError           (3),
+    performanceLimitation      (4),
+    resourceLimitation         (5),
+    authenticationFailure      (6),
+    securityViolation          (7),
+    communicationFailure       (8),
+    systemFailure              (9),
+    hardwareFailure            (10),
+    softwareFailure            (11),
+    configurationError         (12),
+    operationNotSupported      (13),
+    operationBlocked           (14),
+    temporaryFailure           (15),
+    permanentFailure           (16)
+}
+
+-- Mapped to: CmsOrCat (Java)
+OrCat ::= ENUMERATED {
+    notSupported      (0),
+    bayControl        (1),
+    stationControl    (2),
+    remoteControl     (3),
+    automaticBay      (4),
+    automaticStation  (5),
+    automaticRemote   (6),
+    maintenance       (7),
+    process           (8)
+}
+
+-- Mapped to: CmsSmpMod (Java)
+SmpMod ::= ENUMERATED {
+    smpPerPeriod     (0),
+    smpPerSecond     (1),
+    secPerSmp        (2)
+}
+
+-- ======================================================================
+-- 7.11 Control Blocks
+-- ======================================================================
+
+-- Mapped to: CmsSGCB (Java)
+SGCB ::= SEQUENCE {
+    sgcbName ObjectName,
+    sgcbRef  ObjectReference,
+    numOfSG  Int8U,
+    actSG    Int8U,
+    editSG   Int8U,
+    cnfEdit  BOOLEAN,
+    lActTm   UtcTime,
+    resvTms  Int16U OPTIONAL
+}
+
+-- Mapped to: CmsBRCB (Java)
+BRCB ::= SEQUENCE {
+    brcbName    ObjectName,
+    brcbRef     ObjectReference,
+    rptID       VisibleString (SIZE(0..129)),
+    rptEna      BOOLEAN,
+    datSet      ObjectReference,
+    confRev     Int32U,
+    optFlds     RcbOptFlds,
+    bufTm       Int32U,
+    sqNum       Int16U,
+    trgOps      TriggerConditions,
+    intgPd      Int32U,
+    gi          BOOLEAN,
+    purgeBuf    BOOLEAN,
+    entryID     EntryID,
+    timeOfEntry EntryTime,
+    resvTms     Int16 OPTIONAL,
+    owner       OCTET STRING (SIZE(64))
+}
+
+-- Mapped to: CmsURCB (Java)
+URCB ::= SEQUENCE {
+    urcbName ObjectName,
+    urcbRef  ObjectReference,
+    rptID    VisibleString (SIZE(0..129)),
+    rptEna   BOOLEAN,
+    resv     BOOLEAN,
+    datSet   ObjectReference,
+    confRev  Int32U,
+    optFlds  RcbOptFlds,
+    bufTm    Int32U,
+    sqNum    Int8U,
+    trgOps   TriggerConditions,
+    intgPd   Int32U,
+    gi       BOOLEAN,
+    owner    OCTET STRING (SIZE(64))
+}
+
+-- Mapped to: CmsLCB (Java)
+LCB ::= SEQUENCE {
+    lcbName ObjectName,
+    lcbRef  ObjectReference,
+    rptID   VisibleString (SIZE(0..129)),
+    logEna  BOOLEAN,
+    datSet  ObjectReference,
+    confRev Int32U,
+    optFlds LcbOptFlds,
+    bufTm   Int32U,
+    trgOps  TriggerConditions,
+    intgPd  Int32U,
+    logRef  ObjectReference
+}
+
+-- Mapped to: CmsGoCB (Java)
+GoCB ::= SEQUENCE {
+    gocbRef       ObjectReference,
+    appID         VisibleString (SIZE(0..129)),
+    datSet        ObjectReference,
+    confRev       Int32U,
+    ndcom         BOOLEAN,
+    dstAddress    PhyComAddr,
+    minTime       Int32U,
+    maxTime       Int32U,
+    fixedOffs     BOOLEAN,
+    goID          VisibleString (SIZE(0..129)) OPTIONAL
+}
+
+-- Mapped to: CmsMSVCB (Java)
+MSVCB ::= SEQUENCE {
+    msvcbRef       ObjectReference,
+    svID           VisibleString (SIZE(0..129)),
+    datSet         ObjectReference,
+    confRev        Int32U,
+    smpRate        Int32U,
+    nofASDU        Int8U,
+    optFlds        MsvcbOptFlds,
+    smpMod         SmpMod,
+    dstAddress     PhyComAddr,
+    svEna          BOOLEAN,
+    reserved1      BOOLEAN,
+    svCbHealth     VisibleString (SIZE(0..129)) OPTIONAL,
+    svCbAlarmName  VisibleString (SIZE(0..129)) OPTIONAL
+}
+
+-- ======================================================================
+-- 7.12 FileEntry
+-- ======================================================================
+
+-- Mapped to: CmsFileEntry (Java)
+FileEntry ::= SEQUENCE {
+    fileName    VisibleString (SIZE(0..255)),
+    fileSize    Int32U,
+    lastModified UtcTime OPTIONAL,
+    fileType    VisibleString (SIZE(0..64)) OPTIONAL,
+    fileAttr    VisibleString (SIZE(0..64)) OPTIONAL
+}
+
+END

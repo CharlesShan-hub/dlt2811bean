@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/build/cmake_install.cmake",
+		"D:/project/work/standard/dlt2811bean/cms/experiment/cmsper/build/tests/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

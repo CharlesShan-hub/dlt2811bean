@@ -1,0 +1,16 @@
+DLT2811-TestSeq { 1 2 156 2811 99 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+Int8U ::= INTEGER (0..255)
+Int32U ::= INTEGER (0..4294967295)
+
+Item ::= SEQUENCE {
+    id      Int8U,
+    value   Int32U
+}
+
+Container ::= SEQUENCE {
+    name    VisibleString (SIZE(0..64)),
+    items   SEQUENCE OF Item
+}
+
+END

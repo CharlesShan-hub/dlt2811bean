@@ -1,0 +1,224 @@
+--
+-- DL/T 2811 GOOSE & SV Services
+--
+
+DLT2811-Goose { 1 2 156 2811 11 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
+
+IMPORTS
+    Int8U, Int16U, Int32U, VisibleString, OctetString,
+    BOOLEAN, ObjectReference, PhyComAddr,
+    ServiceError, Data
+    FROM DLT2811-DataTypes;
+
+-- ======================================================================
+-- 8.10.1 GetGoReference (Service Code 0x81)
+-- ======================================================================
+
+-- Mapped to: CmsGetGoReference (Java)
+
+GetGoReference-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    gocbRef                     ObjectReference
+}
+
+GetGoReference-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    goReference                 ObjectReference
+}
+
+GetGoReference-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.2 GetGoCBValues (Service Code 0x82)
+-- ======================================================================
+
+-- Mapped to: CmsGetGoCBValues (Java)
+
+GetGoCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    gocbRef                     ObjectReference
+}
+
+GetGoCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    appID                       VisibleString (SIZE(0..129)),
+    datSet                      ObjectReference,
+    confRev                     Int32U,
+    ndcom                       BOOLEAN,
+    dstAddress                  PhyComAddr,
+    minTime                     Int32U,
+    maxTime                     Int32U,
+    fixedOffs                   BOOLEAN,
+    goID                        VisibleString (SIZE(0..129)) OPTIONAL
+}
+
+GetGoCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.3 SetGoCBValues (Service Code 0x83)
+-- ======================================================================
+
+-- Mapped to: CmsSetGoCBValues (Java)
+
+SetGoCBValues-Entry ::= SEQUENCE {
+    reference                   ObjectReference,
+    appID                       VisibleString (SIZE(0..129)) OPTIONAL,
+    datSet                      ObjectReference OPTIONAL,
+    confRev                     Int32U OPTIONAL,
+    ndcom                       BOOLEAN OPTIONAL,
+    minTime                     Int32U OPTIONAL,
+    maxTime                     Int32U OPTIONAL,
+    fixedOffs                   BOOLEAN OPTIONAL,
+    goID                        VisibleString (SIZE(0..129)) OPTIONAL
+}
+
+SetGoCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    gocbValues                  SEQUENCE OF SetGoCBValues-Entry
+}
+
+SetGoCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetGoCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.4 SendGooseMessage (Service Code 0x84, unconfirmed)
+-- ======================================================================
+
+-- Mapped to: CmsSendGooseMessage (Java)
+
+GoosePdu ::= SEQUENCE {
+    gocbRef                     ObjectReference,
+    timeAllowedtoLive           Int32U,
+    datSet                      ObjectReference,
+    goID                        VisibleString (SIZE(0..129)),
+    t                           UtcTime,
+    stNum                       Int32U,
+    sqNum                       Int32U,
+    simulation                  BOOLEAN,
+    confRev                     Int32U,
+    ndcom                       BOOLEAN,
+    numDatSetEntries            Int32U,
+    allData                     SEQUENCE OF Data
+}
+
+SendGooseMessage ::= SEQUENCE {
+    reqId                       Int16U,
+    goosePdu                    GoosePdu
+}
+
+-- ======================================================================
+-- 8.10.5 GetGooseElementNumber (Service Code 0x85)
+-- ======================================================================
+
+-- Mapped to: CmsGetGooseElementNumber (Java)
+
+GetGooseElementNumber-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    gocbRef                     ObjectReference,
+    goosePdu                    GoosePdu
+}
+
+GetGooseElementNumber-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    elementNum                  Int32U
+}
+
+GetGooseElementNumber-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.6 GetMSVCBValues (Service Code 0x86)
+-- ======================================================================
+
+-- Mapped to: CmsGetMSVCBValues (Java)
+
+GetMSVCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    msvcbRef                    ObjectReference
+}
+
+GetMSVCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U,
+    svID                        VisibleString (SIZE(0..129)),
+    datSet                      ObjectReference,
+    confRev                     Int32U,
+    smpRate                     Int32U,
+    nofASDU                     Int8U,
+    optFlds                     BIT STRING (SIZE(8)),
+    smpMod                      ENUMERATED { smpPerPeriod(0), smpPerSecond(1), secPerSmp(2) },
+    dstAddress                  PhyComAddr,
+    svEna                       BOOLEAN
+}
+
+GetMSVCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.7 SetMSVCBValues (Service Code 0x87)
+-- ======================================================================
+
+-- Mapped to: CmsSetMSVCBValues (Java)
+
+SetMSVCBValues-Entry ::= SEQUENCE {
+    reference                   ObjectReference,
+    svID                        VisibleString (SIZE(0..129)) OPTIONAL,
+    datSet                      ObjectReference OPTIONAL,
+    confRev                     Int32U OPTIONAL,
+    smpRate                     Int32U OPTIONAL,
+    nofASDU                     Int8U OPTIONAL,
+    optFlds                     BIT STRING (SIZE(8)) OPTIONAL,
+    smpMod                      ENUMERATED { smpPerPeriod(0), smpPerSecond(1), secPerSmp(2) } OPTIONAL,
+    dstAddress                  PhyComAddr OPTIONAL,
+    svEna                       BOOLEAN OPTIONAL
+}
+
+SetMSVCBValues-Request ::= SEQUENCE {
+    reqId                       Int16U,
+    msvcbValues                 SEQUENCE OF SetMSVCBValues-Entry
+}
+
+SetMSVCBValues-ResponsePositive ::= SEQUENCE {
+    reqId                       Int16U
+}
+
+SetMSVCBValues-ResponseNegative ::= SEQUENCE {
+    reqId                       Int16U,
+    serviceError                ServiceError
+}
+
+-- ======================================================================
+-- 8.10.8 SendMSVMessage (Service Code 0x88, unconfirmed)
+-- ======================================================================
+
+-- Mapped to: CmsSendMSVMessage (Java)
+
+SavPdu ::= SEQUENCE {
+    svID                        VisibleString (SIZE(0..129)),
+    smpCnt                      Int16U,
+    confRev                     Int32U,
+    smpSynch                    BOOLEAN,
+    seqData                     SEQUENCE OF Data
+}
+
+SendMSVMessage ::= SEQUENCE {
+    reqId                       Int16U,
+    savPdu                      SavPdu
+}
+
+END
