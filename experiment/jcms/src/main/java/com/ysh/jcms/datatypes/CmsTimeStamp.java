@@ -9,9 +9,9 @@ import lombok.Data;
 public final class CmsTimeStamp {
 
     private final long secondsSinceEpoch;
-    private final int fractional;
+    private final long fractional;
 
-    public CmsTimeStamp(long secondsSinceEpoch, int fractional) {
+    public CmsTimeStamp(long secondsSinceEpoch, long fractional) {
         this.secondsSinceEpoch = secondsSinceEpoch;
         this.fractional = fractional;
     }
@@ -27,7 +27,7 @@ public final class CmsTimeStamp {
 
     public static CmsTimeStamp decode(byte[] data) {
         LongByReference sec = new LongByReference();
-        IntByReference frac = new IntByReference();
+        LongByReference frac = new LongByReference();
         CmsFFI.INSTANCE.cms_ffi_decode_TimeStamp(data, data.length, sec, frac);
         return new CmsTimeStamp(sec.getValue(), frac.getValue());
     }

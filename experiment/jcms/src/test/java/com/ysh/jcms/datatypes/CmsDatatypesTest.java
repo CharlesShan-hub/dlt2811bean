@@ -25,7 +25,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger((byte) -42);
         byte[] encoded = original.encodeInt8();
         CmsInteger decoded = CmsInteger.decodeInt8(encoded);
-        assertEquals(original.getInt8Value(), decoded.getInt8Value());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -33,7 +33,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger((short) 200);
         byte[] encoded = original.encodeInt8U();
         CmsInteger decoded = CmsInteger.decodeInt8U(encoded);
-        assertEquals(original.getInt8UValue(), decoded.getInt8UValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -41,7 +41,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger((short) -12345);
         byte[] encoded = original.encodeInt16();
         CmsInteger decoded = CmsInteger.decodeInt16(encoded);
-        assertEquals(original.getInt16Value(), decoded.getInt16Value());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -49,7 +49,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger(60000);
         byte[] encoded = original.encodeInt16U();
         CmsInteger decoded = CmsInteger.decodeInt16U(encoded);
-        assertEquals(original.getInt16UValue(), decoded.getInt16UValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -57,7 +57,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger(-2000000);
         byte[] encoded = original.encodeInt32();
         CmsInteger decoded = CmsInteger.decodeInt32(encoded);
-        assertEquals(original.getInt32Value(), decoded.getInt32Value());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -65,7 +65,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger(3000000000L);
         byte[] encoded = original.encodeInt32U();
         CmsInteger decoded = CmsInteger.decodeInt32U(encoded);
-        assertEquals(original.getInt32UValue(), decoded.getInt32UValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -73,7 +73,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger(-9000000000000L);
         byte[] encoded = original.encodeInt64();
         CmsInteger decoded = CmsInteger.decodeInt64(encoded);
-        assertEquals(original.getInt64Value(), decoded.getInt64Value());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -81,7 +81,7 @@ class CmsDatatypesTest {
         CmsInteger original = new CmsInteger(18000000000000L);
         byte[] encoded = original.encodeInt64U();
         CmsInteger decoded = CmsInteger.decodeInt64U(encoded);
-        assertEquals(original.getInt64UValue(), decoded.getInt64UValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -89,7 +89,7 @@ class CmsDatatypesTest {
         CmsFloat original = new CmsFloat(3.14159f);
         byte[] encoded = original.encodeFloat32();
         CmsFloat decoded = CmsFloat.decodeFloat32(encoded);
-        assertEquals(original.getFloat32Value(), decoded.getFloat32Value(), 1e-6);
+        assertEquals(original.getValue(), decoded.getValue(), 1e-6);
     }
 
     @Test
@@ -97,7 +97,7 @@ class CmsDatatypesTest {
         CmsFloat original = new CmsFloat(2.718281828459045);
         byte[] encoded = original.encodeFloat64();
         CmsFloat decoded = CmsFloat.decodeFloat64(encoded);
-        assertEquals(original.getFloat64Value(), decoded.getFloat64Value(), 1e-15);
+        assertEquals(original.getValue(), decoded.getValue(), 1e-15);
     }
 
     @Test
@@ -105,7 +105,7 @@ class CmsDatatypesTest {
         CmsString original = new CmsString("HelloCMS");
         byte[] encoded = original.encodeVisibleString();
         CmsString decoded = CmsString.decodeVisibleString(encoded);
-        assertEquals(original.getVisibleStringValue(), decoded.getVisibleStringValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -113,7 +113,7 @@ class CmsDatatypesTest {
         CmsString original = new CmsString("UTF-8测试");
         byte[] encoded = original.encodeUTF8String();
         CmsString decoded = CmsString.decodeUTF8String(encoded);
-        assertEquals(original.getUTF8StringValue(), decoded.getUTF8StringValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -130,7 +130,7 @@ class CmsDatatypesTest {
         CmsString original = new CmsString("MyObject");
         byte[] encoded = original.encodeObjectName();
         CmsString decoded = CmsString.decodeObjectName(encoded);
-        assertEquals(original.getObjectNameValue(), decoded.getObjectNameValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -138,7 +138,7 @@ class CmsDatatypesTest {
         CmsString original = new CmsString("MyReference");
         byte[] encoded = original.encodeObjectReference();
         CmsString decoded = CmsString.decodeObjectReference(encoded);
-        assertEquals(original.getObjectReferenceValue(), decoded.getObjectReferenceValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -155,7 +155,7 @@ class CmsDatatypesTest {
         CmsString original = new CmsString("SubRef1");
         byte[] encoded = original.encodeSubReference();
         CmsString decoded = CmsString.decodeSubReference(encoded);
-        assertEquals(original.getSubReferenceValue(), decoded.getSubReferenceValue());
+        assertEquals(original.getValue(), decoded.getValue());
     }
 
     @Test
@@ -186,22 +186,23 @@ class CmsDatatypesTest {
         CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500);
         byte[] encoded = original.encode();
         CmsBinaryTime decoded = CmsBinaryTime.decode(encoded);
-        assertEquals(original.getMsOfDay(), decoded.getMsOfDay());
-        assertEquals(original.getDaysSince1984(), decoded.getDaysSince1984());
+        assertEquals(original.getHour(), decoded.getHour());
+        assertEquals(original.getMinute(), decoded.getMinute());
+        assertEquals(original.getSecond(), decoded.getSecond());
+        assertEquals(original.getMillisecond(), decoded.getMillisecond());
     }
 
     @Test
     void utcTimeRoundtrip() {
-        CmsUtcTime original = new CmsUtcTime(1700000000000L, 123);
+        CmsUtcTime original = new CmsUtcTime(1700000000000L);
         byte[] encoded = original.encode();
         CmsUtcTime decoded = CmsUtcTime.decode(encoded);
         assertEquals(original.getSecondsSinceEpoch(), decoded.getSecondsSinceEpoch());
-        assertEquals(original.getFractional(), decoded.getFractional());
     }
 
     @Test
     void timeStampRoundtrip() {
-        CmsTimeStamp original = new CmsTimeStamp(1700000000L, 456);
+        CmsTimeStamp original = new CmsTimeStamp(1700000000L, 456L);
         byte[] encoded = original.encode();
         CmsTimeStamp decoded = CmsTimeStamp.decode(encoded);
         assertEquals(original.getSecondsSinceEpoch(), decoded.getSecondsSinceEpoch());

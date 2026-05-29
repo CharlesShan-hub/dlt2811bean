@@ -1,14 +1,36 @@
-# CMS Experiment — ASN.1 PER Codec & C Code Generator
+# CMS Experiment — ASN.1 PER Codec & FFI
 
 ## 目录结构
 
 ```
 cmsper/          ← PER 编解码核心库 (C)
-cmsgenerator/    ← ASN.1 → C 代码生成器
+cmsgenerator/    ← ASN.1 → C 代码生成器 (仅用于生成 SEQUENCE/CHOICE 结构)
 cmsapp/          ← 应用示例 (roundtrip 测试)
+jcms/            ← Java JNA 封装
 docs/
   cms.asn1       ← CMS ASN.1 定义
 ```
+
+## 架构说明
+
+本项目的编解码分为**两层**：
+
+### 1. FFI 层（手写，推荐使用）
+
+`cmsgenerator/src/cms_ffi*.c` + `cmsgenerator/include/cms_ffi*.h`
+
+- **纯手写**，不依赖代码生成器
+- 提供 `byte[]` 进 `byte[]` 出的纯 C ABI 接口
+- 各语言（Java/Python/C# 等）通过 FFI 直接调用
+- 所有基本数据类型（Float32/Float64/Boolean/Time 等）的编解码都在此层手写实现
+
+### 2. 生成器层（仅用于复杂 SEQUENCE/CHOICE 结构）
+
+`cmsgenerator/src/c_gen.c` 解析 ASN.1 定义，自动生成 C 结构体和 PER 编解码函数。
+
+- 适用于 SGCB、Associate-Request 等复杂嵌套结构
+- 基本数据类型（如 Float32/Float64）在 ASN.1 中定义为 `OCTET STRING (SIZE(4/8))`，生成器将其映射为固定长度的字节数组
+- **如果你只使用 FFI 接口，则完全不需要运行代码生成器**
 
 ## 构建顺序
 
@@ -19,14 +41,7 @@ cd cmsper
 .\win_cmsper.ps1
 ```
 
-### 2. 代码生成器 + 数据类型库
-
-```powershell
-cd cmsgenerator
-.\win_cmsgen.ps1 -InputAsn ..\docs\cms.asn1
-```
-
-### 3. FFI DLL（跨语言调用）
+### 2. FFI DLL（跨语言调用，推荐）
 
 ```powershell
 cd cmsgenerator
@@ -34,6 +49,13 @@ cd cmsgenerator
 ```
 
 输出：`cmsgenerator/build/bin/libcmsper_datatypes.dll`
+
+### 3. 代码生成器 + 数据类型库（仅当需要重新生成 SEQUENCE/CHOICE 结构时）
+
+```powershell
+cd cmsgenerator
+.\win_cmsgen.ps1 -InputAsn ..\docs\cms.asn1
+```
 
 ### 4. 应用示例
 

@@ -1,6 +1,5 @@
 package com.ysh.jcms.datatypes;
 
-import com.sun.jna.ptr.FloatByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.CmsFFI;
 import lombok.Data;
@@ -28,9 +27,9 @@ public final class CmsFloat {
     }
 
     public static CmsFloat decodeFloat32(byte[] data) {
-        FloatByReference v = new FloatByReference();
+        float[] v = new float[1];
         CmsFFI.INSTANCE.cms_ffi_decode_Float32(data, data.length, v);
-        return new CmsFloat(v.getValue());
+        return new CmsFloat(v[0]);
     }
 
     public byte[] encodeFloat64() {
@@ -43,8 +42,8 @@ public final class CmsFloat {
     }
 
     public static CmsFloat decodeFloat64(byte[] data) {
-        com.sun.jna.ptr.DoubleByReference v = new com.sun.jna.ptr.DoubleByReference();
+        double[] v = new double[1];
         CmsFFI.INSTANCE.cms_ffi_decode_Float64(data, data.length, v);
-        return new CmsFloat(v.getValue());
+        return new CmsFloat(v[0]);
     }
 }

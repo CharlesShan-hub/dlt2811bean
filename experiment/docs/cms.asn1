@@ -12,47 +12,37 @@ DLT2811-DataTypes { 1 2 156 2811 1 } DEFINITIONS AUTOMATIC TAGS ::= BEGIN
 -- 7.1.1 BOOLEAN
 -- ======================================================================
 
--- Mapped to: CmsBoolean (Java)
 -- PER encoding: constrained integer (0..1), 1 bit
-
+Boolean ::= INTEGER (0..1)
 
 -- ======================================================================
 -- 7.1.2 Integer Types
 -- ======================================================================
 
--- Mapped to: CmsInt8  (Java: -128..127)
 -- PER encoding: constrained integer, 8 bits aligned
 Int8  ::= INTEGER (-128..127)
 
--- Mapped to: CmsInt8U (Java: 0..255)
 -- PER encoding: constrained integer, 8 bits aligned
 Int8U ::= INTEGER (0..255)
 
--- Mapped to: CmsInt16 (Java: -32768..32767)
 -- PER encoding: constrained integer, 16 bits aligned
 Int16 ::= INTEGER (-32768..32767)
 
--- Mapped to: CmsInt16U (Java: 0..65535)
 -- PER encoding: constrained integer, 16 bits aligned
 Int16U ::= INTEGER (0..65535)
 
--- Mapped to: CmsInt24U (Java: 0..16777215)
 -- PER encoding: constrained integer, 24 bits aligned
 Int24U ::= INTEGER (0..16777215)
 
--- Mapped to: CmsInt32 (Java: -2147483648..2147483647)
 -- PER encoding: constrained integer, 32 bits aligned
 Int32  ::= INTEGER (-2147483648..2147483647)
 
--- Mapped to: CmsInt32U (Java: 0..4294967295)
 -- PER encoding: constrained integer, 32 bits aligned
 Int32U ::= INTEGER (0..4294967295)
 
--- Mapped to: CmsInt64 (Java: -9223372036854775808..9223372036854775807)
 -- PER encoding: length determinant + content bytes
 Int64  ::= INTEGER (-9223372036854775808..9223372036854775807)
 
--- Mapped to: CmsInt64U (Java: 0..18446744073709551615)
 -- PER encoding: length determinant + content bytes
 Int64U ::= INTEGER (0..18446744073709551615)
 
@@ -60,222 +50,205 @@ Int64U ::= INTEGER (0..18446744073709551615)
 -- 7.1.4 Floating-Point Types
 -- ======================================================================
 
--- Mapped to: CmsFloat32 (Java: Float, IEEE 754 single precision)
-Float32 ::= REAL
+Float32 ::= OCTET STRING (SIZE (4))
 
--- Mapped to: CmsFloat64 (Java: Double, IEEE 754 double precision)
-Float64 ::= REAL
+Float64 ::= OCTET STRING (SIZE (8))
 
 -- ======================================================================
 -- 7.1.5 String Types
 -- ======================================================================
 
--- Mapped to: CmsVisibleString (Java)
 -- PER encoding: length prefix + 8-bit characters
 VisibleString ::= VisibleString (SIZE(0..255))
 
--- Mapped to: CmsUtf8String (Java)
 -- PER encoding: length prefix + UTF-8 bytes
 UTF8String ::= UTF8String (SIZE(0..255))
 
--- Mapped to: CmsOctetString (Java)
 -- PER encoding: length prefix + raw bytes
 OctetString ::= OCTET STRING (SIZE(0..65535))
 
--- ======================================================================
--- 7.2.1 ObjectName
--- ======================================================================
-
--- Mapped to: CmsObjectName (Java, extends VisibleString)
--- PER encoding: VisibleString with max length 64
-ObjectName ::= VisibleString (SIZE(0..64))
-
--- ======================================================================
--- 7.2.2 ObjectReference
--- ======================================================================
-
--- Mapped to: CmsObjectReference (Java, extends VisibleString)
--- Format: LDName/LNName[.Name[....]]
--- PER encoding: VisibleString with max length 129
-ObjectReference ::= VisibleString (SIZE(0..129))
-
--- ======================================================================
--- 7.2.3-7.2.7 FC / SubReference / EntryID / BitString
--- ======================================================================
-
--- Mapped to: CmsFC (Java, BIT STRING)
-FC ::= BIT STRING (SIZE(16))
-
--- Mapped to: CmsSubReference (Java, extends VisibleString)
-SubReference ::= VisibleString (SIZE(0..64))
-
--- Mapped to: CmsEntryID (Java, OCTET STRING SIZE(8))
-EntryID ::= OCTET STRING (SIZE(8))
-
--- Mapped to: CmsBitString (Java)
 BitString ::= BIT STRING (SIZE(0..65535))
 
 -- ======================================================================
--- 7.3.1 BinaryTime / EntryTime
+-- 7.1.6 ENUMERATED
 -- ======================================================================
 
--- Mapped to: CmsBinaryTime (Java)
+-- ======================================================================
+-- 7.1.7 CODED ENUM
+-- ======================================================================
+
+-- ======================================================================
+-- 7.1.8 Packed List
+-- ======================================================================
+
+PackedList ::= BIT STRING (SIZE(0..65535))
+
+-- ======================================================================
+-- 7.2.1 UtcTime
+-- ======================================================================
+
+UtcTime ::= OCTET STRING (SIZE(8))
+
+TimeQuality ::= BIT STRING {
+    leap-second-known            (0),
+    clock-failure                (1),
+    clock-not-synchronized       (2)
+} (SIZE(3))
+
+-- ======================================================================
+-- 7.2.2 BinaryTime / EntryTime
+-- ======================================================================
+
 BinaryTime ::= SEQUENCE {
     msOfDay       Int32U,          -- milliseconds since midnight (0..86399999)
     daysSince1984 Int16U           -- days since 1984-01-01
 }
 
--- Mapped to: CmsEntryTime (Java, alias for BinaryTime)
 EntryTime ::= BinaryTime
 
 -- ======================================================================
--- 7.3.2 UtcTime
+-- 7.3.1 ObjectName
 -- ======================================================================
 
--- Mapped to: CmsUtcTime (Java)
-UtcTime ::= SEQUENCE {
-    secondsSinceEpoch Int32,       -- signed seconds since Unix epoch
-    fractional        Int24U OPTIONAL -- fractional milliseconds (0..16777215)
-}
+-- PER encoding: VisibleString with max length 64
+ObjectName ::= VisibleString (SIZE(0..64))
 
 -- ======================================================================
--- 7.3.3 TimeStamp
+-- 7.3.2 ObjectReference
 -- ======================================================================
 
--- Mapped to: CmsTimeStamp (Java)
+-- Format: LDName/LNName[.Name[....]]
+-- PER encoding: VisibleString with max length 129
+ObjectReference ::= VisibleString (SIZE(0..129))
+
+-- ======================================================================
+-- 7.3.3 SubReference
+-- ======================================================================
+
+SubReference ::= VisibleString (SIZE(0..129))
+
+-- ======================================================================
+-- 7.3.4 TimeStamp
+-- ======================================================================
+
 TimeStamp ::= SEQUENCE {
     secondsSinceEpoch Int32,
     fractional        Int24U
 }
 
 -- ======================================================================
--- 7.4 Originator
+-- 7.3.5 Dbpos
 -- ======================================================================
 
--- Mapped to: CmsOriginator (Java)
-Originator ::= SEQUENCE {
-    orCat   OrCat,                 -- originator category
-    orIdent OctetString (SIZE(0..64))
-}
-
--- ======================================================================
--- 7.5 PhyComAddr
--- ======================================================================
-
--- Mapped to: CmsPhyComAddr (Java)
-PhyComAddr ::= OCTET STRING (SIZE(6))
-
--- ======================================================================
--- 7.6 CODED ENUM types (BIT STRING with fixed size)
--- ======================================================================
-
--- Mapped to: CmsCheck (Java, 16 bits)
-Check ::= BIT STRING (SIZE(16))
-
--- Mapped to: CmsDbpos (Java, ENUMERATED)
 Dbpos ::= ENUMERATED { intermediate(0), off(1), on(2), badState(3) }
 
--- Mapped to: CmsLcbOptFlds (Java, 6 bits)
-LcbOptFlds ::= BIT STRING (SIZE(6))
+-- ======================================================================
+-- 7.3.6 Quality
+-- ======================================================================
 
--- Mapped to: CmsMsvcbOptFlds (Java, 8 bits)
-MsvcbOptFlds ::= BIT STRING (SIZE(8))
-
--- Mapped to: CmsQuality (Java, 13 bits)
 Quality ::= BIT STRING (SIZE(13))
 
--- Mapped to: CmsRcbOptFlds (Java, 10 bits)
-RcbOptFlds ::= BIT STRING (SIZE(10))
+-- ======================================================================
+-- 7.3.7 Tcmd
+-- ======================================================================
 
--- Mapped to: CmsReasonCode (Java, 6 bits)
-ReasonCode ::= BIT STRING (SIZE(6))
-
--- Mapped to: CmsTcmd (Java, ENUMERATED)
 Tcmd ::= ENUMERATED { reserved(0), select(1), operate(2), cancel(3) }
 
--- Mapped to: CmsTimeQuality (Java, 8 bits)
-TimeQuality ::= BIT STRING (SIZE(8))
-
--- Mapped to: CmsTriggerConditions (Java, 6 bits)
-TriggerConditions ::= BIT STRING (SIZE(6))
-
--- Mapped to: CmsPackedListImpl (Java, generic packed list)
-PackedList ::= BIT STRING (SIZE(0..65535))
-
 -- ======================================================================
--- 7.7 Data (CHOICE of 24 alternatives)
+-- 7.3.8 EntryID
 -- ======================================================================
 
--- Mapped to: CmsData (Java, generic wrapper)
-Data ::= CHOICE {
-    serviceError    [0] ServiceError,
-    array           [1] SEQUENCE OF Data,
-    structure       [2] SEQUENCE OF Data,
-    boolean         [3] BOOLEAN,
-    int8            [4] Int8,
-    int16           [5] Int16,
-    int32           [6] Int32,
-    int64           [7] Int64,
-    int8u           [8] Int8U,
-    int16u          [9] Int16U,
-    int32u          [10] Int32U,
-    int64u          [11] Int64U,
-    float32         [12] Float32,
-    float64         [13] Float64,
-    bitString       [14] BitString,
-    octetString     [15] OctetString,
-    visibleString   [16] VisibleString,
-    utf8String      [17] UTF8String,
-    utcTime         [18] UtcTime,
-    binaryTime      [19] BinaryTime,
-    quality         [20] Quality,
-    dbpos           [21] Dbpos,
-    tcmd            [22] Tcmd,
-    check           [23] Check
+EntryID ::= OCTET STRING (SIZE(8))
+
+-- ======================================================================
+-- 7.3.9 EntryTime
+-- ======================================================================
+
+EntryTime ::= BinaryTime
+
+-- ======================================================================
+-- 7.3.10 FileEntry
+-- ======================================================================
+
+FileEntry ::= SEQUENCE {
+    fileName    VisibleString (SIZE(0..255)),
+    fileSize    Int32U,
+    lastModified UtcTime OPTIONAL,
+    fileType    VisibleString (SIZE(0..64)) OPTIONAL,
+    fileAttr    VisibleString (SIZE(0..64)) OPTIONAL
 }
 
 -- ======================================================================
--- 7.8 DataDefinition
+-- 7.3.11 ServiceError
 -- ======================================================================
 
--- Mapped to: CmsDataDefinition (Java)
-DataDefinition ::= SEQUENCE {
-    dataName    VisibleString,
-    dataType    VisibleString,
-    fc          FC,
-    data        Data
+ServiceError ::= INTEGER {
+    no-error                                      (0),
+    instance-not-available                        (1),
+    instance-in-use                               (2),
+    access-violation                              (3),
+    access-not-allowed-in-current-state            (4),
+    parameter-value-inappropriate                 (5),
+    parameter-value-inconsistent                  (6),
+    class-not-supported                           (7),
+    instance-locked-by-other-client               (8),
+    control-must-be-selected                      (9),
+    type-conflict                                 (10),
+    failed-due-to-communications-constraint       (11),
+    failed-due-to-server-constraint               (12)
+} (0..12)
+
+-- ======================================================================
+-- 7.3.12 PhyComAddr
+-- ======================================================================
+
+PhyComAddr ::= SEQUENCE {
+    addr        [0] IMPLICIT OCTET STRING (SIZE(6)),
+    priority    [1] IMPLICIT Int8U,
+    vid         [2] IMPLICIT Int16U,
+    appid       [3] IMPLICIT Int16U
 }
 
 -- ======================================================================
--- 7.9 ServiceError
+-- 7.4 FC
 -- ======================================================================
 
--- Mapped to: CmsServiceError (Java)
-ServiceError ::= ENUMERATED {
-    noError                            (0),
-    accessNotAllowedInCurrentState     (1),
-    accessViewNotSupported             (2),
-    ambiguousReference                 (3),
-    classNotSupported                  (4),
-    instanceNotAvailable               (5),
-    instanceInUse                      (6),
-    parameterValueInappropriate        (7),
-    parameterValueInvalid              (8),
-    failedDueToServerConstraint        (9),
-    failedDueToCommunicationConstraint (10),
-    typeConflict                       (11),
-    other                              (12),
-    dataSetNull                        (13),
-    dataSetLimit                       (14),
-    objectAlreadyExists                (15),
-    objectNotExist                     (16)
+FC ::= BIT STRING (SIZE(16))
+
+
+-- ======================================================================
+-- 7.5.1 Control Blocks Attributes
+-- ======================================================================
+
+-- ======================================================================
+-- 7.5.2 Originator
+-- ======================================================================
+
+Originator ::= SEQUENCE {
+    orCat        [0] IMPLICIT INTEGER {
+        notSupported      (0),
+        bayControl        (1),
+        stationControl    (2),
+        remoteControl     (3),
+        automaticBay      (4),
+        automaticStation  (5),
+        automaticRemote   (6),
+        maintenance       (7),
+        process           (8)
+    } (0..8),
+    orIdent      [1] IMPLICIT OCTET STRING (SIZE(0..64))
 }
 
 -- ======================================================================
--- 7.10 AddCause / OrCat / SmpMod
+-- 7.5.3 Check
 -- ======================================================================
 
--- Mapped to: CmsAddCause (Java)
+Check ::= BIT STRING (SIZE(16))
+
+-- ======================================================================
+-- 7.5.4 AddCause
+-- ======================================================================
+
 AddCause ::= ENUMERATED {
     unknown                    (0),
     processError               (1),
@@ -296,31 +269,10 @@ AddCause ::= ENUMERATED {
     permanentFailure           (16)
 }
 
--- Mapped to: CmsOrCat (Java)
-OrCat ::= ENUMERATED {
-    notSupported      (0),
-    bayControl        (1),
-    stationControl    (2),
-    remoteControl     (3),
-    automaticBay      (4),
-    automaticStation  (5),
-    automaticRemote   (6),
-    maintenance       (7),
-    process           (8)
-}
-
--- Mapped to: CmsSmpMod (Java)
-SmpMod ::= ENUMERATED {
-    smpPerPeriod     (0),
-    smpPerSecond     (1),
-    secPerSmp        (2)
-}
-
 -- ======================================================================
--- 7.11 Control Blocks
+-- 7.6.1 Control Blocks
 -- ======================================================================
 
--- Mapped to: CmsSGCB (Java)
 SGCB ::= SEQUENCE {
     sgcbName ObjectName,
     sgcbRef  ObjectReference,
@@ -332,7 +284,6 @@ SGCB ::= SEQUENCE {
     resvTms  Int16U OPTIONAL
 }
 
--- Mapped to: CmsBRCB (Java)
 BRCB ::= SEQUENCE {
     brcbName    ObjectName,
     brcbRef     ObjectReference,
@@ -353,7 +304,6 @@ BRCB ::= SEQUENCE {
     owner       OCTET STRING (SIZE(64))
 }
 
--- Mapped to: CmsURCB (Java)
 URCB ::= SEQUENCE {
     urcbName ObjectName,
     urcbRef  ObjectReference,
@@ -371,7 +321,6 @@ URCB ::= SEQUENCE {
     owner    OCTET STRING (SIZE(64))
 }
 
--- Mapped to: CmsLCB (Java)
 LCB ::= SEQUENCE {
     lcbName ObjectName,
     lcbRef  ObjectReference,
@@ -386,7 +335,6 @@ LCB ::= SEQUENCE {
     logRef  ObjectReference
 }
 
--- Mapped to: CmsGoCB (Java)
 GoCB ::= SEQUENCE {
     gocbRef       ObjectReference,
     appID         VisibleString (SIZE(0..129)),
@@ -400,7 +348,6 @@ GoCB ::= SEQUENCE {
     goID          VisibleString (SIZE(0..129)) OPTIONAL
 }
 
--- Mapped to: CmsMSVCB (Java)
 MSVCB ::= SEQUENCE {
     msvcbRef       ObjectReference,
     svID           VisibleString (SIZE(0..129)),
@@ -418,17 +365,150 @@ MSVCB ::= SEQUENCE {
 }
 
 -- ======================================================================
--- 7.12 FileEntry
+-- 7.6.2 TriggerConditions
 -- ======================================================================
 
--- Mapped to: CmsFileEntry (Java)
-FileEntry ::= SEQUENCE {
-    fileName    VisibleString (SIZE(0..255)),
-    fileSize    Int32U,
-    lastModified UtcTime OPTIONAL,
-    fileType    VisibleString (SIZE(0..64)) OPTIONAL,
-    fileAttr    VisibleString (SIZE(0..64)) OPTIONAL
+TriggerConditions ::= BIT STRING {
+    reserved                    (0),
+    data-change                 (1),
+    quality-change              (2),
+    data-update                 (3),
+    integrity                   (4),
+    general-interrogation       (5)
+} (SIZE(6))
+
+-- ======================================================================
+-- 7.6.3 ReasonCode
+-- ======================================================================
+
+ReasonCode ::= BIT STRING {
+    reserved                    (0),
+    data-change                 (1),
+    quality-change              (2),
+    data-update                 (3),
+    integrity                   (4),
+    general-interrogation       (5),
+    application-trigger         (6)
+} (SIZE(7))
+
+-- ======================================================================
+-- 7.6.4 RcbOptFlds
+-- ======================================================================
+
+RcbOptFlds ::= BIT STRING {
+    reserved                    (0),
+    sequence-number             (1),
+    report-time-stamp           (2),
+    reason-for-inclusion        (3),
+    data-set-name               (4),
+    data-reference              (5),
+    buffer-overflow             (6),
+    entryID                     (7),
+    conf-revision               (8),
+    segmentation                (9)
+} (SIZE(10))
+
+-- ======================================================================
+-- 7.6.5 LcbOptFlds
+-- ======================================================================
+
+LcbOptFlds ::= BIT STRING (SIZE(1))
+
+-- ======================================================================
+-- 7.6.6 MsvcbOptFlds
+-- ======================================================================
+
+MsvcbOptFlds ::= BIT STRING {
+    refresh-time                (0),
+    reserved                    (1),
+    sample-rate                 (2),
+    data-set-name               (3),
+    security                    (4)
+} (SIZE(5))
+
+-- ======================================================================
+-- 7.6.7 SmpMod
+-- ======================================================================
+
+SmpMod ::= INTEGER {
+    samples-per-nominal-period    (0),
+    samples-per-second            (1),
+    seconds-per-sample            (2)
+} (0..2)
+
+-- ======================================================================
+-- 7.7 Data (CHOICE of 24 alternatives)
+-- ======================================================================
+
+Data ::= CHOICE {
+    error              [0] IMPLICIT ServiceError,
+    array              [1] IMPLICIT SEQUENCE OF Data,
+    structure          [2] IMPLICIT SEQUENCE OF Data,
+    boolean            [3] IMPLICIT BOOLEAN,
+    int8               [4] IMPLICIT Int8,
+    int16              [5] IMPLICIT Int16,
+    int32              [6] IMPLICIT Int32,
+    int64              [7] IMPLICIT Int64,
+    int8u              [8] IMPLICIT Int8U,
+    int16u             [9] IMPLICIT Int16U,
+    int32u             [10] IMPLICIT Int32U,
+    int64u             [11] IMPLICIT Int64U,
+    float32            [12] IMPLICIT Float32,
+    float64            [13] IMPLICIT Float64,
+    bit-string         [14] IMPLICIT BIT STRING,
+    octet-string       [15] IMPLICIT OCTET STRING,
+    visible-string     [16] IMPLICIT VisibleString,
+    unicode-string     [17] IMPLICIT UTF8String,
+    utc-time           [18] IMPLICIT UtcTime,
+    binary-time        [19] IMPLICIT BinaryTime,
+    quality            [20] IMPLICIT Quality,
+    dbpos              [21] IMPLICIT Dbpos,
+    tcmd               [22] IMPLICIT Tcmd,
+    check              [23] IMPLICIT Check
 }
+
+-- ======================================================================
+-- 7.8 DataDefinition
+-- ======================================================================
+
+DataDefinition ::= CHOICE {
+    error              [0] IMPLICIT ServiceError,
+    array              [1] IMPLICIT SEQUENCE {
+        numberOfElement  [1] IMPLICIT Int32,
+        elementType      [2] DataDefinition
+    },
+    structure          [2] IMPLICIT SEQUENCE OF SEQUENCE {
+        name             [0] IMPLICIT ObjectName,
+        fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
+        type             [2] DataDefinition
+    },
+    boolean            [3] IMPLICIT NULL,
+    int8               [4] IMPLICIT NULL,
+    int16              [5] IMPLICIT NULL,
+    int32              [6] IMPLICIT NULL,
+    int64              [7] IMPLICIT NULL,
+    int8u              [8] IMPLICIT NULL,
+    int16u             [9] IMPLICIT NULL,
+    int32u             [10] IMPLICIT NULL,
+    int64u             [11] IMPLICIT NULL,
+    float32            [12] IMPLICIT NULL,
+    float64            [13] IMPLICIT NULL,
+    bit-string         [14] IMPLICIT INTEGER,
+    octet-string       [15] IMPLICIT INTEGER,
+    visible-string     [16] IMPLICIT INTEGER,
+    unicode-string     [17] IMPLICIT INTEGER,
+    utc-time           [18] IMPLICIT NULL,
+    binary-time        [19] IMPLICIT NULL,
+    quality            [20] IMPLICIT NULL,
+    dbpos              [21] IMPLICIT NULL,
+    tcmd               [22] IMPLICIT NULL,
+    check              [23] IMPLICIT NULL
+}
+
+
+
+
+
 
 --
 -- DL/T 2811 Protocol Layer ? APCH / ASDU definitions
@@ -440,14 +520,12 @@ FileEntry ::= SEQUENCE {
 -- APCH ? Application Protocol Control Header (4 bytes)
 -- ======================================================================
 
--- Mapped to: CmsApch (Java)
 Apch ::= SEQUENCE {
     cc          ControlCode,
     sc          Int8U,
     fl          Int16U
 }
 
--- Mapped to: CmsControlCode (Java)
 ControlCode ::= SEQUENCE {
     next        BOOLEAN,
     resp        BOOLEAN,
@@ -459,7 +537,6 @@ ControlCode ::= SEQUENCE {
 -- ASDU ? Application Service Data Unit (base for all services)
 -- ======================================================================
 
--- Mapped to: CmsAsdu (Java)
 -- reqId is the first field in every ASDU
 Asdu ::= SEQUENCE {
     reqId       Int16U
@@ -469,7 +546,6 @@ Asdu ::= SEQUENCE {
 -- APDU ? Complete application-layer frame
 -- ======================================================================
 
--- Mapped to: CmsApdu (Java)
 Apdu ::= SEQUENCE {
     apch        Apch,
     asdu        OCTET STRING (SIZE(0..65531))
@@ -483,7 +559,6 @@ Apdu ::= SEQUENCE {
 -- 8.2.1 Associate (Service Code 0x01)
 -- ======================================================================
 
--- Mapped to: CmsAssociate (Java)
 -- Request: serverAccessPointReference + authenticationParameter
 -- Response+: associationId + serviceError + authenticationParameter
 -- Response-: serviceError
@@ -518,7 +593,6 @@ Associate-ResponseNegative ::= SEQUENCE {
 -- 8.2.2 Release (Service Code 0x02)
 -- ======================================================================
 
--- Mapped to: CmsRelease (Java)
 -- Request: no additional fields beyond reqId
 -- Response+: releaseResponse
 -- Response-: serviceError
@@ -541,7 +615,6 @@ Release-ResponseNegative ::= SEQUENCE {
 -- 8.2.3 Abort (Service Code 0x03)
 -- ======================================================================
 
--- Mapped to: CmsAbort (Java)
 -- No request/response ? unidirectional
 
 Abort ::= SEQUENCE {
@@ -565,7 +638,6 @@ AbortReason ::= ENUMERATED {
 -- 8.2.4 AssociateNegotiate (Service Code 0x04)
 -- ======================================================================
 
--- Mapped to: CmsAssociateNegotiate (Java)
 
 NegotiationParameter ::= SEQUENCE {
     maxReqIdSize                Int16U,
@@ -597,7 +669,6 @@ AssociateNegotiate-ResponseNegative ::= SEQUENCE {
 -- 8.3.1 GetDataSetValues (Service Code 0x11)
 -- ======================================================================
 
--- Mapped to: CmsGetDataValues (Java)
 -- Request: ObjectReference
 -- Response+: Data[]
 -- Response-: ServiceError
@@ -626,7 +697,6 @@ GetDataValues-ResponseNegative ::= SEQUENCE {
 -- 8.3.2 SetDataSetValues (Service Code 0x12)
 -- ======================================================================
 
--- Mapped to: CmsSetDataValues (Java)
 
 SetDataValues-Entry ::= SEQUENCE {
     dataRef                     ObjectReference,
@@ -651,7 +721,6 @@ SetDataValues-ResponseNegative ::= SEQUENCE {
 -- 8.3.3 GetDataDefinition (Service Code 0x13)
 -- ======================================================================
 
--- Mapped to: CmsGetDataDefinition (Java)
 
 GetDataDefinition-Entry ::= SEQUENCE {
     dataRef                     ObjectReference,
@@ -677,7 +746,6 @@ GetDataDefinition-ResponseNegative ::= SEQUENCE {
 -- 8.3.4 GetDataDirectory (Service Code 0x14)
 -- ======================================================================
 
--- Mapped to: CmsGetDataDirectory (Java)
 
 GetDataDirectory-Entry ::= SEQUENCE {
     dataRef                     ObjectReference,
@@ -707,7 +775,6 @@ GetDataDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.4.1 Select (Service Code 0x21)
 -- ======================================================================
 
--- Mapped to: CmsSelect (Java)
 
 Select-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -730,7 +797,6 @@ Select-ResponseNegative ::= SEQUENCE {
 -- 8.4.2 SelectWithValue (Service Code 0x22)
 -- ======================================================================
 
--- Mapped to: CmsSelectWithValue (Java)
 
 SelectWithValue-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -753,7 +819,6 @@ SelectWithValue-ResponseNegative ::= SEQUENCE {
 -- 8.4.3 Operate (Service Code 0x23)
 -- ======================================================================
 
--- Mapped to: CmsOperate (Java)
 
 Operate-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -778,7 +843,6 @@ Operate-ResponseNegative ::= SEQUENCE {
 -- 8.4.4 Cancel (Service Code 0x24)
 -- ======================================================================
 
--- Mapped to: CmsCancel (Java)
 
 Cancel-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -800,7 +864,6 @@ Cancel-ResponseNegative ::= SEQUENCE {
 -- 8.4.5 TimeActivatedOperate (Service Code 0x25)
 -- ======================================================================
 
--- Mapped to: CmsTimeActivatedOperate (Java)
 
 TimeActivatedOperate-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -826,7 +889,6 @@ TimeActivatedOperate-ResponseNegative ::= SEQUENCE {
 -- 8.4.6 CommandTermination (Service Code 0x26)
 -- ======================================================================
 
--- Mapped to: CmsCommandTermination (Java)
 -- Unconfirmed service (server ? client)
 
 CommandTermination ::= SEQUENCE {
@@ -840,7 +902,6 @@ CommandTermination ::= SEQUENCE {
 -- 8.4.7 TimeActivatedOperateTermination (Service Code 0x27)
 -- ======================================================================
 
--- Mapped to: CmsTimeActivatedOperateTermination (Java)
 -- Unconfirmed service (server ? client)
 
 TimeActivatedOperateTermination ::= SEQUENCE {
@@ -859,7 +920,6 @@ TimeActivatedOperateTermination ::= SEQUENCE {
 -- 8.5.1 GetBRCBValues (Service Code 0x31)
 -- ======================================================================
 
--- Mapped to: CmsGetBRCBValues (Java)
 
 GetBRCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -894,7 +954,6 @@ GetBRCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.5.2 SetBRCBValues (Service Code 0x32)
 -- ======================================================================
 
--- Mapped to: CmsSetBRCBValues (Java)
 
 SetBRCBValues-Entry ::= SEQUENCE {
     reference                   ObjectReference,
@@ -931,7 +990,6 @@ SetBRCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.5.3 GetURCBValues (Service Code 0x33)
 -- ======================================================================
 
--- Mapped to: CmsGetURCBValues (Java)
 
 GetURCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -963,7 +1021,6 @@ GetURCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.5.4 SetURCBValues (Service Code 0x34)
 -- ======================================================================
 
--- Mapped to: CmsSetURCBValues (Java)
 
 SetURCBValues-Entry ::= SEQUENCE {
     reference                   ObjectReference,
@@ -997,7 +1054,6 @@ SetURCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.5.5 Report (Service Code 0x35, unconfirmed)
 -- ======================================================================
 
--- Mapped to: CmsReport (Java)
 
 ReportEntryData ::= SEQUENCE {
     dataRef                     ObjectReference,
@@ -1031,7 +1087,6 @@ Report ::= SEQUENCE {
 -- 8.6.1 CreateDataSet (Service Code 0x41)
 -- ======================================================================
 
--- Mapped to: CmsCreateDataSet (Java)
 
 CreateDataSet-Entry ::= SEQUENCE {
     dataRef                     ObjectReference
@@ -1056,7 +1111,6 @@ CreateDataSet-ResponseNegative ::= SEQUENCE {
 -- 8.6.2 DeleteDataSet (Service Code 0x42)
 -- ======================================================================
 
--- Mapped to: CmsDeleteDataSet (Java)
 
 DeleteDataSet-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1076,7 +1130,6 @@ DeleteDataSet-ResponseNegative ::= SEQUENCE {
 -- 8.6.3 GetDataSetDirectory (Service Code 0x43)
 -- ======================================================================
 
--- Mapped to: CmsGetDataSetDirectory (Java)
 
 GetDataSetDirectory-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1097,7 +1150,6 @@ GetDataSetDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.6.4 GetDataSetValues (Service Code 0x44)
 -- ======================================================================
 
--- Mapped to: CmsGetDataSetValues (Java)
 
 GetDataSetValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1118,7 +1170,6 @@ GetDataSetValues-ResponseNegative ::= SEQUENCE {
 -- 8.6.5 SetDataSetValues (Service Code 0x45)
 -- ======================================================================
 
--- Mapped to: CmsSetDataSetValues (Java)
 
 SetDataSetValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1143,7 +1194,6 @@ SetDataSetValues-ResponseNegative ::= SEQUENCE {
 -- 8.7.1 GetServerDirectory (Service Code 0x51)
 -- ======================================================================
 
--- Mapped to: CmsGetServerDirectory (Java)
 
 GetServerDirectory-Request ::= SEQUENCE {
     reqId                       Int16U
@@ -1163,7 +1213,6 @@ GetServerDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.7.2 GetLogicalDeviceDirectory (Service Code 0x52)
 -- ======================================================================
 
--- Mapped to: CmsGetLogicalDeviceDirectory (Java)
 
 GetLogicalDeviceDirectory-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1184,7 +1233,6 @@ GetLogicalDeviceDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.7.3 GetLogicalNodeDirectory (Service Code 0x53)
 -- ======================================================================
 
--- Mapped to: CmsGetLogicalNodeDirectory (Java)
 
 ObjectClass ::= SEQUENCE {
     classType                   VisibleString (SIZE(0..32))
@@ -1216,7 +1264,6 @@ GetLogicalNodeDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.7.4 GetServerDirectory (Service Code 0x54)
 -- ======================================================================
 
--- Mapped to: CmsGetAllDataValues (Java)
 
 GetAllDataValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1242,7 +1289,6 @@ GetAllDataValues-ResponseNegative ::= SEQUENCE {
 -- 8.7.5 GetServerDirectory (Service Code 0x55)
 -- ======================================================================
 
--- Mapped to: CmsGetAllDataDefinition (Java)
 
 GetAllDataDefinition-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1270,7 +1316,6 @@ GetAllDataDefinition-ResponseNegative ::= SEQUENCE {
 -- 8.7.6 GetAllCBValues (Service Code 0x56)
 -- ======================================================================
 
--- Mapped to: CmsGetAllCBValues (Java)
 
 CBType ::= ENUMERATED {
     brcb                        (0),
@@ -1310,7 +1355,6 @@ GetAllCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.7.7 GetACSIClasses (Service Code 0x57)
 -- ======================================================================
 
--- Mapped to: CmsGetACSIClasses (Java)
 
 CmsACSIClass ::= SEQUENCE {
     className                   VisibleString (SIZE(0..32)),
@@ -1339,7 +1383,6 @@ GetACSIClasses-ResponseNegative ::= SEQUENCE {
 -- 8.8.1 GetSGCBValues (Service Code 0x61)
 -- ======================================================================
 
--- Mapped to: CmsGetSGCBValues (Java)
 
 GetSGCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1365,7 +1408,6 @@ GetSGCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.8.2 SelectActiveSG (Service Code 0x62)
 -- ======================================================================
 
--- Mapped to: CmsSelectActiveSG (Java)
 
 SelectActiveSG-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1388,7 +1430,6 @@ SelectActiveSG-ResponseNegative ::= SEQUENCE {
 -- 8.8.3 SelectEditSG (Service Code 0x63)
 -- ======================================================================
 
--- Mapped to: CmsSelectEditSG (Java)
 
 SelectEditSG-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1411,7 +1452,6 @@ SelectEditSG-ResponseNegative ::= SEQUENCE {
 -- 8.8.4 ConfirmEditSGValues (Service Code 0x64)
 -- ======================================================================
 
--- Mapped to: CmsConfirmEditSGValues (Java)
 
 ConfirmEditSGValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1432,7 +1472,6 @@ ConfirmEditSGValues-ResponseNegative ::= SEQUENCE {
 -- 8.8.5 GetEditSGValue (Service Code 0x65)
 -- ======================================================================
 
--- Mapped to: CmsGetEditSGValue (Java)
 
 GetEditSGValue-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1453,7 +1492,6 @@ GetEditSGValue-ResponseNegative ::= SEQUENCE {
 -- 8.8.6 SetEditSGValue (Service Code 0x66)
 -- ======================================================================
 
--- Mapped to: CmsSetEditSGValue (Java)
 
 SetEditSGValue-Entry ::= SEQUENCE {
     dataRef                     ObjectReference,
@@ -1478,7 +1516,6 @@ SetEditSGValue-ResponseNegative ::= SEQUENCE {
 -- 8.8.7 GetLCBValues (Service Code 0x67)
 -- ======================================================================
 
--- Mapped to: CmsGetLCBValues (Java)
 
 GetLCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1508,7 +1545,6 @@ GetLCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.8.8 SetLCBValues (Service Code 0x68)
 -- ======================================================================
 
--- Mapped to: CmsSetLCBValues (Java)
 
 SetLCBValues-Entry ::= SEQUENCE {
     reference                   ObjectReference,
@@ -1541,7 +1577,6 @@ SetLCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.8.9 GetLogStatusValues (Service Code 0x69)
 -- ======================================================================
 
--- Mapped to: CmsGetLogStatusValues (Java)
 
 LogStatusValue ::= SEQUENCE {
     ldName                      VisibleString (SIZE(0..64)),
@@ -1570,7 +1605,6 @@ GetLogStatusValues-ResponseNegative ::= SEQUENCE {
 -- 8.8.10 QueryLogAfter (Service Code 0x6A)
 -- ======================================================================
 
--- Mapped to: CmsQueryLogAfter (Java)
 
 LogEntry ::= SEQUENCE {
     entryID                     EntryID,
@@ -1599,7 +1633,6 @@ QueryLogAfter-ResponseNegative ::= SEQUENCE {
 -- 8.8.11 QueryLogByTime (Service Code 0x6B)
 -- ======================================================================
 
--- Mapped to: CmsQueryLogByTime (Java)
 
 QueryLogByTime-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1627,7 +1660,6 @@ QueryLogByTime-ResponseNegative ::= SEQUENCE {
 -- 8.9.1 GetFile (Service Code 0x71)
 -- ======================================================================
 
--- Mapped to: CmsGetFile (Java)
 
 GetFile-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1649,7 +1681,6 @@ GetFile-ResponseNegative ::= SEQUENCE {
 -- 8.9.2 SetFile (Service Code 0x72)
 -- ======================================================================
 
--- Mapped to: CmsSetFile (Java)
 
 SetFile-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1671,7 +1702,6 @@ SetFile-ResponseNegative ::= SEQUENCE {
 -- 8.9.3 DeleteFile (Service Code 0x73)
 -- ======================================================================
 
--- Mapped to: CmsDeleteFile (Java)
 
 DeleteFile-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1691,7 +1721,6 @@ DeleteFile-ResponseNegative ::= SEQUENCE {
 -- 8.9.4 GetFileDirectory (Service Code 0x74)
 -- ======================================================================
 
--- Mapped to: CmsGetFileDirectory (Java)
 
 FileAttribute ::= SEQUENCE {
     fileName                    VisibleString (SIZE(0..255)),
@@ -1718,7 +1747,6 @@ GetFileDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.9.5 GetFileAttributeValues (Service Code 0x75)
 -- ======================================================================
 
--- Mapped to: CmsGetFileAttributeValues (Java)
 
 GetFileAttributeValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1743,7 +1771,6 @@ GetFileAttributeValues-ResponseNegative ::= SEQUENCE {
 -- 8.10.1 GetGoReference (Service Code 0x81)
 -- ======================================================================
 
--- Mapped to: CmsGetGoReference (Java)
 
 GetGoReference-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1764,7 +1791,6 @@ GetGoReference-ResponseNegative ::= SEQUENCE {
 -- 8.10.2 GetGoCBValues (Service Code 0x82)
 -- ======================================================================
 
--- Mapped to: CmsGetGoCBValues (Java)
 
 GetGoCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1793,7 +1819,6 @@ GetGoCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.10.3 SetGoCBValues (Service Code 0x83)
 -- ======================================================================
 
--- Mapped to: CmsSetGoCBValues (Java)
 
 SetGoCBValues-Entry ::= SEQUENCE {
     reference                   ObjectReference,
@@ -1825,7 +1850,6 @@ SetGoCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.10.4 SendGooseMessage (Service Code 0x84, unconfirmed)
 -- ======================================================================
 
--- Mapped to: CmsSendGooseMessage (Java)
 
 GoosePdu ::= SEQUENCE {
     gocbRef                     ObjectReference,
@@ -1851,7 +1875,6 @@ SendGooseMessage ::= SEQUENCE {
 -- 8.10.5 GetGooseElementNumber (Service Code 0x85)
 -- ======================================================================
 
--- Mapped to: CmsGetGooseElementNumber (Java)
 
 GetGooseElementNumber-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1873,7 +1896,6 @@ GetGooseElementNumber-ResponseNegative ::= SEQUENCE {
 -- 8.10.6 GetMSVCBValues (Service Code 0x86)
 -- ======================================================================
 
--- Mapped to: CmsGetMSVCBValues (Java)
 
 GetMSVCBValues-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -1902,7 +1924,6 @@ GetMSVCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.10.7 SetMSVCBValues (Service Code 0x87)
 -- ======================================================================
 
--- Mapped to: CmsSetMSVCBValues (Java)
 
 SetMSVCBValues-Entry ::= SEQUENCE {
     reference                   ObjectReference,
@@ -1935,7 +1956,6 @@ SetMSVCBValues-ResponseNegative ::= SEQUENCE {
 -- 8.10.8 SendMSVMessage (Service Code 0x88, unconfirmed)
 -- ======================================================================
 
--- Mapped to: CmsSendMSVMessage (Java)
 
 SavPdu ::= SEQUENCE {
     svID                        VisibleString (SIZE(0..129)),
@@ -1957,7 +1977,6 @@ SendMSVMessage ::= SEQUENCE {
 -- 8.11.1 GetRpcInterfaceDirectory (Service Code 0x91)
 -- ======================================================================
 
--- Mapped to: CmsGetRpcInterfaceDirectory (Java)
 
 GetRpcInterfaceDirectory-Request ::= SEQUENCE {
     reqId                       Int16U
@@ -1977,7 +1996,6 @@ GetRpcInterfaceDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.11.2 GetRpcInterfaceDefinition (Service Code 0x92)
 -- ======================================================================
 
--- Mapped to: CmsGetRpcInterfaceDefinition (Java)
 
 RpcMethodDefEntry ::= SEQUENCE {
     methodName                  VisibleString (SIZE(0..64)),
@@ -2005,7 +2023,6 @@ GetRpcInterfaceDefinition-ResponseNegative ::= SEQUENCE {
 -- 8.11.3 GetRpcMethodDirectory (Service Code 0x93)
 -- ======================================================================
 
--- Mapped to: CmsGetRpcMethodDirectory (Java)
 
 GetRpcMethodDirectory-Request ::= SEQUENCE {
     reqId                       Int16U,
@@ -2027,7 +2044,6 @@ GetRpcMethodDirectory-ResponseNegative ::= SEQUENCE {
 -- 8.11.4 GetRpcMethodDefinition (Service Code 0x94)
 -- ======================================================================
 
--- Mapped to: CmsGetRpcMethodDefinition (Java)
 
 RpcMethodValue ::= SEQUENCE {
     paramName                   VisibleString (SIZE(0..64)),
@@ -2057,7 +2073,6 @@ GetRpcMethodDefinition-ResponseNegative ::= SEQUENCE {
 -- 8.11.5 RpcCall (Service Code 0x95)
 -- ======================================================================
 
--- Mapped to: CmsRpcCall (Java)
 
 RpcCall-Request ::= SEQUENCE {
     reqId                       Int16U,
