@@ -5,6 +5,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/cmsper_datatypes.dir/src/cms_apdu.c.obj.d"
   "CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj"
   "CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.obj.d"
+  "CMakeFiles/cmsper_datatypes.dir/src/cms_ffi_datatypes.c.obj"
+  "CMakeFiles/cmsper_datatypes.dir/src/cms_ffi_datatypes.c.obj.d"
   "bin/libcmsper_datatypes.dll"
   "bin/libcmsper_datatypes.dll.manifest"
   "bin/libcmsper_datatypes.pdb"

@@ -285,6 +285,30 @@ src/cms_ffi.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi.c.s
 .PHONY : src/cms_ffi.c.s
 
+src/cms_ffi_datatypes.obj: src/cms_ffi_datatypes.c.obj
+.PHONY : src/cms_ffi_datatypes.obj
+
+# target to build an object file
+src/cms_ffi_datatypes.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi_datatypes.c.obj
+.PHONY : src/cms_ffi_datatypes.c.obj
+
+src/cms_ffi_datatypes.i: src/cms_ffi_datatypes.c.i
+.PHONY : src/cms_ffi_datatypes.i
+
+# target to preprocess a source file
+src/cms_ffi_datatypes.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi_datatypes.c.i
+.PHONY : src/cms_ffi_datatypes.c.i
+
+src/cms_ffi_datatypes.s: src/cms_ffi_datatypes.c.s
+.PHONY : src/cms_ffi_datatypes.s
+
+# target to generate assembly for a file
+src/cms_ffi_datatypes.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\cmsper_datatypes.dir\build.make CMakeFiles/cmsper_datatypes.dir/src/cms_ffi_datatypes.c.s
+.PHONY : src/cms_ffi_datatypes.c.s
+
 src/main.obj: src/main.c.obj
 .PHONY : src/main.obj
 
@@ -337,6 +361,9 @@ help:
 	@echo ... src/cms_ffi.obj
 	@echo ... src/cms_ffi.i
 	@echo ... src/cms_ffi.s
+	@echo ... src/cms_ffi_datatypes.obj
+	@echo ... src/cms_ffi_datatypes.i
+	@echo ... src/cms_ffi_datatypes.s
 	@echo ... src/main.obj
 	@echo ... src/main.i
 	@echo ... src/main.s

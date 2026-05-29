@@ -64,6 +64,7 @@ int cms_ffi_decode_associate_request(
         if ((int)len < *sap_ref_cap) {
             memcpy(sap_ref, assoc.serverAccessPointReference, len);
             sap_ref[len] = '\0';
+            *sap_ref_cap = (int)len;
         }
         free(assoc.serverAccessPointReference);
     }

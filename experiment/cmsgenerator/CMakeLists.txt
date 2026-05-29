@@ -14,7 +14,7 @@ file(GLOB GEN_SRC generated/gen_*.c)
 if(GEN_SRC)
     # DLL 只包含 gen_cms.c（已包含所有公共类型定义），避免与 gen_dlt2811b_datatypes.c 重复符号
     list(FILTER GEN_SRC INCLUDE REGEX "gen_cms\\.c$")
-    add_library(cmsper_datatypes SHARED ${GEN_SRC} src/cms_apdu.c src/cms_ffi.c)
+    add_library(cmsper_datatypes SHARED ${GEN_SRC} src/cms_apdu.c src/cms_ffi.c src/cms_ffi_datatypes.c)
     target_include_directories(cmsper_datatypes
         PUBLIC
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/generated>
