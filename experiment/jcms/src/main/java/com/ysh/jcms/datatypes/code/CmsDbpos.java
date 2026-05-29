@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.code;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsDbpos extends AbstractCmsCodedEnum {
 
@@ -17,7 +17,7 @@ public class CmsDbpos extends AbstractCmsCodedEnum {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_Dbpos(value.intValue(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Dbpos(value.intValue(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -25,7 +25,7 @@ public class CmsDbpos extends AbstractCmsCodedEnum {
 
     public static CmsDbpos decode(byte[] data) {
         IntByReference v = new IntByReference();
-        CmsFFI.INSTANCE.cms_decode_Dbpos(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Dbpos(data, data.length, v);
         return new CmsDbpos(v.getValue());
     }
 

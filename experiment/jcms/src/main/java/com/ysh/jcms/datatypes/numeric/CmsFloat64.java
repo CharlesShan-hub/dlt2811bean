@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
 public class CmsFloat64 extends AbstractCmsScalar<Double> {
@@ -19,7 +19,7 @@ public class CmsFloat64 extends AbstractCmsScalar<Double> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_Float64(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Float64(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -27,7 +27,7 @@ public class CmsFloat64 extends AbstractCmsScalar<Double> {
 
     public static CmsFloat64 decode(byte[] data) {
         double[] v = new double[1];
-        CmsFFI.INSTANCE.cms_decode_Float64(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Float64(data, data.length, v);
         return new CmsFloat64(v[0]);
     }
 

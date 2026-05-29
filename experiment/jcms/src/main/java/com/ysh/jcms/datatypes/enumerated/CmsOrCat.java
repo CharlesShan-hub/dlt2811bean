@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.enumerated;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsOrCat extends AbstractCmsEnumerated {
 
@@ -17,7 +17,7 @@ public class CmsOrCat extends AbstractCmsEnumerated {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_Originator(value, new byte[0], 0, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Originator(value, new byte[0], 0, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -27,7 +27,7 @@ public class CmsOrCat extends AbstractCmsEnumerated {
         IntByReference v = new IntByReference();
         byte[] ident = new byte[64];
         IntByReference identCap = new IntByReference(ident.length);
-        CmsFFI.INSTANCE.cms_decode_Originator(data, data.length, v, ident, identCap);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Originator(data, data.length, v, ident, identCap);
         return new CmsOrCat(v.getValue());
     }
 

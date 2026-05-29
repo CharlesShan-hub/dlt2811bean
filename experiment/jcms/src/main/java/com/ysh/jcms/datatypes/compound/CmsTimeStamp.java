@@ -2,7 +2,7 @@ package com.ysh.jcms.datatypes.compound;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsTimeStamp extends AbstractCmsCompound {
 
@@ -21,7 +21,7 @@ public class CmsTimeStamp extends AbstractCmsCompound {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_TimeStamp(secondsSinceEpoch, fractional, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_TimeStamp(secondsSinceEpoch, fractional, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -30,7 +30,7 @@ public class CmsTimeStamp extends AbstractCmsCompound {
     public static CmsTimeStamp decode(byte[] data) {
         LongByReference sec = new LongByReference();
         LongByReference frac = new LongByReference();
-        CmsFFI.INSTANCE.cms_decode_TimeStamp(data, data.length, sec, frac);
+        CmsFFIDatatypes.INSTANCE.cms_decode_TimeStamp(data, data.length, sec, frac);
         return new CmsTimeStamp(sec.getValue(), frac.getValue());
     }
 

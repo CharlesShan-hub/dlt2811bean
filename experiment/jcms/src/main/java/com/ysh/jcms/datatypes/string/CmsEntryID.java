@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.string;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
 public class CmsEntryID extends AbstractCmsScalar<byte[]> {
@@ -27,7 +27,7 @@ public class CmsEntryID extends AbstractCmsScalar<byte[]> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_EntryID(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_EntryID(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -35,7 +35,7 @@ public class CmsEntryID extends AbstractCmsScalar<byte[]> {
 
     public static CmsEntryID decode(byte[] data) {
         byte[] val = new byte[8];
-        CmsFFI.INSTANCE.cms_decode_EntryID(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_decode_EntryID(data, data.length, val);
         return new CmsEntryID(val);
     }
 

@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.math.BigInteger;
 
@@ -20,7 +20,7 @@ public class CmsInt64U extends AbstractCmsScalar<BigInteger> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_Int64U(value.longValue(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Int64U(value.longValue(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -28,7 +28,7 @@ public class CmsInt64U extends AbstractCmsScalar<BigInteger> {
 
     public static CmsInt64U decode(byte[] data) {
         com.sun.jna.ptr.LongByReference v = new com.sun.jna.ptr.LongByReference();
-        CmsFFI.INSTANCE.cms_decode_Int64U(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Int64U(data, data.length, v);
         long raw = v.getValue();
         BigInteger val;
         if (raw >= 0) {

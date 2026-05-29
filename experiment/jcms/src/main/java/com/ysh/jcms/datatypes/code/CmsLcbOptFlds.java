@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.code;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsLcbOptFlds extends AbstractCmsCodedEnum {
 
@@ -18,7 +18,7 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
         byte[] bytes = toPerBytes();
-        CmsFFI.INSTANCE.cms_encode_LcbOptFlds(bytes, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_LcbOptFlds(bytes, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -26,7 +26,7 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum {
 
     public static CmsLcbOptFlds decode(byte[] data) {
         byte[] val = new byte[1];
-        CmsFFI.INSTANCE.cms_decode_LcbOptFlds(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_decode_LcbOptFlds(data, data.length, val);
         return new CmsLcbOptFlds(fromPerBytes(val, 1));
     }
 

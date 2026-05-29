@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
 public class CmsInt32 extends AbstractCmsScalar<Integer> {
@@ -19,7 +19,7 @@ public class CmsInt32 extends AbstractCmsScalar<Integer> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_encode_Int32(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Int32(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -27,7 +27,7 @@ public class CmsInt32 extends AbstractCmsScalar<Integer> {
 
     public static CmsInt32 decode(byte[] data) {
         IntByReference v = new IntByReference();
-        CmsFFI.INSTANCE.cms_decode_Int32(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Int32(data, data.length, v);
         return new CmsInt32(v.getValue());
     }
 

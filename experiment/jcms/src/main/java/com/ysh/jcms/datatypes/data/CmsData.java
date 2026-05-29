@@ -2,7 +2,7 @@ package com.ysh.jcms.datatypes.data;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
-import com.ysh.jcms.CmsFFI;
+import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsData extends AbstractCmsDataUnit<Object> {
 
@@ -39,7 +39,7 @@ public class CmsData extends AbstractCmsDataUnit<Object> {
         byte[] buf = new byte[65536];
         IntByReference outLen = new IntByReference(buf.length);
         byte[] bytes = bytesVal != null ? bytesVal : new byte[0];
-        CmsFFI.INSTANCE.cms_encode_Data((int) value, intVal, floatVal, strVal, bytes, bytes.length, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_encode_Data((int) value, intVal, floatVal, strVal, bytes, bytes.length, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -53,7 +53,7 @@ public class CmsData extends AbstractCmsDataUnit<Object> {
         IntByReference strCap = new IntByReference(strBuf.length);
         byte[] bytesBuf = new byte[65536];
         IntByReference bytesCap = new IntByReference(bytesBuf.length);
-        CmsFFI.INSTANCE.cms_decode_Data(data, data.length, choice, intVal, floatVal, strBuf, strCap, bytesBuf, bytesCap);
+        CmsFFIDatatypes.INSTANCE.cms_decode_Data(data, data.length, choice, intVal, floatVal, strBuf, strCap, bytesBuf, bytesCap);
         String str = strCap.getValue() > 0 ? new String(strBuf, 0, strCap.getValue()) : null;
         byte[] bytes = new byte[bytesCap.getValue()];
         System.arraycopy(bytesBuf, 0, bytes, 0, bytes.length);
