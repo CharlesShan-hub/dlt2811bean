@@ -1,5 +1,5 @@
-#include "ccms/per_enumerated.h"
-#include "ccms/per_integer.h"
+#include "per_enumerated.h"
+#include "per_integer.h"
 
 per_error_t per_encode_enumerated(per_stream_t *s, uint32_t value, uint32_t value_count) {
     return per_encode_constrained_int(s, (int64_t)value, 0, (int64_t)(value_count - 1));

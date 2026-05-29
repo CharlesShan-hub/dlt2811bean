@@ -96,7 +96,7 @@ seq_of_roundtrip_EXTERNAL_OBJECTS =
 seq_of_roundtrip.exe: CMakeFiles/seq_of_roundtrip.dir/examples/seq_of_roundtrip.c.obj
 seq_of_roundtrip.exe: CMakeFiles/seq_of_roundtrip.dir/build.make
 seq_of_roundtrip.exe: libcmsapp_test_datatypes.a
-seq_of_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/build/libcmsper.a
+seq_of_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/build/libccms_core.a
 seq_of_roundtrip.exe: CMakeFiles/seq_of_roundtrip.dir/linkLibs.rsp
 seq_of_roundtrip.exe: CMakeFiles/seq_of_roundtrip.dir/objects1.rsp
 seq_of_roundtrip.exe: CMakeFiles/seq_of_roundtrip.dir/link.txt

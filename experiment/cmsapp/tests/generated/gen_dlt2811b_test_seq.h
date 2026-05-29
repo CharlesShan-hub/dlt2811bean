@@ -2,7 +2,7 @@
 #define GEN_dlt2811b_test_seq_H
 
 #include <stdint.h>
-#include "cmsper/cmsper.h"
+#include "cmsper.h"
 
 typedef struct Item Item;
 typedef struct Container Container;

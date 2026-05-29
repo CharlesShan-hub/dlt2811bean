@@ -116,17 +116,30 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named sgcb_roundtrip
+# Target rules for targets named ffi_roundtrip
 
 # Build rule for target.
-sgcb_roundtrip: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 sgcb_roundtrip
-.PHONY : sgcb_roundtrip
+ffi_roundtrip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 ffi_roundtrip
+.PHONY : ffi_roundtrip
 
 # fast build rule for target.
-sgcb_roundtrip/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/build
-.PHONY : sgcb_roundtrip/fast
+ffi_roundtrip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/build
+.PHONY : ffi_roundtrip/fast
+
+#=============================================================================
+# Target rules for targets named apdu_roundtrip
+
+# Build rule for target.
+apdu_roundtrip: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 apdu_roundtrip
+.PHONY : apdu_roundtrip
+
+# fast build rule for target.
+apdu_roundtrip/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/build
+.PHONY : apdu_roundtrip/fast
 
 #=============================================================================
 # Target rules for targets named cmsapp_test_datatypes
@@ -153,45 +166,6 @@ seq_of_roundtrip: cmake_check_build_system
 seq_of_roundtrip/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\seq_of_roundtrip.dir\build.make CMakeFiles/seq_of_roundtrip.dir/build
 .PHONY : seq_of_roundtrip/fast
-
-#=============================================================================
-# Target rules for targets named service_roundtrip
-
-# Build rule for target.
-service_roundtrip: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 service_roundtrip
-.PHONY : service_roundtrip
-
-# fast build rule for target.
-service_roundtrip/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/build
-.PHONY : service_roundtrip/fast
-
-#=============================================================================
-# Target rules for targets named apdu_roundtrip
-
-# Build rule for target.
-apdu_roundtrip: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 apdu_roundtrip
-.PHONY : apdu_roundtrip
-
-# fast build rule for target.
-apdu_roundtrip/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\apdu_roundtrip.dir\build.make CMakeFiles/apdu_roundtrip.dir/build
-.PHONY : apdu_roundtrip/fast
-
-#=============================================================================
-# Target rules for targets named ffi_roundtrip
-
-# Build rule for target.
-ffi_roundtrip: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\Makefile2 ffi_roundtrip
-.PHONY : ffi_roundtrip
-
-# fast build rule for target.
-ffi_roundtrip/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\ffi_roundtrip.dir\build.make CMakeFiles/ffi_roundtrip.dir/build
-.PHONY : ffi_roundtrip/fast
 
 examples/apdu_roundtrip.obj: examples/apdu_roundtrip.c.obj
 .PHONY : examples/apdu_roundtrip.obj
@@ -265,54 +239,6 @@ examples/seq_of_roundtrip.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\seq_of_roundtrip.dir\build.make CMakeFiles/seq_of_roundtrip.dir/examples/seq_of_roundtrip.c.s
 .PHONY : examples/seq_of_roundtrip.c.s
 
-examples/service_roundtrip.obj: examples/service_roundtrip.c.obj
-.PHONY : examples/service_roundtrip.obj
-
-# target to build an object file
-examples/service_roundtrip.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/examples/service_roundtrip.c.obj
-.PHONY : examples/service_roundtrip.c.obj
-
-examples/service_roundtrip.i: examples/service_roundtrip.c.i
-.PHONY : examples/service_roundtrip.i
-
-# target to preprocess a source file
-examples/service_roundtrip.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/examples/service_roundtrip.c.i
-.PHONY : examples/service_roundtrip.c.i
-
-examples/service_roundtrip.s: examples/service_roundtrip.c.s
-.PHONY : examples/service_roundtrip.s
-
-# target to generate assembly for a file
-examples/service_roundtrip.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\service_roundtrip.dir\build.make CMakeFiles/service_roundtrip.dir/examples/service_roundtrip.c.s
-.PHONY : examples/service_roundtrip.c.s
-
-examples/sgcb_roundtrip.obj: examples/sgcb_roundtrip.c.obj
-.PHONY : examples/sgcb_roundtrip.obj
-
-# target to build an object file
-examples/sgcb_roundtrip.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/examples/sgcb_roundtrip.c.obj
-.PHONY : examples/sgcb_roundtrip.c.obj
-
-examples/sgcb_roundtrip.i: examples/sgcb_roundtrip.c.i
-.PHONY : examples/sgcb_roundtrip.i
-
-# target to preprocess a source file
-examples/sgcb_roundtrip.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/examples/sgcb_roundtrip.c.i
-.PHONY : examples/sgcb_roundtrip.c.i
-
-examples/sgcb_roundtrip.s: examples/sgcb_roundtrip.c.s
-.PHONY : examples/sgcb_roundtrip.s
-
-# target to generate assembly for a file
-examples/sgcb_roundtrip.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles\sgcb_roundtrip.dir\build.make CMakeFiles/sgcb_roundtrip.dir/examples/sgcb_roundtrip.c.s
-.PHONY : examples/sgcb_roundtrip.c.s
-
 tests/generated/gen_dlt2811b_test_seq.obj: tests/generated/gen_dlt2811b_test_seq.c.obj
 .PHONY : tests/generated/gen_dlt2811b_test_seq.obj
 
@@ -349,8 +275,6 @@ help:
 	@echo ... cmsapp_test_datatypes
 	@echo ... ffi_roundtrip
 	@echo ... seq_of_roundtrip
-	@echo ... service_roundtrip
-	@echo ... sgcb_roundtrip
 	@echo ... examples/apdu_roundtrip.obj
 	@echo ... examples/apdu_roundtrip.i
 	@echo ... examples/apdu_roundtrip.s
@@ -360,12 +284,6 @@ help:
 	@echo ... examples/seq_of_roundtrip.obj
 	@echo ... examples/seq_of_roundtrip.i
 	@echo ... examples/seq_of_roundtrip.s
-	@echo ... examples/service_roundtrip.obj
-	@echo ... examples/service_roundtrip.i
-	@echo ... examples/service_roundtrip.s
-	@echo ... examples/sgcb_roundtrip.obj
-	@echo ... examples/sgcb_roundtrip.i
-	@echo ... examples/sgcb_roundtrip.s
 	@echo ... tests/generated/gen_dlt2811b_test_seq.obj
 	@echo ... tests/generated/gen_dlt2811b_test_seq.i
 	@echo ... tests/generated/gen_dlt2811b_test_seq.s

@@ -1,4 +1,4 @@
-#include "ccms/per_enumerated.h"
+#include "per_enumerated.h"
 #include "test_utils.h"
 
 void test_enumerated(void) {

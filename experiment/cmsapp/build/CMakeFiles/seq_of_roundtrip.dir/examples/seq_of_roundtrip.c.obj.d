@@ -1,8 +1,8 @@
 CMakeFiles/seq_of_roundtrip.dir/examples/seq_of_roundtrip.c.obj: \
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/examples/seq_of_roundtrip.c \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/cmsper.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_stream.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_types.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/cmsper.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_stream.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_types.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/crtdefs.h \
@@ -23,12 +23,12 @@ CMakeFiles/seq_of_roundtrip.dir/examples/seq_of_roundtrip.c.obj: \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_null.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_max_align_t.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/__stddef_offsetof.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_boolean.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_integer.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_enumerated.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_string.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_bit_string.h \
-  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/include/cmsper/per_choice.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_boolean.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_integer.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_enumerated.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_string.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_bit_string.h \
+  D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/include/per_choice.h \
   D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/tests/generated/gen_dlt2811b_test_seq.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stdio.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/corecrt_stdio_config.h \

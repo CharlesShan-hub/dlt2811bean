@@ -20,7 +20,7 @@ public final class Abort {
     public byte[] encode() {
         IntByReference outLen = new IntByReference(BUF_SIZE);
         byte[] outBuf = new byte[BUF_SIZE];
-        int ret = CmsFFI.INSTANCE.cms_ffi_encode_abort(
+        int ret = CmsFFI.INSTANCE.cms_encode_abort(
             reqId, abortReason, outBuf, outLen
         );
         if (ret != 0) {
@@ -34,7 +34,7 @@ public final class Abort {
     public static Abort decode(byte[] apdu) {
         LongByReference reqId = new LongByReference();
         LongByReference abortReason = new LongByReference();
-        int ret = CmsFFI.INSTANCE.cms_ffi_decode_abort(
+        int ret = CmsFFI.INSTANCE.cms_decode_abort(
             apdu, apdu.length, reqId, abortReason
         );
         if (ret != 0) {

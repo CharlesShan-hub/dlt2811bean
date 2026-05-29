@@ -22,7 +22,7 @@ public final class CmsBoolean {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_ffi_encode_BOOLEAN(value ? 1 : 0, buf, outLen);
+        CmsFFI.INSTANCE.cms_encode_BOOLEAN(value ? 1 : 0, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -30,7 +30,7 @@ public final class CmsBoolean {
 
     public static CmsBoolean decode(byte[] data) {
         IntByReference value = new IntByReference();
-        CmsFFI.INSTANCE.cms_ffi_decode_BOOLEAN(data, data.length, value);
+        CmsFFI.INSTANCE.cms_decode_BOOLEAN(data, data.length, value);
         return value.getValue() != 0 ? TRUE : FALSE;
     }
 

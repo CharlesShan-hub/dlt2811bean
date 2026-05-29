@@ -19,7 +19,7 @@ public final class CmsOriginator {
     public byte[] encode() {
         byte[] buf = new byte[256];
         com.sun.jna.ptr.IntByReference outLen = new com.sun.jna.ptr.IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_ffi_encode_Originator(orCat, orIdent, orIdent.length, buf, outLen);
+        CmsFFI.INSTANCE.cms_encode_Originator(orCat, orIdent, orIdent.length, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -29,7 +29,7 @@ public final class CmsOriginator {
         IntByReference cat = new IntByReference();
         byte[] ident = new byte[64];
         IntByReference identCap = new IntByReference(ident.length);
-        CmsFFI.INSTANCE.cms_ffi_decode_Originator(data, data.length, cat, ident, identCap);
+        CmsFFI.INSTANCE.cms_decode_Originator(data, data.length, cat, ident, identCap);
         byte[] identResult = new byte[identCap.getValue()];
         System.arraycopy(ident, 0, identResult, 0, identResult.length);
         return new CmsOriginator(cat.getValue(), identResult);

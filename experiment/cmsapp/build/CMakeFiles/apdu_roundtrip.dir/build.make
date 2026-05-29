@@ -95,8 +95,7 @@ apdu_roundtrip_EXTERNAL_OBJECTS =
 
 apdu_roundtrip.exe: CMakeFiles/apdu_roundtrip.dir/examples/apdu_roundtrip.c.obj
 apdu_roundtrip.exe: CMakeFiles/apdu_roundtrip.dir/build.make
-apdu_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/build/libcmsper.a
-apdu_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsgenerator/build/libcmsper_datatypes.a
+apdu_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/build/libccms.dll.a
 apdu_roundtrip.exe: CMakeFiles/apdu_roundtrip.dir/linkLibs.rsp
 apdu_roundtrip.exe: CMakeFiles/apdu_roundtrip.dir/objects1.rsp
 apdu_roundtrip.exe: CMakeFiles/apdu_roundtrip.dir/link.txt

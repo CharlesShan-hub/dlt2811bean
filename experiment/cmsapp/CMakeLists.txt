@@ -4,93 +4,42 @@ project(cmsapp VERSION 1.0.0 LANGUAGES C)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-set(CMS_PER_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/../cmsper)
-set(CMS_GEN_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/../cmsgenerator)
-set(CMS_APP_DIR  ${CMAKE_CURRENT_SOURCE_DIR})
+set(CMS_DIR  ${CMAKE_CURRENT_SOURCE_DIR}/../ccms)
+set(CMS_INC  ${CMS_DIR}/include)
+set(CMS_LIB  ${CMS_DIR}/build/libccms.dll.a)
+set(CMS_CORE ${CMS_DIR}/build/libccms_core.a)
 
-# ---- Example 1: SGCB roundtrip (datatypes only) ----
+# ---- Example 1: FFI roundtrip (services: Associate/Release/Abort) ----
 
-add_executable(sgcb_roundtrip examples/sgcb_roundtrip.c)
+add_executable(ffi_roundtrip examples/ffi_roundtrip.c)
+target_include_directories(ffi_roundtrip PRIVATE ${CMS_INC})
+target_link_libraries(ffi_roundtrip ${CMS_LIB})
 
-target_include_directories(sgcb_roundtrip
-    PRIVATE
-        ${CMS_PER_DIR}/include
-        ${CMS_GEN_DIR}/generated
-)
+# ---- Example 2: APDU roundtrip (APCH + services) ----
 
-target_link_libraries(sgcb_roundtrip
-    ${CMS_PER_DIR}/build/libcmsper.a
-    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
-)
+add_executable(apdu_roundtrip examples/apdu_roundtrip.c)
+target_include_directories(apdu_roundtrip PRIVATE ${CMS_INC})
+target_link_libraries(apdu_roundtrip ${CMS_LIB})
 
-# ---- Example 2: SEQUENCE OF roundtrip ----
+# ---- Example 3: SEQUENCE OF roundtrip ----
 
 file(GLOB TEST_GEN_SRC tests/generated/gen_*.c)
 if(TEST_GEN_SRC)
     add_library(cmsapp_test_datatypes STATIC ${TEST_GEN_SRC})
     target_include_directories(cmsapp_test_datatypes
-        PUBLIC  ${CMS_APP_DIR}/tests/generated
-        PRIVATE ${CMS_PER_DIR}/include
+        PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/tests/generated
+        PRIVATE ${CMS_INC}
     )
-    target_link_libraries(cmsapp_test_datatypes
-        ${CMS_PER_DIR}/build/libcmsper.a
-    )
+    target_link_libraries(cmsapp_test_datatypes ${CMS_CORE})
 
     add_executable(seq_of_roundtrip examples/seq_of_roundtrip.c)
     target_include_directories(seq_of_roundtrip
         PRIVATE
-            ${CMS_PER_DIR}/include
-            ${CMS_APP_DIR}/tests/generated
+            ${CMS_INC}
+            ${CMAKE_CURRENT_SOURCE_DIR}/tests/generated
     )
     target_link_libraries(seq_of_roundtrip
         cmsapp_test_datatypes
-        ${CMS_PER_DIR}/build/libcmsper.a
+        ${CMS_CORE}
     )
 endif()
-
-# ---- Example 3: Service roundtrip (Associate, GetDataValues, Report) ----
-
-add_executable(service_roundtrip examples/service_roundtrip.c)
-
-target_include_directories(service_roundtrip
-    PRIVATE
-        ${CMS_PER_DIR}/include
-        ${CMS_GEN_DIR}/generated
-)
-
-target_link_libraries(service_roundtrip
-    ${CMS_PER_DIR}/build/libcmsper.a
-    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
-)
-
-# ---- Example 4: APDU roundtrip (APCH + ASDU) ----
-
-add_executable(apdu_roundtrip examples/apdu_roundtrip.c)
-
-target_include_directories(apdu_roundtrip
-    PRIVATE
-        ${CMS_PER_DIR}/include
-        ${CMS_GEN_DIR}/generated
-        ${CMS_GEN_DIR}/include
-)
-
-target_link_libraries(apdu_roundtrip
-    ${CMS_PER_DIR}/build/libcmsper.a
-    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
-)
-
-# ---- Example 5: FFI roundtrip (byte[] in/out for all languages) ----
-
-add_executable(ffi_roundtrip examples/ffi_roundtrip.c)
-
-target_include_directories(ffi_roundtrip
-    PRIVATE
-        ${CMS_PER_DIR}/include
-        ${CMS_GEN_DIR}/generated
-        ${CMS_GEN_DIR}/include
-)
-
-target_link_libraries(ffi_roundtrip
-    ${CMS_PER_DIR}/build/libcmsper.a
-    ${CMS_GEN_DIR}/build/libcmsper_datatypes.a
-)

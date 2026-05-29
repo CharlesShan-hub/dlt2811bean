@@ -20,7 +20,7 @@ public final class CmsTimeStamp {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_ffi_encode_TimeStamp(secondsSinceEpoch, fractional, buf, outLen);
+        CmsFFI.INSTANCE.cms_encode_TimeStamp(secondsSinceEpoch, fractional, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -29,7 +29,7 @@ public final class CmsTimeStamp {
     public static CmsTimeStamp decode(byte[] data) {
         LongByReference sec = new LongByReference();
         LongByReference frac = new LongByReference();
-        CmsFFI.INSTANCE.cms_ffi_decode_TimeStamp(data, data.length, sec, frac);
+        CmsFFI.INSTANCE.cms_decode_TimeStamp(data, data.length, sec, frac);
         return new CmsTimeStamp(sec.getValue(), frac.getValue());
     }
 

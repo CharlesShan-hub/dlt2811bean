@@ -1,0 +1,37 @@
+package com.ysh.jcms.datatypes.code;
+
+import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.CmsFFI;
+
+public class CmsTcmd extends AbstractCmsCodedEnum {
+
+    public CmsTcmd() {
+        this(0);
+    }
+
+    public CmsTcmd(long value) {
+        super("Tcmd", value, 3);
+    }
+
+    @Override
+    public byte[] encode() {
+        byte[] buf = new byte[16];
+        IntByReference outLen = new IntByReference(buf.length);
+        CmsFFI.INSTANCE.cms_encode_Tcmd(value.intValue(), buf, outLen);
+        byte[] result = new byte[outLen.getValue()];
+        System.arraycopy(buf, 0, result, 0, result.length);
+        return result;
+    }
+
+    public static CmsTcmd decode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFI.INSTANCE.cms_decode_Tcmd(data, data.length, v);
+        return new CmsTcmd(v.getValue());
+    }
+
+    @Override
+    public CmsTcmd copy() {
+        CmsTcmd clone = new CmsTcmd();
+        return copyTo(clone);
+    }
+}

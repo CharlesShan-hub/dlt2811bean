@@ -1,4 +1,4 @@
-#include "ccms/per_choice.h"
+#include "per_choice.h"
 #include "test_utils.h"
 
 void test_choice(void) {

@@ -14,9 +14,16 @@ target_include_directories(ccms_core
 
 # --- FFI library (hand-written PER codec for DL/T 2811 data types and APDU) ---
 add_library(ccms SHARED
-    src/cms_ffi.c
-    src/cms_ffi_datatypes.c
+    src/cms_services.c
     src/cms_apdu.c
+    src/cms_types1.c
+    src/cms_types2.c
+    src/cms_types3.c
+    src/cms_types4.c
+    src/cms_types5.c
+    src/cms_types6.c
+    src/cms_types7.c
+    src/cms_types8.c
 )
 target_include_directories(ccms
     PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

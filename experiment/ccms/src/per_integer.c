@@ -1,4 +1,4 @@
-#include "ccms/per_integer.h"
+#include "per_integer.h"
 #include <string.h>
 
 /* ceil(log2(range)) */

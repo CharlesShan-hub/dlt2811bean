@@ -141,7 +141,7 @@ public final class CmsData {
     public byte[] encode() {
         byte[] buf = new byte[4096];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_ffi_encode_Data(
+        CmsFFI.INSTANCE.cms_encode_Data(
             choice, intValue, floatValue,
             stringValue, bytesValue, bytesValue != null ? bytesValue.length : 0,
             buf, outLen
@@ -160,7 +160,7 @@ public final class CmsData {
         byte[] bytesBuf = new byte[4096];
         IntByReference bytesCap = new IntByReference(bytesBuf.length);
 
-        CmsFFI.INSTANCE.cms_ffi_decode_Data(data, data.length,
+        CmsFFI.INSTANCE.cms_decode_Data(data, data.length,
             choice, intVal, floatVal, strBuf, strCap, bytesBuf, bytesCap);
 
         int c = choice.getValue();

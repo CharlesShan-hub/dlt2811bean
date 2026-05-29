@@ -1,6 +1,7 @@
-#include "ccms/cms_apdu.h"
+#include "cms_apdu.h"
 #include <string.h>
 
+/* 7.0 APCH / APDU frame */
 void cms_apch_encode(uint8_t *buf, const cms_apch_t *apch) {
     buf[0] = apch->cc;
     buf[1] = apch->sc;

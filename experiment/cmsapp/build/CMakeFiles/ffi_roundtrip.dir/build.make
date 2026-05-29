@@ -95,8 +95,7 @@ ffi_roundtrip_EXTERNAL_OBJECTS =
 
 ffi_roundtrip.exe: CMakeFiles/ffi_roundtrip.dir/examples/ffi_roundtrip.c.obj
 ffi_roundtrip.exe: CMakeFiles/ffi_roundtrip.dir/build.make
-ffi_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsper/build/libcmsper.a
-ffi_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../cmsgenerator/build/libcmsper_datatypes.a
+ffi_roundtrip.exe: D:/project/work/standard/dlt2811bean/cms/experiment/cmsapp/../ccms/build/libccms.dll.a
 ffi_roundtrip.exe: CMakeFiles/ffi_roundtrip.dir/linkLibs.rsp
 ffi_roundtrip.exe: CMakeFiles/ffi_roundtrip.dir/objects1.rsp
 ffi_roundtrip.exe: CMakeFiles/ffi_roundtrip.dir/link.txt

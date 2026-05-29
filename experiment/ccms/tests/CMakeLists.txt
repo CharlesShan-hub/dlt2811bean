@@ -10,7 +10,7 @@ add_executable(test_cmsper
     test_choice.c
 )
 
-target_link_libraries(test_cmsper PRIVATE cmsper)
+target_link_libraries(test_cmsper PRIVATE ccms_core)
 target_include_directories(test_cmsper PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
 add_test(NAME cmsper COMMAND test_cmsper)

@@ -1,5 +1,5 @@
-#include "ccms/per_choice.h"
-#include "ccms/per_integer.h"
+#include "per_choice.h"
+#include "per_integer.h"
 
 per_error_t per_encode_choice(per_stream_t *s, uint32_t index) {
     return per_encode_small_non_negative(s, index);

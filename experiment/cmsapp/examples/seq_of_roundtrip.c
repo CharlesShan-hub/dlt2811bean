@@ -1,4 +1,4 @@
-#include "cmsper/cmsper.h"
+#include "cmsper.h"
 #include "gen_dlt2811b_test_seq.h"
 #include <stdio.h>
 #include <string.h>

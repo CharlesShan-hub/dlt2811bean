@@ -1,5 +1,5 @@
-#include "ccms/per_bit_string.h"
-#include "ccms/per_integer.h"
+#include "per_bit_string.h"
+#include "per_integer.h"
 #include <string.h>
 
 /* Fixed-length BIT STRING: no length prefix, just bits */

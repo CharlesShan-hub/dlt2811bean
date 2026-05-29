@@ -18,7 +18,7 @@ public final class ReleaseRequest {
     public byte[] encode() {
         IntByReference outLen = new IntByReference(BUF_SIZE);
         byte[] outBuf = new byte[BUF_SIZE];
-        int ret = CmsFFI.INSTANCE.cms_ffi_encode_release_request(
+        int ret = CmsFFI.INSTANCE.cms_encode_release_request(
             reqId, outBuf, outLen
         );
         if (ret != 0) {
@@ -31,7 +31,7 @@ public final class ReleaseRequest {
 
     public static ReleaseRequest decode(byte[] apdu) {
         LongByReference reqId = new LongByReference();
-        int ret = CmsFFI.INSTANCE.cms_ffi_decode_release_request(
+        int ret = CmsFFI.INSTANCE.cms_decode_release_request(
             apdu, apdu.length, reqId
         );
         if (ret != 0) {

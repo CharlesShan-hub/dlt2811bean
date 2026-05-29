@@ -23,7 +23,7 @@ public final class CmsBinaryTime {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFI.INSTANCE.cms_ffi_encode_BinaryTime(hour, minute, second, millisecond, buf, outLen);
+        CmsFFI.INSTANCE.cms_encode_BinaryTime(hour, minute, second, millisecond, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -34,7 +34,7 @@ public final class CmsBinaryTime {
         IntByReference m = new IntByReference();
         IntByReference s = new IntByReference();
         IntByReference ms = new IntByReference();
-        CmsFFI.INSTANCE.cms_ffi_decode_BinaryTime(data, data.length, h, m, s, ms);
+        CmsFFI.INSTANCE.cms_decode_BinaryTime(data, data.length, h, m, s, ms);
         return new CmsBinaryTime(h.getValue(), m.getValue(), s.getValue(), ms.getValue());
     }
 

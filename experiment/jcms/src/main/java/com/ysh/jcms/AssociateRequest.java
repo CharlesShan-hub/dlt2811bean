@@ -24,7 +24,7 @@ public final class AssociateRequest {
     public byte[] encode() {
         IntByReference outLen = new IntByReference(BUF_SIZE);
         byte[] outBuf = new byte[BUF_SIZE];
-        int ret = CmsFFI.INSTANCE.cms_ffi_encode_associate_request(
+        int ret = CmsFFI.INSTANCE.cms_encode_associate_request(
             reqId, serverAccessPointReference, hasAuthenticationParameter ? 1 : 0,
             outBuf, outLen
         );
@@ -41,7 +41,7 @@ public final class AssociateRequest {
         byte[] sapRef = new byte[256];
         IntByReference sapRefCap = new IntByReference(sapRef.length);
         IntByReference hasAuth = new IntByReference();
-        int ret = CmsFFI.INSTANCE.cms_ffi_decode_associate_request(
+        int ret = CmsFFI.INSTANCE.cms_decode_associate_request(
             apdu, apdu.length,
             reqId, sapRef, sapRefCap, hasAuth
         );
