@@ -2,12 +2,13 @@ package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 
 public interface CmsFFIDatatypes extends Library {
 
-    CmsFFIDatatypes INSTANCE = Native.load("libccms", CmsFFIDatatypes.class);
+    CmsFFIDatatypes INSTANCE = Native.load("ccms", CmsFFIDatatypes.class);
 
     /* ==================== §7.1.1 BOOLEAN ==================== */
 
@@ -17,7 +18,7 @@ public interface CmsFFIDatatypes extends Library {
     /* ==================== §7.1.2 Integer Types ==================== */
 
     int cms_encode_Int8(byte value, byte[] outBuf, IntByReference outLen);
-    int cms_decode_Int8(byte[] inBuf, int inLen, IntByReference value);
+    int cms_decode_Int8(byte[] inBuf, int inLen, ByteByReference value);
 
     int cms_encode_Int8U(short value, byte[] outBuf, IntByReference outLen);
     int cms_decode_Int8U(byte[] inBuf, int inLen, IntByReference value);

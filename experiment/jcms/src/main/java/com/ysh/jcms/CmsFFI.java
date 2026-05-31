@@ -7,7 +7,7 @@ import com.sun.jna.ptr.LongByReference;
 
 public interface CmsFFI extends Library {
 
-    CmsFFI INSTANCE = Native.load("libccms", CmsFFI.class);
+    CmsFFI INSTANCE = Native.load("ccms", CmsFFI.class);
 
     /* ==================== Services ==================== */
 

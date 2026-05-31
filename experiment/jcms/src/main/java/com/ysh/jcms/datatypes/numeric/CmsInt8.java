@@ -1,5 +1,6 @@
 package com.ysh.jcms.datatypes.numeric;
 
+import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
@@ -26,9 +27,9 @@ public class CmsInt8 extends AbstractCmsScalar<Integer> {
     }
 
     public static CmsInt8 decode(byte[] data) {
-        IntByReference v = new IntByReference();
+        ByteByReference v = new ByteByReference();
         CmsFFIDatatypes.INSTANCE.cms_decode_Int8(data, data.length, v);
-        return new CmsInt8((byte) v.getValue());
+        return new CmsInt8((int) v.getValue());
     }
 
     @Override

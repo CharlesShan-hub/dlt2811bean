@@ -154,8 +154,9 @@ if (-not (Test-Path $pkgDir)) {
     New-Item -ItemType Directory -Path $pkgDir | Out-Null
 }
 if (Test-Path $dllSrc) {
-    Copy-Item $dllSrc (Join-Path $pkgDir "libccms.dll") -Force
-    Write-Host "[OK]   packaged libccms.dll -> dist/" -ForegroundColor Green
+    # Strip the "lib" prefix for JNA (Native.load("ccms", ...))
+    Copy-Item $dllSrc (Join-Path $pkgDir "ccms.dll") -Force
+    Write-Host "[OK]   packaged ccms.dll -> dist/" -ForegroundColor Green
 } else {
     Write-Host "[WARN] libccms.dll not found at $dllSrc" -ForegroundColor Yellow
 }
