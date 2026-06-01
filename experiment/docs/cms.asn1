@@ -1704,7 +1704,7 @@ TimeActivatedOperateTermination-RequestPDU ::= SEQUENCE {
 }
 
 -- ======================================================================
--- 8.9.1 GetFile (Service Code 0x71)
+-- 8.12.1 GetFile (Service Code 0x71)
 -- ======================================================================
 
 GetFile-RequestPDU ::= SEQUENCE {
@@ -1720,254 +1720,186 @@ GetFile-ResponsePDU ::= SEQUENCE {
 GetFile-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.9.2 SetFile (Service Code 0x72)
+-- 8.12.2 SetFile (Service Code 0x72)
 -- ======================================================================
 
-【弄到这里了】
-SetFile-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    fileName                    VisibleString (SIZE(0..255)),
-    fileData                    OCTET STRING (SIZE(0..65535))
+SetFile-RequestPDU ::= SEQUENCE {
+    filename        [0] IMPLICIT VisibleString255,
+    startPosition   [1] IMPLICIT INT32U,
+    fileData        [2] IMPLICIT OCTET STRING,
+    endOfFile       [3] IMPLICIT BOOLEAN DEFAULT FALSE
 }
 
-SetFile-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    fileSize                    Int32U
-}
+SetFile-ResponsePDU ::= NULL
 
-SetFile-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+SetFile-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.9.3 DeleteFile (Service Code 0x73)
+-- 8.12.3 DeleteFile (Service Code 0x73)
 -- ======================================================================
 
-
-DeleteFile-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    fileName                    VisibleString (SIZE(0..255))
+DeleteFile-RequestPDU ::= SEQUENCE {
+    filename        [0] IMPLICIT VisibleString255
 }
 
-DeleteFile-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U
-}
+DeleteFile-ResponsePDU ::= NULL
 
-DeleteFile-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+DeleteFile-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.9.4 GetFileDirectory (Service Code 0x74)
+-- 8.12.4 GetFileAttributeValues (Service Code 0x75)
 -- ======================================================================
 
-
-FileAttribute ::= SEQUENCE {
-    fileName                    VisibleString (SIZE(0..255)),
-    fileSize                    Int32U,
-    lastModified                UtcTime OPTIONAL
+GetFileAttributeValues-RequestPDU ::= SEQUENCE {
+    filename        [0] IMPLICIT VisibleString255
 }
 
-GetFileDirectory-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    directoryName               VisibleString (SIZE(0..255))
-}
+GetFileAttributeValues-ResponsePDU ::= FileEntry
 
-GetFileDirectory-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    files                       SEQUENCE OF FileAttribute
-}
-
-GetFileDirectory-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+GetFileAttributeValues-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.9.5 GetFileAttributeValues (Service Code 0x75)
+-- 8.12.5 GetFileDirectory (Service Code 0x74)
 -- ======================================================================
 
-
-GetFileAttributeValues-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    fileName                    VisibleString (SIZE(0..255))
+GetFileDirectory-RequestPDU ::= SEQUENCE {
+    pathName        [0] IMPLICIT VisibleString255,
+    startTime       [1] IMPLICIT TimeStamp OPTIONAL,
+    stopTime        [2] IMPLICIT TimeStamp OPTIONAL,
+    fileAfter       [3] IMPLICIT VisibleString255 OPTIONAL
 }
 
-GetFileAttributeValues-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    fileAttributes              FileAttribute
+GetFileDirectory-ResponsePDU ::= SEQUENCE {
+    fileEntry       [0] IMPLICIT SEQUENCE OF FileEntry,
+    moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetFileAttributeValues-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
-
+GetFileDirectory-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.11.1 GetRpcInterfaceDirectory (Service Code 0x91)
+-- 8.13.1 RPC Introduction
 -- ======================================================================
 
-
-GetRpcInterfaceDirectory-Request ::= SEQUENCE {
-    reqId                       Int16U
-}
-
-GetRpcInterfaceDirectory-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaces                  SEQUENCE OF VisibleString (SIZE(0..64))
-}
-
-GetRpcInterfaceDirectory-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+-- introduction
 
 -- ======================================================================
--- 8.11.2 GetRpcInterfaceDefinition (Service Code 0x92)
+-- 8.13.2 GetRpcInterfaceDirectory (Service Code 0x91)
 -- ======================================================================
 
-
-RpcMethodDefEntry ::= SEQUENCE {
-    methodName                  VisibleString (SIZE(0..64)),
-    inputTypes                  SEQUENCE OF VisibleString (SIZE(0..32)),
-    outputTypes                 SEQUENCE OF VisibleString (SIZE(0..32))
+GetRpcInterfaceDirectory-RequestPDU ::= SEQUENCE {
+    referenceAfter  [0] IMPLICIT VisibleString OPTIONAL
 }
 
-GetRpcInterfaceDefinition-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64))
+GetRpcInterfaceDirectory-ResponsePDU ::= SEQUENCE {
+    reference       [0] IMPLICIT SEQUENCE OF VisibleString,
+    moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetRpcInterfaceDefinition-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64)),
-    methods                     SEQUENCE OF RpcMethodDefEntry
-}
-
-GetRpcInterfaceDefinition-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+GetRpcInterfaceDirectory-ErrorPDU ::= ServiceError
 
 -- ======================================================================
 -- 8.11.3 GetRpcMethodDirectory (Service Code 0x93)
 -- ======================================================================
 
-
-GetRpcMethodDirectory-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64)),
-    methodName                  VisibleString (SIZE(0..64))
+GetRpcMethodDirectory-RequestPDU ::= SEQUENCE {
+    interface       [0] IMPLICIT VisibleString OPTIONAL,
+    referenceAfter  [1] IMPLICIT VisibleString OPTIONAL
 }
 
-GetRpcMethodDirectory-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    methodName                  VisibleString (SIZE(0..64))
+GetRpcMethodDirectory-ResponsePDU ::= SEQUENCE {
+    reference       [0] IMPLICIT SEQUENCE OF VisibleString,
+    moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetRpcMethodDirectory-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
+GetRpcMethodDirectory-ErrorPDU ::= ServiceError
+
+-- ======================================================================
+-- 8.13.4 GetRpcInterfaceDefinition (Service Code 0x92)
+-- ======================================================================
+
+GetRpcInterfaceDefinition-RequestPDU ::= SEQUENCE {
+    interface       [0] IMPLICIT VisibleString,
+    referenceAfter  [1] IMPLICIT VisibleString OPTIONAL
 }
+
+GetRpcInterfaceDefinition-ResponsePDU ::= SEQUENCE {
+    method          [0] IMPLICIT SEQUENCE OF SEQUENCE {
+        name        [0] IMPLICIT VisibleString,
+        version     [1] IMPLICIT INT32U,
+        timeout     [2] IMPLICIT INT32U,
+        request     [3] IMPLICIT DataDefinition,
+        response    [4] IMPLICIT DataDefinition
+    },
+    moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+}
+
+GetRpcInterfaceDefinition-ErrorPDU ::= ServiceError
 
 -- ======================================================================
 -- 8.11.4 GetRpcMethodDefinition (Service Code 0x94)
 -- ======================================================================
 
-
-RpcMethodValue ::= SEQUENCE {
-    paramName                   VisibleString (SIZE(0..64)),
-    paramType                   VisibleString (SIZE(0..32)),
-    paramValue                  Data OPTIONAL
+GetRpcMethodDefinition-RequestPDU ::= SEQUENCE {
+    reference       [0] IMPLICIT SEQUENCE OF VisibleString
 }
 
-GetRpcMethodDefinition-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64)),
-    methodName                  VisibleString (SIZE(0..64))
+GetRpcMethodDefinition-ResponsePDU ::= SEQUENCE {
+    reference       [0] IMPLICIT SEQUENCE OF CHOICE {
+        error       [0] IMPLICIT ServiceError,
+        method      [1] IMPLICIT SEQUENCE {
+            version     [0] IMPLICIT INT32U,
+            timeout     [1] IMPLICIT INT32U,
+            request     [2] IMPLICIT DataDefinition,
+            response    [3] IMPLICIT DataDefinition
+        }
+    },
+    moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
 }
 
-GetRpcMethodDefinition-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64)),
-    methodName                  VisibleString (SIZE(0..64)),
-    parameters                  SEQUENCE OF RpcMethodValue
-}
-
-GetRpcMethodDefinition-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+GetRpcMethodDefinition-ErrorPDU ::= ServiceError
 
 -- ======================================================================
 -- 8.11.5 RpcCall (Service Code 0x95)
 -- ======================================================================
 
-
-RpcCall-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    interfaceName               VisibleString (SIZE(0..64)),
-    methodName                  VisibleString (SIZE(0..64)),
-    parameters                  SEQUENCE OF RpcMethodValue
+RpcCall-RequestPDU ::= SEQUENCE {
+    method          [0] IMPLICIT VisibleString,
+    req             [1] IMPLICIT CHOICE {
+        reqData     [0] IMPLICIT Data,
+        callID      [1] IMPLICIT OCTET STRING
+    }
 }
 
-RpcCall-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    responseValues              SEQUENCE OF RpcMethodValue
+RpcCall-ResponsePDU ::= SEQUENCE {
+    rspData         [0] IMPLICIT Data,
+    nextCallID      [1] IMPLICIT OCTET STRING OPTIONAL
 }
 
-RpcCall-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+RpcCall-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.12.1 Test (Service Code 0xA1)
+-- 8.14 Test (Service Code 0xA1)
 -- ======================================================================
 
-Test-Request ::= SEQUENCE {
-    reqId                       Int16U
-}
-
-Test-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    testResult                  BOOLEAN
-}
-
-Test-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
+-- FL = 0, no field
 
 -- ======================================================================
 -- 8.13 AssociateNegotiate (Service Code 0x04)
 -- ======================================================================
 
-
-NegotiationParameter ::= SEQUENCE {
-    maxReqIdSize                Int16U,
-    maxSegmentSize              Int32U,
-    supportedServices           OCTET STRING (SIZE(0..65535)),
-    protocolVersion             VisibleString (SIZE(0..32))
+AssociateNegotiate-RequestPDU ::= SEQUENCE {
+    apduSize        [0] IMPLICIT INT16U,
+    asduSize        [1] IMPLICIT INT32U,
+    protocolVersion [2] IMPLICIT INT32U
 }
 
-AssociateNegotiate-Request ::= SEQUENCE {
-    reqId                       Int16U,
-    negotiationParameters       NegotiationParameter
+AssociateNegotiate-ResponsePDU ::= SEQUENCE {
+    apduSize        [0] IMPLICIT INT16U,
+    asduSize        [1] IMPLICIT INT32U,
+    protocolVersion [2] IMPLICIT INT32U,
+    modelVersion    [3] IMPLICIT VisibleString
 }
 
-AssociateNegotiate-ResponsePositive ::= SEQUENCE {
-    reqId                       Int16U,
-    negotiationParameters       NegotiationParameter
-}
-
-AssociateNegotiate-ResponseNegative ::= SEQUENCE {
-    reqId                       Int16U,
-    serviceError                ServiceError
-}
-
+AssociateNegotiate-ErrorPDU ::= ServiceError
 
 END
