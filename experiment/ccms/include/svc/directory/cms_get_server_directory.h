@@ -26,7 +26,7 @@ typedef struct {
 } cms_get_server_directory_response_t;
 
 typedef struct {
-    int service_error;
+    cms_service_error_t service_error;
 } cms_get_server_directory_error_t;
 
 CMS_EXPORT int cms_get_server_directory_request_encode(

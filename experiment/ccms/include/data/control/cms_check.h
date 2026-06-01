@@ -9,6 +9,11 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * Check
+ * ============================================================
+ */
 CMS_EXPORT int cms_check_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_check_decode(const uint8_t *in_buf, int in_len, uint8_t value[2]);
 int cms_check_encode_stream(per_stream_t *s, const uint8_t value[2]);

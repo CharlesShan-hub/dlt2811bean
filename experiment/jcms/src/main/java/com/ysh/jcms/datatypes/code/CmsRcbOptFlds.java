@@ -5,6 +5,17 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsRcbOptFlds extends AbstractCmsCodedEnum {
 
+    public static final int RESERVED          = 0;
+    public static final int SEQUENCE_NUMBER   = 1;
+    public static final int REPORT_TIME_STAMP = 2;
+    public static final int REASON_FOR_INCLUSION = 3;
+    public static final int DATA_SET_NAME     = 4;
+    public static final int DATA_REFERENCE    = 5;
+    public static final int BUFFER_OVERFLOW   = 6;
+    public static final int ENTRY_ID          = 7;
+    public static final int CONF_REVISION     = 8;
+    public static final int SEGMENTATION      = 9;
+
     public CmsRcbOptFlds() {
         this(0L);
     }

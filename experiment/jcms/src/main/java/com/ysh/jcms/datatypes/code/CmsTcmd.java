@@ -5,6 +5,11 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsTcmd extends AbstractCmsCodedEnum {
 
+    public static final int RESERVED = 0;
+    public static final int SELECT   = 1;
+    public static final int OPERATE  = 2;
+    public static final int CANCEL   = 3;
+
     public CmsTcmd() {
         this(0);
     }

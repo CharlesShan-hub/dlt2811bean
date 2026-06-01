@@ -25,7 +25,7 @@ typedef struct {
 typedef struct {
     uint8_t assoc_id[32];
     int assoc_id_len;
-    int service_error;
+    cms_service_error_t service_error;
     int has_auth;
     uint8_t cert[CMS_MAX_CERT_LEN];
     int cert_len;
@@ -35,7 +35,7 @@ typedef struct {
 } cms_associate_response_t;
 
 typedef struct {
-    int service_error;
+    cms_service_error_t service_error;
 } cms_associate_error_t;
 
 CMS_EXPORT int cms_associate_request_encode(

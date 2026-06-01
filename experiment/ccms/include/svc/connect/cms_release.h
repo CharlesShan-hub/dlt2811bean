@@ -17,11 +17,11 @@ typedef struct {
 typedef struct {
     uint8_t assoc_id[32];
     int assoc_id_len;
-    int service_error;
+    cms_service_error_t service_error;
 } cms_release_response_t;
 
 typedef struct {
-    int service_error;
+    cms_service_error_t service_error;
 } cms_release_error_t;
 
 CMS_EXPORT int cms_release_request_encode(

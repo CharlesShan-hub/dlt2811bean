@@ -5,6 +5,10 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsSmpMod extends AbstractCmsEnumerated {
 
+    public static final int SAMPLES_PER_NOMINAL_PERIOD = 0;
+    public static final int SAMPLES_PER_SECOND         = 1;
+    public static final int SECONDS_PER_SAMPLE         = 2;
+
     public CmsSmpMod() {
         this(0);
     }

@@ -5,6 +5,13 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsTriggerConditions extends AbstractCmsCodedEnum {
 
+    public static final int RESERVED              = 0;
+    public static final int DATA_CHANGE           = 1;
+    public static final int QUALITY_CHANGE        = 2;
+    public static final int DATA_UPDATE           = 3;
+    public static final int INTEGRITY             = 4;
+    public static final int GENERAL_INTERROGATION = 5;
+
     public CmsTriggerConditions() {
         this(0L);
     }

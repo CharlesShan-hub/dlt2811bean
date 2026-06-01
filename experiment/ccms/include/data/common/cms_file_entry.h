@@ -11,6 +11,11 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * FileEntry
+ * ============================================================
+ */
 CMS_EXPORT int cms_file_entry_encode(
     const char *fileName, uint32_t fileSize,
     int has_lastModified, const uint8_t lastModified[8],

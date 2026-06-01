@@ -9,6 +9,11 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * Boolean
+ * ============================================================
+ */
 CMS_EXPORT int cms_boolean_encode(int value, uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_boolean_decode(const uint8_t *in_buf, int in_len, int *value);
 int cms_boolean_encode_stream(per_stream_t *s, int value);

@@ -5,6 +5,12 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsMsvcbOptFlds extends AbstractCmsCodedEnum {
 
+    public static final int REFRESH_TIME  = 0;
+    public static final int RESERVED      = 1;
+    public static final int SAMPLE_RATE   = 2;
+    public static final int DATA_SET_NAME = 3;
+    public static final int SECURITY      = 4;
+
     public CmsMsvcbOptFlds() {
         this(0L);
     }

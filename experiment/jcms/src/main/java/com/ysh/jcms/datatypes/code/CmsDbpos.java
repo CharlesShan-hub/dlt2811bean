@@ -5,6 +5,11 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsDbpos extends AbstractCmsCodedEnum {
 
+    public static final int INTERMEDIATE = 0;
+    public static final int OFF          = 1;
+    public static final int ON           = 2;
+    public static final int BAD_STATE    = 3;
+
     public CmsDbpos() {
         this(0);
     }
