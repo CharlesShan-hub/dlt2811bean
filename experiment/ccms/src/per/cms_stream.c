@@ -8,6 +8,7 @@ void per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity) {
     s->byte_pos = 0;
     s->bit_pos = 0;
     s->is_write = true;
+    s->is_dynamic = false;
     if (capacity > 0) memset(buf, 0, capacity);
 }
 
@@ -17,6 +18,7 @@ void per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity) 
     s->byte_pos = 0;
     s->bit_pos = 0;
     s->is_write = false;
+    s->is_dynamic = false;
 }
 
 size_t per_stream_tell(const per_stream_t *s) {
@@ -42,8 +44,44 @@ void per_stream_skip_align(per_stream_t *s) {
 }
 
 static per_error_t ensure_space(per_stream_t *s, size_t need_bytes) {
-    if (s->byte_pos + need_bytes > s->capacity) return PER_ERR_OVERFLOW;
+    if (s->byte_pos + need_bytes <= s->capacity) return PER_OK;
+    if (!s->is_dynamic) return PER_ERR_OVERFLOW;
+
+    size_t new_cap = s->capacity > 0 ? s->capacity * 2 : 256;
+    while (s->byte_pos + need_bytes > new_cap) {
+        new_cap *= 2;
+    }
+    uint8_t *new_buf = realloc(s->buf, new_cap);
+    if (!new_buf) return PER_ERR_OOM;
+    memset(new_buf + s->capacity, 0, new_cap - s->capacity);
+    s->buf = new_buf;
+    s->capacity = new_cap;
     return PER_OK;
+}
+
+per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity)
+{
+    if (initial_capacity < 64) initial_capacity = 64;
+    s->buf = (uint8_t *)calloc(1, initial_capacity);
+    if (!s->buf) return PER_ERR_OOM;
+    s->capacity = initial_capacity;
+    s->byte_pos = 0;
+    s->bit_pos = 0;
+    s->is_write = true;
+    s->is_dynamic = true;
+    return PER_OK;
+}
+
+uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len)
+{
+    uint8_t *buf = s->buf;
+    *out_len = per_stream_bytes_written(s);
+    s->buf = NULL;
+    s->capacity = 0;
+    s->byte_pos = 0;
+    s->bit_pos = 0;
+    s->is_dynamic = false;
+    return buf;
 }
 
 /* ---- bit I/O ---- */

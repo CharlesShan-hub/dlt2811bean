@@ -17,6 +17,7 @@ typedef enum {
     PER_ERR_INVALID_ARG  = -3,   /* NULL pointer or invalid argument */
     PER_ERR_TRUNCATED    = -4,   /* input truncated during decode */
     PER_ERR_LENGTH       = -5,   /* length constraint violation */
+    PER_ERR_OOM          = -6,   /* out of memory (dynamic mode) */
 } per_error_t;
 
 #ifdef __cplusplus

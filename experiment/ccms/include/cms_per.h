@@ -1,5 +1,5 @@
-#ifndef CMSPER_H
-#define CMSPER_H
+#ifndef CMS_PER_H
+#define CMS_PER_H
 
 #include "per/cms_stream.h"
 #include "per/cms_types.h"

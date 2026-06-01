@@ -3,6 +3,7 @@ project(ccms VERSION 1.0.0 LANGUAGES C)
 
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # --- PER encoding/decoding primitives library ---
 file(GLOB LIB_SRC src/per/cms_*.c)
@@ -14,8 +15,10 @@ target_include_directories(ccms_core
 
 # --- FFI library (hand-written PER codec for DL/T 2811 data types and APDU) ---
 add_library(ccms SHARED
-    src/cms_services.c
-    src/cms_apdu.c
+    src/svc/connect/cms_associate.c
+    src/svc/connect/cms_release.c
+    src/svc/connect/cms_abort.c
+    src/svc/other/cms_apdu.c
     src/data/basic/cms_boolean.c
     src/data/basic/cms_integer.c
     src/data/basic/cms_float.c

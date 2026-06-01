@@ -7,13 +7,15 @@ class CmsClientTest {
 
     @Test
     void associateRequestRoundtrip() {
-        AssociateRequest original = new AssociateRequest(1001, "cmsServer", false);
+        AssociateRequest original = new AssociateRequest(
+            "cmsServer", false,
+            new byte[0], 0, new byte[0]
+        );
         byte[] apdu = original.encode();
         assertNotNull(apdu);
         assertTrue(apdu.length > 0);
 
         AssociateRequest decoded = AssociateRequest.decode(apdu);
-        assertEquals(original.getReqId(), decoded.getReqId());
         assertEquals(original.getServerAccessPointReference(), decoded.getServerAccessPointReference());
         assertEquals(original.isHasAuthenticationParameter(), decoded.isHasAuthenticationParameter());
     }

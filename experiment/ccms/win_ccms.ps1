@@ -107,6 +107,13 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "[OK]   cmake configure" -ForegroundColor Green
 
+# Copy compile_commands.json to project root for clangd
+$ccJson = Join-Path $buildDir "compile_commands.json"
+if (Test-Path $ccJson) {
+    Copy-Item $ccJson $PSScriptRoot -Force
+    Write-Host "[OK]   synced compile_commands.json -> ccms root" -ForegroundColor Green
+}
+
 # Step 5: Build all targets
 Write-Host ""
 Write-Host "--- build ---" -ForegroundColor Cyan

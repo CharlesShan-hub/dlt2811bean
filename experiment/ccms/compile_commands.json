@@ -43,51 +43,27 @@
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_services.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_services.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_services.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_services.c.obj"
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\svc\\connect\\cms_associate.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\svc\\connect\\cms_associate.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/svc/connect/cms_associate.c",
+  "output": "CMakeFiles/ccms.dir/src/svc/connect/cms_associate.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_apdu.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_apdu.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_apdu.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_apdu.c.obj"
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\svc\\connect\\cms_release.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\svc\\connect\\cms_release.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/svc/connect/cms_release.c",
+  "output": "CMakeFiles/ccms.dir/src/svc/connect/cms_release.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types3.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types3.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types3.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types3.c.obj"
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\svc\\connect\\cms_abort.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\svc\\connect\\cms_abort.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/svc/connect/cms_abort.c",
+  "output": "CMakeFiles/ccms.dir/src/svc/connect/cms_abort.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types4.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types4.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types4.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types4.c.obj"
-},
-{
-  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types5.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types5.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types5.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types5.c.obj"
-},
-{
-  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types6.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types6.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types6.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types6.c.obj"
-},
-{
-  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types7.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types7.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types7.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types7.c.obj"
-},
-{
-  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\cms_types8.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\cms_types8.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/cms_types8.c",
-  "output": "CMakeFiles/ccms.dir/src/cms_types8.c.obj"
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\svc\\other\\cms_apdu.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\svc\\other\\cms_apdu.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/svc/other/cms_apdu.c",
+  "output": "CMakeFiles/ccms.dir/src/svc/other/cms_apdu.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
@@ -124,6 +100,96 @@
   "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\extended\\cms_time.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\extended\\cms_time.c",
   "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/extended/cms_time.c",
   "output": "CMakeFiles/ccms.dir/src/data/extended/cms_time.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_object_name.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_object_name.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_object_name.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_object_name.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_time_stamp.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_time_stamp.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_time_stamp.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_time_stamp.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_phy_com_addr.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_phy_com_addr.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_phy_com_addr.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_phy_com_addr.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_quality.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_quality.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_quality.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_quality.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_file_entry.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_file_entry.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_file_entry.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_file_entry.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\fc\\cms_fc.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\fc\\cms_fc.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/fc/cms_fc.c",
+  "output": "CMakeFiles/ccms.dir/src/data/fc/cms_fc.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\control\\cms_originator.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\control\\cms_originator.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/control/cms_originator.c",
+  "output": "CMakeFiles/ccms.dir/src/data/control/cms_originator.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\control\\cms_check.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\control\\cms_check.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/control/cms_check.c",
+  "output": "CMakeFiles/ccms.dir/src/data/control/cms_check.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\control\\cms_add_cause.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\control\\cms_add_cause.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/control/cms_add_cause.c",
+  "output": "CMakeFiles/ccms.dir/src/data/control/cms_add_cause.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\block\\cms_opt_flds.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\block\\cms_opt_flds.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/block/cms_opt_flds.c",
+  "output": "CMakeFiles/ccms.dir/src/data/block/cms_opt_flds.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\block\\cms_reason_code.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\block\\cms_reason_code.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/block/cms_reason_code.c",
+  "output": "CMakeFiles/ccms.dir/src/data/block/cms_reason_code.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\block\\cms_trigger_conditions.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\block\\cms_trigger_conditions.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/block/cms_trigger_conditions.c",
+  "output": "CMakeFiles/ccms.dir/src/data/block/cms_trigger_conditions.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\block\\cms_smp_mod.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\block\\cms_smp_mod.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/block/cms_smp_mod.c",
+  "output": "CMakeFiles/ccms.dir/src/data/block/cms_smp_mod.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\choice\\cms_data.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\choice\\cms_data.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/choice/cms_data.c",
+  "output": "CMakeFiles/ccms.dir/src/data/choice/cms_data.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\choice\\cms_data_definition.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\choice\\cms_data_definition.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/choice/cms_data_definition.c",
+  "output": "CMakeFiles/ccms.dir/src/data/choice/cms_data_definition.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build/tests",

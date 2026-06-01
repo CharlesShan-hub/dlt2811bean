@@ -2,13 +2,11 @@
 #include "per/cms_stream.h"
 #include "per/cms_string.h"
 #include <string.h>
-#include <stdlib.h>
 
-/* 7.1.4 Float32 / Float64 */
-CMS_EXPORT int cms_float32_encode(float value, uint8_t *out_buf, int *out_len)
+/* ---- stream versions ---- */
+
+int cms_float32_encode_stream(per_stream_t *s, float value)
 {
-    per_stream_t w;
-    per_stream_init_write(&w, out_buf, (size_t)*out_len);
     uint32_t bits;
     memcpy(&bits, &value, sizeof(bits));
     uint8_t bytes[4];
@@ -16,27 +14,22 @@ CMS_EXPORT int cms_float32_encode(float value, uint8_t *out_buf, int *out_len)
     bytes[1] = (uint8_t)(bits >> 16);
     bytes[2] = (uint8_t)(bits >> 8);
     bytes[3] = (uint8_t)(bits);
-    per_encode_octet_string_fixed(&w, bytes, 4);
-    *out_len = (int)per_stream_bytes_written(&w);
+    per_encode_octet_string_fixed(s, bytes, 4);
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_float32_decode(const uint8_t *in_buf, int in_len, float *value)
+int cms_float32_decode_stream(per_stream_t *s, float *value)
 {
-    per_stream_t r;
-    per_stream_init_read(&r, in_buf, (size_t)in_len);
     uint8_t bytes[4];
-    per_decode_octet_string_fixed(&r, bytes, 4);
+    per_decode_octet_string_fixed(s, bytes, 4);
     uint32_t bits = ((uint32_t)bytes[0] << 24) | ((uint32_t)bytes[1] << 16)
                   | ((uint32_t)bytes[2] << 8) | (uint32_t)bytes[3];
     memcpy(value, &bits, sizeof(bits));
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_float64_encode(double value, uint8_t *out_buf, int *out_len)
+int cms_float64_encode_stream(per_stream_t *s, double value)
 {
-    per_stream_t w;
-    per_stream_init_write(&w, out_buf, (size_t)*out_len);
     uint64_t bits;
     memcpy(&bits, &value, sizeof(bits));
     uint8_t bytes[8];
@@ -48,17 +41,14 @@ CMS_EXPORT int cms_float64_encode(double value, uint8_t *out_buf, int *out_len)
     bytes[5] = (uint8_t)(bits >> 16);
     bytes[6] = (uint8_t)(bits >> 8);
     bytes[7] = (uint8_t)(bits);
-    per_encode_octet_string_fixed(&w, bytes, 8);
-    *out_len = (int)per_stream_bytes_written(&w);
+    per_encode_octet_string_fixed(s, bytes, 8);
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_float64_decode(const uint8_t *in_buf, int in_len, double *value)
+int cms_float64_decode_stream(per_stream_t *s, double *value)
 {
-    per_stream_t r;
-    per_stream_init_read(&r, in_buf, (size_t)in_len);
     uint8_t bytes[8];
-    per_decode_octet_string_fixed(&r, bytes, 8);
+    per_decode_octet_string_fixed(s, bytes, 8);
     uint64_t bits = ((uint64_t)bytes[0] << 56) | ((uint64_t)bytes[1] << 48)
                   | ((uint64_t)bytes[2] << 40) | ((uint64_t)bytes[3] << 32)
                   | ((uint64_t)bytes[4] << 24) | ((uint64_t)bytes[5] << 16)
@@ -66,3 +56,14 @@ CMS_EXPORT int cms_float64_decode(const uint8_t *in_buf, int in_len, double *val
     memcpy(value, &bits, sizeof(bits));
     return CMS_OK;
 }
+
+/* ---- public buffer wrappers ---- */
+
+CMS_EXPORT int cms_float32_encode(float value, uint8_t *out_buf, int *out_len)
+    { per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len); cms_float32_encode_stream(&w, value); *out_len = (int)per_stream_bytes_written(&w); return CMS_OK; }
+CMS_EXPORT int cms_float32_decode(const uint8_t *in_buf, int in_len, float *value)
+    { per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len); cms_float32_decode_stream(&r, value); return CMS_OK; }
+CMS_EXPORT int cms_float64_encode(double value, uint8_t *out_buf, int *out_len)
+    { per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len); cms_float64_encode_stream(&w, value); *out_len = (int)per_stream_bytes_written(&w); return CMS_OK; }
+CMS_EXPORT int cms_float64_decode(const uint8_t *in_buf, int in_len, double *value)
+    { per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len); cms_float64_decode_stream(&r, value); return CMS_OK; }

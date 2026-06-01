@@ -9,19 +9,52 @@ public interface CmsFFI extends Library {
 
     CmsFFI INSTANCE = Native.load("ccms", CmsFFI.class);
 
-    /* ==================== Services ==================== */
+    /* ==================== Associate ==================== */
 
     int cms_associate_request_encode(
-        long reqId, String sapRef, int hasAuth,
+        String sapRef, int hasAuth,
+        byte[] cert, int certLen, long signedTime,
+        byte[] sigVal, int sigLen,
         byte[] outBuf, IntByReference outLen
     );
 
     int cms_associate_request_decode(
         byte[] inBuf, int inLen,
-        LongByReference reqId,
         byte[] sapRef, IntByReference sapRefCap,
-        IntByReference hasAuth
+        IntByReference hasAuth,
+        byte[] cert, IntByReference certCap,
+        LongByReference signedTime,
+        byte[] sigVal, IntByReference sigValCap
     );
+
+    int cms_associate_response_encode(
+        byte[] assocId, int assocIdLen, int serviceError, int hasAuth,
+        byte[] cert, int certLen, long signedTime,
+        byte[] sigVal, int sigLen,
+        byte[] outBuf, IntByReference outLen
+    );
+
+    int cms_associate_response_decode(
+        byte[] inBuf, int inLen,
+        byte[] assocId, IntByReference assocIdCap,
+        IntByReference serviceError,
+        IntByReference hasAuth,
+        byte[] cert, IntByReference certCap,
+        LongByReference signedTime,
+        byte[] sigVal, IntByReference sigValCap
+    );
+
+    int cms_associate_error_encode(
+        int serviceError,
+        byte[] outBuf, IntByReference outLen
+    );
+
+    int cms_associate_error_decode(
+        byte[] inBuf, int inLen,
+        IntByReference serviceError
+    );
+
+    /* ==================== Release ==================== */
 
     int cms_release_request_encode(
         long reqId,
@@ -32,6 +65,8 @@ public interface CmsFFI extends Library {
         byte[] inBuf, int inLen,
         LongByReference reqId
     );
+
+    /* ==================== Abort ==================== */
 
     int cms_abort_encode(
         long reqId, long abortReason,

@@ -16,9 +16,12 @@ typedef struct {
     size_t   byte_pos;
     int      bit_pos;   /* 0-7, 0=MSB */
     bool     is_write;
+    bool     is_dynamic; /* if true, buf is heap-allocated and auto-grows */
 } per_stream_t;
 
 void      per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity);
+per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity);
+uint8_t*  per_stream_detach(per_stream_t *s, size_t *out_len);
 void      per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
 size_t    per_stream_tell(const per_stream_t *s);
 size_t    per_stream_bytes_written(const per_stream_t *s);
