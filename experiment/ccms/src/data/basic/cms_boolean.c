@@ -1,8 +1,7 @@
 #include "data/basic/cms_boolean.h"
-#include "per/cms_boolean.h"
-#include "per/cms_stream.h"
 
 /* ---- internal stream version ---- */
+
 int cms_boolean_encode_stream(per_stream_t *s, int value)
 {
     per_encode_boolean(s, value ? 1 : 0);
@@ -18,6 +17,7 @@ int cms_boolean_decode_stream(per_stream_t *s, int *value)
 }
 
 /* ---- public buffer version ---- */
+
 CMS_EXPORT int cms_boolean_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;

@@ -1,7 +1,6 @@
 #include "data/extended/cms_time.h"
-#include "per/cms_integer.h"
-#include "per/cms_string.h"
-#include "per/cms_bit_string.h"
+
+/* ---- internal stream version ---- */
 
 int cms_utc_time_encode_stream(per_stream_t *s, int64_t timestamp_ms)
 {
@@ -56,7 +55,8 @@ int cms_time_quality_encode_stream(per_stream_t *s, const uint8_t value[1])
 int cms_time_quality_decode_stream(per_stream_t *s, uint8_t value[1])
     { per_decode_bit_string_fixed(s, value, 3); return CMS_OK; }
 
-/* ---- public buffer wrappers ---- */
+/* ---- public buffer version ---- */
+
 CMS_EXPORT int cms_utc_time_encode(int64_t t, uint8_t *b, int *l)
     { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_utc_time_encode_stream(&w, t); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }
 CMS_EXPORT int cms_utc_time_decode(const uint8_t *b, int l, int64_t *t)

@@ -1,6 +1,6 @@
 #include "data/common/cms_quality.h"
-#include "per/cms_integer.h"
-#include "per/cms_bit_string.h"
+
+/* ---- internal stream version ---- */
 
 int cms_quality_encode_stream(per_stream_t *s, const uint8_t value[2])
     { per_encode_bit_string_fixed(s, value, 13); return CMS_OK; }
@@ -18,6 +18,8 @@ int cms_service_error_encode_stream(per_stream_t *s, int value)
     { per_encode_constrained_int(s, value, 0, 12); return CMS_OK; }
 int cms_service_error_decode_stream(per_stream_t *s, int *value)
     { int64_t t; per_decode_constrained_int(s, &t, 0, 12); *value = (int)t; return CMS_OK; }
+
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_quality_encode(const uint8_t v[2], uint8_t *b, int *l)
     { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_quality_encode_stream(&w, v); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }

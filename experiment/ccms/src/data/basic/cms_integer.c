@@ -1,8 +1,6 @@
 #include "data/basic/cms_integer.h"
-#include "per/cms_integer.h"
-#include "per/cms_stream.h"
 
-/* ---- stream versions ---- */
+/* ---- internal stream version ---- */
 
 int cms_int8_encode_stream(per_stream_t *s, int8_t value)
     { per_encode_constrained_int(s, value, -128, 127); return CMS_OK; }
@@ -49,7 +47,7 @@ int cms_int64u_encode_stream(per_stream_t *s, uint64_t value)
 int cms_int64u_decode_stream(per_stream_t *s, uint64_t *value)
     { int64_t t; per_decode_unconstrained_int(s, &t); *value = (uint64_t)t; return CMS_OK; }
 
-/* ---- public buffer wrappers ---- */
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_int8_encode(int8_t value, uint8_t *out_buf, int *out_len)
     { per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len); cms_int8_encode_stream(&w, value); *out_len = (int)per_stream_bytes_written(&w); return CMS_OK; }

@@ -1,9 +1,7 @@
 #include "data/basic/cms_string.h"
-#include "per/cms_string.h"
-#include "per/cms_bit_string.h"
 #include <string.h>
 
-/* ---- stream versions ---- */
+/* ---- internal stream version ---- */
 
 int cms_visible_string_encode_stream(per_stream_t *s, const char *value)
     { per_encode_visible_string(s, value, 255); return CMS_OK; }
@@ -25,7 +23,7 @@ int cms_bit_string_encode_stream(per_stream_t *s, const uint8_t *value, int valu
 int cms_bit_string_decode_stream(per_stream_t *s, uint8_t *value, int *value_cap)
     { int n = *value_cap * 8; per_decode_bit_string(s, value, &n, 65535); *value_cap = (n + 7) / 8; return CMS_OK; }
 
-/* ---- public buffer wrappers ---- */
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_visible_string_encode(const char *value, uint8_t *out_buf, int *out_len)
     { per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len); cms_visible_string_encode_stream(&w, value); *out_len = (int)per_stream_bytes_written(&w); return CMS_OK; }

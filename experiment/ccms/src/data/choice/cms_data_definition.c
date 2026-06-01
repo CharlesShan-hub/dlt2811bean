@@ -1,5 +1,6 @@
 #include "data/choice/cms_data_definition.h"
-#include "per/cms_integer.h"
+
+/* ---- internal stream version ---- */
 
 int cms_data_definition_encode_stream(per_stream_t *s, int choice,
     int64_t int_val, const char *str_val,
@@ -37,6 +38,8 @@ int cms_data_definition_decode_stream(per_stream_t *s, int *choice,
     }
     return CMS_OK;
 }
+
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_data_definition_encode(int choice, int64_t int_val,
     const char *str_val, const uint8_t *bytes_val, int bytes_len,

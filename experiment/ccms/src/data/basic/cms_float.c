@@ -1,9 +1,6 @@
 #include "data/basic/cms_float.h"
-#include "per/cms_stream.h"
-#include "per/cms_string.h"
-#include <string.h>
 
-/* ---- stream versions ---- */
+/* ---- internal stream version ---- */
 
 int cms_float32_encode_stream(per_stream_t *s, float value)
 {
@@ -57,7 +54,7 @@ int cms_float64_decode_stream(per_stream_t *s, double *value)
     return CMS_OK;
 }
 
-/* ---- public buffer wrappers ---- */
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_float32_encode(float value, uint8_t *out_buf, int *out_len)
     { per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len); cms_float32_encode_stream(&w, value); *out_len = (int)per_stream_bytes_written(&w); return CMS_OK; }

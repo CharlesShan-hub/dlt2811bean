@@ -1,7 +1,6 @@
 #include "data/common/cms_file_entry.h"
-#include "per/cms_integer.h"
-#include "per/cms_string.h"
-#include <string.h>
+
+/* ---- internal stream version ---- */
 
 int cms_file_entry_encode_stream(per_stream_t *s,
     const char *fileName, uint32_t fileSize,

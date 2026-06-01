@@ -1,9 +1,4 @@
 #include "data/choice/cms_data.h"
-#include "per/cms_stream.h"
-#include "per/cms_boolean.h"
-#include "per/cms_integer.h"
-#include "per/cms_string.h"
-#include "per/cms_bit_string.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -15,7 +10,7 @@ static void decode_data_value(per_stream_t *r, int choice,
     char *str_val, int *str_cap,
     uint8_t *bytes_val, int *bytes_cap);
 
-/* ---- stream version ---- */
+/* ---- internal stream version ---- */
 
 int cms_data_encode_stream(per_stream_t *s, int choice,
     int64_t int_val, double float_val,
@@ -38,7 +33,7 @@ int cms_data_decode_stream(per_stream_t *s, int *choice,
     return CMS_OK;
 }
 
-/* ---- public buffer wrappers ---- */
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_data_encode(int choice, int64_t int_val, double float_val,
     const char *str_val, const uint8_t *bytes_val, int bytes_len,

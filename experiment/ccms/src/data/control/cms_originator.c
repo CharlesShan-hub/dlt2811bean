@@ -1,6 +1,6 @@
 #include "data/control/cms_originator.h"
-#include "per/cms_integer.h"
-#include "per/cms_string.h"
+
+/* ---- internal stream version ---- */
 
 int cms_originator_encode_stream(per_stream_t *s, int or_cat, const uint8_t *or_ident, int or_ident_len)
 {
@@ -18,6 +18,8 @@ int cms_originator_decode_stream(per_stream_t *s, int *or_cat, uint8_t *or_ident
     *or_ident_cap = (int)l;
     return CMS_OK;
 }
+
+/* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_originator_encode(int oc, const uint8_t *oi, int oil, uint8_t *b, int *l)
     { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_originator_encode_stream(&w, oc, oi, oil); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }
