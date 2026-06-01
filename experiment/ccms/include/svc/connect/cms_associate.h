@@ -1,28 +1,71 @@
 #ifndef CMS_ASSOCIATE_H
 #define CMS_ASSOCIATE_H
 
-#include "cms_core.h"
+#include "svc/cms_svc.h"
+#include "data/basic/cms_string.h"
+#include "data/common/cms_quality.h"
+#include "data/extended/cms_time.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#define CMS_MAX_CERT_LEN 2048
+
+typedef struct {
+    char sap_ref[65];
+    int has_auth;
+    uint8_t cert[CMS_MAX_CERT_LEN];
+    int cert_len;
+    int64_t signed_time;
+    uint8_t sig_val[CMS_MAX_CERT_LEN];
+    int sig_len;
+} cms_associate_request_t;
+
+typedef struct {
+    uint8_t assoc_id[32];
+    int assoc_id_len;
+    int service_error;
+    int has_auth;
+    uint8_t cert[CMS_MAX_CERT_LEN];
+    int cert_len;
+    int64_t signed_time;
+    uint8_t sig_val[CMS_MAX_CERT_LEN];
+    int sig_len;
+} cms_associate_response_t;
+
+typedef struct {
+    int service_error;
+} cms_associate_error_t;
+
 CMS_EXPORT int cms_associate_request_encode(
-    const char *sap_ref,
-    int has_auth,
-    const uint8_t *cert, int cert_len,
-    int64_t signed_time,
-    const uint8_t *sig_val, int sig_len,
+    const cms_associate_request_t *sdu,
     uint8_t *out_buf, int *out_len
 );
 
 CMS_EXPORT int cms_associate_request_decode(
     const uint8_t *in_buf, int in_len,
-    char *sap_ref, int *sap_ref_cap,
-    int *has_auth,
-    uint8_t *cert, int *cert_cap,
-    int64_t *signed_time,
-    uint8_t *sig_val, int *sig_val_cap
+    cms_associate_request_t *sdu
+);
+
+CMS_EXPORT int cms_associate_response_encode(
+    const cms_associate_response_t *sdu,
+    uint8_t *out_buf, int *out_len
+);
+
+CMS_EXPORT int cms_associate_response_decode(
+    const uint8_t *in_buf, int in_len,
+    cms_associate_response_t *sdu
+);
+
+CMS_EXPORT int cms_associate_error_encode(
+    const cms_associate_error_t *sdu,
+    uint8_t *out_buf, int *out_len
+);
+
+CMS_EXPORT int cms_associate_error_decode(
+    const uint8_t *in_buf, int in_len,
+    cms_associate_error_t *sdu
 );
 
 #ifdef __cplusplus

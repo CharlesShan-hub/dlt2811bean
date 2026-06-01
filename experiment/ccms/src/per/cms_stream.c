@@ -83,7 +83,7 @@ uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len)
     s->is_dynamic = false;
     return buf;
 }
-
+ 
 /* ---- bit I/O ---- */
 
 per_error_t per_stream_write_bit(per_stream_t *s, int bit) {
