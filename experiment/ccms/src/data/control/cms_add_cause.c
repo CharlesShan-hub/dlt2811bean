@@ -3,9 +3,9 @@
 /* ---- internal stream version ---- */
 
 int cms_add_cause_encode_stream(per_stream_t *s, cms_add_cause_t value)
-    { per_encode_constrained_int(s, value, 0, 16); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, 27); return CMS_OK; }
 int cms_add_cause_decode_stream(per_stream_t *s, cms_add_cause_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, 0, 16); *value = (cms_add_cause_t)(int)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, 27); *value = (cms_add_cause_t)(int)t; return CMS_OK; }
 
 /* ---- public buffer version ---- */
 
