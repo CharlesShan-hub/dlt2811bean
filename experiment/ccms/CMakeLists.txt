@@ -5,7 +5,7 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 # --- PER encoding/decoding primitives library ---
-file(GLOB LIB_SRC src/per_*.c)
+file(GLOB LIB_SRC src/per/cms_*.c)
 add_library(ccms_core STATIC ${LIB_SRC})
 
 target_include_directories(ccms_core
@@ -16,14 +16,27 @@ target_include_directories(ccms_core
 add_library(ccms SHARED
     src/cms_services.c
     src/cms_apdu.c
-    src/cms_types1.c
-    src/cms_types2.c
-    src/cms_types3.c
-    src/cms_types4.c
-    src/cms_types5.c
-    src/cms_types6.c
-    src/cms_types7.c
-    src/cms_types8.c
+    src/data/basic/cms_boolean.c
+    src/data/basic/cms_integer.c
+    src/data/basic/cms_float.c
+    src/data/basic/cms_string.c
+    src/data/basic/cms_packed_list.c
+    src/data/extended/cms_time.c
+    src/data/common/cms_object_name.c
+    src/data/common/cms_time_stamp.c
+    src/data/common/cms_phy_com_addr.c
+    src/data/common/cms_quality.c
+    src/data/common/cms_file_entry.c
+    src/data/fc/cms_fc.c
+    src/data/control/cms_originator.c
+    src/data/control/cms_check.c
+    src/data/control/cms_add_cause.c
+    src/data/block/cms_opt_flds.c
+    src/data/block/cms_reason_code.c
+    src/data/block/cms_trigger_conditions.c
+    src/data/block/cms_smp_mod.c
+    src/data/choice/cms_data.c
+    src/data/choice/cms_data_definition.c
 )
 target_include_directories(ccms
     PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

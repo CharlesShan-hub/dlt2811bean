@@ -1,4 +1,4 @@
-#include "per_choice.h"
+#include "per/cms_choice.h"
 #include "test_utils.h"
 
 void test_choice(void) {

@@ -1,4 +1,4 @@
-#include "per_bit_string.h"
+#include "per/cms_bit_string.h"
 #include "test_utils.h"
 #include <string.h>
 

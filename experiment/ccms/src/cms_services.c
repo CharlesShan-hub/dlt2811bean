@@ -1,9 +1,9 @@
 #include "cms_services.h"
 #include "cms_apdu.h"
-#include "per_stream.h"
-#include "per_boolean.h"
-#include "per_integer.h"
-#include "per_string.h"
+#include "per/cms_stream.h"
+#include "per/cms_boolean.h"
+#include "per/cms_integer.h"
+#include "per/cms_string.h"
 #include <string.h>
 #include <stdlib.h>
 
