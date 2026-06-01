@@ -4,6 +4,10 @@
 # Maven output
 target/
 
+# CMake build output
+experiment/ccms/build/
+experiment/ccms/dist/
+
 # IDE - IntelliJ IDEA
 .idea/
 *.iml

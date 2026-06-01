@@ -18,7 +18,7 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
         byte[] bytes = toPerBytes();
-        CmsFFIDatatypes.INSTANCE.cms_encode_LcbOptFlds(bytes, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_lcb_opt_flds_encode(bytes, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -26,7 +26,7 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum {
 
     public static CmsLcbOptFlds decode(byte[] data) {
         byte[] val = new byte[1];
-        CmsFFIDatatypes.INSTANCE.cms_decode_LcbOptFlds(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_lcb_opt_flds_decode(data, data.length, val);
         return new CmsLcbOptFlds(fromPerBytes(val, 1));
     }
 

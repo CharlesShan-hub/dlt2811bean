@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-CMS_EXPORT int cms_encode_DataDefinition(
+CMS_EXPORT int cms_data_definition_encode(
     int choice,
     int64_t int_val,
     const char *str_val,
@@ -15,7 +15,7 @@ CMS_EXPORT int cms_encode_DataDefinition(
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_DataDefinition(
+CMS_EXPORT int cms_data_definition_decode(
     const uint8_t *in_buf, int in_len,
     int *choice,
     int64_t *int_val,

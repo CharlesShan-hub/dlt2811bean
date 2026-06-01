@@ -11,34 +11,34 @@ public interface CmsFFI extends Library {
 
     /* ==================== Services ==================== */
 
-    int cms_encode_associate_request(
+    int cms_associate_request_encode(
         long reqId, String sapRef, int hasAuth,
         byte[] outBuf, IntByReference outLen
     );
 
-    int cms_decode_associate_request(
+    int cms_associate_request_decode(
         byte[] inBuf, int inLen,
         LongByReference reqId,
         byte[] sapRef, IntByReference sapRefCap,
         IntByReference hasAuth
     );
 
-    int cms_encode_release_request(
+    int cms_release_request_encode(
         long reqId,
         byte[] outBuf, IntByReference outLen
     );
 
-    int cms_decode_release_request(
+    int cms_release_request_decode(
         byte[] inBuf, int inLen,
         LongByReference reqId
     );
 
-    int cms_encode_abort(
+    int cms_abort_encode(
         long reqId, long abortReason,
         byte[] outBuf, IntByReference outLen
     );
 
-    int cms_decode_abort(
+    int cms_abort_decode(
         byte[] inBuf, int inLen,
         LongByReference reqId,
         LongByReference abortReason

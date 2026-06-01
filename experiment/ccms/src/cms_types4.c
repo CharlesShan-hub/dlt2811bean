@@ -4,7 +4,7 @@
 #include <string.h>
 
 /* 7.4 FC */
-int cms_encode_FC(const uint8_t value[2], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_fc_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -13,7 +13,7 @@ int cms_encode_FC(const uint8_t value[2], uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_FC(const uint8_t *in_buf, int in_len, uint8_t value[2])
+CMS_EXPORT int cms_fc_decode(const uint8_t *in_buf, int in_len, uint8_t value[2])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

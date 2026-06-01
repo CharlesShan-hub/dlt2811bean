@@ -16,7 +16,7 @@ static void decode_data_value(per_stream_t *r, int choice,
     uint8_t *bytes_val, int *bytes_cap);
 
 /* 7.7 Data */
-int cms_encode_Data(
+CMS_EXPORT int cms_data_encode(
     int choice,
     int64_t int_val, double float_val,
     const char *str_val, const uint8_t *bytes_val, int bytes_len,

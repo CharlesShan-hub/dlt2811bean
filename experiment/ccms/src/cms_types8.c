@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 /* 7.8 DataDefinition */
-int cms_encode_DataDefinition(
+CMS_EXPORT int cms_data_definition_encode(
     int choice,
     int64_t int_val,
     const char *str_val,
@@ -60,7 +60,7 @@ int cms_encode_DataDefinition(
     return CMS_OK;
 }
 
-int cms_decode_DataDefinition(
+CMS_EXPORT int cms_data_definition_decode(
     const uint8_t *in_buf, int in_len,
     int *choice,
     int64_t *int_val,

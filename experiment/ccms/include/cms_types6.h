@@ -7,62 +7,62 @@
 extern "C" {
 #endif
 
-CMS_EXPORT int cms_encode_LcbOptFlds(
+CMS_EXPORT int cms_lcb_opt_flds_encode(
     const uint8_t value[1],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_LcbOptFlds(
+CMS_EXPORT int cms_lcb_opt_flds_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[1]
 );
 
-CMS_EXPORT int cms_encode_MsvcbOptFlds(
+CMS_EXPORT int cms_msvcb_opt_flds_encode(
     const uint8_t value[1],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_MsvcbOptFlds(
+CMS_EXPORT int cms_msvcb_opt_flds_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[1]
 );
 
-CMS_EXPORT int cms_encode_RcbOptFlds(
+CMS_EXPORT int cms_rcb_opt_flds_encode(
     const uint8_t value[2],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_RcbOptFlds(
+CMS_EXPORT int cms_rcb_opt_flds_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[2]
 );
 
-CMS_EXPORT int cms_encode_ReasonCode(
+CMS_EXPORT int cms_reason_code_encode(
     const uint8_t value[1],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_ReasonCode(
+CMS_EXPORT int cms_reason_code_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[1]
 );
 
-CMS_EXPORT int cms_encode_TriggerConditions(
+CMS_EXPORT int cms_trigger_conditions_encode(
     const uint8_t value[1],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_TriggerConditions(
+CMS_EXPORT int cms_trigger_conditions_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[1]
 );
 
-CMS_EXPORT int cms_encode_SmpMod(
+CMS_EXPORT int cms_smp_mod_encode(
     int value,
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_SmpMod(
+CMS_EXPORT int cms_smp_mod_decode(
     const uint8_t *in_buf, int in_len,
     int *value
 );

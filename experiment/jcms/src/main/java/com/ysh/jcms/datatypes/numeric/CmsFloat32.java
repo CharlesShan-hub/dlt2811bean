@@ -19,7 +19,7 @@ public class CmsFloat32 extends AbstractCmsScalar<Float> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Float32(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_float32_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -27,7 +27,7 @@ public class CmsFloat32 extends AbstractCmsScalar<Float> {
 
     public static CmsFloat32 decode(byte[] data) {
         float[] v = new float[1];
-        CmsFFIDatatypes.INSTANCE.cms_decode_Float32(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_float32_decode(data, data.length, v);
         return new CmsFloat32(v[0]);
     }
 

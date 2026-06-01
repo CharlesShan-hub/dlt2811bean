@@ -20,7 +20,7 @@ public class CmsObjectReference extends AbstractCmsScalar<String> {
     public byte[] encode() {
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_ObjectReference(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_object_reference_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -29,7 +29,7 @@ public class CmsObjectReference extends AbstractCmsScalar<String> {
     public static CmsObjectReference decode(byte[] data) {
         byte[] strBuf = new byte[256];
         IntByReference strLen = new IntByReference(129);
-        CmsFFIDatatypes.INSTANCE.cms_decode_ObjectReference(data, data.length, strBuf, strLen);
+        CmsFFIDatatypes.INSTANCE.cms_object_reference_decode(data, data.length, strBuf, strLen);
         return new CmsObjectReference(new String(strBuf, 0, strLen.getValue(), StandardCharsets.US_ASCII));
     }
 

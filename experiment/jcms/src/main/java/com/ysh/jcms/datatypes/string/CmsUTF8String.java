@@ -24,7 +24,7 @@ public class CmsUTF8String extends AbstractCmsScalar<String> {
         byte[] nullTerminated = new byte[utf8Bytes.length + 1];
         System.arraycopy(utf8Bytes, 0, nullTerminated, 0, utf8Bytes.length);
         nullTerminated[utf8Bytes.length] = 0;
-        CmsFFIDatatypes.INSTANCE.cms_encode_UTF8String(nullTerminated, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_utf8_string_encode(nullTerminated, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -34,7 +34,7 @@ public class CmsUTF8String extends AbstractCmsScalar<String> {
         byte[] strBuf = new byte[512];
         java.util.Arrays.fill(strBuf, (byte) 0);
         IntByReference strLen = new IntByReference(255);
-        CmsFFIDatatypes.INSTANCE.cms_decode_UTF8String(data, data.length, strBuf, strLen);
+        CmsFFIDatatypes.INSTANCE.cms_utf8_string_decode(data, data.length, strBuf, strLen);
         return new CmsUTF8String(new String(strBuf, 0, strLen.getValue(), StandardCharsets.UTF_8));
     }
 

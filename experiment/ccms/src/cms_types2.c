@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 /* 7.2.1 UtcTime */
-int cms_encode_UtcTime(
+CMS_EXPORT int cms_utc_time_encode(
     int64_t timestamp_ms,
     uint8_t *out_buf, int *out_len)
 {
@@ -29,7 +29,7 @@ int cms_encode_UtcTime(
     return CMS_OK;
 }
 
-int cms_decode_UtcTime(
+CMS_EXPORT int cms_utc_time_decode(
     const uint8_t *in_buf, int in_len,
     int64_t *timestamp_ms)
 {
@@ -47,7 +47,7 @@ int cms_decode_UtcTime(
 }
 
 /* 7.2.2 BinaryTime / EntryTime */
-int cms_encode_BinaryTime(
+CMS_EXPORT int cms_binary_time_encode(
     int32_t hour, int32_t minute, int32_t second, int32_t millisecond,
     uint8_t *out_buf, int *out_len)
 {
@@ -62,7 +62,7 @@ int cms_encode_BinaryTime(
     return CMS_OK;
 }
 
-int cms_decode_BinaryTime(
+CMS_EXPORT int cms_binary_time_decode(
     const uint8_t *in_buf, int in_len,
     int32_t *hour, int32_t *minute, int32_t *second, int32_t *millisecond)
 {
@@ -82,7 +82,7 @@ int cms_decode_BinaryTime(
 }
 
 /* 7.2.1 TimeQuality */
-int cms_encode_TimeQuality(const uint8_t value[1], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_time_quality_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -91,7 +91,7 @@ int cms_encode_TimeQuality(const uint8_t value[1], uint8_t *out_buf, int *out_le
     return CMS_OK;
 }
 
-int cms_decode_TimeQuality(const uint8_t *in_buf, int in_len, uint8_t value[1])
+CMS_EXPORT int cms_time_quality_decode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

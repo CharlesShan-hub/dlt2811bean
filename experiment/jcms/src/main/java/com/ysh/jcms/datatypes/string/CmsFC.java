@@ -28,7 +28,7 @@ public class CmsFC extends AbstractCmsScalar<byte[]> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_FC(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_fc_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -36,7 +36,7 @@ public class CmsFC extends AbstractCmsScalar<byte[]> {
 
     public static CmsFC decode(byte[] data) {
         byte[] val = new byte[2];
-        CmsFFIDatatypes.INSTANCE.cms_decode_FC(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_fc_decode(data, data.length, val);
         return new CmsFC(val);
     }
 

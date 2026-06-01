@@ -20,7 +20,7 @@ public class CmsPhyComAddr extends AbstractCmsCompound {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_PhyComAddr(value, 0, 0, 0, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_phy_com_addr_encode(value, 0, 0, 0, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -31,7 +31,7 @@ public class CmsPhyComAddr extends AbstractCmsCompound {
         IntByReference priority = new IntByReference();
         IntByReference vid = new IntByReference();
         IntByReference appid = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_PhyComAddr(data, data.length, val, priority, vid, appid);
+        CmsFFIDatatypes.INSTANCE.cms_phy_com_addr_decode(data, data.length, val, priority, vid, appid);
         return new CmsPhyComAddr(val);
     }
 

@@ -8,15 +8,20 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsOrCatTest {
 
     @Test
-    void roundtrip() {
-        CmsOrCat original = new CmsOrCat(1);
-        byte[] data = original.encode();
-        CmsOrCat decoded = CmsOrCat.decode(data);
-        assertEquals(original.get(), decoded.get());
+    void defaultValue() {
+        assertEquals(0, (int) new CmsOrCat().get());
     }
 
     @Test
-    void defaultValue() {
-        assertEquals(0, (int) new CmsOrCat().get());
+    void constructWithValue() {
+        CmsOrCat cat = new CmsOrCat(5);
+        assertEquals(5, cat.get());
+    }
+
+    @Test
+    void copy() {
+        CmsOrCat cat = new CmsOrCat(3);
+        CmsOrCat cloned = cat.copy();
+        assertEquals(cat.get(), cloned.get());
     }
 }

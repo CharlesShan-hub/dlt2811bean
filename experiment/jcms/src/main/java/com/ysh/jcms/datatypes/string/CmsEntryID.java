@@ -27,7 +27,7 @@ public class CmsEntryID extends AbstractCmsScalar<byte[]> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_EntryID(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_entry_id_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -35,7 +35,7 @@ public class CmsEntryID extends AbstractCmsScalar<byte[]> {
 
     public static CmsEntryID decode(byte[] data) {
         byte[] val = new byte[8];
-        CmsFFIDatatypes.INSTANCE.cms_decode_EntryID(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_entry_id_decode(data, data.length, val);
         return new CmsEntryID(val);
     }
 

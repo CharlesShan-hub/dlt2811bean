@@ -21,7 +21,7 @@ public class CmsTimeStamp extends AbstractCmsCompound {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_TimeStamp(secondsSinceEpoch, fractional, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_time_stamp_encode(secondsSinceEpoch, fractional, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -30,7 +30,7 @@ public class CmsTimeStamp extends AbstractCmsCompound {
     public static CmsTimeStamp decode(byte[] data) {
         LongByReference sec = new LongByReference();
         LongByReference frac = new LongByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_TimeStamp(data, data.length, sec, frac);
+        CmsFFIDatatypes.INSTANCE.cms_time_stamp_decode(data, data.length, sec, frac);
         return new CmsTimeStamp(sec.getValue(), frac.getValue());
     }
 

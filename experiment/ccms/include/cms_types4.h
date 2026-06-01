@@ -7,12 +7,12 @@
 extern "C" {
 #endif
 
-CMS_EXPORT int cms_encode_FC(
+CMS_EXPORT int cms_fc_encode(
     const uint8_t value[2],
     uint8_t *out_buf, int *out_len
 );
 
-CMS_EXPORT int cms_decode_FC(
+CMS_EXPORT int cms_fc_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t value[2]
 );

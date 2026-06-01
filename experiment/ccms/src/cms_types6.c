@@ -4,7 +4,7 @@
 #include "per_bit_string.h"
 #include <string.h>
 
-int cms_encode_LcbOptFlds(const uint8_t value[1], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_lcb_opt_flds_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -13,7 +13,7 @@ int cms_encode_LcbOptFlds(const uint8_t value[1], uint8_t *out_buf, int *out_len
     return CMS_OK;
 }
 
-int cms_decode_LcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[1])
+CMS_EXPORT int cms_lcb_opt_flds_decode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -22,7 +22,7 @@ int cms_decode_LcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[1])
 }
 
 /* 7.6.6 MsvcbOptFlds */
-int cms_encode_MsvcbOptFlds(const uint8_t value[1], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_msvcb_opt_flds_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -31,7 +31,7 @@ int cms_encode_MsvcbOptFlds(const uint8_t value[1], uint8_t *out_buf, int *out_l
     return CMS_OK;
 }
 
-int cms_decode_MsvcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[1])
+CMS_EXPORT int cms_msvcb_opt_flds_decode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -39,7 +39,7 @@ int cms_decode_MsvcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[1])
     return CMS_OK;
 }
 
-int cms_encode_RcbOptFlds(const uint8_t value[2], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_rcb_opt_flds_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -48,7 +48,7 @@ int cms_encode_RcbOptFlds(const uint8_t value[2], uint8_t *out_buf, int *out_len
     return CMS_OK;
 }
 
-int cms_decode_RcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[2])
+CMS_EXPORT int cms_rcb_opt_flds_decode(const uint8_t *in_buf, int in_len, uint8_t value[2])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -57,7 +57,7 @@ int cms_decode_RcbOptFlds(const uint8_t *in_buf, int in_len, uint8_t value[2])
 }
 
 /* 7.6.3 ReasonCode */
-int cms_encode_ReasonCode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_reason_code_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -66,7 +66,7 @@ int cms_encode_ReasonCode(const uint8_t value[1], uint8_t *out_buf, int *out_len
     return CMS_OK;
 }
 
-int cms_decode_ReasonCode(const uint8_t *in_buf, int in_len, uint8_t value[1])
+CMS_EXPORT int cms_reason_code_decode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -75,7 +75,7 @@ int cms_decode_ReasonCode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 }
 
 /* 7.6.2 TriggerConditions */
-int cms_encode_TriggerConditions(const uint8_t value[1], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_trigger_conditions_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -84,7 +84,7 @@ int cms_encode_TriggerConditions(const uint8_t value[1], uint8_t *out_buf, int *
     return CMS_OK;
 }
 
-int cms_decode_TriggerConditions(const uint8_t *in_buf, int in_len, uint8_t value[1])
+CMS_EXPORT int cms_trigger_conditions_decode(const uint8_t *in_buf, int in_len, uint8_t value[1])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -92,7 +92,7 @@ int cms_decode_TriggerConditions(const uint8_t *in_buf, int in_len, uint8_t valu
     return CMS_OK;
 }
 
-int cms_encode_SmpMod(int value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_smp_mod_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -101,7 +101,7 @@ int cms_encode_SmpMod(int value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_SmpMod(const uint8_t *in_buf, int in_len, int *value)
+CMS_EXPORT int cms_smp_mod_decode(const uint8_t *in_buf, int in_len, int *value)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

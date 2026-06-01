@@ -17,7 +17,7 @@ public class CmsSmpMod extends AbstractCmsEnumerated {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_SmpMod(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_smp_mod_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -25,7 +25,7 @@ public class CmsSmpMod extends AbstractCmsEnumerated {
 
     public static CmsSmpMod decode(byte[] data) {
         IntByReference v = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_SmpMod(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_smp_mod_decode(data, data.length, v);
         return new CmsSmpMod(v.getValue());
     }
 

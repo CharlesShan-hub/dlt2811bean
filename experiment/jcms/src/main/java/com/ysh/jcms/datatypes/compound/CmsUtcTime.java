@@ -18,7 +18,7 @@ public class CmsUtcTime extends AbstractCmsCompound {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_UtcTime(secondsSinceEpoch, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_utc_time_encode(secondsSinceEpoch, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -26,7 +26,7 @@ public class CmsUtcTime extends AbstractCmsCompound {
 
     public static CmsUtcTime decode(byte[] data) {
         LongByReference sec = new LongByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_UtcTime(data, data.length, sec);
+        CmsFFIDatatypes.INSTANCE.cms_utc_time_decode(data, data.length, sec);
         return new CmsUtcTime(sec.getValue());
     }
 

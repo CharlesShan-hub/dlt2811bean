@@ -20,7 +20,7 @@ public class CmsInt32U extends AbstractCmsScalar<Long> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Int32U(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_int32u_encode(value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -28,7 +28,7 @@ public class CmsInt32U extends AbstractCmsScalar<Long> {
 
     public static CmsInt32U decode(byte[] data) {
         LongByReference v = new LongByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_Int32U(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_int32u_decode(data, data.length, v);
         return new CmsInt32U(v.getValue());
     }
 

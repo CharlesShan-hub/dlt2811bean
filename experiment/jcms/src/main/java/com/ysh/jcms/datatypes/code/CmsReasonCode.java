@@ -17,7 +17,7 @@ public class CmsReasonCode extends AbstractCmsCodedEnum {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_ReasonCode(toPerBytes(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_reason_code_encode(toPerBytes(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -25,7 +25,7 @@ public class CmsReasonCode extends AbstractCmsCodedEnum {
 
     public static CmsReasonCode decode(byte[] data) {
         byte[] val = new byte[1];
-        CmsFFIDatatypes.INSTANCE.cms_decode_ReasonCode(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_reason_code_decode(data, data.length, val);
         return new CmsReasonCode(fromPerBytes(val, 7));
     }
 

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 /* 7.3.1 ObjectName */
-int cms_encode_ObjectName(const char *value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_object_name_encode(const char *value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -16,7 +16,7 @@ int cms_encode_ObjectName(const char *value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_ObjectName(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
+CMS_EXPORT int cms_object_name_decode(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -25,7 +25,7 @@ int cms_decode_ObjectName(const uint8_t *in_buf, int in_len, char *value, int *v
     return CMS_OK;
 }
 
-int cms_encode_ObjectReference(const char *value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_object_reference_encode(const char *value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -34,7 +34,7 @@ int cms_encode_ObjectReference(const char *value, uint8_t *out_buf, int *out_len
     return CMS_OK;
 }
 
-int cms_decode_ObjectReference(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
+CMS_EXPORT int cms_object_reference_decode(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -44,7 +44,7 @@ int cms_decode_ObjectReference(const uint8_t *in_buf, int in_len, char *value, i
 }
 
 /* 7.3.3 SubReference */
-int cms_encode_SubReference(const char *value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_sub_reference_encode(const char *value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -53,7 +53,7 @@ int cms_encode_SubReference(const char *value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_SubReference(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
+CMS_EXPORT int cms_sub_reference_decode(const uint8_t *in_buf, int in_len, char *value, int *value_cap)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -62,7 +62,7 @@ int cms_decode_SubReference(const uint8_t *in_buf, int in_len, char *value, int 
     return CMS_OK;
 }
 
-int cms_encode_EntryID(const uint8_t value[8], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_entry_id_encode(const uint8_t value[8], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -71,7 +71,7 @@ int cms_encode_EntryID(const uint8_t value[8], uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_EntryID(const uint8_t *in_buf, int in_len, uint8_t value[8])
+CMS_EXPORT int cms_entry_id_decode(const uint8_t *in_buf, int in_len, uint8_t value[8])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -79,7 +79,7 @@ int cms_decode_EntryID(const uint8_t *in_buf, int in_len, uint8_t value[8])
     return CMS_OK;
 }
 
-int cms_encode_TimeStamp(
+CMS_EXPORT int cms_time_stamp_encode(
     int64_t seconds_since_epoch, int64_t fractional,
     uint8_t *out_buf, int *out_len)
 {
@@ -92,7 +92,7 @@ int cms_encode_TimeStamp(
     return CMS_OK;
 }
 
-int cms_decode_TimeStamp(
+CMS_EXPORT int cms_time_stamp_decode(
     const uint8_t *in_buf, int in_len,
     int64_t *seconds_since_epoch, int64_t *fractional)
 {
@@ -105,7 +105,7 @@ int cms_decode_TimeStamp(
 }
 
 /* 7.3.12 PhyComAddr */
-int cms_encode_PhyComAddr(
+CMS_EXPORT int cms_phy_com_addr_encode(
     const uint8_t addr[6], uint8_t priority, uint16_t vid, uint16_t appid,
     uint8_t *out_buf, int *out_len)
 {
@@ -119,7 +119,7 @@ int cms_encode_PhyComAddr(
     return CMS_OK;
 }
 
-int cms_decode_PhyComAddr(
+CMS_EXPORT int cms_phy_com_addr_decode(
     const uint8_t *in_buf, int in_len,
     uint8_t addr[6], uint8_t *priority, uint16_t *vid, uint16_t *appid)
 {
@@ -137,7 +137,7 @@ int cms_decode_PhyComAddr(
 }
 
 /* 7.3.6 Quality */
-int cms_encode_Quality(const uint8_t value[2], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_quality_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -146,7 +146,7 @@ int cms_encode_Quality(const uint8_t value[2], uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_Quality(const uint8_t *in_buf, int in_len, uint8_t value[2])
+CMS_EXPORT int cms_quality_decode(const uint8_t *in_buf, int in_len, uint8_t value[2])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -155,7 +155,7 @@ int cms_decode_Quality(const uint8_t *in_buf, int in_len, uint8_t value[2])
 }
 
 /* 7.3.5 Dbpos */
-int cms_encode_Dbpos(int value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_dbpos_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -164,7 +164,7 @@ int cms_encode_Dbpos(int value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_Dbpos(const uint8_t *in_buf, int in_len, int *value)
+CMS_EXPORT int cms_dbpos_decode(const uint8_t *in_buf, int in_len, int *value)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -175,7 +175,7 @@ int cms_decode_Dbpos(const uint8_t *in_buf, int in_len, int *value)
 }
 
 /* 7.3.10 FileEntry */
-int cms_encode_FileEntry(
+CMS_EXPORT int cms_file_entry_encode(
     const char *fileName,
     uint32_t fileSize,
     int has_lastModified, const uint8_t lastModified[8],
@@ -207,7 +207,7 @@ int cms_encode_FileEntry(
     return CMS_OK;
 }
 
-int cms_decode_FileEntry(
+CMS_EXPORT int cms_file_entry_decode(
     const uint8_t *in_buf, int in_len,
     char *fileName, int *fileName_cap,
     uint32_t *fileSize,
@@ -246,7 +246,7 @@ int cms_decode_FileEntry(
 }
 
 /* 7.3.7 Tcmd */
-int cms_encode_Tcmd(int value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_tcmd_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -255,7 +255,7 @@ int cms_encode_Tcmd(int value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_Tcmd(const uint8_t *in_buf, int in_len, int *value)
+CMS_EXPORT int cms_tcmd_decode(const uint8_t *in_buf, int in_len, int *value)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -265,7 +265,7 @@ int cms_decode_Tcmd(const uint8_t *in_buf, int in_len, int *value)
     return CMS_OK;
 }
 
-int cms_encode_ServiceError(int value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_service_error_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -274,7 +274,7 @@ int cms_encode_ServiceError(int value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_ServiceError(const uint8_t *in_buf, int in_len, int *value)
+CMS_EXPORT int cms_service_error_decode(const uint8_t *in_buf, int in_len, int *value)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

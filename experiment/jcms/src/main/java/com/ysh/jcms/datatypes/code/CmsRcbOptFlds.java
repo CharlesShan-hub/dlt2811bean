@@ -17,7 +17,7 @@ public class CmsRcbOptFlds extends AbstractCmsCodedEnum {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_RcbOptFlds(toPerBytes(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_rcb_opt_flds_encode(toPerBytes(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -25,7 +25,7 @@ public class CmsRcbOptFlds extends AbstractCmsCodedEnum {
 
     public static CmsRcbOptFlds decode(byte[] data) {
         byte[] val = new byte[2];
-        CmsFFIDatatypes.INSTANCE.cms_decode_RcbOptFlds(data, data.length, val);
+        CmsFFIDatatypes.INSTANCE.cms_rcb_opt_flds_decode(data, data.length, val);
         return new CmsRcbOptFlds(fromPerBytes(val, 10));
     }
 

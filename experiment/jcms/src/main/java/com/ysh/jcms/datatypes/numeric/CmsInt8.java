@@ -20,7 +20,7 @@ public class CmsInt8 extends AbstractCmsScalar<Integer> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Int8((byte) (int) value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_int8_encode((byte) (int) value, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -28,7 +28,7 @@ public class CmsInt8 extends AbstractCmsScalar<Integer> {
 
     public static CmsInt8 decode(byte[] data) {
         ByteByReference v = new ByteByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_Int8(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_int8_decode(data, data.length, v);
         return new CmsInt8((int) v.getValue());
     }
 

@@ -20,7 +20,7 @@ public class CmsOriginator extends AbstractCmsCompound {
     public byte[] encode() {
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Originator(orCat, orIdent, orIdent.length, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_originator_encode(orCat, orIdent, orIdent.length, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -30,7 +30,7 @@ public class CmsOriginator extends AbstractCmsCompound {
         IntByReference cat = new IntByReference();
         byte[] identBuf = new byte[256];
         IntByReference identLen = new IntByReference(identBuf.length);
-        CmsFFIDatatypes.INSTANCE.cms_decode_Originator(data, data.length, cat, identBuf, identLen);
+        CmsFFIDatatypes.INSTANCE.cms_originator_decode(data, data.length, cat, identBuf, identLen);
         byte[] ident = new byte[identLen.getValue()];
         System.arraycopy(identBuf, 0, ident, 0, ident.length);
         return new CmsOriginator(cat.getValue(), ident);

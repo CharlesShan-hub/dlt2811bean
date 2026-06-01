@@ -17,7 +17,7 @@ public class CmsTcmd extends AbstractCmsCodedEnum {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Tcmd(value.intValue(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_tcmd_encode(value.intValue(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -25,7 +25,7 @@ public class CmsTcmd extends AbstractCmsCodedEnum {
 
     public static CmsTcmd decode(byte[] data) {
         IntByReference v = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_Tcmd(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_tcmd_decode(data, data.length, v);
         return new CmsTcmd(v.getValue());
     }
 

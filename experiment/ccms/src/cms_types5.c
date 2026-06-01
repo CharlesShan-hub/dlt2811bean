@@ -7,7 +7,7 @@
 #include <stdlib.h>
 
 /* 7.5.2 Originator */
-int cms_encode_Originator(
+CMS_EXPORT int cms_originator_encode(
     int or_cat,
     const uint8_t *or_ident, int or_ident_len,
     uint8_t *out_buf, int *out_len)
@@ -21,7 +21,7 @@ int cms_encode_Originator(
     return CMS_OK;
 }
 
-int cms_decode_Originator(
+CMS_EXPORT int cms_originator_decode(
     const uint8_t *in_buf, int in_len,
     int *or_cat,
     uint8_t *or_ident, int *or_ident_cap)
@@ -40,7 +40,7 @@ int cms_decode_Originator(
     return CMS_OK;
 }
 
-int cms_encode_Check(const uint8_t value[2], uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_check_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -49,7 +49,7 @@ int cms_encode_Check(const uint8_t value[2], uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_Check(const uint8_t *in_buf, int in_len, uint8_t value[2])
+CMS_EXPORT int cms_check_decode(const uint8_t *in_buf, int in_len, uint8_t value[2])
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -58,7 +58,7 @@ int cms_decode_Check(const uint8_t *in_buf, int in_len, uint8_t value[2])
 }
 
 /* 7.5.4 AddCause */
-int cms_encode_AddCause(int value, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_add_cause_encode(int value, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w;
     per_stream_init_write(&w, out_buf, (size_t)*out_len);
@@ -67,7 +67,7 @@ int cms_encode_AddCause(int value, uint8_t *out_buf, int *out_len)
     return CMS_OK;
 }
 
-int cms_decode_AddCause(const uint8_t *in_buf, int in_len, int *value)
+CMS_EXPORT int cms_add_cause_decode(const uint8_t *in_buf, int in_len, int *value)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

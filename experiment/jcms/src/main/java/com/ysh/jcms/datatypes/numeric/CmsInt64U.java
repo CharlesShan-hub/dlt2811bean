@@ -20,7 +20,7 @@ public class CmsInt64U extends AbstractCmsScalar<BigInteger> {
     public byte[] encode() {
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_encode_Int64U(value.longValue(), buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_int64u_encode(value.longValue(), buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -28,7 +28,7 @@ public class CmsInt64U extends AbstractCmsScalar<BigInteger> {
 
     public static CmsInt64U decode(byte[] data) {
         com.sun.jna.ptr.LongByReference v = new com.sun.jna.ptr.LongByReference();
-        CmsFFIDatatypes.INSTANCE.cms_decode_Int64U(data, data.length, v);
+        CmsFFIDatatypes.INSTANCE.cms_int64u_decode(data, data.length, v);
         long raw = v.getValue();
         BigInteger val;
         if (raw >= 0) {
