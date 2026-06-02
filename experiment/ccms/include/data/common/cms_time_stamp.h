@@ -5,19 +5,20 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
+#include "data/extended/cms_time.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 /*
  * ============================================================
- * TimeStamp
+ * TimeStamp (alias for UtcTime)
  * ============================================================
  */
-CMS_EXPORT int cms_time_stamp_encode(int64_t seconds_since_epoch, int64_t fractional, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_time_stamp_decode(const uint8_t *in_buf, int in_len, int64_t *seconds_since_epoch, int64_t *fractional);
-int cms_time_stamp_encode_stream(per_stream_t *s, int64_t seconds_since_epoch, int64_t fractional);
-int cms_time_stamp_decode_stream(per_stream_t *s, int64_t *seconds_since_epoch, int64_t *fractional);
+CMS_EXPORT int cms_time_stamp_encode(const cms_utc_time_t *t, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_time_stamp_decode(const uint8_t *in_buf, int in_len, cms_utc_time_t *t);
+int cms_time_stamp_encode_stream(per_stream_t *s, const cms_utc_time_t *t);
+int cms_time_stamp_decode_stream(per_stream_t *s, cms_utc_time_t *t);
 /*
  * ============================================================
  * EntryID

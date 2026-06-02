@@ -7,7 +7,7 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import java.util.Arrays;
 import java.util.List;
 
-public class CmsUtcTime extends Structure {
+public class CmsUtcTime extends AbstractCmsCompound {
 
     public int seconds_since_epoch;
     public int fraction_of_second;

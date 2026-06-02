@@ -27,6 +27,22 @@ CMS_EXPORT int cms_utc_time_decode(const uint8_t *in_buf, int in_len, cms_utc_ti
 int cms_utc_time_encode_stream(per_stream_t *s, const cms_utc_time_t *t);
 int cms_utc_time_decode_stream(per_stream_t *s, cms_utc_time_t *t);
 
+/* Convenience: encode ms directly (no need for cms_utc_time_t locals) */
+static inline int cms_utc_time_encode_ms_stream(per_stream_t *s, int64_t ms) {
+    cms_utc_time_t _t;
+    uint64_t u = (uint64_t)ms;
+    _t.seconds_since_epoch = (uint32_t)(u / 1000);
+    _t.fraction_of_second = (uint32_t)(((u % 1000) * 16777216) / 1000);
+    _t.time_quality = 0;
+    return cms_utc_time_encode_stream(s, &_t);
+}
+static inline int64_t cms_utc_time_to_ms_from_stream(per_stream_t *s) {
+    cms_utc_time_t _t;
+    cms_utc_time_decode_stream(s, &_t);
+    return (int64_t)_t.seconds_since_epoch * 1000
+         + (int64_t)(((uint64_t)_t.fraction_of_second * 1000) / 16777216);
+}
+
 /* UtcTime ms helpers: convert between cms_utc_time_t and int64_t milliseconds */
 static inline void cms_utc_time_from_ms(cms_utc_time_t *t, int64_t ms) {
     uint64_t u = (uint64_t)ms;
