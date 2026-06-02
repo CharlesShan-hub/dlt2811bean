@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.compound;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {

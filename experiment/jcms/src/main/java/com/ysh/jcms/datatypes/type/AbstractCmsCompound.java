@@ -1,8 +1,7 @@
-package com.ysh.jcms.datatypes.compound;
+package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-import com.ysh.jcms.datatypes.type.AbstractCmsType;
 
 public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> extends AbstractCmsType<T> {
 

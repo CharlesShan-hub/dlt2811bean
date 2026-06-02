@@ -1,6 +1,5 @@
-package com.ysh.jcms.datatypes.numeric;
+package com.ysh.jcms.datatypes.type;
 
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.math.BigInteger;
 
 public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V>

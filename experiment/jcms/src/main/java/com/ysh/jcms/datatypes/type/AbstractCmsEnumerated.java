@@ -1,6 +1,4 @@
-package com.ysh.jcms.datatypes.enumerated;
-
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
+package com.ysh.jcms.datatypes.type;
 
 public abstract class AbstractCmsEnumerated<T extends AbstractCmsEnumerated<T>>
         extends AbstractCmsScalar<T, Integer> implements CmsEnumerated<T> {

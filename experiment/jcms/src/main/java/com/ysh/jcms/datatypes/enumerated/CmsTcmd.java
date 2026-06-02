@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.enumerated;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsEnumerated;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {

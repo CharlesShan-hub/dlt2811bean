@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.code;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsCodedEnum;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditions> {

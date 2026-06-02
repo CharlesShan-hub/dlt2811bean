@@ -2,6 +2,7 @@ package com.ysh.jcms.datatypes.data;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsDataUnit;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsData extends AbstractCmsDataUnit<CmsData, Object> {

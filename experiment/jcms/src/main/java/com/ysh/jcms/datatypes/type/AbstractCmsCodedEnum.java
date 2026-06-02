@@ -1,6 +1,4 @@
-package com.ysh.jcms.datatypes.code;
-
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
+package com.ysh.jcms.datatypes.type;
 
 public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>>
         extends AbstractCmsScalar<T, Long> implements CmsCodedEnum<T> {

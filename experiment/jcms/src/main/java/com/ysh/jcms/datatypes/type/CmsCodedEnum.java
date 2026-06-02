@@ -1,6 +1,4 @@
-package com.ysh.jcms.datatypes.code;
-
-import com.ysh.jcms.datatypes.type.CmsScalar;
+package com.ysh.jcms.datatypes.type;
 
 public interface CmsCodedEnum<T extends CmsCodedEnum<T>> extends CmsScalar<T, Long> {
     boolean testBit(int pos);

@@ -2,6 +2,7 @@ package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsNumeric;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsInt64 extends AbstractCmsNumeric<CmsInt64, Long> {

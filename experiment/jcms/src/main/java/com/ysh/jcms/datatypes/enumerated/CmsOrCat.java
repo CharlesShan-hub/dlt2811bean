@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.enumerated;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsEnumerated;
 
 public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
 

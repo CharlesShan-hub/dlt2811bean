@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsNumeric;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import java.math.BigInteger;
 

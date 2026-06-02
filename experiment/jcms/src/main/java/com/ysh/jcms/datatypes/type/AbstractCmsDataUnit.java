@@ -1,6 +1,4 @@
-package com.ysh.jcms.datatypes.data;
-
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
+package com.ysh.jcms.datatypes.type;
 
 public abstract class AbstractCmsDataUnit<T extends AbstractCmsDataUnit<T, V>, V>
         extends AbstractCmsScalar<T, V> {

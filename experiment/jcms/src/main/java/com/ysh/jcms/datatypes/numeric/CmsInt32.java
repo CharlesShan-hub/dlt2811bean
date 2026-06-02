@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsNumeric;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsInt32 extends AbstractCmsNumeric<CmsInt32, Integer> {

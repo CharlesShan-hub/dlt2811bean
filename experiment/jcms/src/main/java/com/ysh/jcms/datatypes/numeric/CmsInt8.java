@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.ByteByReference;
+import com.ysh.jcms.datatypes.type.AbstractCmsNumeric;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsInt8 extends AbstractCmsNumeric<CmsInt8, Integer> {
