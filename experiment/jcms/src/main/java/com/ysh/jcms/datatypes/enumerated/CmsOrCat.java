@@ -1,6 +1,8 @@
 package com.ysh.jcms.datatypes.enumerated;
 
-public class CmsOrCat extends AbstractCmsEnumerated {
+import com.sun.jna.ptr.IntByReference;
+
+public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
 
     public static final int NOT_SUPPORTED     = 0;
     public static final int BAY_CONTROL       = 1;
@@ -21,17 +23,11 @@ public class CmsOrCat extends AbstractCmsEnumerated {
     }
 
     @Override
-    public byte[] encode() {
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
         throw new UnsupportedOperationException("should encode with CmsOriginator");
     }
 
     public static CmsOrCat decode(byte[] data) {
         throw new UnsupportedOperationException("should decode with CmsOriginator");
-    }
-
-    @Override
-    public CmsOrCat copy() {
-        CmsOrCat clone = new CmsOrCat();
-        return copyTo(clone);
     }
 }

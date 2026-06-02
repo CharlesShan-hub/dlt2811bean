@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatypes.type;
 
-public interface CmsScalar<V> extends CmsType {
+public interface CmsScalar<T extends CmsScalar<T, V>, V> extends CmsType<T> {
 
     V get();
 

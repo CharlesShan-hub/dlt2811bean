@@ -5,7 +5,7 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.nio.charset.StandardCharsets;
 
-public class CmsVisibleString extends AbstractCmsScalar<String> {
+public class CmsVisibleString extends AbstractCmsScalar<CmsVisibleString, String> {
 
     public CmsVisibleString() {
         super("VisibleString", "");
@@ -17,13 +17,13 @@ public class CmsVisibleString extends AbstractCmsScalar<String> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_visible_string_encode(value, 255, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_visible_string_encode(value, 255, buf, outLen);
     }
 
     public static CmsVisibleString decode(byte[] data) {
@@ -31,11 +31,5 @@ public class CmsVisibleString extends AbstractCmsScalar<String> {
         IntByReference strLen = new IntByReference(255);
         CmsFFIDatatypes.INSTANCE.cms_visible_string_decode(data, data.length, 255, strBuf, strLen);
         return new CmsVisibleString(new String(strBuf, 0, strLen.getValue(), StandardCharsets.US_ASCII));
-    }
-
-    @Override
-    public CmsVisibleString copy() {
-        CmsVisibleString clone = new CmsVisibleString();
-        return copyTo(clone);
     }
 }

@@ -2,21 +2,21 @@ package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
-import com.ysh.jcms.datatypes.compound.CmsUtcTime;
 
 public interface CmsFFIDatatypes extends Library {
 
     CmsFFIDatatypes INSTANCE = Native.load("ccms", CmsFFIDatatypes.class);
 
-    /* ==================== §7.1.1 BOOLEAN ==================== */
+    /* ======================= §7.1.1 BOOLEAN ======================== */
 
     int cms_boolean_encode(int value, byte[] outBuf, IntByReference outLen);
     int cms_boolean_decode(byte[] inBuf, int inLen, IntByReference value);
 
-    /* ==================== §7.1.2 Integer Types ==================== */
+    /* ================== §7.1.2~7.1.3 Integer Types ================== */
 
     int cms_int8_encode(byte value, byte[] outBuf, IntByReference outLen);
     int cms_int8_decode(byte[] inBuf, int inLen, ByteByReference value);
@@ -64,23 +64,23 @@ public interface CmsFFIDatatypes extends Library {
     int cms_octet_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
     int cms_octet_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    /* ==================== §7.1.8 BitString / PackedList ==================== */
-
     int cms_bit_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
     int cms_bit_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
+
+    /* ==================== §7.1.8 BitString / PackedList ==================== */
 
     int cms_packed_list_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
     int cms_packed_list_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
     /* ==================== §7.2.1 UtcTime ==================== */
 
-    int cms_utc_time_encode(CmsUtcTime t, byte[] outBuf, IntByReference outLen);
-    int cms_utc_time_decode(byte[] inBuf, int inLen, CmsUtcTime t);
+    int cms_utc_time_encode(Structure t, byte[] outBuf, IntByReference outLen);
+    int cms_utc_time_decode(byte[] inBuf, int inLen, Structure t);
 
     /* ==================== §7.2.2 BinaryTime ==================== */
 
-    int cms_binary_time_encode(int hour, int minute, int second, int millisecond, byte[] outBuf, IntByReference outLen);
-    int cms_binary_time_decode(byte[] inBuf, int inLen, IntByReference hour, IntByReference minute, IntByReference second, IntByReference millisecond);
+    int cms_binary_time_encode(int msOfDay, int daysSince1984, byte[] outBuf, IntByReference outLen);
+    int cms_binary_time_decode(byte[] inBuf, int inLen, IntByReference msOfDay, IntByReference daysSince1984);
 
     /* ==================== §7.2.3 TimeQuality ==================== */
 
@@ -104,8 +104,8 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.3.4 TimeStamp ==================== */
 
-    int cms_time_stamp_encode(long secondsSinceEpoch, long fractional, byte[] outBuf, IntByReference outLen);
-    int cms_time_stamp_decode(byte[] inBuf, int inLen, LongByReference secondsSinceEpoch, LongByReference fractional);
+    int cms_time_stamp_encode(Structure t, byte[] outBuf, IntByReference outLen);
+    int cms_time_stamp_decode(byte[] inBuf, int inLen, Structure t);
 
     /* ==================== §7.3.5 Dbpos ==================== */
 

@@ -4,20 +4,19 @@ import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import java.math.BigInteger;
 
-public class CmsInt64U extends AbstractCmsNumeric<BigInteger> {
+public class CmsInt64U extends AbstractCmsNumeric<CmsInt64U, BigInteger> {
 
     public CmsInt64U() {
-        super("INT64U", BigInteger.ZERO);
+        this(BigInteger.ZERO);
     }
 
     public CmsInt64U(BigInteger value) {
-        super("INT64U", BigInteger.ZERO);
-        set(value);
+        super("INT64U", value);
     }
 
     @Override
-    protected void doEncode(byte[] buf, com.sun.jna.ptr.IntByReference outLen) {
-        CmsFFIDatatypes.INSTANCE.cms_int64u_encode(value.longValue(), buf, outLen);
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_int64u_encode(value.longValue(), buf, outLen);
     }
 
     public static CmsInt64U decode(byte[] data) {
@@ -36,11 +35,5 @@ public class CmsInt64U extends AbstractCmsNumeric<BigInteger> {
             val = new BigInteger(bytes);
         }
         return new CmsInt64U(val);
-    }
-
-    @Override
-    public CmsInt64U copy() {
-        CmsInt64U clone = new CmsInt64U();
-        return copyTo(clone);
     }
 }

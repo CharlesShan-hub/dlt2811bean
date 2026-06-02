@@ -5,7 +5,7 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.util.Arrays;
 
-public class CmsFC extends AbstractCmsScalar<byte[]> {
+public class CmsFC extends AbstractCmsScalar<CmsFC, byte[]> {
 
     public CmsFC() {
         super("FC", new byte[2]);
@@ -25,24 +25,13 @@ public class CmsFC extends AbstractCmsScalar<byte[]> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_fc_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_fc_encode(value, buf, outLen);
     }
 
     public static CmsFC decode(byte[] data) {
         byte[] val = new byte[2];
         CmsFFIDatatypes.INSTANCE.cms_fc_decode(data, data.length, val);
         return new CmsFC(val);
-    }
-
-    @Override
-    public CmsFC copy() {
-        CmsFC clone = new CmsFC();
-        return copyTo(clone);
     }
 }

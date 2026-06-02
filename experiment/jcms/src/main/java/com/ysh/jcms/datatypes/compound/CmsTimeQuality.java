@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatypes.compound;
 
-public class CmsTimeQuality extends AbstractCmsCompound {
+public class CmsTimeQuality extends AbstractCmsCompound<CmsTimeQuality> {
 
     public static final int LEAP_SECOND_KNOWN = 0;
     public static final int CLOCK_FAILURE     = 1;

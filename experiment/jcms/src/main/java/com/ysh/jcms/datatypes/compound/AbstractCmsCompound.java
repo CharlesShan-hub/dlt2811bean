@@ -4,7 +4,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatypes.type.AbstractCmsType;
 
-public abstract class AbstractCmsCompound extends AbstractCmsType {
+public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> extends AbstractCmsType<T> {
 
     private Structure nativeStruct;
 
@@ -14,6 +14,10 @@ public abstract class AbstractCmsCompound extends AbstractCmsType {
 
     protected void setNativeStruct(Structure s) {
         this.nativeStruct = s;
+    }
+
+    protected Structure getNativeStruct() {
+        return nativeStruct;
     }
 
     protected void write() {

@@ -2,7 +2,8 @@ package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.ptr.IntByReference;
 
-public abstract class AbstractCmsScalar<V> extends AbstractCmsType implements CmsScalar<V> {
+public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
+        extends AbstractCmsType<T> implements CmsScalar<T, V> {
 
     protected V value;
 
@@ -26,22 +27,28 @@ public abstract class AbstractCmsScalar<V> extends AbstractCmsType implements Cm
         this.present = true;
     }
 
+    @Override
+    public byte[] encode() {
+        return ffiEncode(this::ffiEncode);
+    }
+
+    protected abstract int ffiEncode(byte[] buf, IntByReference outLen);
+
+    @Override
     @SuppressWarnings("unchecked")
-    protected <T extends AbstractCmsScalar<V>> T copyTo(T clone) {
-        clone.value = this.value;
-        clone.present = this.present;
-        return clone;
+    public T copy() {
+        try {
+            AbstractCmsScalar<T, V> clone = (AbstractCmsScalar<T, V>) getClass().getDeclaredConstructor().newInstance();
+            clone.value = this.value;
+            clone.present = this.present;
+            return (T) clone;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to copy " + typeName, e);
+        }
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        doEncode(buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    public String toString() {
+        return "(" + getClass().getSimpleName() + ") " + value;
     }
-
-    protected abstract void doEncode(byte[] buf, IntByReference outLen);
 }

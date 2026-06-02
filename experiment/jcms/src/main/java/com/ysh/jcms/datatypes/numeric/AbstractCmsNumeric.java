@@ -3,7 +3,8 @@ package com.ysh.jcms.datatypes.numeric;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.math.BigInteger;
 
-public abstract class AbstractCmsNumeric<V> extends AbstractCmsScalar<V> implements CmsNumeric<V> {
+public abstract class AbstractCmsNumeric<T extends AbstractCmsNumeric<T, V>, V>
+        extends AbstractCmsScalar<T, V> implements CmsNumeric<T, V> {
 
     private final BigInteger min;
     private final BigInteger max;

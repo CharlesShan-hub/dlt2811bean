@@ -3,7 +3,7 @@ package com.ysh.jcms.datatypes.code;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsReasonCode extends AbstractCmsCodedEnum {
+public class CmsReasonCode extends AbstractCmsCodedEnum<CmsReasonCode> {
 
     public static final int RESERVED              = 0;
     public static final int DATA_CHANGE           = 1;
@@ -22,24 +22,13 @@ public class CmsReasonCode extends AbstractCmsCodedEnum {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_reason_code_encode(toPerBytes(), buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_reason_code_encode(toPerBytes(), buf, outLen);
     }
 
     public static CmsReasonCode decode(byte[] data) {
         byte[] val = new byte[1];
         CmsFFIDatatypes.INSTANCE.cms_reason_code_decode(data, data.length, val);
         return new CmsReasonCode(fromPerBytes(val, 7));
-    }
-
-    @Override
-    public CmsReasonCode copy() {
-        CmsReasonCode clone = new CmsReasonCode();
-        return copyTo(clone);
     }
 }

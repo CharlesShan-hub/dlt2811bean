@@ -4,7 +4,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsEntryID extends AbstractCmsScalar<byte[]> {
+public class CmsEntryID extends AbstractCmsScalar<CmsEntryID, byte[]> {
 
     public CmsEntryID() {
         super("EntryID", new byte[8]);
@@ -24,24 +24,13 @@ public class CmsEntryID extends AbstractCmsScalar<byte[]> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_entry_id_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_entry_id_encode(value, buf, outLen);
     }
 
     public static CmsEntryID decode(byte[] data) {
         byte[] val = new byte[8];
         CmsFFIDatatypes.INSTANCE.cms_entry_id_decode(data, data.length, val);
         return new CmsEntryID(val);
-    }
-
-    @Override
-    public CmsEntryID copy() {
-        CmsEntryID clone = new CmsEntryID();
-        return copyTo(clone);
     }
 }

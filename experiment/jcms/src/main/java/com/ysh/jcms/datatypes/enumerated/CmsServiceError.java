@@ -3,7 +3,7 @@ package com.ysh.jcms.datatypes.enumerated;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsServiceError extends AbstractCmsEnumerated {
+public class CmsServiceError extends AbstractCmsEnumerated<CmsServiceError> {
 
     public static final int NO_ERROR                                      = 0;
     public static final int INSTANCE_NOT_AVAILABLE                        = 1;
@@ -28,24 +28,13 @@ public class CmsServiceError extends AbstractCmsEnumerated {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_service_error_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_service_error_encode(value, buf, outLen);
     }
 
     public static CmsServiceError decode(byte[] data) {
         IntByReference v = new IntByReference();
         CmsFFIDatatypes.INSTANCE.cms_service_error_decode(data, data.length, v);
         return new CmsServiceError(v.getValue());
-    }
-
-    @Override
-    public CmsServiceError copy() {
-        CmsServiceError clone = new CmsServiceError();
-        return copyTo(clone);
     }
 }

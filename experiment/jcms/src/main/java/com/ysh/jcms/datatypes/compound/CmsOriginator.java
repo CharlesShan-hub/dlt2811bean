@@ -3,7 +3,7 @@ package com.ysh.jcms.datatypes.compound;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsOriginator extends AbstractCmsCompound {
+public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {
 
     private final int orCat;
     private final byte[] orIdent;

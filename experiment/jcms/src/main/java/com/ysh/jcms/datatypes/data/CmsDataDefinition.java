@@ -4,7 +4,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsDataDefinition extends AbstractCmsDataUnit<Object> {
+public class CmsDataDefinition extends AbstractCmsDataUnit<CmsDataDefinition, Object> {
 
     private final long dataInt;
     private final String dataStr;
@@ -40,6 +40,12 @@ public class CmsDataDefinition extends AbstractCmsDataUnit<Object> {
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        byte[] bytes = dataBytes != null ? dataBytes : new byte[0];
+        return CmsFFIDatatypes.INSTANCE.cms_data_definition_encode((int) value, dataInt, dataStr, bytes, bytes.length, buf, outLen);
     }
 
     public static CmsDataDefinition decode(byte[] data) {

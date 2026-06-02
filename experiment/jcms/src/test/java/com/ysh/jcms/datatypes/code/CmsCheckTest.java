@@ -9,7 +9,7 @@ class CmsCheckTest {
 
     @Test
     void roundtrip() {
-        CmsCheck original = new CmsCheck(0xA055L);
+        CmsCheck original = new CmsCheck(0x02L);
         byte[] data = original.encode();
         CmsCheck decoded = CmsCheck.decode(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
@@ -18,14 +18,14 @@ class CmsCheckTest {
     @Test
     void setBit() {
         CmsCheck c = new CmsCheck();
-        c.setBit(5, true);
-        assertTrue(c.testBit(5));
-        assertFalse(c.testBit(4));
+        c.setBit(1, true);
+        assertTrue(c.testBit(1));
+        assertFalse(c.testBit(0));
     }
 
     @Test
     void copy() {
-        CmsCheck original = new CmsCheck(0xA055L);
+        CmsCheck original = new CmsCheck(0x02L);
         CmsCheck cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

@@ -1,4 +1,4 @@
-package com.ysh.jcms.datatypes.code;
+package com.ysh.jcms.datatypes.enumerated;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

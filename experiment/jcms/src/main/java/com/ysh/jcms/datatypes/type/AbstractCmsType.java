@@ -2,7 +2,7 @@ package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.ptr.IntByReference;
 
-public abstract class AbstractCmsType implements CmsType {
+public abstract class AbstractCmsType<T extends AbstractCmsType<T>> implements CmsType<T> {
 
     protected final String typeName;
     protected boolean optional = false;
@@ -13,7 +13,7 @@ public abstract class AbstractCmsType implements CmsType {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends AbstractCmsType> T self() {
+    protected T self() {
         return (T) this;
     }
 
@@ -40,6 +40,10 @@ public abstract class AbstractCmsType implements CmsType {
         int encode(byte[] buf, IntByReference outLen);
     }
 
+    protected int encodeBufSize() {
+        return 16;
+    }
+
     protected byte[] ffiEncode(int bufSize, FfiEncoder encoder) {
         byte[] buf = new byte[bufSize];
         IntByReference outLen = new IntByReference(buf.length);
@@ -50,6 +54,6 @@ public abstract class AbstractCmsType implements CmsType {
     }
 
     protected byte[] ffiEncode(FfiEncoder encoder) {
-        return ffiEncode(16, encoder);
+        return ffiEncode(encodeBufSize(), encoder);
     }
 }

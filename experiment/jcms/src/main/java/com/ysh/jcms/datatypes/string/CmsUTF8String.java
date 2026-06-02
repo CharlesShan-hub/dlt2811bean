@@ -5,7 +5,7 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 import java.nio.charset.StandardCharsets;
 
-public class CmsUTF8String extends AbstractCmsScalar<String> {
+public class CmsUTF8String extends AbstractCmsScalar<CmsUTF8String, String> {
 
     public CmsUTF8String() {
         super("UTF8String", "");
@@ -17,17 +17,17 @@ public class CmsUTF8String extends AbstractCmsScalar<String> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
         byte[] utf8Bytes = value.getBytes(StandardCharsets.UTF_8);
         byte[] nullTerminated = new byte[utf8Bytes.length + 1];
         System.arraycopy(utf8Bytes, 0, nullTerminated, 0, utf8Bytes.length);
         nullTerminated[utf8Bytes.length] = 0;
-        CmsFFIDatatypes.INSTANCE.cms_utf8_string_encode(nullTerminated, 255, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+        return CmsFFIDatatypes.INSTANCE.cms_utf8_string_encode(nullTerminated, 255, buf, outLen);
     }
 
     public static CmsUTF8String decode(byte[] data) {
@@ -36,11 +36,5 @@ public class CmsUTF8String extends AbstractCmsScalar<String> {
         IntByReference strLen = new IntByReference(255);
         CmsFFIDatatypes.INSTANCE.cms_utf8_string_decode(data, data.length, 255, strBuf, strLen);
         return new CmsUTF8String(new String(strBuf, 0, strLen.getValue(), StandardCharsets.UTF_8));
-    }
-
-    @Override
-    public CmsUTF8String copy() {
-        CmsUTF8String clone = new CmsUTF8String();
-        return copyTo(clone);
     }
 }

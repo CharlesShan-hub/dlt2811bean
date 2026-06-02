@@ -2,7 +2,8 @@ package com.ysh.jcms.datatypes.data;
 
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public abstract class AbstractCmsDataUnit<V> extends AbstractCmsScalar<V> {
+public abstract class AbstractCmsDataUnit<T extends AbstractCmsDataUnit<T, V>, V>
+        extends AbstractCmsScalar<T, V> {
 
     public static final int ERROR          = 0;
     public static final int ARRAY          = 1;

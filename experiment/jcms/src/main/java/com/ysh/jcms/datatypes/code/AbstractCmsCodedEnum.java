@@ -2,7 +2,8 @@ package com.ysh.jcms.datatypes.code;
 
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public abstract class AbstractCmsCodedEnum extends AbstractCmsScalar<Long> implements CmsCodedEnum {
+public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>>
+        extends AbstractCmsScalar<T, Long> implements CmsCodedEnum<T> {
 
     protected final int size;
 

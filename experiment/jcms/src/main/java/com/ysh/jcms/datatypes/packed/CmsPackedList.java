@@ -4,7 +4,7 @@ import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsPackedList extends AbstractCmsScalar<byte[]> {
+public class CmsPackedList extends AbstractCmsScalar<CmsPackedList, byte[]> {
 
     public CmsPackedList() {
         super("PackedList", new byte[0]);
@@ -16,13 +16,13 @@ public class CmsPackedList extends AbstractCmsScalar<byte[]> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[65536];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_packed_list_encode(value, value.length, 65535, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int encodeBufSize() {
+        return 65536;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_packed_list_encode(value, value.length, 65535, buf, outLen);
     }
 
     public static CmsPackedList decode(byte[] data) {
@@ -32,11 +32,5 @@ public class CmsPackedList extends AbstractCmsScalar<byte[]> {
         byte[] result = new byte[valLen.getValue()];
         System.arraycopy(valBuf, 0, result, 0, result.length);
         return new CmsPackedList(result);
-    }
-
-    @Override
-    public CmsPackedList copy() {
-        CmsPackedList clone = new CmsPackedList();
-        return copyTo(clone);
     }
 }

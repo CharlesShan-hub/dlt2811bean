@@ -1,8 +1,8 @@
 package com.ysh.jcms.datatypes.type;
 
-public interface CmsType {
+public interface CmsType<T extends CmsType<T>> {
 
     byte[] encode();
 
-    CmsType copy();
+    T copy();
 }

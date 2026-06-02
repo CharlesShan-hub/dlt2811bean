@@ -3,7 +3,7 @@ package com.ysh.jcms.datatypes.enumerated;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsSmpMod extends AbstractCmsEnumerated {
+public class CmsSmpMod extends AbstractCmsEnumerated<CmsSmpMod> {
 
     public static final int SAMPLES_PER_NOMINAL_PERIOD = 0;
     public static final int SAMPLES_PER_SECOND         = 1;
@@ -18,24 +18,13 @@ public class CmsSmpMod extends AbstractCmsEnumerated {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_smp_mod_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_smp_mod_encode(value, buf, outLen);
     }
 
     public static CmsSmpMod decode(byte[] data) {
         IntByReference v = new IntByReference();
         CmsFFIDatatypes.INSTANCE.cms_smp_mod_decode(data, data.length, v);
         return new CmsSmpMod(v.getValue());
-    }
-
-    @Override
-    public CmsSmpMod copy() {
-        CmsSmpMod clone = new CmsSmpMod();
-        return copyTo(clone);
     }
 }

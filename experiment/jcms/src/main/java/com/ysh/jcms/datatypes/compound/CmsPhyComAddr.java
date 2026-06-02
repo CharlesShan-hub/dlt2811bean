@@ -3,7 +3,7 @@ package com.ysh.jcms.datatypes.compound;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
-public class CmsPhyComAddr extends AbstractCmsCompound {
+public class CmsPhyComAddr extends AbstractCmsCompound<CmsPhyComAddr> {
 
     private final byte[] value;
 
