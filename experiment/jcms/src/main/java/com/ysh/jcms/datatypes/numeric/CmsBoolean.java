@@ -2,9 +2,8 @@ package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsBoolean extends AbstractCmsScalar<Boolean> {
+public class CmsBoolean extends AbstractCmsNumeric<Boolean> {
 
     public static final CmsBoolean TRUE = new CmsBoolean(true);
     public static final CmsBoolean FALSE = new CmsBoolean(false);
@@ -19,13 +18,8 @@ public class CmsBoolean extends AbstractCmsScalar<Boolean> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
+    protected void doEncode(byte[] buf, com.sun.jna.ptr.IntByReference outLen) {
         CmsFFIDatatypes.INSTANCE.cms_boolean_encode(value ? 1 : 0, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
     public static CmsBoolean decode(byte[] data) {

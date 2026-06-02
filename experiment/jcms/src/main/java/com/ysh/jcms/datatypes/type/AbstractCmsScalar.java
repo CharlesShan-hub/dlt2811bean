@@ -1,5 +1,7 @@
 package com.ysh.jcms.datatypes.type;
 
+import com.sun.jna.ptr.IntByReference;
+
 public abstract class AbstractCmsScalar<V> extends AbstractCmsType implements CmsScalar<V> {
 
     protected V value;
@@ -30,4 +32,16 @@ public abstract class AbstractCmsScalar<V> extends AbstractCmsType implements Cm
         clone.present = this.present;
         return clone;
     }
+
+    @Override
+    public byte[] encode() {
+        byte[] buf = new byte[16];
+        IntByReference outLen = new IntByReference(buf.length);
+        doEncode(buf, outLen);
+        byte[] result = new byte[outLen.getValue()];
+        System.arraycopy(buf, 0, result, 0, result.length);
+        return result;
+    }
+
+    protected abstract void doEncode(byte[] buf, IntByReference outLen);
 }

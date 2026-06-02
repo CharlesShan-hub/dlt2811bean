@@ -3,27 +3,24 @@ package com.ysh.jcms.datatypes.numeric;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsInt32U extends AbstractCmsScalar<Long> {
+public class CmsInt32U extends AbstractCmsNumeric<Long> {
+
+    public static final long MIN = 0L;
+    public static final long MAX = 4294967295L;
 
     public CmsInt32U() {
-        super("INT32U", 0L);
+        super("INT32U", MIN, MAX, 0L);
     }
 
     public CmsInt32U(long value) {
-        super("INT32U", 0L);
+        super("INT32U", MIN, MAX, 0L);
         set(value);
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
+    protected void doEncode(byte[] buf, com.sun.jna.ptr.IntByReference outLen) {
         CmsFFIDatatypes.INSTANCE.cms_int32u_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
     public static CmsInt32U decode(byte[] data) {

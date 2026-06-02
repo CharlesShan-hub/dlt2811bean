@@ -3,27 +3,24 @@ package com.ysh.jcms.datatypes.numeric;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsInt64 extends AbstractCmsScalar<Long> {
+public class CmsInt64 extends AbstractCmsNumeric<Long> {
+
+    public static final long MIN = Long.MIN_VALUE;
+    public static final long MAX = Long.MAX_VALUE;
 
     public CmsInt64() {
-        super("INT64", 0L);
+        super("INT64", MIN, MAX, 0L);
     }
 
     public CmsInt64(long value) {
-        super("INT64", 0L);
+        super("INT64", MIN, MAX, 0L);
         set(value);
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
+    protected void doEncode(byte[] buf, com.sun.jna.ptr.IntByReference outLen) {
         CmsFFIDatatypes.INSTANCE.cms_int64_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
     public static CmsInt64 decode(byte[] data) {

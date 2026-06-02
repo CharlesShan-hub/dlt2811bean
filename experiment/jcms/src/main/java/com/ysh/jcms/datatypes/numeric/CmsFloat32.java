@@ -2,9 +2,8 @@ package com.ysh.jcms.datatypes.numeric;
 
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
-import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
 
-public class CmsFloat32 extends AbstractCmsScalar<Float> {
+public class CmsFloat32 extends AbstractCmsNumeric<Float> {
 
     public CmsFloat32() {
         super("FLOAT32", 0.0f);
@@ -16,13 +15,8 @@ public class CmsFloat32 extends AbstractCmsScalar<Float> {
     }
 
     @Override
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
+    protected void doEncode(byte[] buf, com.sun.jna.ptr.IntByReference outLen) {
         CmsFFIDatatypes.INSTANCE.cms_float32_encode(value, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
     public static CmsFloat32 decode(byte[] data) {
