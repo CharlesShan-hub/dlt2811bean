@@ -4,15 +4,15 @@
 
 int cms_boolean_encode_stream(per_stream_t *s, int value)
 {
-    per_encode_boolean(s, value ? 1 : 0);
+    per_stream_write_bit(s, value ? 1 : 0);
     return CMS_OK;
 }
 
 int cms_boolean_decode_stream(per_stream_t *s, int *value)
 {
-    bool b;
-    per_decode_boolean(s, &b);
-    *value = b ? 1 : 0;
+    int bit;
+    per_stream_read_bit(s, &bit);
+    *value = bit;
     return CMS_OK;
 }
 

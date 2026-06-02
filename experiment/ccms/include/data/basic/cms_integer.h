@@ -54,6 +54,8 @@ int cms_int16u_decode_stream(per_stream_t *s, uint16_t *value);
  * Int24U
  * ============================================================
  */
+#define INT24U_MAX 16777215
+
 CMS_EXPORT int cms_int24u_encode(uint32_t value, uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_int24u_decode(const uint8_t *in_buf, int in_len, uint32_t *value);
 int cms_int24u_encode_stream(per_stream_t *s, uint32_t value);

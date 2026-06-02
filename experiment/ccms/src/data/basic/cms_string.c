@@ -8,10 +8,20 @@ int cms_visible_string_encode_stream(per_stream_t *s, const char *value)
 int cms_visible_string_decode_stream(per_stream_t *s, char *value)
     { per_decode_visible_string(s, value, 255); return CMS_OK; }
 
+int cms_visible_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len)
+    { per_encode_visible_string_fixed(s, value, fixed_len); return CMS_OK; }
+int cms_visible_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len)
+    { per_decode_visible_string_fixed(s, value, fixed_len); return CMS_OK; }
+
 int cms_utf8_string_encode_stream(per_stream_t *s, const char *value)
     { per_encode_utf8_string(s, value, 255); return CMS_OK; }
 int cms_utf8_string_decode_stream(per_stream_t *s, char *value)
     { per_decode_utf8_string(s, value, 255); return CMS_OK; }
+
+int cms_utf8_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len)
+    { per_encode_utf8_string_fixed(s, value, fixed_len); return CMS_OK; }
+int cms_utf8_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len)
+    { per_decode_utf8_string_fixed(s, value, fixed_len); return CMS_OK; }
 
 int cms_octet_string_encode_stream(per_stream_t *s, const uint8_t *value, int value_len)
     { per_encode_octet_string(s, value, value_len, 65535); return CMS_OK; }

@@ -66,7 +66,7 @@ static void encode_data_value(per_stream_t *w, int choice,
     case 0: per_encode_constrained_int(w, int_val, 0, 12); break;
     case 1:
     case 2: { per_encode_length(w, (uint32_t)int_val); break; }
-    case 3: per_encode_boolean(w, (int)int_val); break;
+    case 3: per_stream_write_bit(w, (int)int_val); break;
     case 4: per_encode_constrained_int(w, int_val, -128, 127); break;
     case 5: per_encode_constrained_int(w, int_val, -32768, 32767); break;
     case 6: per_encode_constrained_int(w, int_val, -2147483648, 2147483647); break;
@@ -122,7 +122,7 @@ static void decode_data_value(per_stream_t *r, int choice,
     case 0: { int64_t t; per_decode_constrained_int(r, &t, 0, 12); *int_val = t; break; }
     case 1:
     case 2: { uint32_t count; per_decode_length(r, &count); *int_val = count; break; }
-    case 3: { bool b; per_decode_boolean(r, &b); *int_val = b ? 1 : 0; break; }
+    case 3: { int _b; per_stream_read_bit(r, &_b); *int_val = _b; break; }
     case 4: { int64_t t; per_decode_constrained_int(r, &t, -128, 127); *int_val = t; break; }
     case 5: { int64_t t; per_decode_constrained_int(r, &t, -32768, 32767); *int_val = t; break; }
     case 6: { int64_t t; per_decode_constrained_int(r, &t, -2147483648, 2147483647); *int_val = t; break; }

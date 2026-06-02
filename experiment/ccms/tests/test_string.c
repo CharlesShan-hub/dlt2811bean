@@ -43,21 +43,5 @@ void test_string(void) {
     }
     PASS();
 
-    TEST("open type round-trip");
-    {
-        uint8_t buf[32];
-        uint8_t inner[] = {0xDE, 0xAD, 0xBE, 0xEF};
-        per_stream_t w, r;
-        per_stream_init_write(&w, buf, sizeof(buf));
-        per_encode_open_type(&w, inner, 4);
-        per_stream_init_read(&r, buf, sizeof(buf));
-        const uint8_t *out;
-        size_t out_len;
-        per_decode_open_type(&r, &out, &out_len);
-        ASSERT_EQ(4, out_len);
-        ASSERT_EQ(0, memcmp(inner, out, out_len));
-    }
-    PASS();
-
     printf("\n");
 }

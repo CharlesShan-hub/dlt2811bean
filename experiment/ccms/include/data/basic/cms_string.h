@@ -19,6 +19,8 @@ CMS_EXPORT int cms_visible_string_encode(const char *value, uint8_t *out_buf, in
 CMS_EXPORT int cms_visible_string_decode(const uint8_t *in_buf, int in_len, char *value, int *value_cap);
 int cms_visible_string_encode_stream(per_stream_t *s, const char *value);
 int cms_visible_string_decode_stream(per_stream_t *s, char *value);
+int cms_visible_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len);
+int cms_visible_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len);
 
 /*
  * ============================================================
@@ -29,6 +31,8 @@ CMS_EXPORT int cms_utf8_string_encode(const char *value, uint8_t *out_buf, int *
 CMS_EXPORT int cms_utf8_string_decode(const uint8_t *in_buf, int in_len, char *value, int *value_cap);
 int cms_utf8_string_encode_stream(per_stream_t *s, const char *value);
 int cms_utf8_string_decode_stream(per_stream_t *s, char *value);
+int cms_utf8_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len);
+int cms_utf8_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len);
 
 /*
  * ============================================================

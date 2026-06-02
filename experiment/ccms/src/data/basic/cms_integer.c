@@ -3,39 +3,39 @@
 /* ---- internal stream version ---- */
 
 int cms_int8_encode_stream(per_stream_t *s, int8_t value)
-    { per_encode_constrained_int(s, value, -128, 127); return CMS_OK; }
+    { per_encode_constrained_int(s, value, INT8_MIN, INT8_MAX); return CMS_OK; }
 int cms_int8_decode_stream(per_stream_t *s, int8_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, -128, 127); *value = (int8_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, INT8_MIN, INT8_MAX); *value = (int8_t)t; return CMS_OK; }
 
 int cms_int8u_encode_stream(per_stream_t *s, uint8_t value)
-    { per_encode_constrained_int(s, value, 0, 255); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, UINT8_MAX); return CMS_OK; }
 int cms_int8u_decode_stream(per_stream_t *s, uint8_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, 0, 255); *value = (uint8_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, UINT8_MAX); *value = (uint8_t)t; return CMS_OK; }
 
 int cms_int16_encode_stream(per_stream_t *s, int16_t value)
-    { per_encode_constrained_int(s, value, -32768, 32767); return CMS_OK; }
+    { per_encode_constrained_int(s, value, INT16_MIN, INT16_MAX); return CMS_OK; }
 int cms_int16_decode_stream(per_stream_t *s, int16_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, -32768, 32767); *value = (int16_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, INT16_MIN, INT16_MAX); *value = (int16_t)t; return CMS_OK; }
 
 int cms_int16u_encode_stream(per_stream_t *s, uint16_t value)
-    { per_encode_constrained_int(s, value, 0, 65535); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, UINT16_MAX); return CMS_OK; }
 int cms_int16u_decode_stream(per_stream_t *s, uint16_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, 0, 65535); *value = (uint16_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, UINT16_MAX); *value = (uint16_t)t; return CMS_OK; }
 
 int cms_int24u_encode_stream(per_stream_t *s, uint32_t value)
-    { per_encode_constrained_int(s, value, 0, 16777215); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, INT24U_MAX); return CMS_OK; }
 int cms_int24u_decode_stream(per_stream_t *s, uint32_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, 0, 16777215); *value = (uint32_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, INT24U_MAX); *value = (uint32_t)t; return CMS_OK; }
 
 int cms_int32_encode_stream(per_stream_t *s, int32_t value)
-    { per_encode_constrained_int(s, value, -2147483648, 2147483647); return CMS_OK; }
+    { per_encode_constrained_int(s, value, INT32_MIN, INT32_MAX); return CMS_OK; }
 int cms_int32_decode_stream(per_stream_t *s, int32_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, -2147483648, 2147483647); *value = (int32_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, INT32_MIN, INT32_MAX); *value = (int32_t)t; return CMS_OK; }
 
 int cms_int32u_encode_stream(per_stream_t *s, uint32_t value)
-    { per_encode_constrained_int(s, value, 0, 4294967295); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, UINT32_MAX); return CMS_OK; }
 int cms_int32u_decode_stream(per_stream_t *s, uint32_t *value)
-    { int64_t t; per_decode_constrained_int(s, &t, 0, 4294967295); *value = (uint32_t)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, UINT32_MAX); *value = (uint32_t)t; return CMS_OK; }
 
 int cms_int64_encode_stream(per_stream_t *s, int64_t value)
     { per_encode_unconstrained_int(s, value); return CMS_OK; }
