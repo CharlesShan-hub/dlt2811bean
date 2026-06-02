@@ -20,7 +20,7 @@ public class CmsVisibleString extends AbstractCmsScalar<String> {
     public byte[] encode() {
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_visible_string_encode(value, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_visible_string_encode(value, 255, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -29,7 +29,7 @@ public class CmsVisibleString extends AbstractCmsScalar<String> {
     public static CmsVisibleString decode(byte[] data) {
         byte[] strBuf = new byte[256];
         IntByReference strLen = new IntByReference(255);
-        CmsFFIDatatypes.INSTANCE.cms_visible_string_decode(data, data.length, strBuf, strLen);
+        CmsFFIDatatypes.INSTANCE.cms_visible_string_decode(data, data.length, 255, strBuf, strLen);
         return new CmsVisibleString(new String(strBuf, 0, strLen.getValue(), StandardCharsets.US_ASCII));
     }
 

@@ -59,29 +59,36 @@ Float64 ::= OCTET STRING (SIZE (8))
 -- ======================================================================
 
 -- PER encoding: length prefix + 8-bit characters
-VisibleString ::= VisibleString (SIZE(0..255))
+VisibleString ::= VisibleString
+-- VisibleString129::=VisibleString (SIZE (0..129))
+-- VisibleString255::=VisibleString (SIZE (0..255))
 
 -- PER encoding: length prefix + UTF-8 bytes
-UTF8String ::= UTF8String (SIZE(0..255))
+UTF8String ::= UTF8String
 
 -- PER encoding: length prefix + raw bytes
-OctetString ::= OCTET STRING (SIZE(0..65535))
+OctetString ::= OCTET STRING
 
-BitString ::= BIT STRING (SIZE(0..65535))
+BitString ::= BIT STRING
 
 -- ======================================================================
 -- 7.1.6 ENUMERATED
 -- ======================================================================
 
+ENUMERATED ::= Int8
+-- ENUMERATED ::= Int16 (>128)
+
 -- ======================================================================
 -- 7.1.7 CODED ENUM
 -- ======================================================================
+
+CODEDENUM ::= BIT STRING (SIZE(0..n))
 
 -- ======================================================================
 -- 7.1.8 Packed List
 -- ======================================================================
 
-PackedList ::= BIT STRING (SIZE(0..65535))
+PackedList ::= BIT STRING (SIZE(0..n))
 
 -- ======================================================================
 -- 7.2.1 UtcTime
@@ -93,7 +100,7 @@ TimeQuality ::= BIT STRING {
     leap-second-known            (0),
     clock-failure                (1),
     clock-not-synchronized       (2)
-} (SIZE(3))
+} (SIZE(8))
 
 -- ======================================================================
 -- 7.2.2 BinaryTime / EntryTime

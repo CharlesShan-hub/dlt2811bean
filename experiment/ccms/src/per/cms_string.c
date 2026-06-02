@@ -36,6 +36,7 @@ per_error_t per_encode_visible_string(per_stream_t *s, const char *str, uint32_t
     if (len > max_len) return PER_ERR_LENGTH;
     per_error_t err = per_encode_constrained_int(s, (int64_t)len, 0, max_len);
     if (err) return err;
+    per_stream_align(s);
     for (size_t i = 0; i < len; i++) {
         err = per_stream_write_bits(s, (uint8_t)str[i], 8);
         if (err) return err;
@@ -48,6 +49,7 @@ per_error_t per_decode_visible_string(per_stream_t *s, char *out, uint32_t max_l
     per_error_t err = per_decode_constrained_int(s, &len, 0, max_len);
     if (err) return err;
     if (len < 0 || (uint64_t)len > max_len) return PER_ERR_LENGTH;
+    per_stream_align(s);
     for (int64_t i = 0; i < len; i++) {
         uint64_t ch;
         err = per_stream_read_bits(s, &ch, 8);

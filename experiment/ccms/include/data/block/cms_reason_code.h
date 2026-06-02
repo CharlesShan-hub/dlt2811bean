@@ -3,7 +3,7 @@
 
 #include "cms_core.h"
 #include "per/cms_stream.h"
-#include "per/cms_bit_string.h"
+#include "per/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {

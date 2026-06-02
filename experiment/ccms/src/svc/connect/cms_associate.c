@@ -2,31 +2,35 @@
 
 static void cms_server_access_point_encode(per_stream_t *w, const char *sap_ref)
 {
-    cms_visible_string_encode_stream(w, sap_ref);
+    cms_visible_string_encode_stream(w, sap_ref, 64);
 }
 static void cms_authentication_parameter_encode(
     per_stream_t *w,
     const uint8_t *cert, int cert_len,
-    int64_t signed_time,
+    int64_t signed_time_ms,
     const uint8_t *sig_val, int sig_len)
 {
-    cms_octet_string_encode_stream(w, cert, cert_len);
-    cms_utc_time_encode_stream(w, signed_time);
-    cms_octet_string_encode_stream(w, sig_val, sig_len);
+    cms_utc_time_t utc;
+    cms_utc_time_from_ms(&utc, signed_time_ms);
+    cms_octet_string_encode_stream(w, cert, cert_len, CMS_MAX_CERT_LEN);
+    cms_utc_time_encode_stream(w, &utc);
+    cms_octet_string_encode_stream(w, sig_val, sig_len, CMS_MAX_CERT_LEN);
 }
 static void cms_server_access_point_decode(per_stream_t *r, char *sap_ref)
 {
-    cms_visible_string_decode_stream(r, sap_ref);
+    cms_visible_string_decode_stream(r, sap_ref, 64);
 }
 static void cms_authentication_parameter_decode(
     per_stream_t *r,
     uint8_t *cert, int *cert_cap,
-    int64_t *signed_time,
+    int64_t *signed_time_ms,
     uint8_t *sig_val, int *sig_val_cap)
 {
-    cms_octet_string_decode_stream(r, cert, cert_cap);
-    cms_utc_time_decode_stream(r, signed_time);
-    cms_octet_string_decode_stream(r, sig_val, sig_val_cap);
+    cms_utc_time_t utc;
+    cms_octet_string_decode_stream(r, cert, cert_cap, CMS_MAX_CERT_LEN);
+    cms_utc_time_decode_stream(r, &utc);
+    *signed_time_ms = cms_utc_time_to_ms(&utc);
+    cms_octet_string_decode_stream(r, sig_val, sig_val_cap, CMS_MAX_CERT_LEN);
 }
 
 /* ==================== Associate-RequestPDU ==================== */
@@ -89,7 +93,7 @@ CMS_EXPORT int cms_associate_response_encode(
     int err = per_stream_init_dynamic(&w, 512);
     if (err) return CMS_ERR;
     per_stream_write_bits(&w, sdu->has_auth ? 1 : 0, 1);
-    cms_octet_string_encode_stream(&w, sdu->assoc_id, sdu->assoc_id_len);
+    cms_octet_string_encode_stream(&w, sdu->assoc_id, sdu->assoc_id_len, 32);
     cms_service_error_encode_stream(&w, sdu->service_error);
     if (sdu->has_auth) {
         cms_authentication_parameter_encode(&w,
@@ -108,7 +112,7 @@ CMS_EXPORT int cms_associate_response_decode(
     uint64_t bit;
     per_stream_read_bits(&r, &bit, 1);
     sdu->has_auth = (int)bit;
-    cms_octet_string_decode_stream(&r, sdu->assoc_id, &sdu->assoc_id_len);
+    cms_octet_string_decode_stream(&r, sdu->assoc_id, &sdu->assoc_id_len, 32);
     cms_service_error_decode_stream(&r, &sdu->service_error);
     if (sdu->has_auth) {
         cms_authentication_parameter_decode(&r,

@@ -301,7 +301,9 @@ public class CmsCliCompleter implements Completer {
                                  if (das != null) {
                                      Object doMap = das.get(doName);
                                      if (doMap instanceof Map) {
-                                         refs.addAll(((Map<String, ?>) doMap).keySet());
+                                         @SuppressWarnings("unchecked")
+                                         Map<String, ?> doValueMap = (Map<String, ?>) doMap;
+                                         refs.addAll(doValueMap.keySet());
                                      }
                                  }
                              }
@@ -329,7 +331,9 @@ public class CmsCliCompleter implements Completer {
                                  if (das != null) {
                                      Object doMap = das.get(doName);
                                      if (doMap instanceof Map) {
-                                         for (Map.Entry<String, ?> entry : ((Map<String, ?>) doMap).entrySet()) {
+                                         @SuppressWarnings("unchecked")
+                                         Map<String, ?> doValueMap = (Map<String, ?>) doMap;
+                                         for (Map.Entry<String, ?> entry : doValueMap.entrySet()) {
                                              if (entry.getValue() instanceof Map) {
                                                  Object val = ((Map<?, ?>) entry.getValue()).get("value");
                                                  if (val != null) {

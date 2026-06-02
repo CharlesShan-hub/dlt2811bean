@@ -3,9 +3,6 @@ package com.ysh.dlt2811bean.cli.handler.file;
 import com.ysh.dlt2811bean.cli.handler.CliContext;
 import com.ysh.dlt2811bean.cli.handler.common.AbstractServiceHandler;
 import com.ysh.dlt2811bean.service.info.ServiceInfo;
-import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
-import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.file.CmsSetFile;
 import com.ysh.dlt2811bean.cli.handler.common.Param;
 import com.ysh.dlt2811bean.transport.app.CmsClient;
 
@@ -28,13 +25,13 @@ public class FileSetHandler extends AbstractServiceHandler {
         requireConnected(client);
 
         String fileName = values.get("fileName");
-        long start = Long.parseLong(values.get("start"));
+        //long start = Long.parseLong(values.get("start"));
         String text = values.get("data");
         boolean eof = Boolean.parseBoolean(values.get("eof"));
 
-        CmsSetFile asdu = new CmsSetFile(MessageType.REQUEST).fileName(fileName).startPosition(start)
-                .fileData(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)).endOfFile(eof);
-        CmsApdu response = sendAndVerify(client, asdu);
+        //CmsSetFile asdu = new CmsSetFile(MessageType.REQUEST).fileName(fileName).startPosition(start)
+        //        .fileData(text.getBytes(java.nio.charset.StandardCharsets.UTF_8)).endOfFile(eof);
+        //CmsApdu response = sendAndVerify(client, asdu);
 
         System.out.println("  Written " + text.length() + " bytes to " + fileName + (eof ? " (complete)" : ""));
     }

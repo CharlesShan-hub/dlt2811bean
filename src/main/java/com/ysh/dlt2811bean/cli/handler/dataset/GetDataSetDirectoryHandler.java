@@ -29,7 +29,7 @@ public class GetDataSetDirectoryHandler extends AbstractServiceHandler {
     }
 
     protected void afterExecute(CmsClient client, Map<String, String> values) throws Exception {
-        String dsRef = stringVal("dsRef");
+        //String dsRef = stringVal("dsRef");
         CmsGetDataSetDirectory resp = (CmsGetDataSetDirectory) response.getAsdu();
         List<CmsCreateDataSetEntry> entries = resp.memberData.toList();
         CliPrinter.printList("Dataset members (" + entries.size() + " entries)", entries,

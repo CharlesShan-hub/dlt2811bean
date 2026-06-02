@@ -2,30 +2,32 @@
 
 /* ---- internal stream version ---- */
 
-int cms_utc_time_encode_stream(per_stream_t *s, int64_t timestamp_ms)
+int cms_utc_time_encode_stream(per_stream_t *s, const cms_utc_time_t *t)
 {
     uint8_t bytes[8];
-    uint64_t ms = (uint64_t)timestamp_ms;
-    bytes[0] = (uint8_t)(ms >> 56);
-    bytes[1] = (uint8_t)(ms >> 48);
-    bytes[2] = (uint8_t)(ms >> 40);
-    bytes[3] = (uint8_t)(ms >> 32);
-    bytes[4] = (uint8_t)(ms >> 24);
-    bytes[5] = (uint8_t)(ms >> 16);
-    bytes[6] = (uint8_t)(ms >> 8);
-    bytes[7] = (uint8_t)(ms);
+    uint32_t sec = t->seconds_since_epoch;
+    uint32_t frac = t->fraction_of_second;
+    uint8_t tq = t->time_quality;
+    bytes[0] = (uint8_t)(sec >> 24);
+    bytes[1] = (uint8_t)(sec >> 16);
+    bytes[2] = (uint8_t)(sec >> 8);
+    bytes[3] = (uint8_t)(sec);
+    bytes[4] = (uint8_t)(frac >> 16);
+    bytes[5] = (uint8_t)(frac >> 8);
+    bytes[6] = (uint8_t)(frac);
+    bytes[7] = tq;
     per_encode_octet_string_fixed(s, bytes, 8);
     return CMS_OK;
 }
-int cms_utc_time_decode_stream(per_stream_t *s, int64_t *timestamp_ms)
+int cms_utc_time_decode_stream(per_stream_t *s, cms_utc_time_t *t)
 {
     uint8_t bytes[8];
     per_decode_octet_string_fixed(s, bytes, 8);
-    *timestamp_ms = (int64_t)(
-        ((uint64_t)bytes[0] << 56) | ((uint64_t)bytes[1] << 48) |
-        ((uint64_t)bytes[2] << 40) | ((uint64_t)bytes[3] << 32) |
-        ((uint64_t)bytes[4] << 24) | ((uint64_t)bytes[5] << 16) |
-        ((uint64_t)bytes[6] << 8)  | (uint64_t)bytes[7]);
+    t->seconds_since_epoch = ((uint32_t)bytes[0] << 24) | ((uint32_t)bytes[1] << 16)
+                           | ((uint32_t)bytes[2] << 8)  | (uint32_t)bytes[3];
+    t->fraction_of_second = ((uint32_t)bytes[4] << 16) | ((uint32_t)bytes[5] << 8)
+                           | (uint32_t)bytes[6];
+    t->time_quality = bytes[7];
     return CMS_OK;
 }
 
@@ -51,15 +53,15 @@ int cms_binary_time_decode_stream(per_stream_t *s, int32_t *hour, int32_t *minut
 }
 
 int cms_time_quality_encode_stream(per_stream_t *s, const uint8_t value[1])
-    { per_encode_bit_string_fixed(s, value, 3); return CMS_OK; }
+    { per_encode_bit_string_fixed(s, value, 8); return CMS_OK; }
 int cms_time_quality_decode_stream(per_stream_t *s, uint8_t value[1])
-    { per_decode_bit_string_fixed(s, value, 3); return CMS_OK; }
+    { per_decode_bit_string_fixed(s, value, 8); return CMS_OK; }
 
 /* ---- public buffer version ---- */
 
-CMS_EXPORT int cms_utc_time_encode(int64_t t, uint8_t *b, int *l)
+CMS_EXPORT int cms_utc_time_encode(const cms_utc_time_t *t, uint8_t *b, int *l)
     { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_utc_time_encode_stream(&w, t); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }
-CMS_EXPORT int cms_utc_time_decode(const uint8_t *b, int l, int64_t *t)
+CMS_EXPORT int cms_utc_time_decode(const uint8_t *b, int l, cms_utc_time_t *t)
     { per_stream_t r; per_stream_init_read(&r, b, (size_t)l); cms_utc_time_decode_stream(&r, t); return CMS_OK; }
 CMS_EXPORT int cms_binary_time_encode(int32_t h, int32_t m, int32_t s, int32_t ms, uint8_t *b, int *l)
     { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_binary_time_encode_stream(&w, h, m, s, ms); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }

@@ -5,7 +5,7 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
-#include "per/cms_bit_string.h"
+#include "per/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {

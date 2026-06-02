@@ -54,27 +54,27 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.1.5 String Types ==================== */
 
-    int cms_visible_string_encode(String value, byte[] outBuf, IntByReference outLen);
-    int cms_visible_string_decode(byte[] inBuf, int inLen, byte[] value, IntByReference valueCap);
+    int cms_visible_string_encode(String value, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_visible_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_utf8_string_encode(byte[] value, byte[] outBuf, IntByReference outLen);
-    int cms_utf8_string_decode(byte[] inBuf, int inLen, byte[] value, IntByReference valueCap);
+    int cms_utf8_string_encode(byte[] value, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_utf8_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_octet_string_encode(byte[] value, int valueLen, byte[] outBuf, IntByReference outLen);
-    int cms_octet_string_decode(byte[] inBuf, int inLen, byte[] value, IntByReference valueCap);
+    int cms_octet_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_octet_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
     /* ==================== §7.1.8 BitString / PackedList ==================== */
 
-    int cms_bit_string_encode(byte[] value, int valueLen, byte[] outBuf, IntByReference outLen);
-    int cms_bit_string_decode(byte[] inBuf, int inLen, byte[] value, IntByReference valueCap);
+    int cms_bit_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_bit_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_packed_list_encode(byte[] value, int valueLen, byte[] outBuf, IntByReference outLen);
-    int cms_packed_list_decode(byte[] inBuf, int inLen, byte[] value, IntByReference valueCap);
+    int cms_packed_list_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_packed_list_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
 
     /* ==================== §7.2.1 UtcTime ==================== */
 
-    int cms_utc_time_encode(long timestampMs, byte[] outBuf, IntByReference outLen);
-    int cms_utc_time_decode(byte[] inBuf, int inLen, LongByReference timestampMs);
+    int cms_utc_time_encode(CmsUtcTimeStruct.ByReference t, byte[] outBuf, IntByReference outLen);
+    int cms_utc_time_decode(byte[] inBuf, int inLen, CmsUtcTimeStruct.ByReference t);
 
     /* ==================== §7.2.2 BinaryTime ==================== */
 

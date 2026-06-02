@@ -382,13 +382,6 @@ public class GmSslContext {
 
     /**
      * Creates KeyManagers from KeyPair and Certificate.
-     */
-    private static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
-        return createKeyManagers(keyPair, cert, false);
-    }
-
-    /**
-     * Creates KeyManagers from KeyPair and Certificate.
      * @param keyPair key pair
      * @param cert certificate
      * @param useStandardTls whether to use standard TLS

@@ -19,7 +19,7 @@ public class CmsPackedList extends AbstractCmsScalar<byte[]> {
     public byte[] encode() {
         byte[] buf = new byte[65536];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_packed_list_encode(value, value.length, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_packed_list_encode(value, value.length, 65535, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -28,7 +28,7 @@ public class CmsPackedList extends AbstractCmsScalar<byte[]> {
     public static CmsPackedList decode(byte[] data) {
         byte[] valBuf = new byte[65536];
         IntByReference valLen = new IntByReference(valBuf.length);
-        CmsFFIDatatypes.INSTANCE.cms_packed_list_decode(data, data.length, valBuf, valLen);
+        CmsFFIDatatypes.INSTANCE.cms_packed_list_decode(data, data.length, 65535, valBuf, valLen);
         byte[] result = new byte[valLen.getValue()];
         System.arraycopy(valBuf, 0, result, 0, result.length);
         return new CmsPackedList(result);

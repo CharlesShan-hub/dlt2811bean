@@ -1,6 +1,5 @@
 package com.ysh.dlt2811bean.transport.app;
 
-import com.ysh.dlt2811bean.config.CmsConfigLoader;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import org.junit.jupiter.api.*;
