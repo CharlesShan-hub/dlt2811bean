@@ -106,10 +106,11 @@ TimeQuality ::= BIT STRING {
 -- 7.2.2 BinaryTime / EntryTime
 -- ======================================================================
 
-BinaryTime ::= SEQUENCE {
-    msOfDay       Int32U,          -- milliseconds since midnight (0..86399999)
-    daysSince1984 Int16U           -- days since 1984-01-01
-}
+BinaryTime ::= OCTET STRING (SIZE(8))
+-- BinaryTime ::= SEQUENCE {
+--     msOfDay       Int32U,          -- milliseconds since midnight (0..86399999)
+--     daysSince1984 Int16U           -- days since 1984-01-01
+-- }
 
 EntryTime ::= BinaryTime
 
@@ -290,96 +291,12 @@ AddCause ::= INTEGER {
 -- 7.6.1 Control Blocks
 -- ======================================================================
 
-SGCB ::= SEQUENCE {
-    sgcbName ObjectName,
-    sgcbRef  ObjectReference,
-    numOfSG  Int8U,
-    actSG    Int8U,
-    editSG   Int8U,
-    cnfEdit  BOOLEAN,
-    lActTm   UtcTime,
-    resvTms  Int16U OPTIONAL
-}
-
-BRCB ::= SEQUENCE {
-    brcbName    ObjectName,
-    brcbRef     ObjectReference,
-    rptID       VisibleString (SIZE(0..129)),
-    rptEna      BOOLEAN,
-    datSet      ObjectReference,
-    confRev     Int32U,
-    optFlds     RcbOptFlds,
-    bufTm       Int32U,
-    sqNum       Int16U,
-    trgOps      TriggerConditions,
-    intgPd      Int32U,
-    gi          BOOLEAN,
-    purgeBuf    BOOLEAN,
-    entryID     EntryID,
-    timeOfEntry EntryTime,
-    resvTms     Int16 OPTIONAL,
-    owner       OCTET STRING (SIZE(64))
-}
-
-URCB ::= SEQUENCE {
-    urcbName ObjectName,
-    urcbRef  ObjectReference,
-    rptID    VisibleString (SIZE(0..129)),
-    rptEna   BOOLEAN,
-    resv     BOOLEAN,
-    datSet   ObjectReference,
-    confRev  Int32U,
-    optFlds  RcbOptFlds,
-    bufTm    Int32U,
-    sqNum    Int8U,
-    trgOps   TriggerConditions,
-    intgPd   Int32U,
-    gi       BOOLEAN,
-    owner    OCTET STRING (SIZE(64))
-}
-
-LCB ::= SEQUENCE {
-    lcbName ObjectName,
-    lcbRef  ObjectReference,
-    rptID   VisibleString (SIZE(0..129)),
-    logEna  BOOLEAN,
-    datSet  ObjectReference,
-    confRev Int32U,
-    optFlds LcbOptFlds,
-    bufTm   Int32U,
-    trgOps  TriggerConditions,
-    intgPd  Int32U,
-    logRef  ObjectReference
-}
-
-GoCB ::= SEQUENCE {
-    gocbRef       ObjectReference,
-    appID         VisibleString (SIZE(0..129)),
-    datSet        ObjectReference,
-    confRev       Int32U,
-    ndcom         BOOLEAN,
-    dstAddress    PhyComAddr,
-    minTime       Int32U,
-    maxTime       Int32U,
-    fixedOffs     BOOLEAN,
-    goID          VisibleString (SIZE(0..129)) OPTIONAL
-}
-
-MSVCB ::= SEQUENCE {
-    msvcbRef       ObjectReference,
-    svID           VisibleString (SIZE(0..129)),
-    datSet         ObjectReference,
-    confRev        Int32U,
-    smpRate        Int32U,
-    nofASDU        Int8U,
-    optFlds        MsvcbOptFlds,
-    smpMod         SmpMod,
-    dstAddress     PhyComAddr,
-    svEna          BOOLEAN,
-    reserved1      BOOLEAN,
-    svCbHealth     VisibleString (SIZE(0..129)) OPTIONAL,
-    svCbAlarmName  VisibleString (SIZE(0..129)) OPTIONAL
-}
+-- SGCB  -> 8.6.6
+-- BRCB  -> 8.7.2
+-- URCB  -> 8.7.4
+-- LCB   -> 8.8.2
+-- GoCB  -> 8.9.4
+-- MSVCB -> 8.10.2
 
 -- ======================================================================
 -- 7.6.2 TriggerConditions
@@ -584,7 +501,7 @@ VisibleString129 ::= VisibleString (SIZE(0..129))
 
 Associate-RequestPDU ::= SEQUENCE {
     serverAccessPointReference    [0] IMPLICIT VisibleString129 OPTIONAL,
-    authenticationParameter        [1] IMPLICIT SEQUENCE {
+    authenticationParameter       [1] IMPLICIT SEQUENCE {
         signatureCertificate        [0] IMPLICIT OCTET STRING,
         signedTime                  [1] IMPLICIT UtcTime,
         signedValue                 [2] IMPLICIT OCTET STRING
