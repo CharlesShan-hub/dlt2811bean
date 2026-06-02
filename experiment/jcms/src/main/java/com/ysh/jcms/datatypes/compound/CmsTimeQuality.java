@@ -1,8 +1,6 @@
 package com.ysh.jcms.datatypes.compound;
 
-import com.sun.jna.Structure;
-
-public class CmsTimeQuality extends Structure {
+public class CmsTimeQuality extends AbstractCmsCompound {
 
     public static final int LEAP_SECOND_KNOWN = 0;
     public static final int CLOCK_FAILURE     = 1;
@@ -21,13 +19,21 @@ public class CmsTimeQuality extends Structure {
     public long fraction;
 
     public CmsTimeQuality() {
+        super("TimeQuality");
     }
 
-    public static class ByReference extends CmsTimeQuality implements Structure.ByReference {
+    public CmsTimeQuality(int tagf, int precision, long fraction) {
+        super("TimeQuality");
+        this.tagf = tagf;
+        this.precision = precision;
+        this.fraction = fraction;
     }
 
-    @Override
-    protected java.util.List<String> getFieldOrder() {
-        return java.util.Arrays.asList("tagf", "precision", "fraction");
+    public byte[] encode() {
+        return new byte[0];
+    }
+
+    public CmsTimeQuality copy() {
+        return new CmsTimeQuality(tagf, precision, fraction);
     }
 }

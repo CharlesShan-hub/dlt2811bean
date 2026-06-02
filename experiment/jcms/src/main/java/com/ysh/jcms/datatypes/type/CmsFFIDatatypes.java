@@ -5,6 +5,7 @@ import com.sun.jna.Native;
 import com.sun.jna.ptr.ByteByReference;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
+import com.ysh.jcms.datatypes.compound.CmsUtcTime;
 
 public interface CmsFFIDatatypes extends Library {
 
@@ -73,8 +74,8 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.2.1 UtcTime ==================== */
 
-    int cms_utc_time_encode(CmsUtcTimeStruct.ByReference t, byte[] outBuf, IntByReference outLen);
-    int cms_utc_time_decode(byte[] inBuf, int inLen, CmsUtcTimeStruct.ByReference t);
+    int cms_utc_time_encode(CmsUtcTime t, byte[] outBuf, IntByReference outLen);
+    int cms_utc_time_decode(byte[] inBuf, int inLen, CmsUtcTime t);
 
     /* ==================== §7.2.2 BinaryTime ==================== */
 
