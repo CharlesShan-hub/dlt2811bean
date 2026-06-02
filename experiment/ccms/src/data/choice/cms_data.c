@@ -91,10 +91,10 @@ static void encode_data_value(per_stream_t *w, int choice,
         per_encode_octet_string_fixed(w, dbytes, 8);
         break;
     }
-    case 14: per_encode_bit_string(w, bytes_val, bytes_len * 8, 65535); break;
-    case 15: per_encode_octet_string(w, bytes_val, bytes_len, 65535); break;
-    case 16: per_encode_visible_string(w, str_val, 255); break;
-    case 17: per_encode_utf8_string(w, str_val, 255); break;
+    case 14: per_encode_bit_string_unconstrained(w, bytes_val, bytes_len * 8); break;
+    case 15: per_encode_octet_string_unconstrained(w, bytes_val, bytes_len); break;
+    case 16: per_encode_visible_string_unconstrained(w, str_val); break;
+    case 17: per_encode_utf8_string_unconstrained(w, str_val); break;
     case 18: {
         uint8_t bytes[8];
         uint64_t ms = (uint64_t)int_val;
@@ -105,10 +105,20 @@ static void encode_data_value(per_stream_t *w, int choice,
         per_encode_octet_string_fixed(w, bytes, 8);
         break;
     }
-    case 19: { per_encode_constrained_int(w, int_val, 0, 86400000); per_encode_constrained_int(w, 0, 0, 65535); break; }
+    case 19: {
+        uint8_t b6[6];
+        uint64_t ms = (uint64_t)int_val;
+        uint32_t msOfDay = (uint32_t)(ms % 86400000);
+        uint16_t days = (uint16_t)(ms / 86400000);
+        b6[0] = (uint8_t)(msOfDay >> 24); b6[1] = (uint8_t)(msOfDay >> 16);
+        b6[2] = (uint8_t)(msOfDay >> 8);  b6[3] = (uint8_t)(msOfDay);
+        b6[4] = (uint8_t)(days >> 8);     b6[5] = (uint8_t)(days);
+        per_encode_octet_string_fixed(w, b6, 6);
+        break;
+    }
     case 20: per_encode_bit_string_fixed(w, bytes_val, 13); break;
-    case 21: per_encode_small_non_negative(w, (uint32_t)int_val); break;
-    case 22: per_encode_small_non_negative(w, (uint32_t)int_val); break;
+    case 21: per_encode_constrained_int(w, int_val, 0, 3); break;
+    case 22: per_encode_constrained_int(w, int_val, 0, 3); break;
     case 23: per_encode_bit_string_fixed(w, bytes_val, 16); break;
     }
 }
@@ -146,10 +156,10 @@ static void decode_data_value(per_stream_t *r, int choice,
         double dv; memcpy(&dv, &bits, sizeof(dv)); *float_val = dv;
         break;
     }
-    case 14: { int n = *bytes_cap * 8; per_decode_bit_string(r, bytes_val, &n, 65535); *bytes_cap = (n + 7) / 8; break; }
-    case 15: { size_t ol = (size_t)*bytes_cap; per_decode_octet_string(r, bytes_val, &ol, 65535); *bytes_cap = (int)ol; break; }
-    case 16: per_decode_visible_string(r, str_val, (uint32_t)*str_cap); *str_cap = (int)strlen(str_val); break;
-    case 17: per_decode_utf8_string(r, str_val, (uint32_t)*str_cap); *str_cap = (int)strlen(str_val); break;
+    case 14: { int n = *bytes_cap * 8; per_decode_bit_string_unconstrained(r, bytes_val, &n); *bytes_cap = (n + 7) / 8; break; }
+    case 15: { size_t ol = (size_t)*bytes_cap; per_decode_octet_string_unconstrained(r, bytes_val, &ol); *bytes_cap = (int)ol; break; }
+    case 16: { uint32_t _l; per_decode_visible_string_unconstrained(r, str_val, &_l); *str_cap = (int)_l; break; }
+    case 17: { uint32_t _l; per_decode_utf8_string_unconstrained(r, str_val, &_l); *str_cap = (int)_l; break; }
     case 18: {
         uint8_t bytes[8];
         per_decode_octet_string_fixed(r, bytes, 8);
@@ -157,10 +167,18 @@ static void decode_data_value(per_stream_t *r, int choice,
                            | ((uint64_t)bytes[4] << 24) | ((uint64_t)bytes[5] << 16) | ((uint64_t)bytes[6] << 8)  | (uint64_t)bytes[7]);
         break;
     }
-    case 19: { int64_t t; per_decode_constrained_int(r, &t, 0, 86400000); *int_val = t; int64_t _d; per_decode_constrained_int(r, &_d, 0, 65535); break; }
+    case 19: {
+        uint8_t b6[6];
+        per_decode_octet_string_fixed(r, b6, 6);
+        uint32_t msOfDay = ((uint32_t)b6[0] << 24) | ((uint32_t)b6[1] << 16)
+                         | ((uint32_t)b6[2] << 8)  | (uint32_t)b6[3];
+        uint16_t days = (uint16_t)(((uint16_t)b6[4] << 8) | (uint16_t)b6[5]);
+        *int_val = (int64_t)days * 86400000 + msOfDay;
+        break;
+    }
     case 20: per_decode_bit_string_fixed(r, bytes_val, 13); break;
-    case 21: { uint32_t t; per_decode_small_non_negative(r, &t); *int_val = t; break; }
-    case 22: { uint32_t t; per_decode_small_non_negative(r, &t); *int_val = t; break; }
+    case 21: { int64_t t; per_decode_constrained_int(r, &t, 0, 3); *int_val = t; break; }
+    case 22: { int64_t t; per_decode_constrained_int(r, &t, 0, 3); *int_val = t; break; }
     case 23: per_decode_bit_string_fixed(r, bytes_val, 16); break;
     }
 }

@@ -7,13 +7,13 @@ int cms_quality_encode_stream(per_stream_t *s, const uint8_t value[2])
 int cms_quality_decode_stream(per_stream_t *s, uint8_t value[2])
     { per_decode_bit_string_fixed(s, value, 13); return CMS_OK; }
 int cms_dbpos_encode_stream(per_stream_t *s, cms_dbpos_t value)
-    { per_encode_small_non_negative(s, value); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, 3); return CMS_OK; }
 int cms_dbpos_decode_stream(per_stream_t *s, cms_dbpos_t *value)
-    { uint32_t t; per_decode_small_non_negative(s, &t); *value = (cms_dbpos_t)(int)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, 3); *value = (cms_dbpos_t)(int)t; return CMS_OK; }
 int cms_tcmd_encode_stream(per_stream_t *s, cms_tcmd_t value)
-    { per_encode_small_non_negative(s, value); return CMS_OK; }
+    { per_encode_constrained_int(s, value, 0, 3); return CMS_OK; }
 int cms_tcmd_decode_stream(per_stream_t *s, cms_tcmd_t *value)
-    { uint32_t t; per_decode_small_non_negative(s, &t); *value = (cms_tcmd_t)(int)t; return CMS_OK; }
+    { int64_t t; per_decode_constrained_int(s, &t, 0, 3); *value = (cms_tcmd_t)(int)t; return CMS_OK; }
 int cms_service_error_encode_stream(per_stream_t *s, cms_service_error_t value)
     { per_encode_constrained_int(s, value, 0, 12); return CMS_OK; }
 int cms_service_error_decode_stream(per_stream_t *s, cms_service_error_t *value)

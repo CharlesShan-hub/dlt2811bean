@@ -3,9 +3,9 @@
 /* ---- internal stream version ---- */
 
 int cms_check_encode_stream(per_stream_t *s, const uint8_t value[2])
-    { per_encode_bit_string_fixed(s, value, 16); return CMS_OK; }
+    { per_encode_bit_string_fixed(s, value, 2); return CMS_OK; }
 int cms_check_decode_stream(per_stream_t *s, uint8_t value[2])
-    { per_decode_bit_string_fixed(s, value, 16); return CMS_OK; }
+    { per_decode_bit_string_fixed(s, value, 2); return CMS_OK; }
 
 /* ---- public buffer version ---- */
 

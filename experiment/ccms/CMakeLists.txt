@@ -25,6 +25,7 @@ add_library(ccms SHARED
     src/data/basic/cms_integer.c
     src/data/basic/cms_float.c
     src/data/basic/cms_string.c
+    src/data/basic/cms_enumerated.c
     src/data/basic/cms_packed_list.c
     src/data/extended/cms_time.c
     src/data/common/cms_object_name.c

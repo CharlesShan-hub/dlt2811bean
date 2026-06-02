@@ -39,10 +39,15 @@ static inline int64_t cms_utc_time_to_ms(const cms_utc_time_t *t) {
          + (int64_t)(((uint64_t)t->fraction_of_second * 1000) / 16777216);
 }
 
-CMS_EXPORT int cms_binary_time_encode(int32_t hour, int32_t minute, int32_t second, int32_t millisecond, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_binary_time_decode(const uint8_t *in_buf, int in_len, int32_t *hour, int32_t *minute, int32_t *second, int32_t *millisecond);
-int cms_binary_time_encode_stream(per_stream_t *s, int32_t hour, int32_t minute, int32_t second, int32_t millisecond);
-int cms_binary_time_decode_stream(per_stream_t *s, int32_t *hour, int32_t *minute, int32_t *second, int32_t *millisecond);
+/*
+ * ============================================================
+ * BinaryTime (OCTET STRING (SIZE(6)): Int32U msOfDay + Int16U daysSince1984)
+ * ============================================================
+ */
+CMS_EXPORT int cms_binary_time_encode(uint32_t msOfDay, uint16_t daysSince1984, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_binary_time_decode(const uint8_t *in_buf, int in_len, uint32_t *msOfDay, uint16_t *daysSince1984);
+int cms_binary_time_encode_stream(per_stream_t *s, uint32_t msOfDay, uint16_t daysSince1984);
+int cms_binary_time_decode_stream(per_stream_t *s, uint32_t *msOfDay, uint16_t *daysSince1984);
 
 /*
  * ============================================================

@@ -1,4 +1,4 @@
-#include "per/cms_enumerated.h"
+#include "data/basic/cms_enumerated.h"
 #include "test_utils.h"
 
 void test_enumerated(void) {

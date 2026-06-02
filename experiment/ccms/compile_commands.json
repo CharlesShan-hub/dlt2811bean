@@ -7,12 +7,6 @@
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
-  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe  @CMakeFiles/ccms_core.dir/includes_C.rsp -std=gnu99 -o CMakeFiles\\ccms_core.dir\\src\\per\\cms_enumerated.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\per\\cms_enumerated.c",
-  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/per/cms_enumerated.c",
-  "output": "CMakeFiles/ccms_core.dir/src/per/cms_enumerated.c.obj"
-},
-{
-  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
   "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe  @CMakeFiles/ccms_core.dir/includes_C.rsp -std=gnu99 -o CMakeFiles\\ccms_core.dir\\src\\per\\cms_integer.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\per\\cms_integer.c",
   "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/per/cms_integer.c",
   "output": "CMakeFiles/ccms_core.dir/src/per/cms_integer.c.obj"
@@ -88,6 +82,12 @@
   "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\basic\\cms_string.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\basic\\cms_string.c",
   "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/basic/cms_string.c",
   "output": "CMakeFiles/ccms.dir/src/data/basic/cms_string.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\basic\\cms_enumerated.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\basic\\cms_enumerated.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/basic/cms_enumerated.c",
+  "output": "CMakeFiles/ccms.dir/src/data/basic/cms_enumerated.c.obj"
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",

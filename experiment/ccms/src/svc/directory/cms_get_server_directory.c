@@ -1,4 +1,6 @@
 #include "svc/directory/cms_get_server_directory.h"
+#include "per/cms_sequence.h"
+#include <string.h>
 
 /* ==================== GetServerDirectory-RequestPDU ==================== */
 CMS_EXPORT int cms_get_server_directory_request_encode(
@@ -43,17 +45,21 @@ CMS_EXPORT int cms_get_server_directory_response_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 512);
     if (err) return CMS_ERR;
-    uint32_t count = (uint32_t)sdu->ref_count;
-    per_encode_length(&w, count);
+
+    /* SEQUENCE OF ObjectReference — 无约束 */
+    per_encode_length(&w, (uint32_t)sdu->ref_count);
     int offset = 0;
     for (int i = 0; i < sdu->ref_count; i++) {
         cms_object_reference_encode_stream(&w, sdu->refs_flat + offset);
         offset += sdu->ref_lens[i] + 1;
     }
-    per_stream_write_bits(&w, (sdu->more_follows == 0) ? 1 : 0, 1);
+
+    /* moreFollows — DEFAULT TRUE */
+    per_encode_optional(&w, sdu->more_follows == 0);
     if (sdu->more_follows == 0) {
-        cms_boolean_encode_stream(&w, 0);
+        per_stream_write_bit(&w, 0);
     }
+
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_get_server_directory_response_decode(
@@ -62,6 +68,8 @@ CMS_EXPORT int cms_get_server_directory_response_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
+
+    /* SEQUENCE OF ObjectReference */
     uint32_t count;
     per_decode_length(&r, &count);
     if ((int)count > CMS_MAX_REF_COUNT) count = (uint32_t)CMS_MAX_REF_COUNT;
@@ -73,15 +81,16 @@ CMS_EXPORT int cms_get_server_directory_response_decode(
         sdu->ref_lens[i] = len;
         offset += len + 1;
     }
-    uint64_t bit;
-    per_stream_read_bits(&r, &bit, 1);
-    if (bit == 0) {
+
+    /* moreFollows — DEFAULT TRUE */
+    if (!per_decode_optional(&r)) {
         sdu->more_follows = 1;
     } else {
-        int val;
-        cms_boolean_decode_stream(&r, &val);
-        sdu->more_follows = val;
+        int bit;
+        per_stream_read_bit(&r, &bit);
+        sdu->more_follows = bit;
     }
+
     return CMS_OK;
 }
 
