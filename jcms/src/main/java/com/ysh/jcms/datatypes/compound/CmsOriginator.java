@@ -23,22 +23,28 @@ public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {
         this.orIdent = orIdent;
     }
 
-    public byte[] encode() {
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_originator_encode(orCat, orIdent, orIdent.length, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_originator_encode(orCat, orIdent, orIdent.length, buf, outLen);
     }
 
-    public static CmsOriginator decode(byte[] data) {
+    @Override
+    protected void ffiDecode(byte[] data) {
         IntByReference cat = new IntByReference();
         byte[] identBuf = new byte[256];
         IntByReference identLen = new IntByReference(identBuf.length);
         CmsFFIDatatypes.INSTANCE.cms_originator_decode(data, data.length, cat, identBuf, identLen);
-        byte[] ident = new byte[identLen.getValue()];
-        System.arraycopy(identBuf, 0, ident, 0, ident.length);
-        return new CmsOriginator(cat.getValue(), ident);
+        this.orCat = cat.getValue();
+        this.orIdent = new byte[identLen.getValue()];
+        System.arraycopy(identBuf, 0, this.orIdent, 0, this.orIdent.length);
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsOriginator from(byte[] data) {
+        return new CmsOriginator().decode(data);
     }
 }

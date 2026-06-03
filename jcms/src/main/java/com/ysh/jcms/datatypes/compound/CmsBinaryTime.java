@@ -42,13 +42,15 @@ public class CmsBinaryTime extends AbstractCmsCompound<CmsBinaryTime> {
         this(((hour * 60 + minute) * 60 + second) * 1000 + millisecond, daysSince1984);
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.msOfDay = msOfDay;
         ns.daysSince1984 = (short) daysSince1984;
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         msOfDay = ns.msOfDay;
         daysSince1984 = ns.daysSince1984 & 0xFFFF;
@@ -59,22 +61,24 @@ public class CmsBinaryTime extends AbstractCmsCompound<CmsBinaryTime> {
     public int getSecond() { return (msOfDay % 60000) / 1000; }
     public int getMillisecond() { return msOfDay % 1000; }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_binary_time_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_binary_time_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsBinaryTime decode(byte[] data) {
-        CmsBinaryTime bt = new CmsBinaryTime();
-        CmsFFIDatatypes.INSTANCE.cms_binary_time_decode(data, data.length, bt.nativeStruct);
-        ((NativeStruct) bt.nativeStruct).read();
-        bt.syncFromNative();
-        return bt;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_binary_time_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 16;
+    }
+
+    public static CmsBinaryTime from(byte[] data) {
+        return new CmsBinaryTime().decode(data);
     }
 }

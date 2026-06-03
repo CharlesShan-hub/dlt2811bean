@@ -11,7 +11,7 @@ class CmsUtcTimeTest {
     void roundtrip() {
         CmsUtcTime original = CmsUtcTime.fromMillis(1700000000000L);
         byte[] data = original.encode();
-        CmsUtcTime decoded = CmsUtcTime.decode(data);
+        CmsUtcTime decoded = CmsUtcTime.from(data);
         assertEquals(original.seconds_since_epoch, decoded.seconds_since_epoch);
     }
 

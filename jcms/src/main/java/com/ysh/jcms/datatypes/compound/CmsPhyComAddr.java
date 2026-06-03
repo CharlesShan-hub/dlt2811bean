@@ -24,21 +24,27 @@ public class CmsPhyComAddr extends AbstractCmsCompound<CmsPhyComAddr> {
         this.value = value;
     }
 
-    public byte[] encode() {
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_phy_com_addr_encode(value, 0, 0, 0, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_phy_com_addr_encode(value, 0, 0, 0, buf, outLen);
     }
 
-    public static CmsPhyComAddr decode(byte[] data) {
+    @Override
+    protected void ffiDecode(byte[] data) {
         byte[] val = new byte[6];
         IntByReference priority = new IntByReference();
         IntByReference vid = new IntByReference();
         IntByReference appid = new IntByReference();
         CmsFFIDatatypes.INSTANCE.cms_phy_com_addr_decode(data, data.length, val, priority, vid, appid);
-        return new CmsPhyComAddr(val);
+        this.value = val;
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 16;
+    }
+
+    public static CmsPhyComAddr from(byte[] data) {
+        return new CmsPhyComAddr().decode(data);
     }
 }

@@ -63,7 +63,8 @@ public class CmsBRCB extends AbstractCmsCompound<CmsBRCB> {
         nativeStruct = new NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         byte[] rptBuf = new byte[130];
         if (rptID != null) {
@@ -105,7 +106,8 @@ public class CmsBRCB extends AbstractCmsCompound<CmsBRCB> {
         }
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         rptID = new String(ns.rptID).trim();
         rptEna = ns.rptEna != 0;
@@ -126,23 +128,25 @@ public class CmsBRCB extends AbstractCmsCompound<CmsBRCB> {
         owner = ns.owner_present != 0 ? Arrays.copyOf(ns.owner, ns.owner_len) : null;
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_brcb_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_brcb_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsBRCB decode(byte[] data) {
-        CmsBRCB obj = new CmsBRCB();
-        CmsFFIDatatypes.INSTANCE.cms_brcb_decode(data, data.length, obj.nativeStruct);
-        ((NativeStruct) obj.nativeStruct).read();
-        obj.syncFromNative();
-        return obj;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_brcb_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsBRCB from(byte[] data) {
+        return new CmsBRCB().decode(data);
     }
 
     public CmsBRCB copy() {

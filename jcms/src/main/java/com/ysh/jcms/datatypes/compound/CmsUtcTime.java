@@ -34,14 +34,16 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
         nativeStruct = new NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.seconds_since_epoch = seconds_since_epoch;
         ns.fraction_of_second = fraction_of_second;
         ns.time_quality = time_quality;
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         seconds_since_epoch = ns.seconds_since_epoch;
         fraction_of_second = ns.fraction_of_second;
@@ -75,22 +77,24 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
         return utc;
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_utc_time_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_utc_time_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsUtcTime decode(byte[] data) {
-        CmsUtcTime utc = new CmsUtcTime();
-        CmsFFIDatatypes.INSTANCE.cms_utc_time_decode(data, data.length, utc.nativeStruct);
-        ((NativeStruct) utc.nativeStruct).read();
-        utc.syncFromNative();
-        return utc;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_utc_time_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 16;
+    }
+
+    public static CmsUtcTime from(byte[] data) {
+        return new CmsUtcTime().decode(data);
     }
 }

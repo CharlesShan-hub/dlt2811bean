@@ -48,7 +48,8 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
         nativeStruct = new NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.goEna = goEna ? 1 : 0;
         byte[] idBuf = new byte[130];
@@ -79,7 +80,8 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
         }
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         goEna = ns.goEna != 0;
         goID = new String(ns.goID).trim();
@@ -99,22 +101,24 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
         }
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_gocb_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_gocb_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsGoCB decode(byte[] data) {
-        CmsGoCB obj = new CmsGoCB();
-        CmsFFIDatatypes.INSTANCE.cms_gocb_decode(data, data.length, obj.nativeStruct);
-        ((NativeStruct) obj.nativeStruct).read();
-        obj.syncFromNative();
-        return obj;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_gocb_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsGoCB from(byte[] data) {
+        return new CmsGoCB().decode(data);
     }
 }

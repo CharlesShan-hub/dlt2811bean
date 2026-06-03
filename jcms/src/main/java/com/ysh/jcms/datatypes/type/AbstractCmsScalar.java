@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.per.io.PerInputStream;
 import com.ysh.jcms.per.io.PerOutputStream;
 
 public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
@@ -47,6 +48,37 @@ public abstract class AbstractCmsScalar<T extends AbstractCmsScalar<T, V>, V>
     protected void perEncode(PerOutputStream pos) {
         throw new UnsupportedOperationException(
             getClass().getSimpleName() + " has no Java PER encode fallback");
+    }
+
+    /**
+     * FFI decode: decode raw data and set this.value.
+     * Override in subclasses with FFI support.
+     */
+    protected void ffiDecode(byte[] data) {
+        throw new UnsupportedOperationException(
+            getClass().getSimpleName() + " has no FFI decode");
+    }
+
+    /**
+     * Java PER decode fallback — reads PER-encoded data from {@code pis}
+     * and sets this.value. Invoked when FFI library is unavailable.
+     */
+    protected void perDecode(PerInputStream pis) {
+        throw new UnsupportedOperationException(
+            getClass().getSimpleName() + " has no Java PER decode fallback");
+    }
+
+    /**
+     * Decode raw data into this instance. Returns self for chaining.
+     */
+    @SuppressWarnings("unchecked")
+    public T decode(byte[] data) {
+        if (CmsFFIDatatypes.isAvailable()) {
+            ffiDecode(data);
+        } else {
+            perDecode(new PerInputStream(data));
+        }
+        return (T) this;
     }
 
     @Override

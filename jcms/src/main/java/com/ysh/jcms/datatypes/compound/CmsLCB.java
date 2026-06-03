@@ -45,7 +45,8 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
         nativeStruct = new NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.logEna = logEna ? 1 : 0;
         byte[] dsBuf = new byte[256];
@@ -68,7 +69,8 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
         ns.bufTm = bufTm != null ? (int) (long) bufTm : 0;
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         logEna = ns.logEna != 0;
         datSet = new String(ns.datSet).trim();
@@ -79,22 +81,24 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
         bufTm = ns.bufTm_present != 0 ? (ns.bufTm & 0xFFFFFFFFL) : null;
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_lcb_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_lcb_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsLCB decode(byte[] data) {
-        CmsLCB obj = new CmsLCB();
-        CmsFFIDatatypes.INSTANCE.cms_lcb_decode(data, data.length, obj.nativeStruct);
-        ((NativeStruct) obj.nativeStruct).read();
-        obj.syncFromNative();
-        return obj;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_lcb_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsLCB from(byte[] data) {
+        return new CmsLCB().decode(data);
     }
 }

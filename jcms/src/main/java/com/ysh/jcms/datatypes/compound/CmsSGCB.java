@@ -42,7 +42,8 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         ((NativeStruct) nativeStruct).tActEdt = new CmsUtcTime.NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.numOfSG = (byte) numOfSG;
         ns.actSG = (byte) actSG;
@@ -56,7 +57,8 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         ns.resvTms = resvTms != null ? (short) (int) resvTms : 0;
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         numOfSG = ns.numOfSG & 0xFF;
         actSG = ns.actSG & 0xFF;
@@ -68,23 +70,25 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         resvTms = ns.resvTms_present != 0 ? (ns.resvTms & 0xFFFF) : null;
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_sgcb_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_sgcb_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsSGCB decode(byte[] data) {
-        CmsSGCB obj = new CmsSGCB();
-        CmsFFIDatatypes.INSTANCE.cms_sgcb_decode(data, data.length, obj.nativeStruct);
-        ((NativeStruct) obj.nativeStruct).read();
-        obj.syncFromNative();
-        return obj;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_sgcb_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsSGCB from(byte[] data) {
+        return new CmsSGCB().decode(data);
     }
 
     public CmsSGCB copy() {

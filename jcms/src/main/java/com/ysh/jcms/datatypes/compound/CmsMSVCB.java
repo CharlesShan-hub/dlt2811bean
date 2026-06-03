@@ -54,7 +54,8 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
         nativeStruct = new NativeStruct();
     }
 
-    private void syncToNative() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.svEna = svEna ? 1 : 0;
         byte[] idBuf = new byte[130];
@@ -88,7 +89,8 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
         }
     }
 
-    private void syncFromNative() {
+    @Override
+    protected void syncFromNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         svEna = ns.svEna != 0;
         msvID = new String(ns.msvID).trim();
@@ -110,22 +112,24 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
         }
     }
 
-    public byte[] encode() {
-        syncToNative();
-        write();
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_msvcb_encode((NativeStruct) nativeStruct, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_msvcb_encode((NativeStruct) nativeStruct, buf, outLen);
     }
 
-    public static CmsMSVCB decode(byte[] data) {
-        CmsMSVCB obj = new CmsMSVCB();
-        CmsFFIDatatypes.INSTANCE.cms_msvcb_decode(data, data.length, obj.nativeStruct);
-        ((NativeStruct) obj.nativeStruct).read();
-        obj.syncFromNative();
-        return obj;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_msvcb_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsMSVCB from(byte[] data) {
+        return new CmsMSVCB().decode(data);
     }
 }

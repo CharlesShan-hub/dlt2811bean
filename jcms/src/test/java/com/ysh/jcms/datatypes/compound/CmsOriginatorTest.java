@@ -12,7 +12,7 @@ class CmsOriginatorTest {
         byte[] ident = {0x01, 0x02, 0x03};
         CmsOriginator original = new CmsOriginator(1, ident);
         byte[] data = original.encode();
-        CmsOriginator decoded = CmsOriginator.decode(data);
+        CmsOriginator decoded = CmsOriginator.from(data);
         assertEquals(original.orCat(), decoded.orCat());
         assertArrayEquals(original.orIdent(), decoded.orIdent());
     }

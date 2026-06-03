@@ -39,25 +39,39 @@ public class CmsTimeStamp extends AbstractCmsCompound<CmsTimeStamp> {
         this.fractional = fractional;
     }
 
-    public byte[] encode() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.seconds_since_epoch = (int) secondsSinceEpoch;
         ns.fraction_of_second = (int) fractional;
         ns.time_quality = 0;
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_time_stamp_encode(ns, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
-    public static CmsTimeStamp decode(byte[] data) {
-        NativeStruct ns = new NativeStruct();
-        CmsFFIDatatypes.INSTANCE.cms_time_stamp_decode(data, data.length, ns);
-        ns.read();
-        return new CmsTimeStamp(
-            (ns.seconds_since_epoch & 0xFFFFFFFFL),
-            (ns.fraction_of_second & 0xFFFFFFFFL));
+    @Override
+    protected void syncFromNative() {
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        secondsSinceEpoch = ns.seconds_since_epoch & 0xFFFFFFFFL;
+        fractional = ns.fraction_of_second & 0xFFFFFFFFL;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_time_stamp_encode((NativeStruct) nativeStruct, buf, outLen);
+    }
+
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_time_stamp_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 16;
+    }
+
+    public static CmsTimeStamp from(byte[] data) {
+        return new CmsTimeStamp().decode(data);
     }
 }

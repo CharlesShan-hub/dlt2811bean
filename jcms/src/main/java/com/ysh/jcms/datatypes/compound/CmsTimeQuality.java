@@ -1,5 +1,6 @@
 package com.ysh.jcms.datatypes.compound;
 
+import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -35,7 +36,17 @@ public class CmsTimeQuality extends AbstractCmsCompound<CmsTimeQuality> {
         this.fraction = fraction;
     }
 
-    public byte[] encode() {
-        return new byte[0];
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return 0;
+    }
+
+    @Override
+    protected void ffiDecode(byte[] data) {
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 0;
     }
 }

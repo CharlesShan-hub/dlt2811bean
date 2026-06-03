@@ -38,13 +38,19 @@ public class CmsInt64U extends AbstractCmsNumeric<CmsInt64U, BigInteger> {
         return new BigInteger(bytes);
     }
 
-    public static CmsInt64U decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            com.sun.jna.ptr.LongByReference v = new com.sun.jna.ptr.LongByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_int64u_decode(data, data.length, v);
-            return new CmsInt64U(unsignedLongToBigInteger(v.getValue()));
-        }
+    @Override
+    protected void ffiDecode(byte[] data) {
+        com.sun.jna.ptr.LongByReference v = new com.sun.jna.ptr.LongByReference();
+                    CmsFFIDatatypes.Holder.INSTANCE.cms_int64u_decode(data, data.length, v);
+                // TODO: set this.value from decode result
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
         long raw = PerInteger.decodeUnconstrained(new PerInputStream(data));
-        return new CmsInt64U(unsignedLongToBigInteger(raw));
+    }
+
+    public static CmsInt64U from(byte[] data) {
+        return new CmsInt64U().decode(data);
     }
 }

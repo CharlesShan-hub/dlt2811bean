@@ -30,24 +30,32 @@ public class CmsFileEntry extends AbstractCmsCompound<CmsFileEntry> {
         this.checkSum = checkSum;
     }
 
-    public byte[] encode() {
-        byte[] buf = new byte[512];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_file_entry_encode(fileName, fileSize, lastModified, checkSum, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_file_entry_encode(fileName, fileSize, lastModified, checkSum, buf, outLen);
     }
 
-    public static CmsFileEntry decode(byte[] data) {
+    @Override
+    protected void ffiDecode(byte[] data) {
         byte[] fileNameBuf = new byte[256];
         IntByReference fileNameCap = new IntByReference(129);
-        LongByReference fileSize = new LongByReference();
-        byte[] lastModified = new byte[8];
-        LongByReference checkSum = new LongByReference();
+        LongByReference fileSizeRef = new LongByReference();
+        byte[] lastModifiedBuf = new byte[8];
+        LongByReference checkSumRef = new LongByReference();
         CmsFFIDatatypes.INSTANCE.cms_file_entry_decode(data, data.length,
-                fileNameBuf, fileNameCap, fileSize, lastModified, checkSum);
-        String fileName = new String(fileNameBuf, 0, fileNameCap.getValue(), StandardCharsets.US_ASCII);
-        return new CmsFileEntry(fileName, fileSize.getValue(), lastModified, checkSum.getValue());
+                fileNameBuf, fileNameCap, fileSizeRef, lastModifiedBuf, checkSumRef);
+        this.fileName = new String(fileNameBuf, 0, fileNameCap.getValue(), StandardCharsets.US_ASCII);
+        this.fileSize = fileSizeRef.getValue();
+        this.lastModified = lastModifiedBuf;
+        this.checkSum = checkSumRef.getValue();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 512;
+    }
+
+    public static CmsFileEntry from(byte[] data) {
+        return new CmsFileEntry().decode(data);
     }
 }

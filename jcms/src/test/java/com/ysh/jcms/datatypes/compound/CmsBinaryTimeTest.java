@@ -11,7 +11,7 @@ class CmsBinaryTimeTest {
     void roundtrip() {
         CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500, 0);
         byte[] data = original.encode();
-        CmsBinaryTime decoded = CmsBinaryTime.decode(data);
+        CmsBinaryTime decoded = CmsBinaryTime.from(data);
         assertEquals(original.getHour(), decoded.getHour());
         assertEquals(original.getMinute(), decoded.getMinute());
         assertEquals(original.getSecond(), decoded.getSecond());

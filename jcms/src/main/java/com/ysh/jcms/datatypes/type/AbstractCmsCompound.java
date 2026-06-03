@@ -2,6 +2,9 @@ package com.ysh.jcms.datatypes.type;
 
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -15,6 +18,51 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> exte
     protected AbstractCmsCompound(String typeName) {
         super(typeName);
     }
+
+    // ==================== Subclass hooks ====================
+
+    /**
+     * Sync Java fields → native struct before FFI encode.
+     * Override in subclasses that use syncToNative/syncFromNative pattern.
+     */
+    protected void syncToNative() {}
+
+    /**
+     * Sync native struct → Java fields after FFI decode.
+     * Override in subclasses that use syncToNative/syncFromNative pattern.
+     */
+    protected void syncFromNative() {}
+
+    /** FFI encode: call the C function. */
+    protected abstract int ffiEncode(byte[] buf, IntByReference outLen);
+
+    /** FFI decode: call the C function, then read() + syncFromNative(). */
+    protected abstract void ffiDecode(byte[] data);
+
+    /**
+     * Java PER encode fallback — writes PER-encoded data to {@code pos}.
+     * Invoked when FFI library is unavailable. Default throws.
+     */
+    protected void perEncode(PerOutputStream pos) {
+        throw new UnsupportedOperationException(
+            getClass().getSimpleName() + " has no Java PER encode fallback");
+    }
+
+    /**
+     * Java PER decode fallback — reads PER-encoded data from {@code pis}.
+     * Invoked when FFI library is unavailable. Default throws.
+     */
+    protected void perDecode(PerInputStream pis) {
+        throw new UnsupportedOperationException(
+            getClass().getSimpleName() + " has no Java PER decode fallback");
+    }
+
+    /** Buffer size hint for FFI encode. Override if larger buffer needed. */
+    protected int encodeBufSize() {
+        return 4096;
+    }
+
+    // ==================== NativeStruct helpers ====================
 
     protected void setNativeStruct(Structure s) {
         this.nativeStruct = s;
@@ -35,6 +83,37 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> exte
     protected Pointer getPointer() {
         return nativeStruct != null ? nativeStruct.getPointer() : null;
     }
+
+    // ==================== Encode / Decode ====================
+
+    @Override
+    public byte[] encode() {
+        if (CmsFFIDatatypes.isAvailable()) {
+            syncToNative();
+            write();
+            byte[] buf = new byte[encodeBufSize()];
+            IntByReference outLen = new IntByReference(buf.length);
+            ffiEncode(buf, outLen);
+            byte[] result = new byte[outLen.getValue()];
+            System.arraycopy(buf, 0, result, 0, result.length);
+            return result;
+        }
+        PerOutputStream pos = new PerOutputStream();
+        perEncode(pos);
+        return pos.toByteArray();
+    }
+
+    @SuppressWarnings("unchecked")
+    public T decode(byte[] data) {
+        if (CmsFFIDatatypes.isAvailable()) {
+            ffiDecode(data);
+        } else {
+            perDecode(new PerInputStream(data));
+        }
+        return (T) this;
+    }
+
+    // ==================== copy ====================
 
     @Override
     @SuppressWarnings("unchecked")
@@ -63,6 +142,8 @@ public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> exte
             throw new RuntimeException("Failed to copy " + typeName, e);
         }
     }
+
+    // ==================== toString ====================
 
     @Override
     public String toString() {

@@ -38,22 +38,38 @@ public class CmsEntryTime extends AbstractCmsCompound<CmsEntryTime> {
         this.daysSince1984 = daysSince1984;
     }
 
-    public byte[] encode() {
+    @Override
+    protected void syncToNative() {
         NativeStruct ns = (NativeStruct) nativeStruct;
         ns.msOfDay = msOfDay;
         ns.daysSince1984 = (short) daysSince1984;
-        byte[] buf = new byte[16];
-        IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_entry_time_encode(ns, buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
-        return result;
     }
 
-    public static CmsEntryTime decode(byte[] data) {
-        NativeStruct ns = new NativeStruct();
-        CmsFFIDatatypes.INSTANCE.cms_entry_time_decode(data, data.length, ns);
-        ns.read();
-        return new CmsEntryTime(ns.msOfDay, ns.daysSince1984 & 0xFFFF);
+    @Override
+    protected void syncFromNative() {
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        msOfDay = ns.msOfDay;
+        daysSince1984 = ns.daysSince1984 & 0xFFFF;
+    }
+
+    @Override
+    protected int ffiEncode(byte[] buf, IntByReference outLen) {
+        return CmsFFIDatatypes.INSTANCE.cms_entry_time_encode((NativeStruct) nativeStruct, buf, outLen);
+    }
+
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsFFIDatatypes.INSTANCE.cms_entry_time_decode(data, data.length, nativeStruct);
+        ((NativeStruct) nativeStruct).read();
+        syncFromNative();
+    }
+
+    @Override
+    protected int encodeBufSize() {
+        return 16;
+    }
+
+    public static CmsEntryTime from(byte[] data) {
+        return new CmsEntryTime().decode(data);
     }
 }

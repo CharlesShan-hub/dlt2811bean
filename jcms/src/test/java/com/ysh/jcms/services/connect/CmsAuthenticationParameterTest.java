@@ -17,7 +17,7 @@ class CmsAuthenticationParameterTest {
         p.sig_len = 4;
 
         byte[] enc = p.encode();
-        CmsAuthenticationParameter dec = CmsAuthenticationParameter.decode(enc);
+        CmsAuthenticationParameter dec = CmsAuthenticationParameter.from(enc);
 
         assertArrayEquals(p.cert, dec.cert);
         assertEquals(p.cert_len, dec.cert_len);
@@ -36,7 +36,7 @@ class CmsAuthenticationParameterTest {
         p.sig_len = 0;
 
         byte[] enc = p.encode();
-        CmsAuthenticationParameter dec = CmsAuthenticationParameter.decode(enc);
+        CmsAuthenticationParameter dec = CmsAuthenticationParameter.from(enc);
 
         assertEquals(0, dec.cert_len);
         assertEquals(0, dec.sig_len);

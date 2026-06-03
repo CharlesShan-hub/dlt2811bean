@@ -30,12 +30,19 @@ public class CmsBoolean extends AbstractCmsNumeric<CmsBoolean, Boolean> {
         PerInteger.encodeBoolean(pos, value);
     }
 
-    public static CmsBoolean decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_boolean_decode(data, data.length, v);
-            return v.getValue() != 0 ? TRUE : FALSE;
-        }
-        return PerInteger.decodeBoolean(new PerInputStream(data)) ? TRUE : FALSE;
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_boolean_decode(data, data.length, v);
+        this.value = v.getValue() != 0;
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerInteger.decodeBoolean(pis);
+    }
+
+    public static CmsBoolean from(byte[] data) {
+        return new CmsBoolean().decode(data);
     }
 }

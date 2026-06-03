@@ -11,7 +11,7 @@ class CmsTimeStampTest {
     void roundtrip() {
         CmsTimeStamp original = new CmsTimeStamp(1700000000L, 456L);
         byte[] data = original.encode();
-        CmsTimeStamp decoded = CmsTimeStamp.decode(data);
+        CmsTimeStamp decoded = CmsTimeStamp.from(data);
         assertEquals(original.secondsSinceEpoch(), decoded.secondsSinceEpoch());
         assertEquals(original.fractional(), decoded.fractional());
     }

@@ -12,7 +12,7 @@ class CmsPhyComAddrTest {
         byte[] addr = {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F};
         CmsPhyComAddr original = new CmsPhyComAddr(addr);
         byte[] data = original.encode();
-        CmsPhyComAddr decoded = CmsPhyComAddr.decode(data);
+        CmsPhyComAddr decoded = CmsPhyComAddr.from(data);
         assertArrayEquals(original.value(), decoded.value());
     }
 
