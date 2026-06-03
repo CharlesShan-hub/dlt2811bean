@@ -6,11 +6,17 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
 
+    // ==================== Bit positions ====================
+    /** Bit 0 — synchrocheck */
+    public static final int SYNCHROCHECK = 0;
+    /** Bit 1 — interlock-check */
+    public static final int INTERLOCK_CHECK = 1;
+
     public CmsCheck() {
-        this(0L);
+        this(0);
     }
 
-    public CmsCheck(long value) {
+    public CmsCheck(int value) {
         super("Check", value, 2);
     }
 

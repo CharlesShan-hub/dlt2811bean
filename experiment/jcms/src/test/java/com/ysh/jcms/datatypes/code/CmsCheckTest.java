@@ -8,11 +8,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsCheckTest {
 
     @Test
-    void roundtrip() {
-        CmsCheck original = new CmsCheck(0x02L);
+    void roundup() {
+        CmsCheck original = new CmsCheck(0x02);
         byte[] data = original.encode();
         CmsCheck decoded = CmsCheck.decode(data);
-        assertTrue(decoded.testBit(0) == original.testBit(0));
+        //System.out.println(decoded); // (CmsCheck) 2
+        assertEquals(decoded.testBit(0), original.testBit(0));
     }
 
     @Test
@@ -25,7 +26,7 @@ class CmsCheckTest {
 
     @Test
     void copy() {
-        CmsCheck original = new CmsCheck(0x02L);
+        CmsCheck original = new CmsCheck(0x02);
         CmsCheck cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

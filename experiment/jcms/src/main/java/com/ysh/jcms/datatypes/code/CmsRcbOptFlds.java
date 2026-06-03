@@ -18,10 +18,10 @@ public class CmsRcbOptFlds extends AbstractCmsCodedEnum<CmsRcbOptFlds> {
     public static final int SEGMENTATION      = 9;
 
     public CmsRcbOptFlds() {
-        this(0L);
+        this(0);
     }
 
-    public CmsRcbOptFlds(long value) {
+    public CmsRcbOptFlds(int value) {
         super("RcbOptFlds", value, 10);
     }
 

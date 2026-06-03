@@ -10,7 +10,7 @@ class CmsQualityTest {
     @Test
     void constructAndTestBit() {
         CmsQuality q = new CmsQuality();
-        assertEquals(0L, q.get());
+        assertEquals(0, q.get());
 
         q.setBit(2, true);
         q.setBit(11, true);

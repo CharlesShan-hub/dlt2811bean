@@ -13,10 +13,10 @@ public class CmsMsvcbOptFlds extends AbstractCmsCodedEnum<CmsMsvcbOptFlds> {
     public static final int SECURITY      = 4;
 
     public CmsMsvcbOptFlds() {
-        this(0L);
+        this(0);
     }
 
-    public CmsMsvcbOptFlds(long value) {
+    public CmsMsvcbOptFlds(int value) {
         super("MsvcbOptFlds", value, 5);
     }
 

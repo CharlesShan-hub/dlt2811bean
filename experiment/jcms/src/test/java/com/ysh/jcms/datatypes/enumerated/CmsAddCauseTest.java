@@ -12,6 +12,7 @@ class CmsAddCauseTest {
         CmsAddCause original = new CmsAddCause(2);
         byte[] data = original.encode();
         CmsAddCause decoded = CmsAddCause.decode(data);
+        System.out.println(decoded);
         assertEquals(original.get(), decoded.get());
     }
 

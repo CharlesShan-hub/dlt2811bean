@@ -26,10 +26,10 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
     public static final int OPERATOR_BLOCKED = 12;
 
     public CmsQuality() {
-        this(0L);
+        this(0);
     }
 
-    public CmsQuality(long value) {
+    public CmsQuality(int value) {
         super("Quality", value, 13);
     }
 

@@ -6,7 +6,6 @@ import com.sun.jna.Structure;
 import com.sun.jna.Union;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.compound.CmsBinaryTime;
-import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -21,51 +20,13 @@ import java.util.List;
  * <p>Check {@link #choice} before accessing the corresponding value field.
  * Same convention as C: you read {@code data->choice} then {@code data->value.int32}.
  *
- * <p>Thread-safety: not guaranteed (same as all other jcms types).
+ * <p>Thread-safety: not guaranteed.
  */
 @Getter
 @Accessors(fluent = true)
-public class CmsData extends AbstractCmsCompound<CmsData> {
-
-    // ===================== choice constants =====================
-
-    public static final int ERROR          = 0;
-    public static final int ARRAY          = 1;
-    public static final int STRUCTURE      = 2;
-    public static final int BOOLEAN        = 3;
-    public static final int INT8           = 4;
-    public static final int INT16          = 5;
-    public static final int INT32          = 6;
-    public static final int INT64          = 7;
-    public static final int INT8U          = 8;
-    public static final int INT16U         = 9;
-    public static final int INT32U         = 10;
-    public static final int INT64U         = 11;
-    public static final int FLOAT32        = 12;
-    public static final int FLOAT64        = 13;
-    public static final int BIT_STRING     = 14;
-    public static final int OCTET_STRING   = 15;
-    public static final int VISIBLE_STRING = 16;
-    public static final int UTF8_STRING    = 17;
-    public static final int UTC_TIME       = 18;
-    public static final int BINARY_TIME    = 19;
-    public static final int QUALITY        = 20;
-    public static final int DBPOS          = 21;
-    public static final int TCMD           = 22;
-    public static final int CHECK          = 23;
+public class CmsData extends AbstractCmsDataUnit<CmsData> {
 
     // ==================== Native struct/union mapping ====================
-
-    /** Sub-struct for array/structure elements list. */
-    public static class ChildArrayStruct extends Structure {
-        public Pointer elements;   // struct cms_data*
-        public int count;
-
-        @Override
-        protected List<String> getFieldOrder() {
-            return Arrays.asList("elements", "count");
-        }
-    }
 
     /** Sub-struct for BIT_STRING. */
     public static class BitStringStruct extends Structure {
@@ -92,8 +53,8 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
     /** The 24-alternative union. */
     public static class CmsDataUnion extends Union {
         public int error;                       // 0
-        public ChildArrayStruct array;          // 1
-        public ChildArrayStruct structure;      // 2
+        public CmsArray.ArrayStruct array;      // 1
+        public CmsArray.ArrayStruct structure;  // 2
         public int boolean_value;               // 3
         public byte int8;                       // 4
         public short int16;                     // 5
@@ -114,11 +75,10 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         public byte[] quality = new byte[2];    // 20
         public int dbpos;                       // 21
         public int tcmd;                        // 22
-        public byte[] check = new byte[2];      // 23
-
+        public byte[] check = new byte[2];      // 23        
         public CmsDataUnion() {
-            array = new ChildArrayStruct();
-            structure = new ChildArrayStruct();
+            array = new CmsArray.ArrayStruct();
+            structure = new CmsArray.ArrayStruct();
             bit_string = new BitStringStruct();
             octet_string = new OctetStringStruct();
             binary_time = new CmsBinaryTime.NativeStruct();
@@ -147,11 +107,11 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
 
     // ===================== Java-level fields =====================
 
-    public int choice;
-    public int serviceError;
+    /** The JNA native struct backing this Data value. */
+    public NativeStruct nativeStruct;
 
     // array / structure
-    public List<CmsData> elements;
+    public CmsArray arrayVal;
 
     // scalar types
     public boolean boolVal;
@@ -183,17 +143,17 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         return d;
     }
 
-    public static CmsData createArray(List<CmsData> elements) {
+    public static CmsData createArray(CmsArray array) {
         CmsData d = new CmsData();
         d.choice = ARRAY;
-        d.elements = new ArrayList<>(elements);
+        d.arrayVal = array;
         return d;
     }
 
-    public static CmsData createStructure(List<CmsData> members) {
+    public static CmsData createStructure(CmsArray members) {
         CmsData d = new CmsData();
         d.choice = STRUCTURE;
-        d.elements = new ArrayList<>(members);
+        d.arrayVal = members;
         return d;
     }
 
@@ -510,9 +470,9 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
                 throw new IllegalArgumentException("Unknown choice: " + choice);
         }
     }
-
-    private void syncChildArray(ChildArrayStruct arr, List<Pointer> allocs) {
-        int count = elements != null ? elements.size() : 0;
+    
+    private void syncChildArray(CmsArray.ArrayStruct arr, List<Pointer> allocs) {
+        int count = arrayVal != null ? arrayVal.size() : 0;
         arr.count = count;
         if (count == 0) {
             arr.elements = null;
@@ -526,7 +486,7 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         for (int i = 0; i < count; i++) {
             Pointer elemPtr = block.share(i * elemSize);
             NativeStruct elemNs = new NativeStruct(elemPtr);
-            CmsData elem = elements.get(i);
+            CmsData elem = arrayVal.get(i);
             elem.syncToNative(elemNs, allocs);
             elemNs.write();
         }
@@ -610,7 +570,7 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
 
             case ARRAY:
             case STRUCTURE: {
-                ChildArrayStruct arr = (ch == ARRAY) ? ns.value.array : ns.value.structure;
+                CmsArray.ArrayStruct arr = (ch == ARRAY) ? ns.value.array : ns.value.structure;
                 int count = arr.count;
                 List<CmsData> elems = new ArrayList<>(count);
                 if (count > 0 && arr.elements != null) {
@@ -622,7 +582,8 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
                         elems.add(syncFromNative(elemNs));
                     }
                 }
-                return ch == ARRAY ? createArray(elems) : createStructure(elems);
+                CmsArray ca = new CmsArray(elems);
+                return ch == ARRAY ? createArray(ca) : createStructure(ca);
             }
 
             case BOOLEAN:
@@ -714,6 +675,13 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         }
     }
 
+    // ===================== isTagOnly =====================
+
+    @Override
+    public boolean isTagOnly() {
+        return false; // Data has no tag-only choices; every choice carries a value
+    }
+
     // ===================== Copy =====================
 
     @Override
@@ -722,10 +690,7 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         c.choice = choice;
         c.serviceError = serviceError;
 
-        if (elements != null) {
-            c.elements = new ArrayList<>(elements.size());
-            for (CmsData e : elements) c.elements.add(e.copy());
-        }
+        c.arrayVal = arrayVal != null ? arrayVal.copy() : null;
 
         c.boolVal = boolVal;
         c.intVal = intVal;
@@ -754,20 +719,12 @@ public class CmsData extends AbstractCmsCompound<CmsData> {
         return mem;
     }
 
-    private void assertChoice(int... valid) {
-        for (int v : valid) {
-            if (choice == v) return;
-        }
-        throw new IllegalStateException("Invalid choice " + choice
-                + " for this getter (expected " + Arrays.toString(valid) + ")");
-    }
-
     @Override
     public String toString() {
         switch (choice) {
             case ERROR: return "Data(error=" + serviceError + ")";
-            case ARRAY: return "Data(array=" + elements + ")";
-            case STRUCTURE: return "Data(structure=" + elements + ")";
+            case ARRAY: return "Data(array=" + arrayVal + ")";
+            case STRUCTURE: return "Data(structure=" + arrayVal + ")";
             case BOOLEAN: return "Data(bool=" + boolVal + ")";
             case INT8: case INT16: case INT32: case INT64:
             case INT8U: case INT16U: case INT32U: case INT64U:

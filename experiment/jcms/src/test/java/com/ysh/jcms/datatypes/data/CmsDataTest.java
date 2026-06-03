@@ -220,76 +220,80 @@ class CmsDataTest {
 
     @Test
     void arrayRoundtrip() {
-        List<CmsData> items = Arrays.asList(
+        CmsArray arr = new CmsArray(Arrays.asList(
             CmsData.createBoolean(true),
             CmsData.createInt32(42),
             CmsData.createFloat64(3.14),
             CmsData.createVisibleString("test")
-        );
-        byte[] enc = CmsData.createArray(items).encode();
+        ));
+        byte[] enc = CmsData.createArray(arr).encode();
         CmsData dec = CmsData.decode(enc);
         assertEquals(CmsData.ARRAY, dec.choice());
 
-        List<CmsData> result = dec.elements();
-        assertEquals(4, result.size());
-        assertTrue(result.get(0).boolVal());
-        assertEquals(42, result.get(1).intVal());
-        assertEquals(3.14, result.get(2).floatVal(), 1e-15);
-        assertEquals("test", result.get(3).strVal());
+        assertEquals(4, dec.arrayVal().size());
+        assertTrue(dec.arrayVal().get(0).boolVal());
+        assertEquals(42, dec.arrayVal().get(1).intVal());
+        assertEquals(3.14, dec.arrayVal().get(2).floatVal(), 1e-15);
+        assertEquals("test", dec.arrayVal().get(3).strVal());
     }
 
     @Test
     void structureRoundtrip() {
-        List<CmsData> members = Arrays.asList(
+        CmsArray members = new CmsArray(Arrays.asList(
             CmsData.createInt8((byte) 10),
             CmsData.createInt16((short) 20),
             CmsData.createInt32(30)
-        );
+        ));
         byte[] enc = CmsData.createStructure(members).encode();
         CmsData dec = CmsData.decode(enc);
         assertEquals(CmsData.STRUCTURE, dec.choice());
 
-        List<CmsData> result = dec.elements();
-        assertEquals(3, result.size());
-        assertEquals(10, result.get(0).intVal());
-        assertEquals(20, result.get(1).intVal());
-        assertEquals(30, result.get(2).intVal());
+        assertEquals(3, dec.arrayVal().size());
+        assertEquals(10, dec.arrayVal().get(0).intVal());
+        assertEquals(20, dec.arrayVal().get(1).intVal());
+        assertEquals(30, dec.arrayVal().get(2).intVal());
     }
 
     @Test
     void nestedArrayRoundtrip() {
-        List<CmsData> inner = Arrays.asList(
+        CmsArray inner = new CmsArray(Arrays.asList(
             CmsData.createBoolean(false),
             CmsData.createInt64(999L)
-        );
-        CmsData outer = CmsData.createArray(Arrays.asList(
+        ));
+        CmsData outer = CmsData.createArray(new CmsArray(Arrays.asList(
             CmsData.createArray(inner),
             CmsData.createVisibleString("nested")
-        ));
+        )));
         byte[] enc = outer.encode();
         CmsData dec = CmsData.decode(enc);
         assertEquals(CmsData.ARRAY, dec.choice());
 
-        List<CmsData> outerResult = dec.elements();
-        assertEquals(2, outerResult.size());
+        assertEquals(2, dec.arrayVal().size());
 
         // Inner array
-        assertEquals(CmsData.ARRAY, outerResult.get(0).choice());
-        List<CmsData> innerResult = outerResult.get(0).elements();
-        assertEquals(2, innerResult.size());
-        assertFalse(innerResult.get(0).boolVal());
-        assertEquals(999L, innerResult.get(1).intVal());
+        assertEquals(CmsData.ARRAY, dec.arrayVal().get(0).choice());
+        assertEquals(2, dec.arrayVal().get(0).arrayVal().size());
+        assertFalse(dec.arrayVal().get(0).arrayVal().get(0).boolVal());
+        assertEquals(999L, dec.arrayVal().get(0).arrayVal().get(1).intVal());
 
         // Sibling
-        assertEquals("nested", outerResult.get(1).strVal());
+        assertEquals("nested", dec.arrayVal().get(1).strVal());
     }
 
     @Test
     void emptyArrayRoundtrip() {
-        byte[] enc = CmsData.createArray(Arrays.asList()).encode();
+        byte[] enc = CmsData.createArray(new CmsArray()).encode();
         CmsData dec = CmsData.decode(enc);
         assertEquals(CmsData.ARRAY, dec.choice());
-        assertTrue(dec.elements().isEmpty());
+        assertTrue(dec.arrayVal().elements().isEmpty());
     }
 
+    @Test
+    void wrongFieldReturnsDefault() {
+        CmsData d = CmsData.createInt32(10);
+        assertNull(d.strVal());
+        assertFalse(d.boolVal());
+        assertNull(d.arrayVal());
+        assertEquals(0.0, d.floatVal(), 0.0);
+    }
 }

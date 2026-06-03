@@ -9,7 +9,7 @@ class CmsTriggerConditionsTest {
 
     @Test
     void roundtrip() {
-        CmsTriggerConditions original = new CmsTriggerConditions(0x2AL);
+        CmsTriggerConditions original = new CmsTriggerConditions(0x2A);
         byte[] data = original.encode();
         CmsTriggerConditions decoded = CmsTriggerConditions.decode(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
@@ -17,7 +17,7 @@ class CmsTriggerConditionsTest {
 
     @Test
     void copy() {
-        CmsTriggerConditions original = new CmsTriggerConditions(0x2AL);
+        CmsTriggerConditions original = new CmsTriggerConditions(0x2A);
         CmsTriggerConditions cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

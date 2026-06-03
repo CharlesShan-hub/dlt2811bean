@@ -14,10 +14,10 @@ public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditi
     public static final int GENERAL_INTERROGATION = 5;
 
     public CmsTriggerConditions() {
-        this(0L);
+        this(0);
     }
 
-    public CmsTriggerConditions(long value) {
+    public CmsTriggerConditions(int value) {
         super("TriggerConditions", value, 6);
     }
 

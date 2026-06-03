@@ -9,10 +9,10 @@ public class CmsLcbOptFlds extends AbstractCmsCodedEnum<CmsLcbOptFlds> {
     public static final int PURGE = 0;
 
     public CmsLcbOptFlds() {
-        this(0L);
+        this(0);
     }
 
-    public CmsLcbOptFlds(long value) {
+    public CmsLcbOptFlds(int value) {
         super("LcbOptFlds", value, 1);
     }
 

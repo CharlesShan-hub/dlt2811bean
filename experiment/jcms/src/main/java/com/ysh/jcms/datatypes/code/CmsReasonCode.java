@@ -15,10 +15,10 @@ public class CmsReasonCode extends AbstractCmsCodedEnum<CmsReasonCode> {
     public static final int APPLICATION_TRIGGER   = 6;
 
     public CmsReasonCode() {
-        this(0L);
+        this(0);
     }
 
-    public CmsReasonCode(long value) {
+    public CmsReasonCode(int value) {
         super("ReasonCode", value, 7);
     }
 

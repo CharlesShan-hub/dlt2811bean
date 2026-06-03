@@ -9,15 +9,18 @@ class CmsRcbOptFldsTest {
 
     @Test
     void roundtrip() {
-        CmsRcbOptFlds original = new CmsRcbOptFlds(0x02ABL);
+        CmsRcbOptFlds original = new CmsRcbOptFlds(0x02AB);
         byte[] data = original.encode();
         CmsRcbOptFlds decoded = CmsRcbOptFlds.decode(data);
-        assertTrue(decoded.testBit(0) == original.testBit(0));
+        assertEquals(
+            decoded.testBit(CmsRcbOptFlds.SYNCHROCHECK),
+            original.testBit(CmsRcbOptFlds.SYNCHROCHECK)
+        );
     }
 
     @Test
     void copy() {
-        CmsRcbOptFlds original = new CmsRcbOptFlds(0x02ABL);
+        CmsRcbOptFlds original = new CmsRcbOptFlds(0x02AB);
         CmsRcbOptFlds cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

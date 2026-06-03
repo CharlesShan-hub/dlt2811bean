@@ -9,7 +9,7 @@ class CmsLcbOptFldsTest {
 
     @Test
     void roundtrip() {
-        CmsLcbOptFlds original = new CmsLcbOptFlds(0x01L);
+        CmsLcbOptFlds original = new CmsLcbOptFlds(0x01);
         byte[] data = original.encode();
         CmsLcbOptFlds decoded = CmsLcbOptFlds.decode(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
@@ -17,7 +17,7 @@ class CmsLcbOptFldsTest {
 
     @Test
     void copy() {
-        CmsLcbOptFlds original = new CmsLcbOptFlds(0x01L);
+        CmsLcbOptFlds original = new CmsLcbOptFlds(0x01);
         CmsLcbOptFlds cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

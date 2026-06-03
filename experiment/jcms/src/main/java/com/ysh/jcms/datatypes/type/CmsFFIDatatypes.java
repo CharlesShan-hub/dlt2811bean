@@ -206,8 +206,10 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.8 DataDefinition ==================== */
 
-    int cms_data_definition_encode(int choice, long intVal, String strVal, byte[] bytesVal, int bytesLen, byte[] outBuf, IntByReference outLen);
-    int cms_data_definition_decode(byte[] inBuf, int inLen, IntByReference choice, LongByReference intVal, byte[] strVal, IntByReference strCap, byte[] bytesVal, IntByReference bytesCap);
+    int cms_data_definition_encode(Structure def, byte[] outBuf, IntByReference outLen);
+    int cms_data_definition_decode(byte[] inBuf, int inLen, Structure def);
+
+    void cms_data_definition_free(Structure def);
 
     /* ==================== §7.3.10 FileEntry ==================== */
 

@@ -9,7 +9,7 @@ class CmsMsvcbOptFldsTest {
 
     @Test
     void roundtrip() {
-        CmsMsvcbOptFlds original = new CmsMsvcbOptFlds(0x15L);
+        CmsMsvcbOptFlds original = new CmsMsvcbOptFlds(0x15);
         byte[] data = original.encode();
         CmsMsvcbOptFlds decoded = CmsMsvcbOptFlds.decode(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
@@ -17,7 +17,7 @@ class CmsMsvcbOptFldsTest {
 
     @Test
     void copy() {
-        CmsMsvcbOptFlds original = new CmsMsvcbOptFlds(0x15L);
+        CmsMsvcbOptFlds original = new CmsMsvcbOptFlds(0x15);
         CmsMsvcbOptFlds cloned = original.copy();
         assertEquals(original.get(), cloned.get());
     }

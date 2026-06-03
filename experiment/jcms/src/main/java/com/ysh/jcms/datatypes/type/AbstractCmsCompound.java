@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> extends AbstractCmsType<T> {
+public abstract class AbstractCmsCompound<T extends AbstractCmsCompound<T>> extends AbstractCmsType<T> implements CmsCompound<T> {
 
     protected Structure nativeStruct;
 
