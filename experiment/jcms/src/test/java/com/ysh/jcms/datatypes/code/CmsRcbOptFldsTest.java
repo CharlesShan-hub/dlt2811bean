@@ -13,8 +13,8 @@ class CmsRcbOptFldsTest {
         byte[] data = original.encode();
         CmsRcbOptFlds decoded = CmsRcbOptFlds.decode(data);
         assertEquals(
-            decoded.testBit(CmsRcbOptFlds.SYNCHROCHECK),
-            original.testBit(CmsRcbOptFlds.SYNCHROCHECK)
+            decoded.testBit(CmsRcbOptFlds.SEQUENCE_NUMBER),
+            original.testBit(CmsRcbOptFlds.SEQUENCE_NUMBER)
         );
     }
 

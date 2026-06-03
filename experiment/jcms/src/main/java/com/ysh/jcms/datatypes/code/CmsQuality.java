@@ -6,13 +6,13 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
 
-    public static final int GOOD              = 0;
-    public static final int INVALID           = 1;
-    public static final int RESERVED_VALIDITY = 2;
-    public static final int QUESTIONABLE      = 3;
+    public static final int GOOD              = 100;
+    public static final int INVALID           = 101;
+    public static final int RESERVED_VALIDITY = 102;
+    public static final int QUESTIONABLE      = 103;
 
-    public static final int VALIDITY      = 0;
-    public static final int VALIDITY_WIDTH = 2;
+    public static final int INVALID1 = 0;
+    public static final int INVALID2 = 1;
     public static final int OVERFLOW     = 2;
     public static final int OUT_OF_RANGE = 3;
     public static final int BAD_REFERENCE = 4;
@@ -31,6 +31,28 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
 
     public CmsQuality(int value) {
         super("Quality", value, 13);
+    }
+
+    @Override
+    public void setBit(int pos, boolean val) {
+        if (pos == GOOD)             { super.setBit(0, false); super.setBit(1, false); return; }
+        if (pos == INVALID)          { super.setBit(0, false); super.setBit(1, true); return; }
+        if (pos == RESERVED_VALIDITY){ super.setBit(0, true); super.setBit(1, false); return; }
+        if (pos == QUESTIONABLE)     { super.setBit(0, true); super.setBit(1, true); return; }
+        if (pos == INVALID1)         throw new IllegalArgumentException("INVALID1 is reserved");
+        if (pos == INVALID2)         throw new IllegalArgumentException("INVALID2 is reserved");
+        super.setBit(pos, val);
+    }
+
+    @Override
+    public boolean testBit(int pos) {
+        if (pos == GOOD)              return !super.testBit(0) && !super.testBit(1);
+        if (pos == INVALID)           return !super.testBit(0) &&  super.testBit(1);
+        if (pos == RESERVED_VALIDITY) return  super.testBit(0) && !super.testBit(1);
+        if (pos == QUESTIONABLE)      return  super.testBit(0) &&  super.testBit(1);
+        if (pos == INVALID1)         throw new IllegalArgumentException("INVALID1 is reserved");
+        if (pos == INVALID2)         throw new IllegalArgumentException("INVALID2 is reserved");
+        return super.testBit(pos);
     }
 
     @Override

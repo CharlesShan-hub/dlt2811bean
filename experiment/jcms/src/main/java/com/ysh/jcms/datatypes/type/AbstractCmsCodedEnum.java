@@ -1,5 +1,12 @@
 package com.ysh.jcms.datatypes.type;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>>
         extends AbstractCmsScalar<T, Integer> implements CmsCodedEnum<T> {
 
@@ -34,25 +41,78 @@ public abstract class AbstractCmsCodedEnum<T extends AbstractCmsCodedEnum<T>>
         present = true;
     }
 
-    @Override
-    public int getBits(int pos, int width) {
-        int mask = (1 << width) - 1;
-        return (value >>> pos) & mask;
-    }
+    // ==================== toString ====================
 
     @Override
-    public boolean testBits(int pos, int width, int fieldValue) {
-        int mask = (1 << width) - 1;
-        return ((value >>> pos) & mask) == (fieldValue & mask);
+    public String toString() {
+        Map<Integer, String> names = nameMap();
+        List<String> setFlags = new ArrayList<>();
+        for (int pos = 0; pos < size; pos++) {
+            if ((value & (1 << pos)) != 0) {
+                String name = names.get(pos);
+                setFlags.add(name != null ? name : "bit" + pos);
+            }
+        }
+        String binary = toBinary(value, size);
+        if (setFlags.isEmpty()) {
+            return "(" + getClass().getSimpleName() + ") " + binary;
+        }
+        return "(" + getClass().getSimpleName() + ") " + binary
+            + " [" + String.join(", ", setFlags) + "]";
     }
 
-    @Override
-    public void setBits(int pos, int width, int fieldValue) {
-        int mask = (1 << width) - 1;
-        value &= ~(mask << pos);
-        value |= ((fieldValue & mask) << pos);
-        present = true;
+    /** Format value as binary string, grouped by 4 nibbles. */
+    private static String toBinary(int value, int size) {
+        if (size <= 4) {
+            return "0b" + Integer.toBinaryString(value);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = size - 1; i >= 0; i--) {
+            sb.append((value >> i) & 1);
+            if (i % 4 == 0 && i != 0) sb.append(' ');
+        }
+        return "0b" + sb;
     }
+
+    // ==================== Bit-name mapping ====================
+
+    @SuppressWarnings("unchecked")
+    private Map<Integer, String> nameMap() {
+        Map<Integer, String> cache = (Map<Integer, String>) cacheGet();
+        if (cache != null) return cache;
+        cache = buildNameMap();
+        cachePut(cache);
+        return cache;
+    }
+
+    private Map<Integer, String> buildNameMap() {
+        Map<Integer, String> map = new HashMap<>();
+        for (Field field : getClass().getFields()) {
+            int mod = field.getModifiers();
+            if (Modifier.isStatic(mod) && Modifier.isFinal(mod) && field.getType() == int.class) {
+                try {
+                    int val = field.getInt(null);
+                    map.put(val, field.getName());
+                } catch (IllegalAccessException ignored) {
+                }
+            }
+        }
+        return map;
+    }
+
+    // ==================== Per-class cache ====================
+
+    private static final Map<Class<?>, Object> CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private Object cacheGet() {
+        return CACHE.get(getClass());
+    }
+
+    private void cachePut(Object cache) {
+        CACHE.put(getClass(), cache);
+    }
+
+    // ==================== Encode / Decode helpers ====================
 
     /** Convert LSB-0 int value to PER BIT STRING bytes (MSB-first). */
     protected byte[] toPerBytes() {

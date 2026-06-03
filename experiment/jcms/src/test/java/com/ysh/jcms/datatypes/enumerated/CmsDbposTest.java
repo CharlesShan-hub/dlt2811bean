@@ -12,12 +12,13 @@ class CmsDbposTest {
         CmsDbpos original = new CmsDbpos(2);
         byte[] data = original.encode();
         CmsDbpos decoded = CmsDbpos.decode(data);
+        //System.out.println(decoded);
         assertEquals(original.get(), decoded.get());
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, (long) new CmsDbpos().get());
+        assertEquals(0, new CmsDbpos().get());
     }
 
     @Test

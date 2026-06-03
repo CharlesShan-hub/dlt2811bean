@@ -9,10 +9,13 @@ class CmsCheckTest {
 
     @Test
     void roundup() {
-        CmsCheck original = new CmsCheck(0x02);
+        CmsCheck original = new CmsCheck();
+        original.setBit(CmsCheck.INTERLOCK_CHECK, true);
         byte[] data = original.encode();
         CmsCheck decoded = CmsCheck.decode(data);
         //System.out.println(decoded); // (CmsCheck) 2
+        //System.out.println(decoded.testBit(CmsCheck.INTERLOCK_CHECK)); // true
+        //System.out.println(decoded.testBit(CmsCheck.SYNCHROCHECK)); // false
         assertEquals(decoded.testBit(0), original.testBit(0));
     }
 

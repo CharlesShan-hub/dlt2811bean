@@ -6,7 +6,8 @@ import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 
 public class CmsLcbOptFlds extends AbstractCmsCodedEnum<CmsLcbOptFlds> {
 
-    public static final int PURGE = 0;
+    /** Bit 0 — no name in standard */
+    public static final int OPTFLDS = 0;
 
     public CmsLcbOptFlds() {
         this(0);
