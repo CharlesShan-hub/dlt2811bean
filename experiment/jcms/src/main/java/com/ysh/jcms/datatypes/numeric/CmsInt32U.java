@@ -4,6 +4,9 @@ import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.LongByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsNumeric;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerInteger;
 
 public class CmsInt32U extends AbstractCmsNumeric<CmsInt32U, Long> {
 
@@ -20,12 +23,20 @@ public class CmsInt32U extends AbstractCmsNumeric<CmsInt32U, Long> {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_int32u_encode(value, buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_int32u_encode(value, buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerInteger.encode(pos, value, MIN, MAX);
     }
 
     public static CmsInt32U decode(byte[] data) {
-        LongByReference v = new LongByReference();
-        CmsFFIDatatypes.INSTANCE.cms_int32u_decode(data, data.length, v);
-        return new CmsInt32U(v.getValue());
+        if (CmsFFIDatatypes.isAvailable()) {
+            LongByReference v = new LongByReference();
+            CmsFFIDatatypes.Holder.INSTANCE.cms_int32u_decode(data, data.length, v);
+            return new CmsInt32U(v.getValue());
+        }
+        return new CmsInt32U(PerInteger.decode(new PerInputStream(data), MIN, MAX));
     }
 }

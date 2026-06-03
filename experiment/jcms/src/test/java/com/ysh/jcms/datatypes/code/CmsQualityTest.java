@@ -24,7 +24,7 @@ class CmsQualityTest {
         CmsQuality original = new CmsQuality(0x1FFC); // all flags except VALIDITY bits
         byte[] data = original.encode();
         CmsQuality decoded = CmsQuality.decode(data);
-        System.out.println(decoded);
+        //System.out.println(decoded);
         assertTrue(decoded.testBit(CmsQuality.FAILURE));
         assertTrue(decoded.testBit(CmsQuality.TEST));
     }

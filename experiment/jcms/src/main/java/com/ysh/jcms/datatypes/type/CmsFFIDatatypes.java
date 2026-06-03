@@ -9,7 +9,27 @@ import com.sun.jna.ptr.LongByReference;
 
 public interface CmsFFIDatatypes extends Library {
 
-    CmsFFIDatatypes INSTANCE = Native.load("ccms", CmsFFIDatatypes.class);
+    /** @deprecated use {@link #Holder#INSTANCE} or {@link #isAvailable()} check */ @Deprecated
+    CmsFFIDatatypes INSTANCE = Holder.INSTANCE;
+
+    class Holder {
+        public static final CmsFFIDatatypes INSTANCE;
+        public static final boolean AVAILABLE;
+        static {
+            CmsFFIDatatypes instance = null;
+            boolean ok = false;
+            try {
+                instance = Native.load("ccms", CmsFFIDatatypes.class);
+                ok = true;
+            } catch (UnsatisfiedLinkError | NoClassDefFoundError e) {
+                /* DLL not available, will use Java PER fallback */
+            }
+            INSTANCE = instance;
+            AVAILABLE = ok;
+        }
+    }
+
+    static boolean isAvailable() { return Holder.AVAILABLE; }
 
     /* ======================= §7.1.1 BOOLEAN ======================== */
 
