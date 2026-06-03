@@ -77,6 +77,16 @@ int cms_data_decode_stream(per_stream_t *s, cms_data_t *data);
 
 /*
  * ============================================================
+ * Lightweight encode helpers — Java JNA uses these to encode
+ * just the structural metadata (choice index, count) without
+ * needing to marshal the full cms_data_t across FFI.
+ * ============================================================
+ */
+CMS_EXPORT int cms_data_choice_encode(int choice, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_data_count_encode(int count, uint8_t *out_buf, int *out_len);
+
+/*
+ * ============================================================
  * Free all heap-allocated memory inside a cms_data_t
  * (frees child arrays, bit/octet strings, etc. but NOT the cms_data_t itself)
  * ============================================================

@@ -592,7 +592,7 @@ class CmsDataTest {
         CmsData<CmsDbpos> decoded = new CmsData<CmsDbpos>()
                 .set(new CmsDbpos())
                 .decode(new PerInputStream(pos.toByteArray()));
-        assertEquals((long) CmsDbpos.ON, decoded.get().get());
+        assertEquals(CmsDbpos.ON, decoded.get().get());
     }
 
     @Test

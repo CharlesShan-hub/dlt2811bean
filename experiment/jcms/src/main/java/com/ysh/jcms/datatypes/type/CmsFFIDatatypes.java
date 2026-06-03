@@ -194,8 +194,15 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.7 Data ==================== */
 
-    int cms_data_encode(int choice, long intVal, double floatVal, String strVal, byte[] bytesVal, int bytesLen, byte[] outBuf, IntByReference outLen);
-    int cms_data_decode(byte[] inBuf, int inLen, IntByReference choice, LongByReference intVal, double[] floatVal, byte[] strVal, IntByReference strCap, byte[] bytesVal, IntByReference bytesCap);
+    int cms_data_encode(Structure data, byte[] outBuf, IntByReference outLen);
+    int cms_data_decode(byte[] inBuf, int inLen, Structure data);
+
+    /* Choice/count encode — lightweight helpers for Java-side manual composition */
+    int cms_data_choice_encode(int choice, byte[] outBuf, IntByReference outLen);
+    int cms_data_count_encode(int count, byte[] outBuf, IntByReference outLen);
+
+    /* Free C heap memory allocated inside cms_data_t */
+    void cms_data_free(Structure data);
 
     /* ==================== §7.8 DataDefinition ==================== */
 

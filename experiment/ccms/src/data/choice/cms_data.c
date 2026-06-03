@@ -188,3 +188,23 @@ CMS_EXPORT void cms_data_free(cms_data_t *data)
     else if (data->choice == 16) { free(data->value.visible_string); data->value.visible_string = NULL; }
     else if (data->choice == 17) { free(data->value.utf8_string); data->value.utf8_string = NULL; }
 }
+
+/* ---- lightweight encode helpers ---- */
+
+CMS_EXPORT int cms_data_choice_encode(int choice, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w;
+    per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    per_encode_small_non_negative(&w, (uint32_t)choice);
+    *out_len = (int)per_stream_bytes_written(&w);
+    return CMS_OK;
+}
+
+CMS_EXPORT int cms_data_count_encode(int count, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w;
+    per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    per_encode_length(&w, (uint32_t)count);
+    *out_len = (int)per_stream_bytes_written(&w);
+    return CMS_OK;
+}
