@@ -55,17 +55,17 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.1.5 String Types ==================== */
 
-    int cms_visible_string_encode(String value, int maxLen, byte[] outBuf, IntByReference outLen);
-    int cms_visible_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
+    int cms_visible_string_encode(String value, int sizeLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_visible_string_decode(byte[] inBuf, int inLen, int sizeLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_utf8_string_encode(byte[] value, int maxLen, byte[] outBuf, IntByReference outLen);
-    int cms_utf8_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
+    int cms_utf8_string_encode(byte[] value, int sizeLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_utf8_string_decode(byte[] inBuf, int inLen, int sizeLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_octet_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
-    int cms_octet_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
+    int cms_octet_string_encode(byte[] value, int valueLen, int sizeLen, int maxLen, byte[] outBuf, IntByReference outLen);
+    int cms_octet_string_decode(byte[] inBuf, int inLen, int sizeLen, int maxLen, byte[] value, IntByReference valueCap);
 
-    int cms_bit_string_encode(byte[] value, int valueLen, int maxLen, byte[] outBuf, IntByReference outLen);
-    int cms_bit_string_decode(byte[] inBuf, int inLen, int maxLen, byte[] value, IntByReference valueCap);
+    int cms_bit_string_encode(byte[] value, int nbits, int maxNbits, byte[] outBuf, IntByReference outLen);
+    int cms_bit_string_decode(byte[] inBuf, int inLen, int nbits, int maxNbits, byte[] value, IntByReference valueCap);
 
     /* ==================== §7.1.8 BitString / PackedList ==================== */
 
@@ -79,8 +79,8 @@ public interface CmsFFIDatatypes extends Library {
 
     /* ==================== §7.2.2 BinaryTime ==================== */
 
-    int cms_binary_time_encode(int msOfDay, int daysSince1984, byte[] outBuf, IntByReference outLen);
-    int cms_binary_time_decode(byte[] inBuf, int inLen, IntByReference msOfDay, IntByReference daysSince1984);
+    int cms_binary_time_encode(Structure t, byte[] outBuf, IntByReference outLen);
+    int cms_binary_time_decode(byte[] inBuf, int inLen, Structure t);
 
     /* ==================== §7.2.3 TimeQuality ==================== */
 
@@ -126,6 +126,11 @@ public interface CmsFFIDatatypes extends Library {
 
     int cms_entry_id_encode(byte[] value, byte[] outBuf, IntByReference outLen);
     int cms_entry_id_decode(byte[] inBuf, int inLen, byte[] value);
+
+    /* ==================== EntryTime (alias for BinaryTime) ==================== */
+
+    int cms_entry_time_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_entry_time_decode(byte[] inBuf, int inLen, Structure value);
 
     /* ==================== §7.3.11 ServiceError ==================== */
 
@@ -196,6 +201,11 @@ public interface CmsFFIDatatypes extends Library {
 
     int cms_data_definition_encode(int choice, long intVal, String strVal, byte[] bytesVal, int bytesLen, byte[] outBuf, IntByReference outLen);
     int cms_data_definition_decode(byte[] inBuf, int inLen, IntByReference choice, LongByReference intVal, byte[] strVal, IntByReference strCap, byte[] bytesVal, IntByReference bytesCap);
+
+    /* ==================== §7.3.10 FileEntry ==================== */
+
+    int cms_file_entry_encode(String fileName, long fileSize, byte[] lastModified, long checkSum, byte[] outBuf, IntByReference outLen);
+    int cms_file_entry_decode(byte[] inBuf, int inLen, byte[] fileName, IntByReference fileNameCap, LongByReference fileSize, byte[] lastModified, LongByReference checkSum);
 
     /* ==================== Control Blocks ==================== */
 

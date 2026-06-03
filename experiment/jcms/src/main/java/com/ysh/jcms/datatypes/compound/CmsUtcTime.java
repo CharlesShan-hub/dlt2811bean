@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
 
     public static class NativeStruct extends Structure {
@@ -25,24 +29,23 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
     public int fraction_of_second;
     public byte time_quality;
 
-    private final NativeStruct nativeStruct;
-
     public CmsUtcTime() {
         super("UtcTime");
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
     private void syncToNative() {
-        nativeStruct.seconds_since_epoch = seconds_since_epoch;
-        nativeStruct.fraction_of_second = fraction_of_second;
-        nativeStruct.time_quality = time_quality;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.seconds_since_epoch = seconds_since_epoch;
+        ns.fraction_of_second = fraction_of_second;
+        ns.time_quality = time_quality;
     }
 
     private void syncFromNative() {
-        seconds_since_epoch = nativeStruct.seconds_since_epoch;
-        fraction_of_second = nativeStruct.fraction_of_second;
-        time_quality = nativeStruct.time_quality;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        seconds_since_epoch = ns.seconds_since_epoch;
+        fraction_of_second = ns.fraction_of_second;
+        time_quality = ns.time_quality;
     }
 
     public CmsUtcTime(int secondsSinceEpoch, int fractionOfSecond, int tagf, int precision) {
@@ -77,7 +80,7 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
         write();
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_utc_time_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_utc_time_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -86,16 +89,8 @@ public class CmsUtcTime extends AbstractCmsCompound<CmsUtcTime> {
     public static CmsUtcTime decode(byte[] data) {
         CmsUtcTime utc = new CmsUtcTime();
         CmsFFIDatatypes.INSTANCE.cms_utc_time_decode(data, data.length, utc.nativeStruct);
-        utc.nativeStruct.read();
+        ((NativeStruct) utc.nativeStruct).read();
         utc.syncFromNative();
         return utc;
-    }
-
-    public CmsUtcTime copy() {
-        CmsUtcTime clone = new CmsUtcTime();
-        clone.seconds_since_epoch = this.seconds_since_epoch;
-        clone.fraction_of_second = this.fraction_of_second;
-        clone.time_quality = this.time_quality;
-        return clone;
     }
 }

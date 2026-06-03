@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsTimeStamp extends AbstractCmsCompound<CmsTimeStamp> {
 
     public static class NativeStruct extends Structure {
@@ -21,28 +25,28 @@ public class CmsTimeStamp extends AbstractCmsCompound<CmsTimeStamp> {
         }
     }
 
-    private final NativeStruct nativeStruct;
-    private final long secondsSinceEpoch;
-    private final long fractional;
+    public long secondsSinceEpoch;
+    public long fractional;
 
-    public CmsTimeStamp(long secondsSinceEpoch, long fractional) {
+    public CmsTimeStamp() {
         super("TimeStamp");
-        this.secondsSinceEpoch = secondsSinceEpoch;
-        this.fractional = fractional;
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
-    public long getSecondsSinceEpoch() { return secondsSinceEpoch; }
-    public long getFractional() { return fractional; }
+    public CmsTimeStamp(long secondsSinceEpoch, long fractional) {
+        this();
+        this.secondsSinceEpoch = secondsSinceEpoch;
+        this.fractional = fractional;
+    }
 
     public byte[] encode() {
-        nativeStruct.seconds_since_epoch = (int) secondsSinceEpoch;
-        nativeStruct.fraction_of_second = (int) fractional;
-        nativeStruct.time_quality = 0;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.seconds_since_epoch = (int) secondsSinceEpoch;
+        ns.fraction_of_second = (int) fractional;
+        ns.time_quality = 0;
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_time_stamp_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_time_stamp_encode(ns, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -55,9 +59,5 @@ public class CmsTimeStamp extends AbstractCmsCompound<CmsTimeStamp> {
         return new CmsTimeStamp(
             (ns.seconds_since_epoch & 0xFFFFFFFFL),
             (ns.fraction_of_second & 0xFFFFFFFFL));
-    }
-
-    public CmsTimeStamp copy() {
-        return new CmsTimeStamp(secondsSinceEpoch, fractional);
     }
 }

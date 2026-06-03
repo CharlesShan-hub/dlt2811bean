@@ -3,20 +3,25 @@ package com.ysh.jcms.datatypes.compound;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {
 
-    private final int orCat;
-    private final byte[] orIdent;
+    public int orCat;
+    public byte[] orIdent;
+
+    public CmsOriginator() {
+        super("Originator");
+    }
 
     public CmsOriginator(int orCat, byte[] orIdent) {
-        super("Originator");
+        this();
         this.orCat = orCat;
         this.orIdent = orIdent;
     }
-
-    public int getOrCat() { return orCat; }
-    public byte[] getOrIdent() { return orIdent; }
 
     public byte[] encode() {
         byte[] buf = new byte[512];
@@ -35,9 +40,5 @@ public class CmsOriginator extends AbstractCmsCompound<CmsOriginator> {
         byte[] ident = new byte[identLen.getValue()];
         System.arraycopy(identBuf, 0, ident, 0, ident.length);
         return new CmsOriginator(cat.getValue(), ident);
-    }
-
-    public CmsOriginator copy() {
-        return new CmsOriginator(orCat, orIdent.clone());
     }
 }

@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsURCB extends AbstractCmsCompound<CmsURCB> {
 
     public static class NativeStruct extends Structure {
@@ -46,59 +50,58 @@ public class CmsURCB extends AbstractCmsCompound<CmsURCB> {
     public boolean resv;
     public byte[] owner;         // null if not present
 
-    private final NativeStruct nativeStruct;
-
     public CmsURCB() {
         super("URCB");
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
     private void syncToNative() {
+        NativeStruct ns = (NativeStruct) nativeStruct;
         byte[] rptBuf = new byte[130];
         if (rptID != null) {
             byte[] src = rptID.getBytes();
             System.arraycopy(src, 0, rptBuf, 0, Math.min(src.length, 129));
         }
-        nativeStruct.rptID = rptBuf;
-        nativeStruct.rptEna = rptEna ? 1 : 0;
+        ns.rptID = rptBuf;
+        ns.rptEna = rptEna ? 1 : 0;
         byte[] dsBuf = new byte[256];
         if (datSet != null) {
             byte[] src = datSet.getBytes();
             System.arraycopy(src, 0, dsBuf, 0, Math.min(src.length, 255));
         }
-        nativeStruct.datSet = dsBuf;
-        nativeStruct.confRev = (int) confRev;
-        nativeStruct.optFlds = optFlds != null ? optFlds : new byte[2];
-        nativeStruct.bufTm = (int) bufTm;
-        nativeStruct.sqNum = (short) sqNum;
-        nativeStruct.trgOps = trgOps != null ? trgOps : new byte[1];
-        nativeStruct.intgPd = (int) intgPd;
-        nativeStruct.gi = gi ? 1 : 0;
-        nativeStruct.resv = resv ? 1 : 0;
-        nativeStruct.owner_present = owner != null ? 1 : 0;
+        ns.datSet = dsBuf;
+        ns.confRev = (int) confRev;
+        ns.optFlds = optFlds != null ? optFlds : new byte[2];
+        ns.bufTm = (int) bufTm;
+        ns.sqNum = (short) sqNum;
+        ns.trgOps = trgOps != null ? trgOps : new byte[1];
+        ns.intgPd = (int) intgPd;
+        ns.gi = gi ? 1 : 0;
+        ns.resv = resv ? 1 : 0;
+        ns.owner_present = owner != null ? 1 : 0;
         if (owner != null) {
-            nativeStruct.owner = owner.length == 64 ? owner : Arrays.copyOf(owner, 64);
-            nativeStruct.owner_len = owner.length;
+            ns.owner = owner.length == 64 ? owner : Arrays.copyOf(owner, 64);
+            ns.owner_len = owner.length;
         } else {
-            nativeStruct.owner = new byte[64];
-            nativeStruct.owner_len = 0;
+            ns.owner = new byte[64];
+            ns.owner_len = 0;
         }
     }
 
     private void syncFromNative() {
-        rptID = new String(nativeStruct.rptID).trim();
-        rptEna = nativeStruct.rptEna != 0;
-        datSet = new String(nativeStruct.datSet).trim();
-        confRev = nativeStruct.confRev & 0xFFFFFFFFL;
-        optFlds = nativeStruct.optFlds.clone();
-        bufTm = nativeStruct.bufTm & 0xFFFFFFFFL;
-        sqNum = nativeStruct.sqNum & 0xFFFF;
-        trgOps = nativeStruct.trgOps.clone();
-        intgPd = nativeStruct.intgPd & 0xFFFFFFFFL;
-        gi = nativeStruct.gi != 0;
-        resv = nativeStruct.resv != 0;
-        owner = nativeStruct.owner_present != 0 ? Arrays.copyOf(nativeStruct.owner, nativeStruct.owner_len) : null;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        rptID = new String(ns.rptID).trim();
+        rptEna = ns.rptEna != 0;
+        datSet = new String(ns.datSet).trim();
+        confRev = ns.confRev & 0xFFFFFFFFL;
+        optFlds = ns.optFlds.clone();
+        bufTm = ns.bufTm & 0xFFFFFFFFL;
+        sqNum = ns.sqNum & 0xFFFF;
+        trgOps = ns.trgOps.clone();
+        intgPd = ns.intgPd & 0xFFFFFFFFL;
+        gi = ns.gi != 0;
+        resv = ns.resv != 0;
+        owner = ns.owner_present != 0 ? Arrays.copyOf(ns.owner, ns.owner_len) : null;
     }
 
     public byte[] encode() {
@@ -106,7 +109,7 @@ public class CmsURCB extends AbstractCmsCompound<CmsURCB> {
         write();
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_urcb_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_urcb_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -115,25 +118,8 @@ public class CmsURCB extends AbstractCmsCompound<CmsURCB> {
     public static CmsURCB decode(byte[] data) {
         CmsURCB obj = new CmsURCB();
         CmsFFIDatatypes.INSTANCE.cms_urcb_decode(data, data.length, obj.nativeStruct);
-        obj.nativeStruct.read();
+        ((NativeStruct) obj.nativeStruct).read();
         obj.syncFromNative();
         return obj;
-    }
-
-    public CmsURCB copy() {
-        CmsURCB clone = new CmsURCB();
-        clone.rptID = this.rptID;
-        clone.rptEna = this.rptEna;
-        clone.datSet = this.datSet;
-        clone.confRev = this.confRev;
-        clone.optFlds = this.optFlds != null ? this.optFlds.clone() : null;
-        clone.bufTm = this.bufTm;
-        clone.sqNum = this.sqNum;
-        clone.trgOps = this.trgOps != null ? this.trgOps.clone() : null;
-        clone.intgPd = this.intgPd;
-        clone.gi = this.gi;
-        clone.resv = this.resv;
-        clone.owner = this.owner != null ? this.owner.clone() : null;
-        return clone;
     }
 }

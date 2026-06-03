@@ -12,15 +12,15 @@ class CmsTimeStampTest {
         CmsTimeStamp original = new CmsTimeStamp(1700000000L, 456L);
         byte[] data = original.encode();
         CmsTimeStamp decoded = CmsTimeStamp.decode(data);
-        assertEquals(original.getSecondsSinceEpoch(), decoded.getSecondsSinceEpoch());
-        assertEquals(original.getFractional(), decoded.getFractional());
+        assertEquals(original.secondsSinceEpoch(), decoded.secondsSinceEpoch());
+        assertEquals(original.fractional(), decoded.fractional());
     }
 
     @Test
     void copy() {
         CmsTimeStamp original = new CmsTimeStamp(1700000000L, 456L);
         CmsTimeStamp cloned = original.copy();
-        assertEquals(original.getSecondsSinceEpoch(), cloned.getSecondsSinceEpoch());
-        assertEquals(original.getFractional(), cloned.getFractional());
+        assertEquals(original.secondsSinceEpoch(), cloned.secondsSinceEpoch());
+        assertEquals(original.fractional(), cloned.fractional());
     }
 }

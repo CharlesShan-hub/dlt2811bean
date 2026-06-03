@@ -17,7 +17,7 @@ int cms_brcb_encode_stream(per_stream_t *s, const cms_brcb_t *v)
     cms_boolean_encode_stream(s, v->gi);
     cms_boolean_encode_stream(s, v->purgeBuf);
     cms_entry_id_encode_stream(s, v->entryID);
-    cms_binary_time_encode_stream(s, v->timeOfEntry_ms, v->timeOfEntry_days);
+    cms_binary_time_encode_stream(s, &v->timeOfEntry);
     /* resvTms OPTIONAL */
     per_encode_optional(s, v->resvTms_present);
     if (v->resvTms_present)
@@ -43,7 +43,7 @@ int cms_brcb_decode_stream(per_stream_t *s, cms_brcb_t *v)
     cms_boolean_decode_stream(s, &v->gi);
     cms_boolean_decode_stream(s, &v->purgeBuf);
     cms_entry_id_decode_stream(s, v->entryID);
-    cms_binary_time_decode_stream(s, &v->timeOfEntry_ms, &v->timeOfEntry_days);
+    cms_binary_time_decode_stream(s, &v->timeOfEntry);
     /* resvTms OPTIONAL */
     v->resvTms_present = per_decode_optional(s);
     if (v->resvTms_present)

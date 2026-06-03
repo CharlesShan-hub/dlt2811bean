@@ -9,7 +9,7 @@ class CmsBinaryTimeTest {
 
     @Test
     void roundtrip() {
-        CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500);
+        CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500, 0);
         byte[] data = original.encode();
         CmsBinaryTime decoded = CmsBinaryTime.decode(data);
         assertEquals(original.getHour(), decoded.getHour());
@@ -20,7 +20,7 @@ class CmsBinaryTimeTest {
 
     @Test
     void copy() {
-        CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500);
+        CmsBinaryTime original = new CmsBinaryTime(10, 30, 45, 500, 0);
         CmsBinaryTime cloned = original.copy();
         assertEquals(original.getHour(), cloned.getHour());
         assertEquals(original.getMinute(), cloned.getMinute());

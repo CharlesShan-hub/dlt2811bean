@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
 
     public static class NativeStruct extends Structure {
@@ -39,55 +43,54 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
     public int dstVid;
     public int dstAppId;
 
-    private final NativeStruct nativeStruct;
-
     public CmsGoCB() {
         super("GoCB");
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
     private void syncToNative() {
-        nativeStruct.goEna = goEna ? 1 : 0;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.goEna = goEna ? 1 : 0;
         byte[] idBuf = new byte[130];
         if (goID != null) {
             byte[] src = goID.getBytes();
             System.arraycopy(src, 0, idBuf, 0, Math.min(src.length, 129));
         }
-        nativeStruct.goID = idBuf;
+        ns.goID = idBuf;
         byte[] dsBuf = new byte[256];
         if (datSet != null) {
             byte[] src = datSet.getBytes();
             System.arraycopy(src, 0, dsBuf, 0, Math.min(src.length, 255));
         }
-        nativeStruct.datSet = dsBuf;
-        nativeStruct.confRev = (int) confRev;
-        nativeStruct.ndsCom = ndsCom ? 1 : 0;
-        nativeStruct.dstAddress_present = dstAddr != null ? 1 : 0;
+        ns.datSet = dsBuf;
+        ns.confRev = (int) confRev;
+        ns.ndsCom = ndsCom ? 1 : 0;
+        ns.dstAddress_present = dstAddr != null ? 1 : 0;
         if (dstAddr != null) {
-            nativeStruct.dstAddr = dstAddr.length == 6 ? dstAddr : Arrays.copyOf(dstAddr, 6);
-            nativeStruct.dstPriority = (byte) dstPriority;
-            nativeStruct.dstVid = (short) dstVid;
-            nativeStruct.dstAppId = (short) dstAppId;
+            ns.dstAddr = dstAddr.length == 6 ? dstAddr : Arrays.copyOf(dstAddr, 6);
+            ns.dstPriority = (byte) dstPriority;
+            ns.dstVid = (short) dstVid;
+            ns.dstAppId = (short) dstAppId;
         } else {
-            nativeStruct.dstAddr = new byte[6];
-            nativeStruct.dstPriority = 0;
-            nativeStruct.dstVid = 0;
-            nativeStruct.dstAppId = 0;
+            ns.dstAddr = new byte[6];
+            ns.dstPriority = 0;
+            ns.dstVid = 0;
+            ns.dstAppId = 0;
         }
     }
 
     private void syncFromNative() {
-        goEna = nativeStruct.goEna != 0;
-        goID = new String(nativeStruct.goID).trim();
-        datSet = new String(nativeStruct.datSet).trim();
-        confRev = nativeStruct.confRev & 0xFFFFFFFFL;
-        ndsCom = nativeStruct.ndsCom != 0;
-        if (nativeStruct.dstAddress_present != 0) {
-            dstAddr = nativeStruct.dstAddr.clone();
-            dstPriority = nativeStruct.dstPriority & 0xFF;
-            dstVid = nativeStruct.dstVid & 0xFFFF;
-            dstAppId = nativeStruct.dstAppId & 0xFFFF;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        goEna = ns.goEna != 0;
+        goID = new String(ns.goID).trim();
+        datSet = new String(ns.datSet).trim();
+        confRev = ns.confRev & 0xFFFFFFFFL;
+        ndsCom = ns.ndsCom != 0;
+        if (ns.dstAddress_present != 0) {
+            dstAddr = ns.dstAddr.clone();
+            dstPriority = ns.dstPriority & 0xFF;
+            dstVid = ns.dstVid & 0xFFFF;
+            dstAppId = ns.dstAppId & 0xFFFF;
         } else {
             dstAddr = null;
             dstPriority = 0;
@@ -101,7 +104,7 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
         write();
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_gocb_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_gocb_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -110,22 +113,8 @@ public class CmsGoCB extends AbstractCmsCompound<CmsGoCB> {
     public static CmsGoCB decode(byte[] data) {
         CmsGoCB obj = new CmsGoCB();
         CmsFFIDatatypes.INSTANCE.cms_gocb_decode(data, data.length, obj.nativeStruct);
-        obj.nativeStruct.read();
+        ((NativeStruct) obj.nativeStruct).read();
         obj.syncFromNative();
         return obj;
-    }
-
-    public CmsGoCB copy() {
-        CmsGoCB clone = new CmsGoCB();
-        clone.goEna = this.goEna;
-        clone.goID = this.goID;
-        clone.datSet = this.datSet;
-        clone.confRev = this.confRev;
-        clone.ndsCom = this.ndsCom;
-        clone.dstAddr = this.dstAddr != null ? this.dstAddr.clone() : null;
-        clone.dstPriority = this.dstPriority;
-        clone.dstVid = this.dstVid;
-        clone.dstAppId = this.dstAppId;
-        return clone;
     }
 }

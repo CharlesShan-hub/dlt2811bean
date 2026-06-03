@@ -9,23 +9,21 @@ class CmsFCTest {
 
     @Test
     void roundtrip() {
-        byte[] fcData = {(byte) 0xAB, (byte) 0xCD};
-        byte[] data = new CmsFC(fcData).encode();
+        byte[] data = new CmsFC("ST").encode();
         CmsFC decoded = CmsFC.decode(data);
-        assertArrayEquals(fcData, decoded.get());
+        assertEquals("ST", decoded.get());
     }
 
     @Test
     void invalidLengthThrows() {
-        assertThrows(IllegalArgumentException.class, () -> new CmsFC(new byte[]{0x01}));
+        assertThrows(IllegalArgumentException.class, () -> new CmsFC("X"));
     }
 
     @Test
     void copy() {
-        byte[] fcData = {(byte) 0xAB, (byte) 0xCD};
-        CmsFC original = new CmsFC(fcData);
+        CmsFC original = new CmsFC("MX");
         CmsFC cloned = original.copy();
-        assertArrayEquals(original.get(), cloned.get());
+        assertEquals(original.get(), cloned.get());
         assertNotSame(original, cloned);
     }
 }

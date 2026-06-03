@@ -115,6 +115,12 @@
 },
 {
   "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
+  "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_entry_time.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_entry_time.c",
+  "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_entry_time.c",
+  "output": "CMakeFiles/ccms.dir/src/data/common/cms_entry_time.c.obj"
+},
+{
+  "directory": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/build",
   "command": "C:\\Users\\17428\\AppData\\Local\\Microsoft\\WinGet\\Packages\\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\\llvm-mingw-20260519-ucrt-x86_64\\bin\\cc.exe -Dccms_EXPORTS @CMakeFiles/ccms.dir/includes_C.rsp -std=gnu99 -fvisibility=hidden -o CMakeFiles\\ccms.dir\\src\\data\\common\\cms_phy_com_addr.c.obj -c D:\\project\\work\\standard\\dlt2811bean\\cms\\experiment\\ccms\\src\\data\\common\\cms_phy_com_addr.c",
   "file": "D:/project/work/standard/dlt2811bean/cms/experiment/ccms/src/data/common/cms_phy_com_addr.c",
   "output": "CMakeFiles/ccms.dir/src/data/common/cms_phy_com_addr.c.obj"

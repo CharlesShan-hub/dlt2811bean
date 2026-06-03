@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
 
     public static class NativeStruct extends Structure {
@@ -32,37 +36,36 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
     public CmsUtcTime tActEdt;
     public Integer resvTms;      // null if not present (INT16U)
 
-    private final NativeStruct nativeStruct;
-
     public CmsSGCB() {
         super("SGCB");
-        this.nativeStruct = new NativeStruct();
-        this.nativeStruct.tActEdt = new CmsUtcTime.NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
+        ((NativeStruct) nativeStruct).tActEdt = new CmsUtcTime.NativeStruct();
     }
 
     private void syncToNative() {
-        nativeStruct.numOfSG = (byte) numOfSG;
-        nativeStruct.actSG = (byte) actSG;
-        nativeStruct.editSG = (byte) editSG;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.numOfSG = (byte) numOfSG;
+        ns.actSG = (byte) actSG;
+        ns.editSG = (byte) editSG;
         if (tActEdt != null) {
-            nativeStruct.tActEdt.seconds_since_epoch = tActEdt.seconds_since_epoch;
-            nativeStruct.tActEdt.fraction_of_second = tActEdt.fraction_of_second;
-            nativeStruct.tActEdt.time_quality = tActEdt.time_quality;
+            ns.tActEdt.seconds_since_epoch = tActEdt.seconds_since_epoch;
+            ns.tActEdt.fraction_of_second = tActEdt.fraction_of_second;
+            ns.tActEdt.time_quality = tActEdt.time_quality;
         }
-        nativeStruct.resvTms_present = resvTms != null ? 1 : 0;
-        nativeStruct.resvTms = resvTms != null ? (short) (int) resvTms : 0;
+        ns.resvTms_present = resvTms != null ? 1 : 0;
+        ns.resvTms = resvTms != null ? (short) (int) resvTms : 0;
     }
 
     private void syncFromNative() {
-        numOfSG = nativeStruct.numOfSG & 0xFF;
-        actSG = nativeStruct.actSG & 0xFF;
-        editSG = nativeStruct.editSG & 0xFF;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        numOfSG = ns.numOfSG & 0xFF;
+        actSG = ns.actSG & 0xFF;
+        editSG = ns.editSG & 0xFF;
         tActEdt = new CmsUtcTime();
-        tActEdt.seconds_since_epoch = nativeStruct.tActEdt.seconds_since_epoch;
-        tActEdt.fraction_of_second = nativeStruct.tActEdt.fraction_of_second;
-        tActEdt.time_quality = nativeStruct.tActEdt.time_quality;
-        resvTms = nativeStruct.resvTms_present != 0 ? (nativeStruct.resvTms & 0xFFFF) : null;
+        tActEdt.seconds_since_epoch = ns.tActEdt.seconds_since_epoch;
+        tActEdt.fraction_of_second = ns.tActEdt.fraction_of_second;
+        tActEdt.time_quality = ns.tActEdt.time_quality;
+        resvTms = ns.resvTms_present != 0 ? (ns.resvTms & 0xFFFF) : null;
     }
 
     public byte[] encode() {
@@ -70,7 +73,7 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         write();
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_sgcb_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_sgcb_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -79,7 +82,7 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
     public static CmsSGCB decode(byte[] data) {
         CmsSGCB obj = new CmsSGCB();
         CmsFFIDatatypes.INSTANCE.cms_sgcb_decode(data, data.length, obj.nativeStruct);
-        obj.nativeStruct.read();
+        ((NativeStruct) obj.nativeStruct).read();
         obj.syncFromNative();
         return obj;
     }

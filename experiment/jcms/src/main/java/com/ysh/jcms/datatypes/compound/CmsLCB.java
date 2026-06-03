@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
 
     public static class NativeStruct extends Structure {
@@ -36,44 +40,43 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
     public byte[] optFlds;       // null if not present
     public Long bufTm;           // null if not present
 
-    private final NativeStruct nativeStruct;
-
     public CmsLCB() {
         super("LCB");
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
     private void syncToNative() {
-        nativeStruct.logEna = logEna ? 1 : 0;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.logEna = logEna ? 1 : 0;
         byte[] dsBuf = new byte[256];
         if (datSet != null) {
             byte[] src = datSet.getBytes();
             System.arraycopy(src, 0, dsBuf, 0, Math.min(src.length, 255));
         }
-        nativeStruct.datSet = dsBuf;
-        nativeStruct.trgOps = trgOps != null ? trgOps : new byte[1];
-        nativeStruct.intgPd = (int) intgPd;
+        ns.datSet = dsBuf;
+        ns.trgOps = trgOps != null ? trgOps : new byte[1];
+        ns.intgPd = (int) intgPd;
         byte[] lrBuf = new byte[256];
         if (logRef != null) {
             byte[] src = logRef.getBytes();
             System.arraycopy(src, 0, lrBuf, 0, Math.min(src.length, 255));
         }
-        nativeStruct.logRef = lrBuf;
-        nativeStruct.optFlds_present = optFlds != null ? 1 : 0;
-        nativeStruct.optFlds = optFlds != null ? optFlds : new byte[1];
-        nativeStruct.bufTm_present = bufTm != null ? 1 : 0;
-        nativeStruct.bufTm = bufTm != null ? (int) (long) bufTm : 0;
+        ns.logRef = lrBuf;
+        ns.optFlds_present = optFlds != null ? 1 : 0;
+        ns.optFlds = optFlds != null ? optFlds : new byte[1];
+        ns.bufTm_present = bufTm != null ? 1 : 0;
+        ns.bufTm = bufTm != null ? (int) (long) bufTm : 0;
     }
 
     private void syncFromNative() {
-        logEna = nativeStruct.logEna != 0;
-        datSet = new String(nativeStruct.datSet).trim();
-        trgOps = nativeStruct.trgOps.clone();
-        intgPd = nativeStruct.intgPd & 0xFFFFFFFFL;
-        logRef = new String(nativeStruct.logRef).trim();
-        optFlds = nativeStruct.optFlds_present != 0 ? nativeStruct.optFlds.clone() : null;
-        bufTm = nativeStruct.bufTm_present != 0 ? (nativeStruct.bufTm & 0xFFFFFFFFL) : null;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        logEna = ns.logEna != 0;
+        datSet = new String(ns.datSet).trim();
+        trgOps = ns.trgOps.clone();
+        intgPd = ns.intgPd & 0xFFFFFFFFL;
+        logRef = new String(ns.logRef).trim();
+        optFlds = ns.optFlds_present != 0 ? ns.optFlds.clone() : null;
+        bufTm = ns.bufTm_present != 0 ? (ns.bufTm & 0xFFFFFFFFL) : null;
     }
 
     public byte[] encode() {
@@ -81,7 +84,7 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
         write();
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_lcb_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_lcb_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -90,20 +93,8 @@ public class CmsLCB extends AbstractCmsCompound<CmsLCB> {
     public static CmsLCB decode(byte[] data) {
         CmsLCB obj = new CmsLCB();
         CmsFFIDatatypes.INSTANCE.cms_lcb_decode(data, data.length, obj.nativeStruct);
-        obj.nativeStruct.read();
+        ((NativeStruct) obj.nativeStruct).read();
         obj.syncFromNative();
         return obj;
-    }
-
-    public CmsLCB copy() {
-        CmsLCB clone = new CmsLCB();
-        clone.logEna = this.logEna;
-        clone.datSet = this.datSet;
-        clone.trgOps = this.trgOps != null ? this.trgOps.clone() : null;
-        clone.intgPd = this.intgPd;
-        clone.logRef = this.logRef;
-        clone.optFlds = this.optFlds != null ? this.optFlds.clone() : null;
-        clone.bufTm = this.bufTm;
-        return clone;
     }
 }

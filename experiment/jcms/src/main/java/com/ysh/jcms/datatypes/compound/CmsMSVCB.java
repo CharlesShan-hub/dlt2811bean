@@ -4,10 +4,14 @@ import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
 
     public static class NativeStruct extends Structure {
@@ -45,60 +49,59 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
     public int dstVid;
     public int dstAppId;
 
-    private final NativeStruct nativeStruct;
-
     public CmsMSVCB() {
         super("MSVCB");
-        this.nativeStruct = new NativeStruct();
-        setNativeStruct(nativeStruct);
+        nativeStruct = new NativeStruct();
     }
 
     private void syncToNative() {
-        nativeStruct.svEna = svEna ? 1 : 0;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.svEna = svEna ? 1 : 0;
         byte[] idBuf = new byte[130];
         if (msvID != null) {
             byte[] src = msvID.getBytes();
             System.arraycopy(src, 0, idBuf, 0, Math.min(src.length, 129));
         }
-        nativeStruct.msvID = idBuf;
+        ns.msvID = idBuf;
         byte[] dsBuf = new byte[256];
         if (datSet != null) {
             byte[] src = datSet.getBytes();
             System.arraycopy(src, 0, dsBuf, 0, Math.min(src.length, 255));
         }
-        nativeStruct.datSet = dsBuf;
-        nativeStruct.confRev = (int) confRev;
-        nativeStruct.smpMod_present = smpMod != null ? 1 : 0;
-        nativeStruct.smpMod = smpMod != null ? smpMod : 0;
-        nativeStruct.smpRate = (short) smpRate;
-        nativeStruct.optFlds = optFlds != null ? optFlds : new byte[1];
-        nativeStruct.dstAddress_present = dstAddr != null ? 1 : 0;
+        ns.datSet = dsBuf;
+        ns.confRev = (int) confRev;
+        ns.smpMod_present = smpMod != null ? 1 : 0;
+        ns.smpMod = smpMod != null ? smpMod : 0;
+        ns.smpRate = (short) smpRate;
+        ns.optFlds = optFlds != null ? optFlds : new byte[1];
+        ns.dstAddress_present = dstAddr != null ? 1 : 0;
         if (dstAddr != null) {
-            nativeStruct.dstAddr = dstAddr.length == 6 ? dstAddr : Arrays.copyOf(dstAddr, 6);
-            nativeStruct.dstPriority = (byte) dstPriority;
-            nativeStruct.dstVid = (short) dstVid;
-            nativeStruct.dstAppId = (short) dstAppId;
+            ns.dstAddr = dstAddr.length == 6 ? dstAddr : Arrays.copyOf(dstAddr, 6);
+            ns.dstPriority = (byte) dstPriority;
+            ns.dstVid = (short) dstVid;
+            ns.dstAppId = (short) dstAppId;
         } else {
-            nativeStruct.dstAddr = new byte[6];
-            nativeStruct.dstPriority = 0;
-            nativeStruct.dstVid = 0;
-            nativeStruct.dstAppId = 0;
+            ns.dstAddr = new byte[6];
+            ns.dstPriority = 0;
+            ns.dstVid = 0;
+            ns.dstAppId = 0;
         }
     }
 
     private void syncFromNative() {
-        svEna = nativeStruct.svEna != 0;
-        msvID = new String(nativeStruct.msvID).trim();
-        datSet = new String(nativeStruct.datSet).trim();
-        confRev = nativeStruct.confRev & 0xFFFFFFFFL;
-        smpMod = nativeStruct.smpMod_present != 0 ? nativeStruct.smpMod : null;
-        smpRate = nativeStruct.smpRate & 0xFFFF;
-        optFlds = nativeStruct.optFlds.clone();
-        if (nativeStruct.dstAddress_present != 0) {
-            dstAddr = nativeStruct.dstAddr.clone();
-            dstPriority = nativeStruct.dstPriority & 0xFF;
-            dstVid = nativeStruct.dstVid & 0xFFFF;
-            dstAppId = nativeStruct.dstAppId & 0xFFFF;
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        svEna = ns.svEna != 0;
+        msvID = new String(ns.msvID).trim();
+        datSet = new String(ns.datSet).trim();
+        confRev = ns.confRev & 0xFFFFFFFFL;
+        smpMod = ns.smpMod_present != 0 ? ns.smpMod : null;
+        smpRate = ns.smpRate & 0xFFFF;
+        optFlds = ns.optFlds.clone();
+        if (ns.dstAddress_present != 0) {
+            dstAddr = ns.dstAddr.clone();
+            dstPriority = ns.dstPriority & 0xFF;
+            dstVid = ns.dstVid & 0xFFFF;
+            dstAppId = ns.dstAppId & 0xFFFF;
         } else {
             dstAddr = null;
             dstPriority = 0;
@@ -112,7 +115,7 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
         write();
         byte[] buf = new byte[512];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_msvcb_encode(nativeStruct, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_msvcb_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
@@ -121,24 +124,8 @@ public class CmsMSVCB extends AbstractCmsCompound<CmsMSVCB> {
     public static CmsMSVCB decode(byte[] data) {
         CmsMSVCB obj = new CmsMSVCB();
         CmsFFIDatatypes.INSTANCE.cms_msvcb_decode(data, data.length, obj.nativeStruct);
-        obj.nativeStruct.read();
+        ((NativeStruct) obj.nativeStruct).read();
         obj.syncFromNative();
         return obj;
-    }
-
-    public CmsMSVCB copy() {
-        CmsMSVCB clone = new CmsMSVCB();
-        clone.svEna = this.svEna;
-        clone.msvID = this.msvID;
-        clone.datSet = this.datSet;
-        clone.confRev = this.confRev;
-        clone.smpMod = this.smpMod;
-        clone.smpRate = this.smpRate;
-        clone.optFlds = this.optFlds != null ? this.optFlds.clone() : null;
-        clone.dstAddr = this.dstAddr != null ? this.dstAddr.clone() : null;
-        clone.dstPriority = this.dstPriority;
-        clone.dstVid = this.dstVid;
-        clone.dstAppId = this.dstAppId;
-        return clone;
     }
 }

@@ -1,7 +1,11 @@
 package com.ysh.jcms.datatypes.compound;
 
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
+@Getter
+@Accessors(fluent = true)
 public class CmsTimeQuality extends AbstractCmsCompound<CmsTimeQuality> {
 
     public static final int LEAP_SECOND_KNOWN = 0;
@@ -33,9 +37,5 @@ public class CmsTimeQuality extends AbstractCmsCompound<CmsTimeQuality> {
 
     public byte[] encode() {
         return new byte[0];
-    }
-
-    public CmsTimeQuality copy() {
-        return new CmsTimeQuality(tagf, precision, fraction);
     }
 }

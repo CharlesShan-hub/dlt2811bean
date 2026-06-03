@@ -38,7 +38,7 @@ int cms_data_encode_stream(per_stream_t *s, const cms_data_t *data)
     case 16: per_encode_visible_string_unconstrained(s, data->value.visible_string); break;
     case 17: per_encode_utf8_string_unconstrained(s, data->value.utf8_string); break;
     case 18: cms_utc_time_encode_ms_stream(s, data->value.utc_time_ms); break;
-    case 19: cms_binary_time_encode_stream(s, data->value.binary_time.msOfDay, data->value.binary_time.daysSince1984); break;
+    case 19: cms_binary_time_encode_stream(s, (const cms_binary_time_t *)&data->value.binary_time); break;
     case 20: cms_quality_encode_stream(s, data->value.quality); break;
     case 21: cms_dbpos_encode_stream(s, data->value.dbpos); break;
     case 22: cms_tcmd_encode_stream(s, data->value.tcmd); break;
@@ -139,7 +139,7 @@ int cms_data_decode_stream(per_stream_t *s, cms_data_t *data)
     }
     case 18: data->value.utc_time_ms = cms_utc_time_to_ms_from_stream(s); break;
     case 19:
-        cms_binary_time_decode_stream(s, &data->value.binary_time.msOfDay, &data->value.binary_time.daysSince1984);
+        cms_binary_time_decode_stream(s, (cms_binary_time_t *)&data->value.binary_time);
         break;
     case 20: cms_quality_decode_stream(s, data->value.quality); break;
     case 21: cms_dbpos_decode_stream(s, &data->value.dbpos); break;

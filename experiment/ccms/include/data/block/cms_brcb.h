@@ -55,8 +55,7 @@ typedef struct {
     int         gi;                    /* BOOLEAN */
     int         purgeBuf;              /* BOOLEAN */
     uint8_t     entryID[8];            /* EntryID (OCTET STRING SIZE(8)) */
-    uint32_t    timeOfEntry_ms;        /* EntryTime = BinaryTime: msOfDay */
-    uint16_t    timeOfEntry_days;      /* EntryTime = BinaryTime: daysSince1984 */
+    cms_binary_time_t timeOfEntry;     /* EntryTime = BinaryTime */
     int16_t     resvTms;               /* INT16 OPTIONAL */
     int         resvTms_present;       /* 1 if present */
     uint8_t     owner[64];             /* OCTET STRING (SIZE(0..64)) OPTIONAL */

@@ -1,58 +1,80 @@
 package com.ysh.jcms.datatypes.compound;
 
+import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import lombok.Getter;
+import lombok.experimental.Accessors;
 
+import java.util.Arrays;
+import java.util.List;
+
+@Getter
+@Accessors(fluent = true)
 public class CmsBinaryTime extends AbstractCmsCompound<CmsBinaryTime> {
 
-    private final int hour;
-    private final int minute;
-    private final int second;
-    private final int millisecond;
+    public static class NativeStruct extends Structure {
+        public int msOfDay;
+        public short daysSince1984;
 
-    public CmsBinaryTime(int hour, int minute, int second, int millisecond) {
+        @Override
+        protected List<String> getFieldOrder() {
+            return Arrays.asList("msOfDay", "daysSince1984");
+        }
+    }
+
+    public int msOfDay;
+    public int daysSince1984;
+
+    public CmsBinaryTime() {
         super("BinaryTime");
-        this.hour = hour;
-        this.minute = minute;
-        this.second = second;
-        this.millisecond = millisecond;
+        nativeStruct = new NativeStruct();
     }
 
-    public int getHour() { return hour; }
-    public int getMinute() { return minute; }
-    public int getSecond() { return second; }
-    public int getMillisecond() { return millisecond; }
-
-    private int toMsOfDay() {
-        return ((hour * 60 + minute) * 60 + second) * 1000 + millisecond;
+    public CmsBinaryTime(int msOfDay, int daysSince1984) {
+        this();
+        this.msOfDay = msOfDay;
+        this.daysSince1984 = daysSince1984;
     }
+
+    public CmsBinaryTime(int hour, int minute, int second, int millisecond, int daysSince1984) {
+        this(((hour * 60 + minute) * 60 + second) * 1000 + millisecond, daysSince1984);
+    }
+
+    private void syncToNative() {
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        ns.msOfDay = msOfDay;
+        ns.daysSince1984 = (short) daysSince1984;
+    }
+
+    private void syncFromNative() {
+        NativeStruct ns = (NativeStruct) nativeStruct;
+        msOfDay = ns.msOfDay;
+        daysSince1984 = ns.daysSince1984 & 0xFFFF;
+    }
+
+    public int getHour() { return msOfDay / 3600000; }
+    public int getMinute() { return (msOfDay % 3600000) / 60000; }
+    public int getSecond() { return (msOfDay % 60000) / 1000; }
+    public int getMillisecond() { return msOfDay % 1000; }
 
     public byte[] encode() {
-        int msOfDay = toMsOfDay();
+        syncToNative();
+        write();
         byte[] buf = new byte[16];
         IntByReference outLen = new IntByReference(buf.length);
-        CmsFFIDatatypes.INSTANCE.cms_binary_time_encode(msOfDay, 0, buf, outLen);
+        CmsFFIDatatypes.INSTANCE.cms_binary_time_encode((NativeStruct) nativeStruct, buf, outLen);
         byte[] result = new byte[outLen.getValue()];
         System.arraycopy(buf, 0, result, 0, result.length);
         return result;
     }
 
     public static CmsBinaryTime decode(byte[] data) {
-        IntByReference msOfDay = new IntByReference();
-        IntByReference daysSince1984 = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_binary_time_decode(data, data.length, msOfDay, daysSince1984);
-        int totalMs = msOfDay.getValue();
-        int h = totalMs / 3600000;
-        int rem = totalMs % 3600000;
-        int min = rem / 60000;
-        rem %= 60000;
-        int sec = rem / 1000;
-        int ms = rem % 1000;
-        return new CmsBinaryTime(h, min, sec, ms);
-    }
-
-    public CmsBinaryTime copy() {
-        return new CmsBinaryTime(hour, minute, second, millisecond);
+        CmsBinaryTime bt = new CmsBinaryTime();
+        CmsFFIDatatypes.INSTANCE.cms_binary_time_decode(data, data.length, bt.nativeStruct);
+        ((NativeStruct) bt.nativeStruct).read();
+        bt.syncFromNative();
+        return bt;
     }
 }

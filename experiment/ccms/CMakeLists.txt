@@ -30,6 +30,7 @@ add_library(ccms SHARED
     src/data/extended/cms_time.c
     src/data/common/cms_object_name.c
     src/data/common/cms_time_stamp.c
+    src/data/common/cms_entry_time.c
     src/data/common/cms_phy_com_addr.c
     src/data/common/cms_quality.c
     src/data/common/cms_file_entry.c

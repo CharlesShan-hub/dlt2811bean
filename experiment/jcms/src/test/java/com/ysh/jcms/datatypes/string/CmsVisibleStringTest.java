@@ -1,5 +1,6 @@
 package com.ysh.jcms.datatypes.string;
 
+import com.ysh.jcms.datatypes.type.AbstractCmsString.Mode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -33,7 +34,7 @@ class CmsVisibleStringTest {
 
     @Test
     void copy() {
-        CmsVisibleString original = new CmsVisibleString("HelloCMS");
+        CmsVisibleString original = new CmsVisibleString("HelloCMS").max(255);
         CmsVisibleString cloned = original.copy();
         assertEquals(original.get(), cloned.get());
         assertNotSame(original, cloned);
@@ -41,9 +42,9 @@ class CmsVisibleStringTest {
 
     @Test
     void roundtrip() {
-        CmsVisibleString original = new CmsVisibleString("HelloCMS");
+        CmsVisibleString original = new CmsVisibleString("HelloCMS").max(255);
         byte[] data = original.encode();
-        CmsVisibleString decoded = CmsVisibleString.decode(data);
+        CmsVisibleString decoded = CmsVisibleString.decode(data, Mode.VARIABLE, 255);
         assertEquals(original.get(), decoded.get());
     }
 }

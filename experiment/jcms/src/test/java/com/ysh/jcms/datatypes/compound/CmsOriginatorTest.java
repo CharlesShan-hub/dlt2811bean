@@ -13,8 +13,8 @@ class CmsOriginatorTest {
         CmsOriginator original = new CmsOriginator(1, ident);
         byte[] data = original.encode();
         CmsOriginator decoded = CmsOriginator.decode(data);
-        assertEquals(original.getOrCat(), decoded.getOrCat());
-        assertArrayEquals(original.getOrIdent(), decoded.getOrIdent());
+        assertEquals(original.orCat(), decoded.orCat());
+        assertArrayEquals(original.orIdent(), decoded.orIdent());
     }
 
     @Test
@@ -22,7 +22,7 @@ class CmsOriginatorTest {
         byte[] ident = {0x01, 0x02, 0x03};
         CmsOriginator original = new CmsOriginator(1, ident);
         CmsOriginator cloned = original.copy();
-        assertEquals(original.getOrCat(), cloned.getOrCat());
-        assertArrayEquals(original.getOrIdent(), cloned.getOrIdent());
+        assertEquals(original.orCat(), cloned.orCat());
+        assertArrayEquals(original.orIdent(), cloned.orIdent());
     }
 }

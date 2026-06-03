@@ -56,4 +56,9 @@ public abstract class AbstractCmsType<T extends AbstractCmsType<T>> implements C
     protected byte[] ffiEncode(FfiEncoder encoder) {
         return ffiEncode(encodeBufSize(), encoder);
     }
+
+    @Override
+    public String toString() {
+        return typeName;
+    }
 }
