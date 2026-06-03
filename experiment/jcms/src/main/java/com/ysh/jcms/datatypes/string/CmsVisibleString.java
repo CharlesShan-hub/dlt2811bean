@@ -21,6 +21,11 @@ public class CmsVisibleString extends AbstractCmsString<CmsVisibleString, String
     }
 
     @Override
+    protected int encodeBufSize() {
+        return MAX_ENCODE_BUF_SIZE;
+    }
+
+    @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
         if (isFixed()) {
             return CmsFFIDatatypes.Holder.INSTANCE.cms_visible_string_encode(value, size, 0, buf, outLen);

@@ -3,6 +3,9 @@ package com.ysh.jcms.datatypes.code;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCodedEnum;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerBitString;
 
 public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
 
@@ -22,12 +25,20 @@ public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_check_encode(toPerBytes(), buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_check_encode(toPerBytes(), buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
     public static CmsCheck decode(byte[] data) {
-        byte[] val = new byte[1];
-        CmsFFIDatatypes.INSTANCE.cms_check_decode(data, data.length, val);
-        return new CmsCheck(fromPerBytes(val, 2));
+       if (CmsFFIDatatypes.isAvailable()) {
+           byte[] val = new byte[1];
+           CmsFFIDatatypes.Holder.INSTANCE.cms_check_decode(data, data.length, val);
+           return new CmsCheck(fromPerBytes(val, 2));
+       }
+        return new CmsCheck(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 2), 2));
     }
 }

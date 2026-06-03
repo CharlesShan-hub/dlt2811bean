@@ -3,6 +3,9 @@ package com.ysh.jcms.datatypes.enumerated;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsEnumerated;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerInteger;
 
 public class CmsSmpMod extends AbstractCmsEnumerated<CmsSmpMod> {
 
@@ -20,12 +23,20 @@ public class CmsSmpMod extends AbstractCmsEnumerated<CmsSmpMod> {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_smp_mod_encode(value, buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_smp_mod_encode(value, buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerInteger.encode(pos, value, 0, 2);
     }
 
     public static CmsSmpMod decode(byte[] data) {
-        IntByReference v = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_smp_mod_decode(data, data.length, v);
-        return new CmsSmpMod(v.getValue());
+        if (CmsFFIDatatypes.isAvailable()) {
+            IntByReference v = new IntByReference();
+            CmsFFIDatatypes.Holder.INSTANCE.cms_smp_mod_decode(data, data.length, v);
+            return new CmsSmpMod(v.getValue());
+        }
+        return new CmsSmpMod((int) PerInteger.decode(new PerInputStream(data), 0, 2));
     }
 }

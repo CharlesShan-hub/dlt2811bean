@@ -1,4 +1,4 @@
-package com.ysh.jcms.datatypes.compound;
+package com.ysh.jcms.services.connect;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

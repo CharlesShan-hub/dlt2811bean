@@ -20,6 +20,11 @@ public class CmsOctetString extends AbstractCmsString<CmsOctetString, byte[]> {
     }
 
     @Override
+    protected int encodeBufSize() {
+        return MAX_ENCODE_BUF_SIZE;
+    }
+
+    @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
         if (isFixed()) {
             return CmsFFIDatatypes.Holder.INSTANCE.cms_octet_string_encode(value, value.length, size, 0, buf, outLen);

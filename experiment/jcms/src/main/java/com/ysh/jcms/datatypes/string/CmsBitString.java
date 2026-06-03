@@ -20,6 +20,11 @@ public class CmsBitString extends AbstractCmsString<CmsBitString, byte[]> {
     }
 
     @Override
+    protected int encodeBufSize() {
+        return MAX_ENCODE_BUF_SIZE;
+    }
+
+    @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
         if (isFixed()) {
             // fixed: (value, nbits, max_nbits=0, buf, outLen)

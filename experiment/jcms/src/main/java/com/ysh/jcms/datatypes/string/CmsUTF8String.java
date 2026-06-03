@@ -21,6 +21,11 @@ public class CmsUTF8String extends AbstractCmsString<CmsUTF8String, String> {
     }
 
     @Override
+    protected int encodeBufSize() {
+        return MAX_ENCODE_BUF_SIZE;
+    }
+
+    @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
         byte[] utf8Bytes = value.getBytes(StandardCharsets.UTF_8);
         byte[] nullTerminated = new byte[utf8Bytes.length + 1];

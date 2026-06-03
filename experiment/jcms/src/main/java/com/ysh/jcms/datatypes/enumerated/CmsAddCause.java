@@ -3,6 +3,9 @@ package com.ysh.jcms.datatypes.enumerated;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsEnumerated;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerInteger;
 
 public class CmsAddCause extends AbstractCmsEnumerated<CmsAddCause> {
 
@@ -45,12 +48,20 @@ public class CmsAddCause extends AbstractCmsEnumerated<CmsAddCause> {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_add_cause_encode(value, buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_add_cause_encode(value, buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerInteger.encode(pos, value, 0, 27);
     }
 
     public static CmsAddCause decode(byte[] data) {
-        IntByReference v = new IntByReference();
-        CmsFFIDatatypes.INSTANCE.cms_add_cause_decode(data, data.length, v);
-        return new CmsAddCause(v.getValue());
+       if (CmsFFIDatatypes.isAvailable()) {
+           IntByReference v = new IntByReference();
+           CmsFFIDatatypes.Holder.INSTANCE.cms_add_cause_decode(data, data.length, v);
+           return new CmsAddCause(v.getValue());
+       }
+        return new CmsAddCause((int) PerInteger.decode(new PerInputStream(data), 0, 27));
     }
 }

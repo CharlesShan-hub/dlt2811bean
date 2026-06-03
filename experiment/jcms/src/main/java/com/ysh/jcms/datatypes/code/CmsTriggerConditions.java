@@ -3,6 +3,9 @@ package com.ysh.jcms.datatypes.code;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCodedEnum;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerBitString;
 
 public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditions> {
 
@@ -23,12 +26,20 @@ public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditi
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_trigger_conditions_encode(toPerBytes(), buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_trigger_conditions_encode(toPerBytes(), buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
     public static CmsTriggerConditions decode(byte[] data) {
-        byte[] val = new byte[1];
-        CmsFFIDatatypes.INSTANCE.cms_trigger_conditions_decode(data, data.length, val);
-        return new CmsTriggerConditions(fromPerBytes(val, 6));
+       if (CmsFFIDatatypes.isAvailable()) {
+           byte[] val = new byte[1];
+           CmsFFIDatatypes.Holder.INSTANCE.cms_trigger_conditions_decode(data, data.length, val);
+           return new CmsTriggerConditions(fromPerBytes(val, 6));
+       }
+        return new CmsTriggerConditions(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 6), 6));
     }
 }

@@ -2,6 +2,9 @@ package com.ysh.jcms.datatypes.enumerated;
 
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsEnumerated;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerInteger;
 
 public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
 
@@ -26,6 +29,11 @@ public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
         throw new UnsupportedOperationException("should encode with CmsOriginator");
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerInteger.encode(pos, value, 0, 8);
     }
 
     public static CmsOrCat decode(byte[] data) {

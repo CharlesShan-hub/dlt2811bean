@@ -1,4 +1,4 @@
-package com.ysh.jcms.datatypes.compound;
+package com.ysh.jcms.services.connect;
 
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
