@@ -5,8 +5,8 @@
 target/
 
 # CMake build output
-experiment/ccms/build/
-experiment/ccms/dist/
+ccms/build/
+ccms/dist/
 
 # IDE - IntelliJ IDEA
 .idea/
