@@ -157,6 +157,11 @@ public interface CmsFFIDatatypes extends Library {
     int cms_service_error_encode(int value, byte[] outBuf, IntByReference outLen);
     int cms_service_error_decode(byte[] inBuf, int inLen, IntByReference value);
 
+    /* ==================== AuthParameter ==================== */
+
+    int cms_authentication_parameter_encode(Structure param, byte[] outBuf, IntByReference outLen);
+    int cms_authentication_parameter_decode(byte[] inBuf, int inLen, Structure param);
+
     /* ==================== §7.3.12 PhyComAddr ==================== */
 
     int cms_phy_com_addr_encode(byte[] addr, int priority, int vid, int appid, byte[] outBuf, IntByReference outLen);

@@ -2,6 +2,9 @@ package com.ysh.jcms.datatypes.string;
 
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerVisibleString;
 import java.nio.charset.StandardCharsets;
 
 public class CmsObjectName extends CmsVisibleString {
@@ -19,7 +22,12 @@ public class CmsObjectName extends CmsVisibleString {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_object_name_encode(value, buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_object_name_encode(value, buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerVisibleString.encodeConstrained(pos, value, 0, 64);
     }
 
     @Override
@@ -28,10 +36,12 @@ public class CmsObjectName extends CmsVisibleString {
     }
 
     public static CmsObjectName decode(byte[] data) {
-        byte[] strBuf = new byte[128];
-        IntByReference strLen = new IntByReference(64);
-        CmsFFIDatatypes.INSTANCE.cms_object_name_decode(data, data.length, strBuf, strLen);
-        CmsObjectName obj = new CmsObjectName(new String(strBuf, 0, strLen.getValue(), StandardCharsets.US_ASCII));
-        return obj;
+       if (CmsFFIDatatypes.isAvailable()) {
+           byte[] strBuf = new byte[128];
+           IntByReference strLen = new IntByReference(64);
+           CmsFFIDatatypes.Holder.INSTANCE.cms_object_name_decode(data, data.length, strBuf, strLen);
+           return new CmsObjectName(new String(strBuf, 0, strLen.getValue(), StandardCharsets.US_ASCII));
+       }
+        return new CmsObjectName(PerVisibleString.decodeConstrained(new PerInputStream(data), 0, 64));
     }
 }

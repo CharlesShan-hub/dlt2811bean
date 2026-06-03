@@ -15,6 +15,11 @@ public interface CmsFFIServices extends Library {
 
     CmsFFIServices INSTANCE = Native.load("ccms", CmsFFIServices.class);
 
+    /* ==================== AbortReason (INTEGER 0..5) ==================== */
+
+    int cms_abort_reason_encode(int value, byte[] outBuf, IntByReference outLen);
+    int cms_abort_reason_decode(byte[] inBuf, int inLen, IntByReference value);
+
     /* ==================== Abort ==================== */
 
     int cms_abort_encode(CmsAbort sdu, byte[] outBuf, IntByReference outLen);

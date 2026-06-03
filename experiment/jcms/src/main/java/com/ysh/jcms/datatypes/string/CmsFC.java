@@ -2,6 +2,9 @@ package com.ysh.jcms.datatypes.string;
 
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.io.PerOutputStream;
+import com.ysh.jcms.per.types.PerVisibleString;
 import java.nio.charset.StandardCharsets;
 
 public class CmsFC extends CmsVisibleString {
@@ -22,7 +25,12 @@ public class CmsFC extends CmsVisibleString {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIDatatypes.INSTANCE.cms_fc_encode(value.getBytes(StandardCharsets.US_ASCII), buf, outLen);
+        return CmsFFIDatatypes.Holder.INSTANCE.cms_fc_encode(value.getBytes(StandardCharsets.US_ASCII), buf, outLen);
+    }
+
+    @Override
+    protected void perEncode(PerOutputStream pos) {
+        PerVisibleString.encodeFixedSize(pos, value, 2);
     }
 
     @Override
@@ -31,9 +39,11 @@ public class CmsFC extends CmsVisibleString {
     }
 
     public static CmsFC decode(byte[] data) {
-        byte[] strBuf = new byte[2];
-        CmsFFIDatatypes.INSTANCE.cms_fc_decode(data, data.length, strBuf);
-        CmsFC fc = new CmsFC(new String(strBuf, StandardCharsets.US_ASCII));
-        return fc;
+       if (CmsFFIDatatypes.isAvailable()) {
+           byte[] strBuf = new byte[2];
+           CmsFFIDatatypes.Holder.INSTANCE.cms_fc_decode(data, data.length, strBuf);
+           return new CmsFC(new String(strBuf, StandardCharsets.US_ASCII));
+       }
+        return new CmsFC(PerVisibleString.decodeFixedSize(new PerInputStream(data), 2));
     }
 }

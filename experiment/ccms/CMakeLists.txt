@@ -17,8 +17,10 @@ target_include_directories(ccms_core
 add_library(ccms SHARED
     src/svc/other/cms_svc_util.c
     src/svc/connect/cms_associate.c
+    src/svc/connect/cms_authentication_parameter.c
     src/svc/connect/cms_release.c
     src/svc/connect/cms_abort.c
+    src/svc/connect/cms_abort_reason.c
     src/svc/directory/cms_get_server_directory.c
     src/svc/other/cms_apdu.c
     src/data/basic/cms_boolean.c

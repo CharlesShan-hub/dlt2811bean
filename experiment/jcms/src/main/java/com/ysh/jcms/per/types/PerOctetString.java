@@ -237,16 +237,6 @@ public final class PerOctetString {
      */
     public static byte[] decodeFixedSize(PerInputStream pis, int fixedSize) throws PerDecodeException {
         if (fixedSize == 0) return new byte[0];
-
-        if (fixedSize <= 2) {
-            long value = pis.readBits(fixedSize * 8);
-            byte[] result = new byte[fixedSize];
-            for (int i = 0; i < fixedSize; i++) {
-                result[i] = (byte) ((value >> ((fixedSize - 1 - i) * 8)) & 0xFF);
-            }
-            return result;
-        }
-
         pis.align();
         return pis.readBytes(fixedSize);
     }
