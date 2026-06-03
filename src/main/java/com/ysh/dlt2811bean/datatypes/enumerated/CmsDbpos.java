@@ -1,6 +1,6 @@
-package com.ysh.dlt2811bean.datatypes.code;
+package com.ysh.dlt2811bean.datatypes.enumerated;
 
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCodedEnum;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsEnumerated;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
@@ -9,16 +9,16 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  *
  * <pre>
  * ┌──────┬───────┬────────────────────┬──────────────┐
- * │ Bits │ Value │ Meaning            │ Constant     │
+ * │ Code │ Value │ Meaning            │ Constant     │
  * ├──────┼───────┼────────────────────┼──────────────┤
- * │ 00   │  0    │ intermediate-state │ INTERMEDIATE │
- * │ 01   │  1    │ off                │ OFF          │
- * │ 10   │  2    │ on                 │ ON           │
- * │ 11   │  3    │ bad-state          │ BAD          │
+ * │   0  │   0   │ intermediate-state │ INTERMEDIATE │
+ * │   1  │   1   │ off                │ OFF          │
+ * │   2  │   2   │ on                 │ ON           │
+ * │   3  │   3   │ bad-state          │ BAD          │
  * └──────┴───────┴────────────────────┴──────────────┘
  * </pre>
  *
- * <p>Encoded as a fixed 2-bit CODED ENUM (BIT STRING).
+ * <p>Encoded as ENUMERATED (0..3).
  *
  * <pre>
  * // Construction
@@ -35,7 +35,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * if (pos.is(2)) { ... } // same as ON
  *
  * // Getting the value
- * long value = pos.get(); // returns 0, 1, 2, or 3
+ * int value = pos.get(); // returns 0, 1, 2, or 3
  *
  * // Encoding and decoding
  * PerOutputStream posStream = new PerOutputStream();
@@ -46,17 +46,17 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * </pre>
  *
  * <p>This is a concrete application type with fixed enumeration values.
- * The size is 2 bits (values 0..3).
+ * The size is fixed to 4 (values 0..3).
  */
-public class CmsDbpos extends AbstractCmsCodedEnum<CmsDbpos> {
+public class CmsDbpos extends AbstractCmsEnumerated<CmsDbpos> {
 
-    /** 00 — intermediate-state */
+    /** 0 — intermediate-state */
     public static final int INTERMEDIATE = 0;
-    /** 01 — off */
+    /** 1 — off */
     public static final int OFF = 1;
-    /** 10 — on */
+    /** 2 — on */
     public static final int ON = 2;
-    /** 11 — bad-state */
+    /** 3 — bad-state */
     public static final int BAD = 3;
 
     /**
@@ -66,14 +66,14 @@ public class CmsDbpos extends AbstractCmsCodedEnum<CmsDbpos> {
         this(INTERMEDIATE);
     }
 
-    public CmsDbpos(long value) {
-        super("CmsDbpos", value, 2);
+    public CmsDbpos(int value) {
+        super("CmsDbpos", value, 4);
     }
 
     private static final CmsDbpos SHARED = new CmsDbpos();
 
     /** Static write with raw value. */
-    public static void write(PerOutputStream pos, long value) {
+    public static void write(PerOutputStream pos, int value) {
         SHARED.set(value);
         SHARED.encode(pos);
     }

@@ -196,4 +196,24 @@ public interface CmsFFIDatatypes extends Library {
 
     int cms_data_definition_encode(int choice, long intVal, String strVal, byte[] bytesVal, int bytesLen, byte[] outBuf, IntByReference outLen);
     int cms_data_definition_decode(byte[] inBuf, int inLen, IntByReference choice, LongByReference intVal, byte[] strVal, IntByReference strCap, byte[] bytesVal, IntByReference bytesCap);
+
+    /* ==================== Control Blocks ==================== */
+
+    int cms_brcb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_brcb_decode(byte[] inBuf, int inLen, Structure value);
+
+    int cms_gocb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_gocb_decode(byte[] inBuf, int inLen, Structure value);
+
+    int cms_lcb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_lcb_decode(byte[] inBuf, int inLen, Structure value);
+
+    int cms_msvcb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_msvcb_decode(byte[] inBuf, int inLen, Structure value);
+
+    int cms_sgcb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_sgcb_decode(byte[] inBuf, int inLen, Structure value);
+
+    int cms_urcb_encode(Structure value, byte[] outBuf, IntByReference outLen);
+    int cms_urcb_decode(byte[] inBuf, int inLen, Structure value);
 }

@@ -1,6 +1,6 @@
-package com.ysh.dlt2811bean.datatypes.code;
+package com.ysh.dlt2811bean.datatypes.enumerated;
 
-import com.ysh.dlt2811bean.datatypes.type.AbstractCmsCodedEnum;
+import com.ysh.dlt2811bean.datatypes.type.AbstractCmsEnumerated;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
 import com.ysh.dlt2811bean.per.io.PerOutputStream;
 
@@ -8,17 +8,17 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * DL/T 2811 tap command type (§7.3.7, Table 10).
  *
  * <pre>
- * ┌──────┬──────┬──────────────────┬───────────┐
- * │ Bits │ Value │ Meaning          │ Constant  │
- * ├──────┼──────┼──────────────────┼───────────┤
- * │ 00   │ 0    │ stop             │ STOP      │
- * │ 01   │ 1    │ lower            │ LOWER     │
- * │ 10   │ 2    │ higher           │ HIGHER    │
- * │ 11   │ 3    │ reserved         │ RESERVED  │
- * └──────┴──────┴──────────────────┴───────────┘
+ * ┌──────┬───────┬──────────────────┬───────────┐
+ * │ Code │ Value │ Meaning          │ Constant  │
+ * ├──────┼───────┼──────────────────┼───────────┤
+ * │   0  │   0   │ stop             │ STOP      │
+ * │   1  │   1   │ lower            │ LOWER     │
+ * │   2  │   2   │ higher           │ HIGHER    │
+ * │   3  │   3   │ reserved         │ RESERVED  │
+ * └──────┴───────┴──────────────────┴───────────┘
  * </pre>
  *
- * <p>Encoded as a fixed 2-bit CODED ENUM (BIT STRING).
+ * <p>Encoded as ENUMERATED (0..3).
  *
  * <pre>
  * // Construction
@@ -35,7 +35,7 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * if (cmd.is(2)) { ... } // same as HIGHER
  *
  * // Getting the value
- * long value = cmd.get(); // returns 0, 1, 2, or 3
+ * int value = cmd.get(); // returns 0, 1, 2, or 3
  *
  * // Encoding and decoding
  * PerOutputStream pos = new PerOutputStream();
@@ -46,17 +46,17 @@ import com.ysh.dlt2811bean.per.io.PerOutputStream;
  * </pre>
  *
  * <p>This is a concrete application type with fixed enumeration values.
- * The size is 2 bits (values 0..3).
+ * The size is fixed to 4 (values 0..3).
  */
-public class CmsTcmd extends AbstractCmsCodedEnum<CmsTcmd> {
+public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {
 
-    /** 00 — stop */
+    /** 0 — stop */
     public static final int STOP = 0;
-    /** 01 — lower */
+    /** 1 — lower */
     public static final int LOWER = 1;
-    /** 10 — higher */
+    /** 2 — higher */
     public static final int HIGHER = 2;
-    /** 11 — reserved */
+    /** 3 — reserved */
     public static final int RESERVED = 3;
 
     /**
@@ -66,14 +66,14 @@ public class CmsTcmd extends AbstractCmsCodedEnum<CmsTcmd> {
         this(STOP);
     }
 
-    public CmsTcmd(long value) {
-        super("CmsTcmd", value, 2);
+    public CmsTcmd(int value) {
+        super("CmsTcmd", value, 4);
     }
 
     private static final CmsTcmd SHARED = new CmsTcmd();
 
     /** Static write with raw value. */
-    public static void write(PerOutputStream pos, long value) {
+    public static void write(PerOutputStream pos, int value) {
         SHARED.set(value);
         SHARED.encode(pos);
     }

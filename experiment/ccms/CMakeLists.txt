@@ -41,6 +41,12 @@ add_library(ccms SHARED
     src/data/block/cms_reason_code.c
     src/data/block/cms_trigger_conditions.c
     src/data/block/cms_smp_mod.c
+    src/data/block/cms_brcb.c
+    src/data/block/cms_gocb.c
+    src/data/block/cms_lcb.c
+    src/data/block/cms_msvcb.c
+    src/data/block/cms_sgcb.c
+    src/data/block/cms_urcb.c
     src/data/choice/cms_data.c
     src/data/choice/cms_data_definition.c
 )
