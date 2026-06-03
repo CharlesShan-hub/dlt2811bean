@@ -11,7 +11,7 @@ class CmsDbposTest {
     void roundtrip() {
         CmsDbpos original = new CmsDbpos(2);
         byte[] data = original.encode();
-        CmsDbpos decoded = CmsDbpos.decode(data);
+        CmsDbpos decoded = CmsDbpos.from(data);
         //System.out.println(decoded);
         assertEquals(original.get(), decoded.get());
     }

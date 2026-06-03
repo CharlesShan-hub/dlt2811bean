@@ -11,14 +11,14 @@ class CmsObjectNameTest {
     void roundtrip() {
         CmsObjectName original = new CmsObjectName("MyObject");
         byte[] data = original.encode();
-        CmsObjectName decoded = CmsObjectName.decode(data);
+        CmsObjectName decoded = CmsObjectName.from(data);
         assertEquals(original.get(), decoded.get());
     }
 
     @Test
     void empty() {
         byte[] data = new CmsObjectName("").encode();
-        CmsObjectName r = CmsObjectName.decode(data);
+        CmsObjectName r = CmsObjectName.from(data);
         assertEquals("", r.get());
     }
 

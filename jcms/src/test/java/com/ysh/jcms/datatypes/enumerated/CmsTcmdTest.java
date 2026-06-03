@@ -11,7 +11,7 @@ class CmsTcmdTest {
     void roundtrip() {
         CmsTcmd original = new CmsTcmd(1);
         byte[] data = original.encode();
-        CmsTcmd decoded = CmsTcmd.decode(data);
+        CmsTcmd decoded = CmsTcmd.from(data);
         assertEquals(original.get(), decoded.get());
     }
 

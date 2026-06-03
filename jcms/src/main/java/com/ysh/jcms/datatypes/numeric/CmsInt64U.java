@@ -41,13 +41,14 @@ public class CmsInt64U extends AbstractCmsNumeric<CmsInt64U, BigInteger> {
     @Override
     protected void ffiDecode(byte[] data) {
         com.sun.jna.ptr.LongByReference v = new com.sun.jna.ptr.LongByReference();
-                    CmsFFIDatatypes.Holder.INSTANCE.cms_int64u_decode(data, data.length, v);
-                // TODO: set this.value from decode result
+        CmsFFIDatatypes.Holder.INSTANCE.cms_int64u_decode(data, data.length, v);
+        this.value = unsignedLongToBigInteger(v.getValue());
     }
 
     @Override
     protected void perDecode(PerInputStream pis) {
-        long raw = PerInteger.decodeUnconstrained(new PerInputStream(data));
+        long raw = PerInteger.decodeUnconstrained(pis);
+        this.value = unsignedLongToBigInteger(raw);
     }
 
     public static CmsInt64U from(byte[] data) {

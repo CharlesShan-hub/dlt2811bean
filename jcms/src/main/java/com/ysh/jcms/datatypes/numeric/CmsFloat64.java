@@ -26,12 +26,19 @@ public class CmsFloat64 extends AbstractCmsNumeric<CmsFloat64, Double> {
         pos.writeSignedInteger(Double.doubleToLongBits(value), 8);
     }
 
-    public static CmsFloat64 decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            double[] v = new double[1];
-            CmsFFIDatatypes.Holder.INSTANCE.cms_float64_decode(data, data.length, v);
-            return new CmsFloat64(v[0]);
-        }
-        return new CmsFloat64(Double.longBitsToDouble(new PerInputStream(data).readSignedInteger(8)));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        double[] v = new double[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_float64_decode(data, data.length, v);
+        this.value = v[0];
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = Double.longBitsToDouble(pis.readSignedInteger(8));
+    }
+
+    public static CmsFloat64 from(byte[] data) {
+        return new CmsFloat64().decode(data);
     }
 }

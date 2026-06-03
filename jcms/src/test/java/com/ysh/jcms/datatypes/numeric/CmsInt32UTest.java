@@ -10,14 +10,14 @@ class CmsInt32UTest {
     @Test
     void positive() {
         byte[] data = new CmsInt32U(3000000000L).encode();
-        CmsInt32U r = CmsInt32U.decode(data);
+        CmsInt32U r = CmsInt32U.from(data);
         assertEquals(3000000000L, (long) r.get());
     }
 
     @Test
     void zero() {
         byte[] data = new CmsInt32U(0L).encode();
-        CmsInt32U r = CmsInt32U.decode(data);
+        CmsInt32U r = CmsInt32U.from(data);
         assertEquals(0L, (long) r.get());
     }
 
@@ -37,7 +37,7 @@ class CmsInt32UTest {
     void roundtrip() {
         CmsInt32U original = new CmsInt32U(3000000000L);
         byte[] data = original.encode();
-        CmsInt32U decoded = CmsInt32U.decode(data);
+        CmsInt32U decoded = CmsInt32U.from(data);
         assertEquals(original.get(), decoded.get());
     }
 }

@@ -36,7 +36,17 @@ public class CmsOrCat extends AbstractCmsEnumerated<CmsOrCat> {
         PerInteger.encode(pos, value, 0, 8);
     }
 
-    public static CmsOrCat decode(byte[] data) {
-        throw new UnsupportedOperationException("should decode with CmsOriginator");
+    @Override
+    protected void ffiDecode(byte[] data) {
+        throw new UnsupportedOperationException("CmsOrCat has no FFI decode");
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        throw new UnsupportedOperationException("CmsOrCat has no Java PER decode fallback");
+    }
+
+    public static CmsOrCat from(byte[] data) {
+        return new CmsOrCat().decode(data);
     }
 }

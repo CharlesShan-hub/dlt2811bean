@@ -40,7 +40,7 @@ class CmsServerAccessPointReferenceTest {
     void roundtrip() {
         CmsServerAccessPointReference ref = new CmsServerAccessPointReference("MyIED", "MainAP");
         byte[] enc = ref.encode();
-        CmsServerAccessPointReference dec = CmsServerAccessPointReference.decode(enc);
+        CmsServerAccessPointReference dec = CmsServerAccessPointReference.from(enc);
         assertEquals("MyIED", dec.getIedName());
         assertEquals("MainAP", dec.getAccessPoint());
     }

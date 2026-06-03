@@ -38,12 +38,26 @@ public class CmsFC extends CmsVisibleString {
         return (CmsFC) super.copy();
     }
 
-    public static CmsFC decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] strBuf = new byte[2];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_fc_decode(data, data.length, strBuf);
-           return new CmsFC(new String(strBuf, StandardCharsets.US_ASCII));
-       }
-        return new CmsFC(PerVisibleString.decodeFixedSize(new PerInputStream(data), 2));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] strBuf = new byte[2];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_fc_decode(data, data.length, strBuf);
+        this.value = new String(strBuf, StandardCharsets.US_ASCII);
+        this.present = true;
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerVisibleString.decodeFixedSize(pis, 2);
+        this.present = true;
+    }
+
+    @Override
+    public CmsFC decode(byte[] data) {
+        return (CmsFC) super.decode(data);
+    }
+
+    public static CmsFC from(byte[] data) {
+        return new CmsFC().decode(data);
     }
 }

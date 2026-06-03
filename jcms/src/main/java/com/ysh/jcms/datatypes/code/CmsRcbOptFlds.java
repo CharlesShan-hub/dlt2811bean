@@ -38,12 +38,19 @@ public class CmsRcbOptFlds extends AbstractCmsCodedEnum<CmsRcbOptFlds> {
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsRcbOptFlds decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[2];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_rcb_opt_flds_decode(data, data.length, val);
-           return new CmsRcbOptFlds(fromPerBytes(val, 10));
-       }
-        return new CmsRcbOptFlds(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 10), 10));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[2];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_rcb_opt_flds_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 10);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 10), 10);
+    }
+
+    public static CmsRcbOptFlds from(byte[] data) {
+        return new CmsRcbOptFlds().decode(data);
     }
 }

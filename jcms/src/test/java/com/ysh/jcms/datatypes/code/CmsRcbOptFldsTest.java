@@ -11,7 +11,7 @@ class CmsRcbOptFldsTest {
     void roundtrip() {
         CmsRcbOptFlds original = new CmsRcbOptFlds(0x02AB);
         byte[] data = original.encode();
-        CmsRcbOptFlds decoded = CmsRcbOptFlds.decode(data);
+        CmsRcbOptFlds decoded = CmsRcbOptFlds.from(data);
         assertEquals(
             decoded.testBit(CmsRcbOptFlds.SEQUENCE_NUMBER),
             original.testBit(CmsRcbOptFlds.SEQUENCE_NUMBER)

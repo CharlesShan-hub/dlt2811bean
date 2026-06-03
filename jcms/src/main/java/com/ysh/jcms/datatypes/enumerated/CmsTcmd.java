@@ -32,12 +32,19 @@ public class CmsTcmd extends AbstractCmsEnumerated<CmsTcmd> {
         PerInteger.encode(pos, value, 0, 3);
     }
 
-    public static CmsTcmd decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_tcmd_decode(data, data.length, v);
-            return new CmsTcmd(v.getValue());
-        }
-        return new CmsTcmd((int) PerInteger.decode(new PerInputStream(data), 0, 3));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_tcmd_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, size - 1);
+    }
+
+    public static CmsTcmd from(byte[] data) {
+        return new CmsTcmd().decode(data);
     }
 }

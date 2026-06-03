@@ -32,12 +32,19 @@ public class CmsDbpos extends AbstractCmsEnumerated<CmsDbpos> {
         PerInteger.encode(pos, value, 0, 3);
     }
 
-    public static CmsDbpos decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           IntByReference v = new IntByReference();
-           CmsFFIDatatypes.Holder.INSTANCE.cms_dbpos_decode(data, data.length, v);
-           return new CmsDbpos(v.getValue());
-       }
-        return new CmsDbpos((int) PerInteger.decode(new PerInputStream(data), 0, 3));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_dbpos_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, size - 1);
+    }
+
+    public static CmsDbpos from(byte[] data) {
+        return new CmsDbpos().decode(data);
     }
 }

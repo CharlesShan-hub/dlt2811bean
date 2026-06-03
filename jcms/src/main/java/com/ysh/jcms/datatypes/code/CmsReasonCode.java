@@ -35,12 +35,19 @@ public class CmsReasonCode extends AbstractCmsCodedEnum<CmsReasonCode> {
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsReasonCode decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[1];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_reason_code_decode(data, data.length, val);
-           return new CmsReasonCode(fromPerBytes(val, 7));
-       }
-        return new CmsReasonCode(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 7), 7));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_reason_code_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 7);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 7), 7);
+    }
+
+    public static CmsReasonCode from(byte[] data) {
+        return new CmsReasonCode().decode(data);
     }
 }

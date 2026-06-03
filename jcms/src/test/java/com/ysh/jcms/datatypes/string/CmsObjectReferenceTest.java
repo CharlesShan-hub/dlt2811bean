@@ -11,14 +11,14 @@ class CmsObjectReferenceTest {
     void roundtrip() {
         CmsObjectReference original = new CmsObjectReference("LD1/LN1.DO1");
         byte[] data = original.encode();
-        CmsObjectReference decoded = CmsObjectReference.decode(data);
+        CmsObjectReference decoded = CmsObjectReference.from(data);
         assertEquals(original.get(), decoded.get());
     }
 
     @Test
     void empty() {
         byte[] data = new CmsObjectReference("").encode();
-        CmsObjectReference r = CmsObjectReference.decode(data);
+        CmsObjectReference r = CmsObjectReference.from(data);
         assertEquals("", r.get());
     }
 

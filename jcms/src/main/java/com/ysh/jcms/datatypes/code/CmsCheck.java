@@ -33,12 +33,19 @@ public class CmsCheck extends AbstractCmsCodedEnum<CmsCheck> {
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsCheck decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[1];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_check_decode(data, data.length, val);
-           return new CmsCheck(fromPerBytes(val, 2));
-       }
-        return new CmsCheck(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 2), 2));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_check_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 2);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 2), 2);
+    }
+
+    public static CmsCheck from(byte[] data) {
+        return new CmsCheck().decode(data);
     }
 }

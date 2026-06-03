@@ -37,12 +37,26 @@ public class CmsEntryID extends CmsOctetString {
         return (CmsEntryID) super.copy();
     }
 
-    public static CmsEntryID decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[8];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_entry_id_decode(data, data.length, val);
-           return new CmsEntryID(val);
-       }
-        return new CmsEntryID(PerOctetString.decodeFixedSize(new PerInputStream(data), 8));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[8];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_entry_id_decode(data, data.length, val);
+        this.value = val;
+        this.present = true;
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerOctetString.decodeFixedSize(pis, 8);
+        this.present = true;
+    }
+
+    @Override
+    public CmsEntryID decode(byte[] data) {
+        return (CmsEntryID) super.decode(data);
+    }
+
+    public static CmsEntryID from(byte[] data) {
+        return new CmsEntryID().decode(data);
     }
 }

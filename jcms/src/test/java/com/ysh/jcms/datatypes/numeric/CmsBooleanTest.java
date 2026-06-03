@@ -10,14 +10,14 @@ class CmsBooleanTest {
     @Test
     void trueValue() {
         byte[] data = CmsBoolean.TRUE.encode();
-        CmsBoolean r = CmsBoolean.decode(data);
+        CmsBoolean r = CmsBoolean.from(data);
         assertTrue(r.get());
     }
 
     @Test
     void falseValue() {
         byte[] data = CmsBoolean.FALSE.encode();
-        CmsBoolean r = CmsBoolean.decode(data);
+        CmsBoolean r = CmsBoolean.from(data);
         assertFalse(r.get());
     }
 
@@ -59,7 +59,7 @@ class CmsBooleanTest {
     void roundtrip() {
         CmsBoolean original = new CmsBoolean(true);
         byte[] data = original.encode();
-        CmsBoolean decoded = CmsBoolean.decode(data);
+        CmsBoolean decoded = CmsBoolean.from(data);
         assertEquals(original.get(), decoded.get());
     }
 }

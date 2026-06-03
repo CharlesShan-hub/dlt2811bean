@@ -41,12 +41,19 @@ public class CmsServiceError extends AbstractCmsEnumerated<CmsServiceError> {
         PerInteger.encode(pos, value, 0, 12);
     }
 
-    public static CmsServiceError decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_service_error_decode(data, data.length, v);
-            return new CmsServiceError(v.getValue());
-        }
-        return new CmsServiceError((int) PerInteger.decode(new PerInputStream(data), 0, 12));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_service_error_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, size - 1);
+    }
+
+    public static CmsServiceError from(byte[] data) {
+        return new CmsServiceError().decode(data);
     }
 }

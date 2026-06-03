@@ -33,12 +33,19 @@ public class CmsMsvcbOptFlds extends AbstractCmsCodedEnum<CmsMsvcbOptFlds> {
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsMsvcbOptFlds decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[1];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_msvcb_opt_flds_decode(data, data.length, val);
-           return new CmsMsvcbOptFlds(fromPerBytes(val, 5));
-       }
-        return new CmsMsvcbOptFlds(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 5), 5));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_msvcb_opt_flds_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 5);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 5), 5);
+    }
+
+    public static CmsMsvcbOptFlds from(byte[] data) {
+        return new CmsMsvcbOptFlds().decode(data);
     }
 }

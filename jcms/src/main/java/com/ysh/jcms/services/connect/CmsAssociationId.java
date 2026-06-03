@@ -2,7 +2,6 @@ package com.ysh.jcms.services.connect;
 
 import com.ysh.jcms.datatypes.string.CmsOctetString;
 import com.ysh.jcms.datatypes.type.AbstractCmsString.Mode;
-import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.per.io.PerInputStream;
 import com.ysh.jcms.per.types.PerOctetString;
 
@@ -29,14 +28,20 @@ public class CmsAssociationId extends CmsOctetString {
 
     @Override
     protected void ffiDecode(byte[] data) {
-        IntByReference v = new IntByReference();
-        CmsFFIDatatypes.Holder.INSTANCE.cms_associationId_decode(data, data.length, v);
-        this.value = CmsOctetString.decode(encoded, Mode.VARIABLE, MAX_LEN).get();
+        CmsOctetString os = CmsOctetString.decode(data, Mode.VARIABLE, MAX_LEN);
+        this.value = os.get();
+        this.present = true;
     }
 
     @Override
     protected void perDecode(PerInputStream pis) {
-        this.value = (CmsOctetString.decode(encoded, Mode.VARIABLE, MAX_LEN).get());
+        this.value = PerOctetString.decodeConstrained(pis, 0, MAX_LEN);
+        this.present = true;
+    }
+
+    @Override
+    public CmsAssociationId decode(byte[] data) {
+        return (CmsAssociationId) super.decode(data);
     }
 
     public static CmsAssociationId from(byte[] data) {

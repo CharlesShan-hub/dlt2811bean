@@ -11,7 +11,7 @@ class CmsMsvcbOptFldsTest {
     void roundtrip() {
         CmsMsvcbOptFlds original = new CmsMsvcbOptFlds(0x15);
         byte[] data = original.encode();
-        CmsMsvcbOptFlds decoded = CmsMsvcbOptFlds.decode(data);
+        CmsMsvcbOptFlds decoded = CmsMsvcbOptFlds.from(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
     }
 

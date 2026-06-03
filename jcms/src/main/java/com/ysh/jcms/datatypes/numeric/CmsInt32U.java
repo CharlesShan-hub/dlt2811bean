@@ -31,12 +31,19 @@ public class CmsInt32U extends AbstractCmsNumeric<CmsInt32U, Long> {
         PerInteger.encode(pos, value, MIN, MAX);
     }
 
-    public static CmsInt32U decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            LongByReference v = new LongByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_int32u_decode(data, data.length, v);
-            return new CmsInt32U(v.getValue());
-        }
-        return new CmsInt32U(PerInteger.decode(new PerInputStream(data), MIN, MAX));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        LongByReference v = new LongByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_int32u_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerInteger.decode(pis, MIN, MAX);
+    }
+
+    public static CmsInt32U from(byte[] data) {
+        return new CmsInt32U().decode(data);
     }
 }

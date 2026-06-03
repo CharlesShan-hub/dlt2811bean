@@ -31,12 +31,19 @@ public class CmsInt64 extends AbstractCmsNumeric<CmsInt64, Long> {
         PerInteger.encodeUnconstrained(pos, value);
     }
 
-    public static CmsInt64 decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            LongByReference v = new LongByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_int64_decode(data, data.length, v);
-            return new CmsInt64(v.getValue());
-        }
-        return new CmsInt64(PerInteger.decodeUnconstrained(new PerInputStream(data)));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        LongByReference v = new LongByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_int64_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerInteger.decodeUnconstrained(pis);
+    }
+
+    public static CmsInt64 from(byte[] data) {
+        return new CmsInt64().decode(data);
     }
 }

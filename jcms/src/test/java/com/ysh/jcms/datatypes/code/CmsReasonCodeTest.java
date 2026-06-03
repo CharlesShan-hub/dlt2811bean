@@ -11,7 +11,7 @@ class CmsReasonCodeTest {
     void roundtrip() {
         CmsReasonCode original = new CmsReasonCode(0x15);
         byte[] data = original.encode();
-        CmsReasonCode decoded = CmsReasonCode.decode(data);
+        CmsReasonCode decoded = CmsReasonCode.from(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
     }
 

@@ -12,7 +12,7 @@ class CmsCheckTest {
         CmsCheck original = new CmsCheck();
         original.setBit(CmsCheck.INTERLOCK_CHECK, true);
         byte[] data = original.encode();
-        CmsCheck decoded = CmsCheck.decode(data);
+        CmsCheck decoded = CmsCheck.from(data);
         //System.out.println(decoded); // (CmsCheck) 2
         //System.out.println(decoded.testBit(CmsCheck.INTERLOCK_CHECK)); // true
         //System.out.println(decoded.testBit(CmsCheck.SYNCHROCHECK)); // false

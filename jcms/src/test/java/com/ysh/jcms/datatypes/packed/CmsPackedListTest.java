@@ -12,7 +12,7 @@ class CmsPackedListTest {
         byte[] data = {(byte) 0xAB, (byte) 0xCD};
         CmsPackedList original = new CmsPackedList(data);
         byte[] encoded = original.encode();
-        CmsPackedList decoded = CmsPackedList.decode(encoded);
+        CmsPackedList decoded = CmsPackedList.from(encoded);
         assertArrayEquals(original.get(), decoded.get());
     }
 
@@ -20,7 +20,7 @@ class CmsPackedListTest {
     void empty() {
         byte[] data = new byte[0];
         byte[] encoded = new CmsPackedList(data).encode();
-        CmsPackedList decoded = CmsPackedList.decode(encoded);
+        CmsPackedList decoded = CmsPackedList.from(encoded);
         assertArrayEquals(data, decoded.get());
     }
 

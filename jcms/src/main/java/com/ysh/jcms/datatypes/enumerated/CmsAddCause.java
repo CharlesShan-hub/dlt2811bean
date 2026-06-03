@@ -56,12 +56,19 @@ public class CmsAddCause extends AbstractCmsEnumerated<CmsAddCause> {
         PerInteger.encode(pos, value, 0, 27);
     }
 
-    public static CmsAddCause decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           IntByReference v = new IntByReference();
-           CmsFFIDatatypes.Holder.INSTANCE.cms_add_cause_decode(data, data.length, v);
-           return new CmsAddCause(v.getValue());
-       }
-        return new CmsAddCause((int) PerInteger.decode(new PerInputStream(data), 0, 27));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_add_cause_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, size - 1);
+    }
+
+    public static CmsAddCause from(byte[] data) {
+        return new CmsAddCause().decode(data);
     }
 }

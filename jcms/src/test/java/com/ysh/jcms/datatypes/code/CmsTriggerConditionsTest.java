@@ -11,7 +11,7 @@ class CmsTriggerConditionsTest {
     void roundtrip() {
         CmsTriggerConditions original = new CmsTriggerConditions(0x2A);
         byte[] data = original.encode();
-        CmsTriggerConditions decoded = CmsTriggerConditions.decode(data);
+        CmsTriggerConditions decoded = CmsTriggerConditions.from(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
     }
 

@@ -11,7 +11,7 @@ class CmsAbortReasonTest {
     void roundtrip() {
         CmsAbortReason original = new CmsAbortReason(CmsAbortReason.INVALID_ARGUMENT);
         byte[] data = original.encode();
-        CmsAbortReason decoded = CmsAbortReason.decode(data);
+        CmsAbortReason decoded = CmsAbortReason.from(data);
         assertTrue(decoded.is(CmsAbortReason.INVALID_ARGUMENT));
     }
 
@@ -19,7 +19,7 @@ class CmsAbortReasonTest {
     void allValues() {
         for (int v = 0; v <= 5; v++) {
             byte[] data = new CmsAbortReason(v).encode();
-            CmsAbortReason decoded = CmsAbortReason.decode(data);
+            CmsAbortReason decoded = CmsAbortReason.from(data);
             assertEquals(v, decoded.get());
         }
     }

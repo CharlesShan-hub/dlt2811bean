@@ -10,21 +10,21 @@ class CmsInt8Test {
     @Test
     void positive() {
         byte[] data = new CmsInt8(42).encode();
-        CmsInt8 r = CmsInt8.decode(data);
+        CmsInt8 r = CmsInt8.from(data);
         assertEquals(42, (int) r.get());
     }
 
     @Test
     void negative() {
         byte[] data = new CmsInt8(-42).encode();
-        CmsInt8 r = CmsInt8.decode(data);
+        CmsInt8 r = CmsInt8.from(data);
         assertEquals(-42, (int) r.get());
     }
 
     @Test
     void zero() {
         byte[] data = new CmsInt8(0).encode();
-        CmsInt8 r = CmsInt8.decode(data);
+        CmsInt8 r = CmsInt8.from(data);
         assertEquals(0, (int) r.get());
     }
 
@@ -65,7 +65,7 @@ class CmsInt8Test {
     void roundtrip() {
         CmsInt8 original = new CmsInt8(-42);
         byte[] data = original.encode();
-        CmsInt8 decoded = CmsInt8.decode(data);
+        CmsInt8 decoded = CmsInt8.from(data);
         assertEquals(original.get(), decoded.get());
     }
 }

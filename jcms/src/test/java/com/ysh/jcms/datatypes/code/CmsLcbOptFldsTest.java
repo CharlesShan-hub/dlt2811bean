@@ -11,7 +11,7 @@ class CmsLcbOptFldsTest {
     void roundtrip() {
         CmsLcbOptFlds original = new CmsLcbOptFlds(0x01);
         byte[] data = original.encode();
-        CmsLcbOptFlds decoded = CmsLcbOptFlds.decode(data);
+        CmsLcbOptFlds decoded = CmsLcbOptFlds.from(data);
         assertTrue(decoded.testBit(0) == original.testBit(0));
     }
 

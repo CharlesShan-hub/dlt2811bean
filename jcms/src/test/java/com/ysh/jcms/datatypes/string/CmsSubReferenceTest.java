@@ -11,14 +11,14 @@ class CmsSubReferenceTest {
     void roundtrip() {
         CmsSubReference original = new CmsSubReference("SubRef1");
         byte[] data = original.encode();
-        CmsSubReference decoded = CmsSubReference.decode(data);
+        CmsSubReference decoded = CmsSubReference.from(data);
         assertEquals(original.get(), decoded.get());
     }
 
     @Test
     void empty() {
         byte[] data = new CmsSubReference("").encode();
-        CmsSubReference r = CmsSubReference.decode(data);
+        CmsSubReference r = CmsSubReference.from(data);
         assertEquals("", r.get());
     }
 

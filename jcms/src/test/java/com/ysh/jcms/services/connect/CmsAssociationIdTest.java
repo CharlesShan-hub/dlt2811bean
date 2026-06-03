@@ -11,14 +11,14 @@ class CmsAssociationIdTest {
     void roundtrip() {
         byte[] id = {0x01, 0x02, 0x03, 0x04};
         byte[] enc = new CmsAssociationId(id).encode();
-        CmsAssociationId dec = CmsAssociationId.decode(enc);
+        CmsAssociationId dec = CmsAssociationId.from(enc);
         assertArrayEquals(id, dec.get());
     }
 
     @Test
     void empty() {
         byte[] enc = new CmsAssociationId(new byte[0]).encode();
-        CmsAssociationId dec = CmsAssociationId.decode(enc);
+        CmsAssociationId dec = CmsAssociationId.from(enc);
         assertArrayEquals(new byte[0], dec.get());
     }
 
@@ -27,7 +27,7 @@ class CmsAssociationIdTest {
         byte[] id = new byte[50];
         for (int i = 0; i < 50; i++) id[i] = (byte) i;
         byte[] enc = new CmsAssociationId(id).encode();
-        CmsAssociationId dec = CmsAssociationId.decode(enc);
+        CmsAssociationId dec = CmsAssociationId.from(enc);
         assertArrayEquals(id, dec.get());
     }
 

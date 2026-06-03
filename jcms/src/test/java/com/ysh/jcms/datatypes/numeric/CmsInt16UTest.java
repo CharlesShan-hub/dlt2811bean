@@ -10,14 +10,14 @@ class CmsInt16UTest {
     @Test
     void positive() {
         byte[] data = new CmsInt16U(60000).encode();
-        CmsInt16U r = CmsInt16U.decode(data);
+        CmsInt16U r = CmsInt16U.from(data);
         assertEquals(60000, (int) r.get());
     }
 
     @Test
     void zero() {
         byte[] data = new CmsInt16U(0).encode();
-        CmsInt16U r = CmsInt16U.decode(data);
+        CmsInt16U r = CmsInt16U.from(data);
         assertEquals(0, (int) r.get());
     }
 
@@ -30,7 +30,7 @@ class CmsInt16UTest {
     void roundtrip() {
         CmsInt16U original = new CmsInt16U(60000);
         byte[] data = original.encode();
-        CmsInt16U decoded = CmsInt16U.decode(data);
+        CmsInt16U decoded = CmsInt16U.from(data);
         assertEquals(original.get(), decoded.get());
     }
 }

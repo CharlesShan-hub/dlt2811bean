@@ -38,12 +38,19 @@ public class CmsAbortReason extends AbstractCmsEnumerated<CmsAbortReason> {
         PerInteger.encode(pos, value, 0, 5);
     }
 
-    public static CmsAbortReason decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIServices.INSTANCE.cms_abort_reason_decode(data, data.length, v);
-            return new CmsAbortReason(v.getValue());
-        }
-        return new CmsAbortReason((int) PerInteger.decode(new PerInputStream(data), 0, 5));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIServices.INSTANCE.cms_abort_reason_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, 5);
+    }
+
+    public static CmsAbortReason from(byte[] data) {
+        return new CmsAbortReason().decode(data);
     }
 }

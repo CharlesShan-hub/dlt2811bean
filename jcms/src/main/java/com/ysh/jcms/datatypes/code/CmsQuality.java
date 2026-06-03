@@ -68,12 +68,19 @@ public class CmsQuality extends AbstractCmsCodedEnum<CmsQuality> {
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsQuality decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[2];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_quality_decode(data, data.length, val);
-           return new CmsQuality(fromPerBytes(val, 13));
-       }
-        return new CmsQuality(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 13), 13));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[2];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_quality_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 13);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 13), 13);
+    }
+
+    public static CmsQuality from(byte[] data) {
+        return new CmsQuality().decode(data);
     }
 }

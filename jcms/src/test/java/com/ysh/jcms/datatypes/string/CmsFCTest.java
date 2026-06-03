@@ -10,7 +10,7 @@ class CmsFCTest {
     @Test
     void roundtrip() {
         byte[] data = new CmsFC("ST").encode();
-        CmsFC decoded = CmsFC.decode(data);
+        CmsFC decoded = CmsFC.from(data);
         assertEquals("ST", decoded.get());
     }
 

@@ -26,12 +26,19 @@ public class CmsFloat32 extends AbstractCmsNumeric<CmsFloat32, Float> {
         pos.writeSignedInteger(Float.floatToIntBits(value), 4);
     }
 
-    public static CmsFloat32 decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            float[] v = new float[1];
-            CmsFFIDatatypes.Holder.INSTANCE.cms_float32_decode(data, data.length, v);
-            return new CmsFloat32(v[0]);
-        }
-        return new CmsFloat32(Float.intBitsToFloat((int) new PerInputStream(data).readSignedInteger(4)));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        float[] v = new float[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_float32_decode(data, data.length, v);
+        this.value = v[0];
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = Float.intBitsToFloat((int) pis.readSignedInteger(4));
+    }
+
+    public static CmsFloat32 from(byte[] data) {
+        return new CmsFloat32().decode(data);
     }
 }

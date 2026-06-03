@@ -10,21 +10,21 @@ class CmsInt64Test {
     @Test
     void positive() {
         byte[] data = new CmsInt64(9000000000000L).encode();
-        CmsInt64 r = CmsInt64.decode(data);
+        CmsInt64 r = CmsInt64.from(data);
         assertEquals(9000000000000L, (long) r.get());
     }
 
     @Test
     void negative() {
         byte[] data = new CmsInt64(-9000000000000L).encode();
-        CmsInt64 r = CmsInt64.decode(data);
+        CmsInt64 r = CmsInt64.from(data);
         assertEquals(-9000000000000L, (long) r.get());
     }
 
     @Test
     void zero() {
         byte[] data = new CmsInt64(0L).encode();
-        CmsInt64 r = CmsInt64.decode(data);
+        CmsInt64 r = CmsInt64.from(data);
         assertEquals(0L, (long) r.get());
     }
 
@@ -44,7 +44,7 @@ class CmsInt64Test {
     void roundtrip() {
         CmsInt64 original = new CmsInt64(-9000000000000L);
         byte[] data = original.encode();
-        CmsInt64 decoded = CmsInt64.decode(data);
+        CmsInt64 decoded = CmsInt64.from(data);
         assertEquals(original.get(), decoded.get());
     }
 }

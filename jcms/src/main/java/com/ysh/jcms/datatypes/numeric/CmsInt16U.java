@@ -30,12 +30,19 @@ public class CmsInt16U extends AbstractCmsNumeric<CmsInt16U, Integer> {
         PerInteger.encode(pos, value, MIN, MAX);
     }
 
-    public static CmsInt16U decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_int16u_decode(data, data.length, v);
-            return new CmsInt16U(v.getValue());
-        }
-        return new CmsInt16U((int) PerInteger.decode(new PerInputStream(data), MIN, MAX));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_int16u_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, MIN, MAX);
+    }
+
+    public static CmsInt16U from(byte[] data) {
+        return new CmsInt16U().decode(data);
     }
 }

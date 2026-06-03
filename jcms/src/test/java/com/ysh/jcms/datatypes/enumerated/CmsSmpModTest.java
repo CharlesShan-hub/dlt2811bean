@@ -11,7 +11,7 @@ class CmsSmpModTest {
     void roundtrip() {
         CmsSmpMod original = new CmsSmpMod(1);
         byte[] data = original.encode();
-        CmsSmpMod decoded = CmsSmpMod.decode(data);
+        CmsSmpMod decoded = CmsSmpMod.from(data);
         assertEquals(original.get(), decoded.get());
     }
 

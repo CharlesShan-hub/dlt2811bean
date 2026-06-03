@@ -31,12 +31,19 @@ public class CmsSmpMod extends AbstractCmsEnumerated<CmsSmpMod> {
         PerInteger.encode(pos, value, 0, 2);
     }
 
-    public static CmsSmpMod decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            IntByReference v = new IntByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_smp_mod_decode(data, data.length, v);
-            return new CmsSmpMod(v.getValue());
-        }
-        return new CmsSmpMod((int) PerInteger.decode(new PerInputStream(data), 0, 2));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        IntByReference v = new IntByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_smp_mod_decode(data, data.length, v);
+        this.value = v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, 0, size - 1);
+    }
+
+    public static CmsSmpMod from(byte[] data) {
+        return new CmsSmpMod().decode(data);
     }
 }

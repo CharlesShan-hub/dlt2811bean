@@ -11,7 +11,7 @@ class CmsServiceErrorTest {
     void roundtrip() {
         CmsServiceError original = new CmsServiceError(1);
         byte[] data = original.encode();
-        CmsServiceError decoded = CmsServiceError.decode(data);
+        CmsServiceError decoded = CmsServiceError.from(data);
         assertEquals(original.get(), decoded.get());
     }
 

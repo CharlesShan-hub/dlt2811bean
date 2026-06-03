@@ -11,7 +11,7 @@ class CmsAddCauseTest {
     void roundtrip() {
         CmsAddCause original = new CmsAddCause(2);
         byte[] data = original.encode();
-        CmsAddCause decoded = CmsAddCause.decode(data);
+        CmsAddCause decoded = CmsAddCause.from(data);
         System.out.println(decoded);
         assertEquals(original.get(), decoded.get());
     }

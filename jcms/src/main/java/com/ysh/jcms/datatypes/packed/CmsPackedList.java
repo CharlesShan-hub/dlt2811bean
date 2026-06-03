@@ -3,6 +3,7 @@ package com.ysh.jcms.datatypes.packed;
 import com.sun.jna.ptr.IntByReference;
 import com.ysh.jcms.datatypes.type.CmsFFIDatatypes;
 import com.ysh.jcms.datatypes.type.AbstractCmsScalar;
+import com.ysh.jcms.per.io.PerInputStream;
 
 public class CmsPackedList extends AbstractCmsScalar<CmsPackedList, byte[]> {
 
@@ -25,12 +26,21 @@ public class CmsPackedList extends AbstractCmsScalar<CmsPackedList, byte[]> {
         return CmsFFIDatatypes.INSTANCE.cms_packed_list_encode(value, value.length, 65535, buf, outLen);
     }
 
-    public static CmsPackedList decode(byte[] data) {
-        byte[] valBuf = new byte[65536];
+    @Override
+    protected void ffiDecode(byte[] data) {        byte[] valBuf = new byte[65536];
         IntByReference valLen = new IntByReference(valBuf.length);
         CmsFFIDatatypes.INSTANCE.cms_packed_list_decode(data, data.length, 65535, valBuf, valLen);
         byte[] result = new byte[valLen.getValue()];
         System.arraycopy(valBuf, 0, result, 0, result.length);
-        return new CmsPackedList(result);
+        this.value = result;
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        throw new UnsupportedOperationException("CmsPackedList has no Java PER decode fallback");
+    }
+
+    public static CmsPackedList from(byte[] data) {
+        return new CmsPackedList().decode(data);
     }
 }

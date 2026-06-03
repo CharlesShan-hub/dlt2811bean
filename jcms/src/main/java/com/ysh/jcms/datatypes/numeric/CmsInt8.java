@@ -31,12 +31,19 @@ public class CmsInt8 extends AbstractCmsNumeric<CmsInt8, Integer> {
         PerInteger.encode(pos, value, MIN, MAX);
     }
 
-    public static CmsInt8 decode(byte[] data) {
-        if (CmsFFIDatatypes.isAvailable()) {
-            ByteByReference v = new ByteByReference();
-            CmsFFIDatatypes.Holder.INSTANCE.cms_int8_decode(data, data.length, v);
-            return new CmsInt8(v.getValue());
-        }
-        return new CmsInt8((int) PerInteger.decode(new PerInputStream(data), MIN, MAX));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        ByteByReference v = new ByteByReference();
+        CmsFFIDatatypes.Holder.INSTANCE.cms_int8_decode(data, data.length, v);
+        this.value = (int) v.getValue();
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = (int) PerInteger.decode(pis, MIN, MAX);
+    }
+
+    public static CmsInt8 from(byte[] data) {
+        return new CmsInt8().decode(data);
     }
 }

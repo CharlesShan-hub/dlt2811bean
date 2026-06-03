@@ -34,12 +34,19 @@ public class CmsTriggerConditions extends AbstractCmsCodedEnum<CmsTriggerConditi
         PerBitString.encodeFixedSize(pos, toPerBytes(), size);
     }
 
-    public static CmsTriggerConditions decode(byte[] data) {
-       if (CmsFFIDatatypes.isAvailable()) {
-           byte[] val = new byte[1];
-           CmsFFIDatatypes.Holder.INSTANCE.cms_trigger_conditions_decode(data, data.length, val);
-           return new CmsTriggerConditions(fromPerBytes(val, 6));
-       }
-        return new CmsTriggerConditions(fromPerBytes(PerBitString.decodeFixedSizeBytes(new PerInputStream(data), 6), 6));
+    @Override
+    protected void ffiDecode(byte[] data) {
+        byte[] val = new byte[1];
+        CmsFFIDatatypes.Holder.INSTANCE.cms_trigger_conditions_decode(data, data.length, val);
+        this.value = fromPerBytes(val, 6);
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = fromPerBytes(PerBitString.decodeFixedSizeBytes(pis, 6), 6);
+    }
+
+    public static CmsTriggerConditions from(byte[] data) {
+        return new CmsTriggerConditions().decode(data);
     }
 }

@@ -23,7 +23,7 @@ class CmsQualityTest {
     void roundtrip() {
         CmsQuality original = new CmsQuality(0x1FFC); // all flags except VALIDITY bits
         byte[] data = original.encode();
-        CmsQuality decoded = CmsQuality.decode(data);
+        CmsQuality decoded = CmsQuality.from(data);
         //System.out.println(decoded);
         assertTrue(decoded.testBit(CmsQuality.FAILURE));
         assertTrue(decoded.testBit(CmsQuality.TEST));
@@ -34,7 +34,7 @@ class CmsQualityTest {
         CmsQuality q = new CmsQuality();
         q.setBit(CmsQuality.QUESTIONABLE, true);
         byte[] enc = q.encode();
-        CmsQuality dec = CmsQuality.decode(enc);
+        CmsQuality dec = CmsQuality.from(enc);
         assertTrue(dec.testBit(CmsQuality.QUESTIONABLE));
         assertFalse(dec.testBit(CmsQuality.GOOD));
     }

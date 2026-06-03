@@ -2,6 +2,8 @@ package com.ysh.jcms.services.connect;
 
 import com.ysh.jcms.datatypes.string.CmsVisibleString;
 import com.ysh.jcms.datatypes.type.AbstractCmsString.Mode;
+import com.ysh.jcms.per.io.PerInputStream;
+import com.ysh.jcms.per.types.PerVisibleString;
 
 /**
  * ServerAccessPointReference — format {@code IEDName.AccessPoint}.
@@ -68,9 +70,26 @@ public class CmsServerAccessPointReference extends CmsVisibleString {
         return dot >= 0 ? value.substring(dot + 1) : "";
     }
 
-    public static CmsServerAccessPointReference decode(byte[] encoded) {
-        CmsVisibleString vs = CmsVisibleString.decode(encoded, Mode.VARIABLE, MAX_LEN);
-        return new CmsServerAccessPointReference(vs.get());
+    @Override
+    protected void ffiDecode(byte[] data) {
+        CmsVisibleString vs = CmsVisibleString.decode(data, Mode.VARIABLE, MAX_LEN);
+        this.value = vs.get();
+        this.present = true;
+    }
+
+    @Override
+    protected void perDecode(PerInputStream pis) {
+        this.value = PerVisibleString.decodeConstrained(pis, 0, MAX_LEN);
+        this.present = true;
+    }
+
+    public static CmsServerAccessPointReference from(byte[] data) {
+        return new CmsServerAccessPointReference().decode(data);
+    }
+
+    @Override
+    public CmsServerAccessPointReference decode(byte[] data) {
+        return (CmsServerAccessPointReference) super.decode(data);
     }
 
     @Override
