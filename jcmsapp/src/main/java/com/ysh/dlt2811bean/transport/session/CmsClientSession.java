@@ -5,7 +5,7 @@ import com.ysh.dlt2811bean.config.CmsValue;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
 import com.ysh.dlt2811bean.service.protocol.types.CmsAsdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
+import com.ysh.dlt2811bean.service.svc.connection.CmsAssociate;
 import com.ysh.dlt2811bean.transport.io.CmsConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

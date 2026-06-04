@@ -1,4 +1,4 @@
-#include "svc/connect/cms_abort.h"
+#include "svc/connection/cms_abort.h"
 
 /* ==================== AbortPDU ==================== */
 CMS_EXPORT int cms_abort_encode(

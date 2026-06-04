@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service.svc.association;
+package com.ysh.dlt2811bean.service.svc.connection;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.per.io.PerInputStream;
@@ -7,7 +7,7 @@ import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.transport.protocol.CmsFrameManager;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
 import com.ysh.dlt2811bean.service.testutil.mixin.CopyTest;
 import com.ysh.dlt2811bean.service.testutil.mixin.FromFlagsTest;

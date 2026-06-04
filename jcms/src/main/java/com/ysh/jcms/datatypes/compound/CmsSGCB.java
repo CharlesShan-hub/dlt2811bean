@@ -49,7 +49,7 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         ns.actSG = (byte) actSG;
         ns.editSG = (byte) editSG;
         if (tActEdt != null) {
-            ns.tActEdt.seconds_since_epoch = tActEdt.seconds_since_epoch;
+            ns.tActEdt.seconds_since_epoch = (int) tActEdt.seconds_since_epoch;
             ns.tActEdt.fraction_of_second = tActEdt.fraction_of_second;
             ns.tActEdt.time_quality = tActEdt.time_quality;
         }
@@ -64,7 +64,7 @@ public class CmsSGCB extends AbstractCmsCompound<CmsSGCB> {
         actSG = ns.actSG & 0xFF;
         editSG = ns.editSG & 0xFF;
         tActEdt = new CmsUtcTime();
-        tActEdt.seconds_since_epoch = ns.tActEdt.seconds_since_epoch;
+        tActEdt.seconds_since_epoch = ns.tActEdt.seconds_since_epoch & 0xFFFFFFFFL;
         tActEdt.fraction_of_second = ns.tActEdt.fraction_of_second;
         tActEdt.time_quality = ns.tActEdt.time_quality;
         resvTms = ns.resvTms_present != 0 ? (ns.resvTms & 0xFFFF) : null;

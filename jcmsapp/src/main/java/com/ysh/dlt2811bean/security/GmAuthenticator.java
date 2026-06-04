@@ -1,7 +1,7 @@
 package com.ysh.dlt2811bean.security;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AuthenticationParameter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.PublicKey;

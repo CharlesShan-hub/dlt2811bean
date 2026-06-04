@@ -7,7 +7,7 @@ import com.ysh.dlt2811bean.scl.model.ied.SclLN;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsRelease;
+import com.ysh.dlt2811bean.service.svc.connection.CmsRelease;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;
 

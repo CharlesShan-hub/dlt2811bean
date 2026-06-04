@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.transport.protocol.association;
 
-import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.ServerAccessPointReference;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.scl.model.ied.SclAccessPoint;
 import com.ysh.dlt2811bean.scl.model.ied.SclIED;
@@ -8,8 +8,8 @@ import com.ysh.dlt2811bean.security.GmAuthenticator;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
 import com.ysh.dlt2811bean.service.protocol.types.CmsApdu;
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.connection.CmsAssociate;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AuthenticationParameter;
 import com.ysh.dlt2811bean.transport.session.AssociationIdGenerator;
 import com.ysh.dlt2811bean.transport.session.SessionState;
 import com.ysh.dlt2811bean.transport.protocol.AbstractCmsServiceHandler;

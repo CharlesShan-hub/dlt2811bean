@@ -1,7 +1,7 @@
-package com.ysh.dlt2811bean.service.svc.association;
+package com.ysh.dlt2811bean.service.svc.connection;
 
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AbortReason;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

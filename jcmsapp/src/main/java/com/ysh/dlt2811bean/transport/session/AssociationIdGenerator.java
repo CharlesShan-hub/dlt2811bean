@@ -1,6 +1,6 @@
 package com.ysh.dlt2811bean.transport.session;
 
-import com.ysh.dlt2811bean.service.svc.association.CmsAssociate;
+import com.ysh.dlt2811bean.service.svc.connection.CmsAssociate;
 
 import java.security.SecureRandom;
 import java.util.UUID;

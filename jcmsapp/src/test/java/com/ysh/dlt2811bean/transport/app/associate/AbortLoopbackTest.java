@@ -2,7 +2,7 @@ package com.ysh.dlt2811bean.transport.app.associate;
 
 import org.junit.jupiter.api.*;
 
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AbortReason;
 import com.ysh.dlt2811bean.transport.app.LoopbackTest;
 
 import static org.junit.jupiter.api.Assertions.*;

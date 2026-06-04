@@ -1,4 +1,4 @@
-#include "svc/connect/cms_authentication_parameter.h"
+#include "svc/connection/cms_authentication_parameter.h"
 #include "data/basic/cms_string.h"
 #include "data/extended/cms_time.h"
 

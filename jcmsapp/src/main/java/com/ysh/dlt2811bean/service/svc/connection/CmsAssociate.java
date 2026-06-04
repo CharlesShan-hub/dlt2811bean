@@ -1,10 +1,10 @@
-package com.ysh.dlt2811bean.service.svc.association;
+package com.ysh.dlt2811bean.service.svc.connection;
 
 import com.ysh.dlt2811bean.datatypes.string.CmsOctetString;
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.datatypes.type.CmsField;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AuthenticationParameter;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.ServerAccessPointReference;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AuthenticationParameter;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.ServerAccessPointReference;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

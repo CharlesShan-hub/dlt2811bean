@@ -1,4 +1,4 @@
-#include "svc/connect/cms_release.h"
+#include "svc/connection/cms_release.h"
 
 /* ==================== Release-RequestPDU ==================== */
 CMS_EXPORT int cms_release_request_encode(

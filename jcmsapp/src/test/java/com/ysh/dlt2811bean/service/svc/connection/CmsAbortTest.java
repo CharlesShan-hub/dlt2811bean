@@ -1,8 +1,8 @@
-package com.ysh.dlt2811bean.service.svc.association;
+package com.ysh.dlt2811bean.service.svc.connection;
 
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
 import com.ysh.dlt2811bean.service.protocol.enums.ServiceName;
-import com.ysh.dlt2811bean.service.svc.association.datatypes.AbortReason;
+import com.ysh.dlt2811bean.service.svc.connection.datatypes.AbortReason;
 import com.ysh.dlt2811bean.service.testutil.AsduTestUtil;
 import com.ysh.dlt2811bean.service.testutil.mixin.CopyTest;
 import com.ysh.dlt2811bean.service.testutil.mixin.ServiceNameTest;

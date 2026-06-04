@@ -1,4 +1,4 @@
-#include "svc/connect/cms_associate.h"
+#include "svc/connection/cms_associate.h"
 
 static void cms_server_access_point_encode(per_stream_t *w, const char *sap_ref)
 {

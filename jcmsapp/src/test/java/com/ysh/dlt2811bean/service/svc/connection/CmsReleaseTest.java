@@ -1,4 +1,4 @@
-package com.ysh.dlt2811bean.service.svc.association;
+package com.ysh.dlt2811bean.service.svc.connection;
 
 import com.ysh.dlt2811bean.datatypes.enumerated.CmsServiceError;
 import com.ysh.dlt2811bean.service.protocol.enums.MessageType;
