@@ -2,16 +2,16 @@
 #define CMS_ABORT_H
 
 #include "svc/cms_svc.h"
-#include "data/basic/cms_string.h"
+#include "svc/other/cms_association_id.h"
+#include "svc/connection/cms_abort_reason.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-    uint8_t assoc_id[32];
-    int assoc_id_len;
-    int reason;
+    cms_association_id_t assoc_id;
+    cms_abort_reason_t   reason;
 } cms_abort_t;
 
 CMS_EXPORT int cms_abort_encode(

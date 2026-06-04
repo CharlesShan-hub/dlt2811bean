@@ -3,128 +3,150 @@
 
 /* ---- internal stream version ---- */
 
-int cms_visible_string_encode_stream(per_stream_t *s, const char *value, int max_len)
-    { per_encode_visible_string(s, value, max_len); return CMS_OK; }
-int cms_visible_string_decode_stream(per_stream_t *s, char *value, int max_len)
-    { per_decode_visible_string(s, value, max_len); return CMS_OK; }
+int cms_visible_string_var_encode_stream(per_stream_t *s, const cms_visible_string_var_t *v)
+    { per_encode_visible_string(s, v->value, v->max_len); return CMS_OK; }
+int cms_visible_string_var_decode_stream(per_stream_t *s, cms_visible_string_var_t *v)
+    { per_decode_visible_string(s, v->value, v->max_len); return CMS_OK; }
 
-int cms_visible_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len)
-    { per_encode_visible_string_fixed(s, value, fixed_len); return CMS_OK; }
-int cms_visible_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len)
-    { per_decode_visible_string_fixed(s, value, fixed_len); return CMS_OK; }
+int cms_visible_string_fixed_encode_stream(per_stream_t *s, const cms_visible_string_fixed_t *v)
+    { per_encode_visible_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
+int cms_visible_string_fixed_decode_stream(per_stream_t *s, cms_visible_string_fixed_t *v)
+    { per_decode_visible_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
 
-int cms_utf8_string_encode_stream(per_stream_t *s, const char *value, int max_len)
-    { per_encode_utf8_string(s, value, max_len); return CMS_OK; }
-int cms_utf8_string_decode_stream(per_stream_t *s, char *value, int max_len)
-    { per_decode_utf8_string(s, value, max_len); return CMS_OK; }
+int cms_utf8_string_var_encode_stream(per_stream_t *s, const cms_utf8_string_var_t *v)
+    { per_encode_utf8_string(s, v->value, v->max_len); return CMS_OK; }
+int cms_utf8_string_var_decode_stream(per_stream_t *s, cms_utf8_string_var_t *v)
+    { per_decode_utf8_string(s, v->value, v->max_len); return CMS_OK; }
 
-int cms_utf8_string_encode_stream_fixed(per_stream_t *s, const char *value, int fixed_len)
-    { per_encode_utf8_string_fixed(s, value, fixed_len); return CMS_OK; }
-int cms_utf8_string_decode_stream_fixed(per_stream_t *s, char *value, int fixed_len)
-    { per_decode_utf8_string_fixed(s, value, fixed_len); return CMS_OK; }
+int cms_utf8_string_fixed_encode_stream(per_stream_t *s, const cms_utf8_string_fixed_t *v)
+    { per_encode_utf8_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
+int cms_utf8_string_fixed_decode_stream(per_stream_t *s, cms_utf8_string_fixed_t *v)
+    { per_decode_utf8_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
 
-int cms_octet_string_encode_stream(per_stream_t *s, const uint8_t *value, int value_len, int max_len)
-    { per_encode_octet_string(s, value, value_len, max_len); return CMS_OK; }
-int cms_octet_string_decode_stream(per_stream_t *s, uint8_t *value, int *value_cap, int max_len)
-    { size_t l = (size_t)*value_cap; per_decode_octet_string(s, value, &l, max_len); *value_cap = (int)l; return CMS_OK; }
+int cms_octet_string_var_encode_stream(per_stream_t *s, const cms_octet_string_var_t *v)
+    { per_encode_octet_string(s, v->value, v->len, v->max_len); return CMS_OK; }
+int cms_octet_string_var_decode_stream(per_stream_t *s, cms_octet_string_var_t *v)
+    { size_t l = 0; per_decode_octet_string(s, v->value, &l, v->max_len); v->len = (int)l; return CMS_OK; }
 
-int cms_octet_string_encode_stream_fixed(per_stream_t *s, const uint8_t *value, int fixed_len)
-    { per_encode_octet_string_fixed(s, value, fixed_len); return CMS_OK; }
-int cms_octet_string_decode_stream_fixed(per_stream_t *s, uint8_t *value, int fixed_len)
-    { per_decode_octet_string_fixed(s, value, fixed_len); return CMS_OK; }
+int cms_octet_string_fixed_encode_stream(per_stream_t *s, const cms_octet_string_fixed_t *v)
+    { per_encode_octet_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
+int cms_octet_string_fixed_decode_stream(per_stream_t *s, cms_octet_string_fixed_t *v)
+    { per_decode_octet_string_fixed(s, v->value, v->fixed_len); return CMS_OK; }
 
-int cms_bit_string_encode_stream(per_stream_t *s, const uint8_t *value, int value_len, int max_len)
-    { per_encode_bit_string(s, value, value_len * 8, max_len); return CMS_OK; }
-int cms_bit_string_decode_stream(per_stream_t *s, uint8_t *value, int *value_cap, int max_len)
-    { int n = *value_cap * 8; per_decode_bit_string(s, value, &n, max_len); *value_cap = (n + 7) / 8; return CMS_OK; }
+int cms_bit_string_var_encode_stream(per_stream_t *s, const cms_bit_string_var_t *v)
+    { per_encode_bit_string(s, v->value, v->nbits, v->max_len); return CMS_OK; }
+int cms_bit_string_var_decode_stream(per_stream_t *s, cms_bit_string_var_t *v)
+    { int dn = 0; per_decode_bit_string(s, v->value, &dn, v->max_len); v->nbits = dn; return CMS_OK; }
 
-int cms_bit_string_encode_stream_fixed(per_stream_t *s, const uint8_t *value, int fixed_nbits)
-    { per_encode_bit_string_fixed(s, value, fixed_nbits); return CMS_OK; }
-int cms_bit_string_decode_stream_fixed(per_stream_t *s, uint8_t *value, int fixed_nbits)
-    { per_decode_bit_string_fixed(s, value, fixed_nbits); return CMS_OK; }
+int cms_bit_string_fixed_encode_stream(per_stream_t *s, const cms_bit_string_fixed_t *v)
+    { per_encode_bit_string_fixed(s, v->value, v->nbits); return CMS_OK; }
+int cms_bit_string_fixed_decode_stream(per_stream_t *s, cms_bit_string_fixed_t *v)
+    { per_decode_bit_string_fixed(s, v->value, v->nbits); return CMS_OK; }
 
 /* ---- public buffer version (unified: size_len > 0 = fixed, else = variable) ---- */
 
-CMS_EXPORT int cms_visible_string_encode(const char *value, int size_len, int max_len, uint8_t *out_buf, int *out_len)
+/* ---- public buffer version (struct-based) ---- */
+
+CMS_EXPORT int cms_visible_string_fixed_encode(const cms_visible_string_fixed_t *v, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
-    if (size_len > 0)
-        cms_visible_string_encode_stream_fixed(&w, value, size_len);
-    else
-        cms_visible_string_encode_stream(&w, value, max_len);
+    cms_visible_string_fixed_encode_stream(&w, v);
     *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
 }
 
-CMS_EXPORT int cms_visible_string_decode(const uint8_t *in_buf, int in_len, int size_len, int max_len, char *value, int *value_cap)
+CMS_EXPORT int cms_visible_string_fixed_decode(const uint8_t *in_buf, int in_len, cms_visible_string_fixed_t *v)
 {
     per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
-    if (size_len > 0)
-        cms_visible_string_decode_stream_fixed(&r, value, size_len);
-    else
-        cms_visible_string_decode_stream(&r, value, max_len);
-    *value_cap = (int)strlen(value); return CMS_OK;
+    return cms_visible_string_fixed_decode_stream(&r, v);
 }
 
-CMS_EXPORT int cms_utf8_string_encode(const char *value, int size_len, int max_len, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_visible_string_var_encode(const cms_visible_string_var_t *v, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
-    if (size_len > 0)
-        cms_utf8_string_encode_stream_fixed(&w, value, size_len);
-    else
-        cms_utf8_string_encode_stream(&w, value, max_len);
+    cms_visible_string_var_encode_stream(&w, v);
     *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
 }
 
-CMS_EXPORT int cms_utf8_string_decode(const uint8_t *in_buf, int in_len, int size_len, int max_len, char *value, int *value_cap)
+CMS_EXPORT int cms_visible_string_var_decode(const uint8_t *in_buf, int in_len, cms_visible_string_var_t *v)
 {
     per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
-    if (size_len > 0)
-        cms_utf8_string_decode_stream_fixed(&r, value, size_len);
-    else
-        cms_utf8_string_decode_stream(&r, value, max_len);
-    *value_cap = (int)strlen(value); return CMS_OK;
+    return cms_visible_string_var_decode_stream(&r, v);
 }
 
-CMS_EXPORT int cms_octet_string_encode(const uint8_t *value, int value_len, int size_len, int max_len, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_utf8_string_fixed_encode(const cms_utf8_string_fixed_t *v, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
-    if (size_len > 0)
-        cms_octet_string_encode_stream_fixed(&w, value, size_len);
-    else
-        cms_octet_string_encode_stream(&w, value, value_len, max_len);
+    cms_utf8_string_fixed_encode_stream(&w, v);
     *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
 }
 
-CMS_EXPORT int cms_octet_string_decode(const uint8_t *in_buf, int in_len, int size_len, int max_len, uint8_t *value, int *value_cap)
+CMS_EXPORT int cms_utf8_string_fixed_decode(const uint8_t *in_buf, int in_len, cms_utf8_string_fixed_t *v)
 {
     per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
-    if (size_len > 0) {
-        cms_octet_string_decode_stream_fixed(&r, value, size_len);
-        *value_cap = size_len;
-    } else {
-        cms_octet_string_decode_stream(&r, value, value_cap, max_len);
-    }
-    return CMS_OK;
+    return cms_utf8_string_fixed_decode_stream(&r, v);
 }
 
-CMS_EXPORT int cms_bit_string_encode(const uint8_t *value, int nbits, int max_nbits, uint8_t *out_buf, int *out_len)
+CMS_EXPORT int cms_utf8_string_var_encode(const cms_utf8_string_var_t *v, uint8_t *out_buf, int *out_len)
 {
     per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
-    if (max_nbits <= 0)
-        cms_bit_string_encode_stream_fixed(&w, value, nbits);
-    else
-        cms_bit_string_encode_stream(&w, value, (nbits + 7) / 8, max_nbits);
+    cms_utf8_string_var_encode_stream(&w, v);
     *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
 }
 
-CMS_EXPORT int cms_bit_string_decode(const uint8_t *in_buf, int in_len, int nbits, int max_nbits, uint8_t *value, int *value_cap)
+CMS_EXPORT int cms_utf8_string_var_decode(const uint8_t *in_buf, int in_len, cms_utf8_string_var_t *v)
 {
     per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
-    if (max_nbits <= 0) {
-        cms_bit_string_decode_stream_fixed(&r, value, nbits);
-        *value_cap = (nbits + 7) / 8;
-    } else {
-        cms_bit_string_decode_stream(&r, value, value_cap, max_nbits);
-    }
-    return CMS_OK;
+    return cms_utf8_string_var_decode_stream(&r, v);
+}
+
+CMS_EXPORT int cms_octet_string_fixed_encode(const cms_octet_string_fixed_t *v, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    cms_octet_string_fixed_encode_stream(&w, v);
+    *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
+}
+
+CMS_EXPORT int cms_octet_string_fixed_decode(const uint8_t *in_buf, int in_len, cms_octet_string_fixed_t *v)
+{
+    per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
+    return cms_octet_string_fixed_decode_stream(&r, v);
+}
+
+CMS_EXPORT int cms_octet_string_var_encode(const cms_octet_string_var_t *v, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    cms_octet_string_var_encode_stream(&w, v);
+    *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
+}
+
+CMS_EXPORT int cms_octet_string_var_decode(const uint8_t *in_buf, int in_len, cms_octet_string_var_t *v)
+{
+    per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
+    return cms_octet_string_var_decode_stream(&r, v);
+}
+
+CMS_EXPORT int cms_bit_string_fixed_encode(const cms_bit_string_fixed_t *v, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    cms_bit_string_fixed_encode_stream(&w, v);
+    *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
+}
+
+CMS_EXPORT int cms_bit_string_fixed_decode(const uint8_t *in_buf, int in_len, cms_bit_string_fixed_t *v)
+{
+    per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
+    return cms_bit_string_fixed_decode_stream(&r, v);
+}
+
+CMS_EXPORT int cms_bit_string_var_encode(const cms_bit_string_var_t *v, uint8_t *out_buf, int *out_len)
+{
+    per_stream_t w; per_stream_init_write(&w, out_buf, (size_t)*out_len);
+    cms_bit_string_var_encode_stream(&w, v);
+    *out_len = (int)per_stream_bytes_written(&w); return CMS_OK;
+}
+
+CMS_EXPORT int cms_bit_string_var_decode(const uint8_t *in_buf, int in_len, cms_bit_string_var_t *v)
+{
+    per_stream_t r; per_stream_init_read(&r, in_buf, (size_t)in_len);
+    return cms_bit_string_var_decode_stream(&r, v);
 }

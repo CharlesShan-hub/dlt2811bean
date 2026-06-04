@@ -23,6 +23,13 @@ void      per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity);
 per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity);
 uint8_t*  per_stream_detach(per_stream_t *s, size_t *out_len);
 void      per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
+
+static inline per_stream_t per_stream_new_read(const uint8_t *buf, size_t capacity) {
+    per_stream_t s; per_stream_init_read(&s, buf, capacity); return s;
+}
+static inline per_stream_t per_stream_new_write(uint8_t *buf, size_t capacity) {
+    per_stream_t s; per_stream_init_write(&s, buf, capacity); return s;
+}
 size_t    per_stream_tell(const per_stream_t *s);
 size_t    per_stream_bytes_written(const per_stream_t *s);
 void      per_stream_align(per_stream_t *s);

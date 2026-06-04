@@ -5,6 +5,7 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
+#include "data/basic/cms_string.h"
 #include "data/basic/cms_integer.h"
 #include "data/common/cms_object_name.h"
 #include "data/fc/cms_fc.h"
@@ -22,10 +23,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct cms_data_definition_member {
-    char     name[65];                         /* ObjectName (0..64) */
-    uint8_t  fc[3];                            /* FunctionalConstraint (2 chars) */
-    int      has_fc;                           /* 1 = fc present */
-    struct cms_data_definition *type;          /* DataDefinition */
+    cms_visible_string_var_t     name;                          /* ObjectName (0..64) */
+    uint8_t                      fc[3];                         /* FunctionalConstraint (2 chars) */
+    int                          has_fc;                        /* 1 = fc present */
+    struct cms_data_definition  *type;                          /* DataDefinition */
 } cms_data_definition_member_t;
 
 /*

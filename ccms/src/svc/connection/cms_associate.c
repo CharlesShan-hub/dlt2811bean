@@ -1,4 +1,5 @@
 #include "svc/connection/cms_associate.h"
+#include "data/basic/cms_string.h"
 
 static void cms_server_access_point_encode(per_stream_t *w, const char *sap_ref)
 {
@@ -42,8 +43,8 @@ CMS_EXPORT int cms_associate_request_encode(
     int err = per_stream_init_dynamic(&w, 512);
     if (err) return CMS_ERR;
     int has_sap = (sdu->sap_ref[0] != '\0');
-    per_stream_write_bits(&w, has_sap ? 1 : 0, 1);
-    per_stream_write_bits(&w, sdu->has_auth ? 1 : 0, 1);
+    per_encode_optional(&w, has_sap);
+    per_encode_optional(&w, sdu->has_auth);
     if (has_sap) {
         cms_server_access_point_encode(&w, sdu->sap_ref);
     }
@@ -61,11 +62,8 @@ CMS_EXPORT int cms_associate_request_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
-    uint64_t bit;
-    per_stream_read_bits(&r, &bit, 1);
-    int has_sap = (int)bit;
-    per_stream_read_bits(&r, &bit, 1);
-    sdu->has_auth = (int)bit;
+    int has_sap = per_decode_optional(&r);
+    sdu->has_auth = per_decode_optional(&r);
     if (has_sap) {
         cms_server_access_point_decode(&r, sdu->sap_ref);
     } else {
@@ -92,8 +90,8 @@ CMS_EXPORT int cms_associate_response_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 512);
     if (err) return CMS_ERR;
-    per_stream_write_bits(&w, sdu->has_auth ? 1 : 0, 1);
-    cms_octet_string_encode_stream(&w, sdu->assoc_id, sdu->assoc_id_len, 32);
+    per_encode_optional(&w, sdu->has_auth);
+    cms_association_id_encode_stream(&w, &sdu->assoc_id);
     cms_service_error_encode_stream(&w, sdu->service_error);
     if (sdu->has_auth) {
         cms_authentication_parameter_encode(&w,
@@ -109,10 +107,8 @@ CMS_EXPORT int cms_associate_response_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
-    uint64_t bit;
-    per_stream_read_bits(&r, &bit, 1);
-    sdu->has_auth = (int)bit;
-    cms_octet_string_decode_stream(&r, sdu->assoc_id, &sdu->assoc_id_len, 32);
+    sdu->has_auth = per_decode_optional(&r);
+    cms_association_id_decode_stream(&r, &sdu->assoc_id);
     cms_service_error_decode_stream(&r, &sdu->service_error);
     if (sdu->has_auth) {
         cms_authentication_parameter_decode(&r,

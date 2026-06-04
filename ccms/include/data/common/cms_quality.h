@@ -5,6 +5,7 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
+#include "data/basic/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,10 +16,10 @@ extern "C" {
  * Quality (BIT STRING, 13 bits)
  * ============================================================
  */
-CMS_EXPORT int cms_quality_encode(const uint8_t value[2], uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_quality_decode(const uint8_t *in_buf, int in_len, uint8_t value[2]);
-int cms_quality_encode_stream(per_stream_t *s, const uint8_t value[2]);
-int cms_quality_decode_stream(per_stream_t *s, uint8_t value[2]);
+CMS_EXPORT int cms_quality_encode(const cms_bit_string_fixed_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_quality_decode(const uint8_t *in_buf, int in_len, cms_bit_string_fixed_t *v);
+int cms_quality_encode_stream(per_stream_t *s, const cms_bit_string_fixed_t *v);
+int cms_quality_decode_stream(per_stream_t *s, cms_bit_string_fixed_t *v);
 
 /*
  * ============================================================

@@ -14,40 +14,48 @@ extern "C" {
  * Int8
  * ============================================================
  */
-CMS_EXPORT int cms_int8_encode(int8_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int8_decode(const uint8_t *in_buf, int in_len, int8_t *value);
-int cms_int8_encode_stream(per_stream_t *s, int8_t value);
-int cms_int8_decode_stream(per_stream_t *s, int8_t *value);
+typedef struct { int8_t value; } cms_int8_t;
+
+CMS_EXPORT int cms_int8_encode(const cms_int8_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int8_decode(cms_int8_t *v, const uint8_t *in_buf, int in_len);
+int cms_int8_encode_stream(per_stream_t *s, const cms_int8_t *v);
+int cms_int8_decode_stream(per_stream_t *s, cms_int8_t *v);
 
 /*
  * ============================================================
  * Int8U
  * ============================================================
  */
-CMS_EXPORT int cms_int8u_encode(uint8_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int8u_decode(const uint8_t *in_buf, int in_len, uint8_t *value);
-int cms_int8u_encode_stream(per_stream_t *s, uint8_t value);
-int cms_int8u_decode_stream(per_stream_t *s, uint8_t *value);
+typedef struct { uint8_t value; } cms_int8u_t;
+
+CMS_EXPORT int cms_int8u_encode(const cms_int8u_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int8u_decode(cms_int8u_t *v, const uint8_t *in_buf, int in_len);
+int cms_int8u_encode_stream(per_stream_t *s, const cms_int8u_t *v);
+int cms_int8u_decode_stream(per_stream_t *s, cms_int8u_t *v);
 
 /*
  * ============================================================
  * Int16
  * ============================================================
  */
-CMS_EXPORT int cms_int16_encode(int16_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int16_decode(const uint8_t *in_buf, int in_len, int16_t *value);
-int cms_int16_encode_stream(per_stream_t *s, int16_t value);
-int cms_int16_decode_stream(per_stream_t *s, int16_t *value);
+typedef struct { int16_t value; } cms_int16_t;
+
+CMS_EXPORT int cms_int16_encode(const cms_int16_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int16_decode(cms_int16_t *v, const uint8_t *in_buf, int in_len);
+int cms_int16_encode_stream(per_stream_t *s, const cms_int16_t *v);
+int cms_int16_decode_stream(per_stream_t *s, cms_int16_t *v);
 
 /*
  * ============================================================
  * Int16U
  * ============================================================
  */
-CMS_EXPORT int cms_int16u_encode(uint16_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int16u_decode(const uint8_t *in_buf, int in_len, uint16_t *value);
-int cms_int16u_encode_stream(per_stream_t *s, uint16_t value);
-int cms_int16u_decode_stream(per_stream_t *s, uint16_t *value);
+typedef struct { uint16_t value; } cms_int16u_t;
+
+CMS_EXPORT int cms_int16u_encode(const cms_int16u_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int16u_decode(cms_int16u_t *v, const uint8_t *in_buf, int in_len);
+int cms_int16u_encode_stream(per_stream_t *s, const cms_int16u_t *v);
+int cms_int16u_decode_stream(per_stream_t *s, cms_int16u_t *v);
 
 /*
  * ============================================================
@@ -55,51 +63,60 @@ int cms_int16u_decode_stream(per_stream_t *s, uint16_t *value);
  * ============================================================
  */
 #define INT24U_MAX 16777215
+typedef struct { uint32_t value; } cms_int24u_t;
 
-CMS_EXPORT int cms_int24u_encode(uint32_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int24u_decode(const uint8_t *in_buf, int in_len, uint32_t *value);
-int cms_int24u_encode_stream(per_stream_t *s, uint32_t value);
-int cms_int24u_decode_stream(per_stream_t *s, uint32_t *value);
+CMS_EXPORT int cms_int24u_encode(const cms_int24u_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int24u_decode(cms_int24u_t *v, const uint8_t *in_buf, int in_len);
+int cms_int24u_encode_stream(per_stream_t *s, const cms_int24u_t *v);
+int cms_int24u_decode_stream(per_stream_t *s, cms_int24u_t *v);
 
 /*
  * ============================================================
  * Int32
  * ============================================================
  */
-CMS_EXPORT int cms_int32_encode(int32_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int32_decode(const uint8_t *in_buf, int in_len, int32_t *value);
-int cms_int32_encode_stream(per_stream_t *s, int32_t value);
-int cms_int32_decode_stream(per_stream_t *s, int32_t *value);
+typedef struct { int32_t value; } cms_int32_t;
+
+CMS_EXPORT int cms_int32_encode(const cms_int32_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int32_decode(cms_int32_t *v, const uint8_t *in_buf, int in_len);
+int cms_int32_encode_stream(per_stream_t *s, const cms_int32_t *v);
+int cms_int32_decode_stream(per_stream_t *s, cms_int32_t *v);
 
 /*
  * ============================================================
  * Int32U
  * ============================================================
  */
-CMS_EXPORT int cms_int32u_encode(uint32_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int32u_decode(const uint8_t *in_buf, int in_len, uint32_t *value);
-int cms_int32u_encode_stream(per_stream_t *s, uint32_t value);
-int cms_int32u_decode_stream(per_stream_t *s, uint32_t *value);
+typedef struct { uint32_t value; } cms_int32u_t;
+
+CMS_EXPORT int cms_int32u_encode(const cms_int32u_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int32u_decode(cms_int32u_t *v, const uint8_t *in_buf, int in_len);
+int cms_int32u_encode_stream(per_stream_t *s, const cms_int32u_t *v);
+int cms_int32u_decode_stream(per_stream_t *s, cms_int32u_t *v);
 
 /*
  * ============================================================
  * Int64
  * ============================================================
  */
-CMS_EXPORT int cms_int64_encode(int64_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int64_decode(const uint8_t *in_buf, int in_len, int64_t *value);
-int cms_int64_encode_stream(per_stream_t *s, int64_t value);
-int cms_int64_decode_stream(per_stream_t *s, int64_t *value);
+typedef struct { int64_t value; } cms_int64_t;
+
+CMS_EXPORT int cms_int64_encode(const cms_int64_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int64_decode(cms_int64_t *v, const uint8_t *in_buf, int in_len);
+int cms_int64_encode_stream(per_stream_t *s, const cms_int64_t *v);
+int cms_int64_decode_stream(per_stream_t *s, cms_int64_t *v);
 
 /*
  * ============================================================
  * Int64U
  * ============================================================
  */
-CMS_EXPORT int cms_int64u_encode(uint64_t value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_int64u_decode(const uint8_t *in_buf, int in_len, uint64_t *value);
-int cms_int64u_encode_stream(per_stream_t *s, uint64_t value);
-int cms_int64u_decode_stream(per_stream_t *s, uint64_t *value);
+typedef struct { uint64_t value; } cms_int64u_t;
+
+CMS_EXPORT int cms_int64u_encode(const cms_int64u_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_int64u_decode(cms_int64u_t *v, const uint8_t *in_buf, int in_len);
+int cms_int64u_encode_stream(per_stream_t *s, const cms_int64u_t *v);
+int cms_int64u_decode_stream(per_stream_t *s, cms_int64u_t *v);
 
 #ifdef __cplusplus
 }

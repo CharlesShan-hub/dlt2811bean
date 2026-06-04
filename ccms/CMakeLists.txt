@@ -16,6 +16,7 @@ target_include_directories(ccms_core
 # --- FFI library (hand-written PER codec for DL/T 2811 data types and APDU) ---
 add_library(ccms SHARED
     src/svc/other/cms_svc_util.c
+    src/svc/other/cms_association_id.c
     src/svc/connection/cms_associate.c
     src/svc/connection/cms_authentication_parameter.c
     src/svc/connection/cms_release.c

@@ -5,6 +5,7 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
+#include "data/basic/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,7 +21,7 @@ extern "C" {
  */
 
 CMS_EXPORT int cms_file_entry_encode(
-    const char *fileName,
+    const cms_visible_string_var_t *fileName,
     uint32_t fileSize,
     const uint8_t lastModified[8],
     uint32_t checkSum,
@@ -28,19 +29,19 @@ CMS_EXPORT int cms_file_entry_encode(
 
 CMS_EXPORT int cms_file_entry_decode(
     const uint8_t *in_buf, int in_len,
-    char *fileName, int *fileName_cap,
+    cms_visible_string_var_t *fileName,
     uint32_t *fileSize,
     uint8_t lastModified[8],
     uint32_t *checkSum);
 
 int cms_file_entry_encode_stream(per_stream_t *s,
-    const char *fileName,
+    const cms_visible_string_var_t *fileName,
     uint32_t fileSize,
     const uint8_t lastModified[8],
     uint32_t checkSum);
 
 int cms_file_entry_decode_stream(per_stream_t *s,
-    char *fileName, int *fileName_cap,
+    cms_visible_string_var_t *fileName,
     uint32_t *fileSize,
     uint8_t lastModified[8],
     uint32_t *checkSum);

@@ -32,11 +32,11 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    int         goEna;                 /* BOOLEAN */
-    char        goID[130];             /* VisibleString129 */
-    char        datSet[256];           /* ObjectReference */
-    uint32_t    confRev;               /* INT32U */
-    int         ndsCom;                /* BOOLEAN */
+    int                         goEna;                /* BOOLEAN */
+    cms_visible_string_fixed_t  goID;                 /* VisibleString129 */
+    char                        datSet[256];          /* ObjectReference */
+    uint32_t                    confRev;              /* INT32U */
+    int                         ndsCom;               /* BOOLEAN */
     /* dstAddress OPTIONAL */
     uint8_t     dstAddr[6];            /* PHYCOMADDR addr */
     uint8_t     dstPriority;           /* priority */

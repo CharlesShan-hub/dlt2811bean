@@ -38,20 +38,19 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    char        rptID[130];            /* VisibleString129 */
-    int         rptEna;                /* BOOLEAN */
-    char        datSet[256];           /* ObjectReference */
-    uint32_t    confRev;               /* INT32U */
-    uint8_t     optFlds[2];            /* RCBOptFlds (10 bits) */
-    uint32_t    bufTm;                 /* INT32U */
-    uint16_t    sqNum;                 /* INT16U */
-    uint8_t     trgOps[1];             /* TriggerConditions (6 bits) */
-    uint32_t    intgPd;                /* INT32U */
-    int         gi;                    /* BOOLEAN */
-    int         resv;                  /* BOOLEAN */
-    uint8_t     owner[64];             /* OCTET STRING (SIZE(0..64)) OPTIONAL */
-    int         owner_len;             /* actual length of owner */
-    int         owner_present;         /* 1 if present */
+    cms_visible_string_fixed_t  rptID;               /* VisibleString129 */
+    int                         rptEna;               /* BOOLEAN */
+    char                        datSet[256];          /* ObjectReference */
+    uint32_t                    confRev;              /* INT32U */
+    uint8_t                     optFlds[2];           /* RCBOptFlds (10 bits) */
+    uint32_t                    bufTm;                /* INT32U */
+    uint16_t                    sqNum;                /* INT16U */
+    uint8_t                     trgOps[1];            /* TriggerConditions (6 bits) */
+    uint32_t                    intgPd;               /* INT32U */
+    int                         gi;                   /* BOOLEAN */
+    int                         resv;                 /* BOOLEAN */
+    cms_octet_string_var_t      owner;                /* OCTET STRING (SIZE(0..64)) OPTIONAL */
+    int                         owner_present;        /* 1 if present */
 } cms_urcb_t;
 
 CMS_EXPORT int cms_urcb_encode(const cms_urcb_t *value, uint8_t *out_buf, int *out_len);

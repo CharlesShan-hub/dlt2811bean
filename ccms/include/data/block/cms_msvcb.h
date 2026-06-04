@@ -36,10 +36,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    int         svEna;                 /* BOOLEAN */
-    char        msvID[130];            /* VisibleString129 */
-    char        datSet[256];           /* ObjectReference */
-    uint32_t    confRev;               /* INT32U */
+    int                         svEna;                /* BOOLEAN */
+    cms_visible_string_fixed_t  msvID;                /* VisibleString129 */
+    char                        datSet[256];          /* ObjectReference */
+    uint32_t                    confRev;              /* INT32U */
     cms_smp_mod_t smpMod;              /* SmpMod OPTIONAL */
     int         smpMod_present;        /* 1 if present */
     uint16_t    smpRate;               /* INT16U */

@@ -5,9 +5,9 @@
 
 int cms_brcb_encode_stream(per_stream_t *s, const cms_brcb_t *v)
 {
-    cms_visible_string_encode_stream(s, v->rptID, 129);
+    cms_visible_string_fixed_encode_stream(s, &v->rptID);
     cms_boolean_encode_stream(s, v->rptEna);
-    cms_object_reference_encode_stream(s, v->datSet);
+    { cms_visible_string_var_t _ds = { .value = (char *)v->datSet, .max_len = 255 }; cms_object_reference_encode_stream(s, &_ds); }
     cms_int32u_encode_stream(s, v->confRev);
     cms_rcb_opt_flds_encode_stream(s, v->optFlds);
     cms_int32u_encode_stream(s, v->bufTm);
@@ -25,15 +25,15 @@ int cms_brcb_encode_stream(per_stream_t *s, const cms_brcb_t *v)
     /* owner OPTIONAL */
     per_encode_optional(s, v->owner_present);
     if (v->owner_present)
-        cms_octet_string_encode_stream(s, v->owner, v->owner_len, 64);
+        cms_octet_string_var_encode_stream(s, &v->owner);
     return CMS_OK;
 }
 
 int cms_brcb_decode_stream(per_stream_t *s, cms_brcb_t *v)
 {
-    cms_visible_string_decode_stream(s, v->rptID, 129);
+    cms_visible_string_fixed_decode_stream(s, &v->rptID);
     cms_boolean_decode_stream(s, &v->rptEna);
-    cms_object_reference_decode_stream(s, v->datSet);
+    { cms_visible_string_var_t _ds = { .value = (char *)v->datSet, .max_len = 255 }; cms_object_reference_decode_stream(s, &_ds); }
     cms_int32u_decode_stream(s, &v->confRev);
     cms_rcb_opt_flds_decode_stream(s, v->optFlds);
     cms_int32u_decode_stream(s, &v->bufTm);
@@ -51,7 +51,7 @@ int cms_brcb_decode_stream(per_stream_t *s, cms_brcb_t *v)
     /* owner OPTIONAL */
     v->owner_present = per_decode_optional(s);
     if (v->owner_present)
-        cms_octet_string_decode_stream(s, v->owner, &v->owner_len, 64);
+        cms_octet_string_var_decode_stream(s, &v->owner);
     return CMS_OK;
 }
 
