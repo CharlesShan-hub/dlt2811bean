@@ -9,7 +9,7 @@
 #include "data/basic/cms_integer.h"
 #include "data/common/cms_object_name.h"
 #include "data/fc/cms_fc.h"
-#include "data/common/cms_quality.h"
+#include "data/common/cms_service_error.h"
 #include <stdlib.h>
 #include <string.h>
 

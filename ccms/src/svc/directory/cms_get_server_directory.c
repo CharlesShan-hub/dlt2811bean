@@ -1,4 +1,5 @@
 #include "svc/directory/cms_get_server_directory.h"
+#include "data/common/cms_object_reference.h"
 #include "per/cms_sequence.h"
 #include <string.h>
 
@@ -13,7 +14,9 @@ CMS_EXPORT int cms_get_server_directory_request_encode(
     per_encode_constrained_int(&w, sdu->object_class, 0, 2);
     per_stream_write_bits(&w, sdu->has_ref_after ? 1 : 0, 1);
     if (sdu->has_ref_after) {
-        cms_object_reference_encode_stream(&w, sdu->ref_after);
+        cms_object_reference_t ref = { .value = "" };
+        memcpy(ref.value, sdu->ref_after, 65);
+        cms_object_reference_encode_stream(&w, &ref);
     }
     return cms_write_out(&w, out_buf, out_len);
 }
@@ -30,7 +33,9 @@ CMS_EXPORT int cms_get_server_directory_request_decode(
     per_stream_read_bits(&r, &bit, 1);
     sdu->has_ref_after = (int)bit;
     if (sdu->has_ref_after) {
-        cms_object_reference_decode_stream(&r, sdu->ref_after);
+        cms_object_reference_t ref = { .value = "" };
+        cms_object_reference_decode_stream(&r, &ref);
+        memcpy(sdu->ref_after, ref.value, 65);
     } else {
         sdu->ref_after[0] = '\0';
     }
@@ -50,7 +55,9 @@ CMS_EXPORT int cms_get_server_directory_response_encode(
     per_encode_length(&w, (uint32_t)sdu->ref_count);
     int offset = 0;
     for (int i = 0; i < sdu->ref_count; i++) {
-        cms_object_reference_encode_stream(&w, sdu->refs_flat + offset);
+        cms_object_reference_t ref = { .value = "" };
+        memcpy(ref.value, sdu->refs_flat + offset, 130);
+        cms_object_reference_encode_stream(&w, &ref);
         offset += sdu->ref_lens[i] + 1;
     }
 
@@ -76,8 +83,10 @@ CMS_EXPORT int cms_get_server_directory_response_decode(
     sdu->ref_count = (int)count;
     int offset = 0;
     for (uint32_t i = 0; i < count; i++) {
-        cms_object_reference_decode_stream(&r, sdu->refs_flat + offset);
-        int len = (int)strlen(sdu->refs_flat + offset);
+        cms_object_reference_t ref = { .value = "" };
+        cms_object_reference_decode_stream(&r, &ref);
+        int len = (int)strlen((const char *)ref.value);
+        memcpy(sdu->refs_flat + offset, ref.value, 130);
         sdu->ref_lens[i] = len;
         offset += len + 1;
     }
@@ -102,7 +111,7 @@ CMS_EXPORT int cms_get_server_directory_error_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 64);
     if (err) return CMS_ERR;
-    cms_service_error_encode_stream(&w, sdu->service_error);
+    cms_service_error_encode_stream(&w, &sdu->service_error);
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_get_server_directory_error_decode(

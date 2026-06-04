@@ -4,7 +4,7 @@
 #include "svc/cms_svc.h"
 #include "data/basic/cms_boolean.h"
 #include "data/common/cms_object_name.h"
-#include "data/common/cms_quality.h"
+#include "data/common/cms_service_error.h"
 
 #ifdef __cplusplus
 extern "C" {

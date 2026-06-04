@@ -3,21 +3,14 @@
 
 #include "cms_core.h"
 #include "per/cms_stream.h"
-#include "per/cms_string.h"
+#include "data/basic/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * ============================================================
- * PackedList
- * ============================================================
- */
-CMS_EXPORT int cms_packed_list_encode(const uint8_t *value, int value_len, int max_len, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_packed_list_decode(const uint8_t *in_buf, int in_len, int max_len, uint8_t *value, int *value_cap);
-int cms_packed_list_encode_stream(per_stream_t *s, const uint8_t *value, int value_len, int max_len);
-int cms_packed_list_decode_stream(per_stream_t *s, uint8_t *value, int *value_cap, int max_len);
+int cms_packed_list_encode_stream(per_stream_t *s, const cms_bit_string_var_t *v);
+int cms_packed_list_decode_stream(per_stream_t *s, cms_bit_string_var_t *v);
 
 #ifdef __cplusplus
 }

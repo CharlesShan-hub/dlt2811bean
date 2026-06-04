@@ -8,24 +8,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * ============================================================
- * TriggerConditions
+ * TriggerConditions (BIT STRING, 6 bits)
  * ============================================================
  */
-typedef enum {
-    CMS_TRIGGER_RESERVED              = 0, /* bit 0 */
-    CMS_TRIGGER_DATA_CHANGE           = 1, /* bit 1 */
-    CMS_TRIGGER_QUALITY_CHANGE        = 2, /* bit 2 */
-    CMS_TRIGGER_DATA_UPDATE           = 3, /* bit 3 */
-    CMS_TRIGGER_INTEGRITY             = 4, /* bit 4 */
-    CMS_TRIGGER_GENERAL_INTERROGATION = 5  /* bit 5 */
-} cms_trigger_condition_t;
+typedef uint8_t cms_trigger_conditions_t[1];
 
-CMS_EXPORT int cms_trigger_conditions_encode(const uint8_t value[1], uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_trigger_conditions_decode(const uint8_t *in_buf, int in_len, uint8_t value[1]);
-int cms_trigger_conditions_encode_stream(per_stream_t *s, const uint8_t value[1]);
-int cms_trigger_conditions_decode_stream(per_stream_t *s, uint8_t value[1]);
+CMS_EXPORT int cms_trigger_conditions_encode(const cms_trigger_conditions_t value, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_trigger_conditions_decode(const uint8_t *in_buf, int in_len, cms_trigger_conditions_t value);
+int cms_trigger_conditions_encode_stream(per_stream_t *s, const cms_trigger_conditions_t value);
+int cms_trigger_conditions_decode_stream(per_stream_t *s, cms_trigger_conditions_t value);
 
 #ifdef __cplusplus
 }

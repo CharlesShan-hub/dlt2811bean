@@ -29,7 +29,7 @@ typedef enum {
 } cms_orcat_t;
 
 CMS_EXPORT int cms_originator_encode(cms_orcat_t or_cat, const cms_octet_string_var_t *or_ident, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_originator_decode(const uint8_t *in_buf, int in_len, cms_orcat_t *or_cat, cms_octet_string_var_t *or_ident);
+CMS_EXPORT int cms_originator_decode(cms_orcat_t *or_cat, cms_octet_string_var_t *or_ident, const uint8_t *in_buf, int in_len);
 int cms_originator_encode_stream(per_stream_t *s, cms_orcat_t or_cat, const cms_octet_string_var_t *or_ident);
 int cms_originator_decode_stream(per_stream_t *s, cms_orcat_t *or_cat, cms_octet_string_var_t *or_ident);
 

@@ -1,9 +1,11 @@
 #include "svc/connection/cms_associate.h"
 #include "data/basic/cms_string.h"
+#include <string.h>
 
 static void cms_server_access_point_encode(per_stream_t *w, const char *sap_ref)
 {
-    cms_visible_string_encode_stream(w, sap_ref, 64);
+    cms_visible_string_var_t v = { .value = (char *)sap_ref, .max_len = 64 };
+    cms_visible_string_var_encode_stream(w, &v);
 }
 static void cms_authentication_parameter_encode(
     per_stream_t *w,
@@ -12,14 +14,22 @@ static void cms_authentication_parameter_encode(
     const uint8_t *sig_val, int sig_len)
 {
     cms_utc_time_t utc;
-    cms_utc_time_from_ms(&utc, signed_time_ms);
-    cms_octet_string_encode_stream(w, cert, cert_len, CMS_MAX_CERT_LEN);
+    uint64_t _u = (uint64_t)signed_time_ms;
+    utc.seconds_since_epoch.value  = (uint32_t)(_u / 1000);
+    utc.fraction_of_second.value   = (uint32_t)(((_u % 1000) * 16777216) / 1000);
+    utc.time_quality.tagf.value    = 0;
+    utc.time_quality.precision.value = 0;
+    utc.time_quality.fraction.value = 0;
+    { cms_octet_string_var_t _v = { .value = (uint8_t *)cert, .len = cert_len, .max_len = CMS_MAX_CERT_LEN };
+      cms_octet_string_var_encode_stream(w, &_v); }
     cms_utc_time_encode_stream(w, &utc);
-    cms_octet_string_encode_stream(w, sig_val, sig_len, CMS_MAX_CERT_LEN);
+    { cms_octet_string_var_t _v = { .value = (uint8_t *)sig_val, .len = sig_len, .max_len = CMS_MAX_CERT_LEN };
+      cms_octet_string_var_encode_stream(w, &_v); }
 }
 static void cms_server_access_point_decode(per_stream_t *r, char *sap_ref)
 {
-    cms_visible_string_decode_stream(r, sap_ref, 64);
+    cms_visible_string_var_t v = { .value = sap_ref, .max_len = 64 };
+    cms_visible_string_var_decode_stream(r, &v);
 }
 static void cms_authentication_parameter_decode(
     per_stream_t *r,
@@ -28,10 +38,15 @@ static void cms_authentication_parameter_decode(
     uint8_t *sig_val, int *sig_val_cap)
 {
     cms_utc_time_t utc;
-    cms_octet_string_decode_stream(r, cert, cert_cap, CMS_MAX_CERT_LEN);
+    { cms_octet_string_var_t _v = { .value = cert, .len = *cert_cap, .max_len = CMS_MAX_CERT_LEN };
+      cms_octet_string_var_decode_stream(r, &_v);
+      *cert_cap = _v.len; }
     cms_utc_time_decode_stream(r, &utc);
-    *signed_time_ms = cms_utc_time_to_ms(&utc);
-    cms_octet_string_decode_stream(r, sig_val, sig_val_cap, CMS_MAX_CERT_LEN);
+    *signed_time_ms = (int64_t)utc.seconds_since_epoch.value * 1000
+        + (int64_t)(((uint64_t)utc.fraction_of_second.value * 1000) / 16777216);
+    { cms_octet_string_var_t _v = { .value = sig_val, .len = *sig_val_cap, .max_len = CMS_MAX_CERT_LEN };
+      cms_octet_string_var_decode_stream(r, &_v);
+      *sig_val_cap = _v.len; }
 }
 
 /* ==================== Associate-RequestPDU ==================== */
@@ -92,7 +107,7 @@ CMS_EXPORT int cms_associate_response_encode(
     if (err) return CMS_ERR;
     per_encode_optional(&w, sdu->has_auth);
     cms_association_id_encode_stream(&w, &sdu->assoc_id);
-    cms_service_error_encode_stream(&w, sdu->service_error);
+    cms_service_error_encode_stream(&w, &sdu->service_error);
     if (sdu->has_auth) {
         cms_authentication_parameter_encode(&w,
             sdu->cert, sdu->cert_len,
@@ -131,7 +146,7 @@ CMS_EXPORT int cms_associate_error_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 64);
     if (err) return CMS_ERR;
-    cms_service_error_encode_stream(&w, sdu->service_error);
+    cms_service_error_encode_stream(&w, &sdu->service_error);
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_associate_error_decode(

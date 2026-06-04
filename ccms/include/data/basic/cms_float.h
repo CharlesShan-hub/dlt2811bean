@@ -15,20 +15,24 @@ extern "C" {
  * Float32
  * ============================================================
  */
-CMS_EXPORT int cms_float32_encode(float value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_float32_decode(const uint8_t *in_buf, int in_len, float *value);
-int cms_float32_encode_stream(per_stream_t *s, float value);
-int cms_float32_decode_stream(per_stream_t *s, float *value);
+typedef struct { float value; } cms_float32_t;
+
+CMS_EXPORT int cms_float32_encode(const cms_float32_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_float32_decode(cms_float32_t *v, const uint8_t *in_buf, int in_len);
+int cms_float32_encode_stream(per_stream_t *s, const cms_float32_t *v);
+int cms_float32_decode_stream(per_stream_t *s, cms_float32_t *v);
 
 /*
  * ============================================================
  * Float64
  * ============================================================
  */
-CMS_EXPORT int cms_float64_encode(double value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_float64_decode(const uint8_t *in_buf, int in_len, double *value);
-int cms_float64_encode_stream(per_stream_t *s, double value);
-int cms_float64_decode_stream(per_stream_t *s, double *value);
+typedef struct { double value; } cms_float64_t;
+
+CMS_EXPORT int cms_float64_encode(const cms_float64_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_float64_decode(cms_float64_t *v, const uint8_t *in_buf, int in_len);
+int cms_float64_encode_stream(per_stream_t *s, const cms_float64_t *v);
+int cms_float64_decode_stream(per_stream_t *s, cms_float64_t *v);
 
 #ifdef __cplusplus
 }

@@ -4,8 +4,32 @@
 #include "data/basic/cms_float.h"
 #include "data/extended/cms_time.h"
 #include "data/control/cms_check.h"
+#include "data/common/cms_quality.h"
+#include "data/common/cms_dbpos.h"
+#include "data/common/cms_tcmd.h"
+#include "data/common/cms_service_error.h"
 #include <string.h>
 #include <stdlib.h>
+
+static void write_utc_time(per_stream_t *s, int64_t t_ms)
+{
+    cms_utc_time_t utc;
+    uint64_t _u = (uint64_t)t_ms;
+    utc.seconds_since_epoch.value = (uint32_t)(_u / 1000);
+    utc.fraction_of_second.value  = (uint32_t)(((_u % 1000) * 16777216) / 1000);
+    utc.time_quality.tagf.value = 0;
+    utc.time_quality.precision.value = 0;
+    utc.time_quality.fraction.value = 0;
+    cms_utc_time_encode_stream(s, &utc);
+}
+
+static int64_t read_utc_time(per_stream_t *s)
+{
+    cms_utc_time_t utc;
+    cms_utc_time_decode_stream(s, &utc);
+    return (int64_t)utc.seconds_since_epoch.value * 1000
+        + (int64_t)(((uint64_t)utc.fraction_of_second.value * 1000) / 16777216);
+}
 
 int cms_data_encode_stream(per_stream_t *s, const cms_data_t *data)
 {
@@ -21,28 +45,28 @@ int cms_data_encode_stream(per_stream_t *s, const cms_data_t *data)
     }
 
     switch (data->choice) {
-    case 0: cms_service_error_encode_stream(s, data->value.error); break;
-    case 3: cms_boolean_encode_stream(s, data->value.boolean_value); break;
-    case 4: cms_int8_encode_stream(s, data->value.int8); break;
-    case 5: cms_int16_encode_stream(s, data->value.int16); break;
-    case 6: cms_int32_encode_stream(s, data->value.int32); break;
-    case 7: cms_int64_encode_stream(s, data->value.int64); break;
-    case 8: cms_int8u_encode_stream(s, data->value.int8u); break;
-    case 9: cms_int16u_encode_stream(s, data->value.int16u); break;
-    case 10: cms_int32u_encode_stream(s, data->value.int32u); break;
-    case 11: cms_int64u_encode_stream(s, data->value.int64u); break;
-    case 12: cms_float32_encode_stream(s, data->value.float32); break;
-    case 13: cms_float64_encode_stream(s, data->value.float64); break;
+    case 0: { cms_service_error_t _v = { .value = data->value.error}; cms_service_error_encode_stream(s, &_v); } break;
+    case 3: { cms_boolean_t _v = { .value = data->value.boolean_value }; cms_boolean_encode_stream(s, &_v); } break;
+    case 4: { cms_int8_t _v = { .value = data->value.int8 }; cms_int8_encode_stream(s, &_v); } break;
+    case 5: { cms_int16_t _v = { .value = data->value.int16 }; cms_int16_encode_stream(s, &_v); } break;
+    case 6: { cms_int32_t _v = { .value = data->value.int32 }; cms_int32_encode_stream(s, &_v); } break;
+    case 7: { cms_int64_t _v = { .value = data->value.int64 }; cms_int64_encode_stream(s, &_v); } break;
+    case 8: { cms_int8u_t _v = { .value = data->value.int8u }; cms_int8u_encode_stream(s, &_v); } break;
+    case 9: { cms_int16u_t _v = { .value = data->value.int16u }; cms_int16u_encode_stream(s, &_v); } break;
+    case 10: { cms_int32u_t _v = { .value = data->value.int32u }; cms_int32u_encode_stream(s, &_v); } break;
+    case 11: { cms_int64u_t _v = { .value = data->value.int64u }; cms_int64u_encode_stream(s, &_v); } break;
+    case 12: { cms_float32_t _v = { .value = data->value.float32 }; cms_float32_encode_stream(s, &_v); } break;
+    case 13: { cms_float64_t _v = { .value = data->value.float64 }; cms_float64_encode_stream(s, &_v); } break;
     case 14: per_encode_bit_string_unconstrained(s, data->value.bit_string.data, data->value.bit_string.nbits); break;
     case 15: per_encode_octet_string_unconstrained(s, data->value.octet_string.data, data->value.octet_string.len); break;
     case 16: per_encode_visible_string_unconstrained(s, data->value.visible_string); break;
     case 17: per_encode_utf8_string_unconstrained(s, data->value.utf8_string); break;
-    case 18: cms_utc_time_encode_ms_stream(s, data->value.utc_time_ms); break;
+    case 18: write_utc_time(s, data->value.utc_time_ms); break;
     case 19: cms_binary_time_encode_stream(s, (const cms_binary_time_t *)&data->value.binary_time); break;
-    case 20: cms_quality_encode_stream(s, data->value.quality); break;
-    case 21: cms_dbpos_encode_stream(s, data->value.dbpos); break;
-    case 22: cms_tcmd_encode_stream(s, data->value.tcmd); break;
-    case 23: cms_check_encode_stream(s, data->value.check); break;
+    case 20: { cms_quality_t _v = data->value.quality; cms_quality_encode_stream(s, &_v); } break;
+    case 21: { cms_dbpos_t _v = { .value = { .value = data->value.dbpos } }; cms_dbpos_encode_stream(s, &_v); } break;
+    case 22: { cms_tcmd_t _v = { .value = { .value = data->value.tcmd } }; cms_tcmd_encode_stream(s, &_v); } break;
+    case 23: { cms_bit_string_fixed_t _v = { .value = (uint8_t *)data->value.check, .nbits = 2 }; cms_check_encode_stream(s, &_v); } break;
     }
     return CMS_OK;
 }
@@ -74,18 +98,18 @@ int cms_data_decode_stream(per_stream_t *s, cms_data_t *data)
     }
 
     switch (data->choice) {
-    case 0: cms_service_error_decode_stream(s, &data->value.error); break;
-    case 3: cms_boolean_decode_stream(s, &data->value.boolean_value); break;
-    case 4: cms_int8_decode_stream(s, &data->value.int8); break;
-    case 5: cms_int16_decode_stream(s, &data->value.int16); break;
-    case 6: cms_int32_decode_stream(s, &data->value.int32); break;
-    case 7: cms_int64_decode_stream(s, &data->value.int64); break;
-    case 8: cms_int8u_decode_stream(s, &data->value.int8u); break;
-    case 9: cms_int16u_decode_stream(s, &data->value.int16u); break;
-    case 10: cms_int32u_decode_stream(s, &data->value.int32u); break;
-    case 11: cms_int64u_decode_stream(s, &data->value.int64u); break;
-    case 12: cms_float32_decode_stream(s, &data->value.float32); break;
-    case 13: cms_float64_decode_stream(s, &data->value.float64); break;
+    case 0: { cms_service_error_t _v = { .value = { .value = 0 } }; cms_service_error_decode_stream(s, &_v); data->value.error = _v.value.value.value; } break;
+    case 3: { cms_boolean_t _v = { .value = 0 }; cms_boolean_decode_stream(s, &_v); data->value.boolean_value = _v.value; } break;
+    case 4: { cms_int8_t _v = { .value = 0 }; cms_int8_decode_stream(s, &_v); data->value.int8 = _v.value; } break;
+    case 5: { cms_int16_t _v = { .value = 0 }; cms_int16_decode_stream(s, &_v); data->value.int16 = _v.value; } break;
+    case 6: { cms_int32_t _v = { .value = 0 }; cms_int32_decode_stream(s, &_v); data->value.int32 = _v.value; } break;
+    case 7: { cms_int64_t _v = { .value = 0 }; cms_int64_decode_stream(s, &_v); data->value.int64 = _v.value; } break;
+    case 8: { cms_int8u_t _v = { .value = 0 }; cms_int8u_decode_stream(s, &_v); data->value.int8u = _v.value; } break;
+    case 9: { cms_int16u_t _v = { .value = 0 }; cms_int16u_decode_stream(s, &_v); data->value.int16u = _v.value; } break;
+    case 10: { cms_int32u_t _v = { .value = 0 }; cms_int32u_decode_stream(s, &_v); data->value.int32u = _v.value; } break;
+    case 11: { cms_int64u_t _v = { .value = 0 }; cms_int64u_decode_stream(s, &_v); data->value.int64u = _v.value; } break;
+    case 12: { cms_float32_t _v = { .value = 0 }; cms_float32_decode_stream(s, &_v); data->value.float32 = _v.value; } break;
+    case 13: { cms_float64_t _v = { .value = 0 }; cms_float64_decode_stream(s, &_v); data->value.float64 = _v.value; } break;
     case 14: {
         int64_t len;
         per_decode_semi_constrained(s, &len, 0);
@@ -137,14 +161,12 @@ int cms_data_decode_stream(per_stream_t *s, cms_data_t *data)
         data->value.utf8_string[len] = '\0';
         break;
     }
-    case 18: data->value.utc_time_ms = cms_utc_time_to_ms_from_stream(s); break;
-    case 19:
-        cms_binary_time_decode_stream(s, (cms_binary_time_t *)&data->value.binary_time);
-        break;
-    case 20: cms_quality_decode_stream(s, data->value.quality); break;
-    case 21: cms_dbpos_decode_stream(s, &data->value.dbpos); break;
-    case 22: cms_tcmd_decode_stream(s, &data->value.tcmd); break;
-    case 23: cms_check_decode_stream(s, data->value.check); break;
+    case 18: data->value.utc_time_ms = read_utc_time(s); break;
+    case 19: cms_binary_time_decode_stream(s, (cms_binary_time_t *)&data->value.binary_time); break;
+    case 20: cms_quality_decode_stream(s, &data->value.quality); break;
+    case 21: { cms_dbpos_t _v = { .value = { .value = 0 } }; cms_dbpos_decode_stream(s, &_v); data->value.dbpos = _v.value.value.value; } break;
+    case 22: { cms_tcmd_t _v = { .value = { .value = 0 } }; cms_tcmd_decode_stream(s, &_v); data->value.tcmd = _v.value.value.value; } break;
+    case 23: { cms_bit_string_fixed_t _v = { .value = (uint8_t *)data->value.check, .nbits = 2 }; cms_check_decode_stream(s, &_v); } break;
     }
     return CMS_OK;
 }
@@ -174,13 +196,6 @@ CMS_EXPORT void cms_data_free(cms_data_t *data)
         for (int i = 0; i < count; i++)
             cms_data_free(&elems[i]);
         free(elems);
-        if (data->choice == 1) {
-            data->value.array.elements = NULL;
-            data->value.array.count = 0;
-        } else {
-            data->value.structure.elements = NULL;
-            data->value.structure.count = 0;
-        }
         return;
     }
     if (data->choice == 14) { free(data->value.bit_string.data); data->value.bit_string.data = NULL; }
@@ -188,8 +203,6 @@ CMS_EXPORT void cms_data_free(cms_data_t *data)
     else if (data->choice == 16) { free(data->value.visible_string); data->value.visible_string = NULL; }
     else if (data->choice == 17) { free(data->value.utf8_string); data->value.utf8_string = NULL; }
 }
-
-/* ---- lightweight encode helpers ---- */
 
 CMS_EXPORT int cms_data_choice_encode(int choice, uint8_t *out_buf, int *out_len)
 {

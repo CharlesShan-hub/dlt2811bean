@@ -5,7 +5,9 @@
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "per/cms_string.h"
-#include "data/common/cms_quality.h"
+#include "data/common/cms_service_error.h"
+#include "data/common/cms_dbpos.h"
+#include "data/common/cms_tcmd.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -31,12 +31,18 @@ add_library(ccms SHARED
     src/data/basic/cms_enumerated.c
     src/data/basic/cms_packed_list.c
     src/data/extended/cms_time.c
-    src/data/common/cms_object_name.c
-    src/data/common/cms_time_stamp.c
+    src/data/common/cms_dbpos.c
+    src/data/common/cms_entry_id.c
     src/data/common/cms_entry_time.c
+    src/data/common/cms_file_entry.c
+    src/data/common/cms_object_name.c
+    src/data/common/cms_object_reference.c
     src/data/common/cms_phy_com_addr.c
     src/data/common/cms_quality.c
-    src/data/common/cms_file_entry.c
+    src/data/common/cms_service_error.c
+    src/data/common/cms_sub_reference.c
+    src/data/common/cms_tcmd.c
+    src/data/common/cms_time_stamp.c
     src/data/fc/cms_fc.c
     src/data/control/cms_originator.c
     src/data/control/cms_check.c

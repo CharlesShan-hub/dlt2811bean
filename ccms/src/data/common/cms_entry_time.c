@@ -13,6 +13,6 @@ int cms_entry_time_decode_stream(per_stream_t *s, cms_binary_time_t *t)
 /* ---- public buffer version ---- */
 
 CMS_EXPORT int cms_entry_time_encode(const cms_binary_time_t *t, uint8_t *b, int *l)
-    { per_stream_t w; per_stream_init_write(&w, b, (size_t)*l); cms_entry_time_encode_stream(&w, t); *l = (int)per_stream_bytes_written(&w); return CMS_OK; }
-CMS_EXPORT int cms_entry_time_decode(const uint8_t *b, int l, cms_binary_time_t *t)
-    { per_stream_t r; per_stream_init_read(&r, b, (size_t)l); cms_entry_time_decode_stream(&r, t); return CMS_OK; }
+    { per_stream_t w = per_stream_new_write(b, (size_t)*l); int rc = cms_entry_time_encode_stream(&w, t); *l = (int)per_stream_bytes_written(&w); return rc; }
+CMS_EXPORT int cms_entry_time_decode(cms_binary_time_t *t, const uint8_t *b, int l)
+    { per_stream_t r = per_stream_new_read(b, (size_t)l); return cms_entry_time_decode_stream(&r, t); }
