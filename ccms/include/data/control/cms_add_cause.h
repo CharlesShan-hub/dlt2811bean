@@ -11,7 +11,7 @@ extern "C" {
 
 /*
  * ============================================================
- * AddCause ::= ENUMERATED { ... (0..27) }
+ * AddCause ::= INTEGER { ... (0..27) }
  * ============================================================
  */
 #define CMS_ADD_CAUSE_UNKNOWN                       0
@@ -43,10 +43,12 @@ extern "C" {
 #define CMS_ADD_CAUSE_LOCKED_BY_OTHER_CLIENT        26
 #define CMS_ADD_CAUSE_INCONSISTENT_PARAMETERS       27
 
-CMS_EXPORT int cms_add_cause_encode(const cms_int32_t *v, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_add_cause_decode(cms_int32_t *v, const uint8_t *in_buf, int in_len);
-int cms_add_cause_encode_stream(per_stream_t *s, const cms_int32_t *v);
-int cms_add_cause_decode_stream(per_stream_t *s, cms_int32_t *v);
+typedef struct { cms_int32_t value; } cms_add_cause_t;
+
+CMS_EXPORT int cms_add_cause_encode(const cms_add_cause_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_add_cause_decode(cms_add_cause_t *v, const uint8_t *in_buf, int in_len);
+int cms_add_cause_encode_stream(per_stream_t *s, const cms_add_cause_t *v);
+int cms_add_cause_decode_stream(per_stream_t *s, cms_add_cause_t *v);
 
 #ifdef __cplusplus
 }

@@ -17,10 +17,12 @@ extern "C" {
  *   EntryTime ::= BinaryTime
  * ============================================================
  */
-CMS_EXPORT int cms_entry_time_encode(const cms_binary_time_t *t, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_entry_time_decode(cms_binary_time_t *t, const uint8_t *in_buf, int in_len);
-int cms_entry_time_encode_stream(per_stream_t *s, const cms_binary_time_t *t);
-int cms_entry_time_decode_stream(per_stream_t *s, cms_binary_time_t *t);
+typedef cms_binary_time_t cms_entry_time_t;
+
+CMS_EXPORT int cms_entry_time_encode(const cms_entry_time_t *t, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_entry_time_decode(cms_entry_time_t *t, const uint8_t *in_buf, int in_len);
+int cms_entry_time_encode_stream(per_stream_t *s, const cms_entry_time_t *t);
+int cms_entry_time_decode_stream(per_stream_t *s, cms_entry_time_t *t);
 
 #ifdef __cplusplus
 }

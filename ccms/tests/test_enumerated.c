@@ -1,4 +1,5 @@
 #include "data/basic/cms_enumerated.h"
+#include "per/cms_integer.h"
 #include "test_utils.h"
 
 void test_enumerated(void) {
@@ -9,10 +10,10 @@ void test_enumerated(void) {
         uint8_t buf[4];
         per_stream_t w, r;
         per_stream_init_write(&w, buf, sizeof(buf));
-        ASSERT_EQ(PER_OK, per_encode_enumerated(&w, 1, 2));
+        ASSERT_EQ(PER_OK, per_encode_constrained_int(&w, 1, 0, 1));
         per_stream_init_read(&r, buf, sizeof(buf));
-        uint32_t v;
-        per_decode_enumerated(&r, &v, 2);
+        int64_t v;
+        ASSERT_EQ(PER_OK, per_decode_constrained_int(&r, &v, 0, 1));
         ASSERT_EQ(1, v);
     }
     PASS();
@@ -22,10 +23,10 @@ void test_enumerated(void) {
         uint8_t buf[4];
         per_stream_t w, r;
         per_stream_init_write(&w, buf, sizeof(buf));
-        per_encode_enumerated(&w, 4, 6);
+        ASSERT_EQ(PER_OK, per_encode_constrained_int(&w, 4, 0, 5));
         per_stream_init_read(&r, buf, sizeof(buf));
-        uint32_t v;
-        per_decode_enumerated(&r, &v, 6);
+        int64_t v;
+        ASSERT_EQ(PER_OK, per_decode_constrained_int(&r, &v, 0, 5));
         ASSERT_EQ(4, v);
     }
     PASS();

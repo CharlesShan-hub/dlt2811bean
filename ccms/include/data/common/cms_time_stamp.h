@@ -13,10 +13,12 @@ extern "C" {
  * TimeStamp (alias for UtcTime)
  * ============================================================
  */
-CMS_EXPORT int cms_time_stamp_encode(const cms_utc_time_t *t, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_time_stamp_decode(cms_utc_time_t *t, const uint8_t *in_buf, int in_len);
-int cms_time_stamp_encode_stream(per_stream_t *s, const cms_utc_time_t *t);
-int cms_time_stamp_decode_stream(per_stream_t *s, cms_utc_time_t *t);
+typedef cms_utc_time_t cms_time_stamp_t;
+
+CMS_EXPORT int cms_time_stamp_encode(const cms_time_stamp_t *t, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_time_stamp_decode(cms_time_stamp_t *t, const uint8_t *in_buf, int in_len);
+int cms_time_stamp_encode_stream(per_stream_t *s, const cms_time_stamp_t *t);
+int cms_time_stamp_decode_stream(per_stream_t *s, cms_time_stamp_t *t);
 
 #ifdef __cplusplus
 }

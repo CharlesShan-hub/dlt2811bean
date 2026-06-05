@@ -46,20 +46,20 @@ per_error_t per_decode_octet_string_unconstrained(per_stream_t *s, uint8_t *out,
 }
 
 /* ---- VisibleString (8 bits per char, variable length) ---- */
-per_error_t per_encode_visible_string(per_stream_t *s, const char *str, uint32_t max_len) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_visible_string(per_stream_t *s, const uint8_t *str, uint32_t max_len) {
+    size_t len = str ? strlen((const char *)str) : 0;
     if (len > max_len) return PER_ERR_LENGTH;
     per_error_t err = per_encode_constrained_int(s, (int64_t)len, 0, max_len);
     if (err) return err;
     if (max_len * 8 > 16) per_stream_align(s);
     for (size_t i = 0; i < len; i++) {
-        err = per_stream_write_bits(s, (uint8_t)str[i], 8);
+        err = per_stream_write_bits(s, str[i], 8);
         if (err) return err;
     }
     return PER_OK;
 }
 
-per_error_t per_decode_visible_string(per_stream_t *s, char *out, uint32_t max_len) {
+per_error_t per_decode_visible_string(per_stream_t *s, uint8_t *out, uint32_t max_len) {
     int64_t len;
     per_error_t err = per_decode_constrained_int(s, &len, 0, max_len);
     if (err) return err;
@@ -69,51 +69,51 @@ per_error_t per_decode_visible_string(per_stream_t *s, char *out, uint32_t max_l
         uint64_t ch;
         err = per_stream_read_bits(s, &ch, 8);
         if (err) return err;
-        out[i] = (char)ch;
+        out[i] = (uint8_t)ch;
     }
     out[len] = '\0';
     return PER_OK;
 }
 
 /* ---- VisibleString fixed ---- */
-per_error_t per_encode_visible_string_fixed(per_stream_t *s, const char *str, uint32_t fixed_len) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_visible_string_fixed(per_stream_t *s, const uint8_t *str, uint32_t fixed_len) {
+    size_t len = str ? strlen((const char *)str) : 0;
     if (fixed_len * 8 > 16) per_stream_align(s);
     uint32_t i;
     for (i = 0; i < fixed_len; i++) {
-        uint8_t ch = (i < len) ? (uint8_t)str[i] : 0;
+        uint8_t ch = (i < len) ? str[i] : 0;
         per_error_t err = per_stream_write_bits(s, ch, 8);
         if (err) return err;
     }
     return PER_OK;
 }
 
-per_error_t per_decode_visible_string_fixed(per_stream_t *s, char *out, uint32_t fixed_len) {
+per_error_t per_decode_visible_string_fixed(per_stream_t *s, uint8_t *out, uint32_t fixed_len) {
     if (fixed_len * 8 > 16) per_stream_align(s);
     for (uint32_t i = 0; i < fixed_len; i++) {
         uint64_t ch;
         per_error_t err = per_stream_read_bits(s, &ch, 8);
         if (err) return err;
-        out[i] = (char)ch;
+        out[i] = (uint8_t)ch;
     }
     out[fixed_len] = '\0';
     return PER_OK;
 }
 
 /* ---- VisibleString unconstrained — length determinant + 8-bit chars ---- */
-per_error_t per_encode_visible_string_unconstrained(per_stream_t *s, const char *str) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_visible_string_unconstrained(per_stream_t *s, const uint8_t *str) {
+    size_t len = str ? strlen((const char *)str) : 0;
     per_error_t err = per_encode_length(s, (uint32_t)len);
     if (err) return err;
     per_stream_align(s);
     for (size_t i = 0; i < len; i++) {
-        err = per_stream_write_bits(s, (uint8_t)str[i], 8);
+        err = per_stream_write_bits(s, str[i], 8);
         if (err) return err;
     }
     return PER_OK;
 }
 
-per_error_t per_decode_visible_string_unconstrained(per_stream_t *s, char *out, uint32_t *out_len) {
+per_error_t per_decode_visible_string_unconstrained(per_stream_t *s, uint8_t *out, uint32_t *out_len) {
     uint32_t len;
     per_error_t err = per_decode_length(s, &len);
     if (err) return err;
@@ -122,7 +122,7 @@ per_error_t per_decode_visible_string_unconstrained(per_stream_t *s, char *out, 
         uint64_t ch;
         err = per_stream_read_bits(s, &ch, 8);
         if (err) return err;
-        out[i] = (char)ch;
+        out[i] = (uint8_t)ch;
     }
     out[len] = '\0';
     *out_len = len;
@@ -188,39 +188,39 @@ per_error_t per_decode_bit_string_unconstrained(per_stream_t *s, uint8_t *out, i
 }
 
 /* ---- UTF8String (bytes) variable ---- */
-per_error_t per_encode_utf8_string(per_stream_t *s, const char *str, uint32_t max_len) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_utf8_string(per_stream_t *s, const uint8_t *str, uint32_t max_len) {
+    size_t len = str ? strlen((const char *)str) : 0;
     if (len > max_len) return PER_ERR_LENGTH;
     per_error_t err = per_encode_constrained_int(s, (int64_t)len, 0, max_len);
     if (err) return err;
-    return per_stream_write_bytes(s, (const uint8_t *)str, len);
+    return per_stream_write_bytes(s, str, len);
 }
 
-per_error_t per_decode_utf8_string(per_stream_t *s, char *out, uint32_t max_len) {
+per_error_t per_decode_utf8_string(per_stream_t *s, uint8_t *out, uint32_t max_len) {
     int64_t len;
     per_error_t err = per_decode_constrained_int(s, &len, 0, max_len);
     if (err) return err;
     if (len < 0 || (uint64_t)len > max_len) return PER_ERR_LENGTH;
     per_stream_align(s);
-    err = per_stream_read_bytes(s, (uint8_t *)out, (size_t)len);
+    err = per_stream_read_bytes(s, out, (size_t)len);
     if (err) return err;
     out[len] = '\0';
     return PER_OK;
 }
 
 /* ---- UTF8String unconstrained — length determinant + bytes ---- */
-per_error_t per_encode_utf8_string_unconstrained(per_stream_t *s, const char *str) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_utf8_string_unconstrained(per_stream_t *s, const uint8_t *str) {
+    size_t len = str ? strlen((const char *)str) : 0;
     per_error_t err = per_encode_length(s, (uint32_t)len);
     if (err) return err;
-    return per_stream_write_bytes(s, (const uint8_t *)str, len);
+    return per_stream_write_bytes(s, str, len);
 }
 
-per_error_t per_decode_utf8_string_unconstrained(per_stream_t *s, char *out, uint32_t *out_len) {
+per_error_t per_decode_utf8_string_unconstrained(per_stream_t *s, uint8_t *out, uint32_t *out_len) {
     uint32_t len;
     per_error_t err = per_decode_length(s, &len);
     if (err) return err;
-    err = per_stream_read_bytes(s, (uint8_t *)out, len);
+    err = per_stream_read_bytes(s, out, len);
     if (err) return err;
     out[len] = '\0';
     *out_len = len;
@@ -228,11 +228,11 @@ per_error_t per_decode_utf8_string_unconstrained(per_stream_t *s, char *out, uin
 }
 
 /* ---- UTF8String fixed ---- */
-per_error_t per_encode_utf8_string_fixed(per_stream_t *s, const char *str, uint32_t fixed_len) {
-    size_t len = str ? strlen(str) : 0;
+per_error_t per_encode_utf8_string_fixed(per_stream_t *s, const uint8_t *str, uint32_t fixed_len) {
+    size_t len = str ? strlen((const char *)str) : 0;
     if (len > fixed_len) len = fixed_len;
     per_stream_align(s);
-    per_error_t err = per_stream_write_bytes(s, (const uint8_t *)str, len);
+    per_error_t err = per_stream_write_bytes(s, str, len);
     if (err) return err;
     for (uint32_t i = (uint32_t)len; i < fixed_len; i++) {
         err = per_stream_write_byte_aligned(s, 0);
@@ -241,9 +241,9 @@ per_error_t per_encode_utf8_string_fixed(per_stream_t *s, const char *str, uint3
     return PER_OK;
 }
 
-per_error_t per_decode_utf8_string_fixed(per_stream_t *s, char *out, uint32_t fixed_len) {
+per_error_t per_decode_utf8_string_fixed(per_stream_t *s, uint8_t *out, uint32_t fixed_len) {
     per_stream_align(s);
-    per_error_t err = per_stream_read_bytes(s, (uint8_t *)out, fixed_len);
+    per_error_t err = per_stream_read_bytes(s, out, fixed_len);
     if (err) return err;
     out[fixed_len] = '\0';
     return PER_OK;

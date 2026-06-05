@@ -265,7 +265,7 @@ AddCause ::= INTEGER {
     position-reached                     (5),
     parameter-change-in-execution        (6),
     step-limit                           (7),
-    blocked-by-Mode                      (8),
+    blocked-by-mode                      (8),
     blocked-by-process                   (9),
     blocked-by-interlocking              (10),
     blocked-by-syncheck                  (11),

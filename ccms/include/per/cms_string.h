@@ -21,28 +21,28 @@ per_error_t per_encode_octet_string_unconstrained(per_stream_t *s, const uint8_t
 per_error_t per_decode_octet_string_unconstrained(per_stream_t *s, uint8_t *out, size_t *out_len);
 
 /* VisibleString: variable length SIZE(0..max_len) — each char 8 bits */
-per_error_t per_encode_visible_string(per_stream_t *s, const char *str, uint32_t max_len);
-per_error_t per_decode_visible_string(per_stream_t *s, char *out, uint32_t max_len);
+per_error_t per_encode_visible_string(per_stream_t *s, const uint8_t *str, uint32_t max_len);
+per_error_t per_decode_visible_string(per_stream_t *s, uint8_t *out, uint32_t max_len);
 
 /* VisibleString: unconstrained — length determinant + align + 8-bit chars */
-per_error_t per_encode_visible_string_unconstrained(per_stream_t *s, const char *str);
-per_error_t per_decode_visible_string_unconstrained(per_stream_t *s, char *out, uint32_t *out_len);
+per_error_t per_encode_visible_string_unconstrained(per_stream_t *s, const uint8_t *str);
+per_error_t per_decode_visible_string_unconstrained(per_stream_t *s, uint8_t *out, uint32_t *out_len);
 
 /* VisibleString: fixed length — no length prefix, pad with zeros */
-per_error_t per_encode_visible_string_fixed(per_stream_t *s, const char *str, uint32_t fixed_len);
-per_error_t per_decode_visible_string_fixed(per_stream_t *s, char *out, uint32_t fixed_len);
+per_error_t per_encode_visible_string_fixed(per_stream_t *s, const uint8_t *str, uint32_t fixed_len);
+per_error_t per_decode_visible_string_fixed(per_stream_t *s, uint8_t *out, uint32_t fixed_len);
 
 /* UTF8String: variable length SIZE(0..max_len bytes) — length constrained int + bytes */
-per_error_t per_encode_utf8_string(per_stream_t *s, const char *str, uint32_t max_len);
-per_error_t per_decode_utf8_string(per_stream_t *s, char *out, uint32_t max_len);
+per_error_t per_encode_utf8_string(per_stream_t *s, const uint8_t *str, uint32_t max_len);
+per_error_t per_decode_utf8_string(per_stream_t *s, uint8_t *out, uint32_t max_len);
 
 /* UTF8String: unconstrained — length determinant + align + bytes */
-per_error_t per_encode_utf8_string_unconstrained(per_stream_t *s, const char *str);
-per_error_t per_decode_utf8_string_unconstrained(per_stream_t *s, char *out, uint32_t *out_len);
+per_error_t per_encode_utf8_string_unconstrained(per_stream_t *s, const uint8_t *str);
+per_error_t per_decode_utf8_string_unconstrained(per_stream_t *s, uint8_t *out, uint32_t *out_len);
 
 /* UTF8String: fixed length — no length prefix, pad with zeros */
-per_error_t per_encode_utf8_string_fixed(per_stream_t *s, const char *str, uint32_t fixed_len);
-per_error_t per_decode_utf8_string_fixed(per_stream_t *s, char *out, uint32_t fixed_len);
+per_error_t per_encode_utf8_string_fixed(per_stream_t *s, const uint8_t *str, uint32_t fixed_len);
+per_error_t per_decode_utf8_string_fixed(per_stream_t *s, uint8_t *out, uint32_t fixed_len);
 
 /* BitString: fixed length — no length prefix, just bits */
 per_error_t per_encode_bit_string_fixed(per_stream_t *s, const uint8_t *data, int fixed_nbits);

@@ -3,6 +3,7 @@
 
 #include "cms_core.h"
 #include "per/cms_stream.h"
+#include "data/basic/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,9 +14,8 @@ extern "C" {
  * ObjectName ::= VisibleString (SIZE(0..64))
  * ============================================================
  */
-typedef struct {
-    uint8_t value[65];
-} cms_object_name_t;
+typedef cms_uint8_array_t cms_object_name_t;
+#define CMS_OBJECT_NAME_MAX_LEN 64
 
 CMS_EXPORT int cms_object_name_encode(const cms_object_name_t *v, uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_object_name_decode(cms_object_name_t *v, const uint8_t *in_buf, int in_len);

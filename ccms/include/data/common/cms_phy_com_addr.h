@@ -4,6 +4,7 @@
 #include "cms_core.h"
 #include "per/cms_stream.h"
 #include "data/basic/cms_integer.h"
+#include "data/basic/cms_string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,11 +21,13 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    uint8_t      addr[6];
-    uint8_t      priority;
-    uint16_t     vid;
-    uint16_t     appid;
+    cms_uint8_array_t               addr;
+    cms_int8u_t                     priority;
+    cms_int16u_t                    vid;
+    cms_int16u_t                    appid;
 } cms_phy_com_addr_t;
+
+#define CMS_PHY_COM_ADDR_ADDR_SIZE 6
 
 CMS_EXPORT int cms_phy_com_addr_encode(const cms_phy_com_addr_t *v, uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_phy_com_addr_decode(cms_phy_com_addr_t *v, const uint8_t *in_buf, int in_len);

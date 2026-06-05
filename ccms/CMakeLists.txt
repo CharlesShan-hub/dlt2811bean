@@ -29,6 +29,7 @@ add_library(ccms SHARED
     src/data/basic/cms_float.c
     src/data/basic/cms_string.c
     src/data/basic/cms_enumerated.c
+    src/data/basic/cms_coded_enum.c
     src/data/basic/cms_packed_list.c
     src/data/extended/cms_time.c
     src/data/common/cms_dbpos.c
@@ -47,7 +48,9 @@ add_library(ccms SHARED
     src/data/control/cms_originator.c
     src/data/control/cms_check.c
     src/data/control/cms_add_cause.c
-    src/data/block/cms_opt_flds.c
+    src/data/block/cms_rcb_opt_flds.c
+    src/data/block/cms_msvcb_opt_flds.c
+    src/data/block/cms_lcb_opt_flds.c
     src/data/block/cms_reason_code.c
     src/data/block/cms_trigger_conditions.c
     src/data/block/cms_smp_mod.c

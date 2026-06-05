@@ -18,7 +18,7 @@ extern "C" {
  */
 /* ---------- VisibleStringFixed ---------- */
 typedef struct {
-    char   *value;
+    uint8_t *value;
     int     fixed_len;
 } cms_visible_string_fixed_t;
 
@@ -29,7 +29,7 @@ int cms_visible_string_fixed_decode_stream(per_stream_t *s, cms_visible_string_f
 
 /* ---------- VisibleStringVar ---------- */
 typedef struct {
-    char   *value;
+    uint8_t *value;
     int     max_len;
 } cms_visible_string_var_t;
 
@@ -47,7 +47,7 @@ int cms_visible_string_var_decode_stream(per_stream_t *s, cms_visible_string_var
  */
 /* ---------- UTF8StringFixed ---------- */
 typedef struct {
-    char   *value;
+    uint8_t *value;
     int     fixed_len;
 } cms_utf8_string_fixed_t;
 
@@ -58,7 +58,7 @@ int cms_utf8_string_fixed_decode_stream(per_stream_t *s, cms_utf8_string_fixed_t
 
 /* ---------- UTF8StringVar ---------- */
 typedef struct {
-    char   *value;
+    uint8_t *value;
     int     max_len;
 } cms_utf8_string_var_t;
 
@@ -126,6 +126,16 @@ CMS_EXPORT int cms_bit_string_var_encode(const cms_bit_string_var_t *v, uint8_t 
 CMS_EXPORT int cms_bit_string_var_decode(cms_bit_string_var_t *v, const uint8_t *in_buf, int in_len);
 int cms_bit_string_var_encode_stream(per_stream_t *s, const cms_bit_string_var_t *value);
 int cms_bit_string_var_decode_stream(per_stream_t *s, cms_bit_string_var_t *value);
+
+/*
+ * ============================================================
+ * cms_uint8_array_t — pure byte array, no metadata, no encode/decode
+ * ============================================================
+ */
+typedef struct {
+    uint8_t *value;
+    int32_t  len;
+} cms_uint8_array_t;
 
 #ifdef __cplusplus
 }

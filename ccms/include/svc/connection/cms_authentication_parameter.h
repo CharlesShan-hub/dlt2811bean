@@ -3,6 +3,8 @@
 
 #include "cms_core.h"
 #include "per/cms_stream.h"
+#include "data/basic/cms_integer.h"
+#include "data/basic/cms_string.h"
 #include "data/extended/cms_time.h"
 
 #ifdef __cplusplus
@@ -15,19 +17,17 @@ extern "C" {
 
 /*
  * ============================================================
- * AuthenticationParameter — SEQUENCE used in Associate
- *
- *   signatureCertificate   OCTET STRING,
- *   signedTime             UtcTime,
- *   signedValue            OCTET STRING
+ * AuthenticationParameter ::= SEQUENCE {
+ *     signatureCertificate   OCTET STRING,
+ *     signedTime             UtcTime,
+ *     signedValue            OCTET STRING
+ * }
  * ============================================================
  */
 typedef struct {
-    uint8_t  cert[CMS_MAX_CERT_LEN];
-    int      cert_len;
-    int64_t  signed_time_ms;    /* milliseconds since epoch */
-    uint8_t  sig_val[CMS_MAX_CERT_LEN];
-    int      sig_len;
+    cms_uint8_array_t cert;
+    cms_int64_t       signed_time_ms;
+    cms_uint8_array_t sig_val;
 } cms_authentication_parameter_t;
 
 CMS_EXPORT int cms_authentication_parameter_encode(
@@ -35,8 +35,8 @@ CMS_EXPORT int cms_authentication_parameter_encode(
     uint8_t *out_buf, int *out_len);
 
 CMS_EXPORT int cms_authentication_parameter_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_authentication_parameter_t *param);
+    cms_authentication_parameter_t *param,
+    const uint8_t *in_buf, int in_len);
 
 int cms_authentication_parameter_encode_stream(
     per_stream_t *s, const cms_authentication_parameter_t *param);

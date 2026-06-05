@@ -13,20 +13,34 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * GoCB ::= SEQUENCE {
+ *     goEna      [1] IMPLICIT BOOLEAN,
+ *     goID       [2] IMPLICIT VisibleString129,
+ *     datSet     [3] IMPLICIT ObjectReference,
+ *     confRev    [4] IMPLICIT INT32U,
+ *     ndsCom     [5] IMPLICIT BOOLEAN,
+ *     dstAddress [6] IMPLICIT PHYCOMADDR OPTIONAL
+ * }
+ * ============================================================
+ */
+#define CMS_GO_ID_MAX_LEN 129
+
 typedef struct {
-    cms_boolean_t               goEna;
-    cms_visible_string_fixed_t  goID;
-    cms_object_reference_t      datSet;
-    cms_int32u_t                confRev;
-    cms_boolean_t               ndsCom;
-    cms_phy_com_addr_t          dstAddress;
-    int                         dstAddress_present;
+    cms_boolean_t              goEna;
+    cms_uint8_array_t          goID;
+    cms_object_reference_t     datSet;
+    cms_int32u_t               confRev;
+    cms_boolean_t              ndsCom;
+    cms_phy_com_addr_t         dstAddress;
+    cms_boolean_t              dstAddress_present;
 } cms_gocb_t;
 
-CMS_EXPORT int cms_gocb_encode(const cms_gocb_t *value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_gocb_decode(const uint8_t *in_buf, int in_len, cms_gocb_t *value);
-int cms_gocb_encode_stream(per_stream_t *s, const cms_gocb_t *value);
-int cms_gocb_decode_stream(per_stream_t *s, cms_gocb_t *value);
+CMS_EXPORT int cms_gocb_encode(const cms_gocb_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_gocb_decode(cms_gocb_t *v, const uint8_t *in_buf, int in_len);
+int cms_gocb_encode_stream(per_stream_t *s, const cms_gocb_t *v);
+int cms_gocb_decode_stream(per_stream_t *s, cms_gocb_t *v);
 
 #ifdef __cplusplus
 }

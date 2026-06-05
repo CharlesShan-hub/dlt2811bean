@@ -23,9 +23,9 @@ void test_string(void) {
         char out[130];
         per_stream_t w, r;
         per_stream_init_write(&w, buf, sizeof(buf));
-        per_encode_visible_string(&w, "Hello", 129);
+        per_encode_visible_string(&w, (const uint8_t *)"Hello", 129);
         per_stream_init_read(&r, buf, sizeof(buf));
-        per_decode_visible_string(&r, out, 129);
+        per_decode_visible_string(&r, (uint8_t *)out, 129);
         ASSERT_EQ(0, strcmp("Hello", out));
     }
     PASS();
@@ -36,9 +36,9 @@ void test_string(void) {
         char out[130];
         per_stream_t w, r;
         per_stream_init_write(&w, buf, sizeof(buf));
-        per_encode_visible_string(&w, "", 129);
+        per_encode_visible_string(&w, (const uint8_t *)"", 129);
         per_stream_init_read(&r, buf, sizeof(buf));
-        per_decode_visible_string(&r, out, 129);
+        per_decode_visible_string(&r, (uint8_t *)out, 129);
         ASSERT_EQ(0, strcmp("", out));
     }
     PASS();

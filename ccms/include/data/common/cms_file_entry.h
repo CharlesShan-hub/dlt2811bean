@@ -23,7 +23,7 @@ extern "C" {
  * }
  */
 typedef struct {
-    cms_visible_string_fixed_t   fileName;       /* VisibleString129 */
+    cms_uint8_array_t            fileName;  /* VisibleString129 (SIZE(0..129)) */
     cms_int32u_t                 fileSize;
     cms_utc_time_t               lastModified;
     cms_int32u_t                 checkSum;

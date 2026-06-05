@@ -6,7 +6,7 @@
 #include "data/basic/cms_boolean.h"
 #include "data/basic/cms_integer.h"
 #include "data/basic/cms_string.h"
-#include "data/block/cms_opt_flds.h"
+#include "data/block/cms_msvcb_opt_flds.h"
 #include "data/block/cms_smp_mod.h"
 #include "data/common/cms_object_reference.h"
 #include "data/common/cms_phy_com_addr.h"
@@ -15,23 +15,39 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * MSVCB ::= SEQUENCE {
+ *     svEna       [1] IMPLICIT BOOLEAN,
+ *     msvID       [2] IMPLICIT VisibleString129,
+ *     datSet      [3] IMPLICIT ObjectReference,
+ *     confRev     [4] IMPLICIT INT32U,
+ *     smpMod      [5] IMPLICIT SmpMod OPTIONAL,
+ *     smpRate     [6] IMPLICIT INT16U,
+ *     optFlds     [7] IMPLICIT MSVCBOptFlds,
+ *     dstAddress  [8] IMPLICIT PHYCOMADDR OPTIONAL
+ * }
+ * ============================================================
+ */
+#define CMS_MSV_ID_MAX_LEN 129
+
 typedef struct {
     cms_boolean_t               svEna;
-    cms_visible_string_fixed_t  msvID;
+    cms_uint8_array_t           msvID;
     cms_object_reference_t      datSet;
     cms_int32u_t                confRev;
     cms_smp_mod_t               smpMod;
-    int                         smpMod_present;
+    cms_boolean_t               smpMod_present;
     cms_int16u_t                smpRate;
     cms_msvcb_opt_flds_t        optFlds;
     cms_phy_com_addr_t          dstAddress;
-    int                         dstAddress_present;
+    cms_boolean_t               dstAddress_present;
 } cms_msvcb_t;
 
-CMS_EXPORT int cms_msvcb_encode(const cms_msvcb_t *value, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_msvcb_decode(const uint8_t *in_buf, int in_len, cms_msvcb_t *value);
-int cms_msvcb_encode_stream(per_stream_t *s, const cms_msvcb_t *value);
-int cms_msvcb_decode_stream(per_stream_t *s, cms_msvcb_t *value);
+CMS_EXPORT int cms_msvcb_encode(const cms_msvcb_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_msvcb_decode(cms_msvcb_t *v, const uint8_t *in_buf, int in_len);
+int cms_msvcb_encode_stream(per_stream_t *s, const cms_msvcb_t *v);
+int cms_msvcb_decode_stream(per_stream_t *s, cms_msvcb_t *v);
 
 #ifdef __cplusplus
 }
