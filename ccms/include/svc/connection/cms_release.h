@@ -28,8 +28,8 @@ CMS_EXPORT int cms_release_request_encode(
 );
 
 CMS_EXPORT int cms_release_request_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_request_t *sdu
+    cms_release_request_t *sdu,
+    const uint8_t *in_buf, int in_len
 );
 
 CMS_EXPORT int cms_release_response_encode(
@@ -38,8 +38,8 @@ CMS_EXPORT int cms_release_response_encode(
 );
 
 CMS_EXPORT int cms_release_response_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_response_t *sdu
+    cms_release_response_t *sdu,
+    const uint8_t *in_buf, int in_len
 );
 
 CMS_EXPORT int cms_release_error_encode(
@@ -48,8 +48,8 @@ CMS_EXPORT int cms_release_error_encode(
 );
 
 CMS_EXPORT int cms_release_error_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_error_t *sdu
+    cms_release_error_t *sdu,
+    const uint8_t *in_buf, int in_len
 );
 
 #ifdef __cplusplus

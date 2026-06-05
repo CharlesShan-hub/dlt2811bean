@@ -44,7 +44,7 @@ add_library(ccms SHARED
     src/data/common/cms_sub_reference.c
     src/data/common/cms_tcmd.c
     src/data/common/cms_time_stamp.c
-    src/data/fc/cms_fc.c
+    src/data/fc/cms_functional_constraint.c
     src/data/control/cms_originator.c
     src/data/control/cms_check.c
     src/data/control/cms_add_cause.c
@@ -62,6 +62,7 @@ add_library(ccms SHARED
     src/data/block/cms_urcb.c
     src/data/choice/cms_data.c
     src/data/choice/cms_data_definition.c
+    src/cms_test_pair.c
 )
 target_include_directories(ccms
     PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

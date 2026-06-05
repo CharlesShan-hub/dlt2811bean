@@ -20,8 +20,8 @@ CMS_EXPORT int cms_abort_encode(
 );
 
 CMS_EXPORT int cms_abort_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_abort_t *sdu
+    cms_abort_t *sdu,
+    const uint8_t *in_buf, int in_len
 );
 
 #ifdef __cplusplus

@@ -1,0 +1,27 @@
+package com.ysh.jcms.service.connection;
+import com.sun.jna.Structure;
+
+import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.service.other.CmsAssociationId;
+import java.util.Arrays;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsReleaseRequest extends CmsType {
+    public CmsAssociationId.ByValue assocId = new CmsAssociationId.ByValue();
+
+    @Override
+    protected List<String> getFieldOrder() {
+        return Arrays.asList("assocId");
+    }
+
+    @Override
+    protected int encodeBufSize() { return 128; }
+
+    public static class ByValue extends CmsReleaseRequest implements Structure.ByValue {}
+}

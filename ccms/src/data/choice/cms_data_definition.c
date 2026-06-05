@@ -1,7 +1,7 @@
 #include "data/choice/cms_data_definition.h"
 #include "per/cms_choice.h"
 #include "data/basic/cms_integer.h"
-#include "data/fc/cms_fc.h"
+#include "data/fc/cms_functional_constraint.h"
 
 /* ---- internal stream version ---- */
 
@@ -33,7 +33,7 @@ int cms_data_definition_encode_stream(per_stream_t *s, const cms_data_definition
             rc = cms_boolean_encode_stream(s, &m->has_fc);
             if (rc) return rc;
             if (m->has_fc.value){
-                rc = cms_fc_encode_stream(s, &m->fc);
+                rc = cms_functional_constraint_encode_stream(s, &m->fc);
                 if (rc) return rc;
             }
             if (m->type){
@@ -90,7 +90,7 @@ int cms_data_definition_decode_stream(per_stream_t *s, cms_data_definition_t *de
                 rc = cms_boolean_decode_stream(s, &m->has_fc);
                 if (rc) return rc;
                 if (m->has_fc.value){
-                    rc = cms_fc_decode_stream(s, &m->fc);
+                    rc = cms_functional_constraint_decode_stream(s, &m->fc);
                     if (rc) return rc;
                 }
                 m->type = (cms_data_definition_t *)calloc(1, sizeof(cms_data_definition_t));

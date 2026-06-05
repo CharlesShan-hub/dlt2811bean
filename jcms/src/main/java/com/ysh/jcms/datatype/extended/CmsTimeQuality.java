@@ -1,0 +1,27 @@
+package com.ysh.jcms.datatype.extended;
+import com.sun.jna.Structure;
+
+import com.ysh.jcms.datatype.basic.CmsInt32;
+import com.ysh.jcms.datatype.basic.CmsInt64U;
+import com.ysh.jcms.ffi.CmsType;
+import java.util.Arrays;
+import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Getter
+@Setter
+@Accessors(fluent = true)
+public class CmsTimeQuality extends CmsType {
+    public CmsInt32.ByValue tagf = new CmsInt32.ByValue();
+    public CmsInt32.ByValue precision = new CmsInt32.ByValue();
+    public CmsInt64U.ByValue fraction = new CmsInt64U.ByValue();
+
+    @Override
+    protected List<String> getFieldOrder() {
+        return Arrays.asList("tagf", "precision", "fraction");
+    }
+
+    public static class ByValue extends CmsTimeQuality implements Structure.ByValue {}
+}

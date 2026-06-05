@@ -12,8 +12,8 @@ CMS_EXPORT int cms_release_request_encode(
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_release_request_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_request_t *sdu)
+    cms_release_request_t *sdu,
+    const uint8_t *in_buf, int in_len)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -34,8 +34,8 @@ CMS_EXPORT int cms_release_response_encode(
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_release_response_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_response_t *sdu)
+    cms_release_response_t *sdu,
+    const uint8_t *in_buf, int in_len)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
@@ -56,8 +56,8 @@ CMS_EXPORT int cms_release_error_encode(
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_release_error_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_release_error_t *sdu)
+    cms_release_error_t *sdu,
+    const uint8_t *in_buf, int in_len)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

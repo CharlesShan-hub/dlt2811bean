@@ -13,8 +13,8 @@ CMS_EXPORT int cms_abort_encode(
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_abort_decode(
-    const uint8_t *in_buf, int in_len,
-    cms_abort_t *sdu)
+    cms_abort_t *sdu,
+    const uint8_t *in_buf, int in_len)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
