@@ -13,41 +13,34 @@ public class CmsUint8Array extends CmsType {
     public Pointer value;
     public int len;
 
-    /** postDecode() 时从 Pointer 拷出的缓存，避免 Pointer 指向的内存失效。 */
+    /** Cached bytes extracted from native Pointer after decode. */
     private transient byte[] _cachedBytes;
 
-    /**
-     * 默认构造 — value = null，用于无 codec 的嵌入场景。
-     * 如果嵌入到父结构体中，请使用 {@link #ByValue(int)} 指定缓冲区大小。
-     */
+    /** Default constructor — value is null, for embedding without codec. */
     public CmsUint8Array() {
         super(false);
     }
 
     /**
-     * 指定缓冲区大小构造 — 预分配 maxLen 字节 native 内存。
+     * Pre-allocate a buffer of maxLen bytes in native memory.
      *
-     * @param maxLen 预分配字节数（> 0 时自动 {@code new Memory(maxLen)}）
+     * @param maxLen buffer size ({@code > 0} allocates {@code new Memory(maxLen)})
      */
     public CmsUint8Array(int maxLen) {
         this(maxLen, false);
     }
 
     /**
-     * 供别名子类使用（如 CmsEntryId、CmsObjectName），同时指定缓冲区大小。
+     * For alias subclasses (CmsEntryId, CmsObjectName, etc.) that need both
+     * a pre-allocated buffer and FFI codec.
      *
-     * @param maxLen       预分配字节数（> 0 时自动 {@code new Memory(maxLen)}）
-     * @param codecEnabled 是否绑定 FFI encode/decode
+     * @param maxLen       buffer size ({@code > 0} allocates {@code new Memory(maxLen)})
+     * @param codecEnabled whether to bind FFI encode/decode
      */
     protected CmsUint8Array(int maxLen, boolean codecEnabled) {
         super(codecEnabled);
         this.value = maxLen > 0 ? new Memory(maxLen) : null;
         this.len = 0;
-    }
-
-    /** @deprecated 请使用 {@link #CmsUint8Array(int, boolean)} */
-    protected CmsUint8Array(boolean codecEnabled) {
-        this(0, codecEnabled);
     }
 
     public static class ByValue extends CmsUint8Array implements Structure.ByValue {
@@ -69,7 +62,7 @@ public class CmsUint8Array extends CmsType {
         }
     }
 
-    /** 获取字节数组。 */
+    /** Get the underlying byte array, cached from native memory. */
     public byte[] bytes() {
         if (_cachedBytes != null) return _cachedBytes;
         if (value == null || len == 0) return new byte[0];

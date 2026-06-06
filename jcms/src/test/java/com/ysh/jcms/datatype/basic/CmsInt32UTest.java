@@ -10,16 +10,13 @@ class CmsInt32UTest {
     @Test
     void roundtrip() {
         CmsInt32U original = new CmsInt32U().value(300000000);
-        byte[] data = original.encode();
-        CmsInt32U decoded = new CmsInt32U().decode(data);
-        assertEquals(300000000, decoded.value());
+        assertEquals(original, new CmsInt32U().decode(original.encode()));
     }
 
     @Test
     void zero() {
-        byte[] data = new CmsInt32U().value(0).encode();
-        CmsInt32U r = new CmsInt32U().decode(data);
-        assertEquals(0, r.value());
+        assertEquals(new CmsInt32U().value(0),
+                     new CmsInt32U().decode(new CmsInt32U().value(0).encode()));
     }
 
     @Test
@@ -29,8 +26,8 @@ class CmsInt32UTest {
 
     @Test
     void decodeOverwrites() {
-        CmsInt32U v = new CmsInt32U().value(999);
-        v.decode(new CmsInt32U().value(42).encode());
-        assertEquals(42, v.value());
+        CmsInt32U target = new CmsInt32U().value(999);
+        target.decode(new CmsInt32U().value(42).encode());
+        assertEquals(new CmsInt32U().value(42), target);
     }
 }

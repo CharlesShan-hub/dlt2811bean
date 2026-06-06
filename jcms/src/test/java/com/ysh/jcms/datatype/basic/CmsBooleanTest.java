@@ -2,24 +2,21 @@ package com.ysh.jcms.datatype.basic;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("CmsBoolean")
 class CmsBooleanTest {
 
     @Test
     void trueRoundtrip() {
-        byte[] data = new CmsBoolean().value(1).encode();
-        CmsBoolean r = new CmsBoolean().decode(data);
-        assertEquals(1, r.value());
+        assertEquals(new CmsBoolean().value(1),
+                     new CmsBoolean().decode(new CmsBoolean().value(1).encode()));
     }
 
     @Test
     void falseRoundtrip() {
-        byte[] data = new CmsBoolean().value(0).encode();
-        CmsBoolean r = new CmsBoolean().decode(data);
-        assertEquals(0, r.value());
+        assertEquals(new CmsBoolean().value(0),
+                     new CmsBoolean().decode(new CmsBoolean().value(0).encode()));
     }
 
     @Test
@@ -29,8 +26,8 @@ class CmsBooleanTest {
 
     @Test
     void decodeOverwrites() {
-        CmsBoolean v = new CmsBoolean().value(1);
-        v.decode(new CmsBoolean().value(0).encode());
-        assertEquals(0, v.value());
+        CmsBoolean target = new CmsBoolean().value(1);
+        target.decode(new CmsBoolean().value(0).encode());
+        assertEquals(new CmsBoolean().value(0), target);
     }
 }

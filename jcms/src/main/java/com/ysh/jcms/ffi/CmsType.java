@@ -3,13 +3,12 @@ package com.ysh.jcms.ffi;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -97,6 +96,56 @@ public abstract class CmsType extends Structure {
                 } catch (Exception e) { /* ignore */ }
             }
         }
+    }
+
+    // ==================== equals / hashCode ====================
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || !getClass().equals(o.getClass())) return false;
+        try {
+            for (String fn : getFieldOrder()) {
+                java.lang.reflect.Field f = getClass().getField(fn);
+                Object a = f.get(this);
+                Object b = f.get(o);
+                if (a instanceof com.sun.jna.Pointer && b instanceof com.sun.jna.Pointer) {
+                    // Prefer bytes() content over Pointer address
+                    try {
+                        Method m = getClass().getMethod("bytes");
+                        if (!Arrays.equals((byte[]) m.invoke(this), (byte[]) m.invoke(o))) {
+                            return false;
+                        }
+                    } catch (NoSuchMethodException e) {
+                        if (!Objects.equals(a, b)) return false;
+                    }
+                } else if (!Objects.equals(a, b)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int h = 0;
+        try {
+            for (String fn : getFieldOrder()) {
+                java.lang.reflect.Field f = getClass().getField(fn);
+                Object v = f.get(this);
+                if (v instanceof com.sun.jna.Pointer) {
+                    try {
+                        Method m = getClass().getMethod("bytes");
+                        v = m.invoke(this);
+                    } catch (NoSuchMethodException ignored) {}
+                }
+                h = 31 * h + (v != null ? v.hashCode() : 0);
+            }
+        } catch (Exception ignored) {}
+        return h;
     }
 
     // ==================== 名称 ====================
