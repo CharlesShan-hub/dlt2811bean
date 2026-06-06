@@ -8,6 +8,6 @@ public class CmsEntryId extends CmsUint8Array {
     public static class ByValue extends CmsEntryId implements Structure.ByValue {}
 
     public CmsEntryId() {
-        super(true);
+        super(8, true);
     }
 }

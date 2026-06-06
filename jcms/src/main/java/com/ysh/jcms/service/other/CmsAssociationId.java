@@ -7,7 +7,7 @@ public class CmsAssociationId extends CmsUint8Array {
     public static final int MAX = 64;
 
     public CmsAssociationId() {
-        super(true);
+        super(64, true);
     }
 
     public static class ByValue extends CmsAssociationId implements Structure.ByValue {}

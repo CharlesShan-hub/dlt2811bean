@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsAssociateRequest extends CmsType {
-    public CmsUint8Array.ByValue sap_ref = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue sap_ref = new CmsUint8Array.ByValue(64);
     public CmsBoolean sap_ref_present = new CmsBoolean.ByValue();
     public CmsAuthenticationParameter.ByValue auth_param = new CmsAuthenticationParameter.ByValue();
     public CmsBoolean auth_param_present = new CmsBoolean.ByValue();

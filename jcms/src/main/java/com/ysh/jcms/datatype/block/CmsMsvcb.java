@@ -21,7 +21,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsMsvcb extends CmsType {
     public CmsBoolean.ByValue svEna = new CmsBoolean.ByValue();
-    public CmsUint8Array.ByValue msvID = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue msvID = new CmsUint8Array.ByValue(129);
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();
     public CmsInt32U.ByValue confRev = new CmsInt32U.ByValue();
     public CmsSmpMod.ByValue smpMod = new CmsSmpMod.ByValue();

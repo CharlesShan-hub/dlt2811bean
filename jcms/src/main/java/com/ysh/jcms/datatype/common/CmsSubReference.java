@@ -7,7 +7,7 @@ public class CmsSubReference extends CmsUint8Array {
     public static final int MAX_LEN = 129;
 
     public CmsSubReference() {
-        super(true);
+        super(129, true);
     }
 
     public static class ByValue extends CmsSubReference implements Structure.ByValue {}

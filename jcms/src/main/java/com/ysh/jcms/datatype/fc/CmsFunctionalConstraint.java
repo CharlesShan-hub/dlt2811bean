@@ -7,7 +7,7 @@ public class CmsFunctionalConstraint extends CmsUint8Array {
     public static final int LEN = 2;
 
     public CmsFunctionalConstraint() {
-        super(true);
+        super(2, true);
     }
 
     public static class ByValue extends CmsFunctionalConstraint implements Structure.ByValue {}

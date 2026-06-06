@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsGoCB extends CmsType {
     public CmsBoolean.ByValue goEna = new CmsBoolean.ByValue();
-    public CmsUint8Array.ByValue goID = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue goID = new CmsUint8Array.ByValue(129);
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();
     public CmsInt32U.ByValue confRev = new CmsInt32U.ByValue();
     public CmsBoolean.ByValue ndsCom = new CmsBoolean.ByValue();

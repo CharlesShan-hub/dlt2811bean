@@ -48,6 +48,7 @@ int cms_urcb_decode_stream(per_stream_t *s, cms_urcb_t *v){
     cms_visible_string_fixed_t _rptID = { v->rptID.value, CMS_URCB_RPT_ID_MAX_LEN };
     rc = cms_visible_string_fixed_decode_stream(s, &_rptID);
     if (rc) return rc;
+    v->rptID.len = CMS_URCB_RPT_ID_MAX_LEN;
     rc = cms_boolean_decode_stream(s, &v->rptEna);
     if (rc) return rc;
     rc = cms_object_reference_decode_stream(s, &v->datSet);

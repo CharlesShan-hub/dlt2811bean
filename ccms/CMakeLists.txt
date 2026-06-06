@@ -62,7 +62,6 @@ add_library(ccms SHARED
     src/data/block/cms_urcb.c
     src/data/choice/cms_data.c
     src/data/choice/cms_data_definition.c
-    src/cms_test_pair.c
 )
 target_include_directories(ccms
     PUBLIC  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

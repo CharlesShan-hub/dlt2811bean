@@ -13,9 +13,9 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsAuthenticationParameter extends CmsType {
-    public CmsUint8Array.ByValue cert = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue cert = new CmsUint8Array.ByValue(2048);
     public long signed_time_ms;
-    public CmsUint8Array.ByValue sig_val = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue sig_val = new CmsUint8Array.ByValue(2048);
 
     @Override
     protected List<String> getFieldOrder() {

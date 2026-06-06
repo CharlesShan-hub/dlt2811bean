@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsFileEntry extends CmsType {
-    public CmsUint8Array.ByValue fileName = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue fileName = new CmsUint8Array.ByValue(129);
     public CmsInt32U.ByValue fileSize = new CmsInt32U.ByValue();
     public CmsUtcTime.ByValue lastModified = new CmsUtcTime.ByValue();
     public CmsInt32U.ByValue checkSum = new CmsInt32U.ByValue();

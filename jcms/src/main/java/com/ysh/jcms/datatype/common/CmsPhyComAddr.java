@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsPhyComAddr extends CmsType {
-    public CmsUint8Array.ByValue addr = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue addr = new CmsUint8Array.ByValue(6);
     public CmsInt8U.ByValue priority = new CmsInt8U.ByValue();
     public CmsInt16U.ByValue vid = new CmsInt16U.ByValue();
     public CmsInt16U.ByValue appid = new CmsInt16U.ByValue();

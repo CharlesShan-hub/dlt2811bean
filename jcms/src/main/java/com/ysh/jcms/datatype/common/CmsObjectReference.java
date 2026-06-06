@@ -8,6 +8,6 @@ public class CmsObjectReference extends CmsUint8Array {
     public static class ByValue extends CmsObjectReference implements Structure.ByValue {}
 
     public CmsObjectReference() {
-        super(true);
+        super(129, true);
     }
 }

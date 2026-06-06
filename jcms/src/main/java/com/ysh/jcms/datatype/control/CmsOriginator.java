@@ -27,7 +27,7 @@ public class CmsOriginator extends CmsType {
     public static final int ORCAT_PROCESS            = 8;
 
     public CmsInt32.ByValue or_cat = new CmsInt32.ByValue();
-    public CmsUint8Array.ByValue or_ident = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue or_ident = new CmsUint8Array.ByValue(64);
 
     @Override
     protected List<String> getFieldOrder() {

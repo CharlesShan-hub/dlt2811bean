@@ -37,6 +37,7 @@ int cms_gocb_decode_stream(per_stream_t *s, cms_gocb_t *v){
     cms_visible_string_fixed_t _goID = { v->goID.value, CMS_GO_ID_MAX_LEN };
     rc = cms_visible_string_fixed_decode_stream(s, &_goID);
     if (rc) return rc;
+    v->goID.len = CMS_GO_ID_MAX_LEN;
     rc = cms_object_reference_decode_stream(s, &v->datSet);
     if (rc) return rc;
     rc = cms_int32u_decode_stream(s, &v->confRev);

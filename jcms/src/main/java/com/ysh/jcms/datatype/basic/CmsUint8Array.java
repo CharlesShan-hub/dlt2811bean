@@ -16,17 +16,43 @@ public class CmsUint8Array extends CmsType {
     /** postDecode() 时从 Pointer 拷出的缓存，避免 Pointer 指向的内存失效。 */
     private transient byte[] _cachedBytes;
 
-    public static class ByValue extends CmsUint8Array implements Structure.ByValue {}
-
+    /**
+     * 默认构造 — value = null，用于无 codec 的嵌入场景。
+     * 如果嵌入到父结构体中，请使用 {@link #ByValue(int)} 指定缓冲区大小。
+     */
     public CmsUint8Array() {
         super(false);
     }
 
     /**
-     * 供别名子类使用（如 CmsEntryId、CmsObjectName），启用 codec 后自动绑定子类的 FFI encode/decode。
+     * 指定缓冲区大小构造 — 预分配 maxLen 字节 native 内存。
+     *
+     * @param maxLen 预分配字节数（> 0 时自动 {@code new Memory(maxLen)}）
      */
-    protected CmsUint8Array(boolean codecEnabled) {
+    public CmsUint8Array(int maxLen) {
+        this(maxLen, false);
+    }
+
+    /**
+     * 供别名子类使用（如 CmsEntryId、CmsObjectName），同时指定缓冲区大小。
+     *
+     * @param maxLen       预分配字节数（> 0 时自动 {@code new Memory(maxLen)}）
+     * @param codecEnabled 是否绑定 FFI encode/decode
+     */
+    protected CmsUint8Array(int maxLen, boolean codecEnabled) {
         super(codecEnabled);
+        this.value = maxLen > 0 ? new Memory(maxLen) : null;
+        this.len = 0;
+    }
+
+    /** @deprecated 请使用 {@link #CmsUint8Array(int, boolean)} */
+    protected CmsUint8Array(boolean codecEnabled) {
+        this(0, codecEnabled);
+    }
+
+    public static class ByValue extends CmsUint8Array implements Structure.ByValue {
+        public ByValue() { this(0); }
+        public ByValue(int maxLen) { super(maxLen); }
     }
 
     @Override

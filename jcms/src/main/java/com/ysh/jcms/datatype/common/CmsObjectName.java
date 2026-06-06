@@ -7,7 +7,7 @@ public class CmsObjectName extends CmsUint8Array {
     public static final int MAX_LEN = 64;
 
     public CmsObjectName() {
-        super(true);
+        super(64, true);
     }
 
     public static class ByValue extends CmsObjectName implements Structure.ByValue {}

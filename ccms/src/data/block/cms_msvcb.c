@@ -46,6 +46,7 @@ int cms_msvcb_decode_stream(per_stream_t *s, cms_msvcb_t *v){
     cms_visible_string_fixed_t _msvID = { v->msvID.value, CMS_MSV_ID_MAX_LEN };
     rc = cms_visible_string_fixed_decode_stream(s, &_msvID);
     if (rc) return rc;
+    v->msvID.len = CMS_MSV_ID_MAX_LEN;
     rc = cms_object_reference_decode_stream(s, &v->datSet);
     if (rc) return rc;
     rc = cms_int32u_decode_stream(s, &v->confRev);

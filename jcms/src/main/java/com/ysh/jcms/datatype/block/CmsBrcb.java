@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsBrcb extends CmsType {
-    public CmsUint8Array.ByValue rptID = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue rptID = new CmsUint8Array.ByValue(129);
     public CmsBoolean.ByValue rptEna = new CmsBoolean.ByValue();
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();
     public CmsInt32U.ByValue confRev = new CmsInt32U.ByValue();
@@ -35,7 +35,7 @@ public class CmsBrcb extends CmsType {
     public CmsBinaryTime.ByValue timeOfEntry = new CmsBinaryTime.ByValue();
     public CmsInt16.ByValue resvTms = new CmsInt16.ByValue();
     public CmsBoolean.ByValue resvTms_is_present = new CmsBoolean.ByValue();
-    public CmsUint8Array.ByValue owner = new CmsUint8Array.ByValue();
+    public CmsUint8Array.ByValue owner = new CmsUint8Array.ByValue(64);
     public CmsBoolean.ByValue owner_is_present = new CmsBoolean.ByValue();
 
     @Override
