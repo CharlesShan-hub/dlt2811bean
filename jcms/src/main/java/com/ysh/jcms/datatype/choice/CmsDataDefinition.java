@@ -19,10 +19,6 @@ public class CmsDataDefinition extends CmsType {
     public CmsDataType.ByValue choice = new CmsDataType.ByValue();
     public CmsDataDefinitionUnion value = new CmsDataDefinitionUnion();
 
-    public CmsDataDefinition() {
-        super();
-    }
-
     public static CmsDataDefinition ofError(int errorCode) {
         CmsDataDefinition d = new CmsDataDefinition();
         d.choice().value(CmsDataType.ERROR);
