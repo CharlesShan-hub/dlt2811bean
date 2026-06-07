@@ -110,9 +110,9 @@ public abstract class CmsType extends Structure {
                 Object a = f.get(this);
                 Object b = f.get(o);
                 if (a instanceof com.sun.jna.Pointer && b instanceof com.sun.jna.Pointer) {
-                    // Prefer bytes() content over Pointer address
+                    // Compare Pointer content via value() instead of address
                     try {
-                        Method m = getClass().getMethod("bytes");
+                        Method m = getClass().getMethod("value");
                         if (!Arrays.equals((byte[]) m.invoke(this), (byte[]) m.invoke(o))) {
                             return false;
                         }
@@ -138,7 +138,7 @@ public abstract class CmsType extends Structure {
                 Object v = f.get(this);
                 if (v instanceof com.sun.jna.Pointer) {
                     try {
-                        Method m = getClass().getMethod("bytes");
+                        Method m = getClass().getMethod("value");
                         v = m.invoke(this);
                     } catch (NoSuchMethodException ignored) {}
                 }

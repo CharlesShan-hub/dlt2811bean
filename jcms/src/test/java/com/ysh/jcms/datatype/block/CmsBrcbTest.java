@@ -10,22 +10,22 @@ class CmsBrcbTest {
     @Test
     void roundtrip() {
         CmsBrcb original = new CmsBrcb();
-        original.rptID().bytes("BRCB_001");
-        original.rptEna().value(1);
-        original.datSet().bytes("DataSet_01");
+        original.rptID().value("BRCB_001");
+        original.rptEna().value(true);
+        original.datSet().value("DataSet_01");
         original.confRev().value(1);
         original.bufTm().value(1000);
-        original.gi().value(0);
-        original.purgeBuf().value(1);
+        original.gi().value(false);
+        original.purgeBuf().value(true);
 
         byte[] data = original.encode();
         CmsBrcb decoded = new CmsBrcb().decode(data);
 
-        assertEquals("BRCB_001", new String(decoded.rptID().bytes()).trim());
-        assertEquals(1, decoded.rptEna().value());
+        assertEquals("BRCB_001", new String(decoded.rptID().value()).trim());
+        assertEquals(true, decoded.rptEna().value());
         assertEquals(1, decoded.confRev().value());
         assertEquals(1000, decoded.bufTm().value());
-        assertEquals(0, decoded.gi().value());
-        assertEquals(1, decoded.purgeBuf().value());
+        assertEquals(false, decoded.gi().value());
+        assertEquals(true, decoded.purgeBuf().value());
     }
 }

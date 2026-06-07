@@ -7,7 +7,10 @@ int cms_entry_id_encode_stream(per_stream_t *s, const cms_entry_id_t *v){
 }
 int cms_entry_id_decode_stream(per_stream_t *s, cms_entry_id_t *v){
     cms_octet_string_fixed_t _s = { v->value, CMS_ENTRY_ID_LEN };
-    return cms_octet_string_fixed_decode_stream(s, &_s);
+    int rc = cms_octet_string_fixed_decode_stream(s, &_s);
+    if (rc) return rc;
+    v->len = CMS_ENTRY_ID_LEN;
+    return CMS_OK;
 }
 
 CMS_EXPORT int cms_entry_id_encode(const cms_entry_id_t *v, uint8_t *b, int *l){

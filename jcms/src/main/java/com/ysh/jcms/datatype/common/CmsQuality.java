@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatype.common;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsInt32;
 import com.ysh.jcms.ffi.CmsType;
@@ -16,6 +16,11 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsQuality extends CmsType {
+    public static final int GOOD          = 0;
+    public static final int INVALID       = 1;
+    public static final int RESERVED      = 2;
+    public static final int QUESTIONABLE  = 3;
+
     public CmsInt32.ByValue validity = new CmsInt32.ByValue();
     public CmsBoolean.ByValue overflow = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue outOfRange = new CmsBoolean.ByValue();

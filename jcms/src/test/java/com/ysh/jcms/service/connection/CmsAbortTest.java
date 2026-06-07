@@ -13,7 +13,7 @@ class CmsAbortTest {
     void roundtrip() {
         CmsAbort original = new CmsAbort();
         original.reason.value(CmsAbortReason.INVALID_ARGUMENT);
-        original.assocId.bytes("assoc-1");
+        original.assocId.value("assoc-1");
 
         byte[] data = original.encode();
         CmsAbort decoded = new CmsAbort().decode(data);

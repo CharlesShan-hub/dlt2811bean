@@ -19,4 +19,6 @@ public class CmsDataDefinitionStructure extends Structure {
     protected List<String> getFieldOrder() {
         return Arrays.asList("elements", "count");
     }
+
+    public static class ByValue extends CmsDataDefinitionStructure implements Structure.ByValue {}
 }

@@ -19,7 +19,7 @@ class MiniTest {
     @Test
     void testWriteReadByValue() {
         Mini m = new Mini();
-        m.data.bytes("hello");
+        m.data.value("hello");
         m.count.value(42);
         m.write();
 

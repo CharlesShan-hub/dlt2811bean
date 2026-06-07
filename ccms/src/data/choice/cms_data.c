@@ -171,7 +171,7 @@ CMS_EXPORT int cms_data_encode(const cms_data_t *data, uint8_t *out_buf, int *ou
     return rc;
 }
 
-CMS_EXPORT int cms_data_decode(const uint8_t *in_buf, int in_len, cms_data_t *data)
+CMS_EXPORT int cms_data_decode(cms_data_t *data, const uint8_t *in_buf, int in_len)
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);

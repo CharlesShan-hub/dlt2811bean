@@ -1,6 +1,5 @@
-package com.ysh.jcms.datatype.basic;
+package com.ysh.jcms.datatype.extended;
 
-import com.ysh.jcms.datatype.extended.CmsBinaryTime;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;

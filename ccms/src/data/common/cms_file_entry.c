@@ -19,6 +19,7 @@ int cms_file_entry_decode_stream(per_stream_t *s, cms_file_entry_t *v){
     cms_visible_string_fixed_t fileName = {v->fileName.value, 129};
     int rc = cms_visible_string_fixed_decode_stream(s, &fileName);
     if (rc) return rc;
+    v->fileName.len = 129;
     rc = cms_int32u_decode_stream(s, &v->fileSize);
     if (rc) return rc;
     rc = cms_utc_time_decode_stream(s, &v->lastModified);

@@ -4,26 +4,28 @@
 /* ---- internal stream version ---- */
 
 int cms_time_quality_encode_stream(per_stream_t *s, const cms_time_quality_t *v){
-    if (v->tagf.value < 0 || v->tagf.value > 2) return CMS_ERR;
     if (v->precision.value < 0 || v->precision.value > 31) return CMS_ERR;
 
-    uint8_t raw = (uint8_t)(v->tagf.value)          /* bits 0-2 */
-                | (uint8_t)(v->precision.value << 3); /* bits 3-7 */
+    uint8_t raw = 0;
+    if (v->leap_seconds_known.value)      raw |= 0x01;
+    if (v->clock_failure.value)           raw |= 0x02;
+    if (v->clock_not_synchronized.value)  raw |= 0x04;
+    raw |= (uint8_t)(v->precision.value << 3); /* bits 3-7 */
     return per_encode_bit_string_fixed(s, &raw, 8);
 }
 int cms_time_quality_decode_stream(per_stream_t *s, cms_time_quality_t *v){
     uint8_t raw;
     int rc = per_decode_bit_string_fixed(s, &raw, 8);
     if (rc) return rc;
-    v->tagf.value      = raw & 0x07;           /* bits 0-2 */
-    v->precision.value = (raw >> 3) & 0x1F;    /* bits 3-7 */
-    v->fraction.value  = 0;
+    v->leap_seconds_known.value      = (raw & 0x01) ? 1 : 0;
+    v->clock_failure.value           = (raw & 0x02) ? 1 : 0;
+    v->clock_not_synchronized.value  = (raw & 0x04) ? 1 : 0;
+    v->precision.value               = (raw >> 3) & 0x1F;
     return CMS_OK;
 }
 
 int cms_utc_time_encode_stream(per_stream_t *s, const cms_utc_time_t *t){
     if (t->fraction_of_second.value > 16777215) return CMS_ERR;
-    if (t->time_quality.tagf.value < 0 || t->time_quality.tagf.value > 2) return CMS_ERR;
     if (t->time_quality.precision.value < 0 || t->time_quality.precision.value > 31) return CMS_ERR;
 
     uint8_t bytes[8];
@@ -36,8 +38,11 @@ int cms_utc_time_encode_stream(per_stream_t *s, const cms_utc_time_t *t){
     bytes[4] = (uint8_t)(frac >> 16);
     bytes[5] = (uint8_t)(frac >> 8);
     bytes[6] = (uint8_t)(frac);
-    bytes[7] = (uint8_t)(t->time_quality.tagf.value)
-             | (uint8_t)(t->time_quality.precision.value << 3);
+    bytes[7] = 0;
+    if (t->time_quality.leap_seconds_known.value)      bytes[7] |= 0x01;
+    if (t->time_quality.clock_failure.value)           bytes[7] |= 0x02;
+    if (t->time_quality.clock_not_synchronized.value)  bytes[7] |= 0x04;
+    bytes[7] |= (uint8_t)(t->time_quality.precision.value << 3);
     return per_encode_octet_string_fixed(s, bytes, 8);
 }
 int cms_utc_time_decode_stream(per_stream_t *s, cms_utc_time_t *t){
@@ -48,9 +53,10 @@ int cms_utc_time_decode_stream(per_stream_t *s, cms_utc_time_t *t){
                                  | ((uint32_t)bytes[2] << 8)  | (uint32_t)bytes[3];
     t->fraction_of_second.value = ((uint32_t)bytes[4] << 16) | ((uint32_t)bytes[5] << 8)
                                  | (uint32_t)bytes[6];
-    t->time_quality.tagf.value = (int32_t)(bytes[7] & 0x07);
-    t->time_quality.precision.value = (int32_t)((bytes[7] >> 3) & 0x1F);
-    t->time_quality.fraction.value = 0;
+    t->time_quality.leap_seconds_known.value      = (bytes[7] & 0x01) ? 1 : 0;
+    t->time_quality.clock_failure.value           = (bytes[7] & 0x02) ? 1 : 0;
+    t->time_quality.clock_not_synchronized.value  = (bytes[7] & 0x04) ? 1 : 0;
+    t->time_quality.precision.value               = (int32_t)((bytes[7] >> 3) & 0x1F);
     return CMS_OK;
 }
 

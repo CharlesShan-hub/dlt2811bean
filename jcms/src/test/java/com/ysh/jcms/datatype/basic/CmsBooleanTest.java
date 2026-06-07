@@ -9,25 +9,25 @@ class CmsBooleanTest {
 
     @Test
     void trueRoundtrip() {
-        assertEquals(new CmsBoolean().value(1),
-                     new CmsBoolean().decode(new CmsBoolean().value(1).encode()));
+        assertEquals(new CmsBoolean().value(true),
+                     new CmsBoolean().decode(new CmsBoolean().value(true).encode()));
     }
 
     @Test
     void falseRoundtrip() {
-        assertEquals(new CmsBoolean().value(0),
-                     new CmsBoolean().decode(new CmsBoolean().value(0).encode()));
+        assertEquals(new CmsBoolean().value(false),
+                     new CmsBoolean().decode(new CmsBoolean().value(false).encode()));
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsBoolean().value());
+        assertEquals(false, new CmsBoolean().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsBoolean target = new CmsBoolean().value(1);
-        target.decode(new CmsBoolean().value(0).encode());
-        assertEquals(new CmsBoolean().value(0), target);
+        CmsBoolean target = new CmsBoolean().value(true);
+        target.decode(new CmsBoolean().value(false).encode());
+        assertEquals(new CmsBoolean().value(false), target);
     }
 }

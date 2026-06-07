@@ -1,27 +1,36 @@
 package com.ysh.jcms.datatype.common;
+
 import com.sun.jna.Structure;
+import com.ysh.jcms.datatype.extended.CmsBinaryTime;
+import java.time.ZonedDateTime;
 
-import com.ysh.jcms.datatype.basic.CmsInt16U;
-import com.ysh.jcms.datatype.basic.CmsInt32U;
-import com.ysh.jcms.ffi.CmsType;
-import lombok.Getter;
-import lombok.experimental.Accessors;
-import java.util.Arrays;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
-@Getter
-@Setter
-@Accessors(fluent = true)
-public class CmsEntryTime extends CmsType {
-    public CmsInt32U.ByValue msOfDay = new CmsInt32U.ByValue();
-    public CmsInt16U.ByValue daysSince1984 = new CmsInt16U.ByValue();
+public class CmsEntryTime extends CmsBinaryTime {
 
     @Override
-    protected List<String> getFieldOrder() {
-        return Arrays.asList("msOfDay", "daysSince1984");
+    public CmsEntryTime set(long epochMs) {
+        return (CmsEntryTime) super.set(epochMs);
+    }
+
+    @Override
+    public CmsEntryTime set(int year, int month, int day,
+                            int hour, int minute, int second) {
+        return (CmsEntryTime) super.set(year, month, day, hour, minute, second);
+    }
+
+    @Override
+    public CmsEntryTime set(int year, int month, int day,
+                            int hour, int minute, int second, int millis) {
+        return (CmsEntryTime) super.set(year, month, day, hour, minute, second, millis);
+    }
+
+    @Override
+    public CmsEntryTime set(ZonedDateTime dt) {
+        return (CmsEntryTime) super.set(dt);
+    }
+
+    @Override
+    public CmsEntryTime now() {
+        return (CmsEntryTime) super.now();
     }
 
     public static class ByValue extends CmsEntryTime implements Structure.ByValue {}

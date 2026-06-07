@@ -10,13 +10,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public class CmsUint8Array extends CmsType {
-    public Pointer value;
+    public Pointer pointer;
     public int len;
 
     /** Cached bytes extracted from native Pointer after decode. */
     private transient byte[] _cachedBytes;
 
-    /** Default constructor — value is null, for embedding without codec. */
+    /** Default constructor — pointer is null, for embedding without codec. */
     public CmsUint8Array() {
         super(false);
     }
@@ -39,7 +39,7 @@ public class CmsUint8Array extends CmsType {
      */
     protected CmsUint8Array(int maxLen, boolean codecEnabled) {
         super(codecEnabled);
-        this.value = maxLen > 0 ? new Memory(maxLen) : null;
+        this.pointer = maxLen > 0 ? new Memory(maxLen + 1) : null;  // +1 for null terminator
         this.len = 0;
     }
 
@@ -50,38 +50,42 @@ public class CmsUint8Array extends CmsType {
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList("value", "len");
+        return Arrays.asList("pointer", "len");
     }
 
     @Override
     protected void postDecode() {
-        if (value != null && len > 0) {
-            _cachedBytes = value.getByteArray(0, len);
+        if (pointer != null && len > 0) {
+            _cachedBytes = pointer.getByteArray(0, len);
         } else {
             _cachedBytes = new byte[0];
         }
     }
 
     /** Get the underlying byte array, cached from native memory. */
-    public byte[] bytes() {
+    public byte[] value() {
         if (_cachedBytes != null) return _cachedBytes;
-        if (value == null || len == 0) return new byte[0];
-        return value.getByteArray(0, len);
+        if (pointer == null || len == 0) return new byte[0];
+        return pointer.getByteArray(0, len);
     }
 
-    public CmsUint8Array bytes(byte[] data) {
+    public CmsUint8Array value(byte[] data) {
         this._cachedBytes = null;
-        this.value = new Memory(data.length);
-        this.value.write(0, data, 0, data.length);
+        if (data.length > 0) {
+            this.pointer = new Memory(data.length + 1);
+            this.pointer.write(0, data, 0, data.length);
+        } else {
+            this.pointer = null;
+        }
         this.len = data.length;
         return this;
     }
 
-    public CmsUint8Array bytes(char[] data) {
-        return bytes(new String(data).getBytes(StandardCharsets.UTF_8));
+    public CmsUint8Array value(char[] data) {
+        return value(new String(data).getBytes(StandardCharsets.UTF_8));
     }
 
-    public CmsUint8Array bytes(String data) {
-        return bytes(data.getBytes(StandardCharsets.UTF_8));
+    public CmsUint8Array value(String data) {
+        return value(data.getBytes(StandardCharsets.UTF_8));
     }
 }

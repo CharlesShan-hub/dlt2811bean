@@ -1,10 +1,11 @@
 package com.ysh.jcms.datatype.choice;
+
+import com.sun.jna.Memory;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
-
-import com.ysh.jcms.datatype.common.CmsServiceError;
 import com.ysh.jcms.datatype.basic.CmsInt32;
+import com.ysh.jcms.datatype.common.CmsServiceError;
 import com.ysh.jcms.ffi.CmsType;
-
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -15,36 +16,31 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsDataDefinition extends CmsType {
-    public static final int ERROR      = 0;
-    public static final int ARRAY      = 1;
-    public static final int STRUCTURE  = 2;
-    public static final int BOOLEAN    = 3;
-    public static final int INT8       = 4;
-    public static final int INT16      = 5;
-    public static final int INT32      = 6;
-    public static final int INT64      = 7;
-    public static final int INT8U      = 8;
-    public static final int INT16U     = 9;
-    public static final int INT32U     = 10;
-    public static final int INT64U     = 11;
-    public static final int FLOAT32    = 12;
-    public static final int FLOAT64    = 13;
-    public static final int VISIBLE_STRING = 14;
-    public static final int OCTET_STRING   = 15;
-    public static final int BIT_STRING     = 16;
-    public static final int UTF8_STRING    = 17;
-    public static final int UTC_TIME       = 18;
-    public static final int BINARY_TIME    = 19;
-    public static final int QUALITY        = 20;
-    public static final int DBPOS          = 21;
-    public static final int TCMD           = 22;
-    public static final int CHECK          = 23;
-
-    public int choice;
+    public CmsDataType.ByValue choice = new CmsDataType.ByValue();
     public CmsDataDefinitionUnion value = new CmsDataDefinitionUnion();
 
     public CmsDataDefinition() {
         super();
+    }
+
+    public static CmsDataDefinition ofError(int errorCode) {
+        CmsDataDefinition d = new CmsDataDefinition();
+        d.choice().value(CmsDataType.ERROR);
+        d.value.setType(CmsServiceError.ByValue.class);
+        d.value.error.value(errorCode);
+        return d;
+    }
+
+    public static CmsDataDefinition of(int c, int stringLength) {
+        CmsDataDefinition d = new CmsDataDefinition();
+        d.choice().value(c);
+        d.value.setType(CmsInt32.class);
+        d.value.string_length.value(stringLength);
+        return d;
+    }
+
+    public static CmsDataDefinition of(int c) {
+        return of(c, 0);
     }
 
     @Override
@@ -57,23 +53,24 @@ public class CmsDataDefinition extends CmsType {
 
     @Override
     public byte[] encode() {
-        value.setType(unionClass(choice));
+        value.setType(unionClass(choice().value()));
         return super.encode();
     }
 
     @Override
     public CmsDataDefinition decode(byte[] data) {
         super.decode(data);
-        value.setType(unionClass(choice));
+        value.setType(unionClass(choice().value()));
+        value.read();
         return this;
     }
 
     private static Class<?> unionClass(int c) {
         switch (c) {
-            case 0:  return CmsServiceError.class;
-            case 1:  return CmsDataDefinitionArray.class;
-            case 2:  return CmsDataDefinitionStructure.class;
-            default: return CmsInt32.class;  // 3-23 all use string_length (int32)
+            case 0:  return CmsServiceError.ByValue.class;
+            case 1:  return CmsDataDefinitionArray.ByValue.class;
+            case 2:  return CmsDataDefinitionStructure.ByValue.class;
+            default: return CmsInt32.class;
         }
     }
 

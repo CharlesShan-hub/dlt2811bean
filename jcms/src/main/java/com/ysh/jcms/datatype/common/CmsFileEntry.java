@@ -1,12 +1,10 @@
 package com.ysh.jcms.datatype.common;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
 import com.ysh.jcms.datatype.extended.CmsUtcTime;
 import com.ysh.jcms.ffi.CmsType;
-import lombok.Getter;
-import lombok.experimental.Accessors;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;

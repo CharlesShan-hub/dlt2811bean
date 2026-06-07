@@ -7,6 +7,7 @@
 #include "per/cms_string.h"
 #include "data/basic/cms_string.h"
 #include "data/basic/cms_integer.h"
+#include "data/basic/cms_boolean.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,16 +18,11 @@ extern "C" {
  * TimeQuality (BIT STRING, 8 bits)
  * ============================================================
  */
-typedef enum {
-      LEAP_SECOND_KNOWN = 0,
-      CLOCK_FAILURE     = 1,
-      CLOCK_NOT_SYNCED  = 2
-  }cms_time_quality_flag_t;
-
 typedef struct {
-    cms_int32_t   tagf;        /* cms_time_quality_flag_t */
-    cms_int32_t   precision;   /* bits 3-7, 0..31 */
-    cms_int64u_t  fraction;
+    cms_boolean_t leap_seconds_known;      /* bit 0 — 1 = known */
+    cms_boolean_t clock_failure;           /* bit 1 — 1 = failure */
+    cms_boolean_t clock_not_synchronized;  /* bit 2 — 1 = not synced */
+    cms_int32_t   precision;               /* bits 3-7, 0..31; 31 = not specified */
 } cms_time_quality_t;
 
 CMS_EXPORT int cms_time_quality_encode(const cms_time_quality_t *v, uint8_t *out_buf, int *out_len);

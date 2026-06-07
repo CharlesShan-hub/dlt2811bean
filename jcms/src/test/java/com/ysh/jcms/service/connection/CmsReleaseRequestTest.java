@@ -10,7 +10,7 @@ class CmsReleaseRequestTest {
     @Test
     void roundtrip() {
         CmsReleaseRequest original = new CmsReleaseRequest();
-        original.assocId.bytes("assoc-1");
+        original.assocId.value("assoc-1");
 
         byte[] data = original.encode();
         new CmsReleaseRequest().decode(data);

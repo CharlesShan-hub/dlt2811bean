@@ -2,7 +2,7 @@
 #include "data/basic/cms_coded_enum.h"
 
 int cms_dbpos_encode_stream(per_stream_t *s, const cms_dbpos_t *v){
-    uint8_t buf[1] = { (uint8_t)v->value.value };
+    uint8_t buf[1] = { (uint8_t)(v->value.value << 6) };
     cms_bit_string_fixed_t bs = { buf, 2 };
     return cms_coded_enum_encode_stream(s, &bs);
 }
@@ -12,7 +12,7 @@ int cms_dbpos_decode_stream(per_stream_t *s, cms_dbpos_t *v){
     cms_bit_string_fixed_t bs = { buf, 2 };
     int rc = cms_coded_enum_decode_stream(s, &bs);
     if (rc) return rc;
-    v->value.value = buf[0];
+    v->value.value = buf[0] >> 6;
     return CMS_OK;
 }
 

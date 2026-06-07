@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatype.common;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt16U;
 import com.ysh.jcms.datatype.basic.CmsInt8U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;

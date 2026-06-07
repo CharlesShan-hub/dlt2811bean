@@ -18,7 +18,7 @@ class DirectTest {
     void encodeAbortDirectly() {
         // Build a struct with the right layout manually
         CmsAbort a = new CmsAbort();
-        a.assocId.bytes("assoc-1");
+        a.assocId.value("assoc-1");
         a.reason.value(3); // INVALID_ARGUMENT
 
         byte[] buf = new byte[128];
@@ -37,9 +37,9 @@ class DirectTest {
             rc = CmsFFI.INSTANCE.cms_abort_decode(d, result, result.length);
             d.read();
             System.out.println("decode rc=" + rc);
-            System.out.println("assocId bytes: " + new String(d.assocId.bytes()).trim());
+            System.out.println("assocId bytes: " + new String(d.assocId.value()).trim());
             System.out.println("reason: " + d.reason.value());
-            assertEquals("assoc-1", new String(d.assocId.bytes()).trim());
+            assertEquals("assoc-1", new String(d.assocId.value()).trim());
             assertEquals(3, d.reason.value());
         }
     }

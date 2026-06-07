@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatype.control;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.ffi.CmsScalar;
 import java.util.Arrays;
 import java.util.List;

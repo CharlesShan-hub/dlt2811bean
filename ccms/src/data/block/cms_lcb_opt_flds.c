@@ -2,7 +2,7 @@
 #include "data/basic/cms_string.h"
 
 int cms_lcb_opt_flds_encode_stream(per_stream_t *s, const cms_lcb_opt_flds_t *v){
-    uint8_t buf[1] = { (uint8_t)v->value.value };
+    uint8_t buf[1] = { (uint8_t)(v->value.value << 7) };
     cms_bit_string_fixed_t bs = { buf, 1 };
     return cms_bit_string_fixed_encode_stream(s, &bs);
 }
@@ -12,7 +12,7 @@ int cms_lcb_opt_flds_decode_stream(per_stream_t *s, cms_lcb_opt_flds_t *v){
     cms_bit_string_fixed_t bs = { buf, 1 };
     int rc = cms_bit_string_fixed_decode_stream(s, &bs);
     if (rc) return rc;
-    v->value.value = buf[0] & 1;
+    v->value.value = (buf[0] >> 7) & 1;
     return CMS_OK;
 }
 

@@ -22,8 +22,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsDataUnion extends Union {
     public CmsServiceError error = new CmsServiceError();               //  0
-    public CmsDataArray array = new CmsDataArray();                     //  1
-    public CmsDataStructure structure = new CmsDataStructure();         //  2
+    public CmsDataArray.ByValue array = new CmsDataArray.ByValue();          //  1
+    public CmsDataStructure.ByValue structure = new CmsDataStructure.ByValue(); //  2
     public CmsBoolean boolean_value = new CmsBoolean();                 //  3
     public CmsInt8 int8 = new CmsInt8();                                //  4
     public CmsInt16 int16 = new CmsInt16();                             //  5

@@ -67,7 +67,7 @@ struct cms_data {
 };
 
 CMS_EXPORT int cms_data_encode(const cms_data_t *data, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_data_decode(const uint8_t *in_buf, int in_len, cms_data_t *data);
+CMS_EXPORT int cms_data_decode(cms_data_t *data, const uint8_t *in_buf, int in_len);
 int cms_data_encode_stream(per_stream_t *s, const cms_data_t *data);
 int cms_data_decode_stream(per_stream_t *s, cms_data_t *data);
 

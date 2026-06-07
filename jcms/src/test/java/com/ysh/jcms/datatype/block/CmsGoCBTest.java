@@ -10,14 +10,14 @@ class CmsGoCBTest {
     @Test
     void roundtrip() {
         CmsGoCB original = new CmsGoCB();
-        original.goEna().value(1);
-        original.goID().bytes("GOOSE_01");
-        original.ndsCom().value(0);
+        original.goEna().value(true);
+        original.goID().value("GOOSE_01");
+        original.ndsCom().value(false);
 
         byte[] data = original.encode();
         CmsGoCB decoded = new CmsGoCB().decode(data);
 
-        assertEquals(1, decoded.goEna().value());
-        assertEquals(0, decoded.ndsCom().value());
+        assertEquals(true, decoded.goEna().value());
+        assertEquals(false, decoded.ndsCom().value());
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatype.common;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.ffi.CmsScalar;
 import lombok.Getter;
 import lombok.Setter;

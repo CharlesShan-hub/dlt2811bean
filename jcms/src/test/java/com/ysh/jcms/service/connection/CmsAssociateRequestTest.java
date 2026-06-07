@@ -11,14 +11,14 @@ class CmsAssociateRequestTest {
     @Test
     void roundtrip() {
         CmsAssociateRequest original = new CmsAssociateRequest();
-        original.sap_ref.bytes("cmsServer");
-        original.sap_ref_present.value(1);
-        original.auth_param_present.value(0);
+        original.sap_ref.value("cmsServer");
+        original.sap_ref_present.value(true);
+        original.auth_param_present.value(false);
 
         byte[] data = original.encode();
         CmsAssociateRequest decoded = new CmsAssociateRequest().decode(data);
 
-        assertEquals("cmsServer", new String(decoded.sap_ref.bytes()).trim());
-        assertEquals(0, decoded.auth_param_present.value());
+        assertEquals("cmsServer", new String(decoded.sap_ref.value()).trim());
+        assertEquals(false, decoded.auth_param_present.value());
     }
 }

@@ -1,5 +1,6 @@
 #include "data/common/cms_sub_reference.h"
 #include "data/basic/cms_string.h"
+#include <string.h>
 
 int cms_sub_reference_encode_stream(per_stream_t *s, const cms_sub_reference_t *v){ 
     cms_visible_string_var_t _s = { (uint8_t *)v->value, CMS_SUB_REFERENCE_MAX_LEN }; 
@@ -7,7 +8,10 @@ int cms_sub_reference_encode_stream(per_stream_t *s, const cms_sub_reference_t *
 }
 int cms_sub_reference_decode_stream(per_stream_t *s, cms_sub_reference_t *v){ 
     cms_visible_string_var_t _s = { v->value, CMS_SUB_REFERENCE_MAX_LEN }; 
-    return cms_visible_string_var_decode_stream(s, &_s); 
+    int rc = cms_visible_string_var_decode_stream(s, &_s); 
+    if (rc) return rc;
+    v->len = (int32_t)strlen((const char *)v->value);
+    return CMS_OK;
 }
 
 CMS_EXPORT int cms_sub_reference_encode(const cms_sub_reference_t *v, uint8_t *b, int *l){ 

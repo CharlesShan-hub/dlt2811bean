@@ -17,6 +17,7 @@ int cms_phy_com_addr_decode_stream(per_stream_t *s, cms_phy_com_addr_t *v){
     cms_octet_string_fixed_t _addr = { v->addr.value, CMS_PHY_COM_ADDR_ADDR_SIZE };
     int rc = cms_octet_string_fixed_decode_stream(s, &_addr);
     if (rc) return rc;
+    v->addr.len = CMS_PHY_COM_ADDR_ADDR_SIZE;
     rc = cms_int8u_decode_stream(s, &v->priority);
     if (rc) return rc;
     rc = cms_int16u_decode_stream(s, &v->vid);

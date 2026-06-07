@@ -1,6 +1,6 @@
 package com.ysh.jcms.datatype.control;
-import com.sun.jna.Structure;
 
+import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.ffi.CmsType;
 import lombok.Getter;

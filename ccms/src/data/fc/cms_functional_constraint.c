@@ -10,7 +10,10 @@ int cms_functional_constraint_encode_stream(per_stream_t *s, const cms_functiona
 
 int cms_functional_constraint_decode_stream(per_stream_t *s, cms_functional_constraint_t *v){
     cms_visible_string_fixed_t _s = { v->value, CMS_FUNCTIONAL_CONSTRAINT_LEN };
-    return cms_visible_string_fixed_decode_stream(s, &_s);
+    int rc = cms_visible_string_fixed_decode_stream(s, &_s);
+    if (rc) return rc;
+    v->len = CMS_FUNCTIONAL_CONSTRAINT_LEN;
+    return CMS_OK;
 }
 
 /* ---- public buffer version ---- */

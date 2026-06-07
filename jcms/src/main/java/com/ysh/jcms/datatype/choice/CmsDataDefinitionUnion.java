@@ -13,8 +13,8 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsDataDefinitionUnion extends Union {
-    public CmsServiceError error = new CmsServiceError();           //  0
-    public CmsDataDefinitionArray array = new CmsDataDefinitionArray();       //  1
-    public CmsDataDefinitionStructure structure = new CmsDataDefinitionStructure(); //  2
-    public CmsInt32 string_length = new CmsInt32();                  // 14-17
+    public CmsServiceError.ByValue error = new CmsServiceError.ByValue();                 //  0
+    public CmsDataDefinitionArray.ByValue array = new CmsDataDefinitionArray.ByValue();       //  1
+    public CmsDataDefinitionStructure.ByValue structure = new CmsDataDefinitionStructure.ByValue(); //  2
+    public CmsInt32 string_length = new CmsInt32();                                // 14-17
 }

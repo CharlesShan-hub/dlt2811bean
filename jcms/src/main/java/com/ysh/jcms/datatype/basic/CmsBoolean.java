@@ -10,6 +10,6 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsBoolean extends CmsScalar {
-    public int value;
+    public boolean value;
     public static class ByValue extends CmsBoolean implements Structure.ByValue {}
 }
