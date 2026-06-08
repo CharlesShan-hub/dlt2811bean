@@ -4,22 +4,27 @@
 #include "svc/cms_svc.h"
 #include "svc/other/cms_association_id.h"
 #include "data/common/cms_service_error.h"
+#include "data/basic/cms_integer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-    cms_association_id_t assoc_id;
+    cms_int16u_t          req_id;
+    cms_service_error_t   service_error;
+    cms_association_id_t  assoc_id;
 } cms_release_request_t;
 
 typedef struct {
-    cms_association_id_t assoc_id;
-    cms_service_error_t  service_error;
+    cms_int16u_t          req_id;
+    cms_service_error_t   service_error;
+    cms_association_id_t  assoc_id;
 } cms_release_response_t;
 
 typedef struct {
-    cms_service_error_t service_error;
+    cms_int16u_t          req_id;
+    cms_service_error_t   service_error;
 } cms_release_error_t;
 
 CMS_EXPORT int cms_release_request_encode(

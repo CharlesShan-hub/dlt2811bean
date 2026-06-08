@@ -3,7 +3,7 @@ package com.ysh.jcms.datatype.extended;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt16U;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsBinaryTime extends CmsType {
+public class CmsBinaryTime extends CmsField {
     /** Days from 1984-01-01 to Java epoch (1970-01-01). */
     private static final long DAYS_EPOCH_OFFSET = 5113;
     private static final long MS_PER_DAY = 86400000L;

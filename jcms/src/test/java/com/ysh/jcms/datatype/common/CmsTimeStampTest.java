@@ -8,34 +8,36 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsTimeStamp")
 class CmsTimeStampTest {
 
+    private CmsTimeStamp get() { return (CmsTimeStamp)(new CmsTimeStamp().test()); }
+
     @Test
     void roundtrip() {
-        CmsTimeStamp original = new CmsTimeStamp().set(2024, 6, 6, 10, 30, 45, 500);
-        assertEquals(original, new CmsTimeStamp().decode(original.encode()));
+        CmsTimeStamp original = get().set(2024, 6, 6, 10, 30, 45, 500);
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void setFromEpochMillis() {
-        CmsTimeStamp original = new CmsTimeStamp().set(1718015445500L);
-        assertEquals(original, new CmsTimeStamp().decode(original.encode()));
+        CmsTimeStamp original = get().set(1718015445500L);
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void setFromZonedDateTime() {
-        CmsTimeStamp original = new CmsTimeStamp()
+        CmsTimeStamp original = get()
             .set(ZonedDateTime.parse("2024-06-06T10:30:45.500Z"));
-        assertEquals(original, new CmsTimeStamp().decode(original.encode()));
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void nowRoundtrip() {
-        CmsTimeStamp original = new CmsTimeStamp().now();
-        assertEquals(original, new CmsTimeStamp().decode(original.encode()));
+        CmsTimeStamp original = get().now();
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void subTypeAccess() {
-        CmsTimeStamp t = new CmsTimeStamp().set(1718015445500L);
+        CmsTimeStamp t = get().set(1718015445500L);
         assertEquals(1718015445, t.seconds_since_epoch().value());
         assertTrue(t.fraction_of_second().value() > 0);
         assertTrue(t.time_quality().leap_seconds_known().value());

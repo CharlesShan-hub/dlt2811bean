@@ -12,14 +12,10 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public abstract class CmsScalar extends CmsType {
+public abstract class CmsScalar extends CmsField {
 
     protected CmsScalar() {
         super();
-    }
-
-    protected CmsScalar(boolean codecEnabled) {
-        super(codecEnabled);
     }
 
     @Override

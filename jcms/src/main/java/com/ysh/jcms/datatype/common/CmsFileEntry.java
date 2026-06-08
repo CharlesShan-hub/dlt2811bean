@@ -4,7 +4,7 @@ import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
 import com.ysh.jcms.datatype.extended.CmsUtcTime;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsFileEntry extends CmsType {
+public class CmsFileEntry extends CmsField {
     public CmsUint8Array.ByValue fileName = new CmsUint8Array.ByValue(129);
     public CmsInt32U.ByValue fileSize = new CmsInt32U.ByValue();
     public CmsUtcTime.ByValue lastModified = new CmsUtcTime.ByValue();

@@ -3,7 +3,7 @@ package com.ysh.jcms.datatype.common;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsInt32;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsQuality extends CmsType {
+public class CmsQuality extends CmsField {
     public static final int GOOD          = 0;
     public static final int INVALID       = 1;
     public static final int RESERVED      = 2;
@@ -40,6 +40,12 @@ public class CmsQuality extends CmsType {
                 "oscillatory", "failure", "oldData", "inconsistent",
                 "inaccurate", "substituted", "test", "operatorBlocked");
     }
+
+    @Override
+    protected int encodeBufSize() { return 32; }
+
+    /** 由于 {@code test} 字段与 {@link CmsField#test()} 冲突，用此方法启用 FFI codec。 */
+    public CmsField super_test() { return super.test(); }
 
     public static class ByValue extends CmsQuality implements Structure.ByValue {}
 }

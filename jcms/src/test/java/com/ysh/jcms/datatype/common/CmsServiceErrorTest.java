@@ -7,39 +7,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsServiceError")
 class CmsServiceErrorTest {
 
+    private CmsServiceError get() { return (CmsServiceError)(new CmsServiceError().test()); }
+
     @Test
     void noError() {
-        CmsServiceError original = new CmsServiceError().value(CmsServiceError.NO_ERROR);
-        assertEquals(original, new CmsServiceError().decode(original.encode()));
+        CmsServiceError a = get().value(CmsServiceError.NO_ERROR);
+        CmsServiceError b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void instanceNotAvailable() {
-        CmsServiceError original = new CmsServiceError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        assertEquals(original, new CmsServiceError().decode(original.encode()));
+        CmsServiceError a = get().value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsServiceError b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void accessViolation() {
-        CmsServiceError original = new CmsServiceError().value(CmsServiceError.ACCESS_VIOLATION);
-        assertEquals(original, new CmsServiceError().decode(original.encode()));
+        CmsServiceError a = get().value(CmsServiceError.ACCESS_VIOLATION);
+        CmsServiceError b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void maxValue() {
-        CmsServiceError original = new CmsServiceError().value(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        assertEquals(original, new CmsServiceError().decode(original.encode()));
+        CmsServiceError a = get().value(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        CmsServiceError b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsServiceError().value());
+        assertEquals(0, get().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsServiceError target = new CmsServiceError().value(CmsServiceError.ACCESS_VIOLATION);
-        target.decode(new CmsServiceError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE).encode());
-        assertEquals(new CmsServiceError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE), target);
+        CmsServiceError src = get().value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsServiceError target = get().decode(src.encode());
+        assertEquals(src, target);
     }
 }

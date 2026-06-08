@@ -6,7 +6,7 @@ import com.ysh.jcms.datatype.basic.CmsInt32U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
 import com.ysh.jcms.datatype.common.CmsObjectReference;
 import com.ysh.jcms.datatype.common.CmsPhyComAddr;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsGoCB extends CmsType {
+public class CmsGoCB extends CmsField {
     public CmsBoolean.ByValue goEna = new CmsBoolean.ByValue();
     public CmsUint8Array.ByValue goID = new CmsUint8Array.ByValue(129);
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();

@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsBrcb")
 class CmsBrcbTest {
 
+    private CmsBrcb get() { return (CmsBrcb)(new CmsBrcb().test()); }
+
     @Test
     void roundtrip() {
-        CmsBrcb original = new CmsBrcb();
+        CmsBrcb original = get();
         original.rptID().value("BRCB_001");
         original.rptEna().value(true);
         original.datSet().value("DataSet_01");
@@ -18,9 +20,7 @@ class CmsBrcbTest {
         original.gi().value(false);
         original.purgeBuf().value(true);
 
-        byte[] data = original.encode();
-        CmsBrcb decoded = new CmsBrcb().decode(data);
-
+        CmsBrcb decoded = get().decode(original.encode());
         assertEquals("BRCB_001", new String(decoded.rptID().value()).trim());
         assertEquals(true, decoded.rptEna().value());
         assertEquals(1, decoded.confRev().value());

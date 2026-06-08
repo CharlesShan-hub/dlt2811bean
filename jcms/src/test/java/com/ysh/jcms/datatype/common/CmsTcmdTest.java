@@ -7,39 +7,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsTcmd")
 class CmsTcmdTest {
 
+    private CmsTcmd get() { return (CmsTcmd)(new CmsTcmd().test()); }
+
     @Test
     void reserved() {
-        CmsTcmd original = new CmsTcmd().value(CmsTcmd.RESERVED);
-        assertEquals(original, new CmsTcmd().decode(original.encode()));
+        CmsTcmd a = get().value(CmsTcmd.RESERVED);
+        CmsTcmd b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void select() {
-        CmsTcmd original = new CmsTcmd().value(CmsTcmd.SELECT);
-        assertEquals(original, new CmsTcmd().decode(original.encode()));
+        CmsTcmd a = get().value(CmsTcmd.SELECT);
+        CmsTcmd b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void operate() {
-        CmsTcmd original = new CmsTcmd().value(CmsTcmd.OPERATE);
-        assertEquals(original, new CmsTcmd().decode(original.encode()));
+        CmsTcmd a = get().value(CmsTcmd.OPERATE);
+        CmsTcmd b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void cancel() {
-        CmsTcmd original = new CmsTcmd().value(CmsTcmd.CANCEL);
-        assertEquals(original, new CmsTcmd().decode(original.encode()));
+        CmsTcmd a = get().value(CmsTcmd.CANCEL);
+        CmsTcmd b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsTcmd().value());
+        assertEquals(0, get().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsTcmd target = new CmsTcmd().value(CmsTcmd.SELECT);
-        target.decode(new CmsTcmd().value(CmsTcmd.OPERATE).encode());
-        assertEquals(new CmsTcmd().value(CmsTcmd.OPERATE), target);
+        CmsTcmd src = get().value(CmsTcmd.SELECT);
+        CmsTcmd target = get().decode(src.encode());
+        assertEquals(src, target);
     }
 }

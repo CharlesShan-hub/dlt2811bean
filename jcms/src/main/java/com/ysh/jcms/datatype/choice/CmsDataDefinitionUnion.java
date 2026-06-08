@@ -22,4 +22,14 @@ public class CmsDataDefinitionUnion extends Union {
     protected List<String> getFieldOrder() {
         return Arrays.asList("error", "array", "structure", "string_length");
     }
+
+    /** 根据 choice 值返回当前活跃的字段。 */
+    public Object get(int c) {
+        switch (c) {
+            case 0:  return error;
+            case 1:  return array;
+            case 2:  return structure;
+            default: return string_length;
+        }
+    }
 }

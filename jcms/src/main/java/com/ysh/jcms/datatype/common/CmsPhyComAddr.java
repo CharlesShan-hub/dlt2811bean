@@ -4,7 +4,7 @@ import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt16U;
 import com.ysh.jcms.datatype.basic.CmsInt8U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsPhyComAddr extends CmsType {
+public class CmsPhyComAddr extends CmsField {
     public CmsUint8Array.ByValue addr = new CmsUint8Array.ByValue(6);
     public CmsInt8U.ByValue priority = new CmsInt8U.ByValue();
     public CmsInt16U.ByValue vid = new CmsInt16U.ByValue();

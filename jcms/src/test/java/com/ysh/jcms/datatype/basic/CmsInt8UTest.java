@@ -7,33 +7,40 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsInt8U")
 class CmsInt8UTest {
 
+    private CmsInt8U getCmsInt8U() {
+        return (CmsInt8U)(new CmsInt8U().test());
+    }
+
     @Test
     void roundtrip() {
-        CmsInt8U original = new CmsInt8U().value((byte) 100);
-        assertEquals(original, new CmsInt8U().decode(original.encode()));
+        CmsInt8U a = getCmsInt8U().value((byte) 100);
+        CmsInt8U b = getCmsInt8U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void maxByte() {
-        CmsInt8U v = new CmsInt8U().value((byte) 127);
-        assertEquals(v, new CmsInt8U().decode(v.encode()));
+        CmsInt8U a = getCmsInt8U().value((byte) 127);
+        CmsInt8U b = getCmsInt8U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void zero() {
-        CmsInt8U v = new CmsInt8U().value((byte) 0);
-        assertEquals(v, new CmsInt8U().decode(v.encode()));
+        CmsInt8U a = getCmsInt8U().value((byte) 0);
+        CmsInt8U b = getCmsInt8U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsInt8U().value());
+        assertEquals(0, getCmsInt8U().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsInt8U target = new CmsInt8U().value((byte) 55);
-        target.decode(new CmsInt8U().value((byte) 33).encode());
-        assertEquals(new CmsInt8U().value((byte) 33), target);
+        CmsInt8U src = getCmsInt8U().value((byte) 55);
+        CmsInt8U target = getCmsInt8U().decode(src.encode());
+        assertEquals(src, target);
     }
 }

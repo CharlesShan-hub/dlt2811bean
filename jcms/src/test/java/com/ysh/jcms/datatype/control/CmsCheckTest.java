@@ -7,45 +7,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsCheck")
 class CmsCheckTest {
 
+    private CmsCheck get() { return (CmsCheck)(new CmsCheck().test()); }
+
     @Test
     void roundtripDefault() {
-        CmsCheck original = new CmsCheck();
-        assertEquals(original, new CmsCheck().decode(original.encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 
     @Test
     void syncheckTrue() {
-        CmsCheck original = new CmsCheck();
+        CmsCheck original = get();
         original.syncheck().value(true);
-        assertEquals(original, new CmsCheck().decode(original.encode()));
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void interlockCheckTrue() {
-        CmsCheck original = new CmsCheck();
+        CmsCheck original = get();
         original.interlock_check().value(true);
-        assertEquals(original, new CmsCheck().decode(original.encode()));
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void bothTrue() {
-        CmsCheck original = new CmsCheck();
+        CmsCheck original = get();
         original.syncheck().value(true);
         original.interlock_check().value(true);
-        assertEquals(original, new CmsCheck().decode(original.encode()));
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void decodeOverwrites() {
-        CmsCheck target = new CmsCheck();
+        CmsCheck src = get();
+        src.syncheck().value(false);
+        src.interlock_check().value(false);
+
+        CmsCheck target = get();
         target.syncheck().value(true);
         target.interlock_check().value(true);
-
-        CmsCheck source = new CmsCheck();
-        source.syncheck().value(false);
-        source.interlock_check().value(false);
-
-        target.decode(source.encode());
+        target.decode(src.encode());
         assertFalse(target.syncheck().value());
         assertFalse(target.interlock_check().value());
     }

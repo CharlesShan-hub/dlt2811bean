@@ -7,9 +7,11 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsMsvcb")
 class CmsMsvcbTest {
 
+    private CmsMsvcb get() { return (CmsMsvcb)(new CmsMsvcb().test()); }
+
     @Test
     void roundtrip() {
-        CmsMsvcb original = new CmsMsvcb();
+        CmsMsvcb original = get();
         original.svEna().value(true);
         original.msvID().value("MSVCB_01");
         original.datSet().value("DataSet_01");
@@ -22,9 +24,7 @@ class CmsMsvcbTest {
         original.dstAddress().priority().value((byte) 4);
         original.dstAddress_present().value(true);
 
-        byte[] data = original.encode();
-        CmsMsvcb decoded = new CmsMsvcb().decode(data);
-
+        CmsMsvcb decoded = get().decode(original.encode());
         assertEquals(true, decoded.svEna().value());
         assertEquals("MSVCB_01", new String(decoded.msvID().value()).trim());
         assertEquals(1, decoded.confRev().value());

@@ -7,26 +7,31 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsSmpMod")
 class CmsSmpModTest {
 
+    private CmsSmpMod get() { return (CmsSmpMod)(new CmsSmpMod().test()); }
+
     @Test
     void samplesPerNominalPeriod() {
-        assertEquals(new CmsSmpMod().value(CmsSmpMod.SAMPLES_PER_NOMINAL_PERIOD),
-                     new CmsSmpMod().decode(new CmsSmpMod().value(CmsSmpMod.SAMPLES_PER_NOMINAL_PERIOD).encode()));
+        CmsSmpMod a = get().value(CmsSmpMod.SAMPLES_PER_NOMINAL_PERIOD);
+        CmsSmpMod b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void samplesPerSecond() {
-        assertEquals(new CmsSmpMod().value(CmsSmpMod.SAMPLES_PER_SECOND),
-                     new CmsSmpMod().decode(new CmsSmpMod().value(CmsSmpMod.SAMPLES_PER_SECOND).encode()));
+        CmsSmpMod a = get().value(CmsSmpMod.SAMPLES_PER_SECOND);
+        CmsSmpMod b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void secondsPerSample() {
-        assertEquals(new CmsSmpMod().value(CmsSmpMod.SECONDS_PER_SAMPLE),
-                     new CmsSmpMod().decode(new CmsSmpMod().value(CmsSmpMod.SECONDS_PER_SAMPLE).encode()));
+        CmsSmpMod a = get().value(CmsSmpMod.SECONDS_PER_SAMPLE);
+        CmsSmpMod b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsSmpMod().value());
+        assertEquals(0, get().value());
     }
 }

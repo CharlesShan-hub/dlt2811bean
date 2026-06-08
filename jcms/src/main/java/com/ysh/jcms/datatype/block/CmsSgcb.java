@@ -5,7 +5,7 @@ import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsInt16U;
 import com.ysh.jcms.datatype.basic.CmsInt8U;
 import com.ysh.jcms.datatype.common.CmsTimeStamp;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsSgcb extends CmsType {
+public class CmsSgcb extends CmsField {
     public CmsInt8U.ByValue numOfSG = new CmsInt8U.ByValue();
     public CmsInt8U.ByValue actSG = new CmsInt8U.ByValue();
     public CmsInt8U.ByValue editSG = new CmsInt8U.ByValue();

@@ -27,10 +27,10 @@ public abstract class CmsType extends Structure {
         void apply(Structure v, byte[] data, int len);
     }
 
-    protected final String name;
-    private final CmsEncodeFn encodeFn;
-    private final CmsDecodeFn decodeFn;
-    private final boolean codecEnabled;
+    protected String name;
+    private CmsEncodeFn encodeFn;
+    private CmsDecodeFn decodeFn;
+    private boolean codecEnabled;
 
     /** 格式化器，子类可在构造器中替换。 */
     protected transient CmsToString formatter = CmsDefaultFormatter.INSTANCE;
@@ -61,6 +61,14 @@ public abstract class CmsType extends Structure {
             this.encodeFn = null;
             this.decodeFn = null;
         }
+    }
+
+    /** 为已构造的实例手动绑定 FFI（供 CmsField.test() 调用）。 */
+    protected final void enableCodec(String cn) {
+        this.name = toCmsName(cn);
+        this.codecEnabled = true;
+        this.encodeFn = findEncodeFn(cn, "encode");
+        this.decodeFn = findDecodeFn(cn, "decode");
     }
 
     // ==================== 编码解码 ====================
@@ -195,7 +203,7 @@ public abstract class CmsType extends Structure {
         }
     }
 
-    private static CmsDecodeFn findDecodeFn(String cn, String suffix) {
+    static CmsDecodeFn findDecodeFn(String cn, String suffix) {
         String mn = ffiMethodName(cn, suffix);
         try {
             Method m = CmsFFI.class.getMethod(mn, Structure.class, byte[].class, int.class);

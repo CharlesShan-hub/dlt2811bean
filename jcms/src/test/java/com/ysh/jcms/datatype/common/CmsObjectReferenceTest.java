@@ -7,22 +7,22 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsObjectReference")
 class CmsObjectReferenceTest {
 
+    private CmsObjectReference get() { return (CmsObjectReference)(new CmsObjectReference().test()); }
+
     @Test
     void roundtrip() {
-        CmsObjectReference original = CmsObjectReference.of("IED1", "CTRL", "GGIO1", "SPCSO1");
-        assertEquals(original, new CmsObjectReference().decode(original.encode()));
+        CmsObjectReference original = (CmsObjectReference) CmsObjectReference.of("IED1", "CTRL", "GGIO1", "SPCSO1").test();
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void ldNameExplicit() {
-        // Explicit ldName (no '/' in LDName)
         CmsObjectReference ref = CmsObjectReference.of("STATION_CTRL", "CILO", "Clc1");
         assertEquals("STATION_CTRL", ref.ldName());
     }
 
     @Test
     void ldNameComposed() {
-        // Composed: IedName/ldInst
         CmsObjectReference ref = CmsObjectReference.of("P1A1/PROT", "GGIO1", "SPCSO1");
         assertEquals("P1A1/PROT", ref.ldName());
         assertEquals("P1A1", ref.iedName());
@@ -37,7 +37,6 @@ class CmsObjectReferenceTest {
 
     @Test
     void lnNameWithoutDot() {
-        // LN only, no data object
         CmsObjectReference ref = CmsObjectReference.of("IED1", "LLN0");
         assertEquals("LLN0", ref.lnName());
     }

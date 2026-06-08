@@ -7,39 +7,45 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsDbpos")
 class CmsDbposTest {
 
+    private CmsDbpos get() { return (CmsDbpos)(new CmsDbpos().test()); }
+
     @Test
     void intermediate() {
-        CmsDbpos original = new CmsDbpos().value(CmsDbpos.INTERMEDIATE);
-        assertEquals(original, new CmsDbpos().decode(original.encode()));
+        CmsDbpos a = get().value(CmsDbpos.INTERMEDIATE);
+        CmsDbpos b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void off() {
-        CmsDbpos original = new CmsDbpos().value(CmsDbpos.OFF);
-        assertEquals(original, new CmsDbpos().decode(original.encode()));
+        CmsDbpos a = get().value(CmsDbpos.OFF);
+        CmsDbpos b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void on() {
-        CmsDbpos original = new CmsDbpos().value(CmsDbpos.ON);
-        assertEquals(original, new CmsDbpos().decode(original.encode()));
+        CmsDbpos a = get().value(CmsDbpos.ON);
+        CmsDbpos b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void badState() {
-        CmsDbpos original = new CmsDbpos().value(CmsDbpos.BAD_STATE);
-        assertEquals(original, new CmsDbpos().decode(original.encode()));
+        CmsDbpos a = get().value(CmsDbpos.BAD_STATE);
+        CmsDbpos b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsDbpos().value());
+        assertEquals(0, get().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsDbpos target = new CmsDbpos().value(CmsDbpos.ON);
-        target.decode(new CmsDbpos().value(CmsDbpos.OFF).encode());
-        assertEquals(new CmsDbpos().value(CmsDbpos.OFF), target);
+        CmsDbpos src = get().value(CmsDbpos.ON);
+        CmsDbpos target = get().decode(src.encode());
+        assertEquals(src, target);
     }
 }

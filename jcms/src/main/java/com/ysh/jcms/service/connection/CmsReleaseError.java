@@ -2,7 +2,7 @@ package com.ysh.jcms.service.connection;
 import com.sun.jna.Structure;
 
 import com.ysh.jcms.datatype.common.CmsServiceError;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsAPDU;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -12,12 +12,12 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsReleaseError extends CmsType {
+public class CmsReleaseError extends CmsAPDU {
     public CmsServiceError.ByValue serviceError = new CmsServiceError.ByValue();
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList("serviceError");
+        return Arrays.asList("reqId", "serviceError");
     }
 
     @Override

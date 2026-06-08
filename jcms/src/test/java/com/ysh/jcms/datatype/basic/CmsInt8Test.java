@@ -7,45 +7,54 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsInt8")
 class CmsInt8Test {
 
+    private CmsInt8 getCmsInt8() {
+        return (CmsInt8)(new CmsInt8().test());
+    }
+
     @Test
     void roundtrip() {
-        CmsInt8 original = new CmsInt8().value((byte) 42);
-        assertEquals(original, new CmsInt8().decode(original.encode()));
+        CmsInt8 a = getCmsInt8().value((byte) 42);
+        CmsInt8 b = getCmsInt8().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void negative() {
-        assertEquals(new CmsInt8().value((byte) -100),
-                     new CmsInt8().decode(new CmsInt8().value((byte) -100).encode()));
+        CmsInt8 a = getCmsInt8().value((byte) -100);
+        CmsInt8 b = getCmsInt8().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void minValue() {
-        CmsInt8 v = new CmsInt8().value(Byte.MIN_VALUE);
-        assertEquals(v, new CmsInt8().decode(v.encode()));
+        CmsInt8 a = getCmsInt8().value(Byte.MIN_VALUE);
+        CmsInt8 b = getCmsInt8().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void maxValue() {
-        CmsInt8 v = new CmsInt8().value(Byte.MAX_VALUE);
-        assertEquals(v, new CmsInt8().decode(v.encode()));
+        CmsInt8 a = getCmsInt8().value(Byte.MAX_VALUE);
+        CmsInt8 b = getCmsInt8().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void zero() {
-        CmsInt8 v = new CmsInt8().value((byte) 0);
-        assertEquals(v, new CmsInt8().decode(v.encode()));
+        CmsInt8 a = getCmsInt8().value((byte) 0);
+        CmsInt8 b = getCmsInt8().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsInt8().value());
+        assertEquals(0, getCmsInt8().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsInt8 target = new CmsInt8().value((byte) 99);
-        target.decode(new CmsInt8().value((byte) -1).encode());
-        assertEquals(new CmsInt8().value((byte) -1), target);
+        CmsInt8 src = getCmsInt8().value((byte) 99);
+        CmsInt8 target = getCmsInt8().decode(src.encode());
+        assertEquals(src, target);
     }
 }

@@ -7,64 +7,65 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsRcbOptFlds")
 class CmsRcbOptFldsTest {
 
+    private CmsRcbOptFlds get() { return (CmsRcbOptFlds)(new CmsRcbOptFlds().test()); }
+
     @Test
     void roundtripDefault() {
-        assertEquals(new CmsRcbOptFlds(),
-                     new CmsRcbOptFlds().decode(new CmsRcbOptFlds().encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 
     @Test
     void sequenceNumber() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.sequence_number().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void reportTimeStamp() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.report_time_stamp().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void reasonForInclusion() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.reason_for_inclusion().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void dataSetName() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.data_set_name().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void dataReference() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.data_reference().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void entryId() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.entry_id().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void segmentation() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.segmentation().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void allTrue() {
-        CmsRcbOptFlds o = new CmsRcbOptFlds();
+        CmsRcbOptFlds o = get();
         o.sequence_number().value(true);
         o.report_time_stamp().value(true);
         o.reason_for_inclusion().value(true);
@@ -74,6 +75,6 @@ class CmsRcbOptFldsTest {
         o.entry_id().value(true);
         o.conf_revision().value(true);
         o.segmentation().value(true);
-        assertEquals(o, new CmsRcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 }

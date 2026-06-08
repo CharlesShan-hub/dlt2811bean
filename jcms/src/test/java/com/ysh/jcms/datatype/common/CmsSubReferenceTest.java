@@ -7,10 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsSubReference")
 class CmsSubReferenceTest {
 
+    private CmsSubReference get() { return (CmsSubReference)(new CmsSubReference().test()); }
+
     @Test
     void roundtrip() {
-        CmsSubReference original = CmsSubReference.of("LN", "DO", "DA", "BDA");
-        assertEquals(original, new CmsSubReference().decode(original.encode()));
+        CmsSubReference original = (CmsSubReference) CmsSubReference.of("LN", "DO", "DA", "BDA").test();
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
@@ -31,7 +33,7 @@ class CmsSubReferenceTest {
     void segmentCount() {
         assertEquals(4, CmsSubReference.of("LN", "DO", "DA", "BDA").segmentCount());
         assertEquals(2, CmsSubReference.of("DA", "BDA").segmentCount());
-        assertEquals(0, new CmsSubReference().segmentCount());
+        assertEquals(0, get().segmentCount());
     }
 
     @Test
@@ -41,8 +43,8 @@ class CmsSubReferenceTest {
         assertEquals("DO", ref.segment(1));
         assertEquals("DA", ref.segment(2));
         assertEquals("BDA", ref.segment(3));
-        assertEquals("", ref.segment(4));  // out of range
-        assertEquals("", ref.segment(-1)); // out of range
+        assertEquals("", ref.segment(4));
+        assertEquals("", ref.segment(-1));
     }
 
     @Test
@@ -53,7 +55,7 @@ class CmsSubReferenceTest {
 
     @Test
     void empty() {
-        CmsSubReference ref = new CmsSubReference();
+        CmsSubReference ref = get();
         assertEquals(0, ref.segmentCount());
         assertArrayEquals(new String[0], ref.segments());
     }

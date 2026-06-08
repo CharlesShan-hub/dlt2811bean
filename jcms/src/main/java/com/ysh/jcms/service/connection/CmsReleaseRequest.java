@@ -1,7 +1,7 @@
 package com.ysh.jcms.service.connection;
 import com.sun.jna.Structure;
 
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsAPDU;
 import com.ysh.jcms.service.other.CmsAssociationId;
 import java.util.Arrays;
 import java.util.List;
@@ -12,12 +12,12 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsReleaseRequest extends CmsType {
+public class CmsReleaseRequest extends CmsAPDU {
     public CmsAssociationId.ByValue assocId = new CmsAssociationId.ByValue();
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList("assocId");
+        return Arrays.asList("reqId", "assocId");
     }
 
     @Override

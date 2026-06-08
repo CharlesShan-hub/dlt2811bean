@@ -7,23 +7,24 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsLcbOptFlds")
 class CmsLcbOptFldsTest {
 
+    private CmsLcbOptFlds get() { return (CmsLcbOptFlds)(new CmsLcbOptFlds().test()); }
+
     @Test
     void roundtripDefault() {
-        assertEquals(new CmsLcbOptFlds(),
-                     new CmsLcbOptFlds().decode(new CmsLcbOptFlds().encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 
     @Test
     void valueFalse() {
-        CmsLcbOptFlds o = new CmsLcbOptFlds();
+        CmsLcbOptFlds o = get();
         o.value().value(false);
-        assertEquals(o, new CmsLcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void valueTrue() {
-        CmsLcbOptFlds o = new CmsLcbOptFlds();
+        CmsLcbOptFlds o = get();
         o.value().value(true);
-        assertEquals(o, new CmsLcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 }

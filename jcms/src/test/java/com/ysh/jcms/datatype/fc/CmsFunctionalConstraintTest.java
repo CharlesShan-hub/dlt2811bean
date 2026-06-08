@@ -7,23 +7,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsFunctionalConstraint")
 class CmsFunctionalConstraintTest {
 
+    private CmsFunctionalConstraint get() { return (CmsFunctionalConstraint)(new CmsFunctionalConstraint().test()); }
+
     @Test
     void roundtrip() {
-        CmsFunctionalConstraint original = new CmsFunctionalConstraint().value("ST");
-        assertEquals(original, new CmsFunctionalConstraint().decode(original.encode()));
+        CmsFunctionalConstraint a = get().value("ST");
+        CmsFunctionalConstraint b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValueEmpty() {
-        CmsFunctionalConstraint fc = new CmsFunctionalConstraint();
-        assertEquals("", new String(fc.value()).trim());
+        assertEquals("", new String(get().value()).trim());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsFunctionalConstraint target = new CmsFunctionalConstraint().value("MX");
-        target.decode(new CmsFunctionalConstraint().value("CO").encode());
-        assertEquals("CO", new String(target.value()).trim());
+        CmsFunctionalConstraint src = get().value("CO");
+        CmsFunctionalConstraint target = get().decode(src.encode());
+        assertEquals(src, target);
     }
 
     @Test

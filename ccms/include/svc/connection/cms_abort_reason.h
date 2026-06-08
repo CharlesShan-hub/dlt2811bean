@@ -21,7 +21,9 @@ extern "C" {
 #define CMS_ABORT_INVALID_RESULT                4
 #define CMS_ABORT_MAX_SERV_OUTSTANDING_EXCEEDED 5
 
-typedef struct { cms_int32_t value; } cms_abort_reason_t;
+typedef struct { 
+    cms_int32_t value;
+} cms_abort_reason_t;
 
 CMS_EXPORT int cms_abort_reason_encode(const cms_abort_reason_t *v, uint8_t *out_buf, int *out_len);
 CMS_EXPORT int cms_abort_reason_decode(cms_abort_reason_t *v, const uint8_t *in_buf, int in_len);

@@ -126,9 +126,5 @@ public class CmsDataType extends CmsScalar {
 
     public int value;
 
-    public CmsDataType() {
-        super(false);  // 纯包装类，无 FFI 绑定
-    }
-
     public static class ByValue extends CmsDataType implements Structure.ByValue {}
 }

@@ -2,7 +2,7 @@ package com.ysh.jcms.service.connection;
 import com.sun.jna.Structure;
 
 import com.ysh.jcms.datatype.common.CmsServiceError;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsAPDU;
 import com.ysh.jcms.service.other.CmsAssociationId;
 
 import java.util.Arrays;
@@ -14,13 +14,13 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsReleaseResponse extends CmsType {
+public class CmsReleaseResponse extends CmsAPDU {
     public CmsAssociationId.ByValue assocId = new CmsAssociationId.ByValue();
     public CmsServiceError.ByValue serviceError = new CmsServiceError.ByValue();
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList("assocId", "serviceError");
+        return Arrays.asList("reqId", "serviceError", "assocId");
     }
 
     @Override

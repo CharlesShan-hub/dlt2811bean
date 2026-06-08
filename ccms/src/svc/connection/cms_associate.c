@@ -14,8 +14,8 @@
  * PER encoding (non-extensible SEQUENCE with OPTIONAL fields):
  *   1. bit — serverAccessPointReference present?
  *   2. bit — authenticationParameter present?
- *   3. if present: VisibleString129 (IMPLICIT [0] — no tag, raw value)
- *   4. if present: AuthenticationParameter (IMPLICIT [1] — no tag, raw SEQUENCE)
+ *   3. if present: VisibleString129
+ *   4. if present: AuthenticationParameter
  * ============================================================
  */
 CMS_EXPORT int cms_associate_request_encode(
@@ -50,7 +50,6 @@ CMS_EXPORT int cms_associate_request_decode(
     per_stream_init_read(&r, in_buf, (size_t)in_len);
     int rc;
     cms_boolean_t has_sap = {0};
-    /* presence bits */
     rc = cms_boolean_decode_stream(&r, &has_sap);
     if (rc) return rc;
     rc = cms_boolean_decode_stream(&r, &sdu->auth_param_present);

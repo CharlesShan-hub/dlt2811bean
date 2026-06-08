@@ -5,7 +5,7 @@ import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt32;
 import com.ysh.jcms.datatype.common.CmsServiceError;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsDataDefinition extends CmsType {
+public class CmsDataDefinition extends CmsField {
     public CmsDataType.ByValue choice = new CmsDataType.ByValue();
     public CmsDataDefinitionUnion value = new CmsDataDefinitionUnion();
 
@@ -46,6 +46,14 @@ public class CmsDataDefinition extends CmsType {
 
     @Override
     protected int encodeBufSize() { return 4096; }
+
+    @Override
+    public CmsDataDefinition test() {
+        super.test();
+        Object active = value.get(choice().value());
+        if (active instanceof CmsField) ((CmsField) active).test();
+        return this;
+    }
 
     @Override
     public byte[] encode() {

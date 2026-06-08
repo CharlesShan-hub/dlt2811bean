@@ -3,22 +3,22 @@ package com.ysh.jcms.datatype.basic;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
+import com.ysh.jcms.ffi.CmsField;
 import com.ysh.jcms.ffi.CmsType;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-public class CmsUint8Array extends CmsType {
+public class CmsUint8Array extends CmsField {
     public Pointer pointer;
     public int len;
 
     /** Cached bytes extracted from native Pointer after decode. */
     private transient byte[] _cachedBytes;
 
-    /** Default constructor — pointer is null, for embedding without codec. */
+    /** Default constructor — null pointer, for embedding without codec. */
     public CmsUint8Array() {
-        super(false);
+        super();
     }
 
     /**
@@ -27,20 +27,14 @@ public class CmsUint8Array extends CmsType {
      * @param maxLen buffer size ({@code > 0} allocates {@code new Memory(maxLen)})
      */
     public CmsUint8Array(int maxLen) {
-        this(maxLen, false);
+        this();
+        this.pointer = maxLen > 0 ? new Memory(maxLen + 1) : null;
+        this.len = 0;
     }
 
-    /**
-     * For alias subclasses (CmsEntryId, CmsObjectName, etc.) that need both
-     * a pre-allocated buffer and FFI codec.
-     *
-     * @param maxLen       buffer size ({@code > 0} allocates {@code new Memory(maxLen)})
-     * @param codecEnabled whether to bind FFI encode/decode
-     */
-    protected CmsUint8Array(int maxLen, boolean codecEnabled) {
-        super(codecEnabled);
-        this.pointer = maxLen > 0 ? new Memory(maxLen + 1) : null;  // +1 for null terminator
-        this.len = 0;
+    /** For alias subclasses that need a pre-allocated buffer. */
+    protected CmsUint8Array(int maxLen, boolean codecIgnored) {
+        this(maxLen);
     }
 
     public static class ByValue extends CmsUint8Array implements Structure.ByValue {
@@ -90,5 +84,17 @@ public class CmsUint8Array extends CmsType {
 
     public CmsUint8Array value(String data) {
         return value(data.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CmsUint8Array)) return false;
+        return Arrays.equals(value(), ((CmsUint8Array) o).value());
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(value());
     }
 }

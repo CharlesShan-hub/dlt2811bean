@@ -8,36 +8,38 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsEntryId")
 class CmsEntryIdTest {
 
+    private CmsEntryId get() { return (CmsEntryId)(new CmsEntryId().test()); }
+
     private final byte[] SAMPLE = new byte[]{0, 0, 0, 0, 0, 0, 0, 1};
 
     @Test
     void roundtrip() {
-        CmsEntryId original = new CmsEntryId().value(SAMPLE);
-        assertEquals(original, new CmsEntryId().decode(original.encode()));
+        CmsEntryId original = get().value(SAMPLE);
+        assertEquals(original, get().decode(original.encode()));
     }
 
     @Test
     void defaultValueIsEightZeros() {
-        CmsEntryId e = new CmsEntryId();
+        CmsEntryId e = get();
         assertArrayEquals(new byte[8], e.value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsEntryId target = new CmsEntryId().value(new byte[]{1, 2, 3, 4, 5, 6, 7, 8});
-        target.decode(new CmsEntryId().value(SAMPLE).encode());
+        CmsEntryId src = get().value(SAMPLE);
+        CmsEntryId target = get().decode(src.encode());
         assertArrayEquals(SAMPLE, target.value());
     }
 
     @Test
     void fromLong() {
-        CmsEntryId e = new CmsEntryId().value(1L);
+        CmsEntryId e = get().value(1L);
         assertArrayEquals(SAMPLE, e.value());
     }
 
     @Test
     void fromLargeLong() {
-        CmsEntryId e = new CmsEntryId().value(0xDEADBEEFCAFEL);
+        CmsEntryId e = get().value(0xDEADBEEFCAFEL);
         byte[] v = e.value();
         assertEquals(8, v.length);
         assertEquals(0x00, v[0] & 0xFF);
@@ -48,14 +50,12 @@ class CmsEntryIdTest {
 
     @Test
     void fromBinaryTime() {
-        CmsBinaryTime bt = new CmsBinaryTime().set(1718015445500L);
-        CmsEntryId e = new CmsEntryId().from(bt);
+        CmsBinaryTime bt = ((CmsBinaryTime) new CmsBinaryTime().test()).set(1718015445500L);
+        CmsEntryId e = get().from(bt);
         byte[] v = e.value();
         assertEquals(8, v.length);
-        // last 2 bytes should be zero
         assertEquals(0, v[6]);
         assertEquals(0, v[7]);
-        // first 6 bytes should match BinaryTime encode
         byte[] btBytes = bt.encode();
         assertEquals(6, btBytes.length);
         for (int i = 0; i < 6; i++) {

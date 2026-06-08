@@ -2,7 +2,7 @@ package com.ysh.jcms.datatype.block;
 import com.sun.jna.Structure;
 
 import com.ysh.jcms.datatype.basic.CmsBoolean;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsMsvcbOptFlds extends CmsType {
+public class CmsMsvcbOptFlds extends CmsField {
     public CmsBoolean.ByValue refresh_time = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue sample_rate = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue data_set_name = new CmsBoolean.ByValue();

@@ -7,47 +7,48 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsMsvcbOptFlds")
 class CmsMsvcbOptFldsTest {
 
+    private CmsMsvcbOptFlds get() { return (CmsMsvcbOptFlds)(new CmsMsvcbOptFlds().test()); }
+
     @Test
     void roundtripDefault() {
-        assertEquals(new CmsMsvcbOptFlds(),
-                     new CmsMsvcbOptFlds().decode(new CmsMsvcbOptFlds().encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 
     @Test
     void refreshTime() {
-        CmsMsvcbOptFlds o = new CmsMsvcbOptFlds();
+        CmsMsvcbOptFlds o = get();
         o.refresh_time().value(true);
-        assertEquals(o, new CmsMsvcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void sampleRate() {
-        CmsMsvcbOptFlds o = new CmsMsvcbOptFlds();
+        CmsMsvcbOptFlds o = get();
         o.sample_rate().value(true);
-        assertEquals(o, new CmsMsvcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void dataSetName() {
-        CmsMsvcbOptFlds o = new CmsMsvcbOptFlds();
+        CmsMsvcbOptFlds o = get();
         o.data_set_name().value(true);
-        assertEquals(o, new CmsMsvcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void security() {
-        CmsMsvcbOptFlds o = new CmsMsvcbOptFlds();
+        CmsMsvcbOptFlds o = get();
         o.security().value(true);
-        assertEquals(o, new CmsMsvcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 
     @Test
     void allTrue() {
-        CmsMsvcbOptFlds o = new CmsMsvcbOptFlds();
+        CmsMsvcbOptFlds o = get();
         o.refresh_time().value(true);
         o.sample_rate().value(true);
         o.data_set_name().value(true);
         o.security().value(true);
-        assertEquals(o, new CmsMsvcbOptFlds().decode(o.encode()));
+        assertEquals(o, get().decode(o.encode()));
     }
 }

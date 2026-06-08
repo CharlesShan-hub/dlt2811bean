@@ -3,7 +3,7 @@ package com.ysh.jcms.datatype.control;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt32;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsOriginator extends CmsType {
+public class CmsOriginator extends CmsField {
     public static final int ORCAT_NOT_SUPPORTED      = 0;
     public static final int ORCAT_BAY_CONTROL        = 1;
     public static final int ORCAT_STATION_CONTROL    = 2;

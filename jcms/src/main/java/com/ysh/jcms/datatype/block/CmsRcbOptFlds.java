@@ -1,7 +1,7 @@
 package com.ysh.jcms.datatype.block;
 
 import com.ysh.jcms.datatype.basic.CmsBoolean;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsRcbOptFlds extends CmsType {
+public class CmsRcbOptFlds extends CmsField {
 
     public CmsBoolean.ByValue sequence_number = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue report_time_stamp = new CmsBoolean.ByValue();

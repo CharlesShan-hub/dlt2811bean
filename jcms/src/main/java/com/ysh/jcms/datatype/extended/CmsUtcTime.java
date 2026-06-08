@@ -3,7 +3,7 @@ package com.ysh.jcms.datatype.extended;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsInt24U;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsUtcTime extends CmsType {
+public class CmsUtcTime extends CmsField {
 
     /** Max value for the 24-bit fraction field (2^24 - 1). */
     private static final long FRAC_MAX = (1L << 24) - 1;

@@ -3,7 +3,7 @@ package com.ysh.jcms.datatype.extended;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsInt32;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsTimeQuality extends CmsType {
+public class CmsTimeQuality extends CmsField {
     public CmsBoolean.ByValue leap_seconds_known = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue clock_failure = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue clock_not_synchronized = new CmsBoolean.ByValue();

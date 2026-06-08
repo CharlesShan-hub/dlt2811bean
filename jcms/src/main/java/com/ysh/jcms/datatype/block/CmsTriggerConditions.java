@@ -2,7 +2,7 @@ package com.ysh.jcms.datatype.block;
 
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsTriggerConditions extends CmsType {
+public class CmsTriggerConditions extends CmsField {
     public CmsBoolean.ByValue data_change = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue quality_change = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue data_update = new CmsBoolean.ByValue();

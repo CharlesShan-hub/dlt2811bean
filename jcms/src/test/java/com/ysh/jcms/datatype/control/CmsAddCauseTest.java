@@ -7,34 +7,39 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsAddCause")
 class CmsAddCauseTest {
 
+    private CmsAddCause get() { return (CmsAddCause)(new CmsAddCause().test()); }
+
     @Test
     void unknown() {
-        CmsAddCause original = new CmsAddCause().value(CmsAddCause.UNKNOWN);
-        assertEquals(original, new CmsAddCause().decode(original.encode()));
+        CmsAddCause a = get().value(CmsAddCause.UNKNOWN);
+        CmsAddCause b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void blockedBySyncheck() {
-        CmsAddCause original = new CmsAddCause().value(CmsAddCause.BLOCKED_BY_SYNCHECK);
-        assertEquals(original, new CmsAddCause().decode(original.encode()));
+        CmsAddCause a = get().value(CmsAddCause.BLOCKED_BY_SYNCHECK);
+        CmsAddCause b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void none() {
-        CmsAddCause original = new CmsAddCause().value(CmsAddCause.NONE);
-        assertEquals(original, new CmsAddCause().decode(original.encode()));
+        CmsAddCause a = get().value(CmsAddCause.NONE);
+        CmsAddCause b = get().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsAddCause().value());
+        assertEquals(0, get().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsAddCause target = new CmsAddCause().value(CmsAddCause.SELECT_FAILED);
-        target.decode(new CmsAddCause().value(CmsAddCause.NONE).encode());
-        assertEquals(new CmsAddCause().value(CmsAddCause.NONE), target);
+        CmsAddCause src = get().value(CmsAddCause.NONE);
+        CmsAddCause target = get().decode(src.encode());
+        assertEquals(src, target);
     }
 
     @Test

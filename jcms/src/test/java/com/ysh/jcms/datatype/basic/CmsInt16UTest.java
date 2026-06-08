@@ -7,27 +7,33 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsInt16U")
 class CmsInt16UTest {
 
+    private CmsInt16U getCmsInt16U() {
+        return (CmsInt16U)(new CmsInt16U().test());
+    }
+
     @Test
     void roundtrip() {
-        CmsInt16U original = new CmsInt16U().value((short) 12345);
-        assertEquals(original, new CmsInt16U().decode(original.encode()));
+        CmsInt16U a = getCmsInt16U().value((short) 12345);
+        CmsInt16U b = getCmsInt16U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void zero() {
-        CmsInt16U v = new CmsInt16U().value((short) 0);
-        assertEquals(v, new CmsInt16U().decode(v.encode()));
+        CmsInt16U a = getCmsInt16U().value((short) 0);
+        CmsInt16U b = getCmsInt16U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsInt16U().value());
+        assertEquals(0, getCmsInt16U().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsInt16U target = new CmsInt16U().value((short) 32767);
-        target.decode(new CmsInt16U().value((short) 42).encode());
-        assertEquals(new CmsInt16U().value((short) 42), target);
+        CmsInt16U src = getCmsInt16U().value((short) 32767);
+        CmsInt16U target = getCmsInt16U().decode(src.encode());
+        assertEquals(src, target);
     }
 }

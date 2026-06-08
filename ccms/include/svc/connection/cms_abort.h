@@ -4,14 +4,17 @@
 #include "svc/cms_svc.h"
 #include "svc/other/cms_association_id.h"
 #include "svc/connection/cms_abort_reason.h"
+#include "data/common/cms_service_error.h"
+#include "data/basic/cms_integer.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct {
-    cms_association_id_t assoc_id;
-    cms_abort_reason_t   reason;
+    cms_int16u_t          req_id;
+    cms_association_id_t  assoc_id;
+    cms_abort_reason_t    reason;
 } cms_abort_t;
 
 CMS_EXPORT int cms_abort_encode(

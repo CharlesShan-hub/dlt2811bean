@@ -6,7 +6,7 @@ import com.ysh.jcms.datatype.basic.CmsInt16U;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
 import com.ysh.jcms.datatype.common.CmsObjectReference;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsUrcb extends CmsType {
+public class CmsUrcb extends CmsField {
     public CmsUint8Array.ByValue rptID = new CmsUint8Array.ByValue(129);
     public CmsBoolean.ByValue rptEna = new CmsBoolean.ByValue();
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();

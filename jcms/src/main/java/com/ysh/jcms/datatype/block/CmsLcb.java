@@ -4,7 +4,7 @@ import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsInt32U;
 import com.ysh.jcms.datatype.common.CmsObjectReference;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsField;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsLcb extends CmsType {
+public class CmsLcb extends CmsField {
     public CmsBoolean.ByValue logEna = new CmsBoolean.ByValue();
     public CmsObjectReference.ByValue datSet = new CmsObjectReference.ByValue();
     public CmsTriggerConditions.ByValue trgOps = new CmsTriggerConditions.ByValue();

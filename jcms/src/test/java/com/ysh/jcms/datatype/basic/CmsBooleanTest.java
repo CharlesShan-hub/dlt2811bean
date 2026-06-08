@@ -7,27 +7,33 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsBoolean")
 class CmsBooleanTest {
 
+    private CmsBoolean getCmsBoolean() {
+        return (CmsBoolean)(new CmsBoolean().test());
+    }
+
     @Test
     void trueRoundtrip() {
-        assertEquals(new CmsBoolean().value(true),
-                     new CmsBoolean().decode(new CmsBoolean().value(true).encode()));
+        CmsBoolean a = getCmsBoolean().value(true);
+        CmsBoolean b = getCmsBoolean().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void falseRoundtrip() {
-        assertEquals(new CmsBoolean().value(false),
-                     new CmsBoolean().decode(new CmsBoolean().value(false).encode()));
+        CmsBoolean a = getCmsBoolean().value(false);
+        CmsBoolean b = getCmsBoolean().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(false, new CmsBoolean().value());
+        assertEquals(false, getCmsBoolean().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsBoolean target = new CmsBoolean().value(true);
-        target.decode(new CmsBoolean().value(false).encode());
-        assertEquals(new CmsBoolean().value(false), target);
+        CmsBoolean a = getCmsBoolean().value(true);
+        CmsBoolean b = getCmsBoolean().decode(a.encode());
+        assertEquals(a, b);
     }
 }

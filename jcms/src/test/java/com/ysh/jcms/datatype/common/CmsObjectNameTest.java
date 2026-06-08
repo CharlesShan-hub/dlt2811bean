@@ -7,11 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsObjectName")
 class CmsObjectNameTest {
 
+    private CmsObjectName get() { return (CmsObjectName)(new CmsObjectName().test()); }
+
     @Test
     void roundtrip() {
-        CmsObjectName original = new CmsObjectName().value("GGIO1");
-        byte[] data = original.encode();
-        CmsObjectName decoded = new CmsObjectName().decode(data);
+        CmsObjectName original = get().value("GGIO1");
+        CmsObjectName decoded = get().decode(original.encode());
         assertEquals("GGIO1", new String(decoded.value()).trim());
     }
 
@@ -20,14 +21,14 @@ class CmsObjectNameTest {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 64; i++) sb.append('A');
         String s = sb.toString();
-        CmsObjectName original = new CmsObjectName().value(s);
-        CmsObjectName decoded = new CmsObjectName().decode(original.encode());
+        CmsObjectName original = get().value(s);
+        CmsObjectName decoded = get().decode(original.encode());
         assertEquals(s, new String(decoded.value()).trim());
     }
 
     @Test
     void empty() {
-        CmsObjectName v = new CmsObjectName().value("");
+        CmsObjectName v = get().value("");
         assertEquals("", new String(v.value()).trim());
     }
 }

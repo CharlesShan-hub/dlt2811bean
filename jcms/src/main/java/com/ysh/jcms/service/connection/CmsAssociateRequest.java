@@ -3,7 +3,7 @@ import com.sun.jna.Structure;
 
 import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.basic.CmsUint8Array;
-import com.ysh.jcms.ffi.CmsType;
+import com.ysh.jcms.ffi.CmsAPDU;
 import java.util.Arrays;
 import java.util.List;
 import lombok.Getter;
@@ -13,7 +13,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(fluent = true)
-public class CmsAssociateRequest extends CmsType {
+public class CmsAssociateRequest extends CmsAPDU {
     public CmsUint8Array.ByValue sap_ref = new CmsUint8Array.ByValue(64);
     public CmsBoolean sap_ref_present = new CmsBoolean.ByValue();
     public CmsAuthenticationParameter.ByValue auth_param = new CmsAuthenticationParameter.ByValue();
@@ -21,7 +21,7 @@ public class CmsAssociateRequest extends CmsType {
 
     @Override
     protected List<String> getFieldOrder() {
-        return Arrays.asList("sap_ref", "sap_ref_present", "auth_param", "auth_param_present");
+        return Arrays.asList("reqId", "sap_ref", "sap_ref_present", "auth_param", "auth_param_present");
     }
 
     @Override

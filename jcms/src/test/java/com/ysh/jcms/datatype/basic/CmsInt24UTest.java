@@ -7,34 +7,41 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsInt24U")
 class CmsInt24UTest {
 
+    private CmsInt24U getCmsInt24U() {
+        return (CmsInt24U)(new CmsInt24U().test());
+    }
+
     @Test
     void roundtrip() {
-        CmsInt24U original = new CmsInt24U().value(100000);
-        assertEquals(original, new CmsInt24U().decode(original.encode()));
+        CmsInt24U a = getCmsInt24U().value(100000);
+        CmsInt24U b = getCmsInt24U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void maxValue() {
         int max = (1 << 24) - 1;
-        assertEquals(new CmsInt24U().value(max),
-                     new CmsInt24U().decode(new CmsInt24U().value(max).encode()));
+        CmsInt24U a = getCmsInt24U().value(max);
+        CmsInt24U b = getCmsInt24U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void zero() {
-        assertEquals(new CmsInt24U().value(0),
-                     new CmsInt24U().decode(new CmsInt24U().value(0).encode()));
+        CmsInt24U a = getCmsInt24U().value(0);
+        CmsInt24U b = getCmsInt24U().decode(a.encode());
+        assertEquals(a, b);
     }
 
     @Test
     void defaultValue() {
-        assertEquals(0, new CmsInt24U().value());
+        assertEquals(0, getCmsInt24U().value());
     }
 
     @Test
     void decodeOverwrites() {
-        CmsInt24U target = new CmsInt24U().value(999999);
-        target.decode(new CmsInt24U().value(42).encode());
-        assertEquals(new CmsInt24U().value(42), target);
+        CmsInt24U src = getCmsInt24U().value(999999);
+        CmsInt24U target = getCmsInt24U().decode(src.encode());
+        assertEquals(src, target);
     }
 }

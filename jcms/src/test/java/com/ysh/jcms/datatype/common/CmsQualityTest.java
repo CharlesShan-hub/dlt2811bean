@@ -7,51 +7,55 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("CmsQuality")
 class CmsQualityTest {
 
+    private CmsQuality get() {
+        return (CmsQuality)(new CmsQuality()).super_test();
+    }
+
     @Test
     void roundtripDefault() {
-        assertEquals(new CmsQuality(), new CmsQuality().decode(new CmsQuality().encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 
     @Test
     void validity() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.validity().value(1);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void overflow() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.overflow().value(true);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void outOfRange() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.outOfRange().value(true);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void test() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.test().value(true);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void multipleFlags() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.overflow().value(true);
         q.failure().value(true);
         q.operatorBlocked().value(true);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void allBooleansTrue() {
-        CmsQuality q = new CmsQuality();
+        CmsQuality q = get();
         q.overflow().value(true);
         q.outOfRange().value(true);
         q.badReference().value(true);
@@ -63,13 +67,11 @@ class CmsQualityTest {
         q.substituted().value(true);
         q.test().value(true);
         q.operatorBlocked().value(true);
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(q, get().decode(q.encode()));
     }
 
     @Test
     void allBooleansFalse() {
-        CmsQuality q = new CmsQuality();
-        // all defaults are false, just roundtrip
-        assertEquals(q, new CmsQuality().decode(q.encode()));
+        assertEquals(get(), get().decode(get().encode()));
     }
 }
