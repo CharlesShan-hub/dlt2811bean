@@ -46,6 +46,8 @@ public class CmsUint8Array extends CmsType {
     public static class ByValue extends CmsUint8Array implements Structure.ByValue {
         public ByValue() { this(0); }
         public ByValue(int maxLen) { super(maxLen); }
+        @Override
+        public ByValue value(byte[] data) { return (ByValue) super.value(data); }
     }
 
     @Override

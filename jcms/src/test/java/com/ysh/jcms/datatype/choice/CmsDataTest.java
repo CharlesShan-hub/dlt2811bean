@@ -4,7 +4,6 @@ import com.ysh.jcms.datatype.common.CmsServiceError;
 import com.ysh.jcms.datatype.common.CmsDbpos;
 import com.ysh.jcms.datatype.common.CmsTcmd;
 import com.ysh.jcms.datatype.common.CmsQuality;
-import com.ysh.jcms.datatype.basic.CmsBoolean;
 import com.ysh.jcms.datatype.control.CmsCheck;
 import com.ysh.jcms.datatype.extended.CmsUtcTime;
 import com.ysh.jcms.datatype.extended.CmsBinaryTime;
@@ -17,15 +16,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class CmsDataTest {
 
     @Test void type0Error() {
-        assertEquals(CmsData.of(new CmsServiceError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE)),
-                     new CmsData().decode(CmsData.of(new CmsServiceError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE)).encode()));
+        assertEquals(CmsData.of(ERROR, CmsServiceError.INSTANCE_NOT_AVAILABLE),
+                     new CmsData().decode(CmsData.of(ERROR, CmsServiceError.INSTANCE_NOT_AVAILABLE).encode()));
     }
 
     @Test void type3Boolean() {
-        assertEquals(CmsData.of(new CmsBoolean().value(true)),
-                     new CmsData().decode(CmsData.of(BOOLEAN, true).encode()));
         assertEquals(CmsData.of(BOOLEAN, true),
-                     new CmsData().decode(CmsData.of(new CmsBoolean().value(true)).encode()));
+                     new CmsData().decode(CmsData.of(BOOLEAN, true).encode()));
     }
 
     @Test void type6Int32() {
@@ -44,19 +41,21 @@ class CmsDataTest {
     }
 
     @Test void type18UtcTime() {
-        assertEquals(CmsData.of(new CmsUtcTime().set(1718015445500L)),
-                     new CmsData().decode(CmsData.of(new CmsUtcTime().set(1718015445500L)).encode()));
+        CmsUtcTime.ByValue v = new CmsUtcTime.ByValue().set(1718015445500L);
+        assertEquals(CmsData.of(v),
+                     new CmsData().decode(CmsData.of(v).encode()));
     }
 
     @Test void type19BinaryTime() {
-        assertEquals(CmsData.of(new CmsBinaryTime().set(1718015445500L)),
-                     new CmsData().decode(CmsData.of(new CmsBinaryTime().set(1718015445500L)).encode()));
+        CmsBinaryTime.ByValue v = new CmsBinaryTime.ByValue().set(1718015445500L);
+        assertEquals(CmsData.of(v),
+                     new CmsData().decode(CmsData.of(v).encode()));
     }
 
     @Test void type20Quality() {
-        CmsQuality q = new CmsQuality();
-        q.overflow().value(true);
-        q.failure().value(true);
+        CmsQuality.ByValue q = new CmsQuality.ByValue();
+        q.overflow.value = true;
+        q.failure.value = true;
         assertEquals(CmsData.of(q),
                      new CmsData().decode(CmsData.of(q).encode()));
     }
@@ -72,9 +71,9 @@ class CmsDataTest {
     }
 
     @Test void type23Check() {
-        CmsCheck chk = new CmsCheck();
-        chk.syncheck().value(true);
-        chk.interlock_check().value(false);
+        CmsCheck.ByValue chk = new CmsCheck.ByValue();
+        chk.syncheck.value = true;
+        chk.interlock_check.value = false;
         assertEquals(CmsData.of(chk),
                      new CmsData().decode(CmsData.of(chk).encode()));
     }

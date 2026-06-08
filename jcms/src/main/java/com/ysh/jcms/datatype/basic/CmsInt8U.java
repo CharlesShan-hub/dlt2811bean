@@ -11,6 +11,5 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsInt8U extends CmsScalar {
     public byte value;
-
     public static class ByValue extends CmsInt8U implements Structure.ByValue {}
 }

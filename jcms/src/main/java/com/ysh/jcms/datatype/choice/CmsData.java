@@ -1,6 +1,5 @@
 package com.ysh.jcms.datatype.choice;
 
-import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.*;
@@ -24,30 +23,31 @@ public class CmsData extends CmsType {
     /** Choice discriminator as a CmsType. */
     public CmsDataType.ByValue choice = new CmsDataType.ByValue();
     public CmsDataUnion value = new CmsDataUnion();
-    /** Backing native memory for array/structure to prevent GC. */
-    private transient Memory _elementsMemory;
-
     // ==================== Factory: by type ====================
 
-    /** Create a CmsData with a pre-built CmsType value.
+    /** Create a CmsData with a pre-built ByValue value.
      *  The choice discriminator is auto-detected from the value's class. */
-    public static CmsData of(CmsServiceError val) { return of(ERROR, val); }
-    public static CmsData of(CmsBoolean val)      { return of(BOOLEAN, val); }
-    public static CmsData of(CmsInt8 val)          { return of(INT8, val); }
-    public static CmsData of(CmsInt16 val)         { return of(INT16, val); }
-    public static CmsData of(CmsInt32 val)         { return of(INT32, val); }
-    public static CmsData of(CmsInt64 val)         { return of(INT64, val); }
-    public static CmsData of(CmsInt8U val)         { return of(INT8U, val); }
-    public static CmsData of(CmsInt16U val)        { return of(INT16U, val); }
-    public static CmsData of(CmsInt32U val)        { return of(INT32U, val); }
-    public static CmsData of(CmsFloat32 val)       { return of(FLOAT32, val); }
-    public static CmsData of(CmsFloat64 val)       { return of(FLOAT64, val); }
-    public static CmsData of(CmsDbpos val)         { return of(DBPOS, val); }
-    public static CmsData of(CmsTcmd val)          { return of(TCMD, val); }
-    public static CmsData of(CmsQuality val)       { return of(QUALITY, val); }
-    public static CmsData of(CmsCheck val)         { return of(CHECK, val); }
-    public static CmsData of(CmsUtcTime val)       { return of(UTC_TIME, val); }
-    public static CmsData of(CmsBinaryTime val)    { return of(BINARY_TIME, val); }
+    public static CmsData of(CmsServiceError.ByValue val) { return of(ERROR, val); }
+    public static CmsData of(CmsBoolean.ByValue val)      { return of(BOOLEAN, val); }
+    public static CmsData of(CmsInt8.ByValue val)         { return of(INT8, val); }
+    public static CmsData of(CmsInt16.ByValue val)        { return of(INT16, val); }
+    public static CmsData of(CmsInt32.ByValue val)        { return of(INT32, val); }
+    public static CmsData of(CmsInt64.ByValue val)        { return of(INT64, val); }
+    public static CmsData of(CmsInt8U.ByValue val)        { return of(INT8U, val); }
+    public static CmsData of(CmsInt16U.ByValue val)       { return of(INT16U, val); }
+    public static CmsData of(CmsInt32U.ByValue val)       { return of(INT32U, val); }
+    public static CmsData of(CmsInt64U.ByValue val)       { return of(INT64U, val); }
+    public static CmsData of(CmsFloat32.ByValue val)      { return of(FLOAT32, val); }
+    public static CmsData of(CmsFloat64.ByValue val)      { return of(FLOAT64, val); }
+    public static CmsData of(CmsDbpos.ByValue val)        { return of(DBPOS, val); }
+    public static CmsData of(CmsTcmd.ByValue val)         { return of(TCMD, val); }
+    public static CmsData of(CmsQuality.ByValue val)      { return of(QUALITY, val); }
+    public static CmsData of(CmsCheck.ByValue val)        { return of(CHECK, val); }
+    public static CmsData of(CmsUtcTime.ByValue val)      { return of(UTC_TIME, val); }
+    public static CmsData of(CmsBinaryTime.ByValue val)   { return of(BINARY_TIME, val); }
+    public static CmsData of(CmsUint8Array.ByValue val)   { return of(VISIBLE_STRING, val); }
+    public static CmsData of(CmsDataArray.ByValue val)     { return of(ARRAY, val); }
+    public static CmsData of(CmsDataStructure.ByValue val) { return of(STRUCTURE, val); }
 
     // ==================== Factory: simple values ====================
 
@@ -57,88 +57,65 @@ public class CmsData extends CmsType {
         CmsData d = new CmsData();
         d.choice().value(c);
         d.value.setType(unionClass(c));
-        if (c == CmsDataType.ERROR) {
-            if (val instanceof CmsServiceError) d.value.error = (CmsServiceError) val;
-            else d.value.error.value((Integer) val);
-        } else if (c == CmsDataType.BOOLEAN) {
-            if (val instanceof CmsBoolean) d.value.boolean_value = (CmsBoolean) val;
-            else d.value.boolean_value.value((Boolean) val);
-        } else if (c == CmsDataType.INT8) {
-            if (val instanceof CmsInt8) d.value.int8 = (CmsInt8) val;
-            else d.value.int8.value((Byte) val);
-        } else if (c == CmsDataType.INT16) {
-            if (val instanceof CmsInt16) d.value.int16 = (CmsInt16) val;
-            else d.value.int16.value((Short) val);
-        } else if (c == CmsDataType.INT32) {
-            if (val instanceof CmsInt32) d.value.int32 = (CmsInt32) val;
-            else d.value.int32.value((Integer) val);
-        } else if (c == CmsDataType.INT64) {
-            if (val instanceof CmsInt64) d.value.int64 = (CmsInt64) val;
-            else d.value.int64.value((Long) val);
-        } else if (c == CmsDataType.INT8U) {
-            if (val instanceof CmsInt8U) d.value.int8u = (CmsInt8U) val;
-            else d.value.int8u.value((Byte) val);
-        } else if (c == CmsDataType.INT16U) {
-            if (val instanceof CmsInt16U) d.value.int16u = (CmsInt16U) val;
-            else d.value.int16u.value((Short) val);
-        } else if (c == CmsDataType.INT32U) {
-            if (val instanceof CmsInt32U) d.value.int32u = (CmsInt32U) val;
-            else d.value.int32u.value((Integer) val);
-        } else if (c == CmsDataType.FLOAT32) {
-            if (val instanceof CmsFloat32) d.value.float32 = (CmsFloat32) val;
-            else d.value.float32.value((Float) val);
-        } else if (c == CmsDataType.FLOAT64) {
-            if (val instanceof CmsFloat64) d.value.float64 = (CmsFloat64) val;
-            else d.value.float64.value((Double) val);
-        } else if (c == CmsDataType.DBPOS) {
-            if (val instanceof CmsDbpos) d.value.dbpos = (CmsDbpos) val;
-            else d.value.dbpos.value((Integer) val);
-        } else if (c == CmsDataType.TCMD) {
-            if (val instanceof CmsTcmd) d.value.tcmd = (CmsTcmd) val;
-            else d.value.tcmd.value((Integer) val);
-        } else if (val instanceof CmsQuality) d.value.quality = (CmsQuality) val;
-        else if (val instanceof CmsCheck) d.value.check = (CmsCheck) val;
-        else if (val instanceof CmsUtcTime) d.value.utc_time = (CmsUtcTime) val;
-        else if (val instanceof CmsBinaryTime) d.value.binary_time = (CmsBinaryTime) val;
-        else throw new IllegalArgumentException("unsupported value type for choice " + c);
+        assign(d.value, c, val);
         return d;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void assign(CmsDataUnion u, int c, Object val) {
+        switch (c) {
+            case ERROR:        u.error = new CmsServiceError.ByValue();   u.error.value = cvt(val); break;
+            case BOOLEAN:      u.boolean_value = new CmsBoolean.ByValue(); u.boolean_value.value = cvt(val); break;
+            case INT8:         u.int8 = new CmsInt8.ByValue();            u.int8.value = cvt(val); break;
+            case INT16:        u.int16 = new CmsInt16.ByValue();          u.int16.value = cvt(val); break;
+            case INT32:        u.int32 = new CmsInt32.ByValue();          u.int32.value = cvt(val); break;
+            case INT64:        u.int64 = new CmsInt64.ByValue();          u.int64.value = cvt(val); break;
+            case INT8U:        u.int8u = new CmsInt8U.ByValue();          u.int8u.value = cvt(val); break;
+            case INT16U:       u.int16u = new CmsInt16U.ByValue();        u.int16u.value = cvt(val); break;
+            case INT32U:       u.int32u = new CmsInt32U.ByValue();        u.int32u.value = cvt(val); break;
+            case INT64U:       u.int64u = new CmsInt64U.ByValue();        u.int64u.value = cvt(val); break;
+            case FLOAT32:      u.float32 = new CmsFloat32.ByValue();      u.float32.value = cvt(val); break;
+            case FLOAT64:      u.float64 = new CmsFloat64.ByValue();      u.float64.value = cvt(val); break;
+            case DBPOS:        u.dbpos = new CmsDbpos.ByValue();          u.dbpos.value = cvt(val); break;
+            case TCMD:         u.tcmd = new CmsTcmd.ByValue();            u.tcmd.value = cvt(val); break;
+            case UTC_TIME:     u.utc_time = (CmsUtcTime.ByValue) val; break;
+            case BINARY_TIME:  u.binary_time = (CmsBinaryTime.ByValue) val; break;
+            case QUALITY:      u.quality = (CmsQuality.ByValue) val; break;
+            case CHECK:        u.check = (CmsCheck.ByValue) val; break;
+            case BIT_STRING:
+            case OCTET_STRING:
+            case VISIBLE_STRING:
+            case UTF8_STRING:
+                u.visible_string = val instanceof byte[]
+                    ? new CmsUint8Array.ByValue().value((byte[]) val)
+                    : (CmsUint8Array.ByValue) val;
+                break;
+            case ARRAY:        u.array = (CmsDataArray.ByValue) val; break;
+            case STRUCTURE:    u.structure = (CmsDataStructure.ByValue) val; break;
+            default: throw new IllegalArgumentException("unsupported choice " + c);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T cvt(Object v) {
+        return (T) v;
     }
 
     // ==================== Factory: array / structure ====================
 
     /** Create a CmsData wrapping an ARRAY of elements. */
     public static CmsData array(CmsData... elems) {
-        if (elems == null || elems.length == 0)
-            throw new IllegalArgumentException("array must have at least 1 element");
         CmsData d = new CmsData();
         d.choice().value(CmsDataType.ARRAY);
-        int elemSize = elems[0].size();
-        d._elementsMemory = new Memory((long) elemSize * elems.length);
-        for (int i = 0; i < elems.length; i++) {
-            elems[i].write();
-            byte[] raw = elems[i].getPointer().getByteArray(0, elemSize);
-            d._elementsMemory.write((long) i * elemSize, raw, 0, elemSize);
-        }
-        d.value.array.elements = d._elementsMemory;
-        d.value.array.count = elems.length;
+        d.value.array.append(elems);
         return d;
     }
 
     /** Create a CmsData wrapping a STRUCTURE of elements. */
     public static CmsData structure(CmsData... elems) {
-        if (elems == null || elems.length == 0)
-            throw new IllegalArgumentException("structure must have at least 1 element");
         CmsData d = new CmsData();
         d.choice().value(CmsDataType.STRUCTURE);
-        int elemSize = elems[0].size();
-        d._elementsMemory = new Memory((long) elemSize * elems.length);
-        for (int i = 0; i < elems.length; i++) {
-            elems[i].write();
-            byte[] raw = elems[i].getPointer().getByteArray(0, elemSize);
-            d._elementsMemory.write((long) i * elemSize, raw, 0, elemSize);
-        }
-        d.value.structure.elements = d._elementsMemory;
-        d.value.structure.count = elems.length;
+        d.value.structure.append(elems);
         return d;
     }
 
@@ -199,31 +176,31 @@ public class CmsData extends CmsType {
 
     private static Class<?> unionClass(int c) {
         switch (c) {
-            case 0:  return CmsServiceError.class;
+            case 0:  return CmsServiceError.ByValue.class;
             case 1:  return CmsDataArray.ByValue.class;
             case 2:  return CmsDataStructure.ByValue.class;
-            case 3:  return CmsBoolean.class;
-            case 4:  return CmsInt8.class;
-            case 5:  return CmsInt16.class;
-            case 6:  return CmsInt32.class;
-            case 7:  return CmsInt64.class;
-            case 8:  return CmsInt8U.class;
-            case 9:  return CmsInt16U.class;
-            case 10: return CmsInt32U.class;
-            case 11: return CmsInt64U.class;
-            case 12: return CmsFloat32.class;
-            case 13: return CmsFloat64.class;
-            case 14: return CmsUint8Array.class;
-            case 15: return CmsUint8Array.class;
-            case 16: return CmsUint8Array.class;
-            case 17: return CmsUint8Array.class;
-            case 18: return CmsUtcTime.class;
-            case 19: return CmsBinaryTime.class;
-            case 20: return CmsQuality.class;
-            case 21: return CmsDbpos.class;
-            case 22: return CmsTcmd.class;
-            case 23: return CmsCheck.class;
-            default: return CmsInt32.class;
+            case 3:  return CmsBoolean.ByValue.class;
+            case 4:  return CmsInt8.ByValue.class;
+            case 5:  return CmsInt16.ByValue.class;
+            case 6:  return CmsInt32.ByValue.class;
+            case 7:  return CmsInt64.ByValue.class;
+            case 8:  return CmsInt8U.ByValue.class;
+            case 9:  return CmsInt16U.ByValue.class;
+            case 10: return CmsInt32U.ByValue.class;
+            case 11: return CmsInt64U.ByValue.class;
+            case 12: return CmsFloat32.ByValue.class;
+            case 13: return CmsFloat64.ByValue.class;
+            case 14: return CmsUint8Array.ByValue.class;
+            case 15: return CmsUint8Array.ByValue.class;
+            case 16: return CmsUint8Array.ByValue.class;
+            case 17: return CmsUint8Array.ByValue.class;
+            case 18: return CmsUtcTime.ByValue.class;
+            case 19: return CmsBinaryTime.ByValue.class;
+            case 20: return CmsQuality.ByValue.class;
+            case 21: return CmsDbpos.ByValue.class;
+            case 22: return CmsTcmd.ByValue.class;
+            case 23: return CmsCheck.ByValue.class;
+            default: return CmsInt32.ByValue.class;
         }
     }
 

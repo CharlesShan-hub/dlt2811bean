@@ -11,6 +11,5 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class CmsInt64U extends CmsScalar {
     public long value;
-
     public static class ByValue extends CmsInt64U implements Structure.ByValue {}
 }

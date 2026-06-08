@@ -18,7 +18,28 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsBinaryTime extends CmsType {
-    public static class ByValue extends CmsBinaryTime implements Structure.ByValue {}
+    public static class ByValue extends CmsBinaryTime implements Structure.ByValue {
+        @Override
+        public ByValue set(long epochMs) { return (ByValue) super.set(epochMs); }
+        @Override
+        public ByValue set(int year, int month, int day,
+                             int hour, int minute, int second) {
+            return set(year, month, day, hour, minute, second, 0);
+        }
+        @Override
+        public ByValue set(int year, int month, int day,
+                             int hour, int minute, int second, int millis) {
+            return set(year, month, day, hour, minute, second, millis);
+        }
+        @Override
+        public ByValue set(ZonedDateTime dt) {
+            return set(dt.toInstant().toEpochMilli());
+        }
+        @Override
+        public ByValue now() {
+            return set(System.currentTimeMillis());
+        }
+    }
 
     /** Days from 1984-01-01 to Java epoch (1970-01-01). */
     private static final long DAYS_EPOCH_OFFSET = 5113;

@@ -13,8 +13,6 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsTriggerConditions extends CmsType {
-    public static class ByValue extends CmsTriggerConditions implements Structure.ByValue {}
-
     public CmsBoolean.ByValue data_change = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue quality_change = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue data_update = new CmsBoolean.ByValue();
@@ -26,4 +24,6 @@ public class CmsTriggerConditions extends CmsType {
         return Arrays.asList("data_change", "quality_change", "data_update",
                 "integrity", "general_interrogation");
     }
+
+    public static class ByValue extends CmsTriggerConditions implements Structure.ByValue {}
 }

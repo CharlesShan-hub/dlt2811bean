@@ -79,5 +79,8 @@ public class CmsUtcTime extends CmsType {
         return set(System.currentTimeMillis());
     }
 
-    public static class ByValue extends CmsUtcTime implements Structure.ByValue {}
+    public static class ByValue extends CmsUtcTime implements Structure.ByValue {
+        @Override
+        public ByValue set(long epochMs) { return (ByValue) super.set(epochMs); }
+    }
 }
