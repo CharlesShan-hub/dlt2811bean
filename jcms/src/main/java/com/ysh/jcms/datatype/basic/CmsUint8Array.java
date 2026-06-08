@@ -76,6 +76,7 @@ public class CmsUint8Array extends CmsType {
         if (data.length > 0) {
             this.pointer = new Memory(data.length + 1);
             this.pointer.write(0, data, 0, data.length);
+            this.pointer.setByte(data.length, (byte) 0);  // null terminate for C str
         } else {
             this.pointer = null;
         }

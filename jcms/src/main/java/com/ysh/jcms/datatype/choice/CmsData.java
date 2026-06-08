@@ -1,6 +1,7 @@
 package com.ysh.jcms.datatype.choice;
 
 import com.sun.jna.Pointer;
+import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.*;
 import com.ysh.jcms.datatype.common.*;
 import com.ysh.jcms.datatype.control.CmsCheck;
@@ -27,44 +28,45 @@ public class CmsData extends CmsType {
     public CmsData() {
         formatter = CmsDataFormatter.INSTANCE;
     }
-    // ==================== Factory: by type ====================
 
-    /** Create a CmsData with a pre-built value.
-     *  The choice discriminator is auto-detected from the value's class. */
-    public static CmsData of(CmsServiceError val) { CmsServiceError.ByValue bv = new CmsServiceError.ByValue(); bv.value = val.value; return of(ERROR, bv); }
-    public static CmsData of(CmsBoolean val)      { CmsBoolean.ByValue bv = new CmsBoolean.ByValue(); bv.value = val.value; return of(BOOLEAN, bv); }
-    public static CmsData of(CmsInt8 val)         { CmsInt8.ByValue bv = new CmsInt8.ByValue(); bv.value = val.value; return of(INT8, bv); }
-    public static CmsData of(CmsInt16 val)        { CmsInt16.ByValue bv = new CmsInt16.ByValue(); bv.value = val.value; return of(INT16, bv); }
-    public static CmsData of(CmsInt32 val)        { CmsInt32.ByValue bv = new CmsInt32.ByValue(); bv.value = val.value; return of(INT32, bv); }
-    public static CmsData of(CmsInt64 val)        { CmsInt64.ByValue bv = new CmsInt64.ByValue(); bv.value = val.value; return of(INT64, bv); }
-    public static CmsData of(CmsInt8U val)        { CmsInt8U.ByValue bv = new CmsInt8U.ByValue(); bv.value = val.value; return of(INT8U, bv); }
-    public static CmsData of(CmsInt16U val)       { CmsInt16U.ByValue bv = new CmsInt16U.ByValue(); bv.value = val.value; return of(INT16U, bv); }
-    public static CmsData of(CmsInt32U val)       { CmsInt32U.ByValue bv = new CmsInt32U.ByValue(); bv.value = val.value; return of(INT32U, bv); }
-    public static CmsData of(CmsInt64U val)       { CmsInt64U.ByValue bv = new CmsInt64U.ByValue(); bv.value = val.value; return of(INT64U, bv); }
-    public static CmsData of(CmsFloat32 val)      { CmsFloat32.ByValue bv = new CmsFloat32.ByValue(); bv.value = val.value; return of(FLOAT32, bv); }
-    public static CmsData of(CmsFloat64 val)      { CmsFloat64.ByValue bv = new CmsFloat64.ByValue(); bv.value = val.value; return of(FLOAT64, bv); }
-    public static CmsData of(CmsDbpos val)        { CmsDbpos.ByValue bv = new CmsDbpos.ByValue(); bv.value = val.value; return of(DBPOS, bv); }
-    public static CmsData of(CmsTcmd val)         { CmsTcmd.ByValue bv = new CmsTcmd.ByValue(); bv.value = val.value; return of(TCMD, bv); }
-    public static CmsData of(CmsQuality val)      { CmsQuality.ByValue bv = new CmsQuality.ByValue(); bv.validity = val.validity; bv.overflow = val.overflow; bv.outOfRange = val.outOfRange; bv.badReference = val.badReference; bv.oscillatory = val.oscillatory; bv.failure = val.failure; bv.oldData = val.oldData; bv.inconsistent = val.inconsistent; bv.inaccurate = val.inaccurate; bv.substituted = val.substituted; bv.test = val.test; bv.operatorBlocked = val.operatorBlocked; return of(QUALITY, bv); }
-    public static CmsData of(CmsCheck val)        { CmsCheck.ByValue bv = new CmsCheck.ByValue(); bv.syncheck.value = val.syncheck.value; bv.interlock_check.value = val.interlock_check.value; return of(CHECK, bv); }
-    public static CmsData of(CmsUtcTime val)      { CmsUtcTime.ByValue bv = new CmsUtcTime.ByValue(); bv.seconds_since_epoch.value = val.seconds_since_epoch.value; bv.fraction_of_second.value = val.fraction_of_second.value; bv.time_quality.leap_seconds_known.value = val.time_quality.leap_seconds_known.value; bv.time_quality.clock_failure.value = val.time_quality.clock_failure.value; bv.time_quality.clock_not_synchronized.value = val.time_quality.clock_not_synchronized.value; bv.time_quality.precision.value = val.time_quality.precision.value; return of(UTC_TIME, bv); }
-    public static CmsData of(CmsBinaryTime val)   { CmsBinaryTime.ByValue bv = new CmsBinaryTime.ByValue(); bv.msOfDay.value = val.msOfDay.value; bv.daysSince1984.value = val.daysSince1984.value; return of(BINARY_TIME, bv); }
-    public static CmsData of(CmsUint8Array val)   { return of(VISIBLE_STRING, val); }
-    public static CmsData of(CmsDataArray.ByValue val)     { return of(ARRAY, val); }
-    public static CmsData of(CmsDataStructure.ByValue val) { return of(STRUCTURE, val); }
+    // ==================== Choice 映射表 ====================
+    // 以下为 CmsDataUnion 字段与 CmsDataType choice 常量间的映射。
+    // choiceFor() / unionClass() 定义在 CmsDataType 中（通过 static import 访问）。
+    // =========================================================
 
-    // ==================== Factory: simple values ====================
-
-    /** Create a CmsData with a scalar value.
-     *  scalars: (INT32, 42), (BOOLEAN, true), (DBPOS, 1) */
-    public static CmsData of(int c, Object val) {
-        CmsData d = new CmsData();
-        d.choice().value(c);
-        d.value.setType(unionClass(c));
-        assign(d.value, c, val);
-        return d;
+    /** choice → 当前活跃的 Union 值。 */
+    private Object activeValue(int c) {
+        switch (c) {
+            case ERROR:        return value.error;
+            case BOOLEAN:      return value.boolean_value;
+            case INT8:         return value.int8;
+            case INT16:        return value.int16;
+            case INT32:        return value.int32;
+            case INT64:        return value.int64;
+            case INT8U:        return value.int8u;
+            case INT16U:       return value.int16u;
+            case INT32U:       return value.int32u;
+            case INT64U:       return value.int64u;
+            case FLOAT32:      return value.float32;
+            case FLOAT64:      return value.float64;
+            case UTC_TIME:     return value.utc_time;
+            case BINARY_TIME:  return value.binary_time;
+            case QUALITY:      return value.quality;
+            case DBPOS:        return value.dbpos;
+            case TCMD:         return value.tcmd;
+            case CHECK:        return value.check;
+            case BIT_STRING:
+            case OCTET_STRING:
+            case VISIBLE_STRING:
+            case UTF8_STRING:
+                try { return value.visible_string.value(); } catch (Exception e) { return value.visible_string; }
+            case ARRAY:        return value.array;
+            case STRUCTURE:    return value.structure;
+            default:           return value.int32;
+        }
     }
 
+    /** choice → 标量值赋予 Union 字段。 */
     @SuppressWarnings("unchecked")
     private static void assign(CmsDataUnion u, int c, Object val) {
         switch (c) {
@@ -101,11 +103,117 @@ public class CmsData extends CmsType {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T cvt(Object v) {
-        return (T) v;
+    private static <T> T cvt(Object v) { return (T) v; }
+
+    // ==================== equals / hashCode ====================
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CmsData)) return false;
+        CmsData other = (CmsData) o;
+        int c = choice.value();
+        if (c != other.choice.value()) return false;
+        return compareByChoice(c, other);
     }
 
-    // ==================== Factory: array / structure ====================
+    @Override
+    public int hashCode() {
+        return Objects.hash(choice.value());
+    }
+
+    /** choice → 相等比较。 */
+    private boolean compareByChoice(int c, CmsData other) {
+        switch (c) {
+            case ERROR:  return Objects.equals(value.error, other.value.error);
+            case BOOLEAN: return Objects.equals(value.boolean_value, other.value.boolean_value);
+            case INT8:   return Objects.equals(value.int8, other.value.int8);
+            case INT16:  return Objects.equals(value.int16, other.value.int16);
+            case INT32:  return Objects.equals(value.int32, other.value.int32);
+            case INT64:  return Objects.equals(value.int64, other.value.int64);
+            case INT8U:  return Objects.equals(value.int8u, other.value.int8u);
+            case INT16U: return Objects.equals(value.int16u, other.value.int16u);
+            case INT32U: return Objects.equals(value.int32u, other.value.int32u);
+            case INT64U: return Objects.equals(value.int64u, other.value.int64u);
+            case FLOAT32: return Objects.equals(value.float32, other.value.float32);
+            case FLOAT64: return Objects.equals(value.float64, other.value.float64);
+            case BIT_STRING:
+            case OCTET_STRING:
+            case VISIBLE_STRING:
+            case UTF8_STRING:
+                return Arrays.equals(value.visible_string.value(), other.value.visible_string.value());
+            case UTC_TIME:    return Objects.equals(value.utc_time, other.value.utc_time);
+            case BINARY_TIME: return Objects.equals(value.binary_time, other.value.binary_time);
+            case QUALITY:     return Objects.equals(value.quality, other.value.quality);
+            case DBPOS:       return Objects.equals(value.dbpos, other.value.dbpos);
+            case TCMD:        return Objects.equals(value.tcmd, other.value.tcmd);
+            case CHECK:       return Objects.equals(value.check, other.value.check);
+            case ARRAY:
+                if (value.array.count != other.value.array.count) return false;
+                return Objects.equals(value.array.elements, other.value.array.elements);
+            case STRUCTURE:
+                if (value.structure.count != other.value.structure.count) return false;
+                return Objects.equals(value.structure.elements, other.value.structure.elements);
+            default: return false;
+        }
+    }
+
+    // ==================== Factory: by CmsType ====================
+
+    /** 通用工厂：自动推断 choice，通过字段反射拷贝值到 ByValue。 */
+    public static CmsData of(CmsType val) {
+        int c = choiceFor(val.getClass());
+        if (c < 0) throw new IllegalArgumentException("unrecognized type: " + val.getClass());
+        // CmsUint8Array 有 4 个 choice，默认 VISIBLE_STRING（16）
+        if (c == 14 || c == 15 || c == 17) c = 16;
+
+        Class<?> bvClass = unionClass(c);
+        CmsType bv = newBv(bvClass);
+        copyFields(val, bv);
+
+        CmsData d = new CmsData();
+        d.choice().value(c);
+        d.value.setType(bvClass);
+        assign(d.value, c, bv);
+        return d;
+    }
+
+    /** Create a CmsData with a scalar value: (INT32, 42), (BOOLEAN, true), (DBPOS, 1) */
+    public static CmsData of(int c, Object val) {
+        CmsData d = new CmsData();
+        d.choice().value(c);
+        d.value.setType(unionClass(c));
+        assign(d.value, c, val);
+        return d;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T extends com.sun.jna.Structure> T newBv(Class<?> cls) {
+        try {
+            return (T) cls.getDeclaredConstructor().newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException("Cannot instantiate " + cls, e);
+        }
+    }
+
+    /** 反射拷贝：将 src 的 public 字段值赋给 dst（相同字段名）。 */
+    private static void copyFields(CmsType src, CmsType dst) {
+        Class<?> clazz = src.getClass();
+        while (clazz != null && clazz != com.sun.jna.Structure.class) {
+            for (java.lang.reflect.Field f : clazz.getDeclaredFields()) {
+                if (java.lang.reflect.Modifier.isStatic(f.getModifiers())) continue;
+                String fn = f.getName();
+                if ("name".equals(fn) || "encodeFn".equals(fn) || "decodeFn".equals(fn)
+                    || "codecEnabled".equals(fn) || "formatter".equals(fn)) continue;
+                try {
+                    java.lang.reflect.Field df;
+                    try { df = dst.getClass().getField(fn); } catch (NoSuchFieldException e) { continue; }
+                    df.set(dst, f.get(src));
+                } catch (Exception ignored) {}
+            }
+            clazz = clazz.getSuperclass();
+        }
+    }
 
     /** Create a CmsData wrapping an ARRAY of elements. */
     public static CmsData array(CmsData... elems) {
@@ -176,120 +284,6 @@ public class CmsData extends CmsType {
         value.setType(unionClass(choice().value()));
         value.read();
         return this;
-    }
-
-    private static Class<?> unionClass(int c) {
-        switch (c) {
-            case 0:  return CmsServiceError.ByValue.class;
-            case 1:  return CmsDataArray.ByValue.class;
-            case 2:  return CmsDataStructure.ByValue.class;
-            case 3:  return CmsBoolean.ByValue.class;
-            case 4:  return CmsInt8.ByValue.class;
-            case 5:  return CmsInt16.ByValue.class;
-            case 6:  return CmsInt32.ByValue.class;
-            case 7:  return CmsInt64.ByValue.class;
-            case 8:  return CmsInt8U.ByValue.class;
-            case 9:  return CmsInt16U.ByValue.class;
-            case 10: return CmsInt32U.ByValue.class;
-            case 11: return CmsInt64U.ByValue.class;
-            case 12: return CmsFloat32.ByValue.class;
-            case 13: return CmsFloat64.ByValue.class;
-            case 14: return CmsUint8Array.ByValue.class;
-            case 15: return CmsUint8Array.ByValue.class;
-            case 16: return CmsUint8Array.ByValue.class;
-            case 17: return CmsUint8Array.ByValue.class;
-            case 18: return CmsUtcTime.ByValue.class;
-            case 19: return CmsBinaryTime.ByValue.class;
-            case 20: return CmsQuality.ByValue.class;
-            case 21: return CmsDbpos.ByValue.class;
-            case 22: return CmsTcmd.ByValue.class;
-            case 23: return CmsCheck.ByValue.class;
-            default: return CmsInt32.ByValue.class;
-        }
-    }
-
-    // ==================== equals / hashCode ====================
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CmsData)) return false;
-        CmsData other = (CmsData) o;
-        int c = choice().value();
-        if (c != other.choice().value()) return false;
-        return compareByChoice(c, other);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(choice().value());
-    }
-
-    private boolean compareByChoice(int c, CmsData other) {
-        switch (c) {
-            case ERROR:  return Objects.equals(value.error, other.value.error);
-            case BOOLEAN: return Objects.equals(value.boolean_value, other.value.boolean_value);
-            case INT8:   return Objects.equals(value.int8, other.value.int8);
-            case INT16:  return Objects.equals(value.int16, other.value.int16);
-            case INT32:  return Objects.equals(value.int32, other.value.int32);
-            case INT64:  return Objects.equals(value.int64, other.value.int64);
-            case INT8U:  return Objects.equals(value.int8u, other.value.int8u);
-            case INT16U: return Objects.equals(value.int16u, other.value.int16u);
-            case INT32U: return Objects.equals(value.int32u, other.value.int32u);
-            case INT64U: return Objects.equals(value.int64u, other.value.int64u);
-            case FLOAT32: return Objects.equals(value.float32, other.value.float32);
-            case FLOAT64: return Objects.equals(value.float64, other.value.float64);
-            case BIT_STRING:
-            case OCTET_STRING:
-            case VISIBLE_STRING:
-            case UTF8_STRING:
-                return Arrays.equals(value.visible_string.value(), other.value.visible_string.value());
-            case UTC_TIME:    return Objects.equals(value.utc_time, other.value.utc_time);
-            case BINARY_TIME: return Objects.equals(value.binary_time, other.value.binary_time);
-            case QUALITY:     return Objects.equals(value.quality, other.value.quality);
-            case DBPOS:       return Objects.equals(value.dbpos, other.value.dbpos);
-            case TCMD:        return Objects.equals(value.tcmd, other.value.tcmd);
-            case CHECK:       return Objects.equals(value.check, other.value.check);
-            case ARRAY:
-                if (value.array.count != other.value.array.count) return false;
-                // Compare array elements by address (shallow)
-                return Objects.equals(value.array.elements, other.value.array.elements);
-            case STRUCTURE:
-                if (value.structure.count != other.value.structure.count) return false;
-                return Objects.equals(value.structure.elements, other.value.structure.elements);
-            default: return false;
-        }
-    }
-
-    private Object activeValue(int c) {
-        switch (c) {
-            case ERROR:        return value.error;
-            case BOOLEAN:      return value.boolean_value;
-            case INT8:         return value.int8;
-            case INT16:        return value.int16;
-            case INT32:        return value.int32;
-            case INT64:        return value.int64;
-            case INT8U:        return value.int8u;
-            case INT16U:       return value.int16u;
-            case INT32U:       return value.int32u;
-            case INT64U:       return value.int64u;
-            case FLOAT32:      return value.float32;
-            case FLOAT64:      return value.float64;
-            case UTC_TIME:     return value.utc_time;
-            case BINARY_TIME:  return value.binary_time;
-            case QUALITY:      return value.quality;
-            case DBPOS:        return value.dbpos;
-            case TCMD:         return value.tcmd;
-            case CHECK:        return value.check;
-            case BIT_STRING:
-            case OCTET_STRING:
-            case VISIBLE_STRING:
-            case UTF8_STRING:
-                try { return value.visible_string.value(); } catch (Exception e) { return value.visible_string; }
-            case ARRAY:        return value.array;
-            case STRUCTURE:    return value.structure;
-            default:           return value.int32;
-        }
     }
 
     /**
