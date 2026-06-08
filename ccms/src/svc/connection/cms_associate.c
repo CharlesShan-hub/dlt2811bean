@@ -26,6 +26,8 @@ CMS_EXPORT int cms_associate_request_encode(
     int err = per_stream_init_dynamic(&w, 512);
     if (err) return CMS_ERR;
     int rc;
+    rc = cms_int16u_encode_stream(&w, &sdu->req_id);
+    if (rc) return rc;
     rc = cms_boolean_encode_stream(&w, &sdu->sap_ref_present);
     if (rc) return rc;
     rc = cms_boolean_encode_stream(&w, &sdu->auth_param_present);
@@ -49,6 +51,8 @@ CMS_EXPORT int cms_associate_request_decode(
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
     int rc;
+    rc = cms_int16u_decode_stream(&r, &sdu->req_id);
+    if (rc) return rc;
     cms_boolean_t has_sap = {0};
     rc = cms_boolean_decode_stream(&r, &has_sap);
     if (rc) return rc;
@@ -150,7 +154,9 @@ CMS_EXPORT int cms_associate_error_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
-    int rc = cms_service_error_decode_stream(&r, &sdu->service_error);
+    int rc = cms_int16u_decode_stream(&r, &sdu->req_id);
+    if (rc) return rc;
+    rc = cms_service_error_decode_stream(&r, &sdu->service_error);
     if (rc) return rc;
     return CMS_OK;
 }

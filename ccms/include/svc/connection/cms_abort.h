@@ -4,7 +4,6 @@
 #include "svc/cms_svc.h"
 #include "svc/other/cms_association_id.h"
 #include "svc/connection/cms_abort_reason.h"
-#include "data/common/cms_service_error.h"
 #include "data/basic/cms_integer.h"
 
 #ifdef __cplusplus

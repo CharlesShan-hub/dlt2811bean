@@ -33,20 +33,10 @@ public class CmsDataArray extends Structure {
         Object[] keepAlive = new Object[elems.length];
         for (int i = 0; i < elems.length; i++) {
             CmsData src = elems[i];
-            // Deep-resolve nested array/structure by encode → decode
-            int c = src.choice().value();
-            if (c == CmsDataType.ARRAY || c == CmsDataType.STRUCTURE) {
-                CmsData copy = new CmsData().decode(src.encode());
-                copy.write();
-                byte[] raw = copy.getPointer().getByteArray(0, elemSize);
-                mem.write((long) i * elemSize, raw, 0, elemSize);
-                keepAlive[i] = copy;   // prevent GC of deep data
-            } else {
-                src.write();
-                byte[] raw = src.getPointer().getByteArray(0, elemSize);
-                mem.write((long) i * elemSize, raw, 0, elemSize);
-                keepAlive[i] = src;
-            }
+            src.write();
+            byte[] raw = src.getPointer().getByteArray(0, elemSize);
+            mem.write((long) i * elemSize, raw, 0, elemSize);
+            keepAlive[i] = src;
         }
         this.elements = mem;
         this.count = elems.length;

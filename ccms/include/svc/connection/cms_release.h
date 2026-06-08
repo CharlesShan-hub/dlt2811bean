@@ -12,7 +12,6 @@ extern "C" {
 
 typedef struct {
     cms_int16u_t          req_id;
-    cms_service_error_t   service_error;
     cms_association_id_t  assoc_id;
 } cms_release_request_t;
 

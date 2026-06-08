@@ -20,7 +20,6 @@ extern "C" {
 
 typedef struct {
     cms_int16u_t               req_id;
-    cms_service_error_t        service_error;
     cms_uint8_array_t          sap_ref;    /* VisibleString (0..64) */
     cms_boolean_t              sap_ref_present;
     cms_authentication_parameter_t auth_param;

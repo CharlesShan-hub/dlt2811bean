@@ -8,6 +8,7 @@ CMS_EXPORT int cms_release_request_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 128);
     if (err) return CMS_ERR;
+    cms_int16u_encode_stream(&w, &sdu->req_id);
     cms_association_id_encode_stream(&w, &sdu->assoc_id);
     return cms_write_out(&w, out_buf, out_len);
 }
@@ -17,6 +18,7 @@ CMS_EXPORT int cms_release_request_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
+    cms_int16u_decode_stream(&r, &sdu->req_id);
     cms_association_id_decode_stream(&r, &sdu->assoc_id);
     return CMS_OK;
 }
@@ -29,8 +31,9 @@ CMS_EXPORT int cms_release_response_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 128);
     if (err) return CMS_ERR;
-    cms_association_id_encode_stream(&w, &sdu->assoc_id);
+    cms_int16u_encode_stream(&w, &sdu->req_id);
     cms_service_error_encode_stream(&w, &sdu->service_error);
+    cms_association_id_encode_stream(&w, &sdu->assoc_id);
     return cms_write_out(&w, out_buf, out_len);
 }
 CMS_EXPORT int cms_release_response_decode(
@@ -39,8 +42,9 @@ CMS_EXPORT int cms_release_response_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
-    cms_association_id_decode_stream(&r, &sdu->assoc_id);
+    cms_int16u_decode_stream(&r, &sdu->req_id);
     cms_service_error_decode_stream(&r, &sdu->service_error);
+    cms_association_id_decode_stream(&r, &sdu->assoc_id);
     return CMS_OK;
 }
 
@@ -52,6 +56,7 @@ CMS_EXPORT int cms_release_error_encode(
     per_stream_t w;
     int err = per_stream_init_dynamic(&w, 64);
     if (err) return CMS_ERR;
+    cms_int16u_encode_stream(&w, &sdu->req_id);
     cms_service_error_encode_stream(&w, &sdu->service_error);
     return cms_write_out(&w, out_buf, out_len);
 }
@@ -61,6 +66,7 @@ CMS_EXPORT int cms_release_error_decode(
 {
     per_stream_t r;
     per_stream_init_read(&r, in_buf, (size_t)in_len);
+    cms_int16u_decode_stream(&r, &sdu->req_id);
     cms_service_error_decode_stream(&r, &sdu->service_error);
     return CMS_OK;
 }
