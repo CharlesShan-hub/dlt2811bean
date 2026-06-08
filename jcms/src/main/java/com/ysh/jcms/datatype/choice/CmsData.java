@@ -1,7 +1,6 @@
 package com.ysh.jcms.datatype.choice;
 
 import com.sun.jna.Pointer;
-import com.sun.jna.Structure;
 import com.ysh.jcms.datatype.basic.*;
 import com.ysh.jcms.datatype.common.*;
 import com.ysh.jcms.datatype.control.CmsCheck;
@@ -13,6 +12,7 @@ import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import com.ysh.jcms.util.CmsDefaultFormatter;
 import java.util.Objects;
 import static com.ysh.jcms.datatype.choice.CmsDataType.*;
 
@@ -23,29 +23,33 @@ public class CmsData extends CmsType {
     /** Choice discriminator as a CmsType. */
     public CmsDataType.ByValue choice = new CmsDataType.ByValue();
     public CmsDataUnion value = new CmsDataUnion();
+
+    public CmsData() {
+        formatter = CmsDataFormatter.INSTANCE;
+    }
     // ==================== Factory: by type ====================
 
-    /** Create a CmsData with a pre-built ByValue value.
+    /** Create a CmsData with a pre-built value.
      *  The choice discriminator is auto-detected from the value's class. */
-    public static CmsData of(CmsServiceError.ByValue val) { return of(ERROR, val); }
-    public static CmsData of(CmsBoolean.ByValue val)      { return of(BOOLEAN, val); }
-    public static CmsData of(CmsInt8.ByValue val)         { return of(INT8, val); }
-    public static CmsData of(CmsInt16.ByValue val)        { return of(INT16, val); }
-    public static CmsData of(CmsInt32.ByValue val)        { return of(INT32, val); }
-    public static CmsData of(CmsInt64.ByValue val)        { return of(INT64, val); }
-    public static CmsData of(CmsInt8U.ByValue val)        { return of(INT8U, val); }
-    public static CmsData of(CmsInt16U.ByValue val)       { return of(INT16U, val); }
-    public static CmsData of(CmsInt32U.ByValue val)       { return of(INT32U, val); }
-    public static CmsData of(CmsInt64U.ByValue val)       { return of(INT64U, val); }
-    public static CmsData of(CmsFloat32.ByValue val)      { return of(FLOAT32, val); }
-    public static CmsData of(CmsFloat64.ByValue val)      { return of(FLOAT64, val); }
-    public static CmsData of(CmsDbpos.ByValue val)        { return of(DBPOS, val); }
-    public static CmsData of(CmsTcmd.ByValue val)         { return of(TCMD, val); }
-    public static CmsData of(CmsQuality.ByValue val)      { return of(QUALITY, val); }
-    public static CmsData of(CmsCheck.ByValue val)        { return of(CHECK, val); }
-    public static CmsData of(CmsUtcTime.ByValue val)      { return of(UTC_TIME, val); }
-    public static CmsData of(CmsBinaryTime.ByValue val)   { return of(BINARY_TIME, val); }
-    public static CmsData of(CmsUint8Array.ByValue val)   { return of(VISIBLE_STRING, val); }
+    public static CmsData of(CmsServiceError val) { CmsServiceError.ByValue bv = new CmsServiceError.ByValue(); bv.value = val.value; return of(ERROR, bv); }
+    public static CmsData of(CmsBoolean val)      { CmsBoolean.ByValue bv = new CmsBoolean.ByValue(); bv.value = val.value; return of(BOOLEAN, bv); }
+    public static CmsData of(CmsInt8 val)         { CmsInt8.ByValue bv = new CmsInt8.ByValue(); bv.value = val.value; return of(INT8, bv); }
+    public static CmsData of(CmsInt16 val)        { CmsInt16.ByValue bv = new CmsInt16.ByValue(); bv.value = val.value; return of(INT16, bv); }
+    public static CmsData of(CmsInt32 val)        { CmsInt32.ByValue bv = new CmsInt32.ByValue(); bv.value = val.value; return of(INT32, bv); }
+    public static CmsData of(CmsInt64 val)        { CmsInt64.ByValue bv = new CmsInt64.ByValue(); bv.value = val.value; return of(INT64, bv); }
+    public static CmsData of(CmsInt8U val)        { CmsInt8U.ByValue bv = new CmsInt8U.ByValue(); bv.value = val.value; return of(INT8U, bv); }
+    public static CmsData of(CmsInt16U val)       { CmsInt16U.ByValue bv = new CmsInt16U.ByValue(); bv.value = val.value; return of(INT16U, bv); }
+    public static CmsData of(CmsInt32U val)       { CmsInt32U.ByValue bv = new CmsInt32U.ByValue(); bv.value = val.value; return of(INT32U, bv); }
+    public static CmsData of(CmsInt64U val)       { CmsInt64U.ByValue bv = new CmsInt64U.ByValue(); bv.value = val.value; return of(INT64U, bv); }
+    public static CmsData of(CmsFloat32 val)      { CmsFloat32.ByValue bv = new CmsFloat32.ByValue(); bv.value = val.value; return of(FLOAT32, bv); }
+    public static CmsData of(CmsFloat64 val)      { CmsFloat64.ByValue bv = new CmsFloat64.ByValue(); bv.value = val.value; return of(FLOAT64, bv); }
+    public static CmsData of(CmsDbpos val)        { CmsDbpos.ByValue bv = new CmsDbpos.ByValue(); bv.value = val.value; return of(DBPOS, bv); }
+    public static CmsData of(CmsTcmd val)         { CmsTcmd.ByValue bv = new CmsTcmd.ByValue(); bv.value = val.value; return of(TCMD, bv); }
+    public static CmsData of(CmsQuality val)      { CmsQuality.ByValue bv = new CmsQuality.ByValue(); bv.validity = val.validity; bv.overflow = val.overflow; bv.outOfRange = val.outOfRange; bv.badReference = val.badReference; bv.oscillatory = val.oscillatory; bv.failure = val.failure; bv.oldData = val.oldData; bv.inconsistent = val.inconsistent; bv.inaccurate = val.inaccurate; bv.substituted = val.substituted; bv.test = val.test; bv.operatorBlocked = val.operatorBlocked; return of(QUALITY, bv); }
+    public static CmsData of(CmsCheck val)        { CmsCheck.ByValue bv = new CmsCheck.ByValue(); bv.syncheck.value = val.syncheck.value; bv.interlock_check.value = val.interlock_check.value; return of(CHECK, bv); }
+    public static CmsData of(CmsUtcTime val)      { CmsUtcTime.ByValue bv = new CmsUtcTime.ByValue(); bv.seconds_since_epoch.value = val.seconds_since_epoch.value; bv.fraction_of_second.value = val.fraction_of_second.value; bv.time_quality.leap_seconds_known.value = val.time_quality.leap_seconds_known.value; bv.time_quality.clock_failure.value = val.time_quality.clock_failure.value; bv.time_quality.clock_not_synchronized.value = val.time_quality.clock_not_synchronized.value; bv.time_quality.precision.value = val.time_quality.precision.value; return of(UTC_TIME, bv); }
+    public static CmsData of(CmsBinaryTime val)   { CmsBinaryTime.ByValue bv = new CmsBinaryTime.ByValue(); bv.msOfDay.value = val.msOfDay.value; bv.daysSince1984.value = val.daysSince1984.value; return of(BINARY_TIME, bv); }
+    public static CmsData of(CmsUint8Array val)   { return of(VISIBLE_STRING, val); }
     public static CmsData of(CmsDataArray.ByValue val)     { return of(ARRAY, val); }
     public static CmsData of(CmsDataStructure.ByValue val) { return of(STRUCTURE, val); }
 
@@ -257,5 +261,56 @@ public class CmsData extends CmsType {
         }
     }
 
-    public static class ByValue extends CmsData implements Structure.ByValue {}
+    private Object activeValue(int c) {
+        switch (c) {
+            case ERROR:        return value.error;
+            case BOOLEAN:      return value.boolean_value;
+            case INT8:         return value.int8;
+            case INT16:        return value.int16;
+            case INT32:        return value.int32;
+            case INT64:        return value.int64;
+            case INT8U:        return value.int8u;
+            case INT16U:       return value.int16u;
+            case INT32U:       return value.int32u;
+            case INT64U:       return value.int64u;
+            case FLOAT32:      return value.float32;
+            case FLOAT64:      return value.float64;
+            case UTC_TIME:     return value.utc_time;
+            case BINARY_TIME:  return value.binary_time;
+            case QUALITY:      return value.quality;
+            case DBPOS:        return value.dbpos;
+            case TCMD:         return value.tcmd;
+            case CHECK:        return value.check;
+            case BIT_STRING:
+            case OCTET_STRING:
+            case VISIBLE_STRING:
+            case UTF8_STRING:
+                try { return value.visible_string.value(); } catch (Exception e) { return value.visible_string; }
+            case ARRAY:        return value.array;
+            case STRUCTURE:    return value.structure;
+            default:           return value.int32;
+        }
+    }
+
+    /**
+     * CmsData 专用格式化器 — 根据 choice 只展开活跃值，不显示所有 union 字段。
+     */
+    private static class CmsDataFormatter implements com.ysh.jcms.util.CmsToString {
+        static final CmsDataFormatter INSTANCE = new CmsDataFormatter();
+
+        @Override
+        public String toString(com.ysh.jcms.ffi.CmsType obj, int indent) {
+            CmsData d = (CmsData) obj;
+            String pad = indent > 0 ? CmsDefaultFormatter.repeat("    ", indent) : "";
+            int c = d.choice.value();
+            Object active = d.activeValue(c);
+            String valStr = (active instanceof com.ysh.jcms.ffi.CmsType)
+                ? CmsDefaultFormatter.formatValue(active, indent + 1)
+                : String.valueOf(active);
+            return "(" + d.getClass().getSimpleName() + ") {\n"
+                + pad + "    choice: (" + com.ysh.jcms.datatype.choice.CmsDataType.class.getSimpleName() + ") " + c + "\n"
+                + pad + "    value: (CmsDataUnion) -> " + valStr + "\n"
+                + pad + "}";
+        }
+    }
 }

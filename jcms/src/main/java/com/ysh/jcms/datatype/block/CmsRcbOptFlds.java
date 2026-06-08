@@ -12,7 +12,6 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(fluent = true)
 public class CmsRcbOptFlds extends CmsType {
-    public static class ByValue extends CmsRcbOptFlds implements com.sun.jna.Structure.ByValue {}
 
     public CmsBoolean.ByValue sequence_number = new CmsBoolean.ByValue();
     public CmsBoolean.ByValue report_time_stamp = new CmsBoolean.ByValue();
@@ -30,4 +29,6 @@ public class CmsRcbOptFlds extends CmsType {
                 "data_set_name", "data_reference", "buffer_overflow",
                 "entry_id", "conf_revision", "segmentation");
     }
+
+    public static class ByValue extends CmsRcbOptFlds implements com.sun.jna.Structure.ByValue {}
 }

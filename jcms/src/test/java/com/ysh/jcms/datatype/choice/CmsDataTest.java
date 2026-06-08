@@ -41,13 +41,15 @@ class CmsDataTest {
     }
 
     @Test void type18UtcTime() {
-        CmsUtcTime.ByValue v = new CmsUtcTime.ByValue().set(1718015445500L);
+        CmsUtcTime.ByValue v = (CmsUtcTime.ByValue) new CmsUtcTime.ByValue().set(1718015445500L);
+        System.out.println(CmsData.of(v));
+        System.out.println(new CmsData().decode(CmsData.of(v).encode()));
         assertEquals(CmsData.of(v),
                      new CmsData().decode(CmsData.of(v).encode()));
     }
 
     @Test void type19BinaryTime() {
-        CmsBinaryTime.ByValue v = new CmsBinaryTime.ByValue().set(1718015445500L);
+        CmsBinaryTime.ByValue v = (CmsBinaryTime.ByValue) new CmsBinaryTime.ByValue().set(1718015445500L);
         assertEquals(CmsData.of(v),
                      new CmsData().decode(CmsData.of(v).encode()));
     }

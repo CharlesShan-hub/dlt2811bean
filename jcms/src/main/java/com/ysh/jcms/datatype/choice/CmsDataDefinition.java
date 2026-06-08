@@ -30,7 +30,7 @@ public class CmsDataDefinition extends CmsType {
     public static CmsDataDefinition of(int c, int stringLength) {
         CmsDataDefinition d = new CmsDataDefinition();
         d.choice().value(c);
-        d.value.setType(CmsInt32.class);
+        d.value.setType(CmsInt32.ByValue.class);
         d.value.string_length.value(stringLength);
         return d;
     }
@@ -66,9 +66,7 @@ public class CmsDataDefinition extends CmsType {
             case 0:  return CmsServiceError.ByValue.class;
             case 1:  return CmsDataDefinitionArray.ByValue.class;
             case 2:  return CmsDataDefinitionStructure.ByValue.class;
-            default: return CmsInt32.class;
+            default: return CmsInt32.ByValue.class;
         }
     }
-
-    public static class ByValue extends CmsDataDefinition implements Structure.ByValue {}
 }

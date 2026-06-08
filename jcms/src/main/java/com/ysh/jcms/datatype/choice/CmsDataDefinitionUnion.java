@@ -16,5 +16,10 @@ public class CmsDataDefinitionUnion extends Union {
     public CmsServiceError.ByValue error = new CmsServiceError.ByValue();                 //  0
     public CmsDataDefinitionArray.ByValue array = new CmsDataDefinitionArray.ByValue();       //  1
     public CmsDataDefinitionStructure.ByValue structure = new CmsDataDefinitionStructure.ByValue(); //  2
-    public CmsInt32 string_length = new CmsInt32();                                // 14-17
+    public CmsInt32.ByValue string_length = new CmsInt32.ByValue();                                // 14-17
+
+    @Override
+    protected List<String> getFieldOrder() {
+        return Arrays.asList("error", "array", "structure", "string_length");
+    }
 }

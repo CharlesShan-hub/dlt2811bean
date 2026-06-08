@@ -2,6 +2,8 @@ package com.ysh.jcms.ffi;
 
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
+import com.ysh.jcms.util.CmsDefaultFormatter;
+import com.ysh.jcms.util.CmsToString;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -29,6 +31,9 @@ public abstract class CmsType extends Structure {
     private final CmsEncodeFn encodeFn;
     private final CmsDecodeFn decodeFn;
     private final boolean codecEnabled;
+
+    /** 格式化器，子类可在构造器中替换。 */
+    protected transient CmsToString formatter = CmsDefaultFormatter.INSTANCE;
 
     /** 默认构造 — 自动绑定 FFI encode/decode。 */
     protected CmsType() {
@@ -152,8 +157,13 @@ public abstract class CmsType extends Structure {
 
     public String name() { return name; }
 
+    /** 获取格式化器。 */
+    public CmsToString formatter() { return formatter; }
+
     @Override
-    public String toString() { return name; }
+    public String toString() {
+        return formatter.toString(this, 0);
+    }
 
     // ==================== 私有工具 ====================
 
