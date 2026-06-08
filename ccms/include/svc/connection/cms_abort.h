@@ -10,6 +10,22 @@
 extern "C" {
 #endif
 
+/*
+ * ============================================================
+ * Abort-RequestPDU ::= SEQUENCE {
+ *     reqId           Int16U,
+ *     associationId   [0] IMPLICIT OCTET STRING (SIZE(0..64)),
+ *     reason          [1] IMPLICIT INTEGER {
+ *         other                       (0),
+ *         unrecognized-service        (1),
+ *         invalid-reqID               (2),
+ *         invalid-argument            (3),
+ *         invalid-result              (4),
+ *         max-serv-outstanding-exceeded (5)
+ *     } (0..5)
+ * }
+ * ============================================================
+ */
 typedef struct {
     cms_int16u_t          req_id;
     cms_association_id_t  assoc_id;
@@ -17,12 +33,12 @@ typedef struct {
 } cms_abort_t;
 
 CMS_EXPORT int cms_abort_encode(
-    const cms_abort_t *sdu,
+    const cms_abort_t *pdu,
     uint8_t *out_buf, int *out_len
 );
 
 CMS_EXPORT int cms_abort_decode(
-    cms_abort_t *sdu,
+    cms_abort_t *pdu,
     const uint8_t *in_buf, int in_len
 );
 

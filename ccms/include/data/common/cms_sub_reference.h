@@ -22,6 +22,20 @@ CMS_EXPORT int cms_sub_reference_decode(cms_sub_reference_t *v, const uint8_t *i
 int cms_sub_reference_encode_stream(per_stream_t *s, const cms_sub_reference_t *v);
 int cms_sub_reference_decode_stream(per_stream_t *s, cms_sub_reference_t *v);
 
+/*
+ * ============================================================
+ * SEQUENCE OF SubReference
+ * ============================================================
+ */
+typedef struct {
+    cms_sub_reference_t *elements;
+    int32_t              count;
+} cms_sub_reference_array_t;
+
+int cms_sub_reference_array_encode_stream(per_stream_t *s, const cms_sub_reference_array_t *arr);
+int cms_sub_reference_array_decode_stream(per_stream_t *s, cms_sub_reference_array_t *arr);
+void cms_sub_reference_array_free(cms_sub_reference_array_t *arr);
+
 #ifdef __cplusplus
 }
 #endif
