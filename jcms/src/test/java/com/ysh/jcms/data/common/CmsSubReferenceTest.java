@@ -4,5 +4,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CmsSubReferenceTest {
-    // C codec needs all-pointer struct fix for visible string
+    @Test
+    public void roundtrip() {
+        CmsSubReference a = new CmsSubReference("SubRefTest");
+        byte[] encoded = a.encode();
+        CmsSubReference b = new CmsSubReference();
+        b.decode(encoded);
+        assertArrayEquals("SubRefTest".getBytes(), b.value());
+    }
 }

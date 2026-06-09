@@ -4,5 +4,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CmsObjectNameTest {
-    // C codec needs all-pointer struct fix for visible string
+    @Test
+    public void roundtrip() {
+        CmsObjectName a = new CmsObjectName("MyObject");
+        byte[] encoded = a.encode();
+        CmsObjectName b = new CmsObjectName();
+        b.decode(encoded);
+        assertArrayEquals("MyObject".getBytes(), b.value());
+    }
 }

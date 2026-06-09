@@ -4,5 +4,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CmsFunctionalConstraintTest {
-    // C codec needs all-pointer struct fix for fixed visible string
+    @Test
+    public void roundtrip() {
+        CmsFunctionalConstraint a = new CmsFunctionalConstraint();
+        a.value("ST".getBytes());
+        byte[] encoded = a.encode();
+        CmsFunctionalConstraint b = new CmsFunctionalConstraint();
+        b.decode(encoded);
+        assertArrayEquals("ST".getBytes(), b.value());
+    }
 }

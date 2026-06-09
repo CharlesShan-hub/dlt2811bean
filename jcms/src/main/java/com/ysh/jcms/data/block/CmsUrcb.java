@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class CmsUrcb extends CmsType {
 
+    public CmsUint8Array        rptID;      /* VisibleString */
     public CmsBoolean           rptEna;
-    public CmsUint8Array        rptID;
     public CmsObjectReference   datSet;
     public CmsInt32U            confRev;
     public CmsRcbOptFlds        optFlds;
@@ -30,8 +30,8 @@ public class CmsUrcb extends CmsType {
     public CmsUint8Array        owner;          /* OPTIONAL */
 
     public CmsUrcb() {
-        this.rptEna  = new CmsBoolean();
         this.rptID   = new CmsUint8Array();
+        this.rptEna  = new CmsBoolean();
         this.datSet  = new CmsObjectReference();
         this.confRev = new CmsInt32U();
         this.optFlds = new CmsRcbOptFlds();
@@ -47,7 +47,7 @@ public class CmsUrcb extends CmsType {
 
     @Override
     public List<? extends CmsType> children() {
-        return Arrays.asList(rptEna, rptID, datSet, confRev, optFlds,
+        return Arrays.asList(rptID, rptEna, datSet, confRev, optFlds,
             bufTm, sqNum, trgOps, intgPd, gi, resv,
             owner_present, owner);
     }

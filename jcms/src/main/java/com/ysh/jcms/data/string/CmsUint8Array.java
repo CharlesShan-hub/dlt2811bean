@@ -25,7 +25,7 @@ public class CmsUint8Array extends CmsType {
     public int len;
 
     /** 由 write() 分配的 data 内存，用于生命周期管理。 */
-    private Memory ownedData;
+    protected Memory ownedData;
 
     public CmsUint8Array() {}
 
@@ -86,6 +86,12 @@ public class CmsUint8Array extends CmsType {
 
     @Override
     public void write() {
+        if (value == null) {
+            // 自动分配默认缓冲区，确保 C decode 有地方写
+            ownedData = new Memory(256);
+            value = ownedData;
+            len = 0;
+        }
         int ofs = 0;
         nativePtr.setPointer(ofs, value); ofs += 8;
         nativePtr.setInt(ofs, len);

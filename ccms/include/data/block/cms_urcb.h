@@ -36,8 +36,8 @@ extern "C" {
 #define CMS_URCB_OWNER_MAX_LEN     64
 
 typedef struct {
-    cms_boolean_t            *rptEna;
     cms_uint8_array_t        *rptID;         /* VisibleString (SIZE(129)) */
+    cms_boolean_t            *rptEna;        /* BOOLEAN */
     cms_object_reference_t   *datSet;        /* ObjectReference */
     cms_int32u_t             *confRev;       /* INT32U */
     cms_rcb_opt_flds_t       *optFlds;       /* RCBOptFlds */

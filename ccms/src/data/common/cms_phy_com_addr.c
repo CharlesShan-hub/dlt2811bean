@@ -35,6 +35,7 @@ int cms_phy_com_addr_decode_stream(per_stream_t *s, void *ptr) {
     if (!pdu->addr || !pdu->addr->value) return CMS_ERR;
     int err = cms_octet_string_fixed_decode_stream(s, pdu->addr->value, CMS_PHY_COM_ADDR_LEN);
     if (err) return err;
+    pdu->addr->len = CMS_PHY_COM_ADDR_LEN;
 
     /* 2. priority */
     if (!pdu->priority) return CMS_ERR;
