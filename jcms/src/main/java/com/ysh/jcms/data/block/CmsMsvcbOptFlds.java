@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -33,4 +34,7 @@ public class CmsMsvcbOptFlds extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(refresh_time, sample_rate, data_set_name, security);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeMsvcbOptFlds(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeMsvcbOptFlds(nativePtr, data); read(); }
 }

@@ -1,1 +1,15 @@
 package com.ysh.jcms.data.enumerated;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class CmsEnumeratedTest {
+    @Test
+    public void roundtrip() {
+        CmsEnumerated a = new CmsEnumerated(5);
+        byte[] encoded = a.encode();
+        CmsEnumerated b = new CmsEnumerated();
+        b.decode(encoded);
+        assertEquals(5, b.value());
+    }
+}

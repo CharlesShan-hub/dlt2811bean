@@ -1,31 +1,32 @@
 #include "data/block/cms_rcb_opt_flds.h"
+#include "data/string/cms_bitutil.h"
 
 static uint16_t pack_rcb(const cms_rcb_opt_flds_t *q) {
     uint16_t b = 0;
-    /* bit 0: reserved, always 0 */
-    if (q->sequence_number)       b |= (q->sequence_number->value      ? 1 : 0) << 1;
-    if (q->report_time_stamp)     b |= (q->report_time_stamp->value    ? 1 : 0) << 2;
-    if (q->reason_for_inclusion)  b |= (q->reason_for_inclusion->value ? 1 : 0) << 3;
-    if (q->data_set_name)         b |= (q->data_set_name->value        ? 1 : 0) << 4;
-    if (q->data_reference)        b |= (q->data_reference->value       ? 1 : 0) << 5;
-    if (q->buffer_overflow)       b |= (q->buffer_overflow->value      ? 1 : 0) << 6;
-    if (q->entry_id)              b |= (q->entry_id->value             ? 1 : 0) << 7;
-    if (q->conf_revision)         b |= (q->conf_revision->value        ? 1 : 0) << 8;
-    if (q->segmentation)          b |= (q->segmentation->value         ? 1 : 0) << 9;
+    /* bit 0: reserved */
+    if (q->sequence_number)       pack_bit16(&b, 1, q->sequence_number->value);
+    if (q->report_time_stamp)     pack_bit16(&b, 2, q->report_time_stamp->value);
+    if (q->reason_for_inclusion)  pack_bit16(&b, 3, q->reason_for_inclusion->value);
+    if (q->data_set_name)         pack_bit16(&b, 4, q->data_set_name->value);
+    if (q->data_reference)        pack_bit16(&b, 5, q->data_reference->value);
+    if (q->buffer_overflow)       pack_bit16(&b, 6, q->buffer_overflow->value);
+    if (q->entry_id)              pack_bit16(&b, 7, q->entry_id->value);
+    if (q->conf_revision)         pack_bit16(&b, 8, q->conf_revision->value);
+    if (q->segmentation)          pack_bit16(&b, 9, q->segmentation->value);
     return b;
 }
 
 static void unpack_rcb(uint16_t bits, cms_rcb_opt_flds_t *q) {
-    /* bit 0: reserved, ignored */
-    if (q->sequence_number)       q->sequence_number->value      = (bits >> 1) & 1;
-    if (q->report_time_stamp)     q->report_time_stamp->value    = (bits >> 2) & 1;
-    if (q->reason_for_inclusion)  q->reason_for_inclusion->value = (bits >> 3) & 1;
-    if (q->data_set_name)         q->data_set_name->value        = (bits >> 4) & 1;
-    if (q->data_reference)        q->data_reference->value       = (bits >> 5) & 1;
-    if (q->buffer_overflow)       q->buffer_overflow->value      = (bits >> 6) & 1;
-    if (q->entry_id)              q->entry_id->value             = (bits >> 7) & 1;
-    if (q->conf_revision)         q->conf_revision->value        = (bits >> 8) & 1;
-    if (q->segmentation)          q->segmentation->value         = (bits >> 9) & 1;
+    /* bit 0: reserved */
+    if (q->sequence_number)       q->sequence_number->value      = unpack_bit16(bits, 1);
+    if (q->report_time_stamp)     q->report_time_stamp->value    = unpack_bit16(bits, 2);
+    if (q->reason_for_inclusion)  q->reason_for_inclusion->value = unpack_bit16(bits, 3);
+    if (q->data_set_name)         q->data_set_name->value        = unpack_bit16(bits, 4);
+    if (q->data_reference)        q->data_reference->value       = unpack_bit16(bits, 5);
+    if (q->buffer_overflow)       q->buffer_overflow->value      = unpack_bit16(bits, 6);
+    if (q->entry_id)              q->entry_id->value             = unpack_bit16(bits, 7);
+    if (q->conf_revision)         q->conf_revision->value        = unpack_bit16(bits, 8);
+    if (q->segmentation)          q->segmentation->value         = unpack_bit16(bits, 9);
 }
 
 int cms_rcb_opt_flds_encode_stream(per_stream_t *s, const void *ptr) {

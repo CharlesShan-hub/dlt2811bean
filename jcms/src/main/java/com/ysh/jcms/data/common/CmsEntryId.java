@@ -1,15 +1,15 @@
 package com.ysh.jcms.data.common;
 
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.string.CmsUint8Array;
 
 /**
  * EntryID ::= OCTET STRING (SIZE(8))  —  7.3.8
- * Fixed 8-byte OCTET STRING.
- *
- * Use CmsUint8Array directly. This subclass is kept for
- * type-name documentation only.
  */
 public class CmsEntryId extends CmsUint8Array {
     public CmsEntryId() {}
     public CmsEntryId(byte[] data) { super(data); }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeEntryId(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeEntryId(nativePtr, data); read(); }
 }

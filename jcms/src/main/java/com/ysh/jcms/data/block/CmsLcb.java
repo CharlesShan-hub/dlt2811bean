@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import java.util.Arrays;
@@ -41,4 +42,7 @@ public class CmsLcb extends CmsType {
         return Arrays.asList(logEna, datSet, trgOps, intgPd, logRef,
                              optFlds_present, optFlds, bufTm_present, bufTm);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeLcb(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeLcb(nativePtr, data); read(); }
 }

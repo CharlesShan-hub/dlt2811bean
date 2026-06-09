@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -50,4 +51,7 @@ public class CmsRcbOptFlds extends CmsType {
             data_set_name, data_reference, buffer_overflow, entry_id,
             conf_revision, segmentation);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeRcbOptFlds(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeRcbOptFlds(nativePtr, data); read(); }
 }

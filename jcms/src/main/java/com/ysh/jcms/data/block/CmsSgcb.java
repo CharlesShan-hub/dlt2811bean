@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import java.util.Arrays;
@@ -34,4 +35,7 @@ public class CmsSgcb extends CmsType {
         return Arrays.asList(numOfSG, actSG, editSG, tActEdt,
                              resvTms_present, resvTms);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeSgcb(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSgcb(nativePtr, data); read(); }
 }

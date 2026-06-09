@@ -1,21 +1,22 @@
 #include "data/block/cms_msvcb_opt_flds.h"
+#include "data/string/cms_bitutil.h"
 
 static uint8_t pack_msvcb(const cms_msvcb_opt_flds_t *q) {
     uint8_t b = 0;
-    if (q->refresh_time)    b |= (q->refresh_time->value   ? 1 : 0) << 0;
-    /* bit 1: reserved, always 0 */
-    if (q->sample_rate)     b |= (q->sample_rate->value    ? 1 : 0) << 2;
-    if (q->data_set_name)   b |= (q->data_set_name->value  ? 1 : 0) << 3;
-    if (q->security)        b |= (q->security->value       ? 1 : 0) << 4;
+    if (q->refresh_time)    pack_bit(&b, 0, q->refresh_time->value);
+    /* bit 1: reserved */
+    if (q->sample_rate)     pack_bit(&b, 2, q->sample_rate->value);
+    if (q->data_set_name)   pack_bit(&b, 3, q->data_set_name->value);
+    if (q->security)        pack_bit(&b, 4, q->security->value);
     return b;
 }
 
 static void unpack_msvcb(uint8_t byte, cms_msvcb_opt_flds_t *q) {
-    if (q->refresh_time)    q->refresh_time->value   = (byte >> 0) & 1;
-    /* bit 1: reserved, ignored */
-    if (q->sample_rate)     q->sample_rate->value    = (byte >> 2) & 1;
-    if (q->data_set_name)   q->data_set_name->value  = (byte >> 3) & 1;
-    if (q->security)        q->security->value       = (byte >> 4) & 1;
+    if (q->refresh_time)    q->refresh_time->value   = unpack_bit(byte, 0);
+    /* bit 1: reserved */
+    if (q->sample_rate)     q->sample_rate->value    = unpack_bit(byte, 2);
+    if (q->data_set_name)   q->data_set_name->value  = unpack_bit(byte, 3);
+    if (q->security)        q->security->value       = unpack_bit(byte, 4);
 }
 
 int cms_msvcb_opt_flds_encode_stream(per_stream_t *s, const void *ptr) {

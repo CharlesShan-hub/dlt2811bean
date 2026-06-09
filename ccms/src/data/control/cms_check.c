@@ -1,16 +1,17 @@
 #include "data/control/cms_check.h"
+#include "data/string/cms_bitutil.h"
 #include <string.h>
 
 static uint8_t pack_check(const cms_check_t *q) {
     uint8_t b = 0;
-    if (q->syncheck && q->syncheck->value) b |= 0x01;
-    if (q->interlock_check && q->interlock_check->value) b |= 0x02;
+    if (q->syncheck && q->syncheck->value)        pack_bit(&b, 0, 1);
+    if (q->interlock_check && q->interlock_check->value) pack_bit(&b, 1, 1);
     return b;
 }
 
 static void unpack_check(uint8_t byte, cms_check_t *q) {
-    if (q->syncheck)        q->syncheck->value = (byte >> 0) & 1;
-    if (q->interlock_check) q->interlock_check->value = (byte >> 1) & 1;
+    if (q->syncheck)        q->syncheck->value        = unpack_bit(byte, 0);
+    if (q->interlock_check) q->interlock_check->value = unpack_bit(byte, 1);
 }
 
 int cms_check_encode_stream(per_stream_t *s, const void *ptr) {

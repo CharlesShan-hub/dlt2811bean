@@ -1,7 +1,10 @@
 #include "data/block/cms_lcb_opt_flds.h"
+#include "data/string/cms_bitutil.h"
 
 int cms_lcb_opt_flds_encode_stream(per_stream_t *s, const void *ptr) {
-    uint8_t byte = ((const cms_lcb_opt_flds_t*)ptr)->value ? ((const cms_lcb_opt_flds_t*)ptr)->value->value : 0;
+    int val = ((const cms_lcb_opt_flds_t*)ptr)->value ? ((const cms_lcb_opt_flds_t*)ptr)->value->value : 0;
+    uint8_t byte = 0;
+    pack_bit(&byte, 0, val);
     return cms_bit_string_fixed_encode_stream(s, &byte, 1);
 }
 
@@ -10,7 +13,7 @@ int cms_lcb_opt_flds_decode_stream(per_stream_t *s, void *ptr) {
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 1);
     if (err) return CMS_ERR;
     cms_lcb_opt_flds_t *q = (cms_lcb_opt_flds_t*)ptr;
-    if (q->value) q->value->value = byte & 1;
+    if (q->value) q->value->value = unpack_bit(byte, 0);
     return CMS_OK;
 }
 

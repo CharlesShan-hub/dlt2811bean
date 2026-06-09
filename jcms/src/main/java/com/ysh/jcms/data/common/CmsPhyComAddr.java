@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.common;
 
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt8U;
@@ -8,18 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * PhyComAddr ::= SEQUENCE {
- *     addr     [0] OCTET STRING (SIZE(6)),
- *     priority [1] Int8U,
- *     vid      [2] Int16U,
- *     appid    [3] Int16U
- * }  —  7.3.12
- *
- * All-pointer container:
- *   [0]  addr      → CmsUint8Array*
- *   [8]  priority  → CmsInt8U*
- *   [16] vid       → CmsInt16U*
- *   [24] appid     → CmsInt16U*
+ * PhyComAddr ::= SEQUENCE { addr, priority, vid, appid }  —  7.3.12
  */
 public class CmsPhyComAddr extends CmsType {
 
@@ -39,4 +29,9 @@ public class CmsPhyComAddr extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(addr, priority, vid, appid);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodePhyComAddr(nativePtr); }
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodePhyComAddr(nativePtr, data); read(); }
 }

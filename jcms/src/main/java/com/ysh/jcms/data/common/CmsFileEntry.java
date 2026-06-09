@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.common;
 
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -8,18 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * FileEntry ::= SEQUENCE {
- *     fileName     [0] VisibleString129,
- *     fileSize     [1] INT32U,
- *     lastModified [2] UtcTime,
- *     checkSum     [3] INT32U
- * }  —  7.3.10
- *
- * All-pointer container:
- *   [0] fileName      → CmsUint8Array*
- *   [8] fileSize      → CmsInt32U*
- *   [16] lastModified → CmsUtcTime*
- *   [24] checkSum     → CmsInt32U*
+ * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum }  —  7.3.10
  */
 public class CmsFileEntry extends CmsType {
 
@@ -39,4 +29,9 @@ public class CmsFileEntry extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(fileName, fileSize, lastModified, checkSum);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodeFileEntry(nativePtr); }
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodeFileEntry(nativePtr, data); read(); }
 }

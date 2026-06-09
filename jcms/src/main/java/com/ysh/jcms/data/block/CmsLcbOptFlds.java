@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -21,4 +22,7 @@ public class CmsLcbOptFlds extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(value);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeLcbOptFlds(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeLcbOptFlds(nativePtr, data); read(); }
 }

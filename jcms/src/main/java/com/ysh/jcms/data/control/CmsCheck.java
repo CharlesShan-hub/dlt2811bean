@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.control;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -27,4 +28,7 @@ public class CmsCheck extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(syncheck, interlock_check);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeCheck(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeCheck(nativePtr, data); read(); }
 }

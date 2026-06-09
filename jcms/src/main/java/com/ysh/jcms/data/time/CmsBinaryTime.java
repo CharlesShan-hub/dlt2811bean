@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.time;
 
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -8,13 +9,6 @@ import java.util.List;
 
 /**
  * BinaryTime ::= OCTET STRING (SIZE(6))  —  7.2.2
- * PER: 6 bytes aligned (fixed OCTET STRING)
- *
- * Byte layout: [0..3] msOfDay, [4..5] daysSince1984
- *
- * All-pointer container:
- *   [0] msOfDay        → CmsInt32U*
- *   [8] daysSince1984  → CmsInt16U*
  */
 public class CmsBinaryTime extends CmsType {
 
@@ -30,4 +24,9 @@ public class CmsBinaryTime extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(msOfDay, daysSince1984);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodeBinaryTime(nativePtr); }
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodeBinaryTime(nativePtr, data); read(); }
 }

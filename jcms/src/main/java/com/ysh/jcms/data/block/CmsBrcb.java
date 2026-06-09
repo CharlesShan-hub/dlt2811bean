@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -59,4 +60,7 @@ public class CmsBrcb extends CmsType {
             bufTm, sqNum, trgOps, intgPd, gi, purgeBuf, entryID, timeOfEntry,
             resvTms_present, resvTms, owner_present, owner);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeBrcb(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeBrcb(nativePtr, data); read(); }
 }

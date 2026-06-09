@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.common;
 
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.*;
 import java.util.Arrays;
@@ -7,10 +8,6 @@ import java.util.List;
 
 /**
  * Quality ::= BIT STRING (SIZE(13))  —  7.3.6
- * PER: align + 2 bytes (13 bits)
- *
- * All-pointer container:
- *   validity (2 bits), overflow~operatorBlocked (11 booleans)
  */
 public class CmsQuality extends CmsType {
 
@@ -48,4 +45,9 @@ public class CmsQuality extends CmsType {
             oscillatory, failure, oldData, inconsistent, inaccurate,
             substituted, test, operatorBlocked);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodeQuality(nativePtr); }
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodeQuality(nativePtr, data); read(); }
 }

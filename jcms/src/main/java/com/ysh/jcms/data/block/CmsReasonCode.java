@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -40,4 +41,7 @@ public class CmsReasonCode extends CmsType {
         return Arrays.asList(data_change, quality_change, data_update,
                              integrity, general_interrogation, application_trigger);
     }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeReasonCode(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeReasonCode(nativePtr, data); read(); }
 }
