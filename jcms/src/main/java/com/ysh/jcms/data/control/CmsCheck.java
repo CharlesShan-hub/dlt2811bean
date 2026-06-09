@@ -1,0 +1,30 @@
+package com.ysh.jcms.data.control;
+
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Check ::= BIT STRING (SIZE(2))  —  7.5.3
+ * PER: align + 1 byte (2 bits)
+ *
+ * All-pointer container:
+ *   [0] syncheck        → CmsBoolean*
+ *   [8] interlock_check → CmsBoolean*
+ */
+public class CmsCheck extends CmsType {
+
+    public CmsBoolean syncheck;
+    public CmsBoolean interlock_check;
+
+    public CmsCheck() {
+        this.syncheck        = new CmsBoolean();
+        this.interlock_check = new CmsBoolean();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(syncheck, interlock_check);
+    }
+}

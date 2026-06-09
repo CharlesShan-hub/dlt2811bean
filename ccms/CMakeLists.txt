@@ -81,10 +81,21 @@ set(CMS_SRC
     src/data/choice/cms_data_definition_array.c
 )
 
-add_library(ccms STATIC ${CMS_SRC})
+add_library(ccms SHARED ${CMS_SRC})
 target_include_directories(ccms PUBLIC include)
+
+if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+    target_compile_options(ccms PRIVATE -fvisibility=hidden)
+endif()
+set_target_properties(ccms PROPERTIES
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
 
 # Test
 add_executable(test_scalar tests/test_scalar.c)
 target_link_libraries(test_scalar ccms)
 target_include_directories(test_scalar PRIVATE include)
+set_target_properties(test_scalar PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
