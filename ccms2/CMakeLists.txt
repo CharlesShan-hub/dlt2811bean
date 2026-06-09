@@ -42,27 +42,49 @@ set(CMS2_SRC
     src/data/common/cms_sub_reference.c
     src/data/common/cms_dbpos.c
     src/data/common/cms_tcmd.c
+    src/data/common/cms_time_stamp.c
+    src/data/common/cms_entry_id.c
+    src/data/common/cms_entry_time.c
+    src/data/common/cms_file_entry.c
+    src/data/common/cms_service_error.c
+    src/data/common/cms_phy_com_addr.c
 
-    # legacy (to be migrated) — currently disabled
-    # src/cms2_basic.c
-    # src/cms2_associate.c
-    # src/svc/cms2_reference_choice.c
-    # src/svc/cms2_get_all_cb_values.c
+    # enum types
+    src/data/enum/cms_enumerated.c
+
+    # fc types
+    src/data/fc/cms_functional_constraint.c
+
+    # control types
+    src/data/control/cms_or_cat.c
+    src/data/control/cms_originator.c
+    src/data/control/cms_check.c
+    src/data/control/cms_add_cause.c
+
+    # block types
+    src/data/block/cms_trigger_conditions.c
+    src/data/block/cms_reason_code.c
+    src/data/block/cms_rcb_opt_flds.c
+    src/data/block/cms_lcb_opt_flds.c
+    src/data/block/cms_msvcb_opt_flds.c
+    src/data/block/cms_smp_mod.c
+    src/data/block/cms_sgcb.c
+    src/data/block/cms_brcb.c
+    src/data/block/cms_urcb.c
+    src/data/block/cms_lcb.c
+    src/data/block/cms_go_cb.c
+    src/data/block/cms_msvcb.c
+
+    # choice types
+    src/data/choice/cms_data.c
+    src/data/choice/cms_data_definition.c
+    src/data/choice/cms_data_definition_array.c
 )
 
 add_library(ccms2 STATIC ${CMS2_SRC})
 target_include_directories(ccms2 PUBLIC include)
 
-# Tests (old tests disabled — migrated to new cms_ prefix)
-# add_executable(test_associate tests/test_associate.c)
-# target_link_libraries(test_associate ccms2)
-# target_include_directories(test_associate PRIVATE include)
-
-# add_executable(test_get_all_cb tests/test_get_all_cb.c)
-# target_link_libraries(test_get_all_cb ccms2)
-# target_include_directories(test_get_all_cb PRIVATE include)
-
-# New scalar test
+# Test
 add_executable(test_scalar tests/test_scalar.c)
 target_link_libraries(test_scalar ccms2)
 target_include_directories(test_scalar PRIVATE include)

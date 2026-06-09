@@ -1,0 +1,167 @@
+[
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_dbpos.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_dbpos.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_dbpos.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_object_name.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_object_name.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_object_name.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_object_reference.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_object_reference.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_object_reference.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_quality.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_quality.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_quality.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_sub_reference.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_sub_reference.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_sub_reference.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_tcmd.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_common_cms_tcmd.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_tcmd.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_boolean.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_boolean.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_boolean.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_float32.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_float32.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_float32.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_float64.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_float64.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_float64.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int16.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int16.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int16.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int16u.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int16u.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int16u.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int24u.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int24u.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int24u.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int32.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int32.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int32.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int32u.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int32u.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int32u.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int64.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int64.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int64.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int64u.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int64u.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int64u.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int8.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int8.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int8.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int8u.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_scalar_cms_int8u.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/scalar/cms_int8u.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_bit_string.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_string_cms_bit_string.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_bit_string.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_octet_string.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_string_cms_octet_string.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_octet_string.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_utf8_string.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_string_cms_utf8_string.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_utf8_string.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_visible_string.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_string_cms_visible_string.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/string/cms_visible_string.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_binary_time.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_time_cms_binary_time.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_binary_time.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_time_quality.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_time_cms_time_quality.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_time_quality.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_utc_time.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_data_time_cms_utc_time.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/time/cms_utc_time.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_choice.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_per_cms_choice.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_choice.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_integer.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_per_cms_integer.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_integer.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_stream.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_per_cms_stream.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_stream.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_string.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_per_cms_string.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/per/cms_string.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/svc/cms2_get_all_cb_values.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_svc_cms2_get_all_cb_values.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/svc/cms2_get_all_cb_values.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/svc/cms2_reference_choice.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_svc_cms2_reference_choice.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/svc/cms2_reference_choice.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/cms2_associate.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_cms2_associate.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/cms2_associate.c"
+    },
+    {
+        "directory":  "D:/project/work/standard/dlt2811bean/cms/ccms2/build",
+        "file":  "D:/project/work/standard/dlt2811bean/cms/ccms2/src/cms2_basic.c",
+        "command":  "C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/bin/cc.exe  -ID:/project/work/standard/dlt2811bean/cms/ccms2/include -std=gnu11 -o CMakeFiles/ccms2.dir/src_cms2_basic.c.obj -c D:/project/work/standard/dlt2811bean/cms/ccms2/src/cms2_basic.c"
+    }
+]

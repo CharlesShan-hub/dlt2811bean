@@ -1,7 +1,7 @@
 #ifndef CMS_TIME_BINARY_TIME_H
 #define CMS_TIME_BINARY_TIME_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
 #include "per/cms_string.h"
 #include "data/scalar/cms_int32u.h"
@@ -22,8 +22,8 @@ extern "C" {
  *   [4..5] daysSince1984    (Int16U, big-endian)
  */
 typedef struct {
-    cms_int32u_t msOfDay;
-    cms_int16u_t daysSince1984;
+    cms_int32u_t *msOfDay;
+    cms_int16u_t *daysSince1984;
 } cms_binary_time_t;
 
 int cms_binary_time_encode_stream(per_stream_t *s, const void *ptr);

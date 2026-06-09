@@ -1,8 +1,18 @@
-#ifndef CMS2_TYPES_H
-#define CMS2_TYPES_H
+#ifndef CMS_TYPES_H
+#define CMS_TYPES_H
 
-#include "cms_core.h"
-#include "data/string/cms_uint8_array.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
+
+#ifdef _MSC_VER
+  #define CMS_EXPORT __declspec(dllexport)
+#else
+  #define CMS_EXPORT __attribute__((visibility("default")))
+#endif
+
+#define CMS_OK   0
+#define CMS_ERR -1
 
 #ifdef __cplusplus
 extern "C" {

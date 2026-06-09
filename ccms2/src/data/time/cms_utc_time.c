@@ -3,14 +3,20 @@
 #include <string.h>
 
 static void pack_utc_time(const cms_utc_time_t *t, uint8_t out[8]) {
-    uint32_t secs = t->seconds_since_epoch.value;
-    uint32_t frac = t->fraction_of_second.value;
-    uint8_t tq = (uint8_t)(
-        (t->time_quality.leap_seconds_known.value      ? 0x01 : 0) |
-        (t->time_quality.clock_failure.value           ? 0x02 : 0) |
-        (t->time_quality.clock_not_synchronized.value  ? 0x04 : 0) |
-        ((t->time_quality.precision.value & 0x1F) << 3)
-    );
+    uint32_t secs = 0, frac = 0;
+    if (t->seconds_since_epoch)  secs = t->seconds_since_epoch->value;
+    if (t->fraction_of_second)   frac = t->fraction_of_second->value;
+    uint8_t tq = 0;
+    if (t->time_quality) {
+        if (t->time_quality->leap_seconds_known && t->time_quality->leap_seconds_known->value)
+            tq |= 0x01;
+        if (t->time_quality->clock_failure && t->time_quality->clock_failure->value)
+            tq |= 0x02;
+        if (t->time_quality->clock_not_synchronized && t->time_quality->clock_not_synchronized->value)
+            tq |= 0x04;
+        if (t->time_quality->precision)
+            tq |= (t->time_quality->precision->value & 0x1F) << 3;
+    }
     out[0] = (uint8_t)(secs >> 24);
     out[1] = (uint8_t)(secs >> 16);
     out[2] = (uint8_t)(secs >> 8);
@@ -22,13 +28,21 @@ static void pack_utc_time(const cms_utc_time_t *t, uint8_t out[8]) {
 }
 
 static void unpack_utc_time(const uint8_t in[8], cms_utc_time_t *t) {
-    t->seconds_since_epoch.value = ((uint32_t)in[0] << 24) | ((uint32_t)in[1] << 16) |
-                                   ((uint32_t)in[2] << 8)  | (uint32_t)in[3];
-    t->fraction_of_second.value  = ((uint32_t)in[4] << 16) | ((uint32_t)in[5] << 8) | (uint32_t)in[6];
-    t->time_quality.leap_seconds_known.value      = (in[7] >> 0) & 1;
-    t->time_quality.clock_failure.value           = (in[7] >> 1) & 1;
-    t->time_quality.clock_not_synchronized.value  = (in[7] >> 2) & 1;
-    t->time_quality.precision.value               = (in[7] >> 3) & 0x1F;
+    if (t->seconds_since_epoch)
+        t->seconds_since_epoch->value = ((uint32_t)in[0] << 24) | ((uint32_t)in[1] << 16) |
+                                         ((uint32_t)in[2] << 8)  | (uint32_t)in[3];
+    if (t->fraction_of_second)
+        t->fraction_of_second->value  = ((uint32_t)in[4] << 16) | ((uint32_t)in[5] << 8) | (uint32_t)in[6];
+    if (t->time_quality) {
+        if (t->time_quality->leap_seconds_known)
+            t->time_quality->leap_seconds_known->value      = (in[7] >> 0) & 1;
+        if (t->time_quality->clock_failure)
+            t->time_quality->clock_failure->value           = (in[7] >> 1) & 1;
+        if (t->time_quality->clock_not_synchronized)
+            t->time_quality->clock_not_synchronized->value  = (in[7] >> 2) & 1;
+        if (t->time_quality->precision)
+            t->time_quality->precision->value               = (in[7] >> 3) & 0x1F;
+    }
 }
 
 int cms_utc_time_encode_stream(per_stream_t *s, const void *ptr) {

@@ -1,7 +1,7 @@
 #ifndef CMS_ENUM_CODED_ENUM_H
 #define CMS_ENUM_CODED_ENUM_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "cms_types.h"
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"

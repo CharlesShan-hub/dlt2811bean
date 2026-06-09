@@ -3,8 +3,8 @@
 #include <string.h>
 
 static void pack_binary_time(const cms_binary_time_t *t, uint8_t out[6]) {
-    uint32_t ms = t->msOfDay.value;
-    uint16_t days = t->daysSince1984.value;
+    uint32_t ms = t->msOfDay ? t->msOfDay->value : 0;
+    uint16_t days = t->daysSince1984 ? t->daysSince1984->value : 0;
     out[0] = (uint8_t)(ms >> 24);
     out[1] = (uint8_t)(ms >> 16);
     out[2] = (uint8_t)(ms >> 8);
@@ -14,9 +14,11 @@ static void pack_binary_time(const cms_binary_time_t *t, uint8_t out[6]) {
 }
 
 static void unpack_binary_time(const uint8_t in[6], cms_binary_time_t *t) {
-    t->msOfDay.value       = ((uint32_t)in[0] << 24) | ((uint32_t)in[1] << 16) |
-                             ((uint32_t)in[2] << 8)  | (uint32_t)in[3];
-    t->daysSince1984.value = ((uint16_t)in[4] << 8) | (uint16_t)in[5];
+    if (t->msOfDay)
+        t->msOfDay->value       = ((uint32_t)in[0] << 24) | ((uint32_t)in[1] << 16) |
+                                  ((uint32_t)in[2] << 8)  | (uint32_t)in[3];
+    if (t->daysSince1984)
+        t->daysSince1984->value = ((uint16_t)in[4] << 8) | (uint16_t)in[5];
 }
 
 int cms_binary_time_encode_stream(per_stream_t *s, const void *ptr) {

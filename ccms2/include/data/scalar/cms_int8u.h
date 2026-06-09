@@ -1,9 +1,8 @@
 #ifndef CMS_SCALAR_INT8U_H
 #define CMS_SCALAR_INT8U_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
-#include "per/cms_integer.h"
 
 #ifdef __cplusplus
 extern "C" {

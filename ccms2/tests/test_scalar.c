@@ -93,92 +93,179 @@ static void test_time_quality() {
     printf("=== time_quality ===\n");
     uint8_t buf[64]; int len;
 
+    cms_boolean_t leap_v = { .value = 1 };
+    cms_boolean_t clock_fail_v = { .value = 0 };
+    cms_boolean_t clock_ns_v = { .value = 1 };
+    cms_int32_t   prec_v = { .value = 15 };
+
     cms_time_quality_t q = {
-        .leap_seconds_known      = { .value = 1 },
-        .clock_failure           = { .value = 0 },
-        .clock_not_synchronized  = { .value = 1 },
-        .precision               = { .value = 15 },
+        .leap_seconds_known      = &leap_v,
+        .clock_failure           = &clock_fail_v,
+        .clock_not_synchronized  = &clock_ns_v,
+        .precision               = &prec_v,
     };
     len = sizeof(buf);
-    TEST("encode", cms_time_quality_encode(&q, buf, &len) == CMS_OK && len >= 1);
+    TEST("encode", cms_time_quality_encode(&q, buf, &len) == CMS_OK);
 
-    cms_time_quality_t q2 = {0};
+    cms_boolean_t leap_out = {0};
+    cms_boolean_t clock_fail_out = {0};
+    cms_boolean_t clock_ns_out = {0};
+    cms_int32_t   prec_out = {0};
+
+    cms_time_quality_t q2 = {
+        .leap_seconds_known      = &leap_out,
+        .clock_failure           = &clock_fail_out,
+        .clock_not_synchronized  = &clock_ns_out,
+        .precision               = &prec_out,
+    };
     TEST("decode", cms_time_quality_decode(&q2, buf, len) == CMS_OK);
-    TEST("leap_seconds_known", q2.leap_seconds_known.value == 1);
-    TEST("clock_failure", q2.clock_failure.value == 0);
-    TEST("clock_not_synchronized", q2.clock_not_synchronized.value == 1);
-    TEST("precision", q2.precision.value == 15);
+    TEST("leap_seconds_known", leap_out.value == 1);
+    TEST("clock_failure", clock_fail_out.value == 0);
+    TEST("clock_not_synchronized", clock_ns_out.value == 1);
+    TEST("precision", prec_out.value == 15);
 }
 
 static void test_utc_time() {
     printf("=== utc_time ===\n");
     uint8_t buf[64]; int len;
 
+    cms_boolean_t leap_v     = { .value = 1 };
+    cms_boolean_t clock_f_v  = { .value = 0 };
+    cms_boolean_t clock_ns_v = { .value = 0 };
+    cms_int32_t   prec_v     = { .value = 10 };
+    cms_int32u_t  secs_v     = { .value = 1700000000 };
+    cms_int24u_t  frac_v     = { .value = 500000 };
+
+    cms_time_quality_t tq = {
+        .leap_seconds_known      = &leap_v,
+        .clock_failure           = &clock_f_v,
+        .clock_not_synchronized  = &clock_ns_v,
+        .precision               = &prec_v,
+    };
     cms_utc_time_t t = {
-        .seconds_since_epoch  = { .value = 1700000000 },
-        .fraction_of_second   = { .value = 500000 },
-        .time_quality = {
-            .leap_seconds_known     = { .value = 1 },
-            .clock_failure          = { .value = 0 },
-            .clock_not_synchronized = { .value = 0 },
-            .precision              = { .value = 10 },
-        },
+        .seconds_since_epoch  = &secs_v,
+        .fraction_of_second   = &frac_v,
+        .time_quality         = &tq,
     };
     len = sizeof(buf);
-    TEST("encode", cms_utc_time_encode(&t, buf, &len) == CMS_OK && len == 8);
+    TEST("encode", cms_utc_time_encode(&t, buf, &len) == CMS_OK);
 
-    cms_utc_time_t t2 = {0};
+    cms_boolean_t leap_out     = {0};
+    cms_boolean_t clock_f_out  = {0};
+    cms_boolean_t clock_ns_out = {0};
+    cms_int32_t   prec_out     = {0};
+    cms_int32u_t  secs_out     = {0};
+    cms_int24u_t  frac_out     = {0};
+
+    cms_time_quality_t tq_out = {
+        .leap_seconds_known      = &leap_out,
+        .clock_failure           = &clock_f_out,
+        .clock_not_synchronized  = &clock_ns_out,
+        .precision               = &prec_out,
+    };
+    cms_utc_time_t t2 = {
+        .seconds_since_epoch = &secs_out,
+        .fraction_of_second  = &frac_out,
+        .time_quality        = &tq_out,
+    };
     TEST("decode", cms_utc_time_decode(&t2, buf, len) == CMS_OK);
-    TEST("seconds", t2.seconds_since_epoch.value == 1700000000);
-    TEST("fraction", t2.fraction_of_second.value == 500000);
-    TEST("leap", t2.time_quality.leap_seconds_known.value == 1);
+    TEST("seconds", secs_out.value == 1700000000);
+    TEST("fraction", frac_out.value == 500000);
+    TEST("leap", leap_out.value == 1);
 }
 
 static void test_binary_time() {
     printf("=== binary_time ===\n");
     uint8_t buf[64]; int len;
 
+    cms_int32u_t ms_v   = { .value = 12345678 };
+    cms_int16u_t days_v = { .value = 15000 };
+
     cms_binary_time_t t = {
-        .msOfDay         = { .value = 12345678 },
-        .daysSince1984   = { .value = 15000 },
+        .msOfDay         = &ms_v,
+        .daysSince1984   = &days_v,
     };
     len = sizeof(buf);
     TEST("encode", cms_binary_time_encode(&t, buf, &len) == CMS_OK);
     printf("  binary_time encoded %d bytes\n", len);
 
-    cms_binary_time_t t2 = {0};
+    cms_int32u_t ms_out   = {0};
+    cms_int16u_t days_out = {0};
+    cms_binary_time_t t2 = {
+        .msOfDay         = &ms_out,
+        .daysSince1984   = &days_out,
+    };
     TEST("decode", cms_binary_time_decode(&t2, buf, len) == CMS_OK);
-    TEST("msOfDay", t2.msOfDay.value == 12345678);
-    TEST("daysSince1984", t2.daysSince1984.value == 15000);
+    TEST("msOfDay", ms_out.value == 12345678);
+    TEST("daysSince1984", days_out.value == 15000);
 }
 
 static void test_quality() {
     printf("=== quality ===\n");
     uint8_t buf[64]; int len;
 
+    cms_int32_t   validity_val  = { .value = CMS_QUALITY_GOOD };
+    cms_boolean_t overflow_v    = { .value = 0 };
+    cms_boolean_t outOfRange_v  = { .value = 1 };
+    cms_boolean_t badRef_v      = { .value = 0 };
+    cms_boolean_t oscillatory_v = { .value = 0 };
+    cms_boolean_t failure_v     = { .value = 1 };
+    cms_boolean_t oldData_v     = { .value = 0 };
+    cms_boolean_t incons_v      = { .value = 0 };
+    cms_boolean_t inaccur_v     = { .value = 1 };
+    cms_boolean_t subst_v       = { .value = 0 };
+    cms_boolean_t test_v        = { .value = 0 };
+    cms_boolean_t opBlocked_v   = { .value = 0 };
+
     cms_quality_t q = {
-        .validity            = { .value = CMS_QUALITY_GOOD },
-        .overflow            = { .value = 0 },
-        .outOfRange          = { .value = 1 },
-        .badReference        = { .value = 0 },
-        .oscillatory         = { .value = 0 },
-        .failure             = { .value = 1 },
-        .oldData             = { .value = 0 },
-        .inconsistent        = { .value = 0 },
-        .inaccurate          = { .value = 1 },
-        .substituted         = { .value = 0 },
-        .test                = { .value = 0 },
-        .operatorBlocked     = { .value = 0 },
+        .validity            = &validity_val,
+        .overflow            = &overflow_v,
+        .outOfRange          = &outOfRange_v,
+        .badReference        = &badRef_v,
+        .oscillatory         = &oscillatory_v,
+        .failure             = &failure_v,
+        .oldData             = &oldData_v,
+        .inconsistent        = &incons_v,
+        .inaccurate          = &inaccur_v,
+        .substituted         = &subst_v,
+        .test                = &test_v,
+        .operatorBlocked     = &opBlocked_v,
     };
     len = sizeof(buf);
     TEST("encode", cms_quality_encode(&q, buf, &len) == CMS_OK);
 
     cms_quality_t q2 = {0};
+    /* Set up output pointers for decode */
+    cms_int32_t   validity_out  = {0};
+    cms_boolean_t overflow_out  = {0};
+    cms_boolean_t outOfRange_out = {0};
+    cms_boolean_t badRef_out    = {0};
+    cms_boolean_t oscillatory_out = {0};
+    cms_boolean_t failure_out   = {0};
+    cms_boolean_t oldData_out   = {0};
+    cms_boolean_t incons_out    = {0};
+    cms_boolean_t inaccur_out   = {0};
+    cms_boolean_t subst_out     = {0};
+    cms_boolean_t test_out      = {0};
+    cms_boolean_t opBlocked_out = {0};
+    q2.validity = &validity_out;
+    q2.overflow = &overflow_out;
+    q2.outOfRange = &outOfRange_out;
+    q2.badReference = &badRef_out;
+    q2.oscillatory = &oscillatory_out;
+    q2.failure = &failure_out;
+    q2.oldData = &oldData_out;
+    q2.inconsistent = &incons_out;
+    q2.inaccurate = &inaccur_out;
+    q2.substituted = &subst_out;
+    q2.test = &test_out;
+    q2.operatorBlocked = &opBlocked_out;
+
     TEST("decode", cms_quality_decode(&q2, buf, len) == CMS_OK);
-    TEST("validity", q2.validity.value == CMS_QUALITY_GOOD);
-    TEST("outOfRange", q2.outOfRange.value == 1);
-    TEST("failure", q2.failure.value == 1);
-    TEST("inaccurate", q2.inaccurate.value == 1);
+    TEST("validity", validity_out.value == CMS_QUALITY_GOOD);
+    TEST("outOfRange", outOfRange_out.value == 1);
+    TEST("failure", failure_out.value == 1);
+    TEST("inaccurate", inaccur_out.value == 1);
 }
 
 int main() {

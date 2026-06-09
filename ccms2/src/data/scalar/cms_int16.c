@@ -1,4 +1,5 @@
 #include "data/scalar/cms_int16.h"
+#include "per/cms_integer.h"
 
 int cms_int16_encode_stream(per_stream_t *s, const void *ptr) {
     int16_t val = *(const int16_t*)ptr;

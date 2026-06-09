@@ -1,7 +1,7 @@
 #ifndef CMS_COMMON_QUALITY_H
 #define CMS_COMMON_QUALITY_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
 #include "per/cms_integer.h"
 #include "data/scalar/cms_int32.h"
@@ -17,7 +17,7 @@ extern "C" {
  * PER: align + 2 bytes (13 bits)
  *
  * Bit layout:
- *   bit 0-1:   validity (0=good, 1=invalid, 2=reserved, 3=questionable)
+ *   bit 0-1:   validity (0= good, 1=invalid, 2=reserved, 3=questionable)
  *   bit 2:     overflow
  *   bit 3:     outOfRange
  *   bit 4:     badReference
@@ -37,18 +37,18 @@ extern "C" {
 #define CMS_QUALITY_QUESTIONABLE  3
 
 typedef struct {
-    cms_int32_t   validity;
-    cms_boolean_t overflow;
-    cms_boolean_t outOfRange;
-    cms_boolean_t badReference;
-    cms_boolean_t oscillatory;
-    cms_boolean_t failure;
-    cms_boolean_t oldData;
-    cms_boolean_t inconsistent;
-    cms_boolean_t inaccurate;
-    cms_boolean_t substituted;
-    cms_boolean_t test;
-    cms_boolean_t operatorBlocked;
+    cms_int32_t   *validity;
+    cms_boolean_t *overflow;
+    cms_boolean_t *outOfRange;
+    cms_boolean_t *badReference;
+    cms_boolean_t *oscillatory;
+    cms_boolean_t *failure;
+    cms_boolean_t *oldData;
+    cms_boolean_t *inconsistent;
+    cms_boolean_t *inaccurate;
+    cms_boolean_t *substituted;
+    cms_boolean_t *test;
+    cms_boolean_t *operatorBlocked;
 } cms_quality_t;
 
 int cms_quality_encode_stream(per_stream_t *s, const void *ptr);

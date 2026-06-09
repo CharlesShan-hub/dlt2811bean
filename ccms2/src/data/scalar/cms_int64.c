@@ -1,4 +1,5 @@
 #include "data/scalar/cms_int64.h"
+#include "per/cms_integer.h"
 
 int cms_int64_encode_stream(per_stream_t *s, const void *ptr) {
     int64_t val = *(const int64_t*)ptr;

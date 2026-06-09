@@ -1,20 +1,21 @@
 #include "data/time/cms_time_quality.h"
+#include "data/string/cms_bit_string.h"
 #include <string.h>
 
 static uint8_t pack_time_quality(const cms_time_quality_t *q) {
-    return (uint8_t)(
-        (q->leap_seconds_known.value      ? 0x01 : 0) |
-        (q->clock_failure.value           ? 0x02 : 0) |
-        (q->clock_not_synchronized.value  ? 0x04 : 0) |
-        ((q->precision.value & 0x1F) << 3)
-    );
+    uint8_t byte = 0;
+    if (q->leap_seconds_known && q->leap_seconds_known->value)      byte |= 0x01;
+    if (q->clock_failure && q->clock_failure->value)                byte |= 0x02;
+    if (q->clock_not_synchronized && q->clock_not_synchronized->value) byte |= 0x04;
+    if (q->precision)                                                byte |= (q->precision->value & 0x1F) << 3;
+    return byte;
 }
 
 static void unpack_time_quality(uint8_t byte, cms_time_quality_t *q) {
-    q->leap_seconds_known.value      = (byte >> 0) & 1;
-    q->clock_failure.value           = (byte >> 1) & 1;
-    q->clock_not_synchronized.value  = (byte >> 2) & 1;
-    q->precision.value               = (byte >> 3) & 0x1F;
+    if (q->leap_seconds_known)      q->leap_seconds_known->value      = (byte >> 0) & 1;
+    if (q->clock_failure)           q->clock_failure->value           = (byte >> 1) & 1;
+    if (q->clock_not_synchronized)  q->clock_not_synchronized->value  = (byte >> 2) & 1;
+    if (q->precision)               q->precision->value               = (byte >> 3) & 0x1F;
 }
 
 int cms_time_quality_encode_stream(per_stream_t *s, const void *ptr) {

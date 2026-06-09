@@ -1,7 +1,7 @@
 #ifndef CMS_STRING_UINT8_ARRAY_H
 #define CMS_STRING_UINT8_ARRAY_H
 
-#include "cms_core.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,7 +1,7 @@
 CMakeFiles/ccms2.dir/src/data/common/cms_object_name.c.obj: \
   D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_object_name.c \
   D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/common/cms_object_name.h \
-  D:/project/work/standard/dlt2811bean/cms/ccms2/include/cms_core.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/cms_types.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/crtdefs.h \

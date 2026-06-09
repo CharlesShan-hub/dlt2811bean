@@ -506,6 +506,411 @@ CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.s"
 	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_tcmd.c -o CMakeFiles\ccms2.dir\src\data\common\cms_tcmd.c.s
 
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_time_stamp.c
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_time_stamp.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_time_stamp.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_time_stamp.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_time_stamp.c > CMakeFiles\ccms2.dir\src\data\common\cms_time_stamp.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_time_stamp.c -o CMakeFiles\ccms2.dir\src\data\common\cms_time_stamp.c.s
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_entry_id.c
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_entry_id.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_entry_id.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_id.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_id.c > CMakeFiles\ccms2.dir\src\data\common\cms_entry_id.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_id.c -o CMakeFiles\ccms2.dir\src\data\common\cms_entry_id.c.s
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_entry_time.c
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_entry_time.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_entry_time.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_time.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_time.c > CMakeFiles\ccms2.dir\src\data\common\cms_entry_time.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_entry_time.c -o CMakeFiles\ccms2.dir\src\data\common\cms_entry_time.c.s
+
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_file_entry.c
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_file_entry.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_file_entry.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_file_entry.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_file_entry.c > CMakeFiles\ccms2.dir\src\data\common\cms_file_entry.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_file_entry.c -o CMakeFiles\ccms2.dir\src\data\common\cms_file_entry.c.s
+
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_service_error.c
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_service_error.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_service_error.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_service_error.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_service_error.c > CMakeFiles\ccms2.dir\src\data\common\cms_service_error.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_service_error.c -o CMakeFiles\ccms2.dir\src\data\common\cms_service_error.c.s
+
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_phy_com_addr.c
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj -MF CMakeFiles\ccms2.dir\src\data\common\cms_phy_com_addr.c.obj.d -o CMakeFiles\ccms2.dir\src\data\common\cms_phy_com_addr.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_phy_com_addr.c
+
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_phy_com_addr.c > CMakeFiles\ccms2.dir\src\data\common\cms_phy_com_addr.c.i
+
+CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\common\cms_phy_com_addr.c -o CMakeFiles\ccms2.dir\src\data\common\cms_phy_com_addr.c.s
+
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/enum/cms_enumerated.c
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj -MF CMakeFiles\ccms2.dir\src\data\enum\cms_enumerated.c.obj.d -o CMakeFiles\ccms2.dir\src\data\enum\cms_enumerated.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\enum\cms_enumerated.c
+
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\enum\cms_enumerated.c > CMakeFiles\ccms2.dir\src\data\enum\cms_enumerated.c.i
+
+CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\enum\cms_enumerated.c -o CMakeFiles\ccms2.dir\src\data\enum\cms_enumerated.c.s
+
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/fc/cms_functional_constraint.c
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building C object CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj -MF CMakeFiles\ccms2.dir\src\data\fc\cms_functional_constraint.c.obj.d -o CMakeFiles\ccms2.dir\src\data\fc\cms_functional_constraint.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\fc\cms_functional_constraint.c
+
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\fc\cms_functional_constraint.c > CMakeFiles\ccms2.dir\src\data\fc\cms_functional_constraint.c.i
+
+CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\fc\cms_functional_constraint.c -o CMakeFiles\ccms2.dir\src\data\fc\cms_functional_constraint.c.s
+
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/control/cms_or_cat.c
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building C object CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj -MF CMakeFiles\ccms2.dir\src\data\control\cms_or_cat.c.obj.d -o CMakeFiles\ccms2.dir\src\data\control\cms_or_cat.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_or_cat.c
+
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_or_cat.c > CMakeFiles\ccms2.dir\src\data\control\cms_or_cat.c.i
+
+CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_or_cat.c -o CMakeFiles\ccms2.dir\src\data\control\cms_or_cat.c.s
+
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/control/cms_originator.c
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj -MF CMakeFiles\ccms2.dir\src\data\control\cms_originator.c.obj.d -o CMakeFiles\ccms2.dir\src\data\control\cms_originator.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_originator.c
+
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_originator.c > CMakeFiles\ccms2.dir\src\data\control\cms_originator.c.i
+
+CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_originator.c -o CMakeFiles\ccms2.dir\src\data\control\cms_originator.c.s
+
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/control/cms_check.c
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj -MF CMakeFiles\ccms2.dir\src\data\control\cms_check.c.obj.d -o CMakeFiles\ccms2.dir\src\data\control\cms_check.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_check.c
+
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/control/cms_check.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_check.c > CMakeFiles\ccms2.dir\src\data\control\cms_check.c.i
+
+CMakeFiles/ccms2.dir/src/data/control/cms_check.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/control/cms_check.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_check.c -o CMakeFiles\ccms2.dir\src\data\control\cms_check.c.s
+
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/control/cms_add_cause.c
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj -MF CMakeFiles\ccms2.dir\src\data\control\cms_add_cause.c.obj.d -o CMakeFiles\ccms2.dir\src\data\control\cms_add_cause.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_add_cause.c
+
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_add_cause.c > CMakeFiles\ccms2.dir\src\data\control\cms_add_cause.c.i
+
+CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\control\cms_add_cause.c -o CMakeFiles\ccms2.dir\src\data\control\cms_add_cause.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_trigger_conditions.c
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_trigger_conditions.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_trigger_conditions.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_trigger_conditions.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_trigger_conditions.c > CMakeFiles\ccms2.dir\src\data\block\cms_trigger_conditions.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_trigger_conditions.c -o CMakeFiles\ccms2.dir\src\data\block\cms_trigger_conditions.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_reason_code.c
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_reason_code.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_reason_code.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_reason_code.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_reason_code.c > CMakeFiles\ccms2.dir\src\data\block\cms_reason_code.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_reason_code.c -o CMakeFiles\ccms2.dir\src\data\block\cms_reason_code.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_rcb_opt_flds.c
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_rcb_opt_flds.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_rcb_opt_flds.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_rcb_opt_flds.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_rcb_opt_flds.c > CMakeFiles\ccms2.dir\src\data\block\cms_rcb_opt_flds.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_rcb_opt_flds.c -o CMakeFiles\ccms2.dir\src\data\block\cms_rcb_opt_flds.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_lcb_opt_flds.c
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_lcb_opt_flds.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_lcb_opt_flds.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb_opt_flds.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb_opt_flds.c > CMakeFiles\ccms2.dir\src\data\block\cms_lcb_opt_flds.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb_opt_flds.c -o CMakeFiles\ccms2.dir\src\data\block\cms_lcb_opt_flds.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_msvcb_opt_flds.c
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_msvcb_opt_flds.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_msvcb_opt_flds.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb_opt_flds.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb_opt_flds.c > CMakeFiles\ccms2.dir\src\data\block\cms_msvcb_opt_flds.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb_opt_flds.c -o CMakeFiles\ccms2.dir\src\data\block\cms_msvcb_opt_flds.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_smp_mod.c
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_smp_mod.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_smp_mod.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_smp_mod.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_smp_mod.c > CMakeFiles\ccms2.dir\src\data\block\cms_smp_mod.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_smp_mod.c -o CMakeFiles\ccms2.dir\src\data\block\cms_smp_mod.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_sgcb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_sgcb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_sgcb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_sgcb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_sgcb.c > CMakeFiles\ccms2.dir\src\data\block\cms_sgcb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_sgcb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_sgcb.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_brcb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_brcb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_brcb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_brcb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_brcb.c > CMakeFiles\ccms2.dir\src\data\block\cms_brcb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_brcb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_brcb.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_urcb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_urcb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_urcb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_urcb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_urcb.c > CMakeFiles\ccms2.dir\src\data\block\cms_urcb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_urcb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_urcb.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_lcb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_lcb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_lcb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb.c > CMakeFiles\ccms2.dir\src\data\block\cms_lcb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_lcb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_lcb.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_go_cb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_go_cb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_go_cb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_go_cb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_go_cb.c > CMakeFiles\ccms2.dir\src\data\block\cms_go_cb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_go_cb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_go_cb.c.s
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/block/cms_msvcb.c
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj -MF CMakeFiles\ccms2.dir\src\data\block\cms_msvcb.c.obj.d -o CMakeFiles\ccms2.dir\src\data\block\cms_msvcb.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb.c
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb.c > CMakeFiles\ccms2.dir\src\data\block\cms_msvcb.c.i
+
+CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\block\cms_msvcb.c -o CMakeFiles\ccms2.dir\src\data\block\cms_msvcb.c.s
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/choice/cms_data.c
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj -MF CMakeFiles\ccms2.dir\src\data\choice\cms_data.c.obj.d -o CMakeFiles\ccms2.dir\src\data\choice\cms_data.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data.c
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data.c > CMakeFiles\ccms2.dir\src\data\choice\cms_data.c.i
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data.c -o CMakeFiles\ccms2.dir\src\data\choice\cms_data.c.s
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/choice/cms_data_definition.c
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building C object CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj -MF CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition.c.obj.d -o CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition.c
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition.c > CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition.c.i
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition.c -o CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition.c.s
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj: CMakeFiles/ccms2.dir/flags.make
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj: CMakeFiles/ccms2.dir/includes_C.rsp
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj: D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/choice/cms_data_definition_array.c
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj: CMakeFiles/ccms2.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj -MF CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition_array.c.obj.d -o CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition_array.c.obj -c D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition_array.c
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.i"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition_array.c > CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition_array.c.i
+
+CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.s"
+	C:\Users\17428\AppData\Local\Microsoft\WinGet\Packages\MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe\llvm-mingw-20260519-ucrt-x86_64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S D:\project\work\standard\dlt2811bean\cms\ccms2\src\data\choice\cms_data_definition_array.c -o CMakeFiles\ccms2.dir\src\data\choice\cms_data_definition_array.c.s
+
 # Object files for target ccms2
 ccms2_OBJECTS = \
 "CMakeFiles/ccms2.dir/src/per/cms_stream.c.obj" \
@@ -536,7 +941,34 @@ ccms2_OBJECTS = \
 "CMakeFiles/ccms2.dir/src/data/common/cms_object_reference.c.obj" \
 "CMakeFiles/ccms2.dir/src/data/common/cms_sub_reference.c.obj" \
 "CMakeFiles/ccms2.dir/src/data/common/cms_dbpos.c.obj" \
-"CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.obj"
+"CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj" \
+"CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj"
 
 # External object files for target ccms2
 ccms2_EXTERNAL_OBJECTS =
@@ -570,9 +1002,36 @@ libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_object_reference.c.obj
 libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_sub_reference.c.obj
 libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_dbpos.c.obj
 libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_time_stamp.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_entry_id.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_entry_time.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_file_entry.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_service_error.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/common/cms_phy_com_addr.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/enum/cms_enumerated.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/fc/cms_functional_constraint.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/control/cms_or_cat.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/control/cms_originator.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/control/cms_check.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/control/cms_add_cause.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_trigger_conditions.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_reason_code.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_rcb_opt_flds.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_lcb_opt_flds.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_msvcb_opt_flds.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_smp_mod.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_sgcb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_brcb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_urcb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_lcb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_go_cb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/block/cms_msvcb.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/choice/cms_data.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition.c.obj
+libccms2.a: CMakeFiles/ccms2.dir/src/data/choice/cms_data_definition_array.c.obj
 libccms2.a: CMakeFiles/ccms2.dir/build.make
 libccms2.a: CMakeFiles/ccms2.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Linking C static library libccms2.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\project\work\standard\dlt2811bean\cms\ccms2\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Linking C static library libccms2.a"
 	$(CMAKE_COMMAND) -P CMakeFiles\ccms2.dir\cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\ccms2.dir\link.txt --verbose=$(VERBOSE)
 

@@ -1,7 +1,7 @@
 CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.obj: \
   D:/project/work/standard/dlt2811bean/cms/ccms2/src/data/common/cms_tcmd.c \
   D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/common/cms_tcmd.h \
-  D:/project/work/standard/dlt2811bean/cms/ccms2/include/cms_core.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/cms_types.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/stdint.h \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/include/crtdefs.h \
@@ -24,5 +24,9 @@ CMakeFiles/ccms2.dir/src/data/common/cms_tcmd.c.obj: \
   C:/Users/17428/AppData/Local/Microsoft/WinGet/Packages/MartinStorsjo.LLVM-MinGW.UCRT_Microsoft.Winget.Source_8wekyb3d8bbwe/llvm-mingw-20260519-ucrt-x86_64/lib/clang/22/include/stdbool.h \
   D:/project/work/standard/dlt2811bean/cms/ccms2/include/per/cms_stream.h \
   D:/project/work/standard/dlt2811bean/cms/ccms2/include/per/cms_types.h \
-  D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/scalar/cms_int32.h \
-  D:/project/work/standard/dlt2811bean/cms/ccms2/include/per/cms_integer.h
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/enum/cms_enumerated.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/scalar/cms_int8.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/string/cms_bit_string.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/data/string/cms_uint8_array.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/per/cms_integer.h \
+  D:/project/work/standard/dlt2811bean/cms/ccms2/include/per/cms_string.h

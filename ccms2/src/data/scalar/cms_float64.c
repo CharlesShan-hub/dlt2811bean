@@ -1,13 +1,12 @@
 #include "data/scalar/cms_float64.h"
+#include "data/string/cms_octet_string.h"
 
 int cms_float64_encode_stream(per_stream_t *s, const void *ptr) {
-    per_stream_align(s);
-    return (int)per_stream_write_bytes(s, (const uint8_t*)ptr, 8);
+    return cms_octet_string_fixed_encode_stream(s, (const uint8_t*)ptr, 8);
 }
 
 int cms_float64_decode_stream(per_stream_t *s, void *ptr) {
-    per_stream_align(s);
-    return (int)per_stream_read_bytes(s, (uint8_t*)ptr, 8);
+    return cms_octet_string_fixed_decode_stream(s, (uint8_t*)ptr, 8);
 }
 
 int cms_float64_encode(const void *ptr, uint8_t *out_buf, int *out_len) {

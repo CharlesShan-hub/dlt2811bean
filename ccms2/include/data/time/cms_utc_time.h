@@ -1,7 +1,7 @@
 #ifndef CMS_TIME_UTC_TIME_H
 #define CMS_TIME_UTC_TIME_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
 #include "per/cms_string.h"
 #include "data/scalar/cms_int32u.h"
@@ -24,9 +24,9 @@ extern "C" {
  *   [7]    time_quality          (packed 8-bit BIT STRING)
  */
 typedef struct {
-    cms_int32u_t       seconds_since_epoch;
-    cms_int24u_t       fraction_of_second;
-    cms_time_quality_t time_quality;
+    cms_int32u_t       *seconds_since_epoch;
+    cms_int24u_t       *fraction_of_second;
+    cms_time_quality_t *time_quality;
 } cms_utc_time_t;
 
 int cms_utc_time_encode_stream(per_stream_t *s, const void *ptr);

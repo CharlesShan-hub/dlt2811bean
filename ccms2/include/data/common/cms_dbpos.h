@@ -1,9 +1,9 @@
 #ifndef CMS_COMMON_DBPOS_H
 #define CMS_COMMON_DBPOS_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
-#include "data/scalar/cms_int32.h"
+#include "data/enum/cms_enumerated.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,7 +19,7 @@ extern "C" {
 #define CMS_DBPOS_ON            2
 #define CMS_DBPOS_BAD_STATE     3
 
-typedef struct { cms_int32_t value; } cms_dbpos_t;
+typedef cms_enumerated_t cms_dbpos_t;
 
 int cms_dbpos_encode_stream(per_stream_t *s, const void *ptr);
 int cms_dbpos_decode_stream(per_stream_t *s, void *ptr);

@@ -1,4 +1,5 @@
 #include "data/scalar/cms_boolean.h"
+#include "per/cms_integer.h"
 
 int cms_boolean_encode_stream(per_stream_t *s, const void *ptr) {
     int val = *(const int*)ptr;

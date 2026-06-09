@@ -1,4 +1,5 @@
 #include "data/scalar/cms_int24u.h"
+#include "per/cms_integer.h"
 
 int cms_int24u_encode_stream(per_stream_t *s, const void *ptr) {
     uint32_t val = *(const uint32_t*)ptr;

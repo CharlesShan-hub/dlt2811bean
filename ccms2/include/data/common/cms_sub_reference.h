@@ -1,7 +1,7 @@
 #ifndef CMS_COMMON_SUB_REFERENCE_H
 #define CMS_COMMON_SUB_REFERENCE_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "data/string/cms_uint8_array.h"
 #include "data/string/cms_visible_string.h"
 
