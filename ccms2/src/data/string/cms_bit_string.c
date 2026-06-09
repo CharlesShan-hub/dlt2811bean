@@ -1,0 +1,57 @@
+#include "data/string/cms_bit_string.h"
+#include <string.h>
+
+#define ARRAY_PTR(v)      (*(const uint8_t *const*)(v))
+#define ARRAY_LEN(v)      (*((const int32_t*)((const uint8_t*)(v) + 8)))
+#define ARRAY_PTR_MUT(v)  (*(uint8_t**)(v))
+#define ARRAY_LEN_PTR(v)  ((int32_t*)((uint8_t*)(v) + 8))
+
+/* Fixed length: align + bits (no length prefix) */
+int cms_bit_string_fixed_encode_stream(per_stream_t *s, const uint8_t *data, int fixed_nbits) {
+    return (int)per_encode_bit_string_fixed(s, data, fixed_nbits);
+}
+
+int cms_bit_string_fixed_decode_stream(per_stream_t *s, uint8_t *out, int fixed_nbits) {
+    return (int)per_decode_bit_string_fixed(s, out, fixed_nbits);
+}
+
+/* Variable length: SIZE(0..max_nbits) */
+int cms_bit_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max_nbits) {
+    const uint8_t *vptr = ptr ? ARRAY_PTR(ptr) : NULL;
+    int32_t nbits = ptr ? ARRAY_LEN(ptr) : 0;
+    if (!vptr || nbits < 0) return CMS_ERR;
+    if (max_nbits > 0) {
+        return (int)per_encode_bit_string(s, vptr, nbits, (int)max_nbits);
+    }
+    return (int)per_encode_bit_string_unconstrained(s, vptr, nbits);
+}
+
+int cms_bit_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_nbits) {
+    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
+    if (!vptr) return CMS_ERR;
+    int out_nbits = 0;
+    per_error_t err;
+    if (max_nbits > 0) {
+        err = per_decode_bit_string(s, vptr, &out_nbits, (int)max_nbits);
+    } else {
+        err = per_decode_bit_string_unconstrained(s, vptr, &out_nbits);
+    }
+    if (err) return CMS_ERR;
+    *(ARRAY_LEN_PTR(ptr)) = out_nbits;
+    return CMS_OK;
+}
+
+int cms_bit_string_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_bit_string_encode_stream(&s, ptr, 0);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
+}
+
+int cms_bit_string_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_bit_string_decode_stream(&s, ptr, 0);
+}

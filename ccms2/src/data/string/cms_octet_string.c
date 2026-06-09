@@ -1,0 +1,49 @@
+#include "data/string/cms_octet_string.h"
+#include <string.h>
+
+#define ARRAY_PTR(v)      (*(const uint8_t *const*)(v))
+#define ARRAY_LEN(v)      (*((const int32_t*)((const uint8_t*)(v) + 8)))
+#define ARRAY_PTR_MUT(v)  (*(uint8_t**)(v))
+#define ARRAY_LEN_PTR(v)  ((int32_t*)((uint8_t*)(v) + 8))
+
+/* Fixed length: align + bytes (no length prefix) */
+int cms_octet_string_fixed_encode_stream(per_stream_t *s, const uint8_t *data, int fixed_len) {
+    return (int)per_encode_octet_string_fixed(s, data, (size_t)fixed_len);
+}
+
+int cms_octet_string_fixed_decode_stream(per_stream_t *s, uint8_t *out, int fixed_len) {
+    return (int)per_decode_octet_string_fixed(s, out, (size_t)fixed_len);
+}
+
+/* Variable length: SIZE(lb..ub) */
+int cms_octet_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max_len) {
+    const uint8_t *vptr = ptr ? ARRAY_PTR(ptr) : NULL;
+    int32_t len = ptr ? ARRAY_LEN(ptr) : 0;
+    if (!vptr || len < 0) return CMS_ERR;
+    return (int)per_encode_octet_string(s, vptr, (size_t)len, max_len);
+}
+
+int cms_octet_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_len) {
+    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
+    if (!vptr) return CMS_ERR;
+    size_t out_len = 0;
+    per_error_t err = per_decode_octet_string(s, vptr, &out_len, max_len);
+    if (err) return CMS_ERR;
+    *(ARRAY_LEN_PTR(ptr)) = (int32_t)out_len;
+    return CMS_OK;
+}
+
+int cms_octet_string_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_octet_string_encode_stream(&s, ptr, 65535);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
+}
+
+int cms_octet_string_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_octet_string_decode_stream(&s, ptr, 65535);
+}
