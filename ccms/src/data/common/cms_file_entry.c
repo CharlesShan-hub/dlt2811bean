@@ -1,41 +1,64 @@
 #include "data/common/cms_file_entry.h"
-#include "data/basic/cms_string.h"
-#include <string.h>
 
-/* ---- internal stream version ---- */
+int cms_file_entry_encode_stream(per_stream_t *s, const void *ptr) {
+    const cms_file_entry_t *pdu = (const cms_file_entry_t*)ptr;
 
-int cms_file_entry_encode_stream(per_stream_t *s, const cms_file_entry_t *v){
-    cms_visible_string_fixed_t fileName = {v->fileName.value, 129};
-    int rc = cms_visible_string_fixed_encode_stream(s, &fileName);
-    if (rc) return rc;
-    rc = cms_int32u_encode_stream(s, &v->fileSize);
-    if (rc) return rc;
-    rc = cms_utc_time_encode_stream(s, &v->lastModified);
-    if (rc) return rc;
-    return cms_int32u_encode_stream(s, &v->checkSum);
+    /* 1. fileName — VisibleString129 */
+    if (!pdu->fileName) return CMS_ERR;
+    int err = cms_visible_string_encode_stream(s, pdu->fileName, 129);
+    if (err) return err;
+
+    /* 2. fileSize — INT32U */
+    if (!pdu->fileSize) return CMS_ERR;
+    err = cms_int32u_encode_stream(s, pdu->fileSize);
+    if (err) return err;
+
+    /* 3. lastModified — UtcTime */
+    if (!pdu->lastModified) return CMS_ERR;
+    err = cms_utc_time_encode_stream(s, pdu->lastModified);
+    if (err) return err;
+
+    /* 4. checkSum — INT32U */
+    if (!pdu->checkSum) return CMS_ERR;
+    err = cms_int32u_encode_stream(s, pdu->checkSum);
+    if (err) return err;
+
+    return CMS_OK;
 }
 
-int cms_file_entry_decode_stream(per_stream_t *s, cms_file_entry_t *v){
-    cms_visible_string_fixed_t fileName = {v->fileName.value, 129};
-    int rc = cms_visible_string_fixed_decode_stream(s, &fileName);
-    if (rc) return rc;
-    v->fileName.len = 129;
-    rc = cms_int32u_decode_stream(s, &v->fileSize);
-    if (rc) return rc;
-    rc = cms_utc_time_decode_stream(s, &v->lastModified);
-    if (rc) return rc;
-    return cms_int32u_decode_stream(s, &v->checkSum);
+int cms_file_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_file_entry_t *pdu = (cms_file_entry_t*)ptr;
+
+    if (!pdu->fileName) return CMS_ERR;
+    int err = cms_visible_string_decode_stream(s, pdu->fileName, 129);
+    if (err) return err;
+
+    if (!pdu->fileSize) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu->fileSize);
+    if (err) return err;
+
+    if (!pdu->lastModified) return CMS_ERR;
+    err = cms_utc_time_decode_stream(s, pdu->lastModified);
+    if (err) return err;
+
+    if (!pdu->checkSum) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu->checkSum);
+    if (err) return err;
+
+    return CMS_OK;
 }
 
-/* ---- public buffer version ---- */
-
-CMS_EXPORT int cms_file_entry_encode(const cms_file_entry_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l);
-    int rc = cms_file_entry_encode_stream(&w, v);
-    *l = (int)per_stream_bytes_written(&w);
-    return rc;
+int cms_file_entry_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_file_entry_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_file_entry_decode(cms_file_entry_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l);
-    return cms_file_entry_decode_stream(&r, v);
+
+int cms_file_entry_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_file_entry_decode_stream(&s, ptr);
 }

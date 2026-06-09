@@ -1,28 +1,30 @@
 #include "data/common/cms_dbpos.h"
-#include "data/basic/cms_coded_enum.h"
+#include "data/string/cms_bit_string.h"
 
-int cms_dbpos_encode_stream(per_stream_t *s, const cms_dbpos_t *v){
-    uint8_t buf[1] = { (uint8_t)(v->value.value << 6) };
-    cms_bit_string_fixed_t bs = { buf, 2 };
-    return cms_coded_enum_encode_stream(s, &bs);
+int cms_dbpos_encode_stream(per_stream_t *s, const void *ptr) {
+    uint8_t byte = (uint8_t)(((const cms_dbpos_t*)ptr)->value);
+    return cms_bit_string_fixed_encode_stream(s, &byte, 2);
 }
 
-int cms_dbpos_decode_stream(per_stream_t *s, cms_dbpos_t *v){
-    uint8_t buf[1] = {0};
-    cms_bit_string_fixed_t bs = { buf, 2 };
-    int rc = cms_coded_enum_decode_stream(s, &bs);
-    if (rc) return rc;
-    v->value.value = buf[0] >> 6;
+int cms_dbpos_decode_stream(per_stream_t *s, void *ptr) {
+    uint8_t byte = 0;
+    int err = cms_bit_string_fixed_decode_stream(s, &byte, 2);
+    if (err) return CMS_ERR;
+    ((cms_dbpos_t*)ptr)->value = (int)byte;
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_dbpos_encode(const cms_dbpos_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l); 
-    int rc = cms_dbpos_encode_stream(&w, v); 
-    *l = (int)per_stream_bytes_written(&w); 
-    return rc; 
+int cms_dbpos_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_dbpos_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_dbpos_decode(cms_dbpos_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l); 
-    return cms_dbpos_decode_stream(&r, v); 
+
+int cms_dbpos_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_dbpos_decode_stream(&s, ptr);
 }

@@ -1,40 +1,42 @@
 #include "data/control/cms_check.h"
-#include "data/basic/cms_string.h"
+#include <string.h>
 
-/* Check bit layout:
- *   bit 0: syncheck
- *   bit 1: interlockCheck
- */
-
-int cms_check_encode_stream(per_stream_t *s, const cms_check_t *v){
-    uint8_t buf[1];
-    buf[0] = (uint8_t)(
-        (v->syncheck.value         ? 0x80 : 0) |
-        (v->interlock_check.value  ? 0x40 : 0)
-    );
-    cms_bit_string_fixed_t bs = { buf, 2 };
-    return cms_bit_string_fixed_encode_stream(s, &bs);
+static uint8_t pack_check(const cms_check_t *q) {
+    uint8_t b = 0;
+    if (q->syncheck && q->syncheck->value) b |= 0x01;
+    if (q->interlock_check && q->interlock_check->value) b |= 0x02;
+    return b;
 }
 
-int cms_check_decode_stream(per_stream_t *s, cms_check_t *v){
-    uint8_t buf[1] = {0};
-    cms_bit_string_fixed_t bs = { buf, 2 };
-    int rc = cms_bit_string_fixed_decode_stream(s, &bs);
-    if (rc) return rc;
-    v->syncheck.value        = (buf[0] >> 7) & 1;
-    v->interlock_check.value = (buf[0] >> 6) & 1;
+static void unpack_check(uint8_t byte, cms_check_t *q) {
+    if (q->syncheck)        q->syncheck->value = (byte >> 0) & 1;
+    if (q->interlock_check) q->interlock_check->value = (byte >> 1) & 1;
+}
+
+int cms_check_encode_stream(per_stream_t *s, const void *ptr) {
+    uint8_t byte = pack_check((const cms_check_t*)ptr);
+    return cms_bit_string_fixed_encode_stream(s, &byte, 2);
+}
+
+int cms_check_decode_stream(per_stream_t *s, void *ptr) {
+    uint8_t byte = 0;
+    int err = cms_bit_string_fixed_decode_stream(s, &byte, 2);
+    if (err) return CMS_ERR;
+    unpack_check(byte, (cms_check_t*)ptr);
     return CMS_OK;
 }
 
-/* ---- public buffer version ---- */
-
-CMS_EXPORT int cms_check_encode(const cms_check_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l);
-    int rc = cms_check_encode_stream(&w, v);
-    *l = (int)per_stream_bytes_written(&w);
-    return rc;
+int cms_check_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_check_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_check_decode(cms_check_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l);
-    return cms_check_decode_stream(&r, v);
+
+int cms_check_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_check_decode_stream(&s, ptr);
 }

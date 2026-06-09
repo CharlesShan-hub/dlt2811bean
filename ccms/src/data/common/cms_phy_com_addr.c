@@ -1,38 +1,70 @@
 #include "data/common/cms_phy_com_addr.h"
-#include "data/basic/cms_integer.h"
-#include "data/basic/cms_string.h"
 
-int cms_phy_com_addr_encode_stream(per_stream_t *s, const cms_phy_com_addr_t *v){
-    cms_octet_string_fixed_t _addr = { v->addr.value, CMS_PHY_COM_ADDR_ADDR_SIZE };
-    int rc = cms_octet_string_fixed_encode_stream(s, &_addr);
-    if (rc) return rc;
-    rc = cms_int8u_encode_stream(s, &v->priority);
-    if (rc) return rc;
-    rc = cms_int16u_encode_stream(s, &v->vid);
-    if (rc) return rc;
-    return cms_int16u_encode_stream(s, &v->appid);
+#define CMS_PHY_COM_ADDR_LEN 6
+
+int cms_phy_com_addr_encode_stream(per_stream_t *s, const void *ptr) {
+    const cms_phy_com_addr_t *pdu = (const cms_phy_com_addr_t*)ptr;
+
+    /* 1. addr — OCTET STRING (SIZE(6)), fixed */
+    if (!pdu->addr || !pdu->addr->value) return CMS_ERR;
+    int err = cms_octet_string_fixed_encode_stream(s, pdu->addr->value, CMS_PHY_COM_ADDR_LEN);
+    if (err) return err;
+
+    /* 2. priority — Int8U */
+    if (!pdu->priority) return CMS_ERR;
+    err = cms_int8u_encode_stream(s, pdu->priority);
+    if (err) return err;
+
+    /* 3. vid — Int16U */
+    if (!pdu->vid) return CMS_ERR;
+    err = cms_int16u_encode_stream(s, pdu->vid);
+    if (err) return err;
+
+    /* 4. appid — Int16U */
+    if (!pdu->appid) return CMS_ERR;
+    err = cms_int16u_encode_stream(s, pdu->appid);
+    if (err) return err;
+
+    return CMS_OK;
 }
 
-int cms_phy_com_addr_decode_stream(per_stream_t *s, cms_phy_com_addr_t *v){
-    cms_octet_string_fixed_t _addr = { v->addr.value, CMS_PHY_COM_ADDR_ADDR_SIZE };
-    int rc = cms_octet_string_fixed_decode_stream(s, &_addr);
-    if (rc) return rc;
-    v->addr.len = CMS_PHY_COM_ADDR_ADDR_SIZE;
-    rc = cms_int8u_decode_stream(s, &v->priority);
-    if (rc) return rc;
-    rc = cms_int16u_decode_stream(s, &v->vid);
-    if (rc) return rc;
-    return cms_int16u_decode_stream(s, &v->appid);
+int cms_phy_com_addr_decode_stream(per_stream_t *s, void *ptr) {
+    cms_phy_com_addr_t *pdu = (cms_phy_com_addr_t*)ptr;
+
+    /* 1. addr */
+    if (!pdu->addr || !pdu->addr->value) return CMS_ERR;
+    int err = cms_octet_string_fixed_decode_stream(s, pdu->addr->value, CMS_PHY_COM_ADDR_LEN);
+    if (err) return err;
+
+    /* 2. priority */
+    if (!pdu->priority) return CMS_ERR;
+    err = cms_int8u_decode_stream(s, pdu->priority);
+    if (err) return err;
+
+    /* 3. vid */
+    if (!pdu->vid) return CMS_ERR;
+    err = cms_int16u_decode_stream(s, pdu->vid);
+    if (err) return err;
+
+    /* 4. appid */
+    if (!pdu->appid) return CMS_ERR;
+    err = cms_int16u_decode_stream(s, pdu->appid);
+    if (err) return err;
+
+    return CMS_OK;
 }
 
-CMS_EXPORT int cms_phy_com_addr_encode(const cms_phy_com_addr_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l); 
-    int rc = cms_phy_com_addr_encode_stream(&w, v); 
-    *l = (int)per_stream_bytes_written(&w); 
-    return rc; 
+int cms_phy_com_addr_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_phy_com_addr_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
 
-CMS_EXPORT int cms_phy_com_addr_decode(cms_phy_com_addr_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l); 
-    return cms_phy_com_addr_decode_stream(&r, v); 
+int cms_phy_com_addr_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_phy_com_addr_decode_stream(&s, ptr);
 }

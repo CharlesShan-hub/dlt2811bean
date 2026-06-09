@@ -1,63 +1,59 @@
 #include "data/block/cms_rcb_opt_flds.h"
-#include "data/basic/cms_string.h"
 
-/*
- * RCBOptFlds bit layout (10 bits):
- *   bit 0: reserved (always 0)
- *   bit 1: sequenceNumber
- *   bit 2: reportTimeStamp
- *   bit 3: reasonForInclusion
- *   bit 4: dataSetName
- *   bit 5: dataReference
- *   bit 6: bufferOverflow
- *   bit 7: entryID
- *   bit 8: confRevision
- *   bit 9: segmentation
- */
-
-int cms_rcb_opt_flds_encode_stream(per_stream_t *s, const cms_rcb_opt_flds_t *v){
-    uint8_t buf[2] = {0, 0};
-    buf[0] = (uint8_t)(
-        (v->sequence_number.value      ? 0x40 : 0) |
-        (v->report_time_stamp.value    ? 0x20 : 0) |
-        (v->reason_for_inclusion.value ? 0x10 : 0) |
-        (v->data_set_name.value        ? 0x08 : 0) |
-        (v->data_reference.value       ? 0x04 : 0) |
-        (v->buffer_overflow.value      ? 0x02 : 0) |
-        (v->entry_id.value             ? 0x01 : 0)
-    );
-    buf[1] = (uint8_t)(
-        (v->conf_revision.value        ? 0x80 : 0) |
-        (v->segmentation.value         ? 0x40 : 0)
-    );
-    cms_bit_string_fixed_t bs = { buf, 10 };
-    return cms_bit_string_fixed_encode_stream(s, &bs);
+static uint16_t pack_rcb(const cms_rcb_opt_flds_t *q) {
+    uint16_t b = 0;
+    /* bit 0: reserved, always 0 */
+    if (q->sequence_number)       b |= (q->sequence_number->value      ? 1 : 0) << 1;
+    if (q->report_time_stamp)     b |= (q->report_time_stamp->value    ? 1 : 0) << 2;
+    if (q->reason_for_inclusion)  b |= (q->reason_for_inclusion->value ? 1 : 0) << 3;
+    if (q->data_set_name)         b |= (q->data_set_name->value        ? 1 : 0) << 4;
+    if (q->data_reference)        b |= (q->data_reference->value       ? 1 : 0) << 5;
+    if (q->buffer_overflow)       b |= (q->buffer_overflow->value      ? 1 : 0) << 6;
+    if (q->entry_id)              b |= (q->entry_id->value             ? 1 : 0) << 7;
+    if (q->conf_revision)         b |= (q->conf_revision->value        ? 1 : 0) << 8;
+    if (q->segmentation)          b |= (q->segmentation->value         ? 1 : 0) << 9;
+    return b;
 }
 
-int cms_rcb_opt_flds_decode_stream(per_stream_t *s, cms_rcb_opt_flds_t *v){
-    uint8_t buf[2] = {0, 0};
-    cms_bit_string_fixed_t bs = { buf, 10 };
-    int rc = cms_bit_string_fixed_decode_stream(s, &bs);
-    if (rc) return rc;
-    v->sequence_number.value      = (buf[0] >> 6) & 1;
-    v->report_time_stamp.value    = (buf[0] >> 5) & 1;
-    v->reason_for_inclusion.value = (buf[0] >> 4) & 1;
-    v->data_set_name.value        = (buf[0] >> 3) & 1;
-    v->data_reference.value       = (buf[0] >> 2) & 1;
-    v->buffer_overflow.value      = (buf[0] >> 1) & 1;
-    v->entry_id.value             =  buf[0]       & 1;
-    v->conf_revision.value        = (buf[1] >> 7) & 1;
-    v->segmentation.value         = (buf[1] >> 6) & 1;
+static void unpack_rcb(uint16_t bits, cms_rcb_opt_flds_t *q) {
+    /* bit 0: reserved, ignored */
+    if (q->sequence_number)       q->sequence_number->value      = (bits >> 1) & 1;
+    if (q->report_time_stamp)     q->report_time_stamp->value    = (bits >> 2) & 1;
+    if (q->reason_for_inclusion)  q->reason_for_inclusion->value = (bits >> 3) & 1;
+    if (q->data_set_name)         q->data_set_name->value        = (bits >> 4) & 1;
+    if (q->data_reference)        q->data_reference->value       = (bits >> 5) & 1;
+    if (q->buffer_overflow)       q->buffer_overflow->value      = (bits >> 6) & 1;
+    if (q->entry_id)              q->entry_id->value             = (bits >> 7) & 1;
+    if (q->conf_revision)         q->conf_revision->value        = (bits >> 8) & 1;
+    if (q->segmentation)          q->segmentation->value         = (bits >> 9) & 1;
+}
+
+int cms_rcb_opt_flds_encode_stream(per_stream_t *s, const void *ptr) {
+    uint16_t bits = pack_rcb((const cms_rcb_opt_flds_t*)ptr);
+    uint8_t buf[2] = { (uint8_t)(bits >> 8), (uint8_t)(bits) };
+    return cms_bit_string_fixed_encode_stream(s, buf, 10);
+}
+
+int cms_rcb_opt_flds_decode_stream(per_stream_t *s, void *ptr) {
+    uint8_t buf[2];
+    int err = cms_bit_string_fixed_decode_stream(s, buf, 10);
+    if (err) return CMS_ERR;
+    uint16_t bits = ((uint16_t)buf[0] << 8) | buf[1];
+    unpack_rcb(bits, (cms_rcb_opt_flds_t*)ptr);
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_rcb_opt_flds_encode(const cms_rcb_opt_flds_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l);
-    int rc = cms_rcb_opt_flds_encode_stream(&w, v);
-    *l = (int)per_stream_bytes_written(&w);
-    return rc;
+int cms_rcb_opt_flds_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_rcb_opt_flds_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_rcb_opt_flds_decode(cms_rcb_opt_flds_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l);
-    return cms_rcb_opt_flds_decode_stream(&r, v);
+
+int cms_rcb_opt_flds_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_rcb_opt_flds_decode_stream(&s, ptr);
 }

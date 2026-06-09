@@ -1,49 +1,49 @@
 #include "data/block/cms_trigger_conditions.h"
-#include "data/basic/cms_string.h"
 
-/*
- * TriggerConditions bit layout (6 bits):
- *   bit 0: reserved (always 0)
- *   bit 1: dataChange
- *   bit 2: qualityChange
- *   bit 3: dataUpdate
- *   bit 4: integrity
- *   bit 5: generalInterrogation
- */
-
-int cms_trigger_conditions_encode_stream(per_stream_t *s, const cms_trigger_conditions_t *v){
-    uint8_t buf[1];
-    buf[0] = (uint8_t)(
-        (v->data_change.value           ? 0x40 : 0) |
-        (v->quality_change.value        ? 0x20 : 0) |
-        (v->data_update.value           ? 0x10 : 0) |
-        (v->integrity.value             ? 0x08 : 0) |
-        (v->general_interrogation.value ? 0x04 : 0)
-    );
-    cms_bit_string_fixed_t bs = { buf, 6 };
-    return cms_bit_string_fixed_encode_stream(s, &bs);
+static uint8_t pack_trigger(const cms_trigger_conditions_t *q) {
+    uint8_t b = 0;
+    /* bit 0: reserved, always 0 */
+    if (q->data_change)             b |= (q->data_change->value              ? 1 : 0) << 1;
+    if (q->quality_change)          b |= (q->quality_change->value           ? 1 : 0) << 2;
+    if (q->data_update)             b |= (q->data_update->value              ? 1 : 0) << 3;
+    if (q->integrity)               b |= (q->integrity->value                ? 1 : 0) << 4;
+    if (q->general_interrogation)   b |= (q->general_interrogation->value    ? 1 : 0) << 5;
+    return b;
 }
 
-int cms_trigger_conditions_decode_stream(per_stream_t *s, cms_trigger_conditions_t *v){
-    uint8_t buf[1] = {0};
-    cms_bit_string_fixed_t bs = { buf, 6 };
-    int rc = cms_bit_string_fixed_decode_stream(s, &bs);
-    if (rc) return rc;
-    v->data_change.value           = (buf[0] >> 6) & 1;
-    v->quality_change.value        = (buf[0] >> 5) & 1;
-    v->data_update.value           = (buf[0] >> 4) & 1;
-    v->integrity.value             = (buf[0] >> 3) & 1;
-    v->general_interrogation.value = (buf[0] >> 2) & 1;
+static void unpack_trigger(uint8_t byte, cms_trigger_conditions_t *q) {
+    /* bit 0: reserved, ignored */
+    if (q->data_change)             q->data_change->value           = (byte >> 1) & 1;
+    if (q->quality_change)          q->quality_change->value        = (byte >> 2) & 1;
+    if (q->data_update)             q->data_update->value           = (byte >> 3) & 1;
+    if (q->integrity)               q->integrity->value             = (byte >> 4) & 1;
+    if (q->general_interrogation)   q->general_interrogation->value = (byte >> 5) & 1;
+}
+
+int cms_trigger_conditions_encode_stream(per_stream_t *s, const void *ptr) {
+    uint8_t byte = pack_trigger((const cms_trigger_conditions_t*)ptr);
+    return cms_bit_string_fixed_encode_stream(s, &byte, 6);
+}
+
+int cms_trigger_conditions_decode_stream(per_stream_t *s, void *ptr) {
+    uint8_t byte = 0;
+    int err = cms_bit_string_fixed_decode_stream(s, &byte, 6);
+    if (err) return CMS_ERR;
+    unpack_trigger(byte, (cms_trigger_conditions_t*)ptr);
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_trigger_conditions_encode(const cms_trigger_conditions_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l);
-    int rc = cms_trigger_conditions_encode_stream(&w, v);
-    *l = (int)per_stream_bytes_written(&w);
-    return rc;
+int cms_trigger_conditions_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_trigger_conditions_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_trigger_conditions_decode(cms_trigger_conditions_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l);
-    return cms_trigger_conditions_decode_stream(&r, v);
+
+int cms_trigger_conditions_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_trigger_conditions_decode_stream(&s, ptr);
 }

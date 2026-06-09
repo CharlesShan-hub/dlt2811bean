@@ -1,0 +1,1 @@
+ ../libccms_core.a ../libccms.dll.a ../libccms_core.a -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32 

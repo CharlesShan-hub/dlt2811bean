@@ -1,24 +1,32 @@
 #include "data/common/cms_entry_id.h"
-#include "data/basic/cms_string.h"
+#include <string.h>
 
-int cms_entry_id_encode_stream(per_stream_t *s, const cms_entry_id_t *v){
-    cms_octet_string_fixed_t _s = { v->value, CMS_ENTRY_ID_LEN };
-    return cms_octet_string_fixed_encode_stream(s, &_s);
+int cms_entry_id_encode_stream(per_stream_t *s, const void *ptr) {
+    const uint8_t *vptr = *(const uint8_t *const*)ptr;
+    if (!vptr) return CMS_ERR;
+    return cms_octet_string_fixed_encode_stream(s, vptr, CMS_ENTRY_ID_LEN);
 }
-int cms_entry_id_decode_stream(per_stream_t *s, cms_entry_id_t *v){
-    cms_octet_string_fixed_t _s = { v->value, CMS_ENTRY_ID_LEN };
-    int rc = cms_octet_string_fixed_decode_stream(s, &_s);
-    if (rc) return rc;
-    v->len = CMS_ENTRY_ID_LEN;
+
+int cms_entry_id_decode_stream(per_stream_t *s, void *ptr) {
+    uint8_t *vptr = *(uint8_t **)ptr;
+    if (!vptr) return CMS_ERR;
+    int err = cms_octet_string_fixed_decode_stream(s, vptr, CMS_ENTRY_ID_LEN);
+    if (err) return err;
+    *(int32_t*)((uint8_t*)ptr + 8) = CMS_ENTRY_ID_LEN;
     return CMS_OK;
 }
 
-CMS_EXPORT int cms_entry_id_encode(const cms_entry_id_t *v, uint8_t *b, int *l){
-    per_stream_t w = per_stream_new_write(b, (size_t)*l); 
-    int rc = cms_entry_id_encode_stream(&w, v); 
-    *l = (int)per_stream_bytes_written(&w); return rc; 
+int cms_entry_id_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_entry_id_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_entry_id_decode(cms_entry_id_t *v, const uint8_t *b, int l){
-    per_stream_t r = per_stream_new_read(b, (size_t)l); 
-    return cms_entry_id_decode_stream(&r, v); 
+
+int cms_entry_id_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_entry_id_decode_stream(&s, ptr);
 }

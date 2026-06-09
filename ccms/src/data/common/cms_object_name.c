@@ -1,25 +1,14 @@
 #include "data/common/cms_object_name.h"
-#include "data/basic/cms_string.h"
-#include <string.h>
 
-int cms_object_name_encode_stream(per_stream_t *s, const cms_object_name_t *v){ 
-    cms_visible_string_var_t _s = { v->value, CMS_OBJECT_NAME_MAX_LEN }; 
-    return cms_visible_string_var_encode_stream(s, &_s); 
+int cms_object_name_encode_stream(per_stream_t *s, const void *ptr) {
+    return cms_visible_string_encode_stream(s, ptr, CMS_OBJECT_NAME_MAX_LEN);
 }
-int cms_object_name_decode_stream(per_stream_t *s, cms_object_name_t *v){ 
-    cms_visible_string_var_t _s = { v->value, CMS_OBJECT_NAME_MAX_LEN }; 
-    int rc = cms_visible_string_var_decode_stream(s, &_s); 
-    if (rc) return rc;
-    v->len = (int32_t)strlen((const char *)v->value);
-    return CMS_OK;
+int cms_object_name_decode_stream(per_stream_t *s, void *ptr) {
+    return cms_visible_string_decode_stream(s, ptr, CMS_OBJECT_NAME_MAX_LEN);
 }
-
-CMS_EXPORT int cms_object_name_encode(const cms_object_name_t *v, uint8_t *b, int *l){ 
-    per_stream_t w = per_stream_new_write(b, (size_t)*l); 
-    int rc = cms_object_name_encode_stream(&w, v); 
-    *l = (int)per_stream_bytes_written(&w); return rc; 
+int cms_object_name_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    return cms_visible_string_encode(ptr, out_buf, out_len);
 }
-CMS_EXPORT int cms_object_name_decode(cms_object_name_t *v, const uint8_t *b, int l){ 
-    per_stream_t r = per_stream_new_read(b, (size_t)l); 
-    return cms_object_name_decode_stream(&r, v); 
+int cms_object_name_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    return cms_visible_string_decode(ptr, in_buf, in_len);
 }

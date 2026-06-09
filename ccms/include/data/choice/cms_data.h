@@ -1,80 +1,111 @@
-#ifndef DATA_CHOICE_CMS_DATA_H
-#define DATA_CHOICE_CMS_DATA_H
+#ifndef CMS_CHOICE_DATA_H
+#define CMS_CHOICE_DATA_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
-#include "per/cms_integer.h"
-#include "data/basic/cms_boolean.h"
-#include "data/basic/cms_float.h"
-#include "per/cms_string.h"
-#include "data/common/cms_service_error.h"
+#include "data/enum/cms_enumerated.h"
+#include "data/scalar/cms_boolean.h"
+#include "data/scalar/cms_int8.h"
+#include "data/scalar/cms_int16.h"
+#include "data/scalar/cms_int32.h"
+#include "data/scalar/cms_int64.h"
+#include "data/scalar/cms_int8u.h"
+#include "data/scalar/cms_int16u.h"
+#include "data/scalar/cms_int32u.h"
+#include "data/scalar/cms_int64u.h"
+#include "data/scalar/cms_float32.h"
+#include "data/scalar/cms_float64.h"
+#include "data/string/cms_uint8_array.h"
+#include "data/string/cms_utf8_string.h"
+#include "data/time/cms_utc_time.h"
+#include "data/time/cms_binary_time.h"
+#include "data/common/cms_quality.h"
 #include "data/common/cms_dbpos.h"
 #include "data/common/cms_tcmd.h"
-#include "data/common/cms_quality.h"
 #include "data/control/cms_check.h"
-#include "data/extended/cms_time.h"
-
+#include "data/common/cms_service_error.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
- * ============================================================
- * cms_data_t — tagged union for Data CHOICE (24 alternatives)
- * ============================================================
+ * Data ::= CHOICE { ... }  —  7.7
+ *
+ * Flat all-pointer layout; the active alternative is selected by the
+ * 'choice' selector (cms_enumerated_t*).
+ *
+ * For array and structure (SEQUENCE OF Data), use cms_array_t
+ *   { void** elements; int32_t count; }.
+ *
+ * All other alternatives use their natural typed pointer.
  */
-typedef struct cms_data cms_data_t;
 
-typedef struct {
-    cms_data_t *elements;
-    cms_int32_t count;
-} cms_data_array_t;
+/* ── selector values ── */
+#define CMS_DATA_CHOICE_ERROR             0
+#define CMS_DATA_CHOICE_ARRAY             1
+#define CMS_DATA_CHOICE_STRUCTURE         2
+#define CMS_DATA_CHOICE_BOOLEAN           3
+#define CMS_DATA_CHOICE_INT8              4
+#define CMS_DATA_CHOICE_INT16             5
+#define CMS_DATA_CHOICE_INT32             6
+#define CMS_DATA_CHOICE_INT64             7
+#define CMS_DATA_CHOICE_INT8U             8
+#define CMS_DATA_CHOICE_INT16U            9
+#define CMS_DATA_CHOICE_INT32U           10
+#define CMS_DATA_CHOICE_INT64U           11
+#define CMS_DATA_CHOICE_FLOAT32          12
+#define CMS_DATA_CHOICE_FLOAT64          13
+#define CMS_DATA_CHOICE_BIT_STRING       14
+#define CMS_DATA_CHOICE_OCTET_STRING     15
+#define CMS_DATA_CHOICE_VISIBLE_STRING   16
+#define CMS_DATA_CHOICE_UNICODE_STRING   17
+#define CMS_DATA_CHOICE_UTC_TIME         18
+#define CMS_DATA_CHOICE_BINARY_TIME      19
+#define CMS_DATA_CHOICE_QUALITY          20
+#define CMS_DATA_CHOICE_DBPOS            21
+#define CMS_DATA_CHOICE_TCMD             22
+#define CMS_DATA_CHOICE_CHECK            23
 
-typedef struct {
-    cms_data_t *elements;
-    cms_int32_t count;
-} cms_data_structure_t;
+/* Forward declaration for SEQUENCE OF Data (array / structure) */
+typedef struct cms_data_s cms_data_t;
 
-struct cms_data {
-    int32_t  choice;       /* 0 .. 23 */
-    union {
-        cms_service_error_t   error;                        /*  0 */
-        cms_data_array_t      array;                        /*  1 */
-        cms_data_structure_t  structure;                    /*  2 */
-        cms_boolean_t      boolean_value;                 /*  3 */
-        cms_int8_t         int8;                          /*  4 */
-        cms_int16_t        int16;                         /*  5 */
-        cms_int32_t        int32;                         /*  6 */
-        cms_int64_t        int64;                         /*  7 */
-        cms_int8u_t        int8u;                         /*  8 */
-        cms_int16u_t       int16u;                        /*  9 */
-        cms_int32u_t       int32u;                        /* 10 */
-        cms_int64u_t       int64u;                        /* 11 */
-        cms_float32_t      float32;                       /* 12 */
-        cms_float64_t      float64;                       /* 13 */
-        cms_uint8_array_t  bit_string;                    /* 14 */
-        cms_uint8_array_t  octet_string;                  /* 15 */
-        cms_uint8_array_t  visible_string;                /* 16 */
-        cms_uint8_array_t  utf8_string;                   /* 17 */
-        cms_utc_time_t   utc_time;                          /* 18 */
-        cms_binary_time_t  binary_time;                      /* 19 */
-        cms_quality_t    quality;                         /* 20 */
-        cms_dbpos_t      dbpos;                           /* 21 */
-        cms_tcmd_t       tcmd;                            /* 22 */
-        cms_check_t      check;                           /* 23 */
-    } value;
-};
+typedef struct cms_data_s {
+    cms_enumerated_t         *choice;        /* selector, 0..23 */
 
-CMS_EXPORT int cms_data_encode(const cms_data_t *data, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_data_decode(cms_data_t *data, const uint8_t *in_buf, int in_len);
-int cms_data_encode_stream(per_stream_t *s, const cms_data_t *data);
-int cms_data_decode_stream(per_stream_t *s, cms_data_t *data);
+    /* ARRAY / STRUCTURE — SEQUENCE OF Data via cms_array_t */
+    cms_array_t              *alt_sequence;  /* { void** elements; int32_t count; } */
 
-CMS_EXPORT int cms_data_choice_encode(int32_t choice, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_data_count_encode(int32_t count, uint8_t *out_buf, int *out_len);
+    /* scalar / string / time / quality alternatives */
+    cms_boolean_t            *alt_boolean;
+    cms_int8_t               *alt_int8;
+    cms_int16_t              *alt_int16;
+    cms_int32_t              *alt_int32;
+    cms_int64_t              *alt_int64;
+    cms_int8u_t              *alt_int8u;
+    cms_int16u_t             *alt_int16u;
+    cms_int32u_t             *alt_int32u;
+    cms_int64u_t             *alt_int64u;
+    cms_float32_t            *alt_float32;
+    cms_float64_t            *alt_float64;
+    cms_uint8_array_t        *alt_bit_string;    /* BIT STRING (variable) */
+    cms_uint8_array_t        *alt_octet_string;  /* OCTET STRING (variable) */
+    cms_uint8_array_t        *alt_visible_string;/* VisibleString (variable) */
+    cms_uint8_array_t        *alt_unicode_string;/* UTF8String (variable) */
+    cms_utc_time_t           *alt_utc_time;
+    cms_binary_time_t        *alt_binary_time;
+    cms_quality_t            *alt_quality;
+    cms_dbpos_t              *alt_dbpos;         /* Dbpos — BIT STRING SIZE(2) */
+    cms_tcmd_t               *alt_tcmd;          /* Tcmd — BIT STRING SIZE(2) */
+    cms_check_t              *alt_check;         /* Check — BIT STRING SIZE(2) */
+    cms_service_error_t      *alt_error;         /* ServiceError — integer 0..12 */
+} cms_data_t;
 
-CMS_EXPORT void cms_data_free(cms_data_t *data);
+int cms_data_encode_stream(per_stream_t *s, const void *ptr);
+int cms_data_decode_stream(per_stream_t *s, void *ptr);
+
+CMS_EXPORT int cms_data_encode(const void *ptr, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_data_decode(void *ptr, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

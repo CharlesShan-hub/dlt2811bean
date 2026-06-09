@@ -1,20 +1,31 @@
 #include "data/common/cms_service_error.h"
-#include "data/basic/cms_enumerated.h"
+#include "per/cms_integer.h"
 
-int cms_service_error_encode_stream(per_stream_t *s, const cms_service_error_t *v){ 
-    return cms_enumerated_encode_stream(s, &v->value);
+int cms_service_error_encode_stream(per_stream_t *s, const void *ptr) {
+    int val = ((const cms_service_error_t*)ptr)->value;
+    if (val < 0 || val > 12) return CMS_ERR;
+    return (int)per_encode_constrained_int(s, val, -128, 127);
 }
 
-int cms_service_error_decode_stream(per_stream_t *s, cms_service_error_t *v){ 
-    return cms_enumerated_decode_stream(s, &v->value);
+int cms_service_error_decode_stream(per_stream_t *s, void *ptr) {
+    int64_t val;
+    per_error_t err = per_decode_constrained_int(s, &val, -128, 127);
+    if (err) return CMS_ERR;
+    ((cms_service_error_t*)ptr)->value = (int)val;
+    return CMS_OK;
 }
 
-CMS_EXPORT int cms_service_error_encode(const cms_service_error_t *v, uint8_t *b, int *l){ 
-    per_stream_t w = per_stream_new_write(b, (size_t)*l); 
-    int rc = cms_service_error_encode_stream(&w, v); 
-    *l = (int)per_stream_bytes_written(&w); return rc; 
+int cms_service_error_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_service_error_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
 }
-CMS_EXPORT int cms_service_error_decode(cms_service_error_t *v, const uint8_t *b, int l){ 
-    per_stream_t r = per_stream_new_read(b, (size_t)l); 
-    return cms_service_error_decode_stream(&r, v); 
+
+int cms_service_error_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_service_error_decode_stream(&s, ptr);
 }

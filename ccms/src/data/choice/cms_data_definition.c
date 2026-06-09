@@ -1,166 +1,232 @@
 #include "data/choice/cms_data_definition.h"
-#include "per/cms_choice.h"
-#include "data/basic/cms_integer.h"
-#include "data/fc/cms_functional_constraint.h"
+#include "per/cms_integer.h"
 
-/* ---- internal stream version ---- */
+/* ── helper to encode/decode a struct_elem ── */
+static int encode_struct_elem(per_stream_t *s, const cms_data_definition_struct_elem_t *e) {
+    if (!e) return CMS_ERR;
+    int err;
 
-int cms_data_definition_encode_stream(per_stream_t *s, const cms_data_definition_t *def)
-{
-    int rc = per_encode_choice(s, (uint32_t)def->choice);
-    if (rc) return rc;
+    /* name — ObjectName */
+    if (!e->name) return CMS_ERR;
+    err = cms_object_name_encode_stream(s, e->name);
+    if (err) return err;
 
-    switch (def->choice) {
-    case 0:
-        rc = cms_service_error_encode_stream(s, &def->value.error);
-        break;
-
-    case 1:
-        rc = cms_int32_encode_stream(s, &def->value.array.numberOfElement);
-        if (rc) return rc;
-        if (def->value.array.elementType){
-            rc = cms_data_definition_encode_stream(s, def->value.array.elementType);
-            if (rc) return rc;
+    /* fc — FunctionalConstraint OPTIONAL */
+    {
+        int present = (e->fc_present && e->fc_present->value) && e->fc;
+        cms_boolean_t bit = { .value = present };
+        err = cms_boolean_encode_stream(s, &bit);
+        if (err) return err;
+        if (present) {
+            err = cms_functional_constraint_encode_stream(s, e->fc);
+            if (err) return err;
         }
-        break;
-
-    case 2:
-        per_encode_length(s, (uint32_t)def->value.structure.count.value);
-        for (int32_t i = 0; i < def->value.structure.count.value; i++) {
-            const cms_data_definition_member_t *m = &def->value.structure.elements[i];
-            rc = cms_object_name_encode_stream(s, &m->name);
-            if (rc) return rc;
-            rc = cms_boolean_encode_stream(s, &m->has_fc);
-            if (rc) return rc;
-            if (m->has_fc.value){
-                rc = cms_functional_constraint_encode_stream(s, &m->fc);
-                if (rc) return rc;
-            }
-            if (m->type){
-                rc = cms_data_definition_encode_stream(s, m->type);
-                if (rc) return rc;
-            }
-        }
-        break;
-
-    case 3: case 4: case 5: case 6: case 7:
-    case 8: case 9: case 10: case 11: case 12: case 13:
-    case 18: case 19: case 20: case 21: case 22: case 23:
-        break;
-
-    case 14: case 15: case 16: case 17:
-        rc = per_encode_constrained_int(s, def->value.string_length.value, 0, 65535);
-        break;
     }
-    return rc;
+
+    /* type — DataDefinition */
+    if (!e->type) return CMS_ERR;
+    err = cms_data_definition_encode_stream(s, e->type);
+    if (err) return err;
+
+    return CMS_OK;
 }
 
-int cms_data_definition_decode_stream(per_stream_t *s, cms_data_definition_t *def)
-{
-    uint32_t idx;
-    int rc = per_decode_choice(s, &idx);
-    if (rc) return rc;
-    def->choice = (int32_t)idx;
+static int decode_struct_elem(per_stream_t *s, cms_data_definition_struct_elem_t *e) {
+    if (!e) return CMS_ERR;
+    int err;
 
-    switch (def->choice) {
-    case 0:
-        rc = cms_service_error_decode_stream(s, &def->value.error);
-        break;
+    /* name */
+    if (!e->name) return CMS_ERR;
+    err = cms_object_name_decode_stream(s, e->name);
+    if (err) return err;
 
-    case 1:
-        rc = cms_int32_decode_stream(s, &def->value.array.numberOfElement);
-        if (rc) return rc;
-        def->value.array.elementType = (cms_data_definition_t *)calloc(1, sizeof(cms_data_definition_t));
-        if (!def->value.array.elementType) return CMS_ERR;
-        rc = cms_data_definition_decode_stream(s, def->value.array.elementType);
-        break;
+    /* fc OPTIONAL */
+    {
+        cms_boolean_t bit = {0};
+        err = cms_boolean_decode_stream(s, &bit);
+        if (err) return err;
+        if (bit.value && e->fc) {
+            err = cms_functional_constraint_decode_stream(s, e->fc);
+            if (err) return err;
+        }
+        if (e->fc_present) e->fc_present->value = bit.value;
+    }
 
-    case 2: {
+    /* type */
+    if (!e->type) return CMS_ERR;
+    err = cms_data_definition_decode_stream(s, e->type);
+    if (err) return err;
+
+    return CMS_OK;
+}
+
+/* ── main encode / decode ── */
+
+int cms_data_definition_encode_stream(per_stream_t *s, const void *ptr) {
+    const cms_data_definition_t *d = (const cms_data_definition_t*)ptr;
+    if (!d || !d->choice) return CMS_ERR;
+    int sel = d->choice->value;
+    if (sel < 0 || sel > 23) return CMS_ERR;
+
+    /* 1. Encode CHOICE index — small non-negative */
+    per_error_t perr = per_encode_small_non_negative(s, (uint32_t)sel);
+    if (perr) return CMS_ERR;
+
+    /* 2. Encode the selected alternative (if it has payload) */
+    switch (sel) {
+
+    case CMS_DATA_DEFINITION_CHOICE_ERROR:
+        if (!d->alt_error) return CMS_ERR;
+        return cms_service_error_encode_stream(s, d->alt_error);
+
+    case CMS_DATA_DEFINITION_CHOICE_ARRAY:
+        if (!d->alt_array) return CMS_ERR;
+        return cms_data_definition_array_encode_stream(s, d->alt_array);
+
+    case CMS_DATA_DEFINITION_CHOICE_STRUCTURE: {
+        cms_array_t *arr = (cms_array_t*)d->alt_structure;
+        int32_t count = arr ? arr->count : 0;
+        perr = per_encode_length(s, (uint32_t)count);
+        if (perr) return CMS_ERR;
+        for (int32_t i = 0; i < count; i++) {
+            if (!arr || !arr->elements || !arr->elements[i]) return CMS_ERR;
+            int err = encode_struct_elem(s, (const cms_data_definition_struct_elem_t*)arr->elements[i]);
+            if (err) return err;
+        }
+        return CMS_OK;
+    }
+
+    /* [3..13] and [18..23] — NULL alternatives, no payload */
+    case CMS_DATA_DEFINITION_CHOICE_BOOLEAN:
+    case CMS_DATA_DEFINITION_CHOICE_INT8:
+    case CMS_DATA_DEFINITION_CHOICE_INT16:
+    case CMS_DATA_DEFINITION_CHOICE_INT32:
+    case CMS_DATA_DEFINITION_CHOICE_INT64:
+    case CMS_DATA_DEFINITION_CHOICE_INT8U:
+    case CMS_DATA_DEFINITION_CHOICE_INT16U:
+    case CMS_DATA_DEFINITION_CHOICE_INT32U:
+    case CMS_DATA_DEFINITION_CHOICE_INT64U:
+    case CMS_DATA_DEFINITION_CHOICE_FLOAT32:
+    case CMS_DATA_DEFINITION_CHOICE_FLOAT64:
+    case CMS_DATA_DEFINITION_CHOICE_UTC_TIME:
+    case CMS_DATA_DEFINITION_CHOICE_BINARY_TIME:
+    case CMS_DATA_DEFINITION_CHOICE_QUALITY:
+    case CMS_DATA_DEFINITION_CHOICE_DBPOS:
+    case CMS_DATA_DEFINITION_CHOICE_TCMD:
+    case CMS_DATA_DEFINITION_CHOICE_CHECK:
+        return CMS_OK;
+
+    /* [14..17] — INTEGER max length */
+    case CMS_DATA_DEFINITION_CHOICE_BIT_STRING:
+        if (!d->alt_bit_string_len) return CMS_ERR;
+        return cms_int32_encode_stream(s, d->alt_bit_string_len);
+
+    case CMS_DATA_DEFINITION_CHOICE_OCTET_STRING:
+        if (!d->alt_octet_string_len) return CMS_ERR;
+        return cms_int32_encode_stream(s, d->alt_octet_string_len);
+
+    case CMS_DATA_DEFINITION_CHOICE_VISIBLE_STRING:
+        if (!d->alt_visible_string_len) return CMS_ERR;
+        return cms_int32_encode_stream(s, d->alt_visible_string_len);
+
+    case CMS_DATA_DEFINITION_CHOICE_UNICODE_STRING:
+        if (!d->alt_unicode_string_len) return CMS_ERR;
+        return cms_int32_encode_stream(s, d->alt_unicode_string_len);
+
+    default:
+        return CMS_ERR;
+    }
+}
+
+int cms_data_definition_decode_stream(per_stream_t *s, void *ptr) {
+    cms_data_definition_t *d = (cms_data_definition_t*)ptr;
+    if (!d || !d->choice) return CMS_ERR;
+
+    /* 1. Decode CHOICE index */
+    uint32_t sel32;
+    per_error_t perr = per_decode_small_non_negative(s, &sel32);
+    if (perr) return CMS_ERR;
+    if (sel32 > 23) return CMS_ERR;
+    d->choice->value = (int)sel32;
+
+    /* 2. Decode payload */
+    switch (d->choice->value) {
+
+    case CMS_DATA_DEFINITION_CHOICE_ERROR:
+        if (!d->alt_error) return CMS_ERR;
+        return cms_service_error_decode_stream(s, d->alt_error);
+
+    case CMS_DATA_DEFINITION_CHOICE_ARRAY:
+        if (!d->alt_array) return CMS_ERR;
+        return cms_data_definition_array_decode_stream(s, d->alt_array);
+
+    case CMS_DATA_DEFINITION_CHOICE_STRUCTURE: {
         uint32_t count;
-        per_decode_length(s, &count);
-        def->value.structure.count.value = (int32_t)count;
-        def->value.structure.elements = NULL;
-        if (count) {
-            def->value.structure.elements = (cms_data_definition_member_t *)calloc(count, sizeof(cms_data_definition_member_t));
-            if (!def->value.structure.elements) return CMS_ERR;
-            for (uint32_t i = 0; i < count; i++) {
-                cms_data_definition_member_t *m = &def->value.structure.elements[i];
-                rc = cms_object_name_decode_stream(s, &m->name);
-                if (rc) return rc;
-                rc = cms_boolean_decode_stream(s, &m->has_fc);
-                if (rc) return rc;
-                if (m->has_fc.value){
-                    rc = cms_functional_constraint_decode_stream(s, &m->fc);
-                    if (rc) return rc;
-                }
-                m->type = (cms_data_definition_t *)calloc(1, sizeof(cms_data_definition_t));
-                if (!m->type) return CMS_ERR;
-                rc = cms_data_definition_decode_stream(s, m->type);
-                if (rc) return rc;
-            }
+        perr = per_decode_length(s, &count);
+        if (perr) return CMS_ERR;
+        cms_array_t *arr = (cms_array_t*)d->alt_structure;
+        if (arr) arr->count = (int32_t)count;
+        for (uint32_t i = 0; i < count; i++) {
+            if (!arr || !arr->elements || !arr->elements[i]) return CMS_ERR;
+            int err = decode_struct_elem(s, (cms_data_definition_struct_elem_t*)arr->elements[i]);
+            if (err) return err;
         }
-        break;
+        return CMS_OK;
     }
 
-    case 3: case 4: case 5: case 6: case 7:
-    case 8: case 9: case 10: case 11: case 12: case 13:
-    case 18: case 19: case 20: case 21: case 22: case 23:
-        break;
+    /* [3..13] and [18..23] — NULL alternatives, no payload */
+    case CMS_DATA_DEFINITION_CHOICE_BOOLEAN:
+    case CMS_DATA_DEFINITION_CHOICE_INT8:
+    case CMS_DATA_DEFINITION_CHOICE_INT16:
+    case CMS_DATA_DEFINITION_CHOICE_INT32:
+    case CMS_DATA_DEFINITION_CHOICE_INT64:
+    case CMS_DATA_DEFINITION_CHOICE_INT8U:
+    case CMS_DATA_DEFINITION_CHOICE_INT16U:
+    case CMS_DATA_DEFINITION_CHOICE_INT32U:
+    case CMS_DATA_DEFINITION_CHOICE_INT64U:
+    case CMS_DATA_DEFINITION_CHOICE_FLOAT32:
+    case CMS_DATA_DEFINITION_CHOICE_FLOAT64:
+    case CMS_DATA_DEFINITION_CHOICE_UTC_TIME:
+    case CMS_DATA_DEFINITION_CHOICE_BINARY_TIME:
+    case CMS_DATA_DEFINITION_CHOICE_QUALITY:
+    case CMS_DATA_DEFINITION_CHOICE_DBPOS:
+    case CMS_DATA_DEFINITION_CHOICE_TCMD:
+    case CMS_DATA_DEFINITION_CHOICE_CHECK:
+        return CMS_OK;
 
-    case 14: case 15: case 16: case 17: {
-        int64_t t;
-        rc = per_decode_constrained_int(s, &t, 0, 65535);
-        if (rc) return rc;
-        def->value.string_length.value = (int32_t)t;
-        break;
-    }
-    }
-    return rc;
-}
+    /* [14..17] — INTEGER max length */
+    case CMS_DATA_DEFINITION_CHOICE_BIT_STRING:
+        if (!d->alt_bit_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d->alt_bit_string_len);
 
-/* ---- public buffer version ---- */
+    case CMS_DATA_DEFINITION_CHOICE_OCTET_STRING:
+        if (!d->alt_octet_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d->alt_octet_string_len);
 
-CMS_EXPORT int cms_data_definition_encode(const cms_data_definition_t *def, uint8_t *out_buf, int *out_len)
-{
-    per_stream_t w;
-    per_stream_init_write(&w, out_buf, (size_t)*out_len);
-    int rc = cms_data_definition_encode_stream(&w, def);
-    *out_len = (int)per_stream_bytes_written(&w);
-    return rc;
-}
+    case CMS_DATA_DEFINITION_CHOICE_VISIBLE_STRING:
+        if (!d->alt_visible_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d->alt_visible_string_len);
 
-CMS_EXPORT int cms_data_definition_decode(cms_data_definition_t *def, const uint8_t *in_buf, int in_len)
-{
-    per_stream_t r;
-    per_stream_init_read(&r, in_buf, (size_t)in_len);
-    return cms_data_definition_decode_stream(&r, def);
-}
+    case CMS_DATA_DEFINITION_CHOICE_UNICODE_STRING:
+        if (!d->alt_unicode_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d->alt_unicode_string_len);
 
-/* ---- free ---- */
-
-static void free_members(cms_data_definition_member_t *members, int32_t count)
-{
-    for (int32_t i = 0; i < count; i++) {
-        if (members[i].type) {
-            cms_data_definition_free(members[i].type);
-            free(members[i].type);
-        }
+    default:
+        return CMS_ERR;
     }
 }
 
-CMS_EXPORT void cms_data_definition_free(cms_data_definition_t *def)
-{
-    if (!def) return;
-    if (def->choice == 1) {
-        if (def->value.array.elementType) {
-            cms_data_definition_free(def->value.array.elementType);
-            free(def->value.array.elementType);
-            def->value.array.elementType = NULL;
-        }
-    } else if (def->choice == 2) {
-        free_members(def->value.structure.elements, def->value.structure.count.value);
-        free(def->value.structure.elements);
-        def->value.structure.elements = NULL;
-        def->value.structure.count.value = 0;
-    }
+int cms_data_definition_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+    per_stream_t s;
+    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    int rc = cms_data_definition_encode_stream(&s, ptr);
+    if (rc) return rc;
+    *out_len = (int)per_stream_bytes_written(&s);
+    return CMS_OK;
+}
+
+int cms_data_definition_decode(void *ptr, const uint8_t *in_buf, int in_len) {
+    per_stream_t s;
+    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    return cms_data_definition_decode_stream(&s, ptr);
 }

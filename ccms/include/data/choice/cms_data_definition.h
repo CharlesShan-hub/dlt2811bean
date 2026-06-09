@@ -1,60 +1,84 @@
-#ifndef DATA_CHOICE_CMS_DATA_DEFINITION_H
-#define DATA_CHOICE_CMS_DATA_DEFINITION_H
+#ifndef CMS_CHOICE_DATA_DEFINITION_H
+#define CMS_CHOICE_DATA_DEFINITION_H
 
-#include "cms_core.h"
+#include "cms_types.h"
 #include "per/cms_stream.h"
-#include "data/basic/cms_string.h"
-#include "data/basic/cms_integer.h"
-#include "data/basic/cms_boolean.h"
-#include "data/common/cms_object_name.h"
-#include "data/fc/cms_functional_constraint.h"
+#include "data/enum/cms_enumerated.h"
+#include "data/scalar/cms_int32.h"
 #include "data/common/cms_service_error.h"
-#include <stdlib.h>
-#include <string.h>
+#include "data/choice/cms_data_definition_array.h"
+#include "data/choice/cms_data_definition_struct_elem.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*
- * ============================================================
- * DataDefinition ::= CHOICE { ... (24 alternatives) }
- * ============================================================
+ * DataDefinition ::= CHOICE { ... }  —  7.7
+ *
+ * Flat all-pointer layout.  Alternatives marked IMPLICIT NULL in ASN.1
+ * carry no payload (the choice selector alone is sufficient).
+ *
+ * Only these alternatives have data:
+ *   [0]  error       → ServiceError
+ *   [1]  array       → DataDefinitionArray
+ *   [2]  structure   → SEQUENCE OF DataDefinitionStructElem
+ *   [14] bit-string  → INTEGER (max bit length)
+ *   [15] octet-string → INTEGER (max byte length)
+ *   [16] visible-string → INTEGER (max char length)
+ *   [17] unicode-string → INTEGER (max char length)
  */
-typedef struct cms_data_definition cms_data_definition_t;
 
-typedef struct {
-    cms_object_name_t            name;       /* VisibleString (0..64) */
-    cms_functional_constraint_t  fc;         /* FunctionalConstraint (2 chars) */
-    cms_boolean_t                has_fc;
-    cms_data_definition_t       *type;       /* DataDefinition */
-} cms_data_definition_member_t;
+/* ── selector values ── */
+#define CMS_DATA_DEFINITION_CHOICE_ERROR            0
+#define CMS_DATA_DEFINITION_CHOICE_ARRAY            1
+#define CMS_DATA_DEFINITION_CHOICE_STRUCTURE        2
+#define CMS_DATA_DEFINITION_CHOICE_BOOLEAN          3
+#define CMS_DATA_DEFINITION_CHOICE_INT8             4
+#define CMS_DATA_DEFINITION_CHOICE_INT16            5
+#define CMS_DATA_DEFINITION_CHOICE_INT32            6
+#define CMS_DATA_DEFINITION_CHOICE_INT64            7
+#define CMS_DATA_DEFINITION_CHOICE_INT8U            8
+#define CMS_DATA_DEFINITION_CHOICE_INT16U           9
+#define CMS_DATA_DEFINITION_CHOICE_INT32U          10
+#define CMS_DATA_DEFINITION_CHOICE_INT64U          11
+#define CMS_DATA_DEFINITION_CHOICE_FLOAT32         12
+#define CMS_DATA_DEFINITION_CHOICE_FLOAT64         13
+#define CMS_DATA_DEFINITION_CHOICE_BIT_STRING      14
+#define CMS_DATA_DEFINITION_CHOICE_OCTET_STRING    15
+#define CMS_DATA_DEFINITION_CHOICE_VISIBLE_STRING  16
+#define CMS_DATA_DEFINITION_CHOICE_UNICODE_STRING  17
+#define CMS_DATA_DEFINITION_CHOICE_UTC_TIME        18
+#define CMS_DATA_DEFINITION_CHOICE_BINARY_TIME     19
+#define CMS_DATA_DEFINITION_CHOICE_QUALITY         20
+#define CMS_DATA_DEFINITION_CHOICE_DBPOS           21
+#define CMS_DATA_DEFINITION_CHOICE_TCMD            22
+#define CMS_DATA_DEFINITION_CHOICE_CHECK           23
 
-typedef struct {
-    cms_int32_t                  numberOfElement;
-    cms_data_definition_t       *elementType;
-} cms_data_definition_array_t;
+typedef struct cms_data_definition_s {
+    cms_enumerated_t                   *choice;         /* selector, 0..23 */
 
-typedef struct {
-    cms_data_definition_member_t *elements;
-    cms_int32_t                   count;
-} cms_data_definition_structure_t;
+    /* [0] error */
+    cms_service_error_t                *alt_error;
 
-struct cms_data_definition {
-    int32_t  choice;       /* 0 .. 23 */
-    union {
-        cms_service_error_t           error;            /*  0 */
-        cms_data_definition_array_t   array;            /*  1 */
-        cms_data_definition_structure_t structure;      /*  2 */
-        cms_int32_t                   string_length;    /* 14-17 */
-    } value;
-};
+    /* [1] array */
+    cms_data_definition_array_t        *alt_array;
 
-CMS_EXPORT int cms_data_definition_encode(const cms_data_definition_t *def, uint8_t *out_buf, int *out_len);
-CMS_EXPORT int cms_data_definition_decode(cms_data_definition_t *def, const uint8_t *in_buf, int in_len);
-int cms_data_definition_encode_stream(per_stream_t *s, const cms_data_definition_t *def);
-int cms_data_definition_decode_stream(per_stream_t *s, cms_data_definition_t *def);
-CMS_EXPORT void cms_data_definition_free(cms_data_definition_t *def);
+    /* [2] structure — SEQUENCE OF struct_elem via cms_array_t */
+    cms_array_t                        *alt_structure;  /* { void** elements; int32_t count; } */
+
+    /* [14..17] bit-string / octet-string / visible-string / unicode-string — INTEGER max length */
+    cms_int32_t                        *alt_bit_string_len;
+    cms_int32_t                        *alt_octet_string_len;
+    cms_int32_t                        *alt_visible_string_len;
+    cms_int32_t                        *alt_unicode_string_len;
+} cms_data_definition_t;
+
+int cms_data_definition_encode_stream(per_stream_t *s, const void *ptr);
+int cms_data_definition_decode_stream(per_stream_t *s, void *ptr);
+
+CMS_EXPORT int cms_data_definition_encode(const void *ptr, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_data_definition_decode(void *ptr, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }
