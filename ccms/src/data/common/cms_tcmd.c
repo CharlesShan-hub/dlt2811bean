@@ -1,8 +1,12 @@
 #include "data/common/cms_tcmd.h"
 #include "data/string/cms_bit_string.h"
+#include "data/string/cms_bitutil.h"
 
 int cms_tcmd_encode_stream(per_stream_t *s, const void *ptr) {
-    uint8_t byte = (uint8_t)(((const cms_tcmd_t*)ptr)->value);
+    uint8_t byte = 0;
+    int val = ((const cms_tcmd_t*)ptr)->value;
+    pack_bit(&byte, 0, (val >> 1) & 1);
+    pack_bit(&byte, 1, val & 1);
     return cms_bit_string_fixed_encode_stream(s, &byte, 2);
 }
 
@@ -10,7 +14,7 @@ int cms_tcmd_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t byte = 0;
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 2);
     if (err) return CMS_ERR;
-    ((cms_tcmd_t*)ptr)->value = (int)byte;
+    ((cms_tcmd_t*)ptr)->value = (unpack_bit(byte, 0) << 1) | unpack_bit(byte, 1);
     return CMS_OK;
 }
 

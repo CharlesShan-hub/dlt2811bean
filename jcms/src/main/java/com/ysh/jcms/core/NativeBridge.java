@@ -97,6 +97,12 @@ public class NativeBridge {
         int cms_go_cb_decode(Pointer v, byte[] inBuf, int inLen);
         int cms_msvcb_encode(Pointer v, byte[] outBuf, IntByReference outLen);
         int cms_msvcb_decode(Pointer v, byte[] inBuf, int inLen);
+
+        // choice types
+        int cms_data_encode(Pointer v, byte[] outBuf, IntByReference outLen);
+        int cms_data_decode(Pointer v, byte[] inBuf, int inLen);
+        int cms_data_definition_encode(Pointer v, byte[] outBuf, IntByReference outLen);
+        int cms_data_definition_decode(Pointer v, byte[] inBuf, int inLen);
     }
 
     private static final Lib LIB = Native.load("ccms", Lib.class);
@@ -205,4 +211,10 @@ public class NativeBridge {
     public static void decodeGoCb(Pointer p, byte[] d) { decode(p, d, LIB::cms_go_cb_decode); }
     public static byte[] encodeMsvcb(Pointer p) { return encode(p, LIB::cms_msvcb_encode); }
     public static void decodeMsvcb(Pointer p, byte[] d) { decode(p, d, LIB::cms_msvcb_decode); }
+
+    // choice types
+    public static byte[] encodeData(Pointer p) { return encode(p, LIB::cms_data_encode); }
+    public static void decodeData(Pointer p, byte[] d) { decode(p, d, LIB::cms_data_decode); }
+    public static byte[] encodeDataDefinition(Pointer p) { return encode(p, LIB::cms_data_definition_encode); }
+    public static void decodeDataDefinition(Pointer p, byte[] d) { decode(p, d, LIB::cms_data_definition_decode); }
 }

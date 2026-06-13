@@ -83,9 +83,11 @@ int cms_data_encode_stream(per_stream_t *s, const void *ptr) {
         if (!d->alt_float64) return CMS_ERR;
         return cms_float64_encode_stream(s, d->alt_float64);
 
-    case CMS_DATA_CHOICE_BIT_STRING:
+    case CMS_DATA_CHOICE_BIT_STRING: {
         if (!d->alt_bit_string) return CMS_ERR;
-        return cms_bit_string_encode_stream(s, d->alt_bit_string, INT32_MAX);
+        /* len is in bits */
+        return (int)per_encode_bit_string(s, d->alt_bit_string->value, d->alt_bit_string->len, INT32_MAX);
+    }
 
     case CMS_DATA_CHOICE_OCTET_STRING:
         if (!d->alt_octet_string) return CMS_ERR;
@@ -206,9 +208,15 @@ int cms_data_decode_stream(per_stream_t *s, void *ptr) {
         if (!d->alt_float64) return CMS_ERR;
         return cms_float64_decode_stream(s, d->alt_float64);
 
-    case CMS_DATA_CHOICE_BIT_STRING:
+    case CMS_DATA_CHOICE_BIT_STRING: {
         if (!d->alt_bit_string) return CMS_ERR;
-        return cms_bit_string_decode_stream(s, d->alt_bit_string, INT32_MAX);
+        uint8_t *data = d->alt_bit_string->value;
+        int out_nbits;
+        per_error_t perr = per_decode_bit_string(s, data, &out_nbits, INT32_MAX);
+        if (perr) return CMS_ERR;
+        d->alt_bit_string->len = out_nbits;  /* len is in bits */
+        return CMS_OK;
+    }
 
     case CMS_DATA_CHOICE_OCTET_STRING:
         if (!d->alt_octet_string) return CMS_ERR;

@@ -2,6 +2,7 @@ package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.enumerated.CmsEnumerated;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -14,17 +15,43 @@ import java.util.List;
 /**
  * Data ::= CHOICE { 24 alternatives }  —  7.7
  *
- * For ARRAY / STRUCTURE (alternatives 1, 2), alt_sequence is a
- * CmsArray<CmsData> — elements are CmsData objects, count is auto-managed.
+ * Flat all-pointer layout, matching cms_data_t in C:
+ * [choice*, alt_sequence*, alt_boolean*, ..., alt_check*]
  *
- * nativeSize = (1 + 1 + 21) * 8 = 184 bytes
+ * nativeSize = 24 × 8 = 192 bytes
  */
 public class CmsData extends CmsType {
+
+    /* ─── CHOICE indices ─── */
+    public static final int CHOICE_ERROR             = 0;
+    public static final int CHOICE_ARRAY             = 1;
+    public static final int CHOICE_STRUCTURE         = 2;
+    public static final int CHOICE_BOOLEAN           = 3;
+    public static final int CHOICE_INT8              = 4;
+    public static final int CHOICE_INT16             = 5;
+    public static final int CHOICE_INT32             = 6;
+    public static final int CHOICE_INT64             = 7;
+    public static final int CHOICE_INT8U             = 8;
+    public static final int CHOICE_INT16U            = 9;
+    public static final int CHOICE_INT32U            = 10;
+    public static final int CHOICE_INT64U            = 11;
+    public static final int CHOICE_FLOAT32           = 12;
+    public static final int CHOICE_FLOAT64           = 13;
+    public static final int CHOICE_BIT_STRING        = 14;
+    public static final int CHOICE_OCTET_STRING      = 15;
+    public static final int CHOICE_VISIBLE_STRING    = 16;
+    public static final int CHOICE_UNICODE_STRING    = 17;
+    public static final int CHOICE_UTC_TIME          = 18;
+    public static final int CHOICE_BINARY_TIME       = 19;
+    public static final int CHOICE_QUALITY           = 20;
+    public static final int CHOICE_DBPOS             = 21;
+    public static final int CHOICE_TCMD              = 22;
+    public static final int CHOICE_CHECK             = 23;
 
     public CmsEnumerated          choice;           /* selector 0..23 */
 
     /* ARRAY / STRUCTURE — SEQUENCE OF Data */
-    public CmsArray<CmsData>      alt_sequence;     /* CmsArray<CmsData> */
+    public CmsArray<CmsData>      alt_sequence;
 
     /* all alternatives */
     public CmsServiceError        alt_error;
@@ -80,11 +107,18 @@ public class CmsData extends CmsType {
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, alt_sequence,
-            alt_error, alt_boolean, alt_int8, alt_int16, alt_int32, alt_int64,
+            alt_boolean, alt_int8, alt_int16, alt_int32, alt_int64,
             alt_int8u, alt_int16u, alt_int32u, alt_int64u,
             alt_float32, alt_float64,
             alt_bit_string, alt_octet_string, alt_visible_string, alt_unicode_string,
             alt_utc_time, alt_binary_time, alt_quality,
-            alt_dbpos, alt_tcmd, alt_check);
+            alt_dbpos, alt_tcmd, alt_check,
+            alt_error);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodeData(nativePtr); }
+
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodeData(nativePtr, data); read(); }
 }

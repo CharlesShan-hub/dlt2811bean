@@ -6,7 +6,8 @@
 #define ARRAY_PTR_MUT(v)  (*(uint8_t**)(v))
 #define ARRAY_LEN_PTR(v)  ((int32_t*)((uint8_t*)(v) + 8))
 
-/* Fixed length: align + bits (no length prefix) */
+/* Fixed length: align + bits (no length prefix)
+ * Callers are responsible for MSB-first packing via pack_bit/pack_bit16. */
 int cms_bit_string_fixed_encode_stream(per_stream_t *s, const uint8_t *data, int fixed_nbits) {
     return (int)per_encode_bit_string_fixed(s, data, fixed_nbits);
 }
@@ -20,9 +21,7 @@ int cms_bit_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max_
     const uint8_t *vptr = ptr ? ARRAY_PTR(ptr) : NULL;
     int32_t nbits = ptr ? ARRAY_LEN(ptr) : 0;
     if (!vptr || nbits < 0) return CMS_ERR;
-    if (max_nbits > 0) {
-        return (int)per_encode_bit_string(s, vptr, nbits, (int)max_nbits);
-    }
+    if (max_nbits > 0) return (int)per_encode_bit_string(s, vptr, nbits, (int)max_nbits);
     return (int)per_encode_bit_string_unconstrained(s, vptr, nbits);
 }
 

@@ -2,6 +2,7 @@ package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.enumerated.CmsEnumerated;
 import com.ysh.jcms.data.scalar.CmsInt32;
@@ -10,7 +11,6 @@ import java.util.List;
 
 /**
  * DataDefinition ::= CHOICE { 24 alternatives }  —  7.7
- *
  * Only alternatives with payload are stored as pointers:
  *   [0]  error              → CmsServiceError*
  *   [1]  array              → CmsDataDefinitionArray*
@@ -21,6 +21,11 @@ import java.util.List;
  *   [17] unicode-string     → CmsInt32* (max char length)
  *
  * Alternatives [3..13] and [18..23] are IMPLICIT NULL (no data).
+ * Flat all-pointer layout, matching cms_data_definition_t in C.
+ * Only alternatives with payload have pointer fields; NULL alternatives
+ * are not stored.
+ *
+ * nativeSize = 8 × 8 = 64 bytes
  */
 public class CmsDataDefinition extends CmsType {
 
@@ -58,4 +63,10 @@ public class CmsDataDefinition extends CmsType {
             alt_bit_string_len, alt_octet_string_len,
             alt_visible_string_len, alt_unicode_string_len);
     }
+
+    @Override
+    public byte[] encode() { write(); return NativeBridge.encodeDataDefinition(nativePtr); }
+
+    @Override
+    public void decode(byte[] data) { write(); NativeBridge.decodeDataDefinition(nativePtr, data); read(); }
 }
