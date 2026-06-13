@@ -1732,7 +1732,7 @@ GetRpcInterfaceDirectory-ResponsePDU ::= SEQUENCE {
 GetRpcInterfaceDirectory-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.11.3 GetRpcMethodDirectory (Service Code 0x93)
+-- 8.13.3 GetRpcMethodDirectory (Service Code 0x93)
 -- ======================================================================
 
 GetRpcMethodDirectory-RequestPDU ::= SEQUENCE {
@@ -1770,7 +1770,7 @@ GetRpcInterfaceDefinition-ResponsePDU ::= SEQUENCE {
 GetRpcInterfaceDefinition-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.11.4 GetRpcMethodDefinition (Service Code 0x94)
+-- 8.13.5 GetRpcMethodDefinition (Service Code 0x94)
 -- ======================================================================
 
 GetRpcMethodDefinition-RequestPDU ::= SEQUENCE {
@@ -1793,7 +1793,7 @@ GetRpcMethodDefinition-ResponsePDU ::= SEQUENCE {
 GetRpcMethodDefinition-ErrorPDU ::= ServiceError
 
 -- ======================================================================
--- 8.11.5 RpcCall (Service Code 0x95)
+-- 8.13.6 RpcCall (Service Code 0x95)
 -- ======================================================================
 
 RpcCall-RequestPDU ::= SEQUENCE {
