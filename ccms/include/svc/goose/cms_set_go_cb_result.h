@@ -32,6 +32,9 @@ typedef struct {
     cms_service_error_t  *dat_set_err;
 } cms_set_go_cb_result_t;
 
+int cms_set_go_cb_result_encode_stream(per_stream_t *s, const cms_set_go_cb_result_t *v);
+int cms_set_go_cb_result_decode_stream(per_stream_t *s, cms_set_go_cb_result_t *v);
+
 #ifdef __cplusplus
 }
 #endif

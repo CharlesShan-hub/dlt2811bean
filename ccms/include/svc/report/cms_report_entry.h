@@ -30,6 +30,9 @@ typedef struct {
     cms_array_t        *entry_data;     /* SEQUENCE OF ReportDataEntry */
 } cms_report_entry_t;
 
+int cms_report_entry_encode_stream(per_stream_t *s, const cms_report_entry_t *v);
+int cms_report_entry_decode_stream(per_stream_t *s, cms_report_entry_t *v);
+
 #ifdef __cplusplus
 }
 #endif

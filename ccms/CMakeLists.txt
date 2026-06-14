@@ -79,6 +79,18 @@ set(CMS_SRC
     src/data/choice/cms_data.c
     src/data/choice/cms_data_definition.c
     src/data/choice/cms_data_definition_array.c
+
+    # svc - other
+    src/svc/other/cms_req_id.c
+    src/svc/other/cms_association_id.c
+    src/svc/other/cms_reference_choice.c
+
+    # svc - connection
+    src/svc/connection/cms_abort_reason.c
+    src/svc/connection/cms_authentication_parameter.c
+    src/svc/connection/cms_associate.c
+    src/svc/connection/cms_release.c
+    src/svc/connection/cms_abort.c
 )
 
 add_library(ccms SHARED ${CMS_SRC})

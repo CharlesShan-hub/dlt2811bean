@@ -61,6 +61,9 @@ typedef struct {
     cms_int16_t               *resv_tms;
 } cms_set_brcb_entry_t;
 
+int cms_set_brcb_entry_encode_stream(per_stream_t *s, const cms_set_brcb_entry_t *v);
+int cms_set_brcb_entry_decode_stream(per_stream_t *s, cms_set_brcb_entry_t *v);
+
 #ifdef __cplusplus
 }
 #endif

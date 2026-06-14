@@ -31,6 +31,9 @@ typedef struct {
     cms_uint8_array_t  *alt_call_id;
 } cms_rpc_call_req_choice_t;
 
+int cms_rpc_call_req_choice_encode_stream(per_stream_t *s, const cms_rpc_call_req_choice_t *v);
+int cms_rpc_call_req_choice_decode_stream(per_stream_t *s, cms_rpc_call_req_choice_t *v);
+
 #ifdef __cplusplus
 }
 #endif

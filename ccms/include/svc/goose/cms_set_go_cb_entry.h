@@ -32,6 +32,9 @@ typedef struct {
     cms_object_reference_t *dat_set;
 } cms_set_go_cb_entry_t;
 
+int cms_set_go_cb_entry_encode_stream(per_stream_t *s, const cms_set_go_cb_entry_t *v);
+int cms_set_go_cb_entry_decode_stream(per_stream_t *s, cms_set_go_cb_entry_t *v);
+
 #ifdef __cplusplus
 }
 #endif

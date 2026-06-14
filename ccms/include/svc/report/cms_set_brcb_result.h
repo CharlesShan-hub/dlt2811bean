@@ -56,6 +56,9 @@ typedef struct {
     cms_service_error_t  *resv_tms_err;
 } cms_set_brcb_result_t;
 
+int cms_set_brcb_result_encode_stream(per_stream_t *s, const cms_set_brcb_result_t *v);
+int cms_set_brcb_result_decode_stream(per_stream_t *s, cms_set_brcb_result_t *v);
+
 #ifdef __cplusplus
 }
 #endif

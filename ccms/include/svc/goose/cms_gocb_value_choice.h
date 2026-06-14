@@ -31,6 +31,9 @@ typedef struct {
     cms_go_cb_t         *alt_value;
 } cms_gocb_value_choice_t;
 
+int cms_gocb_value_choice_encode_stream(per_stream_t *s, const cms_gocb_value_choice_t *v);
+int cms_gocb_value_choice_decode_stream(per_stream_t *s, cms_gocb_value_choice_t *v);
+
 #ifdef __cplusplus
 }
 #endif

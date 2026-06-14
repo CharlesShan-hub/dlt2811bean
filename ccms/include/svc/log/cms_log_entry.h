@@ -25,6 +25,9 @@ typedef struct {
     cms_array_t       *entry_data;    /* SEQUENCE OF LogDataEntry */
 } cms_log_entry_t;
 
+int cms_log_entry_encode_stream(per_stream_t *s, const cms_log_entry_t *v);
+int cms_log_entry_decode_stream(per_stream_t *s, cms_log_entry_t *v);
+
 #ifdef __cplusplus
 }
 #endif

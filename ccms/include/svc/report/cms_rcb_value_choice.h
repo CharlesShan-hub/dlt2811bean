@@ -33,6 +33,9 @@ typedef struct {
     cms_brcb_t          *alt_value;      /* BRCB or URCB in same slot */
 } cms_rcb_value_choice_t;
 
+int cms_rcb_value_choice_encode_stream(per_stream_t *s, const cms_rcb_value_choice_t *v);
+int cms_rcb_value_choice_decode_stream(per_stream_t *s, cms_rcb_value_choice_t *v);
+
 #ifdef __cplusplus
 }
 #endif
