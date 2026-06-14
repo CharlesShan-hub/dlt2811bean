@@ -91,6 +91,130 @@ set(CMS_SRC
     src/svc/connection/cms_associate.c
     src/svc/connection/cms_release.c
     src/svc/connection/cms_abort.c
+
+    # svc - directory
+    src/svc/directory/cms_acsi_class.c
+    src/svc/directory/cms_object_class.c
+    src/svc/directory/cms_data_value_entry.c
+    src/svc/directory/cms_data_definition_entry.c
+    src/svc/directory/cms_cb_value_choice.c
+    src/svc/directory/cms_cb_value_entry.c
+    src/svc/directory/cms_get_server_directory.c
+    src/svc/directory/cms_get_logical_device_directory.c
+    src/svc/directory/cms_get_logical_node_directory.c
+    src/svc/directory/cms_get_all_data_values.c
+    src/svc/directory/cms_get_all_data_definition.c
+    src/svc/directory/cms_get_all_cb_values.c
+
+    # svc - data
+    src/svc/data/cms_data_ref_entry.c
+    src/svc/data/cms_sub_ref_entry.c
+    src/svc/data/cms_data_ref_value_entry.c
+    src/svc/data/cms_data_def_result_entry.c
+    src/svc/data/cms_get_data_directory.c
+    src/svc/data/cms_get_data_definition.c
+    src/svc/data/cms_get_data_values.c
+    src/svc/data/cms_set_data_values.c
+
+    # svc - dataset
+    src/svc/dataset/cms_data_ref_fc_entry.c
+    src/svc/dataset/cms_get_data_set_directory.c
+    src/svc/dataset/cms_create_data_set.c
+    src/svc/dataset/cms_get_data_set_values.c
+    src/svc/dataset/cms_set_data_set_values.c
+    src/svc/dataset/cms_delete_data_set.c
+
+    # svc - sg
+    src/svc/sg/cms_sgcb_value_choice.c
+    src/svc/sg/cms_sg_ref_fc_entry.c
+    src/svc/sg/cms_sg_ref_value_entry.c
+    src/svc/sg/cms_select_active_sg.c
+    src/svc/sg/cms_select_edit_sg.c
+    src/svc/sg/cms_set_edit_sg_value.c
+    src/svc/sg/cms_confirm_edit_sg_values.c
+    src/svc/sg/cms_get_edit_sg_value.c
+    src/svc/sg/cms_get_sgcb_values.c
+
+    # svc - report
+    src/svc/report/cms_rcb_value_choice.c
+    src/svc/report/cms_report_data_entry.c
+    src/svc/report/cms_report_entry.c
+    src/svc/report/cms_set_brcb_entry.c
+    src/svc/report/cms_set_urcb_entry.c
+    src/svc/report/cms_set_brcb_result.c
+    src/svc/report/cms_set_urcb_result.c
+    src/svc/report/cms_report.c
+    src/svc/report/cms_get_brcb_values.c
+    src/svc/report/cms_get_urcb_values.c
+    src/svc/report/cms_set_brcb_values.c
+    src/svc/report/cms_set_urcb_values.c
+
+    # svc - log
+    src/svc/log/cms_log_data_entry.c
+    src/svc/log/cms_log_entry.c
+    src/svc/log/cms_lcb_value_choice.c
+    src/svc/log/cms_log_status_value.c
+    src/svc/log/cms_log_status_value_choice.c
+    src/svc/log/cms_set_lcb_entry.c
+    src/svc/log/cms_set_lcb_result.c
+    src/svc/log/cms_get_lcb_values.c
+    src/svc/log/cms_set_lcb_values.c
+    src/svc/log/cms_query_log_after.c
+    src/svc/log/cms_query_log_by_time.c
+    src/svc/log/cms_get_log_status_values.c
+
+    # svc - goose
+    src/svc/goose/cms_go_ref_fc_entry.c
+    src/svc/goose/cms_gocb_value_choice.c
+    src/svc/goose/cms_set_go_cb_entry.c
+    src/svc/goose/cms_set_go_cb_result.c
+    src/svc/goose/cms_send_goose_message.c
+    src/svc/goose/cms_get_go_reference.c
+    src/svc/goose/cms_get_goose_element_number.c
+    src/svc/goose/cms_get_go_cb_values.c
+    src/svc/goose/cms_set_go_cb_values.c
+
+    # svc - msv
+    src/svc/msv/cms_msvcb_value_choice.c
+    src/svc/msv/cms_set_msvcb_entry.c
+    src/svc/msv/cms_set_msvcb_result.c
+    src/svc/msv/cms_send_msv_message.c
+    src/svc/msv/cms_get_msvcb_values.c
+    src/svc/msv/cms_set_msvcb_values.c
+
+    # svc - control
+    src/svc/control/cms_select.c
+    src/svc/control/cms_select_with_value.c
+    src/svc/control/cms_operate.c
+    src/svc/control/cms_cancel.c
+    src/svc/control/cms_command_termination.c
+    src/svc/control/cms_time_activated_operate.c
+    src/svc/control/cms_time_activated_operate_termination.c
+
+    # svc - file
+    src/svc/file/cms_visible_string255.c
+    src/svc/file/cms_get_file.c
+    src/svc/file/cms_set_file.c
+    src/svc/file/cms_delete_file.c
+    src/svc/file/cms_get_file_attribute_values.c
+    src/svc/file/cms_get_file_directory.c
+
+    # svc - rpc
+    src/svc/rpc/cms_rpc_method_entry.c
+    src/svc/rpc/cms_rpc_method_def.c
+    src/svc/rpc/cms_rpc_method_def_choice.c
+    src/svc/rpc/cms_rpc_call_req_choice.c
+    src/svc/rpc/cms_get_rpc_interface_directory.c
+    src/svc/rpc/cms_get_rpc_method_directory.c
+    src/svc/rpc/cms_get_rpc_interface_definition.c
+    src/svc/rpc/cms_get_rpc_method_definition.c
+    src/svc/rpc/cms_rpc_call.c
+
+    # svc - test
+    src/svc/test/cms_test.c
+
+    # svc - negotiate
+    src/svc/negotiate/cms_negotiate.c
 )
 
 add_library(ccms SHARED ${CMS_SRC})

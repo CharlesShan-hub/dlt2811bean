@@ -9,18 +9,18 @@
 static int req_encode(per_stream_t *s, const cms_get_server_directory_request_t *pdu) {
     int err;
     if (!pdu->req_id) return CMS_ERR;
-    err = cms_req_id_encode_stream(s, pdu->req_id);
+    err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
     if (!pdu->object_class) return CMS_ERR;
-    err = cms_object_class_encode_stream(s, pdu->object_class);
+    err = cms_object_class_encode_stream(&s, pdu->object_class);
     if (err) return err;
     {
         int present = (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after;
         cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+        err = cms_boolean_encode_stream(&s, &bit);
         if (err) return err;
         if (present) {
-            err = cms_object_reference_encode_stream(s, pdu->ref_after);
+            err = cms_object_reference_encode_stream(&s, pdu->ref_after);
             if (err) return err;
         }
     }
@@ -29,19 +29,19 @@ static int req_encode(per_stream_t *s, const cms_get_server_directory_request_t 
 static int req_decode(per_stream_t *s, cms_get_server_directory_request_t *pdu) {
     int err;
     if (!pdu->req_id) return CMS_ERR;
-    err = cms_req_id_decode_stream(s, pdu->req_id);
+    err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
     if (!pdu->object_class) return CMS_ERR;
-    err = cms_object_class_decode_stream(s, pdu->object_class);
+    err = cms_object_class_decode_stream(&s, pdu->object_class);
     if (err) return err;
     {
         cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+        err = cms_boolean_decode_stream(&s, &bit);
         if (err) return err;
         if (pdu->ref_after_present) pdu->ref_after_present->value = bit.value;
         if (bit.value) {
             if (!pdu->ref_after) return CMS_ERR;
-            err = cms_object_reference_decode_stream(s, pdu->ref_after);
+            err = cms_object_reference_decode_stream(&s, pdu->ref_after);
             if (err) return err;
         }
     }
@@ -60,7 +60,7 @@ int cms_get_server_directory_request_decode(cms_get_server_directory_request_t *
 static int resp_encode(per_stream_t *s, const cms_get_server_directory_response_t *pdu) {
     int err;
     if (!pdu->req_id) return CMS_ERR;
-    err = cms_req_id_encode_stream(s, pdu->req_id);
+    err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
     if (!pdu->reference) return CMS_ERR;
     {
@@ -70,19 +70,19 @@ static int resp_encode(per_stream_t *s, const cms_get_server_directory_response_
         for (uint32_t i = 0; i < count; i++) {
             cms_object_reference_t *elem = (cms_object_reference_t*)pdu->reference->elements[i];
             if (!elem) return CMS_ERR;
-            err = cms_object_reference_encode_stream(s, elem);
+            err = cms_object_reference_encode_stream(&s, elem);
             if (err) return err;
         }
     }
     if (!pdu->more_follows) return CMS_ERR;
-    err = cms_boolean_encode_stream(s, pdu->more_follows);
+    err = cms_boolean_encode_stream(&s, pdu->more_follows);
     if (err) return err;
     return CMS_OK;
 }
 static int resp_decode(per_stream_t *s, cms_get_server_directory_response_t *pdu) {
     int err;
     if (!pdu->req_id) return CMS_ERR;
-    err = cms_req_id_decode_stream(s, pdu->req_id);
+    err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
     if (!pdu->reference) return CMS_ERR;
     {
@@ -93,12 +93,12 @@ static int resp_decode(per_stream_t *s, cms_get_server_directory_response_t *pdu
         for (uint32_t i = 0; i < count; i++) {
             cms_object_reference_t *elem = (cms_object_reference_t*)pdu->reference->elements[i];
             if (!elem) return CMS_ERR;
-            err = cms_object_reference_decode_stream(s, elem);
+            err = cms_object_reference_decode_stream(&s, elem);
             if (err) return err;
         }
     }
     if (!pdu->more_follows) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->more_follows);
+    err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
     return CMS_OK;
 }

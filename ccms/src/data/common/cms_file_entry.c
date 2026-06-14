@@ -29,18 +29,22 @@ int cms_file_entry_encode_stream(per_stream_t *s, const void *ptr) {
 int cms_file_entry_decode_stream(per_stream_t *s, void *ptr) {
     cms_file_entry_t *pdu = (cms_file_entry_t*)ptr;
 
+    /* 1. fileName — VisibleString129 */
     if (!pdu->fileName) return CMS_ERR;
     int err = cms_visible_string_decode_stream(s, pdu->fileName, 129);
     if (err) return err;
 
+    /* 2. fileSize — INT32U */
     if (!pdu->fileSize) return CMS_ERR;
     err = cms_int32u_decode_stream(s, pdu->fileSize);
     if (err) return err;
 
+    /* 3. lastModified — UtcTime */
     if (!pdu->lastModified) return CMS_ERR;
     err = cms_utc_time_decode_stream(s, pdu->lastModified);
     if (err) return err;
 
+    /* 4. checkSum — INT32U */
     if (!pdu->checkSum) return CMS_ERR;
     err = cms_int32u_decode_stream(s, pdu->checkSum);
     if (err) return err;
