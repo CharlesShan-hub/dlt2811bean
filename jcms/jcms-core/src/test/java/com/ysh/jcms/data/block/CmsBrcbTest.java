@@ -12,7 +12,7 @@ public class CmsBrcbTest {
             .datSet("dataset1".getBytes())
             .confRev(3L);
         a.optFlds.sequence_number.value(true);
-        //a.bufTm.value(5000L);
+        a.bufTm.value(5000L);
         a.sqNum.value(100);
         a.trgOps.data_change.value(true);
         a.intgPd.value(3000L);

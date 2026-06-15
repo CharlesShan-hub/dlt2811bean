@@ -2,6 +2,8 @@ package com.ysh.jcms.core;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import com.ysh.jcms.data.string.CmsUint8Array;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -132,7 +134,91 @@ public abstract class CmsType {
         return Arrays.hashCode(nativePtr.getByteArray(0, nativeSize));
     }
 
-    // ==================== Utilities ====================
+    // ==================== toString ====================
+
+    @Override
+    public String toString() {
+        return toString(0);
+    }
+
+    private String toString(int depth) {
+        List<? extends CmsType> kids = children();
+        if (!kids.isEmpty()) {
+            String indent = repeat("    ", depth + 1);
+            String bracketIndent = repeat("    ", depth);
+            StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") {\n");
+            // Map children to their Java field names (public fields only, toString aid)
+            java.util.Map<CmsType, String> fieldNames = new java.util.HashMap<>();
+            for (java.lang.reflect.Field f : getClass().getFields()) {
+                if (CmsType.class.isAssignableFrom(f.getType())) {
+                    try { fieldNames.put((CmsType) f.get(this), f.getName()); } catch (Exception e) {}
+                }
+            }
+            for (int i = 0; i < kids.size(); i++) {
+                CmsType child = kids.get(i);
+                String name = fieldNames.getOrDefault(child, "[" + i + "]");
+                String val = child.toString(depth + 1);
+                sb.append(indent).append("[").append(i).append("] ").append(name).append(": ").append(val).append(",\n");
+            }
+            if (!kids.isEmpty()) {
+                sb.setLength(sb.length() - 2);
+                sb.append("\n");
+            }
+            sb.append(bracketIndent).append("}");
+            return sb.toString();
+        }
+        if (this instanceof CmsUint8Array) {
+            return uint8ArrayToString();
+        }
+        return scalarToString();
+    }
+
+    private String scalarToString() {
+        long val = 0;
+        switch (nativeSize) {
+            case 1: val = nativePtr.getByte(0); break;
+            case 2: val = nativePtr.getShort(0); break;
+            case 4: val = nativePtr.getInt(0); break;
+            case 8: val = nativePtr.getLong(0); break;
+        }
+        return "(" + getClass().getSimpleName() + ") " + val;
+    }
+
+    private String uint8ArrayToString() {
+        CmsUint8Array arr = (CmsUint8Array) this;
+        String prefix = "(" + getClass().getSimpleName() + ") ";
+        byte[] data = arr.value();
+        // Try to show as string
+        if (arr.len > 0 && data.length > 0) {
+            String s = new String(data, StandardCharsets.UTF_8);
+            if (isPrintable(s)) {
+                return prefix + "'" + s + "'";
+            }
+            return prefix + "hex:" + bytesToHex(data);
+        }
+        return prefix + "(empty)";
+    }
+
+    private static boolean isPrintable(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c < 0x20 && c != '\t' && c != '\n' && c != '\r') return false;
+            if (c == 0xFFFD) return false;
+        }
+        return true;
+    }
+
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder(bytes.length * 2);
+        for (byte b : bytes) sb.append(String.format("%02x", b & 0xFF));
+        return sb.toString();
+    }
+
+    private static String repeat(String s, int count) {
+        StringBuilder sb = new StringBuilder(s.length() * count);
+        for (int i = 0; i < count; i++) sb.append(s);
+        return sb.toString();
+    }
 
     public void zero() {
         if (nativePtr != null) {
