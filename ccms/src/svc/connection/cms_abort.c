@@ -5,12 +5,15 @@
 int cms_abort_encode_stream(per_stream_t *s, const cms_abort_t *pdu) {
     if (!pdu) return CMS_ERR;
     int err;
+    /* req_id — mandatory */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(s, pdu->req_id);
     if (err) return err;
+    /* assoc_id */
     if (!pdu->assoc_id) return CMS_ERR;
     err = cms_association_id_encode_stream(s, pdu->assoc_id);
     if (err) return err;
+    /* reason */
     if (!pdu->reason) return CMS_ERR;
     err = cms_abort_reason_encode_stream(s, pdu->reason);
     if (err) return err;
