@@ -1818,7 +1818,7 @@ RpcCall-ErrorPDU ::= ServiceError
 -- FL = 0, no field
 
 -- ======================================================================
--- 8.13 AssociateNegotiate (Service Code 0x04)
+-- 8.15 AssociateNegotiate (Service Code 0x04)
 -- ======================================================================
 
 AssociateNegotiate-RequestPDU ::= SEQUENCE {

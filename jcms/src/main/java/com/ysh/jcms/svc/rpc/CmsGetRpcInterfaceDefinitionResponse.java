@@ -1,1 +1,37 @@
 package com.ysh.jcms.svc.rpc;
+
+import com.ysh.jcms.core.CmsArray;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * GetRpcInterfaceDefinition-ResponsePDU ::= SEQUENCE {
+ *     reqId           Int16U,
+ *     method          [0] IMPLICIT SEQUENCE OF RpcMethodEntry,
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * }  —  8.13.4
+ */
+public class CmsGetRpcInterfaceDefinitionResponse extends CmsType {
+
+    public CmsReqId                          reqId;
+    public CmsArray<CmsRpcMethodEntry>       method;       /* SEQUENCE OF RpcMethodEntry */
+    public CmsBoolean                        moreFollows;  /* DEFAULT TRUE */
+
+    public CmsGetRpcInterfaceDefinitionResponse() {
+        this.reqId       = new CmsReqId();
+        this.method      = new CmsArray<>();
+        this.moreFollows = new CmsBoolean();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(reqId, method, moreFollows);
+    }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeGetRpcInterfaceDefinitionResponse(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetRpcInterfaceDefinitionResponse(nativePtr, data); read(); }
+}

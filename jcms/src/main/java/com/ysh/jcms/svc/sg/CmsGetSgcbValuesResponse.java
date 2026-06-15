@@ -1,1 +1,37 @@
 package com.ysh.jcms.svc.sg;
+
+import com.ysh.jcms.core.CmsArray;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * GetSGCBValues-ResponsePDU ::= SEQUENCE {
+ *     reqId           Int16U,
+ *     sgscb           [0] IMPLICIT SEQUENCE OF SGCBValueChoice,
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * }  —  8.6.6
+ */
+public class CmsGetSgcbValuesResponse extends CmsType {
+
+    public CmsReqId                           reqId;
+    public CmsArray<CmsSgcbValueChoice>       sgscb;        /* SEQUENCE OF SGCBValueChoice */
+    public CmsBoolean                         moreFollows;  /* DEFAULT TRUE */
+
+    public CmsGetSgcbValuesResponse() {
+        this.reqId       = new CmsReqId();
+        this.sgscb       = new CmsArray<>();
+        this.moreFollows = new CmsBoolean();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(reqId, sgscb, moreFollows);
+    }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeGetSgcbValuesResponse(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetSgcbValuesResponse(nativePtr, data); read(); }
+}

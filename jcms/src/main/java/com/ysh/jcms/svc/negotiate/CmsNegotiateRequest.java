@@ -1,1 +1,40 @@
 package com.ysh.jcms.svc.negotiate;
+
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.scalar.CmsInt16U;
+import com.ysh.jcms.data.scalar.CmsInt32U;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * AssociateNegotiate-RequestPDU ::= SEQUENCE {
+ *     reqId           Int16U,
+ *     apduSize        [0] IMPLICIT INT16U,
+ *     asduSize        [1] IMPLICIT INT32U,
+ *     protocolVersion [2] IMPLICIT INT32U
+ * }  —  8.13
+ */
+public class CmsNegotiateRequest extends CmsType {
+
+    public CmsReqId  reqId;
+    public CmsInt16U apduSize;
+    public CmsInt32U asduSize;
+    public CmsInt32U protocolVersion;
+
+    public CmsNegotiateRequest() {
+        this.reqId           = new CmsReqId();
+        this.apduSize        = new CmsInt16U();
+        this.asduSize        = new CmsInt32U();
+        this.protocolVersion = new CmsInt32U();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(reqId, apduSize, asduSize, protocolVersion);
+    }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeNegotiateRequest(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeNegotiateRequest(nativePtr, data); read(); }
+}

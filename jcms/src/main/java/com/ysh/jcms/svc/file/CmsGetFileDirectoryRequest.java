@@ -1,1 +1,52 @@
 package com.ysh.jcms.svc.file;
+
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * GetFileDirectory-RequestPDU ::= SEQUENCE {
+ *     reqId           Int16U,
+ *     pathName        [0] IMPLICIT VisibleString255,
+ *     startTime       [1] IMPLICIT TimeStamp OPTIONAL,
+ *     stopTime        [2] IMPLICIT TimeStamp OPTIONAL,
+ *     fileAfter       [3] IMPLICIT VisibleString255 OPTIONAL
+ * }  —  8.12.4
+ */
+public class CmsGetFileDirectoryRequest extends CmsType {
+
+    public CmsReqId            reqId;
+    public CmsVisibleString255 pathName;
+    public CmsBoolean          startTimePresent;
+    public CmsTimeStamp        startTime;      /* OPTIONAL */
+    public CmsBoolean          stopTimePresent;
+    public CmsTimeStamp        stopTime;       /* OPTIONAL */
+    public CmsBoolean          fileAfterPresent;
+    public CmsVisibleString255 fileAfter;      /* OPTIONAL */
+
+    public CmsGetFileDirectoryRequest() {
+        this.reqId            = new CmsReqId();
+        this.pathName         = new CmsVisibleString255();
+        this.startTimePresent = new CmsBoolean();
+        this.startTime        = new CmsTimeStamp();
+        this.stopTimePresent  = new CmsBoolean();
+        this.stopTime         = new CmsTimeStamp();
+        this.fileAfterPresent = new CmsBoolean();
+        this.fileAfter        = new CmsVisibleString255();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(reqId, pathName,
+            startTimePresent, startTime,
+            stopTimePresent, stopTime,
+            fileAfterPresent, fileAfter);
+    }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeGetFileDirectoryRequest(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetFileDirectoryRequest(nativePtr, data); read(); }
+}

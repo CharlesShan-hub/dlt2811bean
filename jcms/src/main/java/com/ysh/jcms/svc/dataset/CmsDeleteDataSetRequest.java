@@ -1,1 +1,33 @@
 package com.ysh.jcms.svc.dataset;
+
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.common.CmsObjectReference;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * DeleteDataSet-RequestPDU ::= SEQUENCE {
+ *     reqId               Int16U,
+ *     datasetReference    [0] IMPLICIT ObjectReference
+ * }  —  8.5.4
+ */
+public class CmsDeleteDataSetRequest extends CmsType {
+
+    public CmsReqId            reqId;
+    public CmsObjectReference  datasetReference;
+
+    public CmsDeleteDataSetRequest() {
+        this.reqId            = new CmsReqId();
+        this.datasetReference = new CmsObjectReference();
+    }
+
+    @Override
+    public List<? extends CmsType> children() {
+        return Arrays.asList(reqId, datasetReference);
+    }
+
+    @Override public byte[] encode() { write(); return NativeBridge.encodeDeleteDataSetRequest(nativePtr); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeDeleteDataSetRequest(nativePtr, data); read(); }
+}
