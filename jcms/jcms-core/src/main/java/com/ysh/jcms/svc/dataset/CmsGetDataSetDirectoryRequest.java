@@ -30,7 +30,14 @@ public class CmsGetDataSetDirectoryRequest extends CmsType {
         this.refAfterPresent  = new CmsBoolean();
         this.refAfter         = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsGetDataSetDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetDataSetDirectoryRequest datasetReference(byte[] v) { this.datasetReference.value(v); return this; }
+    public CmsGetDataSetDirectoryRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
+    public CmsGetDataSetDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsGetDataSetDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetDataSetDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, datasetReference, refAfterPresent, refAfter);

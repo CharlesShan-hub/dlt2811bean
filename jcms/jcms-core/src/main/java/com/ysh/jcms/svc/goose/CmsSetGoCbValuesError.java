@@ -22,7 +22,10 @@ public class CmsSetGoCbValuesError extends CmsType {
         this.reqId  = new CmsReqId();
         this.result = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsSetGoCbValuesError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetGoCbValuesError result(CmsArray<CmsSetGoCbResult> v) { this.result = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, result);

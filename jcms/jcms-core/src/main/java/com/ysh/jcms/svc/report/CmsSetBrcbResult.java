@@ -75,7 +75,32 @@ public class CmsSetBrcbResult extends CmsType {
         this.resvTmsErrPresent = new CmsBoolean();
         this.resvTmsErr        = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsSetBrcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
+    public CmsSetBrcbResult error(int v) { this.error.value(v); return this; }
+    public CmsSetBrcbResult rptIdErrPresent(boolean v) { this.rptIdErrPresent.value(v); return this; }
+    public CmsSetBrcbResult rptIdErr(int v) { this.rptIdErr.value(v); return this; }
+    public CmsSetBrcbResult rptEnaErrPresent(boolean v) { this.rptEnaErrPresent.value(v); return this; }
+    public CmsSetBrcbResult rptEnaErr(int v) { this.rptEnaErr.value(v); return this; }
+    public CmsSetBrcbResult datSetErrPresent(boolean v) { this.datSetErrPresent.value(v); return this; }
+    public CmsSetBrcbResult datSetErr(int v) { this.datSetErr.value(v); return this; }
+    public CmsSetBrcbResult optFldsErrPresent(boolean v) { this.optFldsErrPresent.value(v); return this; }
+    public CmsSetBrcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
+    public CmsSetBrcbResult bufTmErrPresent(boolean v) { this.bufTmErrPresent.value(v); return this; }
+    public CmsSetBrcbResult bufTmErr(int v) { this.bufTmErr.value(v); return this; }
+    public CmsSetBrcbResult trgOpsErrPresent(boolean v) { this.trgOpsErrPresent.value(v); return this; }
+    public CmsSetBrcbResult trgOpsErr(int v) { this.trgOpsErr.value(v); return this; }
+    public CmsSetBrcbResult intgPdErrPresent(boolean v) { this.intgPdErrPresent.value(v); return this; }
+    public CmsSetBrcbResult intgPdErr(int v) { this.intgPdErr.value(v); return this; }
+    public CmsSetBrcbResult giErrPresent(boolean v) { this.giErrPresent.value(v); return this; }
+    public CmsSetBrcbResult giErr(int v) { this.giErr.value(v); return this; }
+    public CmsSetBrcbResult purgeBufErrPresent(boolean v) { this.purgeBufErrPresent.value(v); return this; }
+    public CmsSetBrcbResult purgeBufErr(int v) { this.purgeBufErr.value(v); return this; }
+    public CmsSetBrcbResult entryIdErrPresent(boolean v) { this.entryIdErrPresent.value(v); return this; }
+    public CmsSetBrcbResult entryIdErr(int v) { this.entryIdErr.value(v); return this; }
+    public CmsSetBrcbResult resvTmsErrPresent(boolean v) { this.resvTmsErrPresent.value(v); return this; }
+    public CmsSetBrcbResult resvTmsErr(int v) { this.resvTmsErr.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(errorPresent, error,

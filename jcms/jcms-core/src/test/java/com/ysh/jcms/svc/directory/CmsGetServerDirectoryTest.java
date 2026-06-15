@@ -9,10 +9,10 @@ public class CmsGetServerDirectoryTest {
 
     @Test
     public void request_roundtrip() {
-        CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest();
-        a.reqId.value(1);
-        a.objectClass.value(CmsObjectClass.LOGICAL_DEVICE);
-        a.refAfterPresent.value(false);
+        CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest()
+            .reqId(1)
+            .objectClass(CmsObjectClass.LOGICAL_DEVICE)
+            .refAfterPresent(false);
         byte[] encoded = a.encode();
 
         CmsGetServerDirectoryRequest b = new CmsGetServerDirectoryRequest();
@@ -24,11 +24,11 @@ public class CmsGetServerDirectoryTest {
 
     @Test
     public void request_roundtrip_with_ref_after() {
-        CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest();
-        a.reqId.value(2);
-        a.objectClass.value(CmsObjectClass.FILE_SYSTEM);
-        a.refAfterPresent.value(true);
-        a.refAfter.value("myRef".getBytes());
+        CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest()
+            .reqId(2)
+            .objectClass(CmsObjectClass.FILE_SYSTEM)
+            .refAfterPresent(true)
+            .refAfter("myRef".getBytes());
         byte[] encoded = a.encode();
 
         CmsGetServerDirectoryRequest b = new CmsGetServerDirectoryRequest();
@@ -41,8 +41,8 @@ public class CmsGetServerDirectoryTest {
 
     @Test
     public void response_roundtrip_with_array() {
-        CmsGetServerDirectoryResponse a = new CmsGetServerDirectoryResponse();
-        a.reqId.value(10);
+        CmsGetServerDirectoryResponse a = new CmsGetServerDirectoryResponse()
+            .reqId(10);
         /* SEQUENCE OF ObjectReference — 2 个元素 */
         CmsObjectReference ref1 = new CmsObjectReference("device1".getBytes());
         CmsObjectReference ref2 = new CmsObjectReference("device2".getBytes());
@@ -61,9 +61,9 @@ public class CmsGetServerDirectoryTest {
 
     @Test
     public void error_roundtrip() {
-        CmsGetServerDirectoryError a = new CmsGetServerDirectoryError();
-        a.reqId.value(99);
-        a.serviceError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsGetServerDirectoryError a = new CmsGetServerDirectoryError()
+            .reqId(99)
+            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         byte[] encoded = a.encode();
 
         CmsGetServerDirectoryError b = new CmsGetServerDirectoryError();

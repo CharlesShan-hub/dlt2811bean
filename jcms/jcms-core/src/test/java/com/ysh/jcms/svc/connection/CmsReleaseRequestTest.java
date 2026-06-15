@@ -6,9 +6,9 @@ import static org.junit.Assert.*;
 public class CmsReleaseRequestTest {
     @Test
     public void roundtrip() {
-        CmsReleaseRequest a = new CmsReleaseRequest();
-        a.reqId.value(20);
-        a.assocId.value(new byte[]{0x0A, 0x0B, 0x0C, 0x0D});
+        CmsReleaseRequest a = new CmsReleaseRequest()
+            .reqId(20)
+            .assocId(new byte[]{0x0A, 0x0B, 0x0C, 0x0D});
         byte[] encoded = a.encode();
 
         CmsReleaseRequest b = new CmsReleaseRequest();

@@ -26,7 +26,13 @@ public class CmsSubRefEntry extends CmsType {
         this.fcPresent = new CmsBoolean();
         this.fc        = new CmsFunctionalConstraint();
     }
-
+    
+    // -- chain setters --
+    public CmsSubRefEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSubRefEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSubRefEntry fcPresent(boolean v) { this.fcPresent.value(v); return this; }
+    public CmsSubRefEntry fc(byte[] v) { this.fcPresent.value(v != null && v.length > 0); if (v != null) this.fc.value(v); return this; }
+    public CmsSubRefEntry fc(String v) { this.fcPresent.value(v != null); if (v != null) this.fc.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, fcPresent, fc);

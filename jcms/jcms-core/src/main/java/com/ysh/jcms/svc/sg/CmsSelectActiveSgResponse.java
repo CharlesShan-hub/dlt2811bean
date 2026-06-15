@@ -18,7 +18,9 @@ public class CmsSelectActiveSgResponse extends CmsType {
     public CmsSelectActiveSgResponse() {
         this.reqId = new CmsReqId();
     }
-
+    
+    // -- chain setters --
+    public CmsSelectActiveSgResponse reqId(int v) { this.reqId.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

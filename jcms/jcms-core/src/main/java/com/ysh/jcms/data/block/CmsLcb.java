@@ -36,7 +36,19 @@ public class CmsLcb extends CmsType {
         this.bufTm_present = new CmsBoolean();
         this.bufTm     = new CmsInt32U();
     }
-
+    
+    // -- chain setters --
+    public CmsLcb logEna(boolean v) { this.logEna.value(v); return this; }
+    public CmsLcb datSet(byte[] v) { this.datSet.value(v); return this; }
+    public CmsLcb datSet(String v) { this.datSet.value(v); return this; }
+    public CmsLcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsLcb intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsLcb logRef(byte[] v) { this.logRef.value(v); return this; }
+    public CmsLcb logRef(String v) { this.logRef.value(v); return this; }
+    public CmsLcb optFlds_present(boolean v) { this.optFlds_present.value(v); return this; }
+    public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsLcb bufTm_present(boolean v) { this.bufTm_present.value(v); return this; }
+    public CmsLcb bufTm(long v) { this.bufTm.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(logEna, datSet, trgOps, intgPd, logRef,

@@ -49,7 +49,18 @@ public class CmsTimeActivatedOperateResponse extends CmsType {
         this.test      = new CmsBoolean();
         this.check     = new CmsCheck();
     }
-
+    
+    // -- chain setters --
+    public CmsTimeActivatedOperateResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsTimeActivatedOperateResponse reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateResponse reference(String v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateResponse ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsTimeActivatedOperateResponse operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsTimeActivatedOperateResponse origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsTimeActivatedOperateResponse ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsTimeActivatedOperateResponse t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsTimeActivatedOperateResponse test(boolean v) { this.test.value(v); return this; }
+    public CmsTimeActivatedOperateResponse check(CmsCheck v) { this.check = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check);

@@ -22,7 +22,11 @@ public class CmsReleaseRequest extends CmsType {
         this.reqId   = new CmsReqId();
         this.assocId = new CmsAssociationId();
     }
-
+    
+    // -- chain setters --
+    public CmsReleaseRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsReleaseRequest assocId(byte[] v) { this.assocId.value(v); return this; }
+    public CmsReleaseRequest assocId(String v) { this.assocId.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId);

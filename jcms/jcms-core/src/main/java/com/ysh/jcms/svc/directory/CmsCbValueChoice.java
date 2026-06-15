@@ -49,7 +49,9 @@ public class CmsCbValueChoice extends CmsType {
         this.altGocb  = new CmsGoCb();
         this.altMsvcb = new CmsMsvcb();
     }
-
+    
+    // -- chain setters --
+    public CmsCbValueChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altBrcb, altUrcb, altLcb,

@@ -33,7 +33,15 @@ public class CmsSetDataSetValuesRequest extends CmsType {
         this.refAfter         = new CmsObjectReference();
         this.value            = new CmsArray<>(CmsData.class);
     }
-
+    
+    // -- chain setters --
+    public CmsSetDataSetValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetDataSetValuesRequest datasetReference(byte[] v) { this.datasetReference.value(v); return this; }
+    public CmsSetDataSetValuesRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
+    public CmsSetDataSetValuesRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsSetDataSetValuesRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsSetDataSetValuesRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+    public CmsSetDataSetValuesRequest value(CmsArray<CmsData> v) { this.value = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, datasetReference, refAfterPresent, refAfter, value);

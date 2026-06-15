@@ -27,7 +27,11 @@ public class CmsGetDataSetValuesResponse extends CmsType {
         this.value       = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetDataSetValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetDataSetValuesResponse value(CmsArray<CmsData> v) { this.value = v; return this; }
+    public CmsGetDataSetValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, value, moreFollows);

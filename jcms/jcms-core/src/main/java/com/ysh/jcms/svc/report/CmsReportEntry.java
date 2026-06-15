@@ -32,7 +32,14 @@ public class CmsReportEntry extends CmsType {
         this.entryId            = new CmsEntryId();
         this.entryData          = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsReportEntry timeOfEntryPresent(boolean v) { this.timeOfEntryPresent.value(v); return this; }
+    public CmsReportEntry timeOfEntry(CmsEntryTime v) { this.timeOfEntry = v; return this; }
+    public CmsReportEntry entryIdPresent(boolean v) { this.entryIdPresent.value(v); return this; }
+    public CmsReportEntry entryId(byte[] v) { this.entryIdPresent.value(v != null && v.length > 0); if (v != null) this.entryId.value(v); return this; }
+    public CmsReportEntry entryId(String v) { this.entryIdPresent.value(v != null); if (v != null) this.entryId.value(v); return this; }
+    public CmsReportEntry entryData(CmsArray<CmsReportDataEntry> v) { this.entryData = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(timeOfEntryPresent, timeOfEntry,

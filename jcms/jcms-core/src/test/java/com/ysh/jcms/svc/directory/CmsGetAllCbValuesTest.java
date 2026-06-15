@@ -11,8 +11,8 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void request_roundtrip_with_ref_after() {
-        CmsGetAllCbValuesRequest a = new CmsGetAllCbValuesRequest();
-        a.reqId.value(11);
+        CmsGetAllCbValuesRequest a = new CmsGetAllCbValuesRequest()
+            .reqId(11);
         a.reference.choice.value(CmsReferenceChoice.LD_NAME);
         a.reference.altLdName.value("ld1".getBytes());
         a.acsiClass.value(CmsAcsiClass.BRCB);
@@ -31,8 +31,8 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void response_roundtrip_with_brcb_entry() {
-        CmsGetAllCbValuesResponse a = new CmsGetAllCbValuesResponse();
-        a.reqId.value(60);
+        CmsGetAllCbValuesResponse a = new CmsGetAllCbValuesResponse()
+            .reqId(60);
         /* SEQUENCE OF CBValueEntry — 2 个元素 */
         CmsCbValueEntry entry1 = new CmsCbValueEntry();
         entry1.reference.value("cbRef1".getBytes());
@@ -88,9 +88,9 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void error_roundtrip() {
-        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError();
-        a.reqId.value(44);
-        a.serviceError.value(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
+        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError()
+            .reqId(44)
+            .serviceError(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
         byte[] encoded = a.encode();
 
         CmsGetAllCbValuesError b = new CmsGetAllCbValuesError();

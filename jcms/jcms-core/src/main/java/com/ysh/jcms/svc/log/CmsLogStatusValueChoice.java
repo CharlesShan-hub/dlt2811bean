@@ -28,7 +28,9 @@ public class CmsLogStatusValueChoice extends CmsType {
         this.altError = new CmsServiceError();
         this.altValue = new CmsLogStatusValue();
     }
-
+    
+    // -- chain setters --
+    public CmsLogStatusValueChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altError, altValue);

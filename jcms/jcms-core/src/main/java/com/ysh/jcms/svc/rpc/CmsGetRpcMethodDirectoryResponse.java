@@ -28,7 +28,11 @@ public class CmsGetRpcMethodDirectoryResponse extends CmsType {
         this.reference   = new CmsArray<>(CmsUint8Array.class);
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetRpcMethodDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetRpcMethodDirectoryResponse reference(CmsArray<CmsUint8Array> v) { this.reference = v; return this; }
+    public CmsGetRpcMethodDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);

@@ -22,7 +22,11 @@ public class CmsConfirmEditSgValuesRequest extends CmsType {
         this.reqId         = new CmsReqId();
         this.sgcbReference = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsConfirmEditSgValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsConfirmEditSgValuesRequest sgcbReference(byte[] v) { this.sgcbReference.value(v); return this; }
+    public CmsConfirmEditSgValuesRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgcbReference);

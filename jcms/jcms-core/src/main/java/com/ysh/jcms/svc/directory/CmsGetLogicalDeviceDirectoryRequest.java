@@ -31,7 +31,15 @@ public class CmsGetLogicalDeviceDirectoryRequest extends CmsType {
         this.refAfterPresent = new CmsBoolean();
         this.refAfter        = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogicalDeviceDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest ldNamePresent(boolean v) { this.ldNamePresent.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest ldName(byte[] v) { this.ldNamePresent.value(v != null && v.length > 0); if (v != null) this.ldName.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest ldName(String v) { this.ldNamePresent.value(v != null); if (v != null) this.ldName.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, ldNamePresent, ldName, refAfterPresent, refAfter);

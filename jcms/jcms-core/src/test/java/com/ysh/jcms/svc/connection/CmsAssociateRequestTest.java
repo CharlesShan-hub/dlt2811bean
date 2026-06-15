@@ -6,10 +6,10 @@ import static org.junit.Assert.*;
 public class CmsAssociateRequestTest {
     @Test
     public void roundtrip_without_optional() {
-        CmsAssociateRequest a = new CmsAssociateRequest();
-        a.reqId.value(1);
-        a.sapRefPresent.value(false);
-        a.authParamPresent.value(false);
+        CmsAssociateRequest a = new CmsAssociateRequest()
+            .reqId(1)
+            .sapRefPresent(false)
+            .authParamPresent(false);
         byte[] encoded = a.encode();
 
         CmsAssociateRequest b = new CmsAssociateRequest();
@@ -21,10 +21,10 @@ public class CmsAssociateRequestTest {
 
     @Test
     public void roundtrip_with_sap_ref() {
-        CmsAssociateRequest a = new CmsAssociateRequest();
-        a.reqId.value(2);
-        a.sapRefPresent.value(true);
-        a.sapRef.value("MyAccessPoint".getBytes());
+        CmsAssociateRequest a = new CmsAssociateRequest()
+            .reqId(2)
+            .sapRefPresent(true)
+            .sapRef("MyAccessPoint".getBytes());
         a.authParamPresent.value(false);
         byte[] encoded = a.encode();
 
@@ -38,11 +38,11 @@ public class CmsAssociateRequestTest {
 
     @Test
     public void roundtrip_with_both_optional() {
-        CmsAssociateRequest a = new CmsAssociateRequest();
-        a.reqId.value(3);
-        a.sapRefPresent.value(true);
-        a.sapRef.value("sapRef".getBytes());
-        a.authParamPresent.value(true);
+        CmsAssociateRequest a = new CmsAssociateRequest()
+            .reqId(3)
+            .sapRefPresent(true)
+            .sapRef("sapRef".getBytes())
+            .authParamPresent(true);
         a.authParam.cert.value(new byte[]{0x11, 0x22});
         a.authParam.signedTime.seconds_since_epoch.value(1234567890L);
         a.authParam.signedTime.fraction_of_second.value(0);

@@ -23,7 +23,10 @@ public class CmsSetDataSetValuesError extends CmsType {
         this.reqId  = new CmsReqId();
         this.result = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsSetDataSetValuesError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetDataSetValuesError result(CmsArray<CmsServiceError> v) { this.result = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, result);

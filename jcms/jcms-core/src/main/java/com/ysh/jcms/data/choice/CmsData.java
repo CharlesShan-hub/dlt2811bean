@@ -103,7 +103,9 @@ public class CmsData extends CmsType {
         this.alt_tcmd         = new CmsTcmd();
         this.alt_check        = new CmsCheck();
     }
-
+    
+    // -- chain setters --
+    public CmsData choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, alt_sequence,

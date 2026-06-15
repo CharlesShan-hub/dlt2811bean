@@ -26,7 +26,12 @@ public class CmsGetFileRequest extends CmsType {
         this.filename      = new CmsUint8Array();
         this.startPosition = new CmsInt32U();
     }
-
+    
+    // -- chain setters --
+    public CmsGetFileRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetFileRequest filename(byte[] v) { this.filename.value(v); return this; }
+    public CmsGetFileRequest filename(String v) { this.filename.value(v); return this; }
+    public CmsGetFileRequest startPosition(long v) { this.startPosition.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, filename, startPosition);

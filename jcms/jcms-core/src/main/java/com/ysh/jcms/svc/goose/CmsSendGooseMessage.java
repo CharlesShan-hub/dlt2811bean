@@ -61,7 +61,24 @@ public class CmsSendGooseMessage extends CmsType {
         this.ndsCom        = new CmsBoolean();
         this.data          = new CmsArray<>(CmsData.class);
     }
-
+    
+    // -- chain setters --
+    public CmsSendGooseMessage reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSendGooseMessage goId(byte[] v) { this.goId.value(v); return this; }
+    public CmsSendGooseMessage goId(String v) { this.goId.value(v); return this; }
+    public CmsSendGooseMessage datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSendGooseMessage datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSendGooseMessage datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSendGooseMessage goRefPresent(boolean v) { this.goRefPresent.value(v); return this; }
+    public CmsSendGooseMessage goRef(byte[] v) { this.goRefPresent.value(v != null && v.length > 0); if (v != null) this.goRef.value(v); return this; }
+    public CmsSendGooseMessage goRef(String v) { this.goRefPresent.value(v != null); if (v != null) this.goRef.value(v); return this; }
+    public CmsSendGooseMessage t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsSendGooseMessage stNum(long v) { this.stNum.value(v); return this; }
+    public CmsSendGooseMessage sqNum(long v) { this.sqNum.value(v); return this; }
+    public CmsSendGooseMessage simulation(boolean v) { this.simulation.value(v); return this; }
+    public CmsSendGooseMessage confRev(long v) { this.confRev.value(v); return this; }
+    public CmsSendGooseMessage ndsCom(boolean v) { this.ndsCom.value(v); return this; }
+    public CmsSendGooseMessage data(CmsArray<CmsData> v) { this.data = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, goId,

@@ -57,7 +57,20 @@ public class CmsTimeActivatedOperateTermination extends CmsType {
         this.addCausePresent  = new CmsBoolean();
         this.addCause         = new CmsAddCause();
     }
-
+    
+    // -- chain setters --
+    public CmsTimeActivatedOperateTermination reqId(int v) { this.reqId.value(v); return this; }
+    public CmsTimeActivatedOperateTermination reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateTermination reference(String v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateTermination ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsTimeActivatedOperateTermination operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsTimeActivatedOperateTermination origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsTimeActivatedOperateTermination ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsTimeActivatedOperateTermination t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsTimeActivatedOperateTermination test(boolean v) { this.test.value(v); return this; }
+    public CmsTimeActivatedOperateTermination check(CmsCheck v) { this.check = v; return this; }
+    public CmsTimeActivatedOperateTermination addCausePresent(boolean v) { this.addCausePresent.value(v); return this; }
+    public CmsTimeActivatedOperateTermination addCause(int v) { this.addCause.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check,

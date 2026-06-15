@@ -38,7 +38,20 @@ public class CmsQuality extends CmsType {
         this.test            = new CmsBoolean();
         this.operatorBlocked = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsQuality validity(int v) { this.validity.value(v); return this; }
+    public CmsQuality overflow(boolean v) { this.overflow.value(v); return this; }
+    public CmsQuality outOfRange(boolean v) { this.outOfRange.value(v); return this; }
+    public CmsQuality badReference(boolean v) { this.badReference.value(v); return this; }
+    public CmsQuality oscillatory(boolean v) { this.oscillatory.value(v); return this; }
+    public CmsQuality failure(boolean v) { this.failure.value(v); return this; }
+    public CmsQuality oldData(boolean v) { this.oldData.value(v); return this; }
+    public CmsQuality inconsistent(boolean v) { this.inconsistent.value(v); return this; }
+    public CmsQuality inaccurate(boolean v) { this.inaccurate.value(v); return this; }
+    public CmsQuality substituted(boolean v) { this.substituted.value(v); return this; }
+    public CmsQuality test(boolean v) { this.test.value(v); return this; }
+    public CmsQuality operatorBlocked(boolean v) { this.operatorBlocked.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(validity, overflow, outOfRange, badReference,

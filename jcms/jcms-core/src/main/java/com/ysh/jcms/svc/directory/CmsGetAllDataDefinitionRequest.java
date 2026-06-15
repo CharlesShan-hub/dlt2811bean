@@ -35,7 +35,16 @@ public class CmsGetAllDataDefinitionRequest extends CmsType {
         this.refAfterPresent = new CmsBoolean();
         this.refAfter        = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsGetAllDataDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest reference(CmsReferenceChoice v) { this.reference = v; return this; }
+    public CmsGetAllDataDefinitionRequest fcPresent(boolean v) { this.fcPresent.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest fc(byte[] v) { this.fcPresent.value(v != null && v.length > 0); if (v != null) this.fc.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest fc(String v) { this.fcPresent.value(v != null); if (v != null) this.fc.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, fcPresent, fc, refAfterPresent, refAfter);

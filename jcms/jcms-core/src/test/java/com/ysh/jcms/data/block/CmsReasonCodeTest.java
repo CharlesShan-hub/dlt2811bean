@@ -6,9 +6,9 @@ import static org.junit.Assert.*;
 public class CmsReasonCodeTest {
     @Test
     public void roundtrip() {
-        CmsReasonCode a = new CmsReasonCode();
-        a.data_change.value(true);
-        a.general_interrogation.value(true);
+        CmsReasonCode a = new CmsReasonCode()
+            .data_change(true)
+            .general_interrogation(true);
         byte[] encoded = a.encode();
         CmsReasonCode b = new CmsReasonCode();
         b.decode(encoded);

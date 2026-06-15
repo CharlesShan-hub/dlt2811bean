@@ -22,7 +22,10 @@ public class CmsSetLcbValuesRequest extends CmsType {
         this.reqId = new CmsReqId();
         this.lcb   = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsSetLcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetLcbValuesRequest lcb(CmsArray<CmsSetLcbEntry> v) { this.lcb = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, lcb);

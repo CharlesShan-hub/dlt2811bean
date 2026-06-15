@@ -22,7 +22,10 @@ public class CmsGetDataValuesRequest extends CmsType {
         this.reqId = new CmsReqId();
         this.data  = new CmsArray<>(CmsDataRefEntry.class);
     }
-
+    
+    // -- chain setters --
+    public CmsGetDataValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetDataValuesRequest data(CmsArray<CmsDataRefEntry> v) { this.data = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, data);

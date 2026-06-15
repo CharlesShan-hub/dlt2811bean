@@ -79,7 +79,35 @@ public class CmsSetBrcbEntry extends CmsType {
         this.resvTmsPresent = new CmsBoolean();
         this.resvTms        = new CmsInt16();
     }
-
+    
+    // -- chain setters --
+    public CmsSetBrcbEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSetBrcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetBrcbEntry rptIdPresent(boolean v) { this.rptIdPresent.value(v); return this; }
+    public CmsSetBrcbEntry rptId(byte[] v) { this.rptIdPresent.value(v != null && v.length > 0); if (v != null) this.rptId.value(v); return this; }
+    public CmsSetBrcbEntry rptId(String v) { this.rptIdPresent.value(v != null); if (v != null) this.rptId.value(v); return this; }
+    public CmsSetBrcbEntry rptEnaPresent(boolean v) { this.rptEnaPresent.value(v); return this; }
+    public CmsSetBrcbEntry rptEna(boolean v) { this.rptEna.value(v); return this; }
+    public CmsSetBrcbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSetBrcbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetBrcbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetBrcbEntry optFldsPresent(boolean v) { this.optFldsPresent.value(v); return this; }
+    public CmsSetBrcbEntry optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsSetBrcbEntry bufTmPresent(boolean v) { this.bufTmPresent.value(v); return this; }
+    public CmsSetBrcbEntry bufTm(long v) { this.bufTm.value(v); return this; }
+    public CmsSetBrcbEntry trgOpsPresent(boolean v) { this.trgOpsPresent.value(v); return this; }
+    public CmsSetBrcbEntry trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsSetBrcbEntry intgPdPresent(boolean v) { this.intgPdPresent.value(v); return this; }
+    public CmsSetBrcbEntry intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsSetBrcbEntry giPresent(boolean v) { this.giPresent.value(v); return this; }
+    public CmsSetBrcbEntry gi(boolean v) { this.gi.value(v); return this; }
+    public CmsSetBrcbEntry purgeBufPresent(boolean v) { this.purgeBufPresent.value(v); return this; }
+    public CmsSetBrcbEntry purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
+    public CmsSetBrcbEntry entryIdPresent(boolean v) { this.entryIdPresent.value(v); return this; }
+    public CmsSetBrcbEntry entryId(byte[] v) { this.entryIdPresent.value(v != null && v.length > 0); if (v != null) this.entryId.value(v); return this; }
+    public CmsSetBrcbEntry entryId(String v) { this.entryIdPresent.value(v != null); if (v != null) this.entryId.value(v); return this; }
+    public CmsSetBrcbEntry resvTmsPresent(boolean v) { this.resvTmsPresent.value(v); return this; }
+    public CmsSetBrcbEntry resvTms(int v) { this.resvTms.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

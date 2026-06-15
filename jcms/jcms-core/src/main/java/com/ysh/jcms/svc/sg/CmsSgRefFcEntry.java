@@ -23,7 +23,12 @@ public class CmsSgRefFcEntry extends CmsType {
         this.reference = new CmsObjectReference();
         this.fc        = new CmsFunctionalConstraint();
     }
-
+    
+    // -- chain setters --
+    public CmsSgRefFcEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSgRefFcEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSgRefFcEntry fc(byte[] v) { this.fc.value(v); return this; }
+    public CmsSgRefFcEntry fc(String v) { this.fc.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, fc);

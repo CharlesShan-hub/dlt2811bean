@@ -26,7 +26,12 @@ public class CmsGetGooseElementNumberRequest extends CmsType {
         this.gocbReference = new CmsObjectReference();
         this.memberData    = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsGetGooseElementNumberRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetGooseElementNumberRequest gocbReference(byte[] v) { this.gocbReference.value(v); return this; }
+    public CmsGetGooseElementNumberRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
+    public CmsGetGooseElementNumberRequest memberData(CmsArray<CmsGoRefFcEntry> v) { this.memberData = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocbReference, memberData);

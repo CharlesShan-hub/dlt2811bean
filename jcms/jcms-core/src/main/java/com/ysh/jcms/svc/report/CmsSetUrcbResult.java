@@ -65,7 +65,28 @@ public class CmsSetUrcbResult extends CmsType {
         this.resvErrPresent    = new CmsBoolean();
         this.resvErr           = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsSetUrcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
+    public CmsSetUrcbResult error(int v) { this.error.value(v); return this; }
+    public CmsSetUrcbResult rptIdErrPresent(boolean v) { this.rptIdErrPresent.value(v); return this; }
+    public CmsSetUrcbResult rptIdErr(int v) { this.rptIdErr.value(v); return this; }
+    public CmsSetUrcbResult rptEnaErrPresent(boolean v) { this.rptEnaErrPresent.value(v); return this; }
+    public CmsSetUrcbResult rptEnaErr(int v) { this.rptEnaErr.value(v); return this; }
+    public CmsSetUrcbResult datSetErrPresent(boolean v) { this.datSetErrPresent.value(v); return this; }
+    public CmsSetUrcbResult datSetErr(int v) { this.datSetErr.value(v); return this; }
+    public CmsSetUrcbResult optFldsErrPresent(boolean v) { this.optFldsErrPresent.value(v); return this; }
+    public CmsSetUrcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
+    public CmsSetUrcbResult bufTmErrPresent(boolean v) { this.bufTmErrPresent.value(v); return this; }
+    public CmsSetUrcbResult bufTmErr(int v) { this.bufTmErr.value(v); return this; }
+    public CmsSetUrcbResult trgOpsErrPresent(boolean v) { this.trgOpsErrPresent.value(v); return this; }
+    public CmsSetUrcbResult trgOpsErr(int v) { this.trgOpsErr.value(v); return this; }
+    public CmsSetUrcbResult intgPdErrPresent(boolean v) { this.intgPdErrPresent.value(v); return this; }
+    public CmsSetUrcbResult intgPdErr(int v) { this.intgPdErr.value(v); return this; }
+    public CmsSetUrcbResult giErrPresent(boolean v) { this.giErrPresent.value(v); return this; }
+    public CmsSetUrcbResult giErr(int v) { this.giErr.value(v); return this; }
+    public CmsSetUrcbResult resvErrPresent(boolean v) { this.resvErrPresent.value(v); return this; }
+    public CmsSetUrcbResult resvErr(int v) { this.resvErr.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(errorPresent, error,

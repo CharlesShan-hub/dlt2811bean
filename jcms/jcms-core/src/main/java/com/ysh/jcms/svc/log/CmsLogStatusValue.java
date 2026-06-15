@@ -29,7 +29,14 @@ public class CmsLogStatusValue extends CmsType {
         this.oldEntr   = new CmsEntryId();
         this.newEntr   = new CmsEntryId();
     }
-
+    
+    // -- chain setters --
+    public CmsLogStatusValue oldEntrTm(CmsEntryTime v) { this.oldEntrTm = v; return this; }
+    public CmsLogStatusValue newEntrTm(CmsEntryTime v) { this.newEntrTm = v; return this; }
+    public CmsLogStatusValue oldEntr(byte[] v) { this.oldEntr.value(v); return this; }
+    public CmsLogStatusValue oldEntr(String v) { this.oldEntr.value(v); return this; }
+    public CmsLogStatusValue newEntr(byte[] v) { this.newEntr.value(v); return this; }
+    public CmsLogStatusValue newEntr(String v) { this.newEntr.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(oldEntrTm, newEntrTm, oldEntr, newEntr);

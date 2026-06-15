@@ -29,7 +29,12 @@ public class CmsRpcMethodDef extends CmsType {
         this.request  = new CmsDataDefinition();
         this.response = new CmsDataDefinition();
     }
-
+    
+    // -- chain setters --
+    public CmsRpcMethodDef version(long v) { this.version.value(v); return this; }
+    public CmsRpcMethodDef timeout(long v) { this.timeout.value(v); return this; }
+    public CmsRpcMethodDef request(CmsDataDefinition v) { this.request = v; return this; }
+    public CmsRpcMethodDef response(CmsDataDefinition v) { this.response = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(version, timeout, request, response);

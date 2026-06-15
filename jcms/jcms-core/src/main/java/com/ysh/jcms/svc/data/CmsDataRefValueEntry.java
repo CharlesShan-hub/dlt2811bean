@@ -30,7 +30,14 @@ public class CmsDataRefValueEntry extends CmsType {
         this.fc        = new CmsFunctionalConstraint();
         this.value     = new CmsData();
     }
-
+    
+    // -- chain setters --
+    public CmsDataRefValueEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsDataRefValueEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsDataRefValueEntry fcPresent(boolean v) { this.fcPresent.value(v); return this; }
+    public CmsDataRefValueEntry fc(byte[] v) { this.fcPresent.value(v != null && v.length > 0); if (v != null) this.fc.value(v); return this; }
+    public CmsDataRefValueEntry fc(String v) { this.fcPresent.value(v != null); if (v != null) this.fc.value(v); return this; }
+    public CmsDataRefValueEntry value(CmsData v) { this.value = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, fcPresent, fc, value);

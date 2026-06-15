@@ -51,7 +51,19 @@ public class CmsSelectWithValueRequest extends CmsType {
         this.test           = new CmsBoolean();
         this.check          = new CmsCheck();
     }
-
+    
+    // -- chain setters --
+    public CmsSelectWithValueRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSelectWithValueRequest reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSelectWithValueRequest reference(String v) { this.reference.value(v); return this; }
+    public CmsSelectWithValueRequest ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsSelectWithValueRequest operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
+    public CmsSelectWithValueRequest operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsSelectWithValueRequest origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsSelectWithValueRequest ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsSelectWithValueRequest t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsSelectWithValueRequest test(boolean v) { this.test.value(v); return this; }
+    public CmsSelectWithValueRequest check(CmsCheck v) { this.check = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

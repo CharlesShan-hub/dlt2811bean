@@ -7,11 +7,11 @@ import static org.junit.Assert.*;
 public class CmsNegotiateTest {
     @Test
     public void request_roundtrip() {
-        CmsNegotiateRequest a = new CmsNegotiateRequest();
-        a.reqId.value(1);
-        a.apduSize.value(1024);
-        a.asduSize.value(65536L);
-        a.protocolVersion.value(1L);
+        CmsNegotiateRequest a = new CmsNegotiateRequest()
+            .reqId(1)
+            .apduSize(1024)
+            .asduSize(65536L)
+            .protocolVersion(1L);
         byte[] encoded = a.encode();
 
         CmsNegotiateRequest b = new CmsNegotiateRequest();
@@ -24,12 +24,12 @@ public class CmsNegotiateTest {
 
     @Test
     public void response_roundtrip() {
-        CmsNegotiateResponse a = new CmsNegotiateResponse();
-        a.reqId.value(2);
-        a.apduSize.value(2048);
-        a.asduSize.value(131072L);
-        a.protocolVersion.value(2L);
-        a.modelVersion.value("1.0".getBytes());
+        CmsNegotiateResponse a = new CmsNegotiateResponse()
+            .reqId(2)
+            .apduSize(2048)
+            .asduSize(131072L)
+            .protocolVersion(2L)
+            .modelVersion("1.0".getBytes());
         byte[] encoded = a.encode();
 
         CmsNegotiateResponse b = new CmsNegotiateResponse();
@@ -43,9 +43,9 @@ public class CmsNegotiateTest {
 
     @Test
     public void error_roundtrip() {
-        CmsNegotiateError a = new CmsNegotiateError();
-        a.reqId.value(99);
-        a.serviceError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsNegotiateError a = new CmsNegotiateError()
+            .reqId(99)
+            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         byte[] encoded = a.encode();
 
         CmsNegotiateError b = new CmsNegotiateError();

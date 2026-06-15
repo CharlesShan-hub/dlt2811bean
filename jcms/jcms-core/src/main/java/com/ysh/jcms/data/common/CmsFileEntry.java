@@ -24,7 +24,13 @@ public class CmsFileEntry extends CmsType {
         this.lastModified = new CmsUtcTime();
         this.checkSum     = new CmsInt32U();
     }
-
+    
+    // -- chain setters --
+    public CmsFileEntry fileName(byte[] v) { this.fileName.value(v); return this; }
+    public CmsFileEntry fileName(String v) { this.fileName.value(v); return this; }
+    public CmsFileEntry fileSize(long v) { this.fileSize.value(v); return this; }
+    public CmsFileEntry lastModified(CmsUtcTime v) { this.lastModified = v; return this; }
+    public CmsFileEntry checkSum(long v) { this.checkSum.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(fileName, fileSize, lastModified, checkSum);

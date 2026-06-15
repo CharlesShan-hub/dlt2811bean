@@ -26,7 +26,12 @@ public class CmsSelectActiveSgRequest extends CmsType {
         this.sgcbReference      = new CmsObjectReference();
         this.settingGroupNumber = new CmsInt8U();
     }
-
+    
+    // -- chain setters --
+    public CmsSelectActiveSgRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSelectActiveSgRequest sgcbReference(byte[] v) { this.sgcbReference.value(v); return this; }
+    public CmsSelectActiveSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
+    public CmsSelectActiveSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgcbReference, settingGroupNumber);

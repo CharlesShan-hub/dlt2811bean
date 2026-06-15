@@ -33,7 +33,14 @@ public class CmsRpcMethodEntry extends CmsType {
         this.request  = new CmsDataDefinition();
         this.response = new CmsDataDefinition();
     }
-
+    
+    // -- chain setters --
+    public CmsRpcMethodEntry name(byte[] v) { this.name.value(v); return this; }
+    public CmsRpcMethodEntry name(String v) { this.name.value(v); return this; }
+    public CmsRpcMethodEntry version(long v) { this.version.value(v); return this; }
+    public CmsRpcMethodEntry timeout(long v) { this.timeout.value(v); return this; }
+    public CmsRpcMethodEntry request(CmsDataDefinition v) { this.request = v; return this; }
+    public CmsRpcMethodEntry response(CmsDataDefinition v) { this.response = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(name, version, timeout, request, response);

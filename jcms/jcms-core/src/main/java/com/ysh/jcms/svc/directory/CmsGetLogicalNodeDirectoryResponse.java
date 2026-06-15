@@ -27,7 +27,11 @@ public class CmsGetLogicalNodeDirectoryResponse extends CmsType {
         this.reference   = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogicalNodeDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryResponse reference(CmsArray<CmsSubReference> v) { this.reference = v; return this; }
+    public CmsGetLogicalNodeDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);

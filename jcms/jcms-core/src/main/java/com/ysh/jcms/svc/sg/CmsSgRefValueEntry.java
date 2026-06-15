@@ -23,7 +23,11 @@ public class CmsSgRefValueEntry extends CmsType {
         this.reference = new CmsObjectReference();
         this.value     = new CmsData();
     }
-
+    
+    // -- chain setters --
+    public CmsSgRefValueEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSgRefValueEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSgRefValueEntry value(CmsData v) { this.value = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, value);

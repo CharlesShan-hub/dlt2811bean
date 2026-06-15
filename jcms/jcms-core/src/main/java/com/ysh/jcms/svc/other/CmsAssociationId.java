@@ -15,6 +15,12 @@ public class CmsAssociationId extends CmsUint8Array {
     public CmsAssociationId() {}
 
     public CmsAssociationId(byte[] data) { super(data); }
+    public CmsAssociationId(int value) {
+        super(new byte[]{(byte)(value>>24),(byte)(value>>16),(byte)(value>>8),(byte)value});
+    }
+    public CmsAssociationId value(int v) {
+        return (CmsAssociationId) value(new byte[]{(byte)(v>>24),(byte)(v>>16),(byte)(v>>8),(byte)v});
+    }
 
     @Override
     public byte[] encode() { write(); return NativeBridge.encodeAssociationId(nativePtr); }

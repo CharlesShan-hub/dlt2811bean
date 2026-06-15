@@ -32,7 +32,13 @@ public class CmsTriggerConditions extends CmsType {
         this.integrity             = new CmsBoolean();
         this.general_interrogation = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsTriggerConditions data_change(boolean v) { this.data_change.value(v); return this; }
+    public CmsTriggerConditions quality_change(boolean v) { this.quality_change.value(v); return this; }
+    public CmsTriggerConditions data_update(boolean v) { this.data_update.value(v); return this; }
+    public CmsTriggerConditions integrity(boolean v) { this.integrity.value(v); return this; }
+    public CmsTriggerConditions general_interrogation(boolean v) { this.general_interrogation.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(data_change, quality_change, data_update,

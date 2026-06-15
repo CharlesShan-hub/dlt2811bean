@@ -9,10 +9,10 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
     @Test
     public void request_roundtrip_without_optional() {
-        CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest();
-        a.reqId.value(3);
-        a.ldNamePresent.value(false);
-        a.refAfterPresent.value(false);
+        CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest()
+            .reqId(3)
+            .ldNamePresent(false)
+            .refAfterPresent(false);
         byte[] encoded = a.encode();
 
         CmsGetLogicalDeviceDirectoryRequest b = new CmsGetLogicalDeviceDirectoryRequest();
@@ -24,11 +24,11 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
     @Test
     public void request_roundtrip_with_ld_name() {
-        CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest();
-        a.reqId.value(4);
-        a.ldNamePresent.value(true);
-        a.ldName.value("ld1".getBytes());
-        a.refAfterPresent.value(false);
+        CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest()
+            .reqId(4)
+            .ldNamePresent(true)
+            .ldName("ld1".getBytes())
+            .refAfterPresent(false);
         byte[] encoded = a.encode();
 
         CmsGetLogicalDeviceDirectoryRequest b = new CmsGetLogicalDeviceDirectoryRequest();

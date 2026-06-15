@@ -7,10 +7,10 @@ import static org.junit.Assert.*;
 public class CmsReleaseResponseTest {
     @Test
     public void roundtrip() {
-        CmsReleaseResponse a = new CmsReleaseResponse();
-        a.reqId.value(30);
-        a.assocId.value(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05});
-        a.serviceError.value(CmsServiceError.NO_ERROR);
+        CmsReleaseResponse a = new CmsReleaseResponse()
+            .reqId(30)
+            .assocId(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05})
+            .serviceError(CmsServiceError.NO_ERROR);
         byte[] encoded = a.encode();
 
         CmsReleaseResponse b = new CmsReleaseResponse();

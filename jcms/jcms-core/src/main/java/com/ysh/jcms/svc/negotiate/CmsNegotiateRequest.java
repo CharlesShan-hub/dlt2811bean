@@ -29,7 +29,12 @@ public class CmsNegotiateRequest extends CmsType {
         this.asduSize        = new CmsInt32U();
         this.protocolVersion = new CmsInt32U();
     }
-
+    
+    // -- chain setters --
+    public CmsNegotiateRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsNegotiateRequest apduSize(int v) { this.apduSize.value(v); return this; }
+    public CmsNegotiateRequest asduSize(long v) { this.asduSize.value(v); return this; }
+    public CmsNegotiateRequest protocolVersion(long v) { this.protocolVersion.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, apduSize, asduSize, protocolVersion);

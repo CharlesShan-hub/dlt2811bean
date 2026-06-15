@@ -25,7 +25,11 @@ public class CmsOriginator extends CmsType {
         this.orCat   = new CmsOrCat();
         this.orIdent = new CmsUint8Array();
     }
-
+    
+    // -- chain setters --
+    public CmsOriginator orCat(int v) { this.orCat.value(v); return this; }
+    public CmsOriginator orIdent(byte[] v) { this.orIdent.value(v); return this; }
+    public CmsOriginator orIdent(String v) { this.orIdent.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(orCat, orIdent);

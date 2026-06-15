@@ -53,7 +53,29 @@ public class CmsBrcb extends CmsType {
         this.owner_present = new CmsBoolean();
         this.owner         = new CmsUint8Array();
     }
-
+    
+    // -- chain setters --
+    public CmsBrcb rptID(byte[] v) { this.rptID.value(v); return this; }
+    public CmsBrcb rptID(String v) { this.rptID.value(v); return this; }
+    public CmsBrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
+    public CmsBrcb datSet(byte[] v) { this.datSet.value(v); return this; }
+    public CmsBrcb datSet(String v) { this.datSet.value(v); return this; }
+    public CmsBrcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsBrcb bufTm(long v) { this.bufTm.value(v); return this; }
+    public CmsBrcb sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsBrcb intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsBrcb gi(boolean v) { this.gi.value(v); return this; }
+    public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
+    public CmsBrcb entryID(byte[] v) { this.entryID.value(v); return this; }
+    public CmsBrcb entryID(String v) { this.entryID.value(v); return this; }
+    public CmsBrcb timeOfEntry(CmsEntryTime v) { this.timeOfEntry = v; return this; }
+    public CmsBrcb resvTms_present(boolean v) { this.resvTms_present.value(v); return this; }
+    public CmsBrcb resvTms(int v) { this.resvTms.value(v); return this; }
+    public CmsBrcb owner_present(boolean v) { this.owner_present.value(v); return this; }
+    public CmsBrcb owner(byte[] v) { this.owner_present.value(v != null && v.length > 0); if (v != null) this.owner.value(v); return this; }
+    public CmsBrcb owner(String v) { this.owner_present.value(v != null); if (v != null) this.owner.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(rptID, rptEna, datSet, confRev, optFlds,

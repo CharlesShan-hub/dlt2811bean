@@ -29,7 +29,9 @@ public class CmsRpcCallReqChoice extends CmsType {
         this.altReqData = new CmsData();
         this.altCallId  = new CmsUint8Array();
     }
-
+    
+    // -- chain setters --
+    public CmsRpcCallReqChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altReqData, altCallId);

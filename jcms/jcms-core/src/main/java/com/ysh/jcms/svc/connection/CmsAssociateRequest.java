@@ -30,7 +30,14 @@ public class CmsAssociateRequest extends CmsType {
         this.authParamPresent = new CmsBoolean();
         this.authParam       = new CmsAuthenticationParameter();
     }
-
+    
+    // -- chain setters --
+    public CmsAssociateRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsAssociateRequest sapRefPresent(boolean v) { this.sapRefPresent.value(v); return this; }
+    public CmsAssociateRequest sapRef(byte[] v) { this.sapRefPresent.value(v != null && v.length > 0); if (v != null) this.sapRef.value(v); return this; }
+    public CmsAssociateRequest sapRef(String v) { this.sapRefPresent.value(v != null); if (v != null) this.sapRef.value(v); return this; }
+    public CmsAssociateRequest authParamPresent(boolean v) { this.authParamPresent.value(v); return this; }
+    public CmsAssociateRequest authParam(CmsAuthenticationParameter v) { this.authParam = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sapRefPresent, sapRef, authParamPresent, authParam);

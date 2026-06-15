@@ -31,7 +31,14 @@ public class CmsLogDataEntry extends CmsType {
         this.value     = new CmsData();
         this.reason    = new CmsReasonCode();
     }
-
+    
+    // -- chain setters --
+    public CmsLogDataEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsLogDataEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsLogDataEntry fc(byte[] v) { this.fc.value(v); return this; }
+    public CmsLogDataEntry fc(String v) { this.fc.value(v); return this; }
+    public CmsLogDataEntry value(CmsData v) { this.value = v; return this; }
+    public CmsLogDataEntry reason(CmsReasonCode v) { this.reason = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, fc, value, reason);

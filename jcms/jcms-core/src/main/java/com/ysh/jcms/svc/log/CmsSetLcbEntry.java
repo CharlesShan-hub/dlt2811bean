@@ -58,7 +58,26 @@ public class CmsSetLcbEntry extends CmsType {
         this.bufTmPresent   = new CmsBoolean();
         this.bufTm          = new CmsInt32U();
     }
-
+    
+    // -- chain setters --
+    public CmsSetLcbEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSetLcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetLcbEntry logEnaPresent(boolean v) { this.logEnaPresent.value(v); return this; }
+    public CmsSetLcbEntry logEna(boolean v) { this.logEna.value(v); return this; }
+    public CmsSetLcbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSetLcbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetLcbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetLcbEntry trgOpsPresent(boolean v) { this.trgOpsPresent.value(v); return this; }
+    public CmsSetLcbEntry trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsSetLcbEntry intgPdPresent(boolean v) { this.intgPdPresent.value(v); return this; }
+    public CmsSetLcbEntry intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsSetLcbEntry logRefPresent(boolean v) { this.logRefPresent.value(v); return this; }
+    public CmsSetLcbEntry logRef(byte[] v) { this.logRefPresent.value(v != null && v.length > 0); if (v != null) this.logRef.value(v); return this; }
+    public CmsSetLcbEntry logRef(String v) { this.logRefPresent.value(v != null); if (v != null) this.logRef.value(v); return this; }
+    public CmsSetLcbEntry optFldsPresent(boolean v) { this.optFldsPresent.value(v); return this; }
+    public CmsSetLcbEntry optFlds(CmsLcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsSetLcbEntry bufTmPresent(boolean v) { this.bufTmPresent.value(v); return this; }
+    public CmsSetLcbEntry bufTm(long v) { this.bufTm.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

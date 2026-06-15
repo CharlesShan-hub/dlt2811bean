@@ -53,7 +53,19 @@ public class CmsTimeActivatedOperateError extends CmsType {
         this.check     = new CmsCheck();
         this.addCause  = new CmsAddCause();
     }
-
+    
+    // -- chain setters --
+    public CmsTimeActivatedOperateError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsTimeActivatedOperateError reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateError reference(String v) { this.reference.value(v); return this; }
+    public CmsTimeActivatedOperateError ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsTimeActivatedOperateError operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsTimeActivatedOperateError origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsTimeActivatedOperateError ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsTimeActivatedOperateError t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsTimeActivatedOperateError test(boolean v) { this.test.value(v); return this; }
+    public CmsTimeActivatedOperateError check(CmsCheck v) { this.check = v; return this; }
+    public CmsTimeActivatedOperateError addCause(int v) { this.addCause.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check, addCause);

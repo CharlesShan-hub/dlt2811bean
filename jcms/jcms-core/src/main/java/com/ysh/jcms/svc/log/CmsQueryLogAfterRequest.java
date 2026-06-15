@@ -34,7 +34,15 @@ public class CmsQueryLogAfterRequest extends CmsType {
         this.startTime        = new CmsEntryTime();
         this.entry            = new CmsEntryId();
     }
-
+    
+    // -- chain setters --
+    public CmsQueryLogAfterRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsQueryLogAfterRequest logReference(byte[] v) { this.logReference.value(v); return this; }
+    public CmsQueryLogAfterRequest logReference(String v) { this.logReference.value(v); return this; }
+    public CmsQueryLogAfterRequest startTimePresent(boolean v) { this.startTimePresent.value(v); return this; }
+    public CmsQueryLogAfterRequest startTime(CmsEntryTime v) { this.startTime = v; return this; }
+    public CmsQueryLogAfterRequest entry(byte[] v) { this.entry.value(v); return this; }
+    public CmsQueryLogAfterRequest entry(String v) { this.entry.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, logReference, startTimePresent, startTime, entry);

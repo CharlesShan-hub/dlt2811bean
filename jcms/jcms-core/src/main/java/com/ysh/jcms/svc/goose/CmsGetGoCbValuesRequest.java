@@ -23,7 +23,10 @@ public class CmsGetGoCbValuesRequest extends CmsType {
         this.reqId     = new CmsReqId();
         this.reference = new CmsArray<>(CmsObjectReference.class);
     }
-
+    
+    // -- chain setters --
+    public CmsGetGoCbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetGoCbValuesRequest reference(CmsArray<CmsObjectReference> v) { this.reference = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

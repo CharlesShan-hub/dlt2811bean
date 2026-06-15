@@ -52,7 +52,22 @@ public class CmsSetMsvcbResult extends CmsType {
         this.optFldsErrPresent = new CmsBoolean();
         this.optFldsErr        = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsSetMsvcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
+    public CmsSetMsvcbResult error(int v) { this.error.value(v); return this; }
+    public CmsSetMsvcbResult svEnaErrPresent(boolean v) { this.svEnaErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult svEnaErr(int v) { this.svEnaErr.value(v); return this; }
+    public CmsSetMsvcbResult msvIdErrPresent(boolean v) { this.msvIdErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult msvIdErr(int v) { this.msvIdErr.value(v); return this; }
+    public CmsSetMsvcbResult datSetErrPresent(boolean v) { this.datSetErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult datSetErr(int v) { this.datSetErr.value(v); return this; }
+    public CmsSetMsvcbResult smpModErrPresent(boolean v) { this.smpModErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult smpModErr(int v) { this.smpModErr.value(v); return this; }
+    public CmsSetMsvcbResult smpRateErrPresent(boolean v) { this.smpRateErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult smpRateErr(int v) { this.smpRateErr.value(v); return this; }
+    public CmsSetMsvcbResult optFldsErrPresent(boolean v) { this.optFldsErrPresent.value(v); return this; }
+    public CmsSetMsvcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(

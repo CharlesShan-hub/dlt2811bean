@@ -6,10 +6,10 @@ import static org.junit.Assert.*;
 public class CmsGoCbTest {
     @Test
     public void roundtrip() {
-        CmsGoCb a = new CmsGoCb();
-        a.goEna.value(true);
-        a.confRev.value(42L);
-        a.ndsCom.value(false);
+        CmsGoCb a = new CmsGoCb()
+            .goEna(true)
+            .confRev(42L)
+            .ndsCom(false);
         byte[] encoded = a.encode();
         CmsGoCb b = new CmsGoCb();
         b.decode(encoded);

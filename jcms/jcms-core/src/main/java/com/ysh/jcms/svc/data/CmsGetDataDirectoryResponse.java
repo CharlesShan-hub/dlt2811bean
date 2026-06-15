@@ -26,7 +26,11 @@ public class CmsGetDataDirectoryResponse extends CmsType {
         this.dataAttribute = new CmsArray<>();
         this.moreFollows   = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetDataDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetDataDirectoryResponse dataAttribute(CmsArray<CmsSubRefEntry> v) { this.dataAttribute = v; return this; }
+    public CmsGetDataDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, dataAttribute, moreFollows);

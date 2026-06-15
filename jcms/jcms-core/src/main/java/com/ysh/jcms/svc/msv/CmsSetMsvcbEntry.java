@@ -54,7 +54,24 @@ public class CmsSetMsvcbEntry extends CmsType {
         this.optFldsPresent = new CmsBoolean();
         this.optFlds        = new CmsMsvcbOptFlds();
     }
-
+    
+    // -- chain setters --
+    public CmsSetMsvcbEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSetMsvcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetMsvcbEntry svEnaPresent(boolean v) { this.svEnaPresent.value(v); return this; }
+    public CmsSetMsvcbEntry svEna(boolean v) { this.svEna.value(v); return this; }
+    public CmsSetMsvcbEntry msvIdPresent(boolean v) { this.msvIdPresent.value(v); return this; }
+    public CmsSetMsvcbEntry msvId(byte[] v) { this.msvIdPresent.value(v != null && v.length > 0); if (v != null) this.msvId.value(v); return this; }
+    public CmsSetMsvcbEntry msvId(String v) { this.msvIdPresent.value(v != null); if (v != null) this.msvId.value(v); return this; }
+    public CmsSetMsvcbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSetMsvcbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetMsvcbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetMsvcbEntry smpModPresent(boolean v) { this.smpModPresent.value(v); return this; }
+    public CmsSetMsvcbEntry smpMod(int v) { this.smpMod.value(v); return this; }
+    public CmsSetMsvcbEntry smpRatePresent(boolean v) { this.smpRatePresent.value(v); return this; }
+    public CmsSetMsvcbEntry smpRate(int v) { this.smpRate.value(v); return this; }
+    public CmsSetMsvcbEntry optFldsPresent(boolean v) { this.optFldsPresent.value(v); return this; }
+    public CmsSetMsvcbEntry optFlds(CmsMsvcbOptFlds v) { this.optFlds = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

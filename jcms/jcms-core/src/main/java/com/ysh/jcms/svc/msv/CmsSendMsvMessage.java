@@ -68,7 +68,25 @@ public class CmsSendMsvMessage extends CmsType {
         this.smpModPresent  = new CmsBoolean();
         this.smpMod         = new CmsSmpMod();
     }
-
+    
+    // -- chain setters --
+    public CmsSendMsvMessage reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSendMsvMessage msvId(byte[] v) { this.msvId.value(v); return this; }
+    public CmsSendMsvMessage msvId(String v) { this.msvId.value(v); return this; }
+    public CmsSendMsvMessage datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSendMsvMessage datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSendMsvMessage datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSendMsvMessage smpCnt(int v) { this.smpCnt.value(v); return this; }
+    public CmsSendMsvMessage confRev(long v) { this.confRev.value(v); return this; }
+    public CmsSendMsvMessage refTmPresent(boolean v) { this.refTmPresent.value(v); return this; }
+    public CmsSendMsvMessage refTm(CmsTimeStamp v) { this.refTm = v; return this; }
+    public CmsSendMsvMessage smpSynch(int v) { this.smpSynch.value(v); return this; }
+    public CmsSendMsvMessage smpRatePresent(boolean v) { this.smpRatePresent.value(v); return this; }
+    public CmsSendMsvMessage smpRate(int v) { this.smpRate.value(v); return this; }
+    public CmsSendMsvMessage simulation(boolean v) { this.simulation.value(v); return this; }
+    public CmsSendMsvMessage sample(CmsArray<CmsData> v) { this.sample = v; return this; }
+    public CmsSendMsvMessage smpModPresent(boolean v) { this.smpModPresent.value(v); return this; }
+    public CmsSendMsvMessage smpMod(int v) { this.smpMod.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, msvId,

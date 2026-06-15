@@ -22,7 +22,11 @@ public class CmsSelectRequest extends CmsType {
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsSelectRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSelectRequest reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSelectRequest reference(String v) { this.reference.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

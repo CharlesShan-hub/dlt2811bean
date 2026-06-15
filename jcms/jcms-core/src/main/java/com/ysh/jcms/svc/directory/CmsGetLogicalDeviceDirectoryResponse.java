@@ -27,7 +27,11 @@ public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
         this.lnReference = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogicalDeviceDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogicalDeviceDirectoryResponse lnReference(CmsArray<CmsSubReference> v) { this.lnReference = v; return this; }
+    public CmsGetLogicalDeviceDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, lnReference, moreFollows);

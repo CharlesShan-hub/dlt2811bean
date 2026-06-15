@@ -26,7 +26,11 @@ public class CmsQueryLogByTimeResponse extends CmsType {
         this.logEntry    = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsQueryLogByTimeResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsQueryLogByTimeResponse logEntry(CmsArray<CmsLogEntry> v) { this.logEntry = v; return this; }
+    public CmsQueryLogByTimeResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, logEntry, moreFollows);

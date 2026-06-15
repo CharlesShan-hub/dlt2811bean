@@ -30,7 +30,9 @@ public class CmsReferenceChoice extends CmsType {
         this.altLdName      = new CmsObjectName();
         this.altLnReference = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsReferenceChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altLdName, altLnReference);

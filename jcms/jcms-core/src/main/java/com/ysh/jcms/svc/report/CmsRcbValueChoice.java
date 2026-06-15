@@ -29,7 +29,9 @@ public class CmsRcbValueChoice extends CmsType {
         this.altError = new CmsServiceError();
         this.altValue = new CmsBrcb();
     }
-
+    
+    // -- chain setters --
+    public CmsRcbValueChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altError, altValue);

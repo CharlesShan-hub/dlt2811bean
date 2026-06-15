@@ -22,7 +22,10 @@ public class CmsGetDataDirectoryError extends CmsType {
         this.reqId        = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsGetDataDirectoryError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetDataDirectoryError serviceError(int v) { this.serviceError.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

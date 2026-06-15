@@ -18,7 +18,9 @@ public class CmsSetGoCbValuesResponse extends CmsType {
     public CmsSetGoCbValuesResponse() {
         this.reqId = new CmsReqId();
     }
-
+    
+    // -- chain setters --
+    public CmsSetGoCbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

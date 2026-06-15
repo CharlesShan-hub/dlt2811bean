@@ -6,8 +6,8 @@ import static org.junit.Assert.*;
 public class CmsLcbOptFldsTest {
     @Test
     public void roundtrip() {
-        CmsLcbOptFlds a = new CmsLcbOptFlds();
-        a.value.value(true);
+        CmsLcbOptFlds a = new CmsLcbOptFlds()
+            .value(true);
         byte[] encoded = a.encode();
         CmsLcbOptFlds b = new CmsLcbOptFlds();
         b.decode(encoded);

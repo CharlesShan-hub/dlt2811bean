@@ -24,7 +24,12 @@ public class CmsTimeQuality extends CmsType {
         this.clock_not_synchronized = new CmsBoolean();
         this.precision = new CmsInt32();
     }
-
+    
+    // -- chain setters --
+    public CmsTimeQuality leap_seconds_known(boolean v) { this.leap_seconds_known.value(v); return this; }
+    public CmsTimeQuality clock_failure(boolean v) { this.clock_failure.value(v); return this; }
+    public CmsTimeQuality clock_not_synchronized(boolean v) { this.clock_not_synchronized.value(v); return this; }
+    public CmsTimeQuality precision(int v) { this.precision.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(leap_seconds_known, clock_failure, clock_not_synchronized, precision);

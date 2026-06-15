@@ -59,7 +59,21 @@ public class CmsCommandTermination extends CmsType {
         this.addCausePresent  = new CmsBoolean();
         this.addCause         = new CmsAddCause();
     }
-
+    
+    // -- chain setters --
+    public CmsCommandTermination reqId(int v) { this.reqId.value(v); return this; }
+    public CmsCommandTermination reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsCommandTermination reference(String v) { this.reference.value(v); return this; }
+    public CmsCommandTermination ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsCommandTermination operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
+    public CmsCommandTermination operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsCommandTermination origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsCommandTermination ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsCommandTermination t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsCommandTermination test(boolean v) { this.test.value(v); return this; }
+    public CmsCommandTermination check(CmsCheck v) { this.check = v; return this; }
+    public CmsCommandTermination addCausePresent(boolean v) { this.addCausePresent.value(v); return this; }
+    public CmsCommandTermination addCause(int v) { this.addCause.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

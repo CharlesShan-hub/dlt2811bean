@@ -32,7 +32,14 @@ public class CmsGetLogicalNodeDirectoryRequest extends CmsType {
         this.refAfterPresent = new CmsBoolean();
         this.refAfter        = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogicalNodeDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryRequest reference(CmsReferenceChoice v) { this.reference = v; return this; }
+    public CmsGetLogicalNodeDirectoryRequest acsiClass(int v) { this.acsiClass.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, acsiClass, refAfterPresent, refAfter);

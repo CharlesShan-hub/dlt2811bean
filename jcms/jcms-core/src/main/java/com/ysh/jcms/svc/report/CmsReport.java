@@ -65,7 +65,26 @@ public class CmsReport extends CmsType {
         this.confRev         = new CmsInt32U();
         this.entry           = new CmsReportEntry();
     }
-
+    
+    // -- chain setters --
+    public CmsReport reqId(int v) { this.reqId.value(v); return this; }
+    public CmsReport rptID(byte[] v) { this.rptID.value(v); return this; }
+    public CmsReport rptID(String v) { this.rptID.value(v); return this; }
+    public CmsReport optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsReport sqNumPresent(boolean v) { this.sqNumPresent.value(v); return this; }
+    public CmsReport sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsReport subSeqNumPresent(boolean v) { this.subSeqNumPresent.value(v); return this; }
+    public CmsReport subSeqNum(int v) { this.subSeqNum.value(v); return this; }
+    public CmsReport moreSegmentsFollowPresent(boolean v) { this.moreSegmentsFollowPresent.value(v); return this; }
+    public CmsReport moreSegmentsFollow(boolean v) { this.moreSegmentsFollow.value(v); return this; }
+    public CmsReport dataSetPresent(boolean v) { this.dataSetPresent.value(v); return this; }
+    public CmsReport dataSet(byte[] v) { this.dataSetPresent.value(v != null && v.length > 0); if (v != null) this.dataSet.value(v); return this; }
+    public CmsReport dataSet(String v) { this.dataSetPresent.value(v != null); if (v != null) this.dataSet.value(v); return this; }
+    public CmsReport bufOvflPresent(boolean v) { this.bufOvflPresent.value(v); return this; }
+    public CmsReport bufOvfl(boolean v) { this.bufOvfl.value(v); return this; }
+    public CmsReport confRevPresent(boolean v) { this.confRevPresent.value(v); return this; }
+    public CmsReport confRev(long v) { this.confRev.value(v); return this; }
+    public CmsReport entry(CmsReportEntry v) { this.entry = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, rptID, optFlds,

@@ -22,7 +22,10 @@ public class CmsSetBrcbValuesRequest extends CmsType {
         this.reqId = new CmsReqId();
         this.brcb  = new CmsArray<>(CmsSetBrcbEntry.class);
     }
-
+    
+    // -- chain setters --
+    public CmsSetBrcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetBrcbValuesRequest brcb(CmsArray<CmsSetBrcbEntry> v) { this.brcb = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, brcb);

@@ -25,7 +25,12 @@ public class CmsGetRpcInterfaceDirectoryRequest extends CmsType {
         this.refAfterPresent = new CmsBoolean();
         this.refAfter        = new CmsUint8Array();
     }
-
+    
+    // -- chain setters --
+    public CmsGetRpcInterfaceDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetRpcInterfaceDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
+    public CmsGetRpcInterfaceDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetRpcInterfaceDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, refAfterPresent, refAfter);

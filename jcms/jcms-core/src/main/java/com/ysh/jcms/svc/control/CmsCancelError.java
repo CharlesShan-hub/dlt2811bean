@@ -51,7 +51,19 @@ public class CmsCancelError extends CmsType {
         this.test           = new CmsBoolean();
         this.addCause       = new CmsAddCause();
     }
-
+    
+    // -- chain setters --
+    public CmsCancelError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsCancelError reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsCancelError reference(String v) { this.reference.value(v); return this; }
+    public CmsCancelError ctlVal(CmsData v) { this.ctlVal = v; return this; }
+    public CmsCancelError operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
+    public CmsCancelError operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsCancelError origin(CmsOriginator v) { this.origin = v; return this; }
+    public CmsCancelError ctlNum(int v) { this.ctlNum.value(v); return this; }
+    public CmsCancelError t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsCancelError test(boolean v) { this.test.value(v); return this; }
+    public CmsCancelError addCause(int v) { this.addCause.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

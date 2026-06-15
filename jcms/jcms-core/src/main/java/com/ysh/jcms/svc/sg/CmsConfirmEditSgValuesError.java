@@ -22,7 +22,10 @@ public class CmsConfirmEditSgValuesError extends CmsType {
         this.reqId        = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsConfirmEditSgValuesError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsConfirmEditSgValuesError serviceError(int v) { this.serviceError.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

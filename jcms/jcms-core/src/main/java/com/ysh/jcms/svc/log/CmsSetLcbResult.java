@@ -57,7 +57,24 @@ public class CmsSetLcbResult extends CmsType {
         this.bufTmErrPresent = new CmsBoolean();
         this.bufTmErr        = new CmsServiceError();
     }
-
+    
+    // -- chain setters --
+    public CmsSetLcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
+    public CmsSetLcbResult error(int v) { this.error.value(v); return this; }
+    public CmsSetLcbResult logEnaErrPresent(boolean v) { this.logEnaErrPresent.value(v); return this; }
+    public CmsSetLcbResult logEnaErr(int v) { this.logEnaErr.value(v); return this; }
+    public CmsSetLcbResult datSetErrPresent(boolean v) { this.datSetErrPresent.value(v); return this; }
+    public CmsSetLcbResult datSetErr(int v) { this.datSetErr.value(v); return this; }
+    public CmsSetLcbResult trgOpsErrPresent(boolean v) { this.trgOpsErrPresent.value(v); return this; }
+    public CmsSetLcbResult trgOpsErr(int v) { this.trgOpsErr.value(v); return this; }
+    public CmsSetLcbResult intgPdErrPresent(boolean v) { this.intgPdErrPresent.value(v); return this; }
+    public CmsSetLcbResult intgPdErr(int v) { this.intgPdErr.value(v); return this; }
+    public CmsSetLcbResult logRefErrPresent(boolean v) { this.logRefErrPresent.value(v); return this; }
+    public CmsSetLcbResult logRefErr(int v) { this.logRefErr.value(v); return this; }
+    public CmsSetLcbResult optFldsErrPresent(boolean v) { this.optFldsErrPresent.value(v); return this; }
+    public CmsSetLcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
+    public CmsSetLcbResult bufTmErrPresent(boolean v) { this.bufTmErrPresent.value(v); return this; }
+    public CmsSetLcbResult bufTmErr(int v) { this.bufTmErr.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(

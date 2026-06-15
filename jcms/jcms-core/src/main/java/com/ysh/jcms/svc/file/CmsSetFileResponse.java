@@ -18,7 +18,9 @@ public class CmsSetFileResponse extends CmsType {
     public CmsSetFileResponse() {
         this.reqId = new CmsReqId();
     }
-
+    
+    // -- chain setters --
+    public CmsSetFileResponse reqId(int v) { this.reqId.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

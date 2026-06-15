@@ -39,7 +39,20 @@ public class CmsMsvcb extends CmsType {
         this.dstAddress_present = new CmsBoolean();
         this.dstAddress = new CmsPhyComAddr();
     }
-
+    
+    // -- chain setters --
+    public CmsMsvcb svEna(boolean v) { this.svEna.value(v); return this; }
+    public CmsMsvcb msvID(byte[] v) { this.msvID.value(v); return this; }
+    public CmsMsvcb msvID(String v) { this.msvID.value(v); return this; }
+    public CmsMsvcb datSet(byte[] v) { this.datSet.value(v); return this; }
+    public CmsMsvcb datSet(String v) { this.datSet.value(v); return this; }
+    public CmsMsvcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsMsvcb smpMod_present(boolean v) { this.smpMod_present.value(v); return this; }
+    public CmsMsvcb smpMod(int v) { this.smpMod.value(v); return this; }
+    public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
+    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsMsvcb dstAddress_present(boolean v) { this.dstAddress_present.value(v); return this; }
+    public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(svEna, msvID, datSet, confRev,

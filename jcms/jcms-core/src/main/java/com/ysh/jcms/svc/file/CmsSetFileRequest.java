@@ -33,7 +33,15 @@ public class CmsSetFileRequest extends CmsType {
         this.fileData      = new CmsUint8Array();
         this.endOfFile     = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsSetFileRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSetFileRequest filename(byte[] v) { this.filename.value(v); return this; }
+    public CmsSetFileRequest filename(String v) { this.filename.value(v); return this; }
+    public CmsSetFileRequest startPosition(long v) { this.startPosition.value(v); return this; }
+    public CmsSetFileRequest fileData(byte[] v) { this.fileData.value(v); return this; }
+    public CmsSetFileRequest fileData(String v) { this.fileData.value(v); return this; }
+    public CmsSetFileRequest endOfFile(boolean v) { this.endOfFile.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, filename, startPosition, fileData, endOfFile);

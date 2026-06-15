@@ -34,7 +34,12 @@ public class CmsAbort extends CmsType {
         this.assocId = new CmsAssociationId();
         this.reason  = new CmsAbortReason();
     }
-
+    
+    // -- chain setters --
+    public CmsAbort reqId(int v) { this.reqId.value(v); return this; }
+    public CmsAbort assocId(byte[] v) { this.assocId.value(v); return this; }
+    public CmsAbort assocId(String v) { this.assocId.value(v); return this; }
+    public CmsAbort reason(int v) { this.reason.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId, reason);

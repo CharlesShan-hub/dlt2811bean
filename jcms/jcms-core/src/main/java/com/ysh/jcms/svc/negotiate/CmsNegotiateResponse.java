@@ -33,7 +33,14 @@ public class CmsNegotiateResponse extends CmsType {
         this.protocolVersion = new CmsInt32U();
         this.modelVersion    = new CmsUint8Array();
     }
-
+    
+    // -- chain setters --
+    public CmsNegotiateResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsNegotiateResponse apduSize(int v) { this.apduSize.value(v); return this; }
+    public CmsNegotiateResponse asduSize(long v) { this.asduSize.value(v); return this; }
+    public CmsNegotiateResponse protocolVersion(long v) { this.protocolVersion.value(v); return this; }
+    public CmsNegotiateResponse modelVersion(byte[] v) { this.modelVersion.value(v); return this; }
+    public CmsNegotiateResponse modelVersion(String v) { this.modelVersion.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, apduSize, asduSize, protocolVersion, modelVersion);

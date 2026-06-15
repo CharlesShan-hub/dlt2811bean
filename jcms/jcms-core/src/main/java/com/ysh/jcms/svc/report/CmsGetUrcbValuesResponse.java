@@ -26,7 +26,11 @@ public class CmsGetUrcbValuesResponse extends CmsType {
         this.urcb        = new CmsArray<>(CmsRcbValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetUrcbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetUrcbValuesResponse urcb(CmsArray<CmsRcbValueChoice> v) { this.urcb = v; return this; }
+    public CmsGetUrcbValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, urcb, moreFollows);

@@ -30,7 +30,14 @@ public class CmsDataDefinitionEntry extends CmsType {
         this.cdcType        = new CmsUint8Array();
         this.definition     = new CmsDataDefinition();
     }
-
+    
+    // -- chain setters --
+    public CmsDataDefinitionEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsDataDefinitionEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsDataDefinitionEntry cdcTypePresent(boolean v) { this.cdcTypePresent.value(v); return this; }
+    public CmsDataDefinitionEntry cdcType(byte[] v) { this.cdcTypePresent.value(v != null && v.length > 0); if (v != null) this.cdcType.value(v); return this; }
+    public CmsDataDefinitionEntry cdcType(String v) { this.cdcTypePresent.value(v != null); if (v != null) this.cdcType.value(v); return this; }
+    public CmsDataDefinitionEntry definition(CmsDataDefinition v) { this.definition = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, cdcTypePresent, cdcType, definition);

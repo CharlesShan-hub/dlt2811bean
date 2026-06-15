@@ -27,7 +27,11 @@ public class CmsGetFileDirectoryResponse extends CmsType {
         this.fileEntry   = new CmsArray<>(CmsFileEntry.class);
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetFileDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetFileDirectoryResponse fileEntry(CmsArray<CmsFileEntry> v) { this.fileEntry = v; return this; }
+    public CmsGetFileDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, fileEntry, moreFollows);

@@ -23,7 +23,10 @@ public class CmsGetLogStatusValuesRequest extends CmsType {
         this.reqId        = new CmsReqId();
         this.logReference = new CmsArray<>();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogStatusValuesRequest reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogStatusValuesRequest logReference(CmsArray<CmsObjectReference> v) { this.logReference = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, logReference);

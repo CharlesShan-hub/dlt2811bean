@@ -22,7 +22,11 @@ public class CmsSelectError extends CmsType {
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsSelectError reqId(int v) { this.reqId.value(v); return this; }
+    public CmsSelectError reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSelectError reference(String v) { this.reference.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

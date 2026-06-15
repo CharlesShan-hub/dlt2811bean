@@ -67,7 +67,30 @@ public class CmsSetUrcbEntry extends CmsType {
         this.resvPresent    = new CmsBoolean();
         this.resv           = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsSetUrcbEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSetUrcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetUrcbEntry rptIdPresent(boolean v) { this.rptIdPresent.value(v); return this; }
+    public CmsSetUrcbEntry rptId(byte[] v) { this.rptIdPresent.value(v != null && v.length > 0); if (v != null) this.rptId.value(v); return this; }
+    public CmsSetUrcbEntry rptId(String v) { this.rptIdPresent.value(v != null); if (v != null) this.rptId.value(v); return this; }
+    public CmsSetUrcbEntry rptEnaPresent(boolean v) { this.rptEnaPresent.value(v); return this; }
+    public CmsSetUrcbEntry rptEna(boolean v) { this.rptEna.value(v); return this; }
+    public CmsSetUrcbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSetUrcbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetUrcbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetUrcbEntry optFldsPresent(boolean v) { this.optFldsPresent.value(v); return this; }
+    public CmsSetUrcbEntry optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsSetUrcbEntry bufTmPresent(boolean v) { this.bufTmPresent.value(v); return this; }
+    public CmsSetUrcbEntry bufTm(long v) { this.bufTm.value(v); return this; }
+    public CmsSetUrcbEntry trgOpsPresent(boolean v) { this.trgOpsPresent.value(v); return this; }
+    public CmsSetUrcbEntry trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsSetUrcbEntry intgPdPresent(boolean v) { this.intgPdPresent.value(v); return this; }
+    public CmsSetUrcbEntry intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsSetUrcbEntry giPresent(boolean v) { this.giPresent.value(v); return this; }
+    public CmsSetUrcbEntry gi(boolean v) { this.gi.value(v); return this; }
+    public CmsSetUrcbEntry resvPresent(boolean v) { this.resvPresent.value(v); return this; }
+    public CmsSetUrcbEntry resv(boolean v) { this.resv.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

@@ -6,11 +6,11 @@ import static org.junit.Assert.*;
 public class CmsBrcbTest {
     @Test
     public void roundtrip() {
-        CmsBrcb a = new CmsBrcb();
-        a.rptID.value("rpt01".getBytes());
-        a.rptEna.value(true);
-        a.datSet.value("dataset1".getBytes());
-        a.confRev.value(3L);
+        CmsBrcb a = new CmsBrcb()
+            .rptID("rpt01".getBytes())
+            .rptEna(true)
+            .datSet("dataset1".getBytes())
+            .confRev(3L);
         a.optFlds.sequence_number.value(true);
         //a.bufTm.value(5000L);
         a.sqNum.value(100);

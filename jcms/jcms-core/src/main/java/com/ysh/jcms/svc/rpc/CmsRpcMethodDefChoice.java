@@ -28,7 +28,9 @@ public class CmsRpcMethodDefChoice extends CmsType {
         this.altError = new CmsServiceError();
         this.altMethod = new CmsRpcMethodDef();
     }
-
+    
+    // -- chain setters --
+    public CmsRpcMethodDefChoice choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altError, altMethod);

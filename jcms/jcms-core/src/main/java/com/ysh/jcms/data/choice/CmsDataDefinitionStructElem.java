@@ -33,7 +33,14 @@ public class CmsDataDefinitionStructElem extends CmsType {
         this.fc         = new CmsFunctionalConstraint();
         this.type       = new CmsDataDefinition();
     }
-
+    
+    // -- chain setters --
+    public CmsDataDefinitionStructElem name(byte[] v) { this.name.value(v); return this; }
+    public CmsDataDefinitionStructElem name(String v) { this.name.value(v); return this; }
+    public CmsDataDefinitionStructElem fc_present(boolean v) { this.fc_present.value(v); return this; }
+    public CmsDataDefinitionStructElem fc(byte[] v) { this.fc_present.value(v != null && v.length > 0); if (v != null) this.fc.value(v); return this; }
+    public CmsDataDefinitionStructElem fc(String v) { this.fc_present.value(v != null); if (v != null) this.fc.value(v); return this; }
+    public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type = v; return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(name, fc_present, fc, type);

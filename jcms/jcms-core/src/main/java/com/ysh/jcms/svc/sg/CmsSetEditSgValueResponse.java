@@ -18,7 +18,9 @@ public class CmsSetEditSgValueResponse extends CmsType {
     public CmsSetEditSgValueResponse() {
         this.reqId = new CmsReqId();
     }
-
+    
+    // -- chain setters --
+    public CmsSetEditSgValueResponse reqId(int v) { this.reqId.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

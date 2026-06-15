@@ -26,7 +26,11 @@ public class CmsGetLogStatusValuesResponse extends CmsType {
         this.log         = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsGetLogStatusValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+    public CmsGetLogStatusValuesResponse log(CmsArray<CmsLogStatusValueChoice> v) { this.log = v; return this; }
+    public CmsGetLogStatusValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, log, moreFollows);

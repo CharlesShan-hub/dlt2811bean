@@ -36,7 +36,18 @@ public class CmsSetGoCbEntry extends CmsType {
         this.datSetPresent  = new CmsBoolean();
         this.datSet         = new CmsObjectReference();
     }
-
+    
+    // -- chain setters --
+    public CmsSetGoCbEntry reference(byte[] v) { this.reference.value(v); return this; }
+    public CmsSetGoCbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetGoCbEntry goEnaPresent(boolean v) { this.goEnaPresent.value(v); return this; }
+    public CmsSetGoCbEntry goEna(boolean v) { this.goEna.value(v); return this; }
+    public CmsSetGoCbEntry goIdPresent(boolean v) { this.goIdPresent.value(v); return this; }
+    public CmsSetGoCbEntry goId(byte[] v) { this.goIdPresent.value(v != null && v.length > 0); if (v != null) this.goId.value(v); return this; }
+    public CmsSetGoCbEntry goId(String v) { this.goIdPresent.value(v != null); if (v != null) this.goId.value(v); return this; }
+    public CmsSetGoCbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
+    public CmsSetGoCbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
+    public CmsSetGoCbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

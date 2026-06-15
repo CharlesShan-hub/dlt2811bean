@@ -9,9 +9,9 @@ public class CmsControlTest {
 
     @Test
     public void select_roundtrip() {
-        CmsSelectRequest a = new CmsSelectRequest();
-        a.reqId.value(10);
-        a.reference.value("ref1".getBytes());
+        CmsSelectRequest a = new CmsSelectRequest()
+            .reqId(10)
+            .reference("ref1".getBytes());
         byte[] encoded = a.encode();
 
         CmsSelectRequest b = new CmsSelectRequest();
@@ -22,9 +22,9 @@ public class CmsControlTest {
 
     @Test
     public void select_with_value_roundtrip() {
-        CmsSelectWithValueRequest a = new CmsSelectWithValueRequest();
-        a.reqId.value(20);
-        a.reference.value("ref2".getBytes());
+        CmsSelectWithValueRequest a = new CmsSelectWithValueRequest()
+            .reqId(20)
+            .reference("ref2".getBytes());
         a.ctlVal.choice.value(CmsData.CHOICE_BOOLEAN);
         a.ctlVal.alt_boolean.value(true);
         a.operTmPresent.value(false);
@@ -47,9 +47,9 @@ public class CmsControlTest {
 
     @Test
     public void operate_roundtrip() {
-        CmsOperateRequest a = new CmsOperateRequest();
-        a.reqId.value(30);
-        a.reference.value("ref3".getBytes());
+        CmsOperateRequest a = new CmsOperateRequest()
+            .reqId(30)
+            .reference("ref3".getBytes());
         a.ctlVal.choice.value(CmsData.CHOICE_INT32);
         a.ctlVal.alt_int32.value(42);
         a.origin.orCat.value(CmsOrCat.NOT_SUPPORTED);

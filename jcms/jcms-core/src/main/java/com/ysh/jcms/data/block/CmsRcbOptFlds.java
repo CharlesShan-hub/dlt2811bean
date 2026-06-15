@@ -44,7 +44,17 @@ public class CmsRcbOptFlds extends CmsType {
         this.conf_revision        = new CmsBoolean();
         this.segmentation         = new CmsBoolean();
     }
-
+    
+    // -- chain setters --
+    public CmsRcbOptFlds sequence_number(boolean v) { this.sequence_number.value(v); return this; }
+    public CmsRcbOptFlds report_time_stamp(boolean v) { this.report_time_stamp.value(v); return this; }
+    public CmsRcbOptFlds reason_for_inclusion(boolean v) { this.reason_for_inclusion.value(v); return this; }
+    public CmsRcbOptFlds data_set_name(boolean v) { this.data_set_name.value(v); return this; }
+    public CmsRcbOptFlds data_reference(boolean v) { this.data_reference.value(v); return this; }
+    public CmsRcbOptFlds buffer_overflow(boolean v) { this.buffer_overflow.value(v); return this; }
+    public CmsRcbOptFlds entry_id(boolean v) { this.entry_id.value(v); return this; }
+    public CmsRcbOptFlds conf_revision(boolean v) { this.conf_revision.value(v); return this; }
+    public CmsRcbOptFlds segmentation(boolean v) { this.segmentation.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(sequence_number, report_time_stamp, reason_for_inclusion,
