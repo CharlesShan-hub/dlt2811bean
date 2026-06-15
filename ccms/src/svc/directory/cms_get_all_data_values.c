@@ -20,10 +20,28 @@ int cms_get_all_data_values_request_encode(const cms_get_all_data_values_request
     if (!pdu->reference) return CMS_ERR; err = cms_reference_choice_encode_stream(&s, pdu->reference); if (err) return err;
 
     /* fc — FunctionalConstraint OPTIONAL */
-    { int p = (pdu->fc_present && pdu->fc_present->value) && pdu->fc; cms_boolean_t b={.value=p}; err=cms_boolean_encode_stream(&s,&b); if(err)return err; if(p){err=cms_functional_constraint_encode_stream(&s,pdu->fc);if(err)return err;} }
+    {
+        int present = (pdu->fc_present && pdu->fc_present->value) && pdu->fc;
+        cms_boolean_t bit = { .value = present };
+        err = cms_boolean_encode_stream(&s, &bit);
+        if (err) return err;
+        if (present) {
+            err = cms_functional_constraint_encode_stream(&s, pdu->fc);
+            if (err) return err;
+        }
+    }
 
     /* referenceAfter — ObjectReference OPTIONAL */
-    { int p = (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after; cms_boolean_t b={.value=p}; err=cms_boolean_encode_stream(&s,&b); if(err)return err; if(p){err=cms_object_reference_encode_stream(&s,pdu->ref_after);if(err)return err;} }
+    {
+        int present = (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after;
+        cms_boolean_t bit = { .value = present };
+        err = cms_boolean_encode_stream(&s, &bit);
+        if (err) return err;
+        if (present) {
+            err = cms_object_reference_encode_stream(&s, pdu->ref_after);
+            if (err) return err;
+        }
+    }
 
     *out_len = (int)per_stream_bytes_written(&s); return CMS_OK;
 }

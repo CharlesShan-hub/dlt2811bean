@@ -6,12 +6,19 @@ int cms_authentication_parameter_encode_stream(
     per_stream_t *s, const cms_authentication_parameter_t *param)
 {
     int err;
+
+    /* 1. cert — OCTET STRING */
     err = cms_octet_string_encode_stream(s, param->cert, UINT32_MAX);
     if (err) return CMS_ERR;
+
+    /* 2. signedTime — UTCTime */
     err = cms_utc_time_encode_stream(s, param->signed_time);
     if (err) return CMS_ERR;
+
+    /* 3. sigVal — OCTET STRING */
     err = cms_octet_string_encode_stream(s, param->sig_val, UINT32_MAX);
     if (err) return CMS_ERR;
+
     return CMS_OK;
 }
 
@@ -19,12 +26,19 @@ int cms_authentication_parameter_decode_stream(
     per_stream_t *s, cms_authentication_parameter_t *param)
 {
     int err;
+
+    /* 1. cert */
     err = cms_octet_string_decode_stream(s, param->cert, UINT32_MAX);
     if (err) return CMS_ERR;
+
+    /* 2. signedTime */
     err = cms_utc_time_decode_stream(s, param->signed_time);
     if (err) return CMS_ERR;
+
+    /* 3. sigVal */
     err = cms_octet_string_decode_stream(s, param->sig_val, UINT32_MAX);
     if (err) return CMS_ERR;
+
     return CMS_OK;
 }
 

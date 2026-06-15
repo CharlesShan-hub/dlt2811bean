@@ -12,12 +12,12 @@ int cms_associate_request_encode_stream(per_stream_t *s, const cms_associate_req
     if (!pdu) return CMS_ERR;
     int err;
 
-    /* req_id — mandatory */
+    /* 1. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(s, pdu->req_id);
     if (err) return err;
 
-    /* sap_ref — OPTIONAL [0] */
+    /* 2. sapRef — VisibleString OPTIONAL */
     {
         int present = (pdu->sap_ref_present && pdu->sap_ref_present->value) && pdu->sap_ref;
         cms_boolean_t bit = { .value = present };
@@ -29,7 +29,7 @@ int cms_associate_request_encode_stream(per_stream_t *s, const cms_associate_req
         }
     }
 
-    /* auth_param — OPTIONAL [1] */
+    /* 3. authParam — AuthenticationParameter OPTIONAL */
     {
         int present = (pdu->auth_param_present && pdu->auth_param_present->value) && pdu->auth_param;
         cms_boolean_t bit = { .value = present };
@@ -48,11 +48,12 @@ int cms_associate_request_decode_stream(per_stream_t *s, cms_associate_request_t
     if (!pdu) return CMS_ERR;
     int err;
 
+    /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(s, pdu->req_id);
     if (err) return err;
 
-    /* sap_ref OPTIONAL */
+    /* 2. sapRef OPTIONAL */
     {
         cms_boolean_t bit = {0};
         err = cms_boolean_decode_stream(s, &bit);
@@ -65,7 +66,7 @@ int cms_associate_request_decode_stream(per_stream_t *s, cms_associate_request_t
         }
     }
 
-    /* auth_param OPTIONAL */
+    /* 3. authParam OPTIONAL */
     {
         cms_boolean_t bit = {0};
         err = cms_boolean_decode_stream(s, &bit);
@@ -102,21 +103,22 @@ int cms_associate_response_encode_stream(per_stream_t *s, const cms_associate_re
     if (!pdu) return CMS_ERR;
     int err;
 
+    /* 1. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(s, pdu->req_id);
     if (err) return err;
 
-    /* assoc_id — mandatory */
+    /* 2. assocId — AssociationId */
     if (!pdu->assoc_id) return CMS_ERR;
     err = cms_association_id_encode_stream(s, pdu->assoc_id);
     if (err) return err;
 
-    /* service_error — mandatory */
+    /* 3. serviceError — ServiceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_encode_stream(s, pdu->service_error);
     if (err) return err;
 
-    /* auth_param — OPTIONAL [2] */
+    /* 4. authParam — AuthenticationParameter OPTIONAL */
     {
         int present = (pdu->auth_param_present && pdu->auth_param_present->value) && pdu->auth_param;
         cms_boolean_t bit = { .value = present };
@@ -135,19 +137,22 @@ int cms_associate_response_decode_stream(per_stream_t *s, cms_associate_response
     if (!pdu) return CMS_ERR;
     int err;
 
+    /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(s, pdu->req_id);
     if (err) return err;
 
+    /* 2. assocId */
     if (!pdu->assoc_id) return CMS_ERR;
     err = cms_association_id_decode_stream(s, pdu->assoc_id);
     if (err) return err;
 
+    /* 3. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_decode_stream(s, pdu->service_error);
     if (err) return err;
 
-    /* auth_param OPTIONAL */
+    /* 4. authParam OPTIONAL */
     {
         cms_boolean_t bit = {0};
         err = cms_boolean_decode_stream(s, &bit);
@@ -184,12 +189,17 @@ int cms_associate_error_encode(const cms_associate_error_t *pdu, uint8_t *out_bu
     per_stream_t s;
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
+
+    /* 1. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 2. serviceError — ServiceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_encode_stream(&s, pdu->service_error);
     if (err) return err;
+
     *out_len = (int)per_stream_bytes_written(&s);
     return CMS_OK;
 }
@@ -198,11 +208,16 @@ int cms_associate_error_decode(cms_associate_error_t *pdu, const uint8_t *in_buf
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+
+    /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 2. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_decode_stream(&s, pdu->service_error);
     if (err) return err;
+
     return CMS_OK;
 }

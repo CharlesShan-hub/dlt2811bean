@@ -6,6 +6,7 @@ int cms_cb_value_choice_encode_stream(per_stream_t *s, const cms_cb_value_choice
     int sel = v->choice->value;
     per_error_t perr = per_encode_small_non_negative(s, (uint32_t)sel);
     if (perr) return CMS_ERR;
+
     switch (sel) {
     case CMS_CB_VALUE_CHOICE_BRCB:
         if (!v->alt_brcb) return CMS_ERR;
@@ -36,6 +37,7 @@ int cms_cb_value_choice_decode_stream(per_stream_t *s, cms_cb_value_choice_t *v)
     per_error_t perr = per_decode_small_non_negative(s, &sel);
     if (perr) return CMS_ERR;
     v->choice->value = (int)sel;
+
     switch (sel) {
     case CMS_CB_VALUE_CHOICE_BRCB:
         if (!v->alt_brcb) return CMS_ERR;
