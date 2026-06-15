@@ -12,6 +12,6 @@ public class CmsInt64UTest {
         byte[] encoded = a.encode();
         CmsInt64U b = new CmsInt64U();
         b.decode(encoded);
-        assertEquals(val, b.value());
+        assertEquals(a, b);
     }
 }

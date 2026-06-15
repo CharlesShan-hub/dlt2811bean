@@ -10,6 +10,6 @@ public class CmsSubReferenceTest {
         byte[] encoded = a.encode();
         CmsSubReference b = new CmsSubReference();
         b.decode(encoded);
-        assertArrayEquals("SubRefTest".getBytes(), b.value());
+        assertEquals(a, b);
     }
 }

@@ -11,6 +11,6 @@ public class CmsLcbOptFldsTest {
         byte[] encoded = a.encode();
         CmsLcbOptFlds b = new CmsLcbOptFlds();
         b.decode(encoded);
-        assertTrue(b.value.value());
+        assertEquals(a, b);
     }
 }

@@ -22,11 +22,7 @@ public class CmsGetAllCbValuesTest {
 
         CmsGetAllCbValuesRequest b = new CmsGetAllCbValuesRequest();
         b.decode(encoded);
-        assertEquals(11, b.reqId.value());
-        assertArrayEquals("ld1".getBytes(), b.reference.altLdName.value());
-        assertEquals(CmsAcsiClass.BRCB, b.acsiClass.value());
-        assertTrue(b.refAfterPresent.value());
-        assertArrayEquals("afterRef".getBytes(), b.refAfter.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -61,10 +57,7 @@ public class CmsGetAllCbValuesTest {
 
         CmsGetAllCbValuesResponse b = new CmsGetAllCbValuesResponse();
         b.decode(encoded);
-        assertEquals(60, b.reqId.value());
-        assertFalse(b.moreFollows.value());
-        assertEquals(2, b.cbValue.size());
-
+        assertEquals(a, b);
         /* 校验 entry1 — BRCB */
         assertArrayEquals("cbRef1".getBytes(), b.cbValue.get(0).reference.value());
         assertEquals(CmsCbValueChoice.BRCB, b.cbValue.get(0).value.choice.value());
@@ -95,7 +88,6 @@ public class CmsGetAllCbValuesTest {
 
         CmsGetAllCbValuesError b = new CmsGetAllCbValuesError();
         b.decode(encoded);
-        assertEquals(44, b.reqId.value());
-        assertEquals(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

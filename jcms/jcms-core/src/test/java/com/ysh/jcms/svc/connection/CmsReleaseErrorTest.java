@@ -14,7 +14,6 @@ public class CmsReleaseErrorTest {
 
         CmsReleaseError b = new CmsReleaseError();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

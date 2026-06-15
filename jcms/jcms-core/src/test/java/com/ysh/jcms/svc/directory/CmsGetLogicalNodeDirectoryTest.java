@@ -20,11 +20,7 @@ public class CmsGetLogicalNodeDirectoryTest {
 
         CmsGetLogicalNodeDirectoryRequest b = new CmsGetLogicalNodeDirectoryRequest();
         b.decode(encoded);
-        assertEquals(5, b.reqId.value());
-        assertEquals(CmsReferenceChoice.LD_NAME, b.reference.choice.value());
-        assertArrayEquals("ld1".getBytes(), b.reference.altLdName.value());
-        assertEquals(CmsAcsiClass.DATA_OBJECT, b.acsiClass.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -40,12 +36,7 @@ public class CmsGetLogicalNodeDirectoryTest {
 
         CmsGetLogicalNodeDirectoryRequest b = new CmsGetLogicalNodeDirectoryRequest();
         b.decode(encoded);
-        assertEquals(6, b.reqId.value());
-        assertEquals(CmsReferenceChoice.LN_REFERENCE, b.reference.choice.value());
-        assertArrayEquals("lnRef".getBytes(), b.reference.altLnReference.value());
-        assertEquals(CmsAcsiClass.DATA_SET, b.acsiClass.value());
-        assertTrue(b.refAfterPresent.value());
-        assertArrayEquals("afterRef".getBytes(), b.refAfter.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -60,11 +51,7 @@ public class CmsGetLogicalNodeDirectoryTest {
 
         CmsGetLogicalNodeDirectoryResponse b = new CmsGetLogicalNodeDirectoryResponse();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertFalse(b.moreFollows.value());
-        assertEquals(2, b.reference.size());
-        assertArrayEquals("fc".getBytes(), b.reference.get(0).value());
-        assertArrayEquals("mx".getBytes(), b.reference.get(1).value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -76,7 +63,6 @@ public class CmsGetLogicalNodeDirectoryTest {
 
         CmsGetLogicalNodeDirectoryError b = new CmsGetLogicalNodeDirectoryError();
         b.decode(encoded);
-        assertEquals(77, b.reqId.value());
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

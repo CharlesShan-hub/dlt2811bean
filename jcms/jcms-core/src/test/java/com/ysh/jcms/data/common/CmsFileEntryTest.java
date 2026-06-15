@@ -14,7 +14,6 @@ public class CmsFileEntryTest {
         byte[] encoded = a.encode();
         CmsFileEntry b = new CmsFileEntry();
         b.decode(encoded);
-        assertArrayEquals("test.txt".getBytes(), b.fileName.value());
-        assertEquals(1024L, b.fileSize.value());
+        assertEquals(a, b);
     }
 }

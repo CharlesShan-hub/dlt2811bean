@@ -12,7 +12,6 @@ public class CmsCheckTest {
         byte[] encoded = a.encode();
         CmsCheck b = new CmsCheck();
         b.decode(encoded);
-        assertTrue(b.syncheck.value());
-        assertFalse(b.interlock_check.value());
+        assertEquals(a, b);
     }
 }

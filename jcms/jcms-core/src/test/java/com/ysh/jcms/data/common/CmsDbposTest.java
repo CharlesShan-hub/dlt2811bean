@@ -10,6 +10,6 @@ public class CmsDbposTest {
         byte[] encoded = a.encode();
         CmsDbpos b = new CmsDbpos();
         b.decode(encoded);
-        assertEquals(CmsDbpos.ON, b.value());
+        assertEquals(a, b);
     }
 }

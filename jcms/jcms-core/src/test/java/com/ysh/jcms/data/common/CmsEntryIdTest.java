@@ -11,6 +11,6 @@ public class CmsEntryIdTest {
         byte[] encoded = a.encode();
         CmsEntryId b = new CmsEntryId();
         b.decode(encoded);
-        assertArrayEquals(id, b.value());
+        assertEquals(a, b);
     }
 }

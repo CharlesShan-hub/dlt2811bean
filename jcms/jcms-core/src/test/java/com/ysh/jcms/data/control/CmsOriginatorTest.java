@@ -12,7 +12,6 @@ public class CmsOriginatorTest {
         byte[] encoded = a.encode();
         CmsOriginator b = new CmsOriginator();
         b.decode(encoded);
-        assertEquals(CmsOrCat.BAY_CONTROL, b.orCat.value());
-        assertArrayEquals("testIdent".getBytes(), b.orIdent.value());
+        assertEquals(a, b);
     }
 }

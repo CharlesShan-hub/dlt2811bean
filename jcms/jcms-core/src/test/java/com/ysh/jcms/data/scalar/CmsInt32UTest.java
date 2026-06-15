@@ -10,6 +10,6 @@ public class CmsInt32UTest {
         byte[] encoded = a.encode();
         CmsInt32U b = new CmsInt32U();
         b.decode(encoded);
-        assertEquals(3000000000L, b.value());
+        assertEquals(a, b);
     }
 }

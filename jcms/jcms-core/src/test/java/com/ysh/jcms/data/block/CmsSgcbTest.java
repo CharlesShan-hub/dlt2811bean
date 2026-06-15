@@ -14,8 +14,6 @@ public class CmsSgcbTest {
         byte[] encoded = a.encode();
         CmsSgcb b = new CmsSgcb();
         b.decode(encoded);
-        assertEquals(5, b.numOfSG.value());
-        assertEquals(3, b.actSG.value());
-        assertEquals(1, b.editSG.value());
+        assertEquals(a, b);
     }
 }

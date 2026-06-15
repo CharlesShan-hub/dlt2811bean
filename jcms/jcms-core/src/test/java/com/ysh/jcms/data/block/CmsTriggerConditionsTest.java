@@ -12,7 +12,6 @@ public class CmsTriggerConditionsTest {
         byte[] encoded = a.encode();
         CmsTriggerConditions b = new CmsTriggerConditions();
         b.decode(encoded);
-        assertTrue(b.data_change.value());
-        assertTrue(b.integrity.value());
+        assertEquals(a, b);
     }
 }

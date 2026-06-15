@@ -10,6 +10,6 @@ public class CmsServiceErrorTest {
         byte[] encoded = a.encode();
         CmsServiceError b = new CmsServiceError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.value());
+        assertEquals(a, b);
     }
 }

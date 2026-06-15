@@ -10,6 +10,6 @@ public class CmsInt64Test {
         byte[] encoded = a.encode();
         CmsInt64 b = new CmsInt64();
         b.decode(encoded);
-        assertEquals(-123456789012345L, b.value());
+        assertEquals(a, b);
     }
 }

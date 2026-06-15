@@ -10,6 +10,6 @@ public class CmsTcmdTest {
         byte[] encoded = a.encode();
         CmsTcmd b = new CmsTcmd();
         b.decode(encoded);
-        assertEquals(CmsTcmd.SELECT, b.value());
+        assertEquals(a, b);
     }
 }

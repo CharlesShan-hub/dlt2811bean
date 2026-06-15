@@ -16,8 +16,7 @@ public class CmsFileTest {
 
         CmsGetFileRequest b = new CmsGetFileRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertArrayEquals("test.txt".getBytes(), b.filename.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -30,8 +29,7 @@ public class CmsFileTest {
 
         CmsGetFileResponse b = new CmsGetFileResponse();
         b.decode(encoded);
-        assertEquals(2, b.reqId.value());
-        assertArrayEquals("file content".getBytes(), b.fileData.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -43,7 +41,7 @@ public class CmsFileTest {
 
         CmsGetFileError b = new CmsGetFileError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -58,8 +56,7 @@ public class CmsFileTest {
 
         CmsSetFileRequest b = new CmsSetFileRequest();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertArrayEquals("new.txt".getBytes(), b.filename.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -71,7 +68,7 @@ public class CmsFileTest {
 
         CmsSetFileError b = new CmsSetFileError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.serviceError.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -83,8 +80,7 @@ public class CmsFileTest {
 
         CmsDeleteFileRequest b = new CmsDeleteFileRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertArrayEquals("del.txt".getBytes(), b.filename.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -111,12 +107,7 @@ public class CmsFileTest {
 
         CmsGetFileDirectoryResponse b = new CmsGetFileDirectoryResponse();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertFalse(b.moreFollows.value());
-        assertEquals(2, b.fileEntry.size());
-        assertArrayEquals("f1.txt".getBytes(), b.fileEntry.get(0).fileName.value());
-        assertEquals(100L, b.fileEntry.get(0).fileSize.value());
-        assertEquals(200L, b.fileEntry.get(1).fileSize.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -128,8 +119,7 @@ public class CmsFileTest {
 
         CmsGetFileAttributeValuesRequest b = new CmsGetFileAttributeValuesRequest();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertArrayEquals("attr.txt".getBytes(), b.filename.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -146,7 +136,6 @@ public class CmsFileTest {
 
         CmsGetFileAttributeValuesResponse b = new CmsGetFileAttributeValuesResponse();
         b.decode(encoded);
-        assertEquals(1024L, b.fileEntry.fileSize.value());
-        assertEquals(999L, b.fileEntry.checkSum.value());
+        assertEquals(a, b);
     }
 }

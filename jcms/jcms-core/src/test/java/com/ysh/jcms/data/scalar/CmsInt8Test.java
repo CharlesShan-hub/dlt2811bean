@@ -10,6 +10,6 @@ public class CmsInt8Test {
         byte[] encoded = a.encode();
         CmsInt8 b = new CmsInt8();
         b.decode(encoded);
-        assertEquals(-42, b.value());
+        assertEquals(a, b);
     }
 }

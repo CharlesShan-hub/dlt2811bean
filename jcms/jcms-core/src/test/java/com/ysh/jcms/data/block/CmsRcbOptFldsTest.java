@@ -13,8 +13,6 @@ public class CmsRcbOptFldsTest {
         byte[] encoded = a.encode();
         CmsRcbOptFlds b = new CmsRcbOptFlds();
         b.decode(encoded);
-        assertTrue(b.sequence_number.value());
-        assertTrue(b.report_time_stamp.value());
-        assertTrue(b.data_set_name.value());
+        assertEquals(a, b);
     }
 }

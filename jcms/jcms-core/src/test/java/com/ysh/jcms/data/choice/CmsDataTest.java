@@ -23,8 +23,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_ERROR, b.choice.value());
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.alt_error.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -37,8 +36,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_BOOLEAN, b.choice.value());
-        assertTrue(b.alt_boolean.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -51,8 +49,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT8, b.choice.value());
-        assertEquals(-42, b.alt_int8.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -65,8 +62,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT16, b.choice.value());
-        assertEquals(-30000, b.alt_int16.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -79,8 +75,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT32, b.choice.value());
-        assertEquals(-2000000000, b.alt_int32.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -93,8 +88,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT64, b.choice.value());
-        assertEquals(-9000000000000000000L, b.alt_int64.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -107,8 +101,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT8U, b.choice.value());
-        assertEquals(200, b.alt_int8u.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -121,8 +114,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT16U, b.choice.value());
-        assertEquals(60000, b.alt_int16u.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -135,8 +127,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT32U, b.choice.value());
-        assertEquals(3000000000L, b.alt_int32u.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -149,8 +140,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_INT64U, b.choice.value());
-        assertEquals(new BigInteger("10000000000000000"), b.alt_int64u.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -163,8 +153,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_FLOAT32, b.choice.value());
-        assertEquals(3.14f, b.alt_float32.value(), 1e-6f);
+        assertEquals(a, b);
     }
 
     @Test
@@ -177,8 +166,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_FLOAT64, b.choice.value());
-        assertEquals(2.718281828459045, b.alt_float64.value(), 1e-12);
+        assertEquals(a, b);
     }
 
     @Test
@@ -194,9 +182,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_BIT_STRING, b.choice.value());
-        assertEquals(16, b.alt_bit_string.len);
-        assertArrayEquals(raw, b.alt_bit_string.value.getByteArray(0, 2));
+        assertEquals(a, b);
     }
 
     @Test
@@ -209,8 +195,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_OCTET_STRING, b.choice.value());
-        assertArrayEquals("Hello".getBytes(), b.alt_octet_string.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -223,8 +208,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_VISIBLE_STRING, b.choice.value());
-        assertArrayEquals("ABC-123".getBytes(), b.alt_visible_string.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -237,8 +221,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_UNICODE_STRING, b.choice.value());
-        assertArrayEquals("你好世界".getBytes(), b.alt_unicode_string.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -253,10 +236,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_UTC_TIME, b.choice.value());
-        assertEquals(1234567890L, b.alt_utc_time.seconds_since_epoch.value());
-        assertEquals(500000, b.alt_utc_time.fraction_of_second.value());
-        assertTrue(b.alt_utc_time.time_quality.leap_seconds_known.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -270,9 +250,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_BINARY_TIME, b.choice.value());
-        assertEquals(43200000L, b.alt_binary_time.msOfDay.value());
-        assertEquals(5000, b.alt_binary_time.daysSince1984.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -289,12 +267,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_QUALITY, b.choice.value());
-        assertEquals(1, b.alt_quality.validity.value());
-        assertTrue(b.alt_quality.overflow.value());
-        assertTrue(b.alt_quality.failure.value());
-        assertTrue(b.alt_quality.inaccurate.value());
-        assertTrue(b.alt_quality.outOfRange.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -307,8 +280,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_DBPOS, b.choice.value());
-        assertEquals(CmsDbpos.ON, b.alt_dbpos.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -321,8 +293,7 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_TCMD, b.choice.value());
-        assertEquals(CmsTcmd.OPERATE, b.alt_tcmd.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -336,8 +307,6 @@ public class CmsDataTest {
         CmsData b = new CmsData();
         b.decode(encoded);
 
-        assertEquals(CmsData.CHOICE_CHECK, b.choice.value());
-        assertTrue(b.alt_check.syncheck.value());
-        assertFalse(b.alt_check.interlock_check.value());
+        assertEquals(a, b);
     }
 }

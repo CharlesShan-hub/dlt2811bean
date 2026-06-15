@@ -17,8 +17,7 @@ public class CmsGooseTest {
 
         CmsGetGoCbValuesRequest b = new CmsGetGoCbValuesRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertEquals(1, b.reference.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -44,8 +43,7 @@ public class CmsGooseTest {
 
         CmsSendGooseMessage b = new CmsSendGooseMessage();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertEquals(1, b.data.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -57,6 +55,6 @@ public class CmsGooseTest {
 
         CmsGetGoCbValuesError b = new CmsGetGoCbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

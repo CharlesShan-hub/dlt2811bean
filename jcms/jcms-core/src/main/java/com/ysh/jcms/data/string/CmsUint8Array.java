@@ -3,6 +3,7 @@ package com.ysh.jcms.data.string;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.ysh.jcms.core.CmsType;
+import java.util.Arrays;
 
 /**
  * typedef struct { uint8_t *value; int32_t len; } cms_uint8_array_t;
@@ -102,5 +103,30 @@ public class CmsUint8Array extends CmsType {
         int ofs = 0;
         this.value = nativePtr.getPointer(ofs); ofs += 8;
         this.len = nativePtr.getInt(ofs);
+    }
+
+    // ==================== equals / hashCode ====================
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CmsUint8Array)) return false;
+        CmsUint8Array other = (CmsUint8Array) o;
+        if (len != other.len) return false;
+        if (len == 0) return true;
+        if (value == null || other.value == null) return false;
+        // Try reading len bytes; for BitString, len is in bits and
+        // may exceed the allocated buffer — fall back to bit count.
+        try {
+            return Arrays.equals(value.getByteArray(0, len), other.value.getByteArray(0, len));
+        } catch (IndexOutOfBoundsException e) {
+            int byteLen = (len + 7) / 8;
+            return Arrays.equals(value.getByteArray(0, byteLen), other.value.getByteArray(0, byteLen));
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(value());
     }
 }

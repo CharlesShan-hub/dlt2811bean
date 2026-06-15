@@ -17,9 +17,7 @@ public class CmsReportTest {
 
         CmsGetBrcbValuesRequest b = new CmsGetBrcbValuesRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertEquals(1, b.reference.size());
-        assertArrayEquals("brcbRef".getBytes(), b.reference.get(0).value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -34,17 +32,14 @@ public class CmsReportTest {
         v1.altValue.sqNum.value(5);
         v1.altValue.gi.value(false);
         v1.altValue.purgeBuf.value(true);
+        v1.altValue.entryID.value(new byte[]{1,2,3,4,5,6,7,8});
         a.brcb.add(v1);
         a.moreFollows.value(false);
         byte[] encoded = a.encode();
 
         CmsGetBrcbValuesResponse b = new CmsGetBrcbValuesResponse();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertFalse(b.moreFollows.value());
-        assertEquals(1, b.brcb.size());
-        assertArrayEquals("brcbRpt".getBytes(), b.brcb.get(0).altValue.rptID.value());
-        assertTrue(b.brcb.get(0).altValue.rptEna.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -56,7 +51,7 @@ public class CmsReportTest {
 
         CmsGetBrcbValuesError b = new CmsGetBrcbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_IN_USE, b.serviceError.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -68,8 +63,7 @@ public class CmsReportTest {
 
         CmsGetUrcbValuesRequest b = new CmsGetUrcbValuesRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertEquals(1, b.reference.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -81,14 +75,14 @@ public class CmsReportTest {
         v1.altValue.rptID.value("urcbRpt".getBytes());
         v1.altValue.rptEna.value(true);
         v1.altValue.confRev.value(50L);
+        v1.altValue.entryID.value(new byte[]{1,2,3,4,5,6,7,8});
         a.urcb.add(v1);
         a.moreFollows.value(false);
         byte[] encoded = a.encode();
 
         CmsGetUrcbValuesResponse b = new CmsGetUrcbValuesResponse();
         b.decode(encoded);
-        assertEquals(25, b.reqId.value());
-        assertEquals(1, b.urcb.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -100,7 +94,7 @@ public class CmsReportTest {
 
         CmsGetUrcbValuesError b = new CmsGetUrcbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -118,8 +112,7 @@ public class CmsReportTest {
 
         CmsSetBrcbValuesRequest b = new CmsSetBrcbValuesRequest();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertEquals(1, b.brcb.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -130,7 +123,7 @@ public class CmsReportTest {
 
         CmsSetBrcbValuesResponse b = new CmsSetBrcbValuesResponse();
         b.decode(encoded);
-        assertEquals(31, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -148,8 +141,7 @@ public class CmsReportTest {
 
         CmsSetUrcbValuesRequest b = new CmsSetUrcbValuesRequest();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertEquals(1, b.urcb.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -160,7 +152,7 @@ public class CmsReportTest {
 
         CmsSetUrcbValuesResponse b = new CmsSetUrcbValuesResponse();
         b.decode(encoded);
-        assertEquals(41, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -181,9 +173,7 @@ public class CmsReportTest {
 
         CmsReport b = new CmsReport();
         b.decode(encoded);
-        assertEquals(50, b.reqId.value());
-        assertArrayEquals("rpt01".getBytes(), b.rptID.value());
-        assertTrue(b.optFlds.sequence_number.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -215,11 +205,7 @@ public class CmsReportTest {
         CmsReport b = new CmsReport();
         b.entry.entryData.add(new CmsReportDataEntry());
         b.decode(encoded);
-        assertEquals(60, b.reqId.value());
-        assertTrue(b.entry.timeOfEntryPresent.value());
-        assertEquals(1, b.entry.entryData.size());
-        assertEquals(CmsData.CHOICE_BOOLEAN, b.entry.entryData.get(0).value.choice.value());
-        assertTrue(b.entry.entryData.get(0).value.alt_boolean.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -273,8 +259,6 @@ public class CmsReportTest {
 
         CmsSetUrcbValuesError b = new CmsSetUrcbValuesError();
         b.decode(encoded);
-        assertEquals(90, b.reqId.value());
-        assertEquals(1, b.result.size());
-        assertEquals(CmsServiceError.INSTANCE_IN_USE, b.result.get(0).error.value());
+        assertEquals(b, pdu);
     }
 }

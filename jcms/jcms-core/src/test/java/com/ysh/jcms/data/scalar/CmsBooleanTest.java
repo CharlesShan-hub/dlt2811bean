@@ -10,6 +10,6 @@ public class CmsBooleanTest {
         byte[] encoded = a.encode();
         CmsBoolean b = new CmsBoolean();
         b.decode(encoded);
-        assertTrue(b.value());
+        assertEquals(a, b);
     }
 }

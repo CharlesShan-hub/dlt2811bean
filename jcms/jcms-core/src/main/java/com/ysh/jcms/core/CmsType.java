@@ -2,22 +2,23 @@ package com.ysh.jcms.core;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * jcms2 基类。
+ * jcms2 base class.
  *
- * 两种模式：
+ * Two modes:
  *
- * 1. 叶子类型（Boolean, Int8 等）：
- *    - 没有 children
- *    - 自管 native 内存，自实现 write()/read()/encode()/decode()
+ * 1. Leaf type (Boolean, Int8, etc.):
+ *    - No children
+ *    - Manages its own native memory, implements write()/read()/encode()/decode()
  *
- * 2. 容器类型（SEQUENCE, CHOICE 等）：
- *    - children() 返回子字段列表
- *    - 基类自动 write/read：把 child 的 nativePtr 按顺序写入 parent 的 native 内存
- *    - encode()/decode() 由 C 侧负责（需要 C 函数支持）
+ * 2. Container type (SEQUENCE, CHOICE, etc.):
+ *    - children() returns the list of child fields
+ *    - Base class auto-write/read: writes child.nativePtr sequentially into parent native memory
+ *    - encode()/decode() handled by C side (requires C function support)
  */
 public abstract class CmsType {
 
@@ -30,22 +31,22 @@ public abstract class CmsType {
         zero();
     }
 
-    // ==================== 子类可重写的 ====================
+    // ==================== Overridable by subclasses ====================
 
-    /** 返回子字段列表（容器类型重写，叶子类型返回空列表）。 */
+    /** Return child fields (overridden by container types; leaf types return empty list). */
     public List<? extends CmsType> children() {
         return Collections.emptyList();
     }
 
-    /** 计算 native 内存大小。叶子类型重写，容器类型默认 children.size() * 8。 */
+    /** Compute native memory size. Leaf types override; container types default to children.size() * 8. */
     protected int calcNativeSize() {
         return children().size() * 8;
     }
 
     /**
-     * 同步 Java 字段 → native 内存。
-     * - 叶子类型：自己写字段到 nativePtr
-     * - 容器类型：遍历 children → child.write() → 写 child.nativePtr
+     * Sync Java fields -> native memory.
+     * - Leaf types: write fields directly to nativePtr
+     * - Container types: iterate children -> child.write() -> write child.nativePtr
      */
     public void write() {
         List<? extends CmsType> kids = children();
@@ -57,9 +58,9 @@ public abstract class CmsType {
     }
 
     /**
-     * 同步 native 内存 → Java 字段。
-     * - 叶子类型：从 nativePtr 读字段
-     * - 容器类型：读 child 指针 → 设置 child.nativePtr → child.read()
+     * Sync native memory -> Java fields.
+     * - Leaf types: read fields from nativePtr
+     * - Container types: read child pointer -> set child.nativePtr -> child.read()
      */
     public void read() {
         List<? extends CmsType> kids = children();
@@ -74,9 +75,9 @@ public abstract class CmsType {
     }
 
     /**
-     * PER 编码：将当前结构编码为字节数组。
-     * - 叶子类型：write() 后再调 C FFI
-     * - 容器类型：先 write()（递归写所有 children），再调 C FFI
+     * PER encode: encodes the current structure to a byte array.
+     * - Leaf types: write() then call C FFI
+     * - Container types: write() first (recursively writes children), then call C FFI
      */
     public byte[] encode() {
         throw new UnsupportedOperationException(
@@ -84,16 +85,54 @@ public abstract class CmsType {
     }
 
     /**
-     * PER 解码：从字节数组解码到当前结构。
-     * - 叶子类型：调 C FFI 后再 read()
-     * - 容器类型：调 C FFI 后再 read()（递归读所有 children）
+     * PER decode: decodes from a byte array into the current structure.
+     * - Leaf types: call C FFI then read()
+     * - Container types: call C FFI then read() (recursively reads children)
      */
     public void decode(byte[] data) {
         throw new UnsupportedOperationException(
             getClass().getSimpleName() + " has no FFI decode");
     }
 
-    // ==================== 公共工具 ====================
+    // ==================== equals / hashCode ====================
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CmsType other = (CmsType) o;
+
+        List<? extends CmsType> kids = children();
+        List<? extends CmsType> otherKids = other.children();
+
+        if (!kids.isEmpty()) {
+            // Compound type: compare children recursively
+            if (kids.size() != otherKids.size()) return false;
+            for (int i = 0; i < kids.size(); i++) {
+                if (!kids.get(i).equals(otherKids.get(i))) return false;
+            }
+            return true;
+        }
+
+        // Leaf type: compare native memory bytes
+        return Arrays.equals(
+            nativePtr.getByteArray(0, nativeSize),
+            other.nativePtr.getByteArray(0, other.nativeSize)
+        );
+    }
+
+    @Override
+    public int hashCode() {
+        List<? extends CmsType> kids = children();
+        if (!kids.isEmpty()) {
+            int h = 1;
+            for (CmsType child : kids) h = 31 * h + child.hashCode();
+            return h;
+        }
+        return Arrays.hashCode(nativePtr.getByteArray(0, nativeSize));
+    }
+
+    // ==================== Utilities ====================
 
     public void zero() {
         if (nativePtr != null) {

@@ -12,7 +12,6 @@ public class CmsMsvcbOptFldsTest {
         byte[] encoded = a.encode();
         CmsMsvcbOptFlds b = new CmsMsvcbOptFlds();
         b.decode(encoded);
-        assertTrue(b.refresh_time.value());
-        assertTrue(b.sample_rate.value());
+        assertEquals(a, b);
     }
 }

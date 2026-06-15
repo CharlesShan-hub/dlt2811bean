@@ -21,12 +21,7 @@ public class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValuesRequest b = new CmsGetAllDataValuesRequest();
         b.decode(encoded);
-        assertEquals(7, b.reqId.value());
-        assertEquals(CmsReferenceChoice.LN_REFERENCE, b.reference.choice.value());
-        assertArrayEquals("lnRef".getBytes(), b.reference.altLnReference.value());
-        assertTrue(b.fcPresent.value());
-        assertArrayEquals("MX".getBytes(), b.fc.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -50,15 +45,7 @@ public class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertTrue(b.moreFollows.value());
-        assertEquals(2, b.data.size());
-        assertArrayEquals("ref1".getBytes(), b.data.get(0).reference.value());
-        assertEquals(CmsData.CHOICE_BOOLEAN, b.data.get(0).value.choice.value());
-        assertTrue(b.data.get(0).value.alt_boolean.value());
-        assertArrayEquals("ref2".getBytes(), b.data.get(1).reference.value());
-        assertEquals(CmsData.CHOICE_INT32, b.data.get(1).value.choice.value());
-        assertEquals(12345L, b.data.get(1).value.alt_int32.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -70,7 +57,6 @@ public class CmsGetAllDataValuesTest {
 
         CmsGetAllDataValuesError b = new CmsGetAllDataValuesError();
         b.decode(encoded);
-        assertEquals(66, b.reqId.value());
-        assertEquals(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

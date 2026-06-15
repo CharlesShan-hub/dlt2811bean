@@ -17,8 +17,7 @@ public class CmsLogTest {
 
         CmsQueryLogByTimeRequest b = new CmsQueryLogByTimeRequest();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertFalse(b.startTimePresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -32,8 +31,7 @@ public class CmsLogTest {
 
         CmsQueryLogAfterRequest b = new CmsQueryLogAfterRequest();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertArrayEquals(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08}, b.entry.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -45,6 +43,6 @@ public class CmsLogTest {
 
         CmsGetLcbValuesError b = new CmsGetLcbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

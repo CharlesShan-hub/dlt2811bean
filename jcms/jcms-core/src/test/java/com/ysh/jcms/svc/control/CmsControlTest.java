@@ -16,8 +16,7 @@ public class CmsControlTest {
 
         CmsSelectRequest b = new CmsSelectRequest();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertArrayEquals("ref1".getBytes(), b.reference.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -41,8 +40,7 @@ public class CmsControlTest {
 
         CmsSelectWithValueRequest b = new CmsSelectWithValueRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertFalse(b.operTmPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -65,7 +63,6 @@ public class CmsControlTest {
 
         CmsOperateRequest b = new CmsOperateRequest();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertEquals(42, b.ctlVal.alt_int32.value());
+        assertEquals(a, b);
     }
 }

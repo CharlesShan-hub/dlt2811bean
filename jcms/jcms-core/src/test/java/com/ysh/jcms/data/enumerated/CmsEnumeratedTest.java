@@ -11,6 +11,6 @@ public class CmsEnumeratedTest {
         byte[] encoded = a.encode();
         CmsEnumerated b = new CmsEnumerated();
         b.decode(encoded);
-        assertEquals(5, b.value());
+        assertEquals(a, b);
     }
 }

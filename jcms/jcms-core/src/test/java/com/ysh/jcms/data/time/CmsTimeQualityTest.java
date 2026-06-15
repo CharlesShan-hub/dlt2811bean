@@ -14,9 +14,6 @@ public class CmsTimeQualityTest {
         byte[] encoded = a.encode();
         CmsTimeQuality b = new CmsTimeQuality();
         b.decode(encoded);
-        assertTrue(b.leap_seconds_known.value());
-        assertTrue(b.clock_failure.value());
-        assertFalse(b.clock_not_synchronized.value());
-        assertEquals(15, b.precision.value());
+        assertEquals(a, b);
     }
 }

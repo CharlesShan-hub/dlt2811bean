@@ -10,6 +10,6 @@ public class CmsObjectNameTest {
         byte[] encoded = a.encode();
         CmsObjectName b = new CmsObjectName();
         b.decode(encoded);
-        assertArrayEquals("MyObject".getBytes(), b.value());
+        assertEquals(a, b);
     }
 }

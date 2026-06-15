@@ -19,11 +19,7 @@ public class CmsGetAllDataDefinitionTest {
 
         CmsGetAllDataDefinitionRequest b = new CmsGetAllDataDefinitionRequest();
         b.decode(encoded);
-        assertEquals(8, b.reqId.value());
-        assertEquals(CmsReferenceChoice.LD_NAME, b.reference.choice.value());
-        assertArrayEquals("ld1".getBytes(), b.reference.altLdName.value());
-        assertFalse(b.fcPresent.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -40,12 +36,7 @@ public class CmsGetAllDataDefinitionTest {
 
         CmsGetAllDataDefinitionRequest b = new CmsGetAllDataDefinitionRequest();
         b.decode(encoded);
-        assertEquals(9, b.reqId.value());
-        assertArrayEquals("lnRef".getBytes(), b.reference.altLnReference.value());
-        assertTrue(b.fcPresent.value());
-        assertArrayEquals("ST".getBytes(), b.fc.value());
-        assertTrue(b.refAfterPresent.value());
-        assertArrayEquals("after".getBytes(), b.refAfter.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -57,7 +48,6 @@ public class CmsGetAllDataDefinitionTest {
 
         CmsGetAllDataDefinitionError b = new CmsGetAllDataDefinitionError();
         b.decode(encoded);
-        assertEquals(55, b.reqId.value());
-        assertEquals(CmsServiceError.TYPE_CONFLICT, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

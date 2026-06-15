@@ -16,10 +16,7 @@ public class CmsNegotiateTest {
 
         CmsNegotiateRequest b = new CmsNegotiateRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertEquals(1024, b.apduSize.value());
-        assertEquals(65536L, b.asduSize.value());
-        assertEquals(1L, b.protocolVersion.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -34,11 +31,7 @@ public class CmsNegotiateTest {
 
         CmsNegotiateResponse b = new CmsNegotiateResponse();
         b.decode(encoded);
-        assertEquals(2, b.reqId.value());
-        assertEquals(2048, b.apduSize.value());
-        assertEquals(131072L, b.asduSize.value());
-        assertEquals(2L, b.protocolVersion.value());
-        assertArrayEquals("1.0".getBytes(), b.modelVersion.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -50,7 +43,6 @@ public class CmsNegotiateTest {
 
         CmsNegotiateError b = new CmsNegotiateError();
         b.decode(encoded);
-        assertEquals(99, b.reqId.value());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

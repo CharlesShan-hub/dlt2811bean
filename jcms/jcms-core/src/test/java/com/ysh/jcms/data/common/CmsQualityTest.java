@@ -14,9 +14,6 @@ public class CmsQualityTest {
         byte[] encoded = a.encode();
         CmsQuality b = new CmsQuality();
         b.decode(encoded);
-        assertEquals(1, b.validity.value());
-        assertTrue(b.overflow.value());
-        assertTrue(b.failure.value());
-        assertTrue(b.inaccurate.value());
+        assertEquals(a, b);
     }
 }

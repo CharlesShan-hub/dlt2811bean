@@ -10,6 +10,6 @@ public class CmsInt16Test {
         byte[] encoded = a.encode();
         CmsInt16 b = new CmsInt16();
         b.decode(encoded);
-        assertEquals(-12345, b.value());
+        assertEquals(a, b);
     }
 }

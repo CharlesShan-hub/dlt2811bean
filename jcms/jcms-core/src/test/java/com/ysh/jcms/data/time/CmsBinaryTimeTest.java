@@ -12,7 +12,6 @@ public class CmsBinaryTimeTest {
         byte[] encoded = a.encode();
         CmsBinaryTime b = new CmsBinaryTime();
         b.decode(encoded);
-        assertEquals(43200000L, b.msOfDay.value());
-        assertEquals(5000, b.daysSince1984.value());
+        assertEquals(a, b);
     }
 }

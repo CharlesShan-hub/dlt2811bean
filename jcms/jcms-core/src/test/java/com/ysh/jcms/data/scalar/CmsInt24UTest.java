@@ -10,6 +10,6 @@ public class CmsInt24UTest {
         byte[] encoded = a.encode();
         CmsInt24U b = new CmsInt24U();
         b.decode(encoded);
-        assertEquals(12345678, b.value());
+        assertEquals(a, b);
     }
 }

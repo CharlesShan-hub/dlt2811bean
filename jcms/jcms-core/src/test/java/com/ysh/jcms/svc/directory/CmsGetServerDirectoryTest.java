@@ -17,9 +17,7 @@ public class CmsGetServerDirectoryTest {
 
         CmsGetServerDirectoryRequest b = new CmsGetServerDirectoryRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertEquals(CmsObjectClass.LOGICAL_DEVICE, b.objectClass.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -33,10 +31,7 @@ public class CmsGetServerDirectoryTest {
 
         CmsGetServerDirectoryRequest b = new CmsGetServerDirectoryRequest();
         b.decode(encoded);
-        assertEquals(2, b.reqId.value());
-        assertEquals(CmsObjectClass.FILE_SYSTEM, b.objectClass.value());
-        assertTrue(b.refAfterPresent.value());
-        assertArrayEquals("myRef".getBytes(), b.refAfter.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -52,11 +47,7 @@ public class CmsGetServerDirectoryTest {
 
         CmsGetServerDirectoryResponse b = new CmsGetServerDirectoryResponse();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertFalse(b.moreFollows.value());
-        assertEquals(2, b.reference.size());
-        assertArrayEquals("device1".getBytes(), b.reference.get(0).value());
-        assertArrayEquals("device2".getBytes(), b.reference.get(1).value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -68,7 +59,6 @@ public class CmsGetServerDirectoryTest {
 
         CmsGetServerDirectoryError b = new CmsGetServerDirectoryError();
         b.decode(encoded);
-        assertEquals(99, b.reqId.value());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

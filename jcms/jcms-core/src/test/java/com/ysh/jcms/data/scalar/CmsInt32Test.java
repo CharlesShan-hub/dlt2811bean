@@ -10,6 +10,6 @@ public class CmsInt32Test {
         byte[] encoded = a.encode();
         CmsInt32 b = new CmsInt32();
         b.decode(encoded);
-        assertEquals(-1234567, b.value());
+        assertEquals(a, b);
     }
 }

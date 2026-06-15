@@ -15,8 +15,6 @@ public class CmsReleaseResponseTest {
 
         CmsReleaseResponse b = new CmsReleaseResponse();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertArrayEquals(new byte[]{0x01, 0x02, 0x03, 0x04, 0x05}, b.assocId.value());
-        assertEquals(CmsServiceError.NO_ERROR, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

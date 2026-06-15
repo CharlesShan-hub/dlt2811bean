@@ -10,6 +10,6 @@ public class CmsInt8UTest {
         byte[] encoded = a.encode();
         CmsInt8U b = new CmsInt8U();
         b.decode(encoded);
-        assertEquals(200, b.value());
+        assertEquals(a, b);
     }
 }

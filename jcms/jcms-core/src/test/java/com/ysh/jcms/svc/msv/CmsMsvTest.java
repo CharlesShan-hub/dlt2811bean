@@ -27,8 +27,7 @@ public class CmsMsvTest {
 
         CmsSendMsvMessage b = new CmsSendMsvMessage();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertEquals(1, b.sample.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -40,6 +39,6 @@ public class CmsMsvTest {
 
         CmsGetMsvcbValuesError b = new CmsGetMsvcbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_IN_USE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

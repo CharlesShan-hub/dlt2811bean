@@ -14,9 +14,7 @@ public class CmsAssociateRequestTest {
 
         CmsAssociateRequest b = new CmsAssociateRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertFalse(b.sapRefPresent.value());
-        assertFalse(b.authParamPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -30,10 +28,7 @@ public class CmsAssociateRequestTest {
 
         CmsAssociateRequest b = new CmsAssociateRequest();
         b.decode(encoded);
-        assertEquals(2, b.reqId.value());
-        assertTrue(b.sapRefPresent.value());
-        assertArrayEquals("MyAccessPoint".getBytes(), b.sapRef.value());
-        assertFalse(b.authParamPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -52,13 +47,6 @@ public class CmsAssociateRequestTest {
 
         CmsAssociateRequest b = new CmsAssociateRequest();
         b.decode(encoded);
-        assertEquals(3, b.reqId.value());
-        assertTrue(b.sapRefPresent.value());
-        assertArrayEquals("sapRef".getBytes(), b.sapRef.value());
-        assertTrue(b.authParamPresent.value());
-        assertArrayEquals(new byte[]{0x11, 0x22}, b.authParam.cert.value());
-        assertEquals(1234567890L, b.authParam.signedTime.seconds_since_epoch.value());
-        assertTrue(b.authParam.signedTime.time_quality.leap_seconds_known.value());
-        assertArrayEquals(new byte[]{0x33, 0x44}, b.authParam.sigVal.value());
+        assertEquals(a, b);
     }
 }

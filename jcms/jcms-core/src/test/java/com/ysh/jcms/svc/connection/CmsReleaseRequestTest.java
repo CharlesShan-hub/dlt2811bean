@@ -13,7 +13,6 @@ public class CmsReleaseRequestTest {
 
         CmsReleaseRequest b = new CmsReleaseRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertArrayEquals(new byte[]{0x0A, 0x0B, 0x0C, 0x0D}, b.assocId.value());
+        assertEquals(a, b);
     }
 }

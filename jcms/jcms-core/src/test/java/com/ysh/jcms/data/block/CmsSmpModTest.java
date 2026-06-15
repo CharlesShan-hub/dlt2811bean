@@ -10,6 +10,6 @@ public class CmsSmpModTest {
         byte[] encoded = a.encode();
         CmsSmpMod b = new CmsSmpMod();
         b.decode(encoded);
-        assertEquals(CmsSmpMod.SAMPLES_PER_SECOND, b.value());
+        assertEquals(a, b);
     }
 }

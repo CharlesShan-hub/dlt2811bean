@@ -17,9 +17,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
         CmsGetLogicalDeviceDirectoryRequest b = new CmsGetLogicalDeviceDirectoryRequest();
         b.decode(encoded);
-        assertEquals(3, b.reqId.value());
-        assertFalse(b.ldNamePresent.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -33,10 +31,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
         CmsGetLogicalDeviceDirectoryRequest b = new CmsGetLogicalDeviceDirectoryRequest();
         b.decode(encoded);
-        assertEquals(4, b.reqId.value());
-        assertTrue(b.ldNamePresent.value());
-        assertArrayEquals("ld1".getBytes(), b.ldName.value());
-        assertFalse(b.refAfterPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -53,12 +48,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
         CmsGetLogicalDeviceDirectoryResponse b = new CmsGetLogicalDeviceDirectoryResponse();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
-        assertTrue(b.moreFollows.value());
-        assertEquals(3, b.lnReference.size());
-        assertArrayEquals("ln1".getBytes(), b.lnReference.get(0).value());
-        assertArrayEquals("ln2".getBytes(), b.lnReference.get(1).value());
-        assertArrayEquals("ln3".getBytes(), b.lnReference.get(2).value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -70,7 +60,6 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
         CmsGetLogicalDeviceDirectoryError b = new CmsGetLogicalDeviceDirectoryError();
         b.decode(encoded);
-        assertEquals(88, b.reqId.value());
-        assertEquals(CmsServiceError.INSTANCE_IN_USE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

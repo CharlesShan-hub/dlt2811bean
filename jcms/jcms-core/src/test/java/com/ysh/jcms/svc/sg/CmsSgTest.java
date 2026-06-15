@@ -15,8 +15,7 @@ public class CmsSgTest {
 
         CmsSelectActiveSgRequest b = new CmsSelectActiveSgRequest();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertArrayEquals("sgcbRef".getBytes(), b.sgcbReference.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -29,7 +28,7 @@ public class CmsSgTest {
 
         CmsSelectEditSgRequest b = new CmsSelectEditSgRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -41,6 +40,6 @@ public class CmsSgTest {
 
         CmsGetSgcbValuesError b = new CmsGetSgcbValuesError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_IN_USE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

@@ -15,8 +15,6 @@ public class CmsMsvcbTest {
         byte[] encoded = a.encode();
         CmsMsvcb b = new CmsMsvcb();
         b.decode(encoded);
-        assertTrue(b.svEna.value());
-        assertEquals(7L, b.confRev.value());
-        assertEquals(4800, b.smpRate.value());
+        assertEquals(a, b);
     }
 }

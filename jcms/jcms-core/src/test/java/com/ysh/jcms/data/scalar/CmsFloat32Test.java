@@ -10,6 +10,6 @@ public class CmsFloat32Test {
         byte[] encoded = a.encode();
         CmsFloat32 b = new CmsFloat32();
         b.decode(encoded);
-        assertEquals(3.14f, b.value(), 1e-6f);
+        assertEquals(a, b);
     }
 }

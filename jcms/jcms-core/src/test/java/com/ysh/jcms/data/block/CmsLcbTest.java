@@ -12,7 +12,6 @@ public class CmsLcbTest {
         byte[] encoded = a.encode();
         CmsLcb b = new CmsLcb();
         b.decode(encoded);
-        assertTrue(b.logEna.value());
-        assertEquals(1000L, b.intgPd.value());
+        assertEquals(a, b);
     }
 }

@@ -10,6 +10,6 @@ public class CmsOrCatTest {
         byte[] encoded = a.encode();
         CmsOrCat b = new CmsOrCat();
         b.decode(encoded);
-        assertEquals(CmsOrCat.STATION_CONTROL, b.value());
+        assertEquals(a, b);
     }
 }

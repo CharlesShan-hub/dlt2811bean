@@ -11,6 +11,6 @@ public class CmsFunctionalConstraintTest {
         byte[] encoded = a.encode();
         CmsFunctionalConstraint b = new CmsFunctionalConstraint();
         b.decode(encoded);
-        assertArrayEquals("ST".getBytes(), b.value());
+        assertEquals(a, b);
     }
 }

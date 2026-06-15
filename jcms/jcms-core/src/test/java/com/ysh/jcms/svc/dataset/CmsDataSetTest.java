@@ -20,8 +20,7 @@ public class CmsDataSetTest {
 
         CmsCreateDataSetRequest b = new CmsCreateDataSetRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
-        assertEquals(1, b.memberData.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -33,7 +32,7 @@ public class CmsDataSetTest {
 
         CmsDeleteDataSetRequest b = new CmsDeleteDataSetRequest();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -50,8 +49,7 @@ public class CmsDataSetTest {
 
         CmsSetDataSetValuesRequest b = new CmsSetDataSetValuesRequest();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertEquals(1, b.value.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -62,6 +60,6 @@ public class CmsDataSetTest {
         byte[] encoded = a.encode();
         CmsCreateDataSetError b = new CmsCreateDataSetError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

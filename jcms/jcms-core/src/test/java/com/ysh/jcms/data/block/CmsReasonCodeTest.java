@@ -12,7 +12,6 @@ public class CmsReasonCodeTest {
         byte[] encoded = a.encode();
         CmsReasonCode b = new CmsReasonCode();
         b.decode(encoded);
-        assertTrue(b.data_change.value());
-        assertTrue(b.general_interrogation.value());
+        assertEquals(a, b);
     }
 }

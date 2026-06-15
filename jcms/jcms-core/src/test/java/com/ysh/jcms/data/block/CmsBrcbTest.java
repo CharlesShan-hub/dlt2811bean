@@ -24,15 +24,6 @@ public class CmsBrcbTest {
 
         CmsBrcb b = new CmsBrcb();
         b.decode(encoded);
-        assertArrayEquals("rpt01".getBytes(), b.rptID.value());
-        assertTrue(b.rptEna.value());
-        assertEquals(3L, b.confRev.value());
-        assertTrue(b.optFlds.sequence_number.value());
-        //assertEquals(5000L, b.bufTm.value());
-        assertEquals(100, b.sqNum.value());
-        assertTrue(b.trgOps.data_change.value());
-        assertEquals(3000L, b.intgPd.value());
-        assertFalse(b.gi.value());
-        assertTrue(b.purgeBuf.value());
+        assertEquals(a, b);
     }
 }

@@ -13,8 +13,6 @@ public class CmsUtcTimeTest {
         byte[] encoded = a.encode();
         CmsUtcTime b = new CmsUtcTime();
         b.decode(encoded);
-        assertEquals(1234567890L, b.seconds_since_epoch.value());
-        assertEquals(500000, b.fraction_of_second.value());
-        assertTrue(b.time_quality.leap_seconds_known.value());
+        assertEquals(a, b);
     }
 }

@@ -16,7 +16,7 @@ public class CmsRpcTest {
 
         CmsGetRpcInterfaceDirectoryRequest b = new CmsGetRpcInterfaceDirectoryRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -31,8 +31,7 @@ public class CmsRpcTest {
 
         CmsGetRpcInterfaceDirectoryResponse b = new CmsGetRpcInterfaceDirectoryResponse();
         b.decode(encoded);
-        assertEquals(10, b.reqId.value());
-        assertEquals(2, b.reference.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -45,7 +44,7 @@ public class CmsRpcTest {
 
         CmsGetRpcMethodDirectoryRequest b = new CmsGetRpcMethodDirectoryRequest();
         b.decode(encoded);
-        assertEquals(20, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -60,8 +59,7 @@ public class CmsRpcTest {
 
         CmsGetRpcMethodDirectoryResponse b = new CmsGetRpcMethodDirectoryResponse();
         b.decode(encoded);
-        assertEquals(21, b.reqId.value());
-        assertEquals(2, b.reference.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -74,7 +72,7 @@ public class CmsRpcTest {
 
         CmsGetRpcInterfaceDefinitionRequest b = new CmsGetRpcInterfaceDefinitionRequest();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -87,8 +85,7 @@ public class CmsRpcTest {
 
         CmsGetRpcMethodDefinitionRequest b = new CmsGetRpcMethodDefinitionRequest();
         b.decode(encoded);
-        assertEquals(40, b.reqId.value());
-        assertEquals(1, b.reference.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -103,9 +100,7 @@ public class CmsRpcTest {
 
         CmsRpcCallRequest b = new CmsRpcCallRequest();
         b.decode(encoded);
-        assertEquals(50, b.reqId.value());
-        assertArrayEquals("myMethod".getBytes(), b.method.value());
-        assertEquals(CmsRpcCallReqChoice.REQ_DATA, b.req.choice.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -119,9 +114,7 @@ public class CmsRpcTest {
 
         CmsRpcCallResponse b = new CmsRpcCallResponse();
         b.decode(encoded);
-        assertEquals(60, b.reqId.value());
-        assertEquals(CmsData.CHOICE_INT32, b.rspData.choice.value());
-        assertFalse(b.nextCallIdPresent.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -133,6 +126,6 @@ public class CmsRpcTest {
 
         CmsGetRpcInterfaceDirectoryError b = new CmsGetRpcInterfaceDirectoryError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

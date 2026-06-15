@@ -14,7 +14,6 @@ public class CmsAssociateErrorTest {
 
         CmsAssociateError b = new CmsAssociateError();
         b.decode(encoded);
-        assertEquals(5, b.reqId.value());
-        assertEquals(CmsServiceError.INSTANCE_NOT_AVAILABLE, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

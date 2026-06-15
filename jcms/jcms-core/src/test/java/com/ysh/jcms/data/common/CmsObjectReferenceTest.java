@@ -10,6 +10,6 @@ public class CmsObjectReferenceTest {
         byte[] encoded = a.encode();
         CmsObjectReference b = new CmsObjectReference();
         b.decode(encoded);
-        assertArrayEquals("ObjRefTest".getBytes(), b.value());
+        assertEquals(a, b);
     }
 }

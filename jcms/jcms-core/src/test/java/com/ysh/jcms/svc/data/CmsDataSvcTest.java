@@ -15,7 +15,7 @@ public class CmsDataSvcTest {
 
         CmsGetDataDirectoryRequest b = new CmsGetDataDirectoryRequest();
         b.decode(encoded);
-        assertEquals(1, b.reqId.value());
+        assertEquals(a, b);
     }
 
     @Test
@@ -31,8 +31,7 @@ public class CmsDataSvcTest {
 
         CmsGetDataValuesRequest b = new CmsGetDataValuesRequest();
         b.decode(encoded);
-        assertEquals(30, b.reqId.value());
-        assertEquals(1, b.data.size());
+        assertEquals(a, b);
     }
 
     @Test
@@ -44,6 +43,6 @@ public class CmsDataSvcTest {
 
         CmsGetDataDirectoryError b = new CmsGetDataDirectoryError();
         b.decode(encoded);
-        assertEquals(CmsServiceError.ACCESS_VIOLATION, b.serviceError.value());
+        assertEquals(a, b);
     }
 }

@@ -21,9 +21,6 @@ public class CmsUrcbTest {
         byte[] encoded = a.encode();
         CmsUrcb b = new CmsUrcb();
         b.decode(encoded);
-        assertArrayEquals("urpt01".getBytes(), b.rptID.value());
-        assertFalse(b.rptEna.value());
-        assertEquals(5L, b.confRev.value());
-        assertTrue(b.resv.value());
+        assertEquals(a, b);
     }
 }

@@ -10,6 +10,6 @@ public class CmsInt16UTest {
         byte[] encoded = a.encode();
         CmsInt16U b = new CmsInt16U();
         b.decode(encoded);
-        assertEquals(60000, b.value());
+        assertEquals(a, b);
     }
 }

@@ -10,6 +10,6 @@ public class CmsAddCauseTest {
         byte[] encoded = a.encode();
         CmsAddCause b = new CmsAddCause();
         b.decode(encoded);
-        assertEquals(CmsAddCause.BLOCKED_BY_INTERLOCKING, b.value());
+        assertEquals(a, b);
     }
 }

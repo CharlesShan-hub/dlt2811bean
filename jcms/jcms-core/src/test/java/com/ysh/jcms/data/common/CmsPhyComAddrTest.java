@@ -15,9 +15,6 @@ public class CmsPhyComAddrTest {
         System.out.println("encoded " + encoded.length + " bytes");
         CmsPhyComAddr b = new CmsPhyComAddr();
         b.decode(encoded);
-        assertArrayEquals(new byte[]{1,2,3,4,5,6}, b.addr.value());
-        assertEquals(3, b.priority.value());
-        assertEquals(100, b.vid.value());
-        assertEquals(200, b.appid.value());
+        assertEquals(a, b);
     }
 }
