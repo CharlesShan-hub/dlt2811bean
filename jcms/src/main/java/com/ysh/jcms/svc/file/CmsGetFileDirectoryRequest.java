@@ -4,6 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.CmsTimeStamp;
 import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -19,24 +20,24 @@ import java.util.List;
  */
 public class CmsGetFileDirectoryRequest extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsVisibleString255 pathName;
-    public CmsBoolean          startTimePresent;
-    public CmsTimeStamp        startTime;      /* OPTIONAL */
-    public CmsBoolean          stopTimePresent;
-    public CmsTimeStamp        stopTime;       /* OPTIONAL */
-    public CmsBoolean          fileAfterPresent;
-    public CmsVisibleString255 fileAfter;      /* OPTIONAL */
+    public CmsReqId       reqId;
+    public CmsUint8Array  pathName;
+    public CmsBoolean     startTimePresent;
+    public CmsTimeStamp   startTime;      /* OPTIONAL */
+    public CmsBoolean     stopTimePresent;
+    public CmsTimeStamp   stopTime;       /* OPTIONAL */
+    public CmsBoolean     fileAfterPresent;
+    public CmsUint8Array  fileAfter;      /* OPTIONAL */
 
     public CmsGetFileDirectoryRequest() {
         this.reqId            = new CmsReqId();
-        this.pathName         = new CmsVisibleString255();
+        this.pathName         = new CmsUint8Array();
         this.startTimePresent = new CmsBoolean();
         this.startTime        = new CmsTimeStamp();
         this.stopTimePresent  = new CmsBoolean();
         this.stopTime         = new CmsTimeStamp();
         this.fileAfterPresent = new CmsBoolean();
-        this.fileAfter        = new CmsVisibleString255();
+        this.fileAfter        = new CmsUint8Array();
     }
 
     @Override

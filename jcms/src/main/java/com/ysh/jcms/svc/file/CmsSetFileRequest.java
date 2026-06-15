@@ -21,14 +21,14 @@ import java.util.List;
 public class CmsSetFileRequest extends CmsType {
 
     public CmsReqId            reqId;
-    public CmsVisibleString255 filename;
+    public CmsUint8Array       filename;
     public CmsInt32U           startPosition;
     public CmsUint8Array       fileData;
     public CmsBoolean          endOfFile;   /* DEFAULT FALSE */
 
     public CmsSetFileRequest() {
         this.reqId         = new CmsReqId();
-        this.filename      = new CmsVisibleString255();
+        this.filename      = new CmsUint8Array();
         this.startPosition = new CmsInt32U();
         this.fileData      = new CmsUint8Array();
         this.endOfFile     = new CmsBoolean();

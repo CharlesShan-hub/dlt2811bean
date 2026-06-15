@@ -3,6 +3,7 @@ package com.ysh.jcms.svc.file;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.CmsFileEntry;
+import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -15,12 +16,12 @@ import java.util.List;
  */
 public class CmsGetFileAttributeValuesRequest extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsVisibleString255 filename;
+    public CmsReqId       reqId;
+    public CmsUint8Array  filename;
 
     public CmsGetFileAttributeValuesRequest() {
         this.reqId    = new CmsReqId();
-        this.filename = new CmsVisibleString255();
+        this.filename = new CmsUint8Array();
     }
 
     @Override

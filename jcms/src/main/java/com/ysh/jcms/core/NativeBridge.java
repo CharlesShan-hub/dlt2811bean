@@ -49,6 +49,8 @@ public class NativeBridge {
         int cms_entry_id_decode(Pointer v, byte[] inBuf, int inLen);
         int cms_functional_constraint_encode(Pointer v, byte[] outBuf, IntByReference outLen);
         int cms_functional_constraint_decode(Pointer v, byte[] inBuf, int inLen);
+        int cms_association_id_encode(Pointer v, byte[] outBuf, IntByReference outLen);
+        int cms_association_id_decode(Pointer v, byte[] inBuf, int inLen);
 
         // time
         int cms_time_quality_encode(Pointer v, byte[] outBuf, IntByReference outLen);
@@ -509,6 +511,8 @@ public class NativeBridge {
     public static void decodeEntryId(Pointer p, byte[] d) { decode(p, d, LIB::cms_entry_id_decode); }
     public static byte[] encodeFunctionalConstraint(Pointer p) { return encode(p, LIB::cms_functional_constraint_encode); }
     public static void decodeFunctionalConstraint(Pointer p, byte[] d) { decode(p, d, LIB::cms_functional_constraint_decode); }
+    public static byte[] encodeAssociationId(Pointer p) { return encode(p, LIB::cms_association_id_encode); }
+    public static void decodeAssociationId(Pointer p, byte[] d) { decode(p, d, LIB::cms_association_id_decode); }
 
     // time
     public static byte[] encodeTimeQuality(Pointer p) { return encode(p, LIB::cms_time_quality_encode); }
