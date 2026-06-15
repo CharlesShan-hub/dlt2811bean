@@ -23,10 +23,10 @@ public class CmsSelectResponse extends CmsType {
         this.reference = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsSelectResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsSelectResponse reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSelectResponse reference(String v) { this.reference.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

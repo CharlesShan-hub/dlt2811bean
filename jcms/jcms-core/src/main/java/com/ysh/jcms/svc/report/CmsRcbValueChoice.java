@@ -3,7 +3,7 @@ package com.ysh.jcms.svc.report;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,8 +30,8 @@ public class CmsRcbValueChoice extends CmsType {
         this.altValue = new CmsBrcb();
     }
     
-    // -- chain setters --
     public CmsRcbValueChoice choice(int v) { this.choice.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altError, altValue);

@@ -55,7 +55,6 @@ public class CmsSetMsvcbEntry extends CmsType {
         this.optFlds        = new CmsMsvcbOptFlds();
     }
     
-    // -- chain setters --
     public CmsSetMsvcbEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSetMsvcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetMsvcbEntry svEnaPresent(boolean v) { this.svEnaPresent.value(v); return this; }
@@ -72,6 +71,7 @@ public class CmsSetMsvcbEntry extends CmsType {
     public CmsSetMsvcbEntry smpRate(int v) { this.smpRate.value(v); return this; }
     public CmsSetMsvcbEntry optFldsPresent(boolean v) { this.optFldsPresent.value(v); return this; }
     public CmsSetMsvcbEntry optFlds(CmsMsvcbOptFlds v) { this.optFlds = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

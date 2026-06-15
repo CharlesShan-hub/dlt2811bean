@@ -37,7 +37,6 @@ public class CmsLcb extends CmsType {
         this.bufTm     = new CmsInt32U();
     }
     
-    // -- chain setters --
     public CmsLcb logEna(boolean v) { this.logEna.value(v); return this; }
     public CmsLcb datSet(byte[] v) { this.datSet.value(v); return this; }
     public CmsLcb datSet(String v) { this.datSet.value(v); return this; }
@@ -49,6 +48,7 @@ public class CmsLcb extends CmsType {
     public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds = v; return this; }
     public CmsLcb bufTm_present(boolean v) { this.bufTm_present.value(v); return this; }
     public CmsLcb bufTm(long v) { this.bufTm.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(logEna, datSet, trgOps, intgPd, logRef,

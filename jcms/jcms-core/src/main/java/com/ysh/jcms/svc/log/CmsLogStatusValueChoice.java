@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,8 +29,8 @@ public class CmsLogStatusValueChoice extends CmsType {
         this.altValue = new CmsLogStatusValue();
     }
     
-    // -- chain setters --
     public CmsLogStatusValueChoice choice(int v) { this.choice.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altError, altValue);

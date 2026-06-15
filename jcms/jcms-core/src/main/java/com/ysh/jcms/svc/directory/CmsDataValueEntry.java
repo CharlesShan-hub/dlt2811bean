@@ -24,10 +24,10 @@ public class CmsDataValueEntry extends CmsType {
         this.value     = new CmsData();
     }
     
-    // -- chain setters --
     public CmsDataValueEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsDataValueEntry reference(String v) { this.reference.value(v); return this; }
     public CmsDataValueEntry value(CmsData v) { this.value = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, value);

@@ -28,10 +28,10 @@ public class CmsGetServerDirectoryResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetServerDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetServerDirectoryResponse reference(CmsArray<CmsObjectReference> v) { this.reference = v; return this; }
     public CmsGetServerDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);

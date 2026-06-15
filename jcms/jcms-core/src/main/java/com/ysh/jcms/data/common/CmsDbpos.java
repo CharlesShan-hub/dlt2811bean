@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * Dbpos ::= BIT STRING (SIZE(2))  —  7.3.5
@@ -17,5 +17,5 @@ public class CmsDbpos extends CmsEnumerated {
     public static final int BAD_STATE    = 3;
 
     public CmsDbpos() {}
-    public CmsDbpos(int value) { super(value); }
+    public CmsDbpos(int value) { super(0, 3, value); }
 }

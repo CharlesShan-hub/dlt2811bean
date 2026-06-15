@@ -27,10 +27,10 @@ public class CmsQueryLogAfterResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsQueryLogAfterResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsQueryLogAfterResponse logEntry(CmsArray<CmsLogEntry> v) { this.logEntry = v; return this; }
     public CmsQueryLogAfterResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, logEntry, moreFollows);

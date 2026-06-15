@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.enumerated;
 
+import com.ysh.jcms.core.CmsEnumerated;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

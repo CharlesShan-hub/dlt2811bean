@@ -23,9 +23,9 @@ public class CmsSetEditSgValueRequest extends CmsType {
         this.data  = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsSetEditSgValueRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetEditSgValueRequest data(CmsArray<CmsSgRefValueEntry> v) { this.data = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, data);

@@ -43,7 +43,6 @@ public class CmsReportDataEntry extends CmsType {
         this.reason       = new CmsReasonCode();
     }
     
-    // -- chain setters --
     public CmsReportDataEntry refPresent(boolean v) { this.refPresent.value(v); return this; }
     public CmsReportDataEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsReportDataEntry reference(String v) { this.reference.value(v); return this; }
@@ -54,6 +53,7 @@ public class CmsReportDataEntry extends CmsType {
     public CmsReportDataEntry value(CmsData v) { this.value = v; return this; }
     public CmsReportDataEntry reasonPresent(boolean v) { this.reasonPresent.value(v); return this; }
     public CmsReportDataEntry reason(CmsReasonCode v) { this.reason = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(refPresent, reference, fcPresent, fc, id, value,

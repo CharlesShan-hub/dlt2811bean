@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.control;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * AddCause ::= INTEGER (0..27)  —  7.5.4
@@ -41,5 +41,5 @@ public class CmsAddCause extends CmsEnumerated {
     public static final int INCONSISTENT_PARAMETERS        = 27;
 
     public CmsAddCause() {}
-    public CmsAddCause(int value) { super(value); }
+    public CmsAddCause(int value) { super(0, 27, value); }
 }

@@ -76,7 +76,6 @@ public class CmsSetBrcbResult extends CmsType {
         this.resvTmsErr        = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetBrcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
     public CmsSetBrcbResult error(int v) { this.error.value(v); return this; }
     public CmsSetBrcbResult rptIdErrPresent(boolean v) { this.rptIdErrPresent.value(v); return this; }
@@ -101,6 +100,7 @@ public class CmsSetBrcbResult extends CmsType {
     public CmsSetBrcbResult entryIdErr(int v) { this.entryIdErr.value(v); return this; }
     public CmsSetBrcbResult resvTmsErrPresent(boolean v) { this.resvTmsErrPresent.value(v); return this; }
     public CmsSetBrcbResult resvTmsErr(int v) { this.resvTmsErr.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(errorPresent, error,

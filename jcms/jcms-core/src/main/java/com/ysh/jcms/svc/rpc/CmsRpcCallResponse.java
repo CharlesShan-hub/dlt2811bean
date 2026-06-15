@@ -30,12 +30,12 @@ public class CmsRpcCallResponse extends CmsType {
         this.nextCallId       = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsRpcCallResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsRpcCallResponse rspData(CmsData v) { this.rspData = v; return this; }
     public CmsRpcCallResponse nextCallIdPresent(boolean v) { this.nextCallIdPresent.value(v); return this; }
     public CmsRpcCallResponse nextCallId(byte[] v) { this.nextCallIdPresent.value(v != null && v.length > 0); if (v != null) this.nextCallId.value(v); return this; }
     public CmsRpcCallResponse nextCallId(String v) { this.nextCallIdPresent.value(v != null); if (v != null) this.nextCallId.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, rspData, nextCallIdPresent, nextCallId);

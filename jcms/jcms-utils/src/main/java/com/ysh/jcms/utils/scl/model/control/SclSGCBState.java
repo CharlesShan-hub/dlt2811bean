@@ -18,7 +18,7 @@ public class SclSGCBState {
     private long actTm;
     private int resvTms;
     private final Map<Integer, Map<String, String>> sgValues = new ConcurrentHashMap<>();
-    private final Map<String, CmsData<?>> editValues = new ConcurrentHashMap<>();
+    private final Map<String, CmsData> editValues = new ConcurrentHashMap<>();
 
     public SclSGCBState() {
         this.numOfSG = 4;
@@ -69,7 +69,7 @@ public class SclSGCBState {
         return values != null ? values.get(daName) : null;
     }
 
-    public Map<String, CmsData<?>> getEditValues() {
+    public Map<String, CmsData> getEditValues() {
         return editValues;
     }
 

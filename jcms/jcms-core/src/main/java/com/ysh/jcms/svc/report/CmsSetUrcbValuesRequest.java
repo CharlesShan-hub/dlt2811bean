@@ -23,9 +23,9 @@ public class CmsSetUrcbValuesRequest extends CmsType {
         this.urcb  = new CmsArray<>(CmsSetUrcbEntry.class);
     }
     
-    // -- chain setters --
     public CmsSetUrcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetUrcbValuesRequest urcb(CmsArray<CmsSetUrcbEntry> v) { this.urcb = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, urcb);

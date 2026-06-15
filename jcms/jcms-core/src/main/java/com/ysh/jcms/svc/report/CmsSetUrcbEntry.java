@@ -68,7 +68,6 @@ public class CmsSetUrcbEntry extends CmsType {
         this.resv           = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsSetUrcbEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSetUrcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetUrcbEntry rptIdPresent(boolean v) { this.rptIdPresent.value(v); return this; }
@@ -91,6 +90,7 @@ public class CmsSetUrcbEntry extends CmsType {
     public CmsSetUrcbEntry gi(boolean v) { this.gi.value(v); return this; }
     public CmsSetUrcbEntry resvPresent(boolean v) { this.resvPresent.value(v); return this; }
     public CmsSetUrcbEntry resv(boolean v) { this.resv.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

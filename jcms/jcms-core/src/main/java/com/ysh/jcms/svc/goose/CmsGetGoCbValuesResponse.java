@@ -27,10 +27,10 @@ public class CmsGetGoCbValuesResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetGoCbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetGoCbValuesResponse gocb(CmsArray<CmsGocbValueChoice> v) { this.gocb = v; return this; }
     public CmsGetGoCbValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocb, moreFollows);

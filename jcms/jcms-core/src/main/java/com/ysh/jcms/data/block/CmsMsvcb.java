@@ -40,7 +40,6 @@ public class CmsMsvcb extends CmsType {
         this.dstAddress = new CmsPhyComAddr();
     }
     
-    // -- chain setters --
     public CmsMsvcb svEna(boolean v) { this.svEna.value(v); return this; }
     public CmsMsvcb msvID(byte[] v) { this.msvID.value(v); return this; }
     public CmsMsvcb msvID(String v) { this.msvID.value(v); return this; }
@@ -53,6 +52,7 @@ public class CmsMsvcb extends CmsType {
     public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds = v; return this; }
     public CmsMsvcb dstAddress_present(boolean v) { this.dstAddress_present.value(v); return this; }
     public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress = v; return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(svEna, msvID, datSet, confRev,

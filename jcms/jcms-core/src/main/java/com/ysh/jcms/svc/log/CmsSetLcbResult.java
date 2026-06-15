@@ -58,7 +58,6 @@ public class CmsSetLcbResult extends CmsType {
         this.bufTmErr        = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetLcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
     public CmsSetLcbResult error(int v) { this.error.value(v); return this; }
     public CmsSetLcbResult logEnaErrPresent(boolean v) { this.logEnaErrPresent.value(v); return this; }
@@ -75,6 +74,7 @@ public class CmsSetLcbResult extends CmsType {
     public CmsSetLcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
     public CmsSetLcbResult bufTmErrPresent(boolean v) { this.bufTmErrPresent.value(v); return this; }
     public CmsSetLcbResult bufTmErr(int v) { this.bufTmErr.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(

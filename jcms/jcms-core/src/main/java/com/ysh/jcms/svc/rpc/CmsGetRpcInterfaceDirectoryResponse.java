@@ -29,10 +29,10 @@ public class CmsGetRpcInterfaceDirectoryResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetRpcInterfaceDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetRpcInterfaceDirectoryResponse reference(CmsArray<CmsUint8Array> v) { this.reference = v; return this; }
     public CmsGetRpcInterfaceDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);

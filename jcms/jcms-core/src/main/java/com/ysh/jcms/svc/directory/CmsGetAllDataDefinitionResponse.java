@@ -27,10 +27,10 @@ public class CmsGetAllDataDefinitionResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetAllDataDefinitionResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetAllDataDefinitionResponse data(CmsArray<CmsDataDefinitionEntry> v) { this.data = v; return this; }
     public CmsGetAllDataDefinitionResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, data, moreFollows);

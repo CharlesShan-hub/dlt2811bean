@@ -51,7 +51,6 @@ public class CmsOperateError extends CmsType {
         this.addCause  = new CmsAddCause();
     }
     
-    // -- chain setters --
     public CmsOperateError reqId(int v) { this.reqId.value(v); return this; }
     public CmsOperateError reference(byte[] v) { this.reference.value(v); return this; }
     public CmsOperateError reference(String v) { this.reference.value(v); return this; }
@@ -62,6 +61,7 @@ public class CmsOperateError extends CmsType {
     public CmsOperateError test(boolean v) { this.test.value(v); return this; }
     public CmsOperateError check(CmsCheck v) { this.check = v; return this; }
     public CmsOperateError addCause(int v) { this.addCause.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, origin, ctlNum, t, test, check, addCause);

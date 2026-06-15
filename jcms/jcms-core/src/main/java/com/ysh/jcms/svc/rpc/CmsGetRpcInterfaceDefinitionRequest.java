@@ -29,13 +29,13 @@ public class CmsGetRpcInterfaceDefinitionRequest extends CmsType {
         this.refAfter         = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsGetRpcInterfaceDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionRequest interfaceName(byte[] v) { this.interfaceName.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionRequest interfaceName(String v) { this.interfaceName.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, interfaceName, refAfterPresent, refAfter);

@@ -3,7 +3,7 @@ package com.ysh.jcms.svc.other;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsObjectName;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,8 +31,8 @@ public class CmsReferenceChoice extends CmsType {
         this.altLnReference = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsReferenceChoice choice(int v) { this.choice.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altLdName, altLnReference);

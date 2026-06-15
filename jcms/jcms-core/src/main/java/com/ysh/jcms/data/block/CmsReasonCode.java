@@ -36,13 +36,13 @@ public class CmsReasonCode extends CmsType {
         this.application_trigger   = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsReasonCode data_change(boolean v) { this.data_change.value(v); return this; }
     public CmsReasonCode quality_change(boolean v) { this.quality_change.value(v); return this; }
     public CmsReasonCode data_update(boolean v) { this.data_update.value(v); return this; }
     public CmsReasonCode integrity(boolean v) { this.integrity.value(v); return this; }
     public CmsReasonCode general_interrogation(boolean v) { this.general_interrogation.value(v); return this; }
     public CmsReasonCode application_trigger(boolean v) { this.application_trigger.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(data_change, quality_change, data_update,

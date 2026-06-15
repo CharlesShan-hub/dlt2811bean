@@ -33,7 +33,6 @@ public class CmsCreateDataSetRequest extends CmsType {
         this.memberData       = new CmsArray<>(CmsDataRefFcEntry.class);
     }
     
-    // -- chain setters --
     public CmsCreateDataSetRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsCreateDataSetRequest datasetReference(byte[] v) { this.datasetReference.value(v); return this; }
     public CmsCreateDataSetRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
@@ -41,6 +40,7 @@ public class CmsCreateDataSetRequest extends CmsType {
     public CmsCreateDataSetRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
     public CmsCreateDataSetRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
     public CmsCreateDataSetRequest memberData(CmsArray<CmsDataRefFcEntry> v) { this.memberData = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, datasetReference, refAfterPresent, refAfter, memberData);

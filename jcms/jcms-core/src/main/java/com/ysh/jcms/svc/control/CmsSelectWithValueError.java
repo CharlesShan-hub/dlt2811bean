@@ -56,7 +56,6 @@ public class CmsSelectWithValueError extends CmsType {
         this.addCause       = new CmsAddCause();
     }
     
-    // -- chain setters --
     public CmsSelectWithValueError reqId(int v) { this.reqId.value(v); return this; }
     public CmsSelectWithValueError reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSelectWithValueError reference(String v) { this.reference.value(v); return this; }
@@ -69,6 +68,7 @@ public class CmsSelectWithValueError extends CmsType {
     public CmsSelectWithValueError test(boolean v) { this.test.value(v); return this; }
     public CmsSelectWithValueError check(CmsCheck v) { this.check = v; return this; }
     public CmsSelectWithValueError addCause(int v) { this.addCause.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

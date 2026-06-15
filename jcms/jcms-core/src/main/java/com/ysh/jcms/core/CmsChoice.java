@@ -1,6 +1,4 @@
-package com.ysh.jcms.data.choice;
-
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+package com.ysh.jcms.core;
 
 /**
  * Base class for CHOICE types.

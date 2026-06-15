@@ -33,7 +33,6 @@ public class CmsGoCb extends CmsType {
         this.dstAddress = new CmsPhyComAddr();
     }
     
-    // -- chain setters --
     public CmsGoCb goEna(boolean v) { this.goEna.value(v); return this; }
     public CmsGoCb goID(byte[] v) { this.goID.value(v); return this; }
     public CmsGoCb goID(String v) { this.goID.value(v); return this; }
@@ -43,6 +42,7 @@ public class CmsGoCb extends CmsType {
     public CmsGoCb ndsCom(boolean v) { this.ndsCom.value(v); return this; }
     public CmsGoCb dstAddress_present(boolean v) { this.dstAddress_present.value(v); return this; }
     public CmsGoCb dstAddress(CmsPhyComAddr v) { this.dstAddress = v; return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(goEna, goID, datSet, confRev, ndsCom,

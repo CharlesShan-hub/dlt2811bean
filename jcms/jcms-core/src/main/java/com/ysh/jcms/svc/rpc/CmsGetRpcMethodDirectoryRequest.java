@@ -31,7 +31,6 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsType {
         this.refAfter         = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsGetRpcMethodDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetRpcMethodDirectoryRequest interfacePresent(boolean v) { this.interfacePresent.value(v); return this; }
     public CmsGetRpcMethodDirectoryRequest interfaceName(byte[] v) { this.interfaceName.value(v); return this; }
@@ -39,6 +38,7 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsType {
     public CmsGetRpcMethodDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
     public CmsGetRpcMethodDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
     public CmsGetRpcMethodDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, interfacePresent, interfaceName, refAfterPresent, refAfter);

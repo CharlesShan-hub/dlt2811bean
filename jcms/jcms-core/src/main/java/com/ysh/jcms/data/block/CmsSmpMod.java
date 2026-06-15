@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.block;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * SmpMod ::= INTEGER (0..2)  —  7.6.7
@@ -14,5 +14,5 @@ public class CmsSmpMod extends CmsEnumerated {
     public static final int SECONDS_PER_SAMPLE         = 2;
 
     public CmsSmpMod() {}
-    public CmsSmpMod(int value) { super(value); }
+    public CmsSmpMod(int value) { super(0, 2, value); }
 }

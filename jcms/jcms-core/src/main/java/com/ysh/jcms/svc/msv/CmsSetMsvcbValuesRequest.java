@@ -23,9 +23,9 @@ public class CmsSetMsvcbValuesRequest extends CmsType {
         this.msvcb = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsSetMsvcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetMsvcbValuesRequest msvcb(CmsArray<CmsSetMsvcbEntry> v) { this.msvcb = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, msvcb);

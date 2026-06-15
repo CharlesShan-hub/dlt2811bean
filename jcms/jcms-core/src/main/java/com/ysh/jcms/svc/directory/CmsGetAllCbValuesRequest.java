@@ -33,13 +33,13 @@ public class CmsGetAllCbValuesRequest extends CmsType {
         this.refAfter        = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsGetAllCbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetAllCbValuesRequest reference(CmsReferenceChoice v) { this.reference = v; return this; }
     public CmsGetAllCbValuesRequest acsiClass(int v) { this.acsiClass.value(v); return this; }
     public CmsGetAllCbValuesRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
     public CmsGetAllCbValuesRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
     public CmsGetAllCbValuesRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, acsiClass, refAfterPresent, refAfter);

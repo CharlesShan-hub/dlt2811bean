@@ -62,7 +62,6 @@ public class CmsSendGooseMessage extends CmsType {
         this.data          = new CmsArray<>(CmsData.class);
     }
     
-    // -- chain setters --
     public CmsSendGooseMessage reqId(int v) { this.reqId.value(v); return this; }
     public CmsSendGooseMessage goId(byte[] v) { this.goId.value(v); return this; }
     public CmsSendGooseMessage goId(String v) { this.goId.value(v); return this; }
@@ -79,6 +78,7 @@ public class CmsSendGooseMessage extends CmsType {
     public CmsSendGooseMessage confRev(long v) { this.confRev.value(v); return this; }
     public CmsSendGooseMessage ndsCom(boolean v) { this.ndsCom.value(v); return this; }
     public CmsSendGooseMessage data(CmsArray<CmsData> v) { this.data = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, goId,

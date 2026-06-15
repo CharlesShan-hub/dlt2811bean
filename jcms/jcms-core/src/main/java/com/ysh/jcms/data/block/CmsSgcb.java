@@ -30,13 +30,13 @@ public class CmsSgcb extends CmsType {
         this.resvTms  = new CmsInt16U();
     }
     
-    // -- chain setters --
     public CmsSgcb numOfSG(int v) { this.numOfSG.value(v); return this; }
     public CmsSgcb actSG(int v) { this.actSG.value(v); return this; }
     public CmsSgcb editSG(int v) { this.editSG.value(v); return this; }
     public CmsSgcb tActEdt(CmsTimeStamp v) { this.tActEdt = v; return this; }
     public CmsSgcb resvTms_present(boolean v) { this.resvTms_present.value(v); return this; }
     public CmsSgcb resvTms(int v) { this.resvTms.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(numOfSG, actSG, editSG, tActEdt,

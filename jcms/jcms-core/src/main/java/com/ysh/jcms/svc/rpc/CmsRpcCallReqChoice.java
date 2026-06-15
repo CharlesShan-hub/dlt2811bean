@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.rpc;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import java.util.Arrays;
 import java.util.List;
@@ -30,8 +30,8 @@ public class CmsRpcCallReqChoice extends CmsType {
         this.altCallId  = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsRpcCallReqChoice choice(int v) { this.choice.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altReqData, altCallId);

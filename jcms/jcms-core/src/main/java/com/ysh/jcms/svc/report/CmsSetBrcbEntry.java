@@ -80,7 +80,6 @@ public class CmsSetBrcbEntry extends CmsType {
         this.resvTms        = new CmsInt16();
     }
     
-    // -- chain setters --
     public CmsSetBrcbEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSetBrcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetBrcbEntry rptIdPresent(boolean v) { this.rptIdPresent.value(v); return this; }
@@ -108,6 +107,7 @@ public class CmsSetBrcbEntry extends CmsType {
     public CmsSetBrcbEntry entryId(String v) { this.entryIdPresent.value(v != null); if (v != null) this.entryId.value(v); return this; }
     public CmsSetBrcbEntry resvTmsPresent(boolean v) { this.resvTmsPresent.value(v); return this; }
     public CmsSetBrcbEntry resvTms(int v) { this.resvTms.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

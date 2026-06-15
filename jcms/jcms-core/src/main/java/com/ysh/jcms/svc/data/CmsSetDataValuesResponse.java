@@ -21,8 +21,8 @@ public class CmsSetDataValuesResponse extends CmsType {
         this.reqId = new CmsReqId();
     }
     
-    // -- chain setters --
     public CmsSetDataValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

@@ -34,7 +34,6 @@ public class CmsDataDefinitionStructElem extends CmsType {
         this.type       = new CmsDataDefinition();
     }
     
-    // -- chain setters --
     public CmsDataDefinitionStructElem name(byte[] v) { this.name.value(v); return this; }
     public CmsDataDefinitionStructElem name(String v) { this.name.value(v); return this; }
     public CmsDataDefinitionStructElem fc_present(boolean v) { this.fc_present.value(v); return this; }

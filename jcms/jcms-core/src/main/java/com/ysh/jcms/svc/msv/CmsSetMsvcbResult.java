@@ -53,7 +53,6 @@ public class CmsSetMsvcbResult extends CmsType {
         this.optFldsErr        = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetMsvcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
     public CmsSetMsvcbResult error(int v) { this.error.value(v); return this; }
     public CmsSetMsvcbResult svEnaErrPresent(boolean v) { this.svEnaErrPresent.value(v); return this; }
@@ -68,6 +67,7 @@ public class CmsSetMsvcbResult extends CmsType {
     public CmsSetMsvcbResult smpRateErr(int v) { this.smpRateErr.value(v); return this; }
     public CmsSetMsvcbResult optFldsErrPresent(boolean v) { this.optFldsErrPresent.value(v); return this; }
     public CmsSetMsvcbResult optFldsErr(int v) { this.optFldsErr.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(

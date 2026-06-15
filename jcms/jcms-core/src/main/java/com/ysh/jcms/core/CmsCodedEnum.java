@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.enumerated;
+package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.string.CmsUint8Array;
 

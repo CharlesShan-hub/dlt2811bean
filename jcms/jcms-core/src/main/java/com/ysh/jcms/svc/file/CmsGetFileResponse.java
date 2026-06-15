@@ -27,11 +27,11 @@ public class CmsGetFileResponse extends CmsType {
         this.endOfFile = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetFileResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetFileResponse fileData(byte[] v) { this.fileData.value(v); return this; }
     public CmsGetFileResponse fileData(String v) { this.fileData.value(v); return this; }
     public CmsGetFileResponse endOfFile(boolean v) { this.endOfFile.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, fileData, endOfFile);

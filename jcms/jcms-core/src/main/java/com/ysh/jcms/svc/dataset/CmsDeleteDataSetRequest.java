@@ -23,10 +23,10 @@ public class CmsDeleteDataSetRequest extends CmsType {
         this.datasetReference = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsDeleteDataSetRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsDeleteDataSetRequest datasetReference(byte[] v) { this.datasetReference.value(v); return this; }
     public CmsDeleteDataSetRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, datasetReference);

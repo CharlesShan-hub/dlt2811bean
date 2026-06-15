@@ -26,11 +26,11 @@ public class CmsLogEntry extends CmsType {
         this.entryData   = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsLogEntry timeOfEntry(CmsEntryTime v) { this.timeOfEntry = v; return this; }
     public CmsLogEntry entryId(byte[] v) { this.entryId.value(v); return this; }
     public CmsLogEntry entryId(String v) { this.entryId.value(v); return this; }
     public CmsLogEntry entryData(CmsArray<CmsLogDataEntry> v) { this.entryData = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(timeOfEntry, entryId, entryData);

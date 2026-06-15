@@ -23,9 +23,9 @@ public class CmsGetGoCbValuesError extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsGetGoCbValuesError reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetGoCbValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

@@ -24,10 +24,10 @@ public class CmsGetFileAttributeValuesRequest extends CmsType {
         this.filename = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsGetFileAttributeValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetFileAttributeValuesRequest filename(byte[] v) { this.filename.value(v); return this; }
     public CmsGetFileAttributeValuesRequest filename(String v) { this.filename.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, filename);

@@ -59,7 +59,6 @@ public class CmsSetLcbEntry extends CmsType {
         this.bufTm          = new CmsInt32U();
     }
     
-    // -- chain setters --
     public CmsSetLcbEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSetLcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetLcbEntry logEnaPresent(boolean v) { this.logEnaPresent.value(v); return this; }
@@ -78,6 +77,7 @@ public class CmsSetLcbEntry extends CmsType {
     public CmsSetLcbEntry optFlds(CmsLcbOptFlds v) { this.optFlds = v; return this; }
     public CmsSetLcbEntry bufTmPresent(boolean v) { this.bufTmPresent.value(v); return this; }
     public CmsSetLcbEntry bufTm(long v) { this.bufTm.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

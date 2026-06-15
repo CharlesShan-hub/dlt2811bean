@@ -23,9 +23,9 @@ public class CmsQueryLogAfterError extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsQueryLogAfterError reqId(int v) { this.reqId.value(v); return this; }
     public CmsQueryLogAfterError serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

@@ -33,13 +33,13 @@ public class CmsAssociateResponse extends CmsType {
         this.authParam       = new CmsAuthenticationParameter();
     }
     
-    // -- chain setters --
     public CmsAssociateResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsAssociateResponse assocId(byte[] v) { this.assocId.value(v); return this; }
     public CmsAssociateResponse assocId(String v) { this.assocId.value(v); return this; }
     public CmsAssociateResponse serviceError(int v) { this.serviceError.value(v); return this; }
     public CmsAssociateResponse authParamPresent(boolean v) { this.authParamPresent.value(v); return this; }
     public CmsAssociateResponse authParam(CmsAuthenticationParameter v) { this.authParam = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId, serviceError, authParamPresent, authParam);

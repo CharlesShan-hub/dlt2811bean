@@ -26,7 +26,6 @@ public class CmsDataDefinitionArray extends CmsType {
         this.elementType     = new CmsDataDefinition();
     }
     
-    // -- chain setters --
     public CmsDataDefinitionArray numberOfElement(int v) { this.numberOfElement.value(v); return this; }
     public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType = v; return this; }
     @Override

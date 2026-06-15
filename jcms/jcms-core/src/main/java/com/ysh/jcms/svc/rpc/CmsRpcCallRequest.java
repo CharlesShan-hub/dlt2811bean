@@ -26,11 +26,11 @@ public class CmsRpcCallRequest extends CmsType {
         this.req    = new CmsRpcCallReqChoice();
     }
     
-    // -- chain setters --
     public CmsRpcCallRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsRpcCallRequest method(byte[] v) { this.method.value(v); return this; }
     public CmsRpcCallRequest method(String v) { this.method.value(v); return this; }
     public CmsRpcCallRequest req(CmsRpcCallReqChoice v) { this.req = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, method, req);

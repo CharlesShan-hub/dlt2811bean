@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * Tcmd ::= BIT STRING (SIZE(2))  —  7.3.7
@@ -17,5 +17,5 @@ public class CmsTcmd extends CmsEnumerated {
     public static final int CANCEL   = 3;
 
     public CmsTcmd() {}
-    public CmsTcmd(int value) { super(value); }
+    public CmsTcmd(int value) { super(0, 3, value); }
 }

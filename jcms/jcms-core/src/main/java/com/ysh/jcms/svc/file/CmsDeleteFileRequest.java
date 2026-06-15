@@ -23,10 +23,10 @@ public class CmsDeleteFileRequest extends CmsType {
         this.filename = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsDeleteFileRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsDeleteFileRequest filename(byte[] v) { this.filename.value(v); return this; }
     public CmsDeleteFileRequest filename(String v) { this.filename.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, filename);

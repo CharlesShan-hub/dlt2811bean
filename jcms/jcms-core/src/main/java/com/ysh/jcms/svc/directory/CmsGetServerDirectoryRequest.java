@@ -29,12 +29,12 @@ public class CmsGetServerDirectoryRequest extends CmsType {
         this.refAfter        = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsGetServerDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetServerDirectoryRequest objectClass(int v) { this.objectClass.value(v); return this; }
     public CmsGetServerDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
     public CmsGetServerDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
     public CmsGetServerDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, objectClass, refAfterPresent, refAfter);

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * ServiceError ::= INTEGER (0..12)  —  7.3.11
@@ -26,5 +26,5 @@ public class CmsServiceError extends CmsEnumerated {
     public static final int FAILED_DUE_TO_SERVER_CONSTRAINT             = 12;
 
     public CmsServiceError() {}
-    public CmsServiceError(int value) { super(value); }
+    public CmsServiceError(int value) { super(0, 12, value); }
 }

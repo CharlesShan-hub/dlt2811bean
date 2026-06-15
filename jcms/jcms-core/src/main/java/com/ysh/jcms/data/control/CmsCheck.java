@@ -24,9 +24,9 @@ public class CmsCheck extends CmsType {
         this.interlock_check = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsCheck syncheck(boolean v) { this.syncheck.value(v); return this; }
     public CmsCheck interlock_check(boolean v) { this.interlock_check.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(syncheck, interlock_check);

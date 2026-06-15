@@ -23,10 +23,10 @@ public class CmsCbValueEntry extends CmsType {
         this.value     = new CmsCbValueChoice();
     }
     
-    // -- chain setters --
     public CmsCbValueEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsCbValueEntry reference(String v) { this.reference.value(v); return this; }
     public CmsCbValueEntry value(CmsCbValueChoice v) { this.value = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference, value);

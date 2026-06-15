@@ -52,7 +52,6 @@ public class CmsSelectWithValueRequest extends CmsType {
         this.check          = new CmsCheck();
     }
     
-    // -- chain setters --
     public CmsSelectWithValueRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsSelectWithValueRequest reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSelectWithValueRequest reference(String v) { this.reference.value(v); return this; }
@@ -64,6 +63,7 @@ public class CmsSelectWithValueRequest extends CmsType {
     public CmsSelectWithValueRequest t(CmsTimeStamp v) { this.t = v; return this; }
     public CmsSelectWithValueRequest test(boolean v) { this.test.value(v); return this; }
     public CmsSelectWithValueRequest check(CmsCheck v) { this.check = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

@@ -27,11 +27,11 @@ public class CmsReleaseResponse extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsReleaseResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsReleaseResponse assocId(byte[] v) { this.assocId.value(v); return this; }
     public CmsReleaseResponse assocId(String v) { this.assocId.value(v); return this; }
     public CmsReleaseResponse serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId, serviceError);

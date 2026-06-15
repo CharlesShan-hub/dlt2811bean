@@ -40,7 +40,6 @@ public class CmsGetFileDirectoryRequest extends CmsType {
         this.fileAfter        = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsGetFileDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetFileDirectoryRequest pathName(byte[] v) { this.pathName.value(v); return this; }
     public CmsGetFileDirectoryRequest pathName(String v) { this.pathName.value(v); return this; }
@@ -51,6 +50,7 @@ public class CmsGetFileDirectoryRequest extends CmsType {
     public CmsGetFileDirectoryRequest fileAfterPresent(boolean v) { this.fileAfterPresent.value(v); return this; }
     public CmsGetFileDirectoryRequest fileAfter(byte[] v) { this.fileAfterPresent.value(v != null && v.length > 0); if (v != null) this.fileAfter.value(v); return this; }
     public CmsGetFileDirectoryRequest fileAfter(String v) { this.fileAfterPresent.value(v != null); if (v != null) this.fileAfter.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, pathName,

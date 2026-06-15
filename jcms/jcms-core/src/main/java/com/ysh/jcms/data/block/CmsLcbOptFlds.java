@@ -18,8 +18,8 @@ public class CmsLcbOptFlds extends CmsType {
         this.value = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsLcbOptFlds value(boolean v) { this.value.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(value);

@@ -23,9 +23,9 @@ public class CmsGetLogicalNodeDirectoryError extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsGetLogicalNodeDirectoryError reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetLogicalNodeDirectoryError serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

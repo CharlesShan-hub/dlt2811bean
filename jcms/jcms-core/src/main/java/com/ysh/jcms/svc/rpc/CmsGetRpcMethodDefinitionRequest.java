@@ -25,9 +25,9 @@ public class CmsGetRpcMethodDefinitionRequest extends CmsType {
         this.reference = new CmsArray<>(CmsUint8Array.class);
     }
     
-    // -- chain setters --
     public CmsGetRpcMethodDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetRpcMethodDefinitionRequest reference(CmsArray<CmsUint8Array> v) { this.reference = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

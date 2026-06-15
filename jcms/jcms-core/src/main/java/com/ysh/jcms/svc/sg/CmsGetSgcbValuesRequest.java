@@ -24,9 +24,9 @@ public class CmsGetSgcbValuesRequest extends CmsType {
         this.sgcbReference = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsGetSgcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetSgcbValuesRequest sgcbReference(CmsArray<CmsObjectReference> v) { this.sgcbReference = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgcbReference);

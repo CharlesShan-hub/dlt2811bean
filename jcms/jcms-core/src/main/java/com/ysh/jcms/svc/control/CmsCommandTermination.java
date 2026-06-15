@@ -60,7 +60,6 @@ public class CmsCommandTermination extends CmsType {
         this.addCause         = new CmsAddCause();
     }
     
-    // -- chain setters --
     public CmsCommandTermination reqId(int v) { this.reqId.value(v); return this; }
     public CmsCommandTermination reference(byte[] v) { this.reference.value(v); return this; }
     public CmsCommandTermination reference(String v) { this.reference.value(v); return this; }
@@ -74,6 +73,7 @@ public class CmsCommandTermination extends CmsType {
     public CmsCommandTermination check(CmsCheck v) { this.check = v; return this; }
     public CmsCommandTermination addCausePresent(boolean v) { this.addCausePresent.value(v); return this; }
     public CmsCommandTermination addCause(int v) { this.addCause.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal,

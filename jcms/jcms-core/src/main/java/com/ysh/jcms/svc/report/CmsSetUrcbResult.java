@@ -66,7 +66,6 @@ public class CmsSetUrcbResult extends CmsType {
         this.resvErr           = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetUrcbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
     public CmsSetUrcbResult error(int v) { this.error.value(v); return this; }
     public CmsSetUrcbResult rptIdErrPresent(boolean v) { this.rptIdErrPresent.value(v); return this; }
@@ -87,6 +86,7 @@ public class CmsSetUrcbResult extends CmsType {
     public CmsSetUrcbResult giErr(int v) { this.giErr.value(v); return this; }
     public CmsSetUrcbResult resvErrPresent(boolean v) { this.resvErrPresent.value(v); return this; }
     public CmsSetUrcbResult resvErr(int v) { this.resvErr.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(errorPresent, error,

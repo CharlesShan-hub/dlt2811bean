@@ -19,8 +19,8 @@ public class CmsSelectEditSgResponse extends CmsType {
         this.reqId = new CmsReqId();
     }
     
-    // -- chain setters --
     public CmsSelectEditSgResponse reqId(int v) { this.reqId.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);

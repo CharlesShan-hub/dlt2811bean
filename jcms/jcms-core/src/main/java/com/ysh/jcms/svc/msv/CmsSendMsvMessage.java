@@ -69,7 +69,6 @@ public class CmsSendMsvMessage extends CmsType {
         this.smpMod         = new CmsSmpMod();
     }
     
-    // -- chain setters --
     public CmsSendMsvMessage reqId(int v) { this.reqId.value(v); return this; }
     public CmsSendMsvMessage msvId(byte[] v) { this.msvId.value(v); return this; }
     public CmsSendMsvMessage msvId(String v) { this.msvId.value(v); return this; }
@@ -87,6 +86,7 @@ public class CmsSendMsvMessage extends CmsType {
     public CmsSendMsvMessage sample(CmsArray<CmsData> v) { this.sample = v; return this; }
     public CmsSendMsvMessage smpModPresent(boolean v) { this.smpModPresent.value(v); return this; }
     public CmsSendMsvMessage smpMod(int v) { this.smpMod.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, msvId,

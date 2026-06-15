@@ -24,9 +24,9 @@ public class CmsGetUrcbValuesRequest extends CmsType {
         this.reference = new CmsArray<>(CmsObjectReference.class);
     }
     
-    // -- chain setters --
     public CmsGetUrcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetUrcbValuesRequest reference(CmsArray<CmsObjectReference> v) { this.reference = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);

@@ -23,9 +23,9 @@ public class CmsSetUrcbValuesError extends CmsType {
         this.result = new CmsArray<>(CmsSetUrcbResult.class);
     }
     
-    // -- chain setters --
     public CmsSetUrcbValuesError reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetUrcbValuesError result(CmsArray<CmsSetUrcbResult> v) { this.result = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, result);

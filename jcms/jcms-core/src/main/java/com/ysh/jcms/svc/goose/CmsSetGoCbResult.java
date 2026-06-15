@@ -38,7 +38,6 @@ public class CmsSetGoCbResult extends CmsType {
         this.datSetErr       = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetGoCbResult errorPresent(boolean v) { this.errorPresent.value(v); return this; }
     public CmsSetGoCbResult error(int v) { this.error.value(v); return this; }
     public CmsSetGoCbResult goEnaErrPresent(boolean v) { this.goEnaErrPresent.value(v); return this; }
@@ -47,6 +46,7 @@ public class CmsSetGoCbResult extends CmsType {
     public CmsSetGoCbResult goIdErr(int v) { this.goIdErr.value(v); return this; }
     public CmsSetGoCbResult datSetErrPresent(boolean v) { this.datSetErrPresent.value(v); return this; }
     public CmsSetGoCbResult datSetErr(int v) { this.datSetErr.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(errorPresent, error,

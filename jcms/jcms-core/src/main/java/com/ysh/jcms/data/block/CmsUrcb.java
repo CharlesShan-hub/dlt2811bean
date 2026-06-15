@@ -45,7 +45,6 @@ public class CmsUrcb extends CmsType {
         this.owner   = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsUrcb rptID(byte[] v) { this.rptID.value(v); return this; }
     public CmsUrcb rptID(String v) { this.rptID.value(v); return this; }
     public CmsUrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
@@ -62,6 +61,7 @@ public class CmsUrcb extends CmsType {
     public CmsUrcb owner_present(boolean v) { this.owner_present.value(v); return this; }
     public CmsUrcb owner(byte[] v) { this.owner_present.value(v != null && v.length > 0); if (v != null) this.owner.value(v); return this; }
     public CmsUrcb owner(String v) { this.owner_present.value(v != null); if (v != null) this.owner.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(rptID, rptEna, datSet, confRev, optFlds,

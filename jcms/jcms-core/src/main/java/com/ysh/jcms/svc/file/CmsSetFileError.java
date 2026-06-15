@@ -23,9 +23,9 @@ public class CmsSetFileError extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSetFileError reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetFileError serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

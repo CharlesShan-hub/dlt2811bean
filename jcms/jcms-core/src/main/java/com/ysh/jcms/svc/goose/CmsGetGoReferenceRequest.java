@@ -28,11 +28,11 @@ public class CmsGetGoReferenceRequest extends CmsType {
         this.memberOfs     = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsGetGoReferenceRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetGoReferenceRequest gocbReference(byte[] v) { this.gocbReference.value(v); return this; }
     public CmsGetGoReferenceRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
     public CmsGetGoReferenceRequest memberOfs(CmsArray<CmsInt16U> v) { this.memberOfs = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocbReference, memberOfs);

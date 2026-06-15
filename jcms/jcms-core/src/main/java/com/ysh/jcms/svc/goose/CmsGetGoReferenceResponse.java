@@ -34,7 +34,6 @@ public class CmsGetGoReferenceResponse extends CmsType {
         this.memberData    = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsGetGoReferenceResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetGoReferenceResponse gocbReference(byte[] v) { this.gocbReference.value(v); return this; }
     public CmsGetGoReferenceResponse gocbReference(String v) { this.gocbReference.value(v); return this; }
@@ -42,6 +41,7 @@ public class CmsGetGoReferenceResponse extends CmsType {
     public CmsGetGoReferenceResponse datSet(byte[] v) { this.datSet.value(v); return this; }
     public CmsGetGoReferenceResponse datSet(String v) { this.datSet.value(v); return this; }
     public CmsGetGoReferenceResponse memberData(CmsArray<CmsGoRefFcEntry> v) { this.memberData = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocbReference, confRev, datSet, memberData);

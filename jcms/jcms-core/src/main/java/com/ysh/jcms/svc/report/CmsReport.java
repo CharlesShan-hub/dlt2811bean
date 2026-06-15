@@ -66,7 +66,6 @@ public class CmsReport extends CmsType {
         this.entry           = new CmsReportEntry();
     }
     
-    // -- chain setters --
     public CmsReport reqId(int v) { this.reqId.value(v); return this; }
     public CmsReport rptID(byte[] v) { this.rptID.value(v); return this; }
     public CmsReport rptID(String v) { this.rptID.value(v); return this; }
@@ -85,6 +84,7 @@ public class CmsReport extends CmsType {
     public CmsReport confRevPresent(boolean v) { this.confRevPresent.value(v); return this; }
     public CmsReport confRev(long v) { this.confRev.value(v); return this; }
     public CmsReport entry(CmsReportEntry v) { this.entry = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, rptID, optFlds,

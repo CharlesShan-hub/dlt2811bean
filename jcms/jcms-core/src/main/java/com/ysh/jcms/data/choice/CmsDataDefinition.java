@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.scalar.CmsInt32;
 import java.util.Arrays;
 import java.util.List;
@@ -57,7 +57,6 @@ public class CmsDataDefinition extends CmsType {
         this.alt_unicode_string_len = new CmsInt32();
     }
     
-    // -- chain setters --
     public CmsDataDefinition choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {

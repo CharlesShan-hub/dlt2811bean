@@ -37,7 +37,6 @@ public class CmsSetGoCbEntry extends CmsType {
         this.datSet         = new CmsObjectReference();
     }
     
-    // -- chain setters --
     public CmsSetGoCbEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSetGoCbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetGoCbEntry goEnaPresent(boolean v) { this.goEnaPresent.value(v); return this; }
@@ -48,6 +47,7 @@ public class CmsSetGoCbEntry extends CmsType {
     public CmsSetGoCbEntry datSetPresent(boolean v) { this.datSetPresent.value(v); return this; }
     public CmsSetGoCbEntry datSet(byte[] v) { this.datSetPresent.value(v != null && v.length > 0); if (v != null) this.datSet.value(v); return this; }
     public CmsSetGoCbEntry datSet(String v) { this.datSetPresent.value(v != null); if (v != null) this.datSet.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reference,

@@ -7,7 +7,7 @@ import com.ysh.jcms.data.block.CmsLcb;
 import com.ysh.jcms.data.block.CmsMsvcb;
 import com.ysh.jcms.data.block.CmsSgcb;
 import com.ysh.jcms.data.block.CmsUrcb;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,8 +50,8 @@ public class CmsCbValueChoice extends CmsType {
         this.altMsvcb = new CmsMsvcb();
     }
     
-    // -- chain setters --
     public CmsCbValueChoice choice(int v) { this.choice.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, altBrcb, altUrcb, altLcb,

@@ -27,11 +27,11 @@ public class CmsSelectEditSgRequest extends CmsType {
         this.settingGroupNumber = new CmsInt8U();
     }
     
-    // -- chain setters --
     public CmsSelectEditSgRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsSelectEditSgRequest sgcbReference(byte[] v) { this.sgcbReference.value(v); return this; }
     public CmsSelectEditSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
     public CmsSelectEditSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgcbReference, settingGroupNumber);

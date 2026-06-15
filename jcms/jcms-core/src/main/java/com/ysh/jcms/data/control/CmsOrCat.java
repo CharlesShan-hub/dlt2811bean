@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.control;
 
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 
 /**
  * CmsOrCat ::= INTEGER (0..8)  —  7.5.2
@@ -22,5 +22,5 @@ public class CmsOrCat extends CmsEnumerated {
     public static final int PROCESS            = 8;
 
     public CmsOrCat() {}
-    public CmsOrCat(int value) { super(value); }
+    public CmsOrCat(int value) { super(0, 8, value); }
 }

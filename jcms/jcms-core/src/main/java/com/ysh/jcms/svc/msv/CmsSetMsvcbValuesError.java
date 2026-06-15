@@ -23,9 +23,9 @@ public class CmsSetMsvcbValuesError extends CmsType {
         this.result = new CmsArray<>();
     }
     
-    // -- chain setters --
     public CmsSetMsvcbValuesError reqId(int v) { this.reqId.value(v); return this; }
     public CmsSetMsvcbValuesError result(CmsArray<CmsSetMsvcbResult> v) { this.result = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, result);

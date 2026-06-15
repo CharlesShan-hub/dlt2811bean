@@ -3,7 +3,7 @@ package com.ysh.jcms.data.choice;
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
-import com.ysh.jcms.data.enumerated.CmsEnumerated;
+import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.data.time.*;
@@ -104,7 +104,6 @@ public class CmsData extends CmsType {
         this.alt_check        = new CmsCheck();
     }
     
-    // -- chain setters --
     public CmsData choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {

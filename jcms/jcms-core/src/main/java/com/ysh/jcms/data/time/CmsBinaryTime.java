@@ -20,9 +20,9 @@ public class CmsBinaryTime extends CmsType {
         this.daysSince1984 = new CmsInt16U();
     }
     
-    // -- chain setters --
     public CmsBinaryTime msOfDay(long v) { this.msOfDay.value(v); return this; }
     public CmsBinaryTime daysSince1984(int v) { this.daysSince1984.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(msOfDay, daysSince1984);

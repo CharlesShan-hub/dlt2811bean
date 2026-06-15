@@ -23,9 +23,9 @@ public class CmsSelectEditSgError extends CmsType {
         this.serviceError = new CmsServiceError();
     }
     
-    // -- chain setters --
     public CmsSelectEditSgError reqId(int v) { this.reqId.value(v); return this; }
     public CmsSelectEditSgError serviceError(int v) { this.serviceError.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);

@@ -23,9 +23,9 @@ public class CmsGetFileAttributeValuesResponse extends CmsType {
         this.fileEntry = new CmsFileEntry();
     }
     
-    // -- chain setters --
     public CmsGetFileAttributeValuesResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetFileAttributeValuesResponse fileEntry(CmsFileEntry v) { this.fileEntry = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, fileEntry);

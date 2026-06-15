@@ -52,7 +52,6 @@ public class CmsTimeActivatedOperateRequest extends CmsType {
         this.check     = new CmsCheck();
     }
     
-    // -- chain setters --
     public CmsTimeActivatedOperateRequest reqId(int v) { this.reqId.value(v); return this; }
     public CmsTimeActivatedOperateRequest reference(byte[] v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateRequest reference(String v) { this.reference.value(v); return this; }
@@ -63,6 +62,7 @@ public class CmsTimeActivatedOperateRequest extends CmsType {
     public CmsTimeActivatedOperateRequest t(CmsTimeStamp v) { this.t = v; return this; }
     public CmsTimeActivatedOperateRequest test(boolean v) { this.test.value(v); return this; }
     public CmsTimeActivatedOperateRequest check(CmsCheck v) { this.check = v; return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check);

@@ -30,11 +30,11 @@ public class CmsMsvcbOptFlds extends CmsType {
         this.security      = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsMsvcbOptFlds refresh_time(boolean v) { this.refresh_time.value(v); return this; }
     public CmsMsvcbOptFlds sample_rate(boolean v) { this.sample_rate.value(v); return this; }
     public CmsMsvcbOptFlds data_set_name(boolean v) { this.data_set_name.value(v); return this; }
     public CmsMsvcbOptFlds security(boolean v) { this.security.value(v); return this; }
+    
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(refresh_time, sample_rate, data_set_name, security);

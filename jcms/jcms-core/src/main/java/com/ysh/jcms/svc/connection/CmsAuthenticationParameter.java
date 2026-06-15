@@ -25,12 +25,12 @@ public class CmsAuthenticationParameter extends CmsType {
         this.sigVal     = new CmsUint8Array();
     }
     
-    // -- chain setters --
     public CmsAuthenticationParameter cert(byte[] v) { this.cert.value(v); return this; }
     public CmsAuthenticationParameter cert(String v) { this.cert.value(v); return this; }
     public CmsAuthenticationParameter signedTime(CmsUtcTime v) { this.signedTime = v; return this; }
     public CmsAuthenticationParameter sigVal(byte[] v) { this.sigVal.value(v); return this; }
     public CmsAuthenticationParameter sigVal(String v) { this.sigVal.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(cert, signedTime, sigVal);

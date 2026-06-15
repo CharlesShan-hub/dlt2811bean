@@ -27,10 +27,10 @@ public class CmsGetRpcInterfaceDefinitionResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetRpcInterfaceDefinitionResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetRpcInterfaceDefinitionResponse method(CmsArray<CmsRpcMethodEntry> v) { this.method = v; return this; }
     public CmsGetRpcInterfaceDefinitionResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, method, moreFollows);

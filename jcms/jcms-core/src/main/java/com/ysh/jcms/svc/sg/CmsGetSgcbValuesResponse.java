@@ -27,10 +27,10 @@ public class CmsGetSgcbValuesResponse extends CmsType {
         this.moreFollows = new CmsBoolean();
     }
     
-    // -- chain setters --
     public CmsGetSgcbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
     public CmsGetSgcbValuesResponse sgscb(CmsArray<CmsSgcbValueChoice> v) { this.sgscb = v; return this; }
     public CmsGetSgcbValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgscb, moreFollows);
