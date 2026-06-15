@@ -7,44 +7,64 @@
     <groupId>com.ysh</groupId>
     <artifactId>jcms</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
-    <name>jcms — DL/T 2811 Java JNA Binding</name>
+    <name>jcms — DL/T 2811 Java Implementation</name>
+    <description>Multi-module project: core (JNA binding), utils (SCL, security, config), app (transport, server, client)</description>
+
+    <modules>
+        <module>jcms-core</module>
+        <module>jcms-utils</module>
+        <module>jcms-app</module>
+    </modules>
 
     <properties>
         <java.version>1.8</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jcms.version>1.0.0-SNAPSHOT</jcms.version>
         <jna.version>5.14.0</jna.version>
+        <junit.version>4.13.2</junit.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <snakeyaml.version>2.2</snakeyaml.version>
+        <bouncycastle.version>1.78</bouncycastle.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna</artifactId>
-            <version>${jna.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.ysh</groupId>
+                <artifactId>jcms-core</artifactId>
+                <version>${jcms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ysh</groupId>
+                <artifactId>jcms-utils</artifactId>
+                <version>${jcms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ysh</groupId>
+                <artifactId>jcms-app</artifactId>
+                <version>${jcms.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.11.0</version>
+                    <configuration>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

@@ -7,7 +7,7 @@ echo "=== step 1: build ccms ==="
 cd "$ROOT/../ccms"
 bash ./ccms.sh
 
-echo "=== step 2: copy ccms lib -> resources ==="
+echo "=== step 2: copy ccms lib -> jcms-core resources ==="
 UNAME_S="$(uname -s)"
 UNAME_M="$(uname -m)"
 
@@ -33,7 +33,7 @@ case "$UNAME_S" in
 esac
 
 LIB_SRC="$ROOT/../ccms/dist/$SRC"
-DST_DIR="$ROOT/src/main/resources/$JNA_DIR"
+DST_DIR="$ROOT/jcms-core/src/main/resources/$JNA_DIR"
 if [ ! -f "$LIB_SRC" ]; then
     echo "[FAIL] $SRC not found at $LIB_SRC"
     exit 1
@@ -42,8 +42,8 @@ mkdir -p "$DST_DIR"
 cp "$LIB_SRC" "$DST_DIR/$JNA_NAME"
 echo "[OK] copied to $DST_DIR/$JNA_NAME"
 
-echo "=== step 3: mvn clean compile test ==="
+echo "=== step 3: mvn clean test -pl jcms-core ==="
 cd "$ROOT"
-mvn clean compile test
+mvn clean test -pl jcms-core
 
 echo "=== all done ==="
