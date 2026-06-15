@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsOrCatTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsOrCat a = new CmsOrCat(CmsOrCat.STATION_CONTROL);
         byte[] encoded = a.encode();
         CmsOrCat b = new CmsOrCat();

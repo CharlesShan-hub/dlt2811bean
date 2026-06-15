@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class CmsAssociateResponseTest {
     @Test
-    public void roundtrip_without_auth() {
+    public void roundup_without_auth() {
         CmsAssociateResponse a = new CmsAssociateResponse()
             .reqId(10)
             .assocId(new byte[]{0x01, 0x02, 0x03, 0x04})
@@ -20,7 +20,7 @@ public class CmsAssociateResponseTest {
     }
 
     @Test
-    public void roundtrip_with_auth() {
+    public void roundup_with_auth() {
         CmsAssociateResponse a = new CmsAssociateResponse()
             .reqId(11)
             .assocId(new byte[]{0x05, 0x06, 0x07, 0x08})

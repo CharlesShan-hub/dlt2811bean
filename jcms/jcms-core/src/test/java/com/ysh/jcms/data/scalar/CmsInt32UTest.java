@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsInt32UTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsInt32U a = new CmsInt32U(3000000000L);
         byte[] encoded = a.encode();
         CmsInt32U b = new CmsInt32U();

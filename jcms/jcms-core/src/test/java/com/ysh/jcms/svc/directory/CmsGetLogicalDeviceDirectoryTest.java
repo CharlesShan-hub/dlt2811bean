@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class CmsGetLogicalDeviceDirectoryTest {
 
     @Test
-    public void request_roundtrip_without_optional() {
+    public void request_roundup_without_optional() {
         CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest()
             .reqId(3)
             .ldNamePresent(false)
@@ -21,7 +21,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
     }
 
     @Test
-    public void request_roundtrip_with_ld_name() {
+    public void request_roundup_with_ld_name() {
         CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest()
             .reqId(4)
             .ldNamePresent(true)
@@ -35,7 +35,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
     }
 
     @Test
-    public void response_roundtrip_with_array() {
+    public void response_roundup_with_array() {
         CmsGetLogicalDeviceDirectoryResponse a = new CmsGetLogicalDeviceDirectoryResponse();
         a.reqId.value(20);
         /* SEQUENCE OF SubReference — 3 个元素 */
@@ -52,7 +52,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsGetLogicalDeviceDirectoryError a = new CmsGetLogicalDeviceDirectoryError();
         a.reqId.value(88);
         a.serviceError.value(CmsServiceError.INSTANCE_IN_USE);

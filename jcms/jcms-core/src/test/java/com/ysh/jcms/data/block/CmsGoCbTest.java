@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsGoCbTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsGoCb a = new CmsGoCb()
             .goEna(true)
             .confRev(42L)

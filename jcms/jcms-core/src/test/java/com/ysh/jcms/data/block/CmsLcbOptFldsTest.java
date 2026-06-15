@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsLcbOptFldsTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsLcbOptFlds a = new CmsLcbOptFlds()
             .value(true);
         byte[] encoded = a.encode();

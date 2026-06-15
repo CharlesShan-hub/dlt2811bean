@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsReasonCodeTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsReasonCode a = new CmsReasonCode()
             .data_change(true)
             .general_interrogation(true);

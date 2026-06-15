@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class CmsGetAllDataDefinitionTest {
 
     @Test
-    public void request_roundtrip_without_optional() {
+    public void request_roundup_without_optional() {
         CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest();
         a.reqId.value(8);
         a.reference.choice.value(CmsReferenceChoice.LD_NAME);
@@ -23,7 +23,7 @@ public class CmsGetAllDataDefinitionTest {
     }
 
     @Test
-    public void request_roundtrip_with_all_optional() {
+    public void request_roundup_with_all_optional() {
         CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest();
         a.reqId.value(9);
         a.reference.choice.value(CmsReferenceChoice.LN_REFERENCE);
@@ -40,7 +40,7 @@ public class CmsGetAllDataDefinitionTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsGetAllDataDefinitionError a = new CmsGetAllDataDefinitionError();
         a.reqId.value(55);
         a.serviceError.value(CmsServiceError.TYPE_CONFLICT);

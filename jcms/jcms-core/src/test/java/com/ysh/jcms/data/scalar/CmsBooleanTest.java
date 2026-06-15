@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsBooleanTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsBoolean a = new CmsBoolean(true);
         byte[] encoded = a.encode();
         CmsBoolean b = new CmsBoolean();

@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class CmsGetLogicalNodeDirectoryTest {
 
     @Test
-    public void request_roundtrip_with_ld_name() {
+    public void request_roundup_with_ld_name() {
         CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest();
         a.reqId.value(5);
         a.reference.choice.value(CmsReferenceChoice.LD_NAME);
@@ -24,7 +24,7 @@ public class CmsGetLogicalNodeDirectoryTest {
     }
 
     @Test
-    public void request_roundtrip_with_ln_reference() {
+    public void request_roundup_with_ln_reference() {
         CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest();
         a.reqId.value(6);
         a.reference.choice.value(CmsReferenceChoice.LN_REFERENCE);
@@ -40,7 +40,7 @@ public class CmsGetLogicalNodeDirectoryTest {
     }
 
     @Test
-    public void response_roundtrip_with_array() {
+    public void response_roundup_with_array() {
         CmsGetLogicalNodeDirectoryResponse a = new CmsGetLogicalNodeDirectoryResponse();
         a.reqId.value(30);
         /* SEQUENCE OF SubReference — 2 个元素 */
@@ -55,7 +55,7 @@ public class CmsGetLogicalNodeDirectoryTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsGetLogicalNodeDirectoryError a = new CmsGetLogicalNodeDirectoryError();
         a.reqId.value(77);
         a.serviceError.value(CmsServiceError.ACCESS_VIOLATION);

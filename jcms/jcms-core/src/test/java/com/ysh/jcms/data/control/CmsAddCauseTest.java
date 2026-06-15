@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsAddCauseTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsAddCause a = new CmsAddCause(CmsAddCause.BLOCKED_BY_INTERLOCKING);
         byte[] encoded = a.encode();
         CmsAddCause b = new CmsAddCause();

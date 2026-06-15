@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsTriggerConditionsTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsTriggerConditions a = new CmsTriggerConditions()
             .data_change(true)
             .integrity(true);

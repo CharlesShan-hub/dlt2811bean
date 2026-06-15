@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class CmsAssociateErrorTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsAssociateError a = new CmsAssociateError()
             .reqId(5)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);

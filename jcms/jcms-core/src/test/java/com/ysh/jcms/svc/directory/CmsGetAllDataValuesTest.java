@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class CmsGetAllDataValuesTest {
 
     @Test
-    public void request_roundtrip_with_fc() {
+    public void request_roundup_with_fc() {
         CmsGetAllDataValuesRequest a = new CmsGetAllDataValuesRequest();
         a.reqId.value(7);
         a.reference.choice.value(CmsReferenceChoice.LN_REFERENCE);
@@ -25,7 +25,7 @@ public class CmsGetAllDataValuesTest {
     }
 
     @Test
-    public void response_roundtrip_with_array() {
+    public void response_roundup_with_array() {
         CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse();
         a.reqId.value(40);
         /* SEQUENCE OF DataValueEntry — 2 个元素 */
@@ -49,7 +49,7 @@ public class CmsGetAllDataValuesTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsGetAllDataValuesError a = new CmsGetAllDataValuesError();
         a.reqId.value(66);
         a.serviceError.value(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsReleaseRequestTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsReleaseRequest a = new CmsReleaseRequest()
             .reqId(20)
             .assocId(new byte[]{0x0A, 0x0B, 0x0C, 0x0D});

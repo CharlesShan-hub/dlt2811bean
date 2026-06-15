@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsLcbTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsLcb a = new CmsLcb()
             .logEna(true)
             .intgPd(1000L);
@@ -13,5 +13,6 @@ public class CmsLcbTest {
         CmsLcb b = new CmsLcb();
         b.decode(encoded);
         assertEquals(a, b);
+        System.out.println(a);
     }
 }

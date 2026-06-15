@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 
 public class CmsUtcTimeTest {
     @Test
-    public void roundtrip() {
-        CmsUtcTime a = new CmsUtcTime();
-        a.seconds_since_epoch.value(1234567890L);
-        a.fraction_of_second.value(500000);
-        a.time_quality.leap_seconds_known.value(true);
+    public void roundup() {
+        CmsUtcTime a = new CmsUtcTime()
+            .seconds_since_epoch(1234567890L)
+            .fraction_of_second(500000)
+            .time_quality(new CmsTimeQuality().leap_seconds_known(true));
         byte[] encoded = a.encode();
         CmsUtcTime b = new CmsUtcTime();
         b.decode(encoded);

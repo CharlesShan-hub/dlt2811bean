@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsSubReferenceTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsSubReference a = new CmsSubReference("SubRefTest");
         byte[] encoded = a.encode();
         CmsSubReference b = new CmsSubReference();

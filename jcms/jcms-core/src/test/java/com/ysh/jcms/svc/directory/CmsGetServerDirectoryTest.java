@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class CmsGetServerDirectoryTest {
 
     @Test
-    public void request_roundtrip() {
+    public void request_roundup() {
         CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest()
             .reqId(1)
             .objectClass(CmsObjectClass.LOGICAL_DEVICE)
@@ -21,7 +21,7 @@ public class CmsGetServerDirectoryTest {
     }
 
     @Test
-    public void request_roundtrip_with_ref_after() {
+    public void request_roundup_with_ref_after() {
         CmsGetServerDirectoryRequest a = new CmsGetServerDirectoryRequest()
             .reqId(2)
             .objectClass(CmsObjectClass.FILE_SYSTEM)
@@ -35,7 +35,7 @@ public class CmsGetServerDirectoryTest {
     }
 
     @Test
-    public void response_roundtrip_with_array() {
+    public void response_roundup_with_array() {
         CmsGetServerDirectoryResponse a = new CmsGetServerDirectoryResponse()
             .reqId(10);
         /* SEQUENCE OF ObjectReference — 2 个元素 */
@@ -51,7 +51,7 @@ public class CmsGetServerDirectoryTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsGetServerDirectoryError a = new CmsGetServerDirectoryError()
             .reqId(99)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);

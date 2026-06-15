@@ -25,6 +25,11 @@ public class CmsPhyComAddr extends CmsType {
         this.appid    = new CmsInt16U();
     }
 
+    public CmsPhyComAddr addr(byte[] v) { this.addr.value(v); return this; }
+    public CmsPhyComAddr priority(int v) { this.priority.value(v); return this; }
+    public CmsPhyComAddr vid(int v) { this.vid.value(v); return this; }
+    public CmsPhyComAddr appid(int v) { this.appid.value(v); return this; }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(addr, priority, vid, appid);

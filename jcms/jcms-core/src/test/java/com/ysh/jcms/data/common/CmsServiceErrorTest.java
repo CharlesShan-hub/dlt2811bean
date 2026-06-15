@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsServiceErrorTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsServiceError a = new CmsServiceError(CmsServiceError.ACCESS_VIOLATION);
         byte[] encoded = a.encode();
         CmsServiceError b = new CmsServiceError();

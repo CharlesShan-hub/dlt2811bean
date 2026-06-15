@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsMsvcbOptFldsTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsMsvcbOptFlds a = new CmsMsvcbOptFlds()
             .refresh_time(true)
             .sample_rate(true);

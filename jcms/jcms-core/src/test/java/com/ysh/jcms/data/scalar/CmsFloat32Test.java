@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsFloat32Test {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsFloat32 a = new CmsFloat32(3.14f);
         byte[] encoded = a.encode();
         CmsFloat32 b = new CmsFloat32();

@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsDbposTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsDbpos a = new CmsDbpos(CmsDbpos.ON);
         byte[] encoded = a.encode();
         CmsDbpos b = new CmsDbpos();

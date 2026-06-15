@@ -5,5 +5,5 @@ import static org.junit.Assert.*;
 
 public class CmsCodedEnumTest {
     // CmsCodedEnum extends CmsUint8Array, no custom encode/decode
-    // no roundtrip test
+    // no roundup test
 }

@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class CmsNegotiateTest {
     @Test
-    public void request_roundtrip() {
+    public void request_roundup() {
         CmsNegotiateRequest a = new CmsNegotiateRequest()
             .reqId(1)
             .apduSize(1024)
@@ -20,7 +20,7 @@ public class CmsNegotiateTest {
     }
 
     @Test
-    public void response_roundtrip() {
+    public void response_roundup() {
         CmsNegotiateResponse a = new CmsNegotiateResponse()
             .reqId(2)
             .apduSize(2048)
@@ -35,7 +35,7 @@ public class CmsNegotiateTest {
     }
 
     @Test
-    public void error_roundtrip() {
+    public void error_roundup() {
         CmsNegotiateError a = new CmsNegotiateError()
             .reqId(99)
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);

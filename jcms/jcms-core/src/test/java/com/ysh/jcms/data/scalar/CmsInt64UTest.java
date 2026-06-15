@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class CmsInt64UTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         BigInteger val = new BigInteger("12345678901234567890");
         CmsInt64U a = new CmsInt64U(val);
         byte[] encoded = a.encode();

@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 
 public class CmsOriginatorTest {
     @Test
-    public void roundtrip() {
-        CmsOriginator a = new CmsOriginator();
-        a.orCat.value(CmsOrCat.BAY_CONTROL);
-        a.orIdent.value("testIdent".getBytes());
+    public void roundup() {
+        CmsOriginator a = new CmsOriginator()
+            .orCat(CmsOrCat.BAY_CONTROL)
+            .orIdent("testIdent".getBytes());
         byte[] encoded = a.encode();
         CmsOriginator b = new CmsOriginator();
         b.decode(encoded);

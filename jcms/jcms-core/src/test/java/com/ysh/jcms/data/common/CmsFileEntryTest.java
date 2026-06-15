@@ -1,16 +1,17 @@
 package com.ysh.jcms.data.common;
 
+import com.ysh.jcms.data.time.CmsUtcTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CmsFileEntryTest {
     @Test
-    public void roundtrip() {
-        CmsFileEntry a = new CmsFileEntry();
-        a.fileName.value("test.txt".getBytes());
-        a.fileSize.value(1024L);
-        a.lastModified.seconds_since_epoch.value(1234567890L);
-        a.checkSum.value(0xDEADBEEFL);
+    public void roundup() {
+        CmsFileEntry a = new CmsFileEntry()
+            .fileName("test.txt".getBytes())
+            .fileSize(1024L)
+            .lastModified(new CmsUtcTime().seconds_since_epoch(1234567890L))
+            .checkSum(0xDEADBEEFL);
         byte[] encoded = a.encode();
         CmsFileEntry b = new CmsFileEntry();
         b.decode(encoded);

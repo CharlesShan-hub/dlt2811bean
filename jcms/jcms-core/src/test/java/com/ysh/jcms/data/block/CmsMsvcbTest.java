@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsMsvcbTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsMsvcb a = new CmsMsvcb()
             .svEna(true)
             .msvID("msv01".getBytes())

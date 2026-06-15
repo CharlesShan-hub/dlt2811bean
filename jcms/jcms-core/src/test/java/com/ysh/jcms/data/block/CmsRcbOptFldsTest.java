@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsRcbOptFldsTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsRcbOptFlds a = new CmsRcbOptFlds()
             .sequence_number(true)
             .report_time_stamp(true)

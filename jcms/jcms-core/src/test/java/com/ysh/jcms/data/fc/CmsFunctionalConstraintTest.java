@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsFunctionalConstraintTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsFunctionalConstraint a = new CmsFunctionalConstraint();
         a.value("ST".getBytes());
         byte[] encoded = a.encode();

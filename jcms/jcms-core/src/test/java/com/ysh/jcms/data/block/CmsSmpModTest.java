@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 public class CmsSmpModTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsSmpMod a = new CmsSmpMod(CmsSmpMod.SAMPLES_PER_SECOND);
         byte[] encoded = a.encode();
         CmsSmpMod b = new CmsSmpMod();

@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 public class CmsReleaseErrorTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsReleaseError a = new CmsReleaseError()
             .reqId(40)
             .serviceError(CmsServiceError.ACCESS_VIOLATION);

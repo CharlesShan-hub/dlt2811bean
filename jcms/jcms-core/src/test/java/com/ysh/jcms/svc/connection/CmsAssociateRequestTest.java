@@ -1,11 +1,13 @@
 package com.ysh.jcms.svc.connection;
 
+import com.ysh.jcms.data.time.CmsTimeQuality;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class CmsAssociateRequestTest {
     @Test
-    public void roundtrip_without_optional() {
+    public void roundup_without_optional() {
         CmsAssociateRequest a = new CmsAssociateRequest()
             .reqId(1)
             .sapRefPresent(false)
@@ -18,12 +20,12 @@ public class CmsAssociateRequestTest {
     }
 
     @Test
-    public void roundtrip_with_sap_ref() {
+    public void roundup_with_sap_ref() {
         CmsAssociateRequest a = new CmsAssociateRequest()
             .reqId(2)
             .sapRefPresent(true)
-            .sapRef("MyAccessPoint".getBytes());
-        a.authParamPresent.value(false);
+            .sapRef("MyAccessPoint".getBytes())
+            .authParamPresent(false);
         byte[] encoded = a.encode();
 
         CmsAssociateRequest b = new CmsAssociateRequest();
@@ -32,17 +34,20 @@ public class CmsAssociateRequestTest {
     }
 
     @Test
-    public void roundtrip_with_both_optional() {
+    public void roundup_with_both_optional() {
         CmsAssociateRequest a = new CmsAssociateRequest()
             .reqId(3)
             .sapRefPresent(true)
             .sapRef("sapRef".getBytes())
-            .authParamPresent(true);
-        a.authParam.cert.value(new byte[]{0x11, 0x22});
-        a.authParam.signedTime.seconds_since_epoch.value(1234567890L);
-        a.authParam.signedTime.fraction_of_second.value(0);
-        a.authParam.signedTime.time_quality.leap_seconds_known.value(true);
-        a.authParam.sigVal.value(new byte[]{0x33, 0x44});
+            .authParamPresent(true)
+            .authParam(new CmsAuthenticationParameter()
+                .cert(new byte[]{0x11, 0x22})
+                .signedTime(new CmsUtcTime()
+                    .seconds_since_epoch(1234567890L)
+                    .fraction_of_second(0)
+                    .time_quality(new CmsTimeQuality()
+                        .leap_seconds_known(true)))
+                .sigVal(new byte[]{0x33, 0x44}));
         byte[] encoded = a.encode();
 
         CmsAssociateRequest b = new CmsAssociateRequest();

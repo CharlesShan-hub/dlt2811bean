@@ -5,19 +5,19 @@ import static org.junit.Assert.*;
 
 public class CmsUrcbTest {
     @Test
-    public void roundtrip() {
+    public void roundup() {
         CmsUrcb a = new CmsUrcb()
             .rptID("urpt01".getBytes())
             .rptEna(false)
             .datSet("dataset1".getBytes())
-            .confRev(5L);
-        a.optFlds.sequence_number.value(true);
-        a.bufTm.value(3000L);
-        a.sqNum.value(200);
-        a.trgOps.data_change.value(true);
-        a.intgPd.value(1000L);
-        a.gi.value(false);
-        a.resv.value(true);
+            .confRev(5L)
+            .optFlds(new CmsRcbOptFlds().sequence_number(true))
+            .bufTm(3000L)
+            .sqNum(200)
+            .trgOps(new CmsTriggerConditions().data_change(true))
+            .intgPd(1000L)
+            .gi(false)
+            .resv(true);
         byte[] encoded = a.encode();
         CmsUrcb b = new CmsUrcb();
         b.decode(encoded);

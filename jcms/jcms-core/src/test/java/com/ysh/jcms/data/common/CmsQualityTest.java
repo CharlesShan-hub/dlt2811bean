@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 
 public class CmsQualityTest {
     @Test
-    public void roundtrip() {
-        CmsQuality a = new CmsQuality();
-        a.validity.value(1);
-        a.overflow.value(true);
-        a.failure.value(true);
-        a.inaccurate.value(true);
+    public void roundup() {
+        CmsQuality a = new CmsQuality()
+            .validity(1)
+            .overflow(true)
+            .failure(true)
+            .inaccurate(true);
         byte[] encoded = a.encode();
         CmsQuality b = new CmsQuality();
         b.decode(encoded);
