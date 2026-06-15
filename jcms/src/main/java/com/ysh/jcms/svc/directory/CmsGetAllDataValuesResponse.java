@@ -23,7 +23,7 @@ public class CmsGetAllDataValuesResponse extends CmsType {
 
     public CmsGetAllDataValuesResponse() {
         this.reqId       = new CmsReqId();
-        this.data        = new CmsArray<>();
+        this.data        = new CmsArray<>(CmsDataValueEntry.class);
         this.moreFollows = new CmsBoolean();
     }
 

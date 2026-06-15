@@ -24,7 +24,7 @@ public class CmsGetLogicalNodeDirectoryResponse extends CmsType {
 
     public CmsGetLogicalNodeDirectoryResponse() {
         this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>();
+        this.reference   = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
     }
 

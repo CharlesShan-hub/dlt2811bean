@@ -59,7 +59,7 @@ public class CmsSendGooseMessage extends CmsType {
         this.simulation    = new CmsBoolean();
         this.confRev       = new CmsInt32U();
         this.ndsCom        = new CmsBoolean();
-        this.data          = new CmsArray<>();
+        this.data          = new CmsArray<>(CmsData.class);
     }
 
     @Override

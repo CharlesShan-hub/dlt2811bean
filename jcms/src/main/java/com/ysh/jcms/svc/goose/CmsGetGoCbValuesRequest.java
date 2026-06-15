@@ -21,7 +21,7 @@ public class CmsGetGoCbValuesRequest extends CmsType {
 
     public CmsGetGoCbValuesRequest() {
         this.reqId     = new CmsReqId();
-        this.reference = new CmsArray<>();
+        this.reference = new CmsArray<>(CmsObjectReference.class);
     }
 
     @Override

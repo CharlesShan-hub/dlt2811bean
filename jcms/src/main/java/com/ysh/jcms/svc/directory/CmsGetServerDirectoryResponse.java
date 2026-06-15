@@ -24,7 +24,7 @@ public class CmsGetServerDirectoryResponse extends CmsType {
 
     public CmsGetServerDirectoryResponse() {
         this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>();
+        this.reference   = new CmsArray<>(CmsObjectReference.class);
         this.moreFollows = new CmsBoolean();
     }
 

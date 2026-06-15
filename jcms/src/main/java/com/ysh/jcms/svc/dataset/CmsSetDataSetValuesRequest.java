@@ -31,7 +31,7 @@ public class CmsSetDataSetValuesRequest extends CmsType {
         this.datasetReference = new CmsObjectReference();
         this.refAfterPresent  = new CmsBoolean();
         this.refAfter         = new CmsObjectReference();
-        this.value            = new CmsArray<>();
+        this.value            = new CmsArray<>(CmsData.class);
     }
 
     @Override
@@ -40,5 +40,5 @@ public class CmsSetDataSetValuesRequest extends CmsType {
     }
 
     @Override public byte[] encode() { write(); return NativeBridge.encodeSetDataSetValuesRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetDataValuesRequest(nativePtr, data); read(); }
+    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetDataSetValuesRequest(nativePtr, data); read(); }
 }

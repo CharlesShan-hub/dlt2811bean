@@ -23,7 +23,7 @@ public class CmsGetAllDataDefinitionResponse extends CmsType {
 
     public CmsGetAllDataDefinitionResponse() {
         this.reqId       = new CmsReqId();
-        this.data        = new CmsArray<>();
+        this.data        = new CmsArray<>(CmsDataDefinitionEntry.class);
         this.moreFollows = new CmsBoolean();
     }
 

@@ -24,7 +24,7 @@ public class CmsGetFileDirectoryResponse extends CmsType {
 
     public CmsGetFileDirectoryResponse() {
         this.reqId       = new CmsReqId();
-        this.fileEntry   = new CmsArray<>();
+        this.fileEntry   = new CmsArray<>(CmsFileEntry.class);
         this.moreFollows = new CmsBoolean();
     }
 

@@ -3,6 +3,7 @@ package com.ysh.jcms.svc.rpc;
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -24,7 +25,7 @@ public class CmsGetRpcInterfaceDirectoryResponse extends CmsType {
 
     public CmsGetRpcInterfaceDirectoryResponse() {
         this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>();
+        this.reference   = new CmsArray<>(CmsUint8Array.class);
         this.moreFollows = new CmsBoolean();
     }
 

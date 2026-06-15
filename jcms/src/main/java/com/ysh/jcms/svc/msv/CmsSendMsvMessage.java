@@ -64,7 +64,7 @@ public class CmsSendMsvMessage extends CmsType {
         this.smpRatePresent = new CmsBoolean();
         this.smpRate        = new CmsInt16U();
         this.simulation     = new CmsBoolean();
-        this.sample         = new CmsArray<>();
+        this.sample         = new CmsArray<>(CmsData.class);
         this.smpModPresent  = new CmsBoolean();
         this.smpMod         = new CmsSmpMod();
     }

@@ -20,7 +20,7 @@ public class CmsGetDataValuesRequest extends CmsType {
 
     public CmsGetDataValuesRequest() {
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>();
+        this.data  = new CmsArray<>(CmsDataRefEntry.class);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class CmsCreateDataSetRequest extends CmsType {
         this.datasetReference = new CmsObjectReference();
         this.refAfterPresent  = new CmsBoolean();
         this.refAfter         = new CmsObjectReference();
-        this.memberData       = new CmsArray<>();
+        this.memberData       = new CmsArray<>(CmsDataRefFcEntry.class);
     }
 
     @Override

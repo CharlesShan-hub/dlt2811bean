@@ -24,7 +24,7 @@ public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
 
     public CmsGetLogicalDeviceDirectoryResponse() {
         this.reqId       = new CmsReqId();
-        this.lnReference = new CmsArray<>();
+        this.lnReference = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
     }
 
