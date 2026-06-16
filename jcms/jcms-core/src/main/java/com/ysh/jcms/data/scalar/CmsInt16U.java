@@ -10,7 +10,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsInt16U extends CmsType {
 
-    private short value;  /* Java short 存 uint16_t 的 bit 模式 */
+    private short value = 0;  /* Java short 存 uint16_t 的 bit 模式 */
 
     public CmsInt16U() {}
     public CmsInt16U(int value) { this.value = (short) (value & 0xFFFF); write(); }

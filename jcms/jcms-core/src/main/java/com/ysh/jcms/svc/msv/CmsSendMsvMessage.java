@@ -6,7 +6,7 @@ import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.block.CmsSmpMod;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -42,7 +42,7 @@ public class CmsSendMsvMessage extends CmsType {
     public CmsInt16U           smpCnt;
     public CmsInt32U           confRev;
     public CmsBoolean          refTmPresent;
-    public CmsTimeStamp        refTm;          /* OPTIONAL */
+    public CmsUtcTime        refTm;          /* OPTIONAL */
     public CmsInt8U            smpSynch;
     public CmsBoolean          smpRatePresent;
     public CmsInt16U           smpRate;        /* OPTIONAL */
@@ -59,7 +59,7 @@ public class CmsSendMsvMessage extends CmsType {
         this.smpCnt         = new CmsInt16U();
         this.confRev        = new CmsInt32U();
         this.refTmPresent   = new CmsBoolean();
-        this.refTm          = new CmsTimeStamp();
+        this.refTm          = new CmsUtcTime();
         this.smpSynch       = new CmsInt8U();
         this.smpRatePresent = new CmsBoolean();
         this.smpRate        = new CmsInt16U();
@@ -78,7 +78,7 @@ public class CmsSendMsvMessage extends CmsType {
     public CmsSendMsvMessage smpCnt(int v) { this.smpCnt.value(v); return this; }
     public CmsSendMsvMessage confRev(long v) { this.confRev.value(v); return this; }
     public CmsSendMsvMessage refTmPresent(boolean v) { this.refTmPresent.value(v); return this; }
-    public CmsSendMsvMessage refTm(CmsTimeStamp v) { this.refTm = v; return this; }
+    public CmsSendMsvMessage refTm(CmsUtcTime v) { this.refTm = v; return this; }
     public CmsSendMsvMessage smpSynch(int v) { this.smpSynch.value(v); return this; }
     public CmsSendMsvMessage smpRatePresent(boolean v) { this.smpRatePresent.value(v); return this; }
     public CmsSendMsvMessage smpRate(int v) { this.smpRate.value(v); return this; }

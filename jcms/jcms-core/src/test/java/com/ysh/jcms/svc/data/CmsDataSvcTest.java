@@ -1,6 +1,7 @@
 package com.ysh.jcms.svc.data;
 
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.fc.CmsFC;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -25,7 +26,7 @@ public class CmsDataSvcTest {
         CmsDataRefEntry r1 = new CmsDataRefEntry();
         r1.reference.value("dv1".getBytes());
         r1.fcPresent.value(true);
-        r1.fc.value("MX".getBytes());
+        r1.fc.value(CmsFC.MX);
         a.data.add(r1);
         byte[] encoded = a.encode();
 

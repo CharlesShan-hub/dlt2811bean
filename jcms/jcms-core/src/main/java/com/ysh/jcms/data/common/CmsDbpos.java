@@ -16,6 +16,6 @@ public class CmsDbpos extends CmsEnumerated {
     public static final int ON           = 2;
     public static final int BAD_STATE    = 3;
 
-    public CmsDbpos() {}
+    public CmsDbpos() { super(0, 3, INTERMEDIATE); }
     public CmsDbpos(int value) { super(0, 3, value); }
 }

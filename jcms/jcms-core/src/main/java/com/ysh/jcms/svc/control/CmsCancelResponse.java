@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.control.CmsOriginator;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt8U;
@@ -30,10 +30,10 @@ public class CmsCancelResponse extends CmsType {
     public CmsObjectReference  reference;
     public CmsData             ctlVal;
     public CmsBoolean          operTmPresent;
-    public CmsTimeStamp        operTm;         /* OPTIONAL */
+    public CmsUtcTime        operTm;         /* OPTIONAL */
     public CmsOriginator       origin;
     public CmsInt8U            ctlNum;
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsBoolean          test;
 
     public CmsCancelResponse() {
@@ -41,10 +41,10 @@ public class CmsCancelResponse extends CmsType {
         this.reference      = new CmsObjectReference();
         this.ctlVal         = new CmsData();
         this.operTmPresent  = new CmsBoolean();
-        this.operTm         = new CmsTimeStamp();
+        this.operTm         = new CmsUtcTime();
         this.origin         = new CmsOriginator();
         this.ctlNum         = new CmsInt8U();
-        this.t              = new CmsTimeStamp();
+        this.t              = new CmsUtcTime();
         this.test           = new CmsBoolean();
     }
     
@@ -53,10 +53,10 @@ public class CmsCancelResponse extends CmsType {
     public CmsCancelResponse reference(String v) { this.reference.value(v); return this; }
     public CmsCancelResponse ctlVal(CmsData v) { this.ctlVal = v; return this; }
     public CmsCancelResponse operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
-    public CmsCancelResponse operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsCancelResponse operTm(CmsUtcTime v) { this.operTm = v; return this; }
     public CmsCancelResponse origin(CmsOriginator v) { this.origin = v; return this; }
     public CmsCancelResponse ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsCancelResponse t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsCancelResponse t(CmsUtcTime v) { this.t = v; return this; }
     public CmsCancelResponse test(boolean v) { this.test.value(v); return this; }
 
     @Override

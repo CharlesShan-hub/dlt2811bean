@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.control.CmsAddCause;
 import com.ysh.jcms.data.control.CmsCheck;
 import com.ysh.jcms.data.control.CmsOriginator;
@@ -36,10 +36,10 @@ public class CmsCommandTermination extends CmsType {
     public CmsObjectReference  reference;
     public CmsData             ctlVal;
     public CmsBoolean          operTmPresent;
-    public CmsTimeStamp        operTm;         /* OPTIONAL */
+    public CmsUtcTime        operTm;         /* OPTIONAL */
     public CmsOriginator       origin;
     public CmsInt8U            ctlNum;
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsBoolean          test;
     public CmsCheck            check;
     public CmsBoolean          addCausePresent;
@@ -50,10 +50,10 @@ public class CmsCommandTermination extends CmsType {
         this.reference        = new CmsObjectReference();
         this.ctlVal           = new CmsData();
         this.operTmPresent    = new CmsBoolean();
-        this.operTm           = new CmsTimeStamp();
+        this.operTm           = new CmsUtcTime();
         this.origin           = new CmsOriginator();
         this.ctlNum           = new CmsInt8U();
-        this.t                = new CmsTimeStamp();
+        this.t                = new CmsUtcTime();
         this.test             = new CmsBoolean();
         this.check            = new CmsCheck();
         this.addCausePresent  = new CmsBoolean();
@@ -65,10 +65,10 @@ public class CmsCommandTermination extends CmsType {
     public CmsCommandTermination reference(String v) { this.reference.value(v); return this; }
     public CmsCommandTermination ctlVal(CmsData v) { this.ctlVal = v; return this; }
     public CmsCommandTermination operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
-    public CmsCommandTermination operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsCommandTermination operTm(CmsUtcTime v) { this.operTm = v; return this; }
     public CmsCommandTermination origin(CmsOriginator v) { this.origin = v; return this; }
     public CmsCommandTermination ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsCommandTermination t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsCommandTermination t(CmsUtcTime v) { this.t = v; return this; }
     public CmsCommandTermination test(boolean v) { this.test.value(v); return this; }
     public CmsCommandTermination check(CmsCheck v) { this.check = v; return this; }
     public CmsCommandTermination addCausePresent(boolean v) { this.addCausePresent.value(v); return this; }

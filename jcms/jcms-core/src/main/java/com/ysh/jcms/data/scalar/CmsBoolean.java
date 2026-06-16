@@ -9,7 +9,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsBoolean extends CmsType {
 
-    private boolean value;
+    private boolean value = false;
 
     public CmsBoolean() {}
     public CmsBoolean(boolean value) { this.value = value; write(); }

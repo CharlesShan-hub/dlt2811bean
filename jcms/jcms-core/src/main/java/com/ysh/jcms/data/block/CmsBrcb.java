@@ -4,6 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
+import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +29,7 @@ public class CmsBrcb extends CmsType {
     public CmsBoolean           gi;
     public CmsBoolean           purgeBuf;
     public CmsEntryId           entryID;
-    public CmsEntryTime         timeOfEntry;
+    public CmsBinaryTime         timeOfEntry;
     public CmsBoolean           resvTms_present;
     public CmsInt16             resvTms;        /* OPTIONAL */
     public CmsBoolean           owner_present;
@@ -47,7 +48,7 @@ public class CmsBrcb extends CmsType {
         this.gi            = new CmsBoolean();
         this.purgeBuf      = new CmsBoolean();
         this.entryID       = new CmsEntryId();
-        this.timeOfEntry   = new CmsEntryTime();
+        this.timeOfEntry   = new CmsBinaryTime();
         this.resvTms_present = new CmsBoolean();
         this.resvTms       = new CmsInt16();
         this.owner_present = new CmsBoolean();
@@ -69,7 +70,7 @@ public class CmsBrcb extends CmsType {
     public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
     public CmsBrcb entryID(byte[] v) { this.entryID.value(v); return this; }
     public CmsBrcb entryID(String v) { this.entryID.value(v); return this; }
-    public CmsBrcb timeOfEntry(CmsEntryTime v) { this.timeOfEntry = v; return this; }
+    public CmsBrcb timeOfEntry(CmsBinaryTime v) { this.timeOfEntry = v; return this; }
     public CmsBrcb resvTms_present(boolean v) { this.resvTms_present.value(v); return this; }
     public CmsBrcb resvTms(int v) { this.resvTms.value(v); return this; }
     public CmsBrcb owner_present(boolean v) { this.owner_present.value(v); return this; }

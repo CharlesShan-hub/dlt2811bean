@@ -13,6 +13,8 @@ public class CmsGoCbTest {
         byte[] encoded = a.encode();
         CmsGoCb b = new CmsGoCb();
         b.decode(encoded);
+        System.out.println(a);
+        System.out.println(b);
         assertEquals(a, b);
     }
 }

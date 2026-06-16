@@ -10,7 +10,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsInt32U extends CmsType {
 
-    private long value;  /* unsigned int32, 用 long 存 */
+    private long value = 0L;  /* unsigned int32, 用 long 存 */
 
     public CmsInt32U() {}
     public CmsInt32U(long value) { this.value = value & 0xFFFFFFFFL; write(); }

@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.common.CmsEntryId;
-import com.ysh.jcms.data.common.CmsEntryTime;
+import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -25,9 +25,9 @@ public class CmsQueryLogByTimeRequest extends CmsType {
     public CmsReqId            reqId;
     public CmsObjectReference  logReference;
     public CmsBoolean          startTimePresent;
-    public CmsEntryTime        startTime;      /* OPTIONAL */
+    public CmsBinaryTime        startTime;      /* OPTIONAL */
     public CmsBoolean          stopTimePresent;
-    public CmsEntryTime        stopTime;       /* OPTIONAL */
+    public CmsBinaryTime        stopTime;       /* OPTIONAL */
     public CmsBoolean          entryAfterPresent;
     public CmsEntryId          entryAfter;     /* OPTIONAL */
 
@@ -35,9 +35,9 @@ public class CmsQueryLogByTimeRequest extends CmsType {
         this.reqId             = new CmsReqId();
         this.logReference      = new CmsObjectReference();
         this.startTimePresent  = new CmsBoolean();
-        this.startTime         = new CmsEntryTime();
+        this.startTime         = new CmsBinaryTime();
         this.stopTimePresent   = new CmsBoolean();
-        this.stopTime          = new CmsEntryTime();
+        this.stopTime          = new CmsBinaryTime();
         this.entryAfterPresent = new CmsBoolean();
         this.entryAfter        = new CmsEntryId();
     }
@@ -46,9 +46,9 @@ public class CmsQueryLogByTimeRequest extends CmsType {
     public CmsQueryLogByTimeRequest logReference(byte[] v) { this.logReference.value(v); return this; }
     public CmsQueryLogByTimeRequest logReference(String v) { this.logReference.value(v); return this; }
     public CmsQueryLogByTimeRequest startTimePresent(boolean v) { this.startTimePresent.value(v); return this; }
-    public CmsQueryLogByTimeRequest startTime(CmsEntryTime v) { this.startTime = v; return this; }
+    public CmsQueryLogByTimeRequest startTime(CmsBinaryTime v) { this.startTime = v; return this; }
     public CmsQueryLogByTimeRequest stopTimePresent(boolean v) { this.stopTimePresent.value(v); return this; }
-    public CmsQueryLogByTimeRequest stopTime(CmsEntryTime v) { this.stopTime = v; return this; }
+    public CmsQueryLogByTimeRequest stopTime(CmsBinaryTime v) { this.stopTime = v; return this; }
     public CmsQueryLogByTimeRequest entryAfterPresent(boolean v) { this.entryAfterPresent.value(v); return this; }
     public CmsQueryLogByTimeRequest entryAfter(byte[] v) { this.entryAfterPresent.value(v != null && v.length > 0); if (v != null) this.entryAfter.value(v); return this; }
     public CmsQueryLogByTimeRequest entryAfter(String v) { this.entryAfterPresent.value(v != null); if (v != null) this.entryAfter.value(v); return this; }

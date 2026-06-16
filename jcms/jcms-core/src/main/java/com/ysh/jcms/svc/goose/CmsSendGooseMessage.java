@@ -5,7 +5,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -38,7 +38,7 @@ public class CmsSendGooseMessage extends CmsType {
     public CmsObjectReference  datSet;         /* OPTIONAL */
     public CmsBoolean          goRefPresent;
     public CmsObjectReference  goRef;          /* OPTIONAL */
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsInt32U           stNum;
     public CmsInt32U           sqNum;
     public CmsBoolean          simulation;
@@ -53,7 +53,7 @@ public class CmsSendGooseMessage extends CmsType {
         this.datSet        = new CmsObjectReference();
         this.goRefPresent  = new CmsBoolean();
         this.goRef         = new CmsObjectReference();
-        this.t             = new CmsTimeStamp();
+        this.t             = new CmsUtcTime();
         this.stNum         = new CmsInt32U();
         this.sqNum         = new CmsInt32U();
         this.simulation    = new CmsBoolean();
@@ -71,7 +71,7 @@ public class CmsSendGooseMessage extends CmsType {
     public CmsSendGooseMessage goRefPresent(boolean v) { this.goRefPresent.value(v); return this; }
     public CmsSendGooseMessage goRef(byte[] v) { this.goRefPresent.value(v != null && v.length > 0); if (v != null) this.goRef.value(v); return this; }
     public CmsSendGooseMessage goRef(String v) { this.goRefPresent.value(v != null); if (v != null) this.goRef.value(v); return this; }
-    public CmsSendGooseMessage t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsSendGooseMessage t(CmsUtcTime v) { this.t = v; return this; }
     public CmsSendGooseMessage stNum(long v) { this.stNum.value(v); return this; }
     public CmsSendGooseMessage sqNum(long v) { this.sqNum.value(v); return this; }
     public CmsSendGooseMessage simulation(boolean v) { this.simulation.value(v); return this; }

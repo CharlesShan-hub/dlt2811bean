@@ -10,7 +10,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsInt8U extends CmsType {
 
-    private byte value;
+    private byte value = 0;
 
     public CmsInt8U() {}
     public CmsInt8U(int value) { this.value = (byte) (value & 0xFF); write(); }

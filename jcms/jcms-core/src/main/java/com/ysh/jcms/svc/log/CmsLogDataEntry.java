@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.fc.CmsFunctionalConstraint;
+import com.ysh.jcms.data.fc.CmsFC;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,21 +21,21 @@ import java.util.List;
 public class CmsLogDataEntry extends CmsType {
 
     public CmsObjectReference     reference;
-    public CmsFunctionalConstraint fc;
+    public CmsFC fc;
     public CmsData                value;
     public CmsReasonCode          reason;
 
     public CmsLogDataEntry() {
         this.reference = new CmsObjectReference();
-        this.fc        = new CmsFunctionalConstraint();
+        this.fc        = new CmsFC();
         this.value     = new CmsData();
         this.reason    = new CmsReasonCode();
     }
-    
+
     public CmsLogDataEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsLogDataEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsLogDataEntry fc(byte[] v) { this.fc.value(v); return this; }
-    public CmsLogDataEntry fc(String v) { this.fc.value(v); return this; }
+    public CmsLogDataEntry fc(int v) { this.fc.value(v); return this; }
+
     public CmsLogDataEntry value(CmsData v) { this.value = v; return this; }
     public CmsLogDataEntry reason(CmsReasonCode v) { this.reason = v; return this; }
 

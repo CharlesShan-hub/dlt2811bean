@@ -1,6 +1,7 @@
 package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.fc.CmsFC;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
 import org.junit.Test;
@@ -15,7 +16,7 @@ public class CmsGetAllDataValuesTest {
         a.reference.choice.value(CmsReferenceChoice.LN_REFERENCE);
         a.reference.altLnReference.value("lnRef".getBytes());
         a.fcPresent.value(true);
-        a.fc.value("MX".getBytes());
+        a.fc.value(CmsFC.MX);
         a.refAfterPresent.value(false);
         byte[] encoded = a.encode();
 

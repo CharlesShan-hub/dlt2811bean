@@ -3,7 +3,7 @@ package com.ysh.jcms.svc.log;
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsEntryId;
-import com.ysh.jcms.data.common.CmsEntryTime;
+import com.ysh.jcms.data.time.CmsBinaryTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,17 +16,17 @@ import java.util.List;
  */
 public class CmsLogEntry extends CmsType {
 
-    public CmsEntryTime               timeOfEntry;
+    public CmsBinaryTime               timeOfEntry;
     public CmsEntryId                 entryId;
     public CmsArray<CmsLogDataEntry>  entryData;   /* SEQUENCE OF LogDataEntry */
 
     public CmsLogEntry() {
-        this.timeOfEntry = new CmsEntryTime();
+        this.timeOfEntry = new CmsBinaryTime();
         this.entryId     = new CmsEntryId();
         this.entryData   = new CmsArray<>();
     }
     
-    public CmsLogEntry timeOfEntry(CmsEntryTime v) { this.timeOfEntry = v; return this; }
+    public CmsLogEntry timeOfEntry(CmsBinaryTime v) { this.timeOfEntry = v; return this; }
     public CmsLogEntry entryId(byte[] v) { this.entryId.value(v); return this; }
     public CmsLogEntry entryId(String v) { this.entryId.value(v); return this; }
     public CmsLogEntry entryData(CmsArray<CmsLogDataEntry> v) { this.entryData = v; return this; }

@@ -2,6 +2,7 @@ package com.ysh.jcms.svc.dataset;
 
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.fc.CmsFC;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -14,7 +15,7 @@ public class CmsDataSetTest {
         a.refAfterPresent.value(false);
         CmsDataRefFcEntry m1 = new CmsDataRefFcEntry();
         m1.reference.value("ref1".getBytes());
-        m1.fc.value("MX".getBytes());
+        m1.fc.value(CmsFC.MX);
         a.memberData.add(m1);
         byte[] encoded = a.encode();
 

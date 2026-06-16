@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.control.CmsCheck;
 import com.ysh.jcms.data.control.CmsOriginator;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -33,10 +33,10 @@ public class CmsTimeActivatedOperateRequest extends CmsType {
     public CmsReqId            reqId;
     public CmsObjectReference  reference;
     public CmsData             ctlVal;
-    public CmsTimeStamp        operTm;         /* mandatory */
+    public CmsUtcTime        operTm;         /* mandatory */
     public CmsOriginator       origin;
     public CmsInt8U            ctlNum;
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsBoolean          test;
     public CmsCheck            check;
 
@@ -44,10 +44,10 @@ public class CmsTimeActivatedOperateRequest extends CmsType {
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
         this.ctlVal    = new CmsData();
-        this.operTm    = new CmsTimeStamp();
+        this.operTm    = new CmsUtcTime();
         this.origin    = new CmsOriginator();
         this.ctlNum    = new CmsInt8U();
-        this.t         = new CmsTimeStamp();
+        this.t         = new CmsUtcTime();
         this.test      = new CmsBoolean();
         this.check     = new CmsCheck();
     }
@@ -56,10 +56,10 @@ public class CmsTimeActivatedOperateRequest extends CmsType {
     public CmsTimeActivatedOperateRequest reference(byte[] v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateRequest reference(String v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateRequest ctlVal(CmsData v) { this.ctlVal = v; return this; }
-    public CmsTimeActivatedOperateRequest operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsTimeActivatedOperateRequest operTm(CmsUtcTime v) { this.operTm = v; return this; }
     public CmsTimeActivatedOperateRequest origin(CmsOriginator v) { this.origin = v; return this; }
     public CmsTimeActivatedOperateRequest ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsTimeActivatedOperateRequest t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsTimeActivatedOperateRequest t(CmsUtcTime v) { this.t = v; return this; }
     public CmsTimeActivatedOperateRequest test(boolean v) { this.test.value(v); return this; }
     public CmsTimeActivatedOperateRequest check(CmsCheck v) { this.check = v; return this; }
 

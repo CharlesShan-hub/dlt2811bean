@@ -11,7 +11,7 @@ public class CmsInt24U extends CmsType {
 
     public static final int MAX = 16777215;
 
-    private int value;
+    private int value = 0;
 
     public CmsInt24U() {}
     public CmsInt24U(int value) { this.value = value & MAX; write(); }

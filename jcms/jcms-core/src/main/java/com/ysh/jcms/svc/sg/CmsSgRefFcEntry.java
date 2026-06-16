@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.fc.CmsFunctionalConstraint;
+import com.ysh.jcms.data.fc.CmsFC;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,17 +17,17 @@ import java.util.List;
 public class CmsSgRefFcEntry extends CmsType {
 
     public CmsObjectReference     reference;
-    public CmsFunctionalConstraint fc;
+    public CmsFC fc;
 
     public CmsSgRefFcEntry() {
         this.reference = new CmsObjectReference();
-        this.fc        = new CmsFunctionalConstraint();
+        this.fc        = new CmsFC();
     }
-    
+
     public CmsSgRefFcEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsSgRefFcEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSgRefFcEntry fc(byte[] v) { this.fc.value(v); return this; }
-    public CmsSgRefFcEntry fc(String v) { this.fc.value(v); return this; }
+    public CmsSgRefFcEntry fc(int v) { this.fc.value(v); return this; }
+
 
     @Override
     public List<? extends CmsType> children() {

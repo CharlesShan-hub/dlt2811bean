@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.control.CmsAddCause;
 import com.ysh.jcms.data.control.CmsCheck;
 import com.ysh.jcms.data.control.CmsOriginator;
@@ -34,7 +34,7 @@ public class CmsOperateError extends CmsType {
     public CmsData             ctlVal;
     public CmsOriginator       origin;
     public CmsInt8U            ctlNum;
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsBoolean          test;
     public CmsCheck            check;
     public CmsAddCause         addCause;
@@ -45,7 +45,7 @@ public class CmsOperateError extends CmsType {
         this.ctlVal    = new CmsData();
         this.origin    = new CmsOriginator();
         this.ctlNum    = new CmsInt8U();
-        this.t         = new CmsTimeStamp();
+        this.t         = new CmsUtcTime();
         this.test      = new CmsBoolean();
         this.check     = new CmsCheck();
         this.addCause  = new CmsAddCause();
@@ -57,7 +57,7 @@ public class CmsOperateError extends CmsType {
     public CmsOperateError ctlVal(CmsData v) { this.ctlVal = v; return this; }
     public CmsOperateError origin(CmsOriginator v) { this.origin = v; return this; }
     public CmsOperateError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsOperateError t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsOperateError t(CmsUtcTime v) { this.t = v; return this; }
     public CmsOperateError test(boolean v) { this.test.value(v); return this; }
     public CmsOperateError check(CmsCheck v) { this.check = v; return this; }
     public CmsOperateError addCause(int v) { this.addCause.value(v); return this; }

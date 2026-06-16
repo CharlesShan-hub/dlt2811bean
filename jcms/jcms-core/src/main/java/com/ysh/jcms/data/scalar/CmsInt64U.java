@@ -11,9 +11,9 @@ import java.math.BigInteger;
  */
 public class CmsInt64U extends CmsType {
 
-    private BigInteger value;
+    private BigInteger value = BigInteger.ZERO;
 
-    public CmsInt64U() { this.value = BigInteger.ZERO; }
+    public CmsInt64U() {}
     public CmsInt64U(BigInteger value) { this.value = value.and(MAX); write(); }
 
     public static final BigInteger MAX = new BigInteger("18446744073709551615");

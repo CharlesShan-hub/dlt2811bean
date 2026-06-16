@@ -9,7 +9,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsInt16 extends CmsType {
 
-    private short value;
+    private short value = 0;
 
     public CmsInt16() {}
     public CmsInt16(short value) { this.value = value; write(); }

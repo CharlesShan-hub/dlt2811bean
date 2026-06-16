@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsEntryId;
-import com.ysh.jcms.data.common.CmsEntryTime;
+import com.ysh.jcms.data.time.CmsBinaryTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,20 +18,20 @@ import java.util.List;
  */
 public class CmsLogStatusValue extends CmsType {
 
-    public CmsEntryTime oldEntrTm;
-    public CmsEntryTime newEntrTm;
+    public CmsBinaryTime oldEntrTm;
+    public CmsBinaryTime newEntrTm;
     public CmsEntryId   oldEntr;
     public CmsEntryId   newEntr;
 
     public CmsLogStatusValue() {
-        this.oldEntrTm = new CmsEntryTime();
-        this.newEntrTm = new CmsEntryTime();
+        this.oldEntrTm = new CmsBinaryTime();
+        this.newEntrTm = new CmsBinaryTime();
         this.oldEntr   = new CmsEntryId();
         this.newEntr   = new CmsEntryId();
     }
     
-    public CmsLogStatusValue oldEntrTm(CmsEntryTime v) { this.oldEntrTm = v; return this; }
-    public CmsLogStatusValue newEntrTm(CmsEntryTime v) { this.newEntrTm = v; return this; }
+    public CmsLogStatusValue oldEntrTm(CmsBinaryTime v) { this.oldEntrTm = v; return this; }
+    public CmsLogStatusValue newEntrTm(CmsBinaryTime v) { this.newEntrTm = v; return this; }
     public CmsLogStatusValue oldEntr(byte[] v) { this.oldEntr.value(v); return this; }
     public CmsLogStatusValue oldEntr(String v) { this.oldEntr.value(v); return this; }
     public CmsLogStatusValue newEntr(byte[] v) { this.newEntr.value(v); return this; }

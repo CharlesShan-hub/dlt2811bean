@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsTimeStamp;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.control.CmsAddCause;
 import com.ysh.jcms.data.control.CmsCheck;
 import com.ysh.jcms.data.control.CmsOriginator;
@@ -33,10 +33,10 @@ public class CmsTimeActivatedOperateError extends CmsType {
     public CmsReqId            reqId;
     public CmsObjectReference  reference;
     public CmsData             ctlVal;
-    public CmsTimeStamp        operTm;         /* mandatory */
+    public CmsUtcTime        operTm;         /* mandatory */
     public CmsOriginator       origin;
     public CmsInt8U            ctlNum;
-    public CmsTimeStamp        t;
+    public CmsUtcTime        t;
     public CmsBoolean          test;
     public CmsCheck            check;
     public CmsAddCause         addCause;
@@ -45,10 +45,10 @@ public class CmsTimeActivatedOperateError extends CmsType {
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
         this.ctlVal    = new CmsData();
-        this.operTm    = new CmsTimeStamp();
+        this.operTm    = new CmsUtcTime();
         this.origin    = new CmsOriginator();
         this.ctlNum    = new CmsInt8U();
-        this.t         = new CmsTimeStamp();
+        this.t         = new CmsUtcTime();
         this.test      = new CmsBoolean();
         this.check     = new CmsCheck();
         this.addCause  = new CmsAddCause();
@@ -58,10 +58,10 @@ public class CmsTimeActivatedOperateError extends CmsType {
     public CmsTimeActivatedOperateError reference(byte[] v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateError reference(String v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateError ctlVal(CmsData v) { this.ctlVal = v; return this; }
-    public CmsTimeActivatedOperateError operTm(CmsTimeStamp v) { this.operTm = v; return this; }
+    public CmsTimeActivatedOperateError operTm(CmsUtcTime v) { this.operTm = v; return this; }
     public CmsTimeActivatedOperateError origin(CmsOriginator v) { this.origin = v; return this; }
     public CmsTimeActivatedOperateError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsTimeActivatedOperateError t(CmsTimeStamp v) { this.t = v; return this; }
+    public CmsTimeActivatedOperateError t(CmsUtcTime v) { this.t = v; return this; }
     public CmsTimeActivatedOperateError test(boolean v) { this.test.value(v); return this; }
     public CmsTimeActivatedOperateError check(CmsCheck v) { this.check = v; return this; }
     public CmsTimeActivatedOperateError addCause(int v) { this.addCause.value(v); return this; }

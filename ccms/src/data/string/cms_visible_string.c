@@ -22,6 +22,22 @@ int cms_visible_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_le
     return CMS_OK;
 }
 
+/* Fixed-size: SIZE(N), no length prefix */
+int cms_visible_string_encode_stream_fixed(per_stream_t *s, const void *ptr, uint32_t fixed_len) {
+    const uint8_t *vptr = ptr ? ARRAY_PTR(ptr) : NULL;
+    if (!vptr) return CMS_ERR;
+    return (int)per_encode_visible_string_fixed(s, vptr, fixed_len);
+}
+
+int cms_visible_string_decode_stream_fixed(per_stream_t *s, void *ptr, uint32_t fixed_len) {
+    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
+    if (!vptr) return CMS_ERR;
+    per_error_t err = per_decode_visible_string_fixed(s, vptr, fixed_len);
+    if (err) return CMS_ERR;
+    *(int32_t*)((uint8_t*)ptr + 8) = (int32_t)fixed_len;
+    return CMS_OK;
+}
+
 int cms_visible_string_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
     per_stream_t s;
     per_stream_init_write(&s, out_buf, (size_t)*out_len);

@@ -4,7 +4,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.fc.CmsFunctionalConstraint;
+import com.ysh.jcms.data.fc.CmsFC;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ public class CmsReportDataEntry extends CmsType {
     public CmsBoolean              refPresent;
     public CmsObjectReference      reference;       /* OPTIONAL */
     public CmsBoolean              fcPresent;
-    public CmsFunctionalConstraint fc;              /* OPTIONAL */
+    public CmsFC fc;              /* OPTIONAL */
     public CmsInt16U               id;
     public CmsData                 value;
     public CmsBoolean              reasonPresent;
@@ -36,19 +36,19 @@ public class CmsReportDataEntry extends CmsType {
         this.refPresent   = new CmsBoolean();
         this.reference    = new CmsObjectReference();
         this.fcPresent    = new CmsBoolean();
-        this.fc           = new CmsFunctionalConstraint();
+        this.fc           = new CmsFC();
         this.id           = new CmsInt16U();
         this.value        = new CmsData();
         this.reasonPresent = new CmsBoolean();
         this.reason       = new CmsReasonCode();
     }
-    
+
     public CmsReportDataEntry refPresent(boolean v) { this.refPresent.value(v); return this; }
     public CmsReportDataEntry reference(byte[] v) { this.reference.value(v); return this; }
     public CmsReportDataEntry reference(String v) { this.reference.value(v); return this; }
     public CmsReportDataEntry fcPresent(boolean v) { this.fcPresent.value(v); return this; }
-    public CmsReportDataEntry fc(byte[] v) { this.fcPresent.value(v != null && v.length > 0); if (v != null) this.fc.value(v); return this; }
-    public CmsReportDataEntry fc(String v) { this.fcPresent.value(v != null); if (v != null) this.fc.value(v); return this; }
+    public CmsReportDataEntry fc(int v) { this.fcPresent.value(true); this.fc.value(v); return this; }
+
     public CmsReportDataEntry id(int v) { this.id.value(v); return this; }
     public CmsReportDataEntry value(CmsData v) { this.value = v; return this; }
     public CmsReportDataEntry reasonPresent(boolean v) { this.reasonPresent.value(v); return this; }

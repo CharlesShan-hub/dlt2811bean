@@ -28,7 +28,12 @@ public class CmsUint8Array extends CmsType {
     /** 由 write() 分配的 data 内存，用于生命周期管理。 */
     protected Memory ownedData;
 
-    public CmsUint8Array() {}
+    public CmsUint8Array() {
+        this.ownedData = new Memory(1);
+        this.value = ownedData;
+        this.len = 0;
+        write();
+    }
 
     public CmsUint8Array(int maxLen) {
         this.len = 0;
@@ -101,8 +106,16 @@ public class CmsUint8Array extends CmsType {
     @Override
     public void read() {
         int ofs = 0;
-        this.value = nativePtr.getPointer(ofs); ofs += 8;
-        this.len = nativePtr.getInt(ofs);
+        Pointer v = nativePtr.getPointer(ofs); ofs += 8;
+        int n = nativePtr.getInt(ofs);
+        // if C decoder left garbage for absent fields, treat as empty
+        if (v == null || n <= 0) {
+            this.value = null;
+            this.len = 0;
+            return;
+        }
+        this.value = v;
+        this.len = n;
     }
 
     // ==================== equals / hashCode ====================
@@ -111,18 +124,8 @@ public class CmsUint8Array extends CmsType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CmsUint8Array)) return false;
-        CmsUint8Array other = (CmsUint8Array) o;
-        if (len != other.len) return false;
-        if (len == 0) return true;
-        if (value == null || other.value == null) return false;
-        // Try reading len bytes; for BitString, len is in bits and
-        // may exceed the allocated buffer — fall back to bit count.
-        try {
-            return Arrays.equals(value.getByteArray(0, len), other.value.getByteArray(0, len));
-        } catch (IndexOutOfBoundsException e) {
-            int byteLen = (len + 7) / 8;
-            return Arrays.equals(value.getByteArray(0, byteLen), other.value.getByteArray(0, byteLen));
-        }
+        // compare by logical data content; value() handles empty case
+        return Arrays.equals(value(), ((CmsUint8Array) o).value());
     }
 
     @Override
@@ -130,3 +133,4 @@ public class CmsUint8Array extends CmsType {
         return Arrays.hashCode(value());
     }
 }
+

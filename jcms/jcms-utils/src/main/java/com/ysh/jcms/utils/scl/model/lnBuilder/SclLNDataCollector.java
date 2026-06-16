@@ -3,7 +3,7 @@ package com.ysh.jcms.utils.scl.model.lnBuilder;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.fc.CmsFunctionalConstraint;
+import com.ysh.jcms.data.fc.CmsFC;
 import com.ysh.jcms.utils.scl.model.template.SclSDO;
 import com.ysh.jcms.utils.scl.model.control.SclSGCBState;
 import com.ysh.jcms.utils.scl.model.data.SclDataDefinitionEntry;

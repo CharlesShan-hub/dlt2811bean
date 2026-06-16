@@ -10,7 +10,7 @@ import com.ysh.jcms.core.NativeBridge;
  */
 public class CmsFloat32 extends CmsType {
 
-    private float value;
+    private float value = 0.0f;
 
     public CmsFloat32() {}
     public CmsFloat32(float value) { this.value = value; write(); }
