@@ -40,6 +40,6 @@ public class CmsAddCause extends CmsEnumerated {
     public static final int LOCKED_BY_OTHER_CLIENT         = 26;
     public static final int INCONSISTENT_PARAMETERS        = 27;
 
-    public CmsAddCause() {}
+    public CmsAddCause() { super(0, 27, UNKNOWN);} 
     public CmsAddCause(int value) { super(0, 27, value); }
 }

@@ -44,6 +44,20 @@ public class CmsUint8Array extends CmsType {
         write();
     }
 
+    /** 预分配固定大小的缓冲区，并可选填入初始数据。 */
+    public CmsUint8Array(int bufSize, byte[] defaultData) {
+        this.ownedData = new Memory(bufSize);
+        this.value = ownedData;
+        if (defaultData != null && defaultData.length > 0) {
+            int copyLen = Math.min(defaultData.length, bufSize);
+            ownedData.write(0, defaultData, 0, copyLen);
+            this.len = copyLen;
+        } else {
+            this.len = 0;
+        }
+        write();
+    }
+
     /** 用已有字节数组初始化（拷贝到 native 内存）。 */
     public CmsUint8Array(byte[] data) {
         value(data);

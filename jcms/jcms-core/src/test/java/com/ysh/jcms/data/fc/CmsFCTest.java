@@ -3,7 +3,7 @@ package com.ysh.jcms.data.fc;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class CmsFunctionalConstraintTest {
+public class CmsFCTest {
     @Test
     public void roundup() {
         CmsFC a = new CmsFC(CmsFC.ST);

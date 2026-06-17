@@ -16,6 +16,6 @@ public class CmsTcmd extends CmsEnumerated {
     public static final int OPERATE  = 2;
     public static final int CANCEL   = 3;
 
-    public CmsTcmd() {}
-    public CmsTcmd(int value) { super(0, 3, value); }
+    public CmsTcmd() { super(1, 3, SELECT); }
+    public CmsTcmd(int value) { super(1, 3, value); }
 }

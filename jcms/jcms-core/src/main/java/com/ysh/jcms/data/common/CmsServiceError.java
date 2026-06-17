@@ -25,6 +25,6 @@ public class CmsServiceError extends CmsEnumerated {
     public static final int FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT     = 11;
     public static final int FAILED_DUE_TO_SERVER_CONSTRAINT             = 12;
 
-    public CmsServiceError() {}
+    public CmsServiceError() { super(0, 12, NO_ERROR); }
     public CmsServiceError(int value) { super(0, 12, value); }
 }

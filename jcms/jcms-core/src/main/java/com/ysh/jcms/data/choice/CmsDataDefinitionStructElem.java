@@ -17,7 +17,7 @@ import java.util.List;
  * All-pointer container:
  *   [0]  name       → CmsObjectName*
  *   [8]  fc_present → CmsBoolean*
- *   [16] fc         → CmsFunctionalConstraint*
+ *   [16] fc         → CmsFC*
  *   [24] type       → CmsDataDefinition*
  */
 public class CmsDataDefinitionStructElem extends CmsType {

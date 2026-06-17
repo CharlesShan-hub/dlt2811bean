@@ -21,6 +21,6 @@ public class CmsOrCat extends CmsEnumerated {
     public static final int MAINTENANCE        = 7;
     public static final int PROCESS            = 8;
 
-    public CmsOrCat() {}
+    public CmsOrCat() { super(0, 8, NOT_SUPPORTED); }
     public CmsOrCat(int value) { super(0, 8, value); }
 }

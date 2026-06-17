@@ -13,6 +13,6 @@ public class CmsSmpMod extends CmsEnumerated {
     public static final int SAMPLES_PER_SECOND         = 1;
     public static final int SECONDS_PER_SAMPLE         = 2;
 
-    public CmsSmpMod() {}
+    public CmsSmpMod() { super(0, 2, SAMPLES_PER_NOMINAL_PERIOD); }
     public CmsSmpMod(int value) { super(0, 2, value); }
 }
