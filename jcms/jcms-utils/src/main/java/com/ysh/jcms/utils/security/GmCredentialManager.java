@@ -31,7 +31,6 @@ import java.util.Date;
 @Getter
 public class GmCredentialManager {
 
-    private static final String SIGNATURE_ALGORITHM = "SM3withSM2";
     private static final String PROVIDER = "BC";
 
     static {

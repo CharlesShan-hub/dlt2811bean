@@ -38,7 +38,9 @@ public class SclDataDefinitionResolver {
     }
 
     // Data definition selectors (alternatives 0..23)
+    @SuppressWarnings("unused")
     private static final int SEL_ERROR          = 0;
+    @SuppressWarnings("unused")
     private static final int SEL_ARRAY          = 1;
     private static final int SEL_STRUCTURE      = 2;
     private static final int SEL_BOOLEAN        = 3;
@@ -53,6 +55,7 @@ public class SclDataDefinitionResolver {
     private static final int SEL_FLOAT32        = 12;
     private static final int SEL_FLOAT64        = 13;
     private static final int SEL_BIT_STRING     = 14;
+    @SuppressWarnings("unused")
     private static final int SEL_OCTET_STRING   = 15;
     private static final int SEL_VISIBLE_STRING = 16;
     private static final int SEL_UNICODE_STRING = 17;

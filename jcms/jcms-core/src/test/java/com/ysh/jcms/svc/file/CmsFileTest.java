@@ -90,16 +90,16 @@ public class CmsFileTest {
         CmsFileEntry e1 = new CmsFileEntry();
         e1.fileName.value("f1.txt".getBytes());
         e1.fileSize.value(100L);
-        e1.lastModified.seconds_since_epoch.value(1000000L);
-        e1.lastModified.fraction_of_second.value(0);
-        e1.lastModified.time_quality.leap_seconds_known.value(true);
+        e1.lastModified.secondsSinceEpoch.value(1000000L);
+        e1.lastModified.fractionOfSecond.value(0);
+        e1.lastModified.timeQuality.leap_seconds_known.value(true);
         e1.checkSum.value(12345L);
         CmsFileEntry e2 = new CmsFileEntry();
         e2.fileName.value("f2.txt".getBytes());
         e2.fileSize.value(200L);
-        e2.lastModified.seconds_since_epoch.value(2000000L);
-        e2.lastModified.fraction_of_second.value(0);
-        e2.lastModified.time_quality.leap_seconds_known.value(false);
+        e2.lastModified.secondsSinceEpoch.value(2000000L);
+        e2.lastModified.fractionOfSecond.value(0);
+        e2.lastModified.timeQuality.leap_seconds_known.value(false);
         e2.checkSum.value(67890L);
         a.fileEntry.add(e1).add(e2);
         a.moreFollows.value(false);
@@ -128,9 +128,9 @@ public class CmsFileTest {
         a.reqId.value(41);
         a.fileEntry.fileName.value("f.txt".getBytes());
         a.fileEntry.fileSize.value(1024L);
-        a.fileEntry.lastModified.seconds_since_epoch.value(3000000L);
-        a.fileEntry.lastModified.fraction_of_second.value(0);
-        a.fileEntry.lastModified.time_quality.leap_seconds_known.value(true);
+        a.fileEntry.lastModified.secondsSinceEpoch.value(3000000L);
+        a.fileEntry.lastModified.fractionOfSecond.value(0);
+        a.fileEntry.lastModified.timeQuality.leap_seconds_known.value(true);
         a.fileEntry.checkSum.value(999L);
         byte[] encoded = a.encode();
 

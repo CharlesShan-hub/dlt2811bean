@@ -1,8 +1,6 @@
 package com.ysh.jcms.data.fc;
 
 import com.ysh.jcms.core.CmsEnumerated;
-import com.ysh.jcms.core.NativeBridge.Codec;
-
 /**
  * FunctionalConstraint ::= VisibleString (SIZE(2))  —  7.4
  *

@@ -1,6 +1,5 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsEntryId;

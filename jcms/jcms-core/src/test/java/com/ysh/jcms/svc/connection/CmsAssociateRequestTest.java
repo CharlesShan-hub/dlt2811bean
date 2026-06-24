@@ -43,9 +43,9 @@ public class CmsAssociateRequestTest {
             .authParam(new CmsAuthenticationParameter()
                 .cert(new byte[]{0x11, 0x22})
                 .signedTime(new CmsUtcTime()
-                    .seconds_since_epoch(1234567890L)
-                    .fraction_of_second(0)
-                    .time_quality(new CmsTimeQuality()
+                    .secondsSinceEpoch(1234567890L)
+                    .fractionOfSecond(0)
+                    .timeQuality(new CmsTimeQuality()
                         .leap_seconds_known(true)))
                 .sigVal(new byte[]{0x33, 0x44}));
         byte[] encoded = a.encode();

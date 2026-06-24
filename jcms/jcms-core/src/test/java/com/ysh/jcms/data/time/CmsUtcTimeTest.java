@@ -7,9 +7,9 @@ public class CmsUtcTimeTest {
     @Test
     public void roundup() {
         CmsUtcTime a = new CmsUtcTime()
-            .seconds_since_epoch(1234567890L)
-            .fraction_of_second(500000)
-            .time_quality(new CmsTimeQuality().leap_seconds_known(true));
+            .secondsSinceEpoch(1234567890L)
+            .fractionOfSecond(500000)
+            .timeQuality(new CmsTimeQuality().leap_seconds_known(true));
         byte[] encoded = a.encode();
         CmsUtcTime b = new CmsUtcTime();
         b.decode(encoded);

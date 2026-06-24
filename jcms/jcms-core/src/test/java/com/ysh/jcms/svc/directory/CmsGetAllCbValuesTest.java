@@ -1,7 +1,5 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.data.block.CmsBrcb;
-import com.ysh.jcms.data.block.CmsGoCb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
 import org.junit.Test;

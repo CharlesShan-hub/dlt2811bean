@@ -1,10 +1,6 @@
 package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.data.common.*;
-import com.ysh.jcms.data.control.*;
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import com.ysh.jcms.data.time.*;
 
 import java.math.BigInteger;
 
@@ -228,9 +224,9 @@ public class CmsDataTest {
     public void roundup_utc_time() {
         CmsData a = new CmsData();
         a.choice.value(CmsData.CHOICE_UTC_TIME);
-        a.alt_utc_time.seconds_since_epoch.value(1234567890L);
-        a.alt_utc_time.fraction_of_second.value(500000);
-        a.alt_utc_time.time_quality.leap_seconds_known.value(true);
+        a.alt_utc_time.secondsSinceEpoch.value(1234567890L);
+        a.alt_utc_time.fractionOfSecond.value(500000);
+        a.alt_utc_time.timeQuality.leap_seconds_known.value(true);
 
         byte[] encoded = a.encode();
         CmsData b = new CmsData();

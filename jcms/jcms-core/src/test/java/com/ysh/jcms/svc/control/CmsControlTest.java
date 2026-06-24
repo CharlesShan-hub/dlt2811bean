@@ -33,9 +33,9 @@ public class CmsControlTest {
             .orCat(CmsOrCat.NOT_SUPPORTED)
             .orIdent("origin1".getBytes()));
         a.ctlNum.value(5);
-        a.t.seconds_since_epoch.value(1000000L);
-        a.t.fraction_of_second.value(0);
-        a.t.time_quality.leap_seconds_known.value(false);
+        a.t.secondsSinceEpoch.value(1000000L);
+        a.t.fractionOfSecond.value(0);
+        a.t.timeQuality.leap_seconds_known.value(false);
         a.test.value(false);
         a.check(new CmsCheck()
             .syncheck(true)
@@ -58,9 +58,9 @@ public class CmsControlTest {
             .orCat(CmsOrCat.NOT_SUPPORTED)
             .orIdent("op".getBytes()));
         a.ctlNum.value(1);
-        a.t.seconds_since_epoch.value(2000000L);
-        a.t.fraction_of_second.value(0);
-        a.t.time_quality.leap_seconds_known.value(true);
+        a.t.secondsSinceEpoch.value(2000000L);
+        a.t.fractionOfSecond.value(0);
+        a.t.timeQuality.leap_seconds_known.value(true);
         a.test.value(false);
         a.check(new CmsCheck()
             .syncheck(true)

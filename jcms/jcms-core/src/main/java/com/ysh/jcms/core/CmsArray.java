@@ -54,7 +54,8 @@ public class CmsArray<T extends CmsType> extends CmsType {
         return this;
     }
 
-    public CmsArray<T> addAll(T... items) {
+    @SafeVarargs
+    public final CmsArray<T> addAll(T... items) {
         for (T item : items) this.items.add(item);
         return this;
     }

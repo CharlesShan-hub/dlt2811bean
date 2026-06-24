@@ -1,6 +1,5 @@
 package com.ysh.jcms.data.common;
 
-import com.sun.jna.Memory;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 

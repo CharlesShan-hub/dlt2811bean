@@ -27,9 +27,9 @@ public class CmsAssociateResponseTest {
             .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE)
             .authParamPresent(true);
         a.authParam.cert.value(new byte[]{0x11, 0x22});
-        a.authParam.signedTime.seconds_since_epoch.value(987654321L);
-        a.authParam.signedTime.fraction_of_second.value(100000);
-        a.authParam.signedTime.time_quality.leap_seconds_known.value(false);
+        a.authParam.signedTime.secondsSinceEpoch.value(987654321L);
+        a.authParam.signedTime.fractionOfSecond.value(100000);
+        a.authParam.signedTime.timeQuality.leap_seconds_known.value(false);
         a.authParam.sigVal.value(new byte[]{0x33, 0x44});
         byte[] encoded = a.encode();
 

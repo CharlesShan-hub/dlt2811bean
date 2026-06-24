@@ -2,7 +2,6 @@ package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;

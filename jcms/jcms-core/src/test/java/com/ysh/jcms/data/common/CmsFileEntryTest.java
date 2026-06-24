@@ -10,7 +10,7 @@ public class CmsFileEntryTest {
         CmsFileEntry a = new CmsFileEntry()
             .fileName("test.txt".getBytes())
             .fileSize(1024L)
-            .lastModified(new CmsUtcTime().seconds_since_epoch(1234567890L))
+            .lastModified(new CmsUtcTime().secondsSinceEpoch(1234567890L))
             .checkSum(0xDEADBEEFL);
         byte[] encoded = a.encode();
         CmsFileEntry b = new CmsFileEntry();

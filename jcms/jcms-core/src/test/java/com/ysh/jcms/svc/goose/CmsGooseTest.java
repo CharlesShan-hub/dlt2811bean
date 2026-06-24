@@ -31,9 +31,9 @@ public class CmsGooseTest {
             .simulation(false)
             .confRev(5L)
             .ndsCom(false);
-        a.t.seconds_since_epoch.value(1000000L);
-        a.t.fraction_of_second.value(0);
-        a.t.time_quality.leap_seconds_known.value(false);
+        a.t.secondsSinceEpoch.value(1000000L);
+        a.t.fractionOfSecond.value(0);
+        a.t.timeQuality.leap_seconds_known.value(false);
         CmsData d1 = new CmsData();
         d1.choice.value(CmsData.CHOICE_BOOLEAN);
         d1.alt_boolean.value(true);
