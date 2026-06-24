@@ -36,12 +36,7 @@ void per_stream_align(per_stream_t *s) {
     s->bit_pos = 0;
 }
 
-void per_stream_skip_align(per_stream_t *s) {
-    if (s->is_write) return;
-    if (s->bit_pos == 0) return;
-    s->byte_pos++;
-    s->bit_pos = 0;
-}
+/* ---- Dynamic growth ---- */
 
 static per_error_t ensure_space(per_stream_t *s, size_t need_bytes) {
     if (s->byte_pos + need_bytes <= s->capacity) return PER_OK;
@@ -59,8 +54,7 @@ static per_error_t ensure_space(per_stream_t *s, size_t need_bytes) {
     return PER_OK;
 }
 
-per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity)
-{
+per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity) {
     if (initial_capacity < 64) initial_capacity = 64;
     s->buf = (uint8_t *)calloc(1, initial_capacity);
     if (!s->buf) return PER_ERR_OOM;
@@ -72,8 +66,7 @@ per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity)
     return PER_OK;
 }
 
-uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len)
-{
+uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len) {
     uint8_t *buf = s->buf;
     *out_len = per_stream_bytes_written(s);
     s->buf = NULL;
@@ -83,8 +76,8 @@ uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len)
     s->is_dynamic = false;
     return buf;
 }
- 
-/* ---- bit I/O ---- */
+
+/* ---- Bit-level I/O ---- */
 
 per_error_t per_stream_write_bit(per_stream_t *s, int bit) {
     per_error_t err = ensure_space(s, 1);
@@ -111,8 +104,6 @@ per_error_t per_stream_read_bit(per_stream_t *s, int *out) {
     return PER_OK;
 }
 
-/* ---- multi-bit I/O ---- */
-
 per_error_t per_stream_write_bits(per_stream_t *s, uint64_t value, int nbits) {
     if (nbits <= 0) return PER_OK;
     if (nbits > 64) return PER_ERR_INVALID_ARG;
@@ -137,7 +128,7 @@ per_error_t per_stream_read_bits(per_stream_t *s, uint64_t *out, int nbits) {
     return PER_OK;
 }
 
-/* ---- byte-aligned I/O (aligns before read/write) ---- */
+/* ---- Byte-aligned I/O (auto-aligns before read/write) ---- */
 
 per_error_t per_stream_write_byte_aligned(per_stream_t *s, uint8_t byte) {
     per_stream_align(s);
@@ -155,8 +146,6 @@ per_error_t per_stream_read_byte_aligned(per_stream_t *s, uint8_t *out) {
     s->byte_pos++;
     return PER_OK;
 }
-
-/* ---- raw byte I/O (also aligns first) ---- */
 
 per_error_t per_stream_write_bytes(per_stream_t *s, const uint8_t *data, size_t len) {
     if (len == 0) return PER_OK;

@@ -1,7 +1,9 @@
 #include "per/cms_integer.h"
 #include <string.h>
 
-/* ceil(log2(range)) */
+/* ---- Internal helpers ---- */
+
+/* Compute ceil(log2(range)). */
 static int bits_needed(uint64_t range) {
     if (range <= 1) return 0;
     int bits = 0;
@@ -10,7 +12,7 @@ static int bits_needed(uint64_t range) {
     return bits;
 }
 
-/* ceil(log2(range))/8 */
+/* Compute ceil(log2(range))/8 — number of bytes to represent the range. */
 static int bytes_for_range(uint64_t range) {
     int bits = bits_needed(range);
     return (bits + 7) / 8;
@@ -23,13 +25,15 @@ per_error_t per_encode_constrained_int(per_stream_t *s, int64_t value,
     if (value < lower_bound || value > upper_bound) return PER_ERR_RANGE;
 
     uint64_t range = (uint64_t)(upper_bound - lower_bound + 1);
-    if (range == 1) return PER_OK;  /* 0 bits */
+    if (range == 1) return PER_OK;  /* 0 bits — value is implicit */
 
     uint64_t offset = (uint64_t)(value - lower_bound);
 
     if (range < 256) {
+        /* Range 2..255: write ceil(log2(range)) bits directly */
         return per_stream_write_bits(s, offset, bits_needed(range));
     } else if (range <= 65536) {
+        /* Range 256..65536: align + big-endian bytes */
         int nbytes = bytes_for_range(range);
         per_stream_align(s);
         for (int i = nbytes - 1; i >= 0; i--) {
@@ -38,6 +42,7 @@ per_error_t per_encode_constrained_int(per_stream_t *s, int64_t value,
         }
         return PER_OK;
     } else {
+        /* Range > 65536: length(constrained 1..maxLen) + align + content */
         int max_len = bytes_for_range(range);
         uint8_t content[16];
         int content_len = per_unsigned_to_bytes(offset, content, max_len);
@@ -106,7 +111,7 @@ per_error_t per_encode_length(per_stream_t *s, uint32_t length) {
         if (err) return err;
         return per_stream_write_byte_aligned(s, low);
     }
-    return PER_ERR_RANGE;
+    return PER_ERR_RANGE;  /* fragmented form not supported */
 }
 
 per_error_t per_decode_length(per_stream_t *s, uint32_t *out) {
@@ -115,20 +120,22 @@ per_error_t per_decode_length(per_stream_t *s, uint32_t *out) {
     if (err) return err;
 
     if ((first & 0x80) == 0) {
+        /* Short form (1 byte): 0xxxxxxx */
         *out = first;
         return PER_OK;
     }
     if ((first & 0xC0) == 0x80) {
+        /* Long form (2 bytes): 10xxxxxx xxxxxxxx */
         uint8_t second;
         err = per_stream_read_byte_aligned(s, &second);
         if (err) return err;
         *out = ((uint32_t)(first & 0x3F) << 8) | second;
         return PER_OK;
     }
-    return PER_ERR_RANGE; /* fragmented, not supported */
+    return PER_ERR_RANGE;  /* fragmented form not supported */
 }
 
-/* ==================== Small non-negative ==================== */
+/* ==================== Normally small non-negative ==================== */
 
 per_error_t per_encode_small_non_negative(per_stream_t *s, uint32_t value) {
     if (value <= 63) {
@@ -159,7 +166,7 @@ per_error_t per_decode_small_non_negative(per_stream_t *s, uint32_t *out) {
     return PER_OK;
 }
 
-/* ==================== Semi-constrained ==================== */
+/* ==================== Semi-constrained (lb..MAX) ==================== */
 
 per_error_t per_encode_semi_constrained(per_stream_t *s, int64_t value, int64_t lower_bound) {
     uint64_t offset = (uint64_t)(value - lower_bound);
@@ -189,7 +196,7 @@ per_error_t per_decode_semi_constrained(per_stream_t *s, int64_t *out, int64_t l
 /* ==================== Unconstrained (signed) ==================== */
 
 per_error_t per_encode_unconstrained_int(per_stream_t *s, int64_t value) {
-    /* determine minimal bytes for two's complement representation */
+    /* Determine minimal bytes for two's complement representation */
     int nbytes;
     if (value >= -128 && value <= 127) {
         nbytes = 1;
@@ -223,7 +230,7 @@ per_error_t per_decode_unconstrained_int(per_stream_t *s, int64_t *out) {
     for (uint32_t i = 0; i < len; i++) {
         value = (value << 8) | content[i];
     }
-    /* sign extend */
+    /* Sign-extend if negative */
     if (len > 0 && (content[0] & 0x80)) {
         int shift = 64 - (int)(len * 8);
         value = (value << shift) >> shift;
@@ -232,7 +239,7 @@ per_error_t per_decode_unconstrained_int(per_stream_t *s, int64_t *out) {
     return PER_OK;
 }
 
-/* ==================== Helper: unsigned to minimal big-endian ==================== */
+/* ==================== Helper: unsigned → minimal big-endian ==================== */
 
 int per_unsigned_to_bytes(uint64_t value, uint8_t *out, int max_bytes) {
     if (value == 0) {

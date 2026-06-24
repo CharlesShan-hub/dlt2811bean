@@ -9,6 +9,7 @@ set(CMS_SRC
     src/per/cms_integer.c
     src/per/cms_string.c
     src/per/cms_choice.c
+    src/per/cms_sequence.c
 
     # scalar types (leaf, inline value)
     src/data/scalar/cms_boolean.c
@@ -233,5 +234,17 @@ add_executable(test_scalar tests/test_scalar.c)
 target_link_libraries(test_scalar ccms)
 target_include_directories(test_scalar PRIVATE include)
 set_target_properties(test_scalar PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+add_executable(test_per tests/test_per.c
+    src/per/cms_stream.c
+    src/per/cms_integer.c
+    src/per/cms_string.c
+    src/per/cms_choice.c
+    src/per/cms_sequence.c
+)
+target_include_directories(test_per PRIVATE include)
+set_target_properties(test_per PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
