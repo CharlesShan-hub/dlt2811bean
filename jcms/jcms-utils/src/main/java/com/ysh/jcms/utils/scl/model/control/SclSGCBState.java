@@ -9,8 +9,6 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 public class SclSGCBState {
 
-    private static final String SESSION_KEY = SclSGCBState.class.getName();
-
     private int numOfSG;
     private int actSG;
     private int editSG;
@@ -71,15 +69,5 @@ public class SclSGCBState {
 
     public Map<String, CmsData> getEditValues() {
         return editValues;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Map<String, SclSGCBState> getOrCreateSessionState(CmsServerSession session) {
-        Map<String, SclSGCBState> state = (Map<String, SclSGCBState>) session.getAttribute(SESSION_KEY);
-        if (state == null) {
-            state = new ConcurrentHashMap<>();
-            session.setAttribute(SESSION_KEY, state);
-        }
-        return state;
     }
 }

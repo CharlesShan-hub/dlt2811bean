@@ -86,10 +86,6 @@ public class SclLN extends SclLNBase {
         return SclLNDataCollector.collectDataValues(this, templates, fcFilter, relative);
     }
 
-    public List<SclDataValue> collectDataValues(SclDataTypeTemplates templates, String fcFilter, boolean relative, CmsServerSession session) {
-        return SclLNDataCollector.collectDataValues(this, templates, fcFilter, relative, session);
-    }
-
     // -------------------------------------------------------------------------
     // Data definition collection (for GetAllDataDefinition service)
     // -------------------------------------------------------------------------
@@ -102,8 +98,8 @@ public class SclLN extends SclLNBase {
     // Control block value collection (for GetAllCBValues service)
     // -------------------------------------------------------------------------
 
-    public List<SclCBEntry> collectCBValues(int acsiClass, CmsServerSession session) {
-        return SclLNControlBlockCollector.collectCBValues(this, acsiClass, session);
+    public List<SclCBEntry> collectCBValues(int acsiClass) {
+        return SclLNControlBlockCollector.collectCBValues(this, acsiClass);
     }
 
     // -------------------------------------------------------------------------
@@ -132,8 +128,8 @@ public class SclLN extends SclLNBase {
             if (lnt != null) {
                 for (SclDO doDef : lnt.getDos()) {
                     if (!seen.contains(doDef.getName())) {
-                        seen.add(doDef.getName());
                         entries.add(new SclDataDirectoryEntry(doDef.getName(), null));
+                        seen.add(doDef.getName());
                     }
                 }
             }

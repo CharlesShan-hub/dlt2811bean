@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.security;
 
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.connection.datatypes.AuthenticationParameter;
+import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.PublicKey;
@@ -71,15 +71,15 @@ public class GmAuthenticator {
      * @param signedData  signed data (usually serverAccessPointReference)
      * @return error code on failure, Optional.empty() on success
      */
-    public Optional<CmsServiceError> validate(AuthenticationParameter authParam, byte[] signedData) {
+    public Optional<CmsServiceError> validate(CmsAuthenticationParameter authParam, byte[] signedData) {
         // 1. Check if authentication parameter exists
-        if (authParam == null || authParam.signatureCertificate() == null) {
+        if (authParam == null || authParam.cert == null) {
             log.warn("Authentication parameter or certificate is missing");
             return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
         }
 
         // 2. Get certificate
-        byte[] certBytes = authParam.signatureCertificate().get();
+        byte[] certBytes = authParam.cert.value();
         X509Certificate clientCert;
         try {
             clientCert = GmCertificateParser.parseX509(certBytes);
@@ -111,8 +111,8 @@ public class GmAuthenticator {
         }
 
         // 5. Verify signature timestamp
-        if (authParam.signedTime() != null) {
-            long signedTime = authParam.signedTime().secondsSinceEpoch.get();
+        if (authParam.signedTime != null) {
+            long signedTime = authParam.signedTime.secondsSinceEpoch.value();
             long currentTime = Instant.now().getEpochSecond();
             long timeDiff = Math.abs(currentTime - signedTime);
 
@@ -124,7 +124,7 @@ public class GmAuthenticator {
         }
 
         // 6. Verify signature
-        byte[] signatureValue = authParam.signedValue().get();
+        byte[] signatureValue = authParam.sigVal.value();
         PublicKey publicKey = clientCert.getPublicKey();
 
         if (!GmSignature.verify(publicKey, signedData, signatureValue)) {
@@ -144,14 +144,14 @@ public class GmAuthenticator {
      * @param signedData signed data
      * @return error code on failure
      */
-    public Optional<CmsServiceError> validateSimple(AuthenticationParameter authParam,
+    public Optional<CmsServiceError> validateSimple(CmsAuthenticationParameter authParam,
                                                      PublicKey publicKey,
                                                      byte[] signedData) {
         if (authParam == null) {
             return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
         }
 
-        byte[] signatureValue = authParam.signedValue().get();
+        byte[] signatureValue = authParam.sigVal.value();
         if (GmSignature.verify(publicKey, signedData, signatureValue)) {
             return Optional.empty();
         }

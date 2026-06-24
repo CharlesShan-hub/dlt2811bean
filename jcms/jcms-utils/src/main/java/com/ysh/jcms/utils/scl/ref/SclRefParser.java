@@ -16,7 +16,7 @@ public class SclRefParser {
     private SclRefParser() {}
 
     public static SclRef parse(String ref) {
-        if (ref == null || ref.isBlank()) {
+        if (ref == null || ref.trim().isEmpty()) {
             throw new IllegalArgumentException("Reference cannot be null or blank");
         }
 
@@ -50,7 +50,7 @@ public class SclRefParser {
     }
 
     public static boolean isValid(String ref) {
-        if (ref == null || ref.isBlank()) return false;
+        if (ref == null || ref.trim().isEmpty()) return false;
         String trimmed = ref.trim();
         return REF_PATTERN.matcher(trimmed).matches() || REF_WITH_FC_PATTERN.matcher(trimmed).matches();
     }

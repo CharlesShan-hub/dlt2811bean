@@ -6,7 +6,7 @@ import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
-
+import java.util.stream.Collectors;
 import java.util.List;
 
 public class SclRefValidator {
@@ -114,6 +114,6 @@ public class SclRefValidator {
     public List<String> validateAll(List<String> refs) {
         return refs.stream()
             .filter(r -> !isValid(r))
-            .toList();
+            .collect(Collectors.toList());
     }
 }

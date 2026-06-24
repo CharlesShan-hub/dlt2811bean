@@ -5,8 +5,6 @@ import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 
-import java.util.Objects;
-
 public class SclDataSetResolver {
 
     private SclDataSetResolver() {}
@@ -79,7 +77,7 @@ public class SclDataSetResolver {
         fcda.setLdInst(ldName);
         fcda.setLnClass(ln.getLnClass());
         fcda.setLnInst(ln.getInst());
-        fcda.setPrefix(Objects.requireNonNullElse(ln.getPrefix(), ""));
+        fcda.setPrefix(ln.getPrefix() != null ? ln.getPrefix() : "");
 
         int daDotIdx = doDaPart.indexOf('.');
         if (daDotIdx >= 0) {

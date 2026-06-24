@@ -9,9 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -30,7 +30,7 @@ public class SclServer {
     }
 
     public List<String> getLDeviceNames() {
-        return lDevices.stream().map(SclLDevice::getInst).toList();
+        return lDevices.stream().map(SclLDevice::getInst).collect(Collectors.toList());
     }
 
     public List<String> getLDeviceNames(String after) {
@@ -94,15 +94,11 @@ public class SclServer {
         if (lnReference == null || lnReference.isEmpty()) return null;
         SclLN ln = findLnByRef(lnReference);
         if (ln == null) return null;
-        return List.of(ln);
+        return Collections.singletonList(ln);
     }
 
     public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates) {
         return com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates);
-    }
-
-    public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates, CmsServerSession session) {
-        return com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates, session);
     }
 
     public int setDataValue(String ref, String value, SclDataTypeTemplates templates) {

@@ -2,6 +2,7 @@ package com.ysh.jcms.utils.scl.query;
 
 import com.ysh.jcms.utils.scl.model.template.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,6 @@ public class DataTypeQuery {
     public List<SclDA> findDasByFc(String doTypeId, String fc) {
         return doType(doTypeId)
             .map(dot -> dot.findDaByFc(fc))
-            .orElse(List.of());
+            .orElse(Collections.emptyList());
     }
 }

@@ -12,22 +12,22 @@ import java.util.List;
  */
 public class CmsUtcTime extends CmsType {
 
-    public CmsInt32U seconds_since_epoch;
-    public CmsInt24U fraction_of_second;
-    public CmsTimeQuality time_quality;
+    public CmsInt32U secondsSinceEpoch;
+    public CmsInt24U fractionOfSecond;
+    public CmsTimeQuality timeQuality;
 
     public CmsUtcTime() { super(Codec.UTC_TIME);
-        this.seconds_since_epoch = new CmsInt32U();
-        this.fraction_of_second = new CmsInt24U();
-        this.time_quality = new CmsTimeQuality();
+        this.secondsSinceEpoch = new CmsInt32U();
+        this.fractionOfSecond = new CmsInt24U();
+        this.timeQuality = new CmsTimeQuality();
     }
     
-    public CmsUtcTime seconds_since_epoch(long v) { this.seconds_since_epoch.value(v); return this; }
-    public CmsUtcTime fraction_of_second(int v) { this.fraction_of_second.value(v); return this; }
-    public CmsUtcTime time_quality(CmsTimeQuality v) { this.time_quality = v; return this; }
+    public CmsUtcTime secondsSinceEpoch(long v) { this.secondsSinceEpoch.value(v); return this; }
+    public CmsUtcTime fractionOfSecond(int v) { this.fractionOfSecond.value(v); return this; }
+    public CmsUtcTime timeQuality(CmsTimeQuality v) { this.timeQuality = v; return this; }
     
     @Override
     public List<? extends CmsType> children() {
-        return Arrays.asList(seconds_since_epoch, fraction_of_second, time_quality);
+        return Arrays.asList(secondsSinceEpoch, fractionOfSecond, timeQuality);
     }
 }

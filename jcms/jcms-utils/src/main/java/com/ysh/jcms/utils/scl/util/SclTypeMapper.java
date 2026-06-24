@@ -2,8 +2,7 @@ package com.ysh.jcms.utils.scl.util;
 
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.string.CmsUtf8String;
-import com.ysh.jcms.data.string.CmsVisibleString;
+import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.utils.scl.query.SclQuery;
 import com.ysh.jcms.utils.scl.reader.SclReader;
@@ -13,9 +12,9 @@ public class SclTypeMapper {
     private SclTypeMapper() {
     }
 
-    public static CmsType<?> createTypedValue(String bType, String value) {
+    public static CmsType createTypedValue(String bType, String value) {
         if (bType == null || value == null) {
-            return new CmsVisibleString(value != null ? value : "").max(255);
+            return new CmsUint8Array(value != null ? value : "");
         }
         try {
             switch (bType) {
@@ -48,27 +47,26 @@ public class SclTypeMapper {
                     return new CmsInt32(Integer.parseInt(value.trim()));
                 case "VisString255":
                 case "VISIBLE STRING":
-                    return new CmsVisibleString(value).max(255);
                 case "Unicode255":
                 case "UNICODE STRING":
-                    return new CmsUtf8String(value).max(255);
+                    return new CmsUint8Array(value);
                 case "Check":
                     return new CmsInt32(Integer.parseInt(value.trim()));
                 default:
-                    return new CmsVisibleString(value).max(255);
+                    return new CmsUint8Array(value);
             }
         } catch (Exception e) {
-            return new CmsVisibleString(value).max(255);
+            return new CmsUint8Array(value);
         }
     }
 
-    public static CmsType<?> parseControlValue(CmsConfig config, String ref, String value) {
+    public static CmsType parseControlValue(CmsConfig config, String ref, String value) {
         try {
             String sclPath = config.getServer().getResolvedSclFile();
             if (sclPath != null) {
                 SclReader reader = new SclReader();
                 SclQuery query = new SclQuery(reader.read(sclPath));
-                CmsType<?> result = query.resolveBType(ref)
+                CmsType result = query.resolveBType(ref)
                     .map(bType -> createTypedValue(bType, value))
                     .orElse(null);
                 if (result != null) return result;
@@ -79,11 +77,11 @@ public class SclTypeMapper {
         return new CmsBoolean(value.equalsIgnoreCase("true"));
     }
 
-    public static CmsType<?> resolveTypedValue(CmsConfig config, String ref, String value) {
+    public static CmsType resolveTypedValue(CmsConfig config, String ref, String value) {
         if (ref != null) {
             String[] dotParts = ref.split("\\.");
             if (dotParts.length == 2) {
-                return new CmsVisibleString(value).max(255);
+                return new CmsUint8Array(value);
             }
         }
         try {
@@ -91,7 +89,7 @@ public class SclTypeMapper {
             if (sclPath != null) {
                 SclReader reader = new SclReader();
                 SclQuery query = new SclQuery(reader.read(sclPath));
-                CmsType<?> result = query.resolveBType(ref)
+                CmsType result = query.resolveBType(ref)
                     .map(bType -> createTypedValue(bType, value))
                     .orElse(null);
                 if (result != null) return result;
@@ -99,6 +97,6 @@ public class SclTypeMapper {
         } catch (Exception e) {
             // fall through
         }
-        return new CmsVisibleString(value).max(255);
+        return new CmsUint8Array(value);
     }
 }

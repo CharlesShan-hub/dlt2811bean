@@ -2,8 +2,10 @@ package com.ysh.jcms.utils.scl.query;
 
 import com.ysh.jcms.utils.scl.model.ied.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class IedQuery {
 
@@ -33,7 +35,7 @@ public class IedQuery {
     public List<SclLDevice> lDevices() {
         return server()
             .map(SclServer::getLDevices)
-            .orElse(List.of());
+            .orElse(Collections.emptyList());
     }
 
     public Optional<SclLDevice> lDevice(String inst) {
@@ -44,25 +46,25 @@ public class IedQuery {
     public List<String> lDeviceNames() {
         return lDevices().stream()
             .map(SclLDevice::getInst)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<SclLN> lns() {
         return lDevices().stream()
             .flatMap(ld -> ld.getLns().stream())
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<SclLN> lnsByClass(String lnClass) {
         return lDevices().stream()
             .flatMap(ld -> ld.findLnsByClass(lnClass).stream())
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<String> lnNames() {
         return lns().stream()
             .map(SclLN::getFullName)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public Optional<SclLN> ln(String fullName) {

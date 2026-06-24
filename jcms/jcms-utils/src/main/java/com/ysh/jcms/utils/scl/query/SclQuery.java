@@ -17,6 +17,7 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.scl.ref.SclRefResult;
 import com.ysh.jcms.utils.scl.ref.SclRefValidator;
+import java.util.stream.Collectors;
 
 import java.util.*;
 
@@ -56,14 +57,14 @@ public class SclQuery {
     public List<String> iedNames() {
         return document.getIeds().stream()
             .map(SclIED::getName)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<SclIED> iedsByFilter(String namePattern) {
         String regex = namePattern.replace("*", ".*");
         return document.getIeds().stream()
             .filter(i -> i.getName().matches(regex))
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public Optional<SclLDevice> lDevice(String ldInst) {
@@ -87,10 +88,10 @@ public class SclQuery {
             .filter(Objects::nonNull)
             .flatMap(server -> server.getLDevices().stream())
             .map(SclLDevice::getInst)
-            .toList();
+            .collect(Collectors.toList());
         if (after == null || after.isEmpty()) return names;
         int idx = names.indexOf(after);
-        if (idx < 0) return List.of();
+        if (idx < 0) return Collections.emptyList();
         return names.subList(idx + 1, names.size());
     }
 
@@ -103,36 +104,34 @@ public class SclQuery {
         return lDevice(ldInst)
             .map(ld -> ld.getLns().stream()
                 .map(SclLN::getFullName)
-                .toList())
-            .orElse(List.of());
+                .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
     }
 
     public List<String> lnNamesByClass(String ldInst, String lnClass) {
         return lDevice(ldInst)
             .map(ld -> ld.findLnsByClass(lnClass).stream()
                 .map(SclLN::getFullName)
-                .toList())
-            .orElse(List.of());
+                .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
     }
 
     public List<String> doNames(String ldInst, String lnFullName) {
         return ln(ldInst, lnFullName)
             .map(ln -> ln.getDois().stream()
                 .map(SclDOI::getName)
-                .toList())
-            .orElse(List.of());
+                .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
     }
 
     public List<String> daNames(String ldInst, String lnFullName, String doName) {
         return ln(ldInst, lnFullName)
-            .map(ln -> {
-                SclDOI doi = ln.findDoiByName(doName);
-                if (doi == null) return List.<String>of();
-                return doi.getDais().stream()
-                    .map(SclDAI::getName)
-                    .toList();
-            })
-            .orElse(List.of());
+            .map(sclLn -> sclLn.findDoiByName(doName))
+            .filter(doi -> doi != null)
+            .map(doi -> doi.getDais().stream()
+                .map(SclDAI::getName)
+                .collect(Collectors.toList()))
+            .orElse(Collections.<String>emptyList());
     }
 
     public Optional<String> resolveBType(String refStr) {
@@ -145,7 +144,7 @@ public class SclQuery {
         if (templates == null) return Optional.empty();
 
         Optional<SclLN> lnOpt = ln(ref.getLdName(), ref.getLnName());
-        if (lnOpt.isEmpty()) return Optional.empty();
+        if (!lnOpt.isPresent()) return Optional.empty();
 
         SclLN ln = lnOpt.get();
         SclLNodeType lnt = templates.findLNodeTypeById(ln.getLnType());
@@ -192,7 +191,7 @@ public class SclQuery {
     public List<SclDataSet> dataSets(String ldInst, String lnFullName) {
         return ln(ldInst, lnFullName)
             .map(SclLN::getDataSets)
-            .orElse(List.of());
+            .orElse(Collections.emptyList());
     }
 
     public Optional<SclDataSet> dataSet(String ldInst, String lnFullName, String dsName) {
@@ -203,13 +202,13 @@ public class SclQuery {
     public List<SclReportControl> reportControls(String ldInst, String lnFullName) {
         return ln(ldInst, lnFullName)
             .map(SclLN::getReportControls)
-            .orElse(List.of());
+            .orElse(Collections.emptyList());
     }
 
     public List<SclGSEControl> gseControls(String ldInst, String lnFullName) {
         return ln(ldInst, lnFullName)
             .map(SclLN::getGseControls)
-            .orElse(List.of());
+            .orElse(Collections.emptyList());
     }
 
     public DataTypeQuery dataTypes() {
@@ -235,7 +234,7 @@ public class SclQuery {
                 .filter(Objects::nonNull)
                 .flatMap(server -> server.getLDevices().stream())
                 .map(SclLDevice::getInst)
-                .toList();
+                .collect(Collectors.toList());
             result.put(ied.getName(), ldInsts);
         }
         return result;

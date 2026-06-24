@@ -13,6 +13,7 @@ import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -52,18 +53,18 @@ public class SclLNBase {
     public void addInput(SclInput input) { this.inputs.add(input); }
 
     public List<String> getDataSetNames() {
-        return dataSets.stream().map(SclDataSet::getName).toList();
+        return dataSets.stream().map(SclDataSet::getName).collect(Collectors.toList());
     }
 
     public List<String> getReportControlNames(boolean buffered) {
         return reportControls.stream()
             .filter(rc -> Boolean.toString(buffered).equals(rc.getBuffered()))
             .map(SclReportControl::getName)
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<String> getLogControlNames() {
-        return logControls.stream().map(SclLogControl::getName).toList();
+        return logControls.stream().map(SclLogControl::getName).collect(Collectors.toList());
     }
 
     public List<String> getLogNames() {
@@ -71,14 +72,14 @@ public class SclLNBase {
             .map(SclLogControl::getLogName)
             .filter(java.util.Objects::nonNull)
             .filter(name -> !name.isEmpty())
-            .toList();
+            .collect(Collectors.toList());
     }
 
     public List<String> getGseControlNames() {
-        return gseControls.stream().map(SclGSEControl::getName).toList();
+        return gseControls.stream().map(SclGSEControl::getName).collect(Collectors.toList());
     }
 
     public List<String> getSvControlNames() {
-        return svControls.stream().map(SclSampledValueControl::getName).toList();
+        return svControls.stream().map(SclSampledValueControl::getName).collect(Collectors.toList());
     }
 }
