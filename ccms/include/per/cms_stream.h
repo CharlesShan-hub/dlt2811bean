@@ -35,15 +35,23 @@ typedef struct {
 
 /* ---- Stream lifecycle ---- */
 
-/* Initialise a write stream backed by a fixed buffer. */
-void      per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity);
+/* Fixed-buffer read stream — caller provides buffer. */
+void  per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
+static inline per_stream_t per_stream_new_read(const uint8_t *buf, size_t capacity) {
+    per_stream_t s; per_stream_init_read(&s, buf, capacity); return s;
+}
 
-/*
- * Initialise a write stream with a dynamically growing buffer.
- * @param initial_capacity Minimum starting capacity (clamped to 64).
- * @return PER_OK or PER_ERR_OOM.
- */
+/* Fixed-buffer write stream — caller provides buffer. */
+void per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity);
+static inline per_stream_t per_stream_new_write(uint8_t *buf, size_t capacity) {
+    per_stream_t s; per_stream_init_write(&s, buf, capacity); return s;
+}
+
+/* Dynamic write stream — auto-grows on write (heap-allocated). */
 per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity);
+static inline per_stream_t per_stream_new_dynamic(size_t initial_capacity) {
+    per_stream_t s; per_stream_init_dynamic(&s, initial_capacity); return s;
+}
 
 /*
  * Detach the buffer from a dynamic stream.
@@ -52,26 +60,20 @@ per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity);
  */
 uint8_t*  per_stream_detach(per_stream_t *s, size_t *out_len);
 
-/* Initialise a read stream over an existing buffer. */
-void      per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
-
-/* Convenience: create a read stream (value semantics). */
-static inline per_stream_t per_stream_new_read(const uint8_t *buf, size_t capacity) {
-    per_stream_t s; per_stream_init_read(&s, buf, capacity); return s;
-}
-
-/* Convenience: create a fixed-buffer write stream (value semantics). */
-static inline per_stream_t per_stream_new_write(uint8_t *buf, size_t capacity) {
-    per_stream_t s; per_stream_init_write(&s, buf, capacity); return s;
-}
+/*
+ * Free resources held by a stream.
+ * For dynamic streams, frees the heap-allocated buffer.
+ * For fixed-buffer streams, this is a no-op (safe to call either way).
+ */
+void per_stream_free(per_stream_t *s);
 
 /* ---- Position queries ---- */
 
 /* Current bit position in the stream (0 = start of buffer). */
-size_t    per_stream_tell(const per_stream_t *s);
+size_t per_stream_tell(const per_stream_t *s);
 
 /* Number of full bytes written (partial byte rounds up). */
-size_t    per_stream_bytes_written(const per_stream_t *s);
+size_t per_stream_bytes_written(const per_stream_t *s);
 
 /* ---- Alignment ---- */
 
@@ -81,7 +83,7 @@ size_t    per_stream_bytes_written(const per_stream_t *s);
  * In read mode: skips remaining bits in the current byte.
  * No-op if already aligned (bit_pos == 0).
  */
-void      per_stream_align(per_stream_t *s);
+void per_stream_align(per_stream_t *s);
 
 /* ---- Bit-level I/O ---- */
 

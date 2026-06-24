@@ -1,12 +1,13 @@
 # Compiled class file
 *.class
-
+.cache
 # Maven output
 target/
 
 # CMake build output
 ccms/build/
 ccms/dist/
+ccms/compile_commands.json
 
 # IDE - IntelliJ IDEA
 .idea/
