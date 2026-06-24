@@ -1,0 +1,95 @@
+package com.ysh.jcms.utils.transport;
+
+/**
+ * Service names for DL/T 2811 protocol.
+ */
+public enum ServiceName {
+
+    ASSOCIATE(0x01),
+    ABORT(0x02),
+    RELEASE(0x03),
+
+    GET_SERVER_DIRECTORY(0x50),
+    GET_LOGIC_DEVICE_DIRECTORY(0x51),
+    GET_LOGIC_NODE_DIRECTORY(0x52),
+    GET_ALL_DATA_VALUES(0x53),
+    GET_ALL_DATA_DEFINITION(0x9B),
+    GET_ALL_CB_VALUES(0x9C),
+
+    GET_DATA_VALUES(0x30),
+    SET_DATA_VALUES(0x31),
+    GET_DATA_DIRECTORY(0x32),
+    GET_DATA_DEFINITION(0x33),
+
+    GET_DATA_SET_VALUES(0x3A),
+    SET_DATA_SET_VALUES(0x3B),
+    CREATE_DATA_SET(0x36),
+    DELETE_DATA_SET(0x37),
+    GET_DATA_SET_DIRECTORY(0x39),
+
+    SELECT_ACTIVE_SG(0x54),
+    SELECT_EDIT_SG(0x55),
+    SET_EDIT_SG_VALUE(0x56),
+    CONFIRM_EDIT_SG_VALUES(0x57),
+    GET_EDIT_SG_VALUE(0x58),
+    GET_SGCB_VALUES(0x59),
+
+    REPORT(0x5A),
+    GET_BRCB_VALUES(0x5B),
+    SET_BRCB_VALUES(0x5C),
+    GET_URCB_VALUES(0x5D),
+    SET_URCB_VALUES(0x5E),
+
+    GET_LCB_VALUES(0x5F),
+    SET_LCB_VALUES(0x60),
+    QUERY_LOG_BY_TIME(0x61),
+    QUERY_LOG_AFTER(0x62),
+    GET_LOG_STATUS_VALUES(0x63),
+
+    GET_GOCB_VALUES(0x66),
+    SET_GOCB_VALUES(0x67),
+
+    GET_MSVCB_VALUES(0x68),
+    SET_MSVCB_VALUES(0x69),
+
+    SELECT(0x70),
+    SELECT_WITH_VALUE(0x71),
+    CANCEL(0x72),
+    OPERATE(0x73),
+    TIME_ACTIVATED_OPERATE(0x74),
+    COMMAND_TERMINATION(0x75),
+    TIME_ACTIVATED_OPERATE_TERMINATION(0x76),
+
+    GET_FILE(0x7A),
+    SET_FILE(0x7B),
+    DELETE_FILE(0x7C),
+    GET_FILE_DIRECTORY(0x7D),
+    GET_FILE_ATTRIBUTE_VALUES(0x7E),
+
+    TEST(0x80),
+
+    SEND_GOOSE_MESSAGE(0x00),
+    GET_GO_REFERENCE(0x00),
+    GET_GOOSE_ELEMENT_NUMBER(0x00),
+
+    ASSOCIATE_NEGOTIATE(0x90),
+
+    GET_RPC_INTERFACE_DIRECTORY(0xA0),
+    GET_RPC_INTERFACE_DEFINITION(0xA1),
+    GET_RPC_METHOD_DIRECTORY(0xA2),
+    GET_RPC_METHOD_DEFINITION(0xA3),
+    RPC_CALL(0xA4);
+
+    private final int code;
+
+    ServiceName(int code) { this.code = code; }
+
+    public int getCode() { return code; }
+
+    public static ServiceName fromCode(int code) {
+        for (ServiceName sn : values()) {
+            if (sn.code == code) return sn;
+        }
+        return null;
+    }
+}

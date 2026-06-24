@@ -1,0 +1,100 @@
+package com.ysh.jcms.app.node;
+
+import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.frame.FrameHeader;
+import com.ysh.jcms.utils.transport.session.ClientSession;
+import com.ysh.jcms.utils.transport.session.SessionState;
+import com.ysh.jcms.utils.transport.wire.ClientConnector;
+import com.ysh.jcms.utils.transport.wire.Connection;
+import com.ysh.jcms.utils.transport.wire.ConnectionListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+
+/**
+ * InnerClient — pure sender.
+ *
+ * <p>Sends requests and waits for responses synchronously.
+ * All business logic (decoding, session updates) belongs to the caller.
+ * Push messages (Report, CommandTermination) are handled by separate listeners.
+ */
+public class InnerClient implements ConnectionListener {
+
+    private static final Logger log = LoggerFactory.getLogger(InnerClient.class);
+
+    private final ClientConnector connector = new ClientConnector();
+    private volatile ClientSession session;
+    private volatile Connection connection;
+    private volatile String host;
+    private volatile int port;
+
+    public InnerClient() {}
+
+    public void connect(String host, int port) throws IOException {
+        this.host = host;
+        this.port = port;
+        this.connection = connector.connect(host, port, this);
+        this.session = new ClientSession(connection);
+        connection.startReader();
+        log.info("Connected to {}:{}", host, port);
+    }
+
+    /**
+     * Send a request and wait synchronously for the response.
+     * The reqId is extracted from the first 2 bytes of the ASDU.
+     *
+     * @return the raw response Frame, or null on timeout
+     */
+    public Frame sendRequest(ServiceName serviceCode, byte[] asduBytes, long timeoutMs) throws IOException {
+        if (session == null || !session.isConnected()) {
+            throw new IOException("Not connected");
+        }
+        int reqId = extractReqId(asduBytes);
+        session.addPendingRequest(reqId, timeoutMs);
+        connection.send(new Frame(
+            new FrameHeader().serviceCode(serviceCode).resp(false).err(false),
+            asduBytes, reqId
+        ));
+        try { return (Frame) session.waitForPendingRequest(reqId, timeoutMs); }
+        catch (InterruptedException e) { Thread.currentThread().interrupt(); return null; }
+    }
+
+    private static int extractReqId(byte[] asdu) {
+        if (asdu == null || asdu.length < 2) return 0;
+        return ((asdu[0] & 0xFF) << 8) | (asdu[1] & 0xFF);
+    }
+
+    public Frame sendRequest(ServiceName serviceCode, byte[] asduBytes) throws IOException {
+        return sendRequest(serviceCode, asduBytes, 5000);
+    }
+
+    public void close() {
+        if (connection != null) connection.close();
+        if (session != null) session.setState(SessionState.DISCONNECTED);
+    }
+
+    public boolean isConnected() { return session != null && session.isConnected(); }
+    public ClientSession getSession() { return session; }
+    public Connection getConnection() { return connection; }
+
+    @Override
+    public void onConnected(Connection connection) {}
+
+    @Override
+    public void onFrameReceived(Connection connection, Frame frame) {
+        if (session != null) session.tryDispatchResponse(frame);
+    }
+
+    @Override
+    public void onDisconnected(Connection connection) {
+        if (session != null) session.setState(SessionState.DISCONNECTED);
+        log.info("Disconnected from {}:{}", host, port);
+    }
+
+    @Override
+    public void onError(Connection connection, Exception e) {
+        log.error("Connection error", e);
+    }
+}
