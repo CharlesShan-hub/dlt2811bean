@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.dataset;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -24,7 +24,7 @@ public class CmsGetDataSetDirectoryRequest extends CmsType {
     public CmsBoolean          refAfterPresent;
     public CmsObjectReference  refAfter;       /* OPTIONAL */
 
-    public CmsGetDataSetDirectoryRequest() {
+    public CmsGetDataSetDirectoryRequest() { super(Codec.GET_DATA_SET_DIRECTORY_REQUEST);
         this.reqId            = new CmsReqId();
         this.datasetReference = new CmsObjectReference();
         this.refAfterPresent  = new CmsBoolean();
@@ -42,7 +42,4 @@ public class CmsGetDataSetDirectoryRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, datasetReference, refAfterPresent, refAfter);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetDataSetDirectoryRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetDataSetDirectoryRequest(nativePtr, data); read(); }
 }

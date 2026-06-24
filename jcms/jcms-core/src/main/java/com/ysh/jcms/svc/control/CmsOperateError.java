@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.control;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -39,7 +39,7 @@ public class CmsOperateError extends CmsType {
     public CmsCheck            check;
     public CmsAddCause         addCause;
 
-    public CmsOperateError() {
+    public CmsOperateError() { super(Codec.OPERATE_ERROR);
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
         this.ctlVal    = new CmsData();
@@ -66,7 +66,4 @@ public class CmsOperateError extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, origin, ctlNum, t, test, check, addCause);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeOperateError(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeOperateError(nativePtr, data); read(); }
 }

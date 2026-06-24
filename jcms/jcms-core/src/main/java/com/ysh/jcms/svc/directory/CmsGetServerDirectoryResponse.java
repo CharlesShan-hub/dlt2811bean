@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -22,7 +22,7 @@ public class CmsGetServerDirectoryResponse extends CmsType {
     public CmsArray<CmsObjectReference> reference;   /* SEQUENCE OF ObjectReference */
     public CmsBoolean                   moreFollows; /* DEFAULT TRUE */
 
-    public CmsGetServerDirectoryResponse() {
+    public CmsGetServerDirectoryResponse() { super(Codec.GET_SERVER_DIRECTORY_RESPONSE);
         this.reqId       = new CmsReqId();
         this.reference   = new CmsArray<>(CmsObjectReference.class);
         this.moreFollows = new CmsBoolean();
@@ -36,7 +36,4 @@ public class CmsGetServerDirectoryResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetServerDirectoryResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetServerDirectoryResponse(nativePtr, data); read(); }
 }

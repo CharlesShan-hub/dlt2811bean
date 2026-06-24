@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.time;
 
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt32;
@@ -18,7 +18,7 @@ public class CmsTimeQuality extends CmsType {
     public CmsBoolean clock_not_synchronized;
     public CmsInt32 precision;
 
-    public CmsTimeQuality() {
+    public CmsTimeQuality() { super(Codec.TIME_QUALITY);
         this.leap_seconds_known = new CmsBoolean();
         this.clock_failure = new CmsBoolean();
         this.clock_not_synchronized = new CmsBoolean();
@@ -34,9 +34,4 @@ public class CmsTimeQuality extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(leap_seconds_known, clock_failure, clock_not_synchronized, precision);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeTimeQuality(nativePtr); }
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodeTimeQuality(nativePtr, data); read(); }
 }

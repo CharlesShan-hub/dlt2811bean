@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.report;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class CmsSetUrcbValuesError extends CmsType {
     public CmsReqId                        reqId;
     public CmsArray<CmsSetUrcbResult>      result;   /* SEQUENCE OF SetURCBResult */
 
-    public CmsSetUrcbValuesError() {
+    public CmsSetUrcbValuesError() { super(Codec.SET_URCB_VALUES_ERROR);
         this.reqId  = new CmsReqId();
         this.result = new CmsArray<>(CmsSetUrcbResult.class);
     }
@@ -30,7 +30,4 @@ public class CmsSetUrcbValuesError extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, result);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSetUrcbValuesError(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetUrcbValuesError(nativePtr, data); read(); }
 }

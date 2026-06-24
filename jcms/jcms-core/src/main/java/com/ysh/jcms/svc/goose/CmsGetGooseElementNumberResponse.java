@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -27,7 +27,7 @@ public class CmsGetGooseElementNumberResponse extends CmsType {
     public CmsObjectReference    datSet;
     public CmsArray<CmsInt16U>   memberOffset;  /* SEQUENCE OF INT16U */
 
-    public CmsGetGooseElementNumberResponse() {
+    public CmsGetGooseElementNumberResponse() { super(Codec.GET_GOOSE_ELEMENT_NUMBER_RESPONSE);
         this.reqId         = new CmsReqId();
         this.gocbReference = new CmsObjectReference();
         this.confRev       = new CmsInt32U();
@@ -47,7 +47,4 @@ public class CmsGetGooseElementNumberResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocbReference, confRev, datSet, memberOffset);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetGooseElementNumberResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetGooseElementNumberResponse(nativePtr, data); read(); }
 }

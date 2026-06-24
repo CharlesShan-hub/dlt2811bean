@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.rpc;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -23,7 +23,7 @@ public class CmsGetRpcMethodDirectoryResponse extends CmsType {
     public CmsArray<CmsUint8Array>        reference;    /* SEQUENCE OF VisibleString */
     public CmsBoolean                     moreFollows;  /* DEFAULT TRUE */
 
-    public CmsGetRpcMethodDirectoryResponse() {
+    public CmsGetRpcMethodDirectoryResponse() { super(Codec.GET_RPC_METHOD_DIRECTORY_RESPONSE);
         this.reqId       = new CmsReqId();
         this.reference   = new CmsArray<>(CmsUint8Array.class);
         this.moreFollows = new CmsBoolean();
@@ -37,7 +37,4 @@ public class CmsGetRpcMethodDirectoryResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetRpcMethodDirectoryResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetRpcMethodDirectoryResponse(nativePtr, data); read(); }
 }

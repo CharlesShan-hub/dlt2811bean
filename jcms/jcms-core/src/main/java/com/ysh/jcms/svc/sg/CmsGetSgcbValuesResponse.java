@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class CmsGetSgcbValuesResponse extends CmsType {
     public CmsArray<CmsSgcbValueChoice>       sgscb;        /* SEQUENCE OF SGCBValueChoice */
     public CmsBoolean                         moreFollows;  /* DEFAULT TRUE */
 
-    public CmsGetSgcbValuesResponse() {
+    public CmsGetSgcbValuesResponse() { super(Codec.GET_SGCB_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
         this.sgscb       = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
@@ -35,7 +35,4 @@ public class CmsGetSgcbValuesResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgscb, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetSgcbValuesResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetSgcbValuesResponse(nativePtr, data); read(); }
 }

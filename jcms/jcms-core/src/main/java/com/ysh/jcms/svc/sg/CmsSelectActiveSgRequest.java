@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt8U;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -21,7 +21,7 @@ public class CmsSelectActiveSgRequest extends CmsType {
     public CmsObjectReference  sgcbReference;
     public CmsInt8U            settingGroupNumber;
 
-    public CmsSelectActiveSgRequest() {
+    public CmsSelectActiveSgRequest() { super(Codec.SELECT_ACTIVE_SG_REQUEST);
         this.reqId              = new CmsReqId();
         this.sgcbReference      = new CmsObjectReference();
         this.settingGroupNumber = new CmsInt8U();
@@ -36,7 +36,4 @@ public class CmsSelectActiveSgRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, sgcbReference, settingGroupNumber);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSelectActiveSgRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSelectActiveSgRequest(nativePtr, data); read(); }
 }

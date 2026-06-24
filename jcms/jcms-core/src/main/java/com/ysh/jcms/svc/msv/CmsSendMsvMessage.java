@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.msv;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.block.CmsSmpMod;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -51,7 +51,7 @@ public class CmsSendMsvMessage extends CmsType {
     public CmsBoolean          smpModPresent;
     public CmsSmpMod           smpMod;         /* OPTIONAL */
 
-    public CmsSendMsvMessage() {
+    public CmsSendMsvMessage() { super(Codec.SEND_MSV_MESSAGE);
         this.reqId          = new CmsReqId();
         this.msvId          = new CmsUint8Array();
         this.datSetPresent  = new CmsBoolean();
@@ -98,7 +98,4 @@ public class CmsSendMsvMessage extends CmsType {
             simulation, sample,
             smpModPresent, smpMod);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSendMsvMessage(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSendMsvMessage(nativePtr, data); read(); }
 }

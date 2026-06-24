@@ -2,6 +2,7 @@ package com.ysh.jcms.core;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -26,11 +27,17 @@ public abstract class CmsType {
 
     public Pointer nativePtr;
     public int nativeSize;
+    protected Codec codec;
 
     protected CmsType() {
         this.nativeSize = calcNativeSize();
         this.nativePtr = new Memory(nativeSize);
         zero();
+    }
+
+    protected CmsType(Codec codec) {
+        this();
+        this.codec = codec;
     }
 
     // ==================== Overridable by subclasses ====================
@@ -78,22 +85,27 @@ public abstract class CmsType {
 
     /**
      * PER encode: encodes the current structure to a byte array.
-     * - Leaf types: write() then call C FFI
-     * - Container types: write() first (recursively writes children), then call C FFI
+     * Uses {@link #codec} if set, otherwise throws.
      */
     public byte[] encode() {
-        throw new UnsupportedOperationException(
-            getClass().getSimpleName() + " has no FFI encode");
+        if (codec == null)
+            throw new UnsupportedOperationException(
+                getClass().getSimpleName() + " has no FFI encode (codec not set)");
+        write();
+        return codec.encode(nativePtr);
     }
 
     /**
      * PER decode: decodes from a byte array into the current structure.
-     * - Leaf types: call C FFI then read()
-     * - Container types: call C FFI then read() (recursively reads children)
+     * Uses {@link #codec} if set, otherwise throws.
      */
     public void decode(byte[] data) {
-        throw new UnsupportedOperationException(
-            getClass().getSimpleName() + " has no FFI decode");
+        if (codec == null)
+            throw new UnsupportedOperationException(
+                getClass().getSimpleName() + " has no FFI decode (codec not set)");
+        write();
+        codec.decode(nativePtr, data);
+        read();
     }
 
     // ==================== equals / hashCode ====================

@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.fc;
 
 import com.ysh.jcms.core.CmsEnumerated;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 
 /**
  * FunctionalConstraint ::= VisibleString (SIZE(2))  —  7.4
@@ -34,7 +34,4 @@ public class CmsFC extends CmsEnumerated {
 
     @Override
     public CmsFC value(int v) { return (CmsFC) super.value(v); }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeFunctionalConstraint(nativePtr); }
-    @Override public void decode(byte[] data) { NativeBridge.decodeFunctionalConstraint(nativePtr, data); read(); }
 }

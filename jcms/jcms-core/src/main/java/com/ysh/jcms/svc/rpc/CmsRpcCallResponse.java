@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.rpc;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -23,7 +23,7 @@ public class CmsRpcCallResponse extends CmsType {
     public CmsBoolean      nextCallIdPresent;
     public CmsUint8Array   nextCallId;       /* OCTET STRING OPTIONAL */
 
-    public CmsRpcCallResponse() {
+    public CmsRpcCallResponse() { super(Codec.RPC_CALL_RESPONSE);
         this.reqId            = new CmsReqId();
         this.rspData          = new CmsData();
         this.nextCallIdPresent = new CmsBoolean();
@@ -40,7 +40,4 @@ public class CmsRpcCallResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, rspData, nextCallIdPresent, nextCallId);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeRpcCallResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeRpcCallResponse(nativePtr, data); read(); }
 }

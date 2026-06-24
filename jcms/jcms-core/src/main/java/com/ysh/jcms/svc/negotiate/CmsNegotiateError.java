@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.negotiate;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class CmsNegotiateError extends CmsType {
     public CmsReqId        reqId;
     public CmsServiceError serviceError;
 
-    public CmsNegotiateError() {
+    public CmsNegotiateError() { super(Codec.NEGOTIATE_ERROR);
         this.reqId        = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
@@ -30,7 +30,4 @@ public class CmsNegotiateError extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeNegotiateError(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeNegotiateError(nativePtr, data); read(); }
 }

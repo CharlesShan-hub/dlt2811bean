@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.time.CmsBinaryTime;
@@ -35,7 +35,7 @@ public class CmsBrcb extends CmsType {
     public CmsBoolean           owner_present;
     public CmsUint8Array        owner;          /* OPTIONAL */
 
-    public CmsBrcb() {
+    public CmsBrcb() { super(Codec.BRCB);
         this.rptID         = new CmsUint8Array();
         this.rptEna        = new CmsBoolean();
         this.datSet        = new CmsObjectReference();
@@ -83,7 +83,4 @@ public class CmsBrcb extends CmsType {
             bufTm, sqNum, trgOps, intgPd, gi, purgeBuf, entryID, timeOfEntry,
             resvTms_present, resvTms, owner_present, owner);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeBrcb(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeBrcb(nativePtr, data); read(); }
 }

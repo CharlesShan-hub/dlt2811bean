@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.negotiate;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -26,7 +26,7 @@ public class CmsNegotiateResponse extends CmsType {
     public CmsInt32U      protocolVersion;
     public CmsUint8Array  modelVersion;     /* VisibleString */
 
-    public CmsNegotiateResponse() {
+    public CmsNegotiateResponse() { super(Codec.NEGOTIATE_RESPONSE);
         this.reqId           = new CmsReqId();
         this.apduSize        = new CmsInt16U();
         this.asduSize        = new CmsInt32U();
@@ -45,7 +45,4 @@ public class CmsNegotiateResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, apduSize, asduSize, protocolVersion, modelVersion);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeNegotiateResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeNegotiateResponse(nativePtr, data); read(); }
 }

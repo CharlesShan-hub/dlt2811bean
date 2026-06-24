@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class CmsGetLogicalDeviceDirectoryError extends CmsType {
     public CmsReqId        reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetLogicalDeviceDirectoryError() {
+    public CmsGetLogicalDeviceDirectoryError() { super(Codec.GET_LOGICAL_DEVICE_DIRECTORY_ERROR);
         this.reqId        = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
@@ -30,7 +30,4 @@ public class CmsGetLogicalDeviceDirectoryError extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, serviceError);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetLogicalDeviceDirectoryError(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetLogicalDeviceDirectoryError(nativePtr, data); read(); }
 }

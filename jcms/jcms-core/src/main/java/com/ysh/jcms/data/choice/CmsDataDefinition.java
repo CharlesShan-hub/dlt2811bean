@@ -2,7 +2,7 @@ package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.scalar.CmsInt32;
@@ -46,7 +46,7 @@ public class CmsDataDefinition extends CmsType {
     public CmsInt32                             alt_visible_string_len;
     public CmsInt32                             alt_unicode_string_len;
 
-    public CmsDataDefinition() {
+    public CmsDataDefinition() { super(Codec.DATA_DEFINITION);
         this.choice                 = new CmsEnumerated();
         this.alt_error              = new CmsServiceError();
         this.alt_array              = new CmsDataDefinitionArray();
@@ -64,10 +64,4 @@ public class CmsDataDefinition extends CmsType {
             alt_bit_string_len, alt_octet_string_len,
             alt_visible_string_len, alt_unicode_string_len);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeDataDefinition(nativePtr); }
-
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodeDataDefinition(nativePtr, data); read(); }
 }

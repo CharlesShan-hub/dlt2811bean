@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -46,7 +46,7 @@ public class CmsSendGooseMessage extends CmsType {
     public CmsBoolean          ndsCom;
     public CmsArray<CmsData>   data;           /* SEQUENCE OF Data */
 
-    public CmsSendGooseMessage() {
+    public CmsSendGooseMessage() { super(Codec.SEND_GOOSE_MESSAGE);
         this.reqId         = new CmsReqId();
         this.goId          = new CmsUint8Array();
         this.datSetPresent = new CmsBoolean();
@@ -86,7 +86,4 @@ public class CmsSendGooseMessage extends CmsType {
             goRefPresent, goRef,
             t, stNum, sqNum, simulation, confRev, ndsCom, data);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSendGooseMessage(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSendGooseMessage(nativePtr, data); read(); }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.report;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.block.CmsRcbOptFlds;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -47,7 +47,7 @@ public class CmsReport extends CmsType {
     public CmsInt32U           confRev;           /* OPTIONAL */
     public CmsReportEntry      entry;
 
-    public CmsReport() {
+    public CmsReport() { super(Codec.REPORT);
         this.reqId           = new CmsReqId();
         this.rptID           = new CmsUint8Array();
         this.optFlds         = new CmsRcbOptFlds();
@@ -96,7 +96,4 @@ public class CmsReport extends CmsType {
             confRevPresent, confRev,
             entry);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeReport(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeReport(nativePtr, data); read(); }
 }

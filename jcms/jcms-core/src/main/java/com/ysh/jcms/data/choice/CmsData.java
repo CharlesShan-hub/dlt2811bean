@@ -2,7 +2,7 @@ package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -77,7 +77,7 @@ public class CmsData extends CmsType {
     public CmsTcmd                alt_tcmd;
     public CmsCheck               alt_check;
 
-    public CmsData() {
+    public CmsData() { super(Codec.DATA);
         this.choice           = new CmsEnumerated();
         this.alt_sequence     = new CmsArray<>();
         this.alt_error        = new CmsServiceError();
@@ -116,10 +116,4 @@ public class CmsData extends CmsType {
             alt_dbpos, alt_tcmd, alt_check,
             alt_error);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeData(nativePtr); }
-
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodeData(nativePtr, data); read(); }
 }

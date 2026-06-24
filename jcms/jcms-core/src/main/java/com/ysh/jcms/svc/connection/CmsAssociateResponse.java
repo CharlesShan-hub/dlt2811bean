@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.connection;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsAssociationId;
@@ -25,7 +25,7 @@ public class CmsAssociateResponse extends CmsType {
     public CmsBoolean              authParamPresent;
     public CmsAuthenticationParameter authParam;   /* OPTIONAL */
 
-    public CmsAssociateResponse() {
+    public CmsAssociateResponse() { super(Codec.ASSOCIATE_RESPONSE);
         this.reqId           = new CmsReqId();
         this.assocId         = new CmsAssociationId();
         this.serviceError    = new CmsServiceError();
@@ -44,7 +44,4 @@ public class CmsAssociateResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId, serviceError, authParamPresent, authParam);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeAssociateResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeAssociateResponse(nativePtr, data); read(); }
 }

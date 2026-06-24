@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -19,7 +19,7 @@ public class CmsGetLcbValuesRequest extends CmsType {
     public CmsReqId                           reqId;
     public CmsArray<CmsObjectReference>       reference;  /* SEQUENCE OF ObjectReference */
 
-    public CmsGetLcbValuesRequest() {
+    public CmsGetLcbValuesRequest() { super(Codec.GET_LCB_VALUES_REQUEST);
         this.reqId     = new CmsReqId();
         this.reference = new CmsArray<>();
     }
@@ -31,7 +31,4 @@ public class CmsGetLcbValuesRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetLcbValuesRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetLcbValuesRequest(nativePtr, data); read(); }
 }

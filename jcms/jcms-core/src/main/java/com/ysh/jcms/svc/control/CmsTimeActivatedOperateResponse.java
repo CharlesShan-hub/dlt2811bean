@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.control;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -38,7 +38,7 @@ public class CmsTimeActivatedOperateResponse extends CmsType {
     public CmsBoolean          test;
     public CmsCheck            check;
 
-    public CmsTimeActivatedOperateResponse() {
+    public CmsTimeActivatedOperateResponse() { super(Codec.TIME_ACTIVATED_OPERATE_RESPONSE);
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
         this.ctlVal    = new CmsData();
@@ -65,7 +65,4 @@ public class CmsTimeActivatedOperateResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeTimeActivatedOperateResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeTimeActivatedOperateResponse(nativePtr, data); read(); }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.*;
 import java.util.Arrays;
@@ -24,7 +24,7 @@ public class CmsQuality extends CmsType {
     public CmsBoolean test;
     public CmsBoolean operatorBlocked;
 
-    public CmsQuality() {
+    public CmsQuality() { super(Codec.QUALITY);
         this.validity        = new CmsInt32();
         this.overflow        = new CmsBoolean();
         this.outOfRange      = new CmsBoolean();
@@ -58,9 +58,4 @@ public class CmsQuality extends CmsType {
             oscillatory, failure, oldData, inconsistent, inaccurate,
             substituted, test, operatorBlocked);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeQuality(nativePtr); }
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodeQuality(nativePtr, data); read(); }
 }

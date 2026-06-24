@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ public class CmsSetFileResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetFileResponse() {
+    public CmsSetFileResponse() { super(Codec.SET_FILE_RESPONSE);
         this.reqId = new CmsReqId();
     }
     
@@ -25,7 +25,4 @@ public class CmsSetFileResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSetFileResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetFileResponse(nativePtr, data); read(); }
 }

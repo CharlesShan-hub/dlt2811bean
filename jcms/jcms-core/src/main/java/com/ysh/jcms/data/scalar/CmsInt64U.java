@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import java.math.BigInteger;
 
 /**
@@ -13,8 +13,8 @@ public class CmsInt64U extends CmsType {
 
     private BigInteger value = BigInteger.ZERO;
 
-    public CmsInt64U() {}
-    public CmsInt64U(BigInteger value) { this.value = value.and(MAX); write(); }
+    public CmsInt64U() { super(Codec.INT64U);}
+    public CmsInt64U(BigInteger value) { super(Codec.INT64U); this.value = value.and(MAX); write(); }
 
     public static final BigInteger MAX = new BigInteger("18446744073709551615");
 
@@ -39,7 +39,4 @@ public class CmsInt64U extends CmsType {
         for (int i = 0; i < 8; i++) b[i] = nativePtr.getByte(i);
         this.value = new BigInteger(1, b);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeInt64U(nativePtr); }
-    @Override public void decode(byte[] data) { NativeBridge.decodeInt64U(nativePtr, data); read(); }
 }

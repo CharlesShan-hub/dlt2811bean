@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class CmsDeleteFileRequest extends CmsType {
     public CmsReqId       reqId;
     public CmsUint8Array  filename;
 
-    public CmsDeleteFileRequest() {
+    public CmsDeleteFileRequest() { super(Codec.DELETE_FILE_REQUEST);
         this.reqId    = new CmsReqId();
         this.filename = new CmsUint8Array();
     }
@@ -31,7 +31,4 @@ public class CmsDeleteFileRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, filename);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeDeleteFileRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeDeleteFileRequest(nativePtr, data); read(); }
 }

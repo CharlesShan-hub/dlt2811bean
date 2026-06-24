@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
@@ -25,7 +25,7 @@ public class CmsGetAllCbValuesRequest extends CmsType {
     public CmsBoolean          refAfterPresent;
     public CmsObjectReference  refAfter;       /* OPTIONAL */
 
-    public CmsGetAllCbValuesRequest() {
+    public CmsGetAllCbValuesRequest() { super(Codec.GET_ALL_CB_VALUES_REQUEST);
         this.reqId           = new CmsReqId();
         this.reference       = new CmsReferenceChoice();
         this.acsiClass       = new CmsAcsiClass();
@@ -44,7 +44,4 @@ public class CmsGetAllCbValuesRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference, acsiClass, refAfterPresent, refAfter);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetAllCbValuesRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetAllCbValuesRequest(nativePtr, data); read(); }
 }

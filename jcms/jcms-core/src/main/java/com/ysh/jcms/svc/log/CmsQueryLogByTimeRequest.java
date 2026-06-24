@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsEntryId;
 import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -31,7 +31,7 @@ public class CmsQueryLogByTimeRequest extends CmsType {
     public CmsBoolean          entryAfterPresent;
     public CmsEntryId          entryAfter;     /* OPTIONAL */
 
-    public CmsQueryLogByTimeRequest() {
+    public CmsQueryLogByTimeRequest() { super(Codec.QUERY_LOG_BY_TIME_REQUEST);
         this.reqId             = new CmsReqId();
         this.logReference      = new CmsObjectReference();
         this.startTimePresent  = new CmsBoolean();
@@ -60,7 +60,4 @@ public class CmsQueryLogByTimeRequest extends CmsType {
             stopTimePresent, stopTime,
             entryAfterPresent, entryAfter);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeQueryLogByTimeRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeQueryLogByTimeRequest(nativePtr, data); read(); }
 }

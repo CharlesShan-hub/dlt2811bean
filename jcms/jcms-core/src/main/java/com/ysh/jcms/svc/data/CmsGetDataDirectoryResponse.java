@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.data;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class CmsGetDataDirectoryResponse extends CmsType {
     public CmsArray<CmsSubRefEntry>    dataAttribute;  /* SEQUENCE OF SubRefEntry */
     public CmsBoolean                  moreFollows;    /* DEFAULT TRUE */
 
-    public CmsGetDataDirectoryResponse() {
+    public CmsGetDataDirectoryResponse() { super(Codec.GET_DATA_DIRECTORY_RESPONSE);
         this.reqId         = new CmsReqId();
         this.dataAttribute = new CmsArray<>();
         this.moreFollows   = new CmsBoolean();
@@ -35,7 +35,4 @@ public class CmsGetDataDirectoryResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, dataAttribute, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetDataDirectoryResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetDataDirectoryResponse(nativePtr, data); read(); }
 }

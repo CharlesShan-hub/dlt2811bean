@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 
 /**
  * typedef struct { uint8_t value; } cms_int8u_t;
@@ -12,8 +12,8 @@ public class CmsInt8U extends CmsType {
 
     private byte value = 0;
 
-    public CmsInt8U() {}
-    public CmsInt8U(int value) { this.value = (byte) (value & 0xFF); write(); }
+    public CmsInt8U() { super(Codec.INT8U);}
+    public CmsInt8U(int value) { super(Codec.INT8U); this.value = (byte) (value & 0xFF); write(); }
 
     public int value() { return value & 0xFF; }
     public CmsInt8U value(int v) { this.value = (byte) (v & 0xFF); write(); return this; }
@@ -26,10 +26,4 @@ public class CmsInt8U extends CmsType {
 
     @Override
     public void read() { this.value = nativePtr.getByte(0); }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeInt8U(nativePtr); }
-
-    @Override
-    public void decode(byte[] data) { NativeBridge.decodeInt8U(nativePtr, data); read(); }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class CmsSgcb extends CmsType {
     public CmsBoolean   resvTms_present;
     public CmsInt16U    resvTms;        /* OPTIONAL */
 
-    public CmsSgcb() {
+    public CmsSgcb() { super(Codec.SGCB);
         this.numOfSG  = new CmsInt8U();
         this.actSG    = new CmsInt8U();
         this.editSG   = new CmsInt8U();
@@ -42,7 +42,4 @@ public class CmsSgcb extends CmsType {
         return Arrays.asList(numOfSG, actSG, editSG, tActEdt,
                              resvTms_present, resvTms);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSgcb(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSgcb(nativePtr, data); read(); }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.control;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -18,7 +18,7 @@ public class CmsOperateResponse extends CmsType {
     public CmsReqId            reqId;
     public CmsObjectReference  reference;
 
-    public CmsOperateResponse() {
+    public CmsOperateResponse() { super(Codec.OPERATE_RESPONSE);
         this.reqId     = new CmsReqId();
         this.reference = new CmsObjectReference();
     }
@@ -31,7 +31,4 @@ public class CmsOperateResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, reference);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeOperateResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeOperateResponse(nativePtr, data); read(); }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.dataset;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -17,7 +17,7 @@ public class CmsDeleteDataSetResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsDeleteDataSetResponse() {
+    public CmsDeleteDataSetResponse() { super(Codec.DELETE_DATA_SET_RESPONSE);
         this.reqId = new CmsReqId();
     }
     
@@ -27,7 +27,4 @@ public class CmsDeleteDataSetResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeDeleteDataSetResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeDeleteDataSetResponse(nativePtr, data); read(); }
 }

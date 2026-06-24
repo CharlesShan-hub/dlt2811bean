@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.connection;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsAssociationId;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class CmsAbort extends CmsType {
     public CmsAssociationId assocId;
     public CmsAbortReason   reason;
 
-    public CmsAbort() {
+    public CmsAbort() { super(Codec.ABORT);
         this.reqId   = new CmsReqId();
         this.assocId = new CmsAssociationId();
         this.reason  = new CmsAbortReason();
@@ -44,8 +44,4 @@ public class CmsAbort extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, assocId, reason);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeAbort(nativePtr); }
-
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeAbort(nativePtr, data); read(); }
 }

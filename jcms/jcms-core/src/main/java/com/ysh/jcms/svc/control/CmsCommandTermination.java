@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.control;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -45,7 +45,7 @@ public class CmsCommandTermination extends CmsType {
     public CmsBoolean          addCausePresent;
     public CmsAddCause         addCause;       /* OPTIONAL */
 
-    public CmsCommandTermination() {
+    public CmsCommandTermination() { super(Codec.COMMAND_TERMINATION);
         this.reqId            = new CmsReqId();
         this.reference        = new CmsObjectReference();
         this.ctlVal           = new CmsData();
@@ -80,7 +80,4 @@ public class CmsCommandTermination extends CmsType {
             operTmPresent, operTm, origin, ctlNum, t, test, check,
             addCausePresent, addCause);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeCommandTermination(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeCommandTermination(nativePtr, data); read(); }
 }

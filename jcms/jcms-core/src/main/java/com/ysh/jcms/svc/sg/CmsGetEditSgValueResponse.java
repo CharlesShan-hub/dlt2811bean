@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -22,7 +22,7 @@ public class CmsGetEditSgValueResponse extends CmsType {
     public CmsArray<CmsData>     value;        /* SEQUENCE OF Data */
     public CmsBoolean            moreFollows;  /* DEFAULT TRUE */
 
-    public CmsGetEditSgValueResponse() {
+    public CmsGetEditSgValueResponse() { super(Codec.GET_EDIT_SG_VALUE_RESPONSE);
         this.reqId       = new CmsReqId();
         this.value       = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
@@ -36,7 +36,4 @@ public class CmsGetEditSgValueResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, value, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetEditSgValueResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetEditSgValueResponse(nativePtr, data); read(); }
 }

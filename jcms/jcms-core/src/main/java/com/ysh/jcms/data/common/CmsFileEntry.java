@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -18,7 +18,7 @@ public class CmsFileEntry extends CmsType {
     public CmsUtcTime    lastModified;
     public CmsInt32U     checkSum;
 
-    public CmsFileEntry() {
+    public CmsFileEntry() { super(Codec.FILE_ENTRY);
         this.fileName     = new CmsUint8Array();
         this.fileSize     = new CmsInt32U();
         this.lastModified = new CmsUtcTime();
@@ -34,9 +34,4 @@ public class CmsFileEntry extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(fileName, fileSize, lastModified, checkSum);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeFileEntry(nativePtr); }
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodeFileEntry(nativePtr, data); read(); }
 }

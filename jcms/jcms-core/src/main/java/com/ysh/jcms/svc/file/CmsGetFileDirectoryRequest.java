@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -29,7 +29,7 @@ public class CmsGetFileDirectoryRequest extends CmsType {
     public CmsBoolean     fileAfterPresent;
     public CmsUint8Array  fileAfter;      /* OPTIONAL */
 
-    public CmsGetFileDirectoryRequest() {
+    public CmsGetFileDirectoryRequest() { super(Codec.GET_FILE_DIRECTORY_REQUEST);
         this.reqId            = new CmsReqId();
         this.pathName         = new CmsUint8Array();
         this.startTimePresent = new CmsBoolean();
@@ -58,7 +58,4 @@ public class CmsGetFileDirectoryRequest extends CmsType {
             stopTimePresent, stopTime,
             fileAfterPresent, fileAfter);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetFileDirectoryRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetFileDirectoryRequest(nativePtr, data); read(); }
 }

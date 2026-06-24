@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ public class CmsQueryLogAfterResponse extends CmsType {
     public CmsArray<CmsLogEntry>       logEntry;     /* SEQUENCE OF LogEntry */
     public CmsBoolean                  moreFollows;  /* DEFAULT TRUE */
 
-    public CmsQueryLogAfterResponse() {
+    public CmsQueryLogAfterResponse() { super(Codec.QUERY_LOG_AFTER_RESPONSE);
         this.reqId       = new CmsReqId();
         this.logEntry    = new CmsArray<>();
         this.moreFollows = new CmsBoolean();
@@ -35,7 +35,4 @@ public class CmsQueryLogAfterResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, logEntry, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeQueryLogAfterResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeQueryLogAfterResponse(nativePtr, data); read(); }
 }

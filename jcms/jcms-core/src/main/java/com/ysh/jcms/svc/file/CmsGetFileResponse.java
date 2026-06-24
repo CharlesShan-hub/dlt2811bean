@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -21,7 +21,7 @@ public class CmsGetFileResponse extends CmsType {
     public CmsUint8Array    fileData;
     public CmsBoolean       endOfFile;   /* DEFAULT FALSE */
 
-    public CmsGetFileResponse() {
+    public CmsGetFileResponse() { super(Codec.GET_FILE_RESPONSE);
         this.reqId     = new CmsReqId();
         this.fileData  = new CmsUint8Array();
         this.endOfFile = new CmsBoolean();
@@ -36,7 +36,4 @@ public class CmsGetFileResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, fileData, endOfFile);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetFileResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetFileResponse(nativePtr, data); read(); }
 }

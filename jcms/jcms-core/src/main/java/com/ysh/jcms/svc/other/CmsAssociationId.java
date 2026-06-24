@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.other;
 
 import com.sun.jna.Memory;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 
 /**
@@ -12,26 +12,12 @@ public class CmsAssociationId extends CmsUint8Array {
 
     public static final int MAX_LEN = 64;
 
-    public CmsAssociationId() {}
-
-    public CmsAssociationId(byte[] data) { super(data); }
-    public CmsAssociationId(int value) {
-        super(new byte[]{(byte)(value>>24),(byte)(value>>16),(byte)(value>>8),(byte)value});
-    }
+    public CmsAssociationId() { this.codec = Codec.ASSOCIATION_ID; }
+    public CmsAssociationId(byte[] data) { super(data); this.codec = Codec.ASSOCIATION_ID; }
+    public CmsAssociationId(int value) { super(new byte[]{
+        (byte)(value>>24),(byte)(value>>16),(byte)(value>>8),(byte)value
+    }); this.codec = Codec.ASSOCIATION_ID; }
     public CmsAssociationId value(int v) {
         return (CmsAssociationId) value(new byte[]{(byte)(v>>24),(byte)(v>>16),(byte)(v>>8),(byte)v});
-    }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodeAssociationId(nativePtr); }
-
-    @Override
-    public void decode(byte[] data) {
-        this.ownedData = new Memory(MAX_LEN);
-        this.value = ownedData;
-        this.len = 0;
-        write();
-        NativeBridge.decodeAssociationId(nativePtr, data);
-        read();
     }
 }

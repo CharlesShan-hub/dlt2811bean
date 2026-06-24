@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.data;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +18,7 @@ public class CmsGetDataValuesRequest extends CmsType {
     public CmsReqId                   reqId;
     public CmsArray<CmsDataRefEntry>  data;   /* SEQUENCE OF DataRefEntry */
 
-    public CmsGetDataValuesRequest() {
+    public CmsGetDataValuesRequest() { super(Codec.GET_DATA_VALUES_REQUEST);
         this.reqId = new CmsReqId();
         this.data  = new CmsArray<>(CmsDataRefEntry.class);
     }
@@ -30,7 +30,4 @@ public class CmsGetDataValuesRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, data);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetDataValuesRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetDataValuesRequest(nativePtr, data); read(); }
 }

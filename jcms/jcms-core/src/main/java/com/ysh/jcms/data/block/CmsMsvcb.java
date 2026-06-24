@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -27,7 +27,7 @@ public class CmsMsvcb extends CmsType {
     public CmsBoolean          dstAddress_present;
     public CmsPhyComAddr       dstAddress;     /* OPTIONAL */
 
-    public CmsMsvcb() {
+    public CmsMsvcb() { super(Codec.MSVCB);
         this.svEna    = new CmsBoolean();
         this.msvID    = new CmsUint8Array();
         this.datSet   = new CmsObjectReference();
@@ -59,7 +59,4 @@ public class CmsMsvcb extends CmsType {
             smpMod_present, smpMod, smpRate, optFlds,
             dstAddress_present, dstAddress);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeMsvcb(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeMsvcb(nativePtr, data); read(); }
 }

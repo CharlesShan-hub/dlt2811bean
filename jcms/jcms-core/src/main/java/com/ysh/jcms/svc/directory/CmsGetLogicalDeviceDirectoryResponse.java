@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -22,7 +22,7 @@ public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
     public CmsArray<CmsSubReference>    lnReference;  /* SEQUENCE OF SubReference */
     public CmsBoolean                   moreFollows;  /* DEFAULT TRUE */
 
-    public CmsGetLogicalDeviceDirectoryResponse() {
+    public CmsGetLogicalDeviceDirectoryResponse() { super(Codec.GET_LOGICAL_DEVICE_DIRECTORY_RESPONSE);
         this.reqId       = new CmsReqId();
         this.lnReference = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
@@ -36,7 +36,4 @@ public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, lnReference, moreFollows);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetLogicalDeviceDirectoryResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetLogicalDeviceDirectoryResponse(nativePtr, data); read(); }
 }

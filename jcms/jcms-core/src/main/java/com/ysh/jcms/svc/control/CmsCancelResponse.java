@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.control;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -36,7 +36,7 @@ public class CmsCancelResponse extends CmsType {
     public CmsUtcTime        t;
     public CmsBoolean          test;
 
-    public CmsCancelResponse() {
+    public CmsCancelResponse() { super(Codec.CANCEL_RESPONSE);
         this.reqId          = new CmsReqId();
         this.reference      = new CmsObjectReference();
         this.ctlVal         = new CmsData();
@@ -64,7 +64,4 @@ public class CmsCancelResponse extends CmsType {
         return Arrays.asList(reqId, reference, ctlVal,
             operTmPresent, operTm, origin, ctlNum, t, test);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeCancelResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeCancelResponse(nativePtr, data); read(); }
 }

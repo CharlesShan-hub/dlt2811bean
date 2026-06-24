@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -33,7 +33,7 @@ public class CmsRcbOptFlds extends CmsType {
     public CmsBoolean conf_revision;
     public CmsBoolean segmentation;
 
-    public CmsRcbOptFlds() {
+    public CmsRcbOptFlds() { super(Codec.RCB_OPT_FLDS);
         this.sequence_number      = new CmsBoolean();
         this.report_time_stamp    = new CmsBoolean();
         this.reason_for_inclusion = new CmsBoolean();
@@ -61,7 +61,4 @@ public class CmsRcbOptFlds extends CmsType {
             data_set_name, data_reference, buffer_overflow, entry_id,
             conf_revision, segmentation);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeRcbOptFlds(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeRcbOptFlds(nativePtr, data); read(); }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt8U;
@@ -18,7 +18,7 @@ public class CmsPhyComAddr extends CmsType {
     public CmsInt16U     vid;
     public CmsInt16U     appid;
 
-    public CmsPhyComAddr() {
+    public CmsPhyComAddr() { super(Codec.PHY_COM_ADDR);
         this.addr     = new CmsUint8Array();
         this.priority = new CmsInt8U();
         this.vid      = new CmsInt16U();
@@ -34,9 +34,4 @@ public class CmsPhyComAddr extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(addr, priority, vid, appid);
     }
-
-    @Override
-    public byte[] encode() { write(); return NativeBridge.encodePhyComAddr(nativePtr); }
-    @Override
-    public void decode(byte[] data) { write(); NativeBridge.decodePhyComAddr(nativePtr, data); read(); }
 }

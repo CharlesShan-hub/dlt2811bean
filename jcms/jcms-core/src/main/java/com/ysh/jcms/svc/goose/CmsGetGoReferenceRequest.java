@@ -2,7 +2,7 @@ package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -22,7 +22,7 @@ public class CmsGetGoReferenceRequest extends CmsType {
     public CmsObjectReference  gocbReference;
     public CmsArray<CmsInt16U> memberOfs;   /* SEQUENCE OF INT16U */
 
-    public CmsGetGoReferenceRequest() {
+    public CmsGetGoReferenceRequest() { super(Codec.GET_GO_REFERENCE_REQUEST);
         this.reqId         = new CmsReqId();
         this.gocbReference = new CmsObjectReference();
         this.memberOfs     = new CmsArray<>();
@@ -37,7 +37,4 @@ public class CmsGetGoReferenceRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, gocbReference, memberOfs);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetGoReferenceRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetGoReferenceRequest(nativePtr, data); read(); }
 }

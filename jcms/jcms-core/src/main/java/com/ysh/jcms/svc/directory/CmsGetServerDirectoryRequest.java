@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -22,7 +22,7 @@ public class CmsGetServerDirectoryRequest extends CmsType {
     public CmsBoolean          refAfterPresent;
     public CmsObjectReference  refAfter;       /* OPTIONAL */
 
-    public CmsGetServerDirectoryRequest() {
+    public CmsGetServerDirectoryRequest() { super(Codec.GET_SERVER_DIRECTORY_REQUEST);
         this.reqId           = new CmsReqId();
         this.objectClass     = new CmsObjectClass();
         this.refAfterPresent = new CmsBoolean();
@@ -39,7 +39,4 @@ public class CmsGetServerDirectoryRequest extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId, objectClass, refAfterPresent, refAfter);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeGetServerDirectoryRequest(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeGetServerDirectoryRequest(nativePtr, data); read(); }
 }

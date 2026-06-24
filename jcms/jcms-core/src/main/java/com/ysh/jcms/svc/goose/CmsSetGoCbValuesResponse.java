@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ public class CmsSetGoCbValuesResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetGoCbValuesResponse() {
+    public CmsSetGoCbValuesResponse() { super(Codec.SET_GO_CB_VALUES_RESPONSE);
         this.reqId = new CmsReqId();
     }
     
@@ -25,7 +25,4 @@ public class CmsSetGoCbValuesResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSetGoCbValuesResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetGoCbValuesResponse(nativePtr, data); read(); }
 }

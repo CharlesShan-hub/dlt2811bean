@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +15,7 @@ public class CmsSetEditSgValueResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetEditSgValueResponse() {
+    public CmsSetEditSgValueResponse() { super(Codec.SET_EDIT_SG_VALUE_RESPONSE);
         this.reqId = new CmsReqId();
     }
     
@@ -25,7 +25,4 @@ public class CmsSetEditSgValueResponse extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(reqId);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeSetEditSgValueResponse(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeSetEditSgValueResponse(nativePtr, data); read(); }
 }

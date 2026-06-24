@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge;
+import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +23,7 @@ public class CmsMsvcbOptFlds extends CmsType {
     public CmsBoolean data_set_name;
     public CmsBoolean security;
 
-    public CmsMsvcbOptFlds() {
+    public CmsMsvcbOptFlds() { super(Codec.MSVCB_OPT_FLDS);
         this.refresh_time  = new CmsBoolean();
         this.sample_rate   = new CmsBoolean();
         this.data_set_name = new CmsBoolean();
@@ -39,7 +39,4 @@ public class CmsMsvcbOptFlds extends CmsType {
     public List<? extends CmsType> children() {
         return Arrays.asList(refresh_time, sample_rate, data_set_name, security);
     }
-
-    @Override public byte[] encode() { write(); return NativeBridge.encodeMsvcbOptFlds(nativePtr); }
-    @Override public void decode(byte[] data) { write(); NativeBridge.decodeMsvcbOptFlds(nativePtr, data); read(); }
 }
