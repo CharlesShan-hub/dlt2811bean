@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
+import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
@@ -7,13 +8,9 @@ import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.security.GmAuthenticator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.transport.frame.FrameHeader;
-import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
 import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
@@ -24,13 +21,15 @@ import java.util.Optional;
  *
  * <p>Handles SCL access point resolution and optional GM authentication.
  */
-public class AssociateServer implements ServiceHandler {
-
-    private static final Logger log = LoggerFactory.getLogger(AssociateServer.class);
+public class AssociateServer extends BaseServerHandler {
 
     private GmAuthenticator authenticator;
     private boolean requireAuthentication;
     private byte[] serverCertificateBytes;
+
+    public AssociateServer() {
+        super(ServiceName.ASSOCIATE);
+    }
 
     public AssociateServer enableSecurity(GmAuthenticator authenticator, X509Certificate serverCert) throws Exception {
         this.authenticator = authenticator;
@@ -40,26 +39,18 @@ public class AssociateServer implements ServiceHandler {
     }
 
     @Override
-    public ServiceName getServiceName() {
-        return ServiceName.ASSOCIATE;
-    }
-
-    @Override
     public Frame handleRequest(Session session, Frame request) {
         // 1. Decode request
         CmsAssociateRequest req = new CmsAssociateRequest();
-        try {
-            req.decode(request.asduBytes());
-        } catch (Exception e) {
-            log.error("Failed to decode AssociateRequest", e);
-            return buildErrorResponse(request.reqId(), CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        if (!tryDecode(session, request, req)) {
+            return buildAssociateError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
 
         int reqId = req.reqId.value();
         log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (session.isAssociated()) {
-            return buildErrorResponse(reqId, CmsServiceError.INSTANCE_IN_USE);
+            return buildAssociateError(reqId, CmsServiceError.INSTANCE_IN_USE);
         }
 
         // 2. Resolve server access point reference
@@ -68,7 +59,7 @@ public class AssociateServer implements ServiceHandler {
 
         if (sapRef == null || sapRef.isEmpty()) {
             log.warn("No serverAccessPointReference in request");
-            return buildErrorResponse(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return buildAssociateError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
         log.debug("Requested access point: {}", sapRef);
 
@@ -76,7 +67,7 @@ public class AssociateServer implements ServiceHandler {
         if (requireAuthentication) {
             int authError = validateAuthParam(req, sapRef);
             if (authError != CmsServiceError.NO_ERROR) {
-                return buildErrorResponse(reqId, authError);
+                return buildAssociateError(reqId, authError);
             }
         }
 
@@ -95,24 +86,20 @@ public class AssociateServer implements ServiceHandler {
                 .cert(serverCertificateBytes));
             resp.authParamPresent(true);
         }
-        resp.write();
 
         byte[] respBytes;
         try {
             respBytes = resp.encode();
         } catch (Exception e) {
             log.error("Failed to encode AssociateResponse", e);
-            return buildErrorResponse(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return buildAssociateError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
 
         session.setAssociationId(assocId);
         session.setState(SessionState.ASSOCIATED);
         log.info("Association established: session={}", session.getSessionId());
 
-        return new Frame(
-            new FrameHeader().serviceCode(ServiceName.ASSOCIATE).resp(true).err(false),
-            respBytes, reqId
-        );
+        return buildSuccess(respBytes, reqId);
     }
 
     private int validateAuthParam(CmsAssociateRequest req, String sapRef) {
@@ -146,15 +133,10 @@ public class AssociateServer implements ServiceHandler {
         return sapBytes;
     }
 
-    private Frame buildErrorResponse(int reqId, int errorCode) {
-        byte[] respBytes = new CmsAssociateResponse()
+    private Frame buildAssociateError(int reqId, int errorCode) {
+        return buildError(new CmsAssociateResponse()
             .reqId(reqId)
             .serviceError(errorCode)
-            .encode();
-
-        return new Frame(
-            new FrameHeader().serviceCode(ServiceName.ASSOCIATE).resp(true).err(true),
-            respBytes, reqId
-        );
+            .encode(), reqId);
     }
 }

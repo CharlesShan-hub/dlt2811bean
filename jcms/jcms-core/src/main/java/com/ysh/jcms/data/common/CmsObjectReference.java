@@ -8,8 +8,9 @@ import com.ysh.jcms.data.string.CmsUint8Array;
  */
 public class CmsObjectReference extends CmsUint8Array {
     public static final int MAX_LEN = 129;
+    { this.codec = Codec.OBJECT_REFERENCE; }
 
-    public CmsObjectReference() { this.codec = Codec.OBJECT_REFERENCE; }
-    public CmsObjectReference(byte[] data) { super(data); this.codec = Codec.OBJECT_REFERENCE; }
-    public CmsObjectReference(String s) { super(s); this.codec = Codec.OBJECT_REFERENCE; }
+    public CmsObjectReference() {}
+    public CmsObjectReference(byte[] data) { super(data); }
+    public CmsObjectReference(String s) { super(s); }
 }

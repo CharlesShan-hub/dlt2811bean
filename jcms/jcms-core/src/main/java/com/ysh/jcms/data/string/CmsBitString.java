@@ -1,13 +1,21 @@
 package com.ysh.jcms.data.string;
 
-/*
+/**
  * BitString ::= BIT STRING
  *
- * This type is an alias for CmsUint8Array { uint8_t* value; int32_t len; }.
- * Use CmsUint8Array directly — this file is kept only for ASN.1 type-name
- * documentation.
+ * PER encoding: constrained length + align + content (MSB-first packed bits).
  *
- * NOTE: For BitString, len stores the number of bits (nbits), not bytes.
+ * For BitString, the inherited `len` field stores the number of bits (nbits),
+ * NOT bytes. The {@link #value()} getter converts nbits → bytes automatically.
  */
-public class CmsBitString {
+public class CmsBitString extends CmsUint8Array {
+
+    @Override
+    protected int defaultBufSize() { return 2; }
+
+    public CmsBitString() {}
+    public CmsBitString(byte[] data) { super(data); }
+
+    @Override
+    protected int valueByteLen() { return (len + 7) / 8; }
 }

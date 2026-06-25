@@ -158,7 +158,7 @@ int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pd
         for (uint32_t i = 0; i < cnt; i++) {
             cms_file_entry_t *e = (cms_file_entry_t*)pdu->file_entry->elements[i];
             if (!e) return CMS_ERR;
-            err = cms_file_entry_encode_stream(&s, e);
+            err = cms_file_entry_decode_stream(&s, e);
             if (err) return err;
         }
     }

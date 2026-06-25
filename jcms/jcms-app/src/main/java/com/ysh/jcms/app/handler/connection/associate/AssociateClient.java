@@ -1,18 +1,14 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
+import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.app.node.InnerClient;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.security.GmCredentialManager;
 import com.ysh.jcms.utils.transport.ServiceName;
-import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.transport.session.ClientSession;
 import com.ysh.jcms.utils.transport.session.SessionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -23,16 +19,14 @@ import java.security.Signature;
  *
  * <p>Registered via {@link CmsNode#registerClient(Object)}.
  */
-public class AssociateClient {
+public class AssociateClient extends BaseClientHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(AssociateClient.class);
     private static final String SIGNATURE_ALGORITHM = "SM3withSM2";
 
-    private final CmsNode node;
     private GmCredentialManager credentialManager;
 
     public AssociateClient(CmsNode node) {
-        this.node = node;
+        super(node);
     }
 
     public AssociateClient credentialManager(GmCredentialManager cm) {
@@ -40,38 +34,30 @@ public class AssociateClient {
         return this;
     }
 
-    private InnerClient client() { return node.getClient(); }
-    private ClientSession session() { return node.getClient().getSession(); }
-
     public CmsAssociateResponse execute(AssociateClientDao dao) throws Exception {
-        CmsAssociateRequest req = new CmsAssociateRequest();
-        req.reqId(session().nextReqId());
-        req.sapRef(dao.sapRef);
-        req.sapRefPresent(dao.sapRef != null && !dao.sapRef.isEmpty());
+        CmsAssociateRequest req = new CmsAssociateRequest()
+            .reqId(nextReqId())
+            .sapRef(dao.sapRef())
+            .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
-        if (dao.secure && credentialManager != null) {
-            req.authParam(buildAuthParam(dao.sapRef));
+        if (dao.secure() && credentialManager != null) {
+            req.authParam(buildAuthParam(dao.sapRef()));
             req.authParamPresent(true);
         }
 
-        byte[] reqBytes = req.encode();
-        Frame response = client().sendRequest(ServiceName.ASSOCIATE, reqBytes);
-        if (response == null) throw new IOException("Associate timeout");
-
-        CmsAssociateResponse resp = new CmsAssociateResponse();
-        try { resp.decode(response.asduBytes()); }
-        catch (Exception e) { throw new IOException("Failed to decode AssociateResponse", e); }
+        CmsAssociateResponse resp = decodeFrame(
+            send(ServiceName.ASSOCIATE, req.encode()),
+            new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
-            session().setState(SessionState.DISCONNECTED);
+            node.getClient().getSession().setState(SessionState.DISCONNECTED);
             throw new IOException("Association rejected: error=" + serviceError);
         }
 
-        byte[] assocId = resp.assocId.value();
-        session().setAssociationId(assocId);
-        session().setState(SessionState.ASSOCIATED);
-        log.info("Association established: session={}", session().getSessionId());
+        node.getClient().getSession().setAssociationId(resp.assocId.value());
+        node.getClient().getSession().setState(SessionState.ASSOCIATED);
+        log.info("Association established: session={}", node.getClient().getSession().getSessionId());
 
         return resp;
     }

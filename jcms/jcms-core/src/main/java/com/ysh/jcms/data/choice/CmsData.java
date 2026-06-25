@@ -5,6 +5,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.scalar.*;
+import com.ysh.jcms.data.string.CmsBitString;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.data.time.*;
 import com.ysh.jcms.data.common.*;
@@ -66,7 +67,7 @@ public class CmsData extends CmsType {
     public CmsInt64U              alt_int64u;
     public CmsFloat32             alt_float32;
     public CmsFloat64             alt_float64;
-    public CmsUint8Array          alt_bit_string;
+    public CmsBitString           alt_bit_string;
     public CmsUint8Array          alt_octet_string;
     public CmsUint8Array          alt_visible_string;
     public CmsUint8Array          alt_unicode_string;
@@ -92,7 +93,7 @@ public class CmsData extends CmsType {
         this.alt_int64u       = new CmsInt64U();
         this.alt_float32      = new CmsFloat32();
         this.alt_float64      = new CmsFloat64();
-        this.alt_bit_string   = new CmsUint8Array();
+        this.alt_bit_string   = new CmsBitString();
         this.alt_octet_string = new CmsUint8Array();
         this.alt_visible_string = new CmsUint8Array();
         this.alt_unicode_string = new CmsUint8Array();

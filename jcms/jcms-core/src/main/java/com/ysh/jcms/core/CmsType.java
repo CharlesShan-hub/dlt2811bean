@@ -160,7 +160,7 @@ public abstract class CmsType {
             String bracketIndent = repeat("    ", depth);
             StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") {\n");
             // Map children to their Java field names (public fields only, toString aid)
-            java.util.Map<CmsType, String> fieldNames = new java.util.HashMap<>();
+            java.util.Map<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
             for (java.lang.reflect.Field f : getClass().getFields()) {
                 if (CmsType.class.isAssignableFrom(f.getType())) {
                     try { fieldNames.put((CmsType) f.get(this), f.getName()); } catch (Exception e) {}

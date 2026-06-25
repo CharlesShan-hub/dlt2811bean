@@ -8,8 +8,9 @@ import com.ysh.jcms.data.string.CmsUint8Array;
  */
 public class CmsObjectName extends CmsUint8Array {
     public static final int MAX_LEN = 64;
+    { this.codec = Codec.OBJECT_NAME; }
 
-    public CmsObjectName() { this.codec = Codec.OBJECT_NAME; }
-    public CmsObjectName(byte[] data) { super(data); this.codec = Codec.OBJECT_NAME; }
-    public CmsObjectName(String s) { super(s); this.codec = Codec.OBJECT_NAME; }
+    public CmsObjectName() {}
+    public CmsObjectName(byte[] data) { super(data); }
+    public CmsObjectName(String s) { super(s); }
 }

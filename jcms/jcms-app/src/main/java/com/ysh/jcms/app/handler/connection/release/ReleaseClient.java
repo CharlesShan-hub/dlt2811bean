@@ -1,14 +1,12 @@
 package com.ysh.jcms.app.handler.connection.release;
 
+import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsReleaseRequest;
 import com.ysh.jcms.svc.connection.CmsReleaseResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
-import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -17,27 +15,20 @@ import java.io.IOException;
  *
  * <p>Registered via {@link CmsNode#registerClient(Object)}.
  */
-public class ReleaseClient {
-
-    private static final Logger log = LoggerFactory.getLogger(ReleaseClient.class);
-
-    private final CmsNode node;
+public class ReleaseClient extends BaseClientHandler {
 
     public ReleaseClient(CmsNode node) {
-        this.node = node;
+        super(node);
     }
 
     public void execute() throws Exception {
         byte[] reqBytes = new CmsReleaseRequest()
-            .reqId(node.getClient().getSession().nextReqId())
+            .reqId(nextReqId())
             .encode();
 
-        Frame response = node.sendRequest(ServiceName.RELEASE, reqBytes);
-        if (response == null) throw new IOException("Release timeout");
-
-        CmsReleaseResponse resp = new CmsReleaseResponse();
-        try { resp.decode(response.asduBytes()); }
-        catch (Exception e) { throw new IOException("Failed to decode ReleaseResponse", e); }
+        CmsReleaseResponse resp = decodeFrame(
+            send(ServiceName.RELEASE, reqBytes),
+            new CmsReleaseResponse());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {

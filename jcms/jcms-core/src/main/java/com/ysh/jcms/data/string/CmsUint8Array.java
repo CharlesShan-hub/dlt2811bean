@@ -28,10 +28,15 @@ public class CmsUint8Array extends CmsType {
     /** 由 write() 分配的 data 内存，用于生命周期管理。 */
     protected Memory ownedData;
 
+    /** 子类可覆盖此方法指定默认缓冲区大小（如 BitString 需要更⼤空间）。 */
+    protected int defaultBufSize() { return 1; }
+
     public CmsUint8Array() {
-        this.ownedData = new Memory(1);
+        int sz = defaultBufSize();
+        this.ownedData = new Memory(sz);
         this.value = ownedData;
         this.len = 0;
+        if (sz > 0) ownedData.setByte(0, (byte)0);  /* 初始化为空字符串 */
         write();
     }
 
@@ -70,10 +75,13 @@ public class CmsUint8Array extends CmsType {
 
     // ==================== 读写数据 ====================
 
+    /** 子类可覆盖此方法以改变 len 到实际字节数的映射（如 BitString 存比特数）。 */
+    protected int valueByteLen() { return len; }
+
     /** 获取字节数组（从 native 拷贝到 Java）。 */
     public byte[] value() {
         if (value == null || len == 0) return new byte[0];
-        return value.getByteArray(0, len);
+        return value.getByteArray(0, valueByteLen());
     }
 
     /** 设置字节数组（拷贝到 native）。 */
