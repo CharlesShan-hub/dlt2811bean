@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import org.junit.After;
 import org.junit.Before;
@@ -35,7 +34,7 @@ public abstract class BaseLoopbackTest {
     private CmsNode clientNode;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() throws Exception {
         serverNode = new CmsNode(FREE_PORT);
         registerServers(serverNode);
         serverNode.start();
@@ -54,12 +53,12 @@ public abstract class BaseLoopbackTest {
     /**
      * Register server-side handlers. Called during {@link #setup()}.
      */
-    protected abstract void registerServers(CmsNode node);
+    protected abstract void registerServers(CmsNode node) throws Exception;
 
     /**
      * Register client-side handlers. Called during {@link #setup()}.
      */
-    protected abstract void registerClients(CmsNode node);
+    protected abstract void registerClients(CmsNode node) throws Exception;
 
     // ──────────────────────────────────────────────
     //  Protected accessors

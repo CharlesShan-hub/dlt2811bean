@@ -16,13 +16,13 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
     }
 
     @Override
-    protected void registerServers(CmsNode node) {
+    protected void registerServers(CmsNode node) throws Exception {
         regServer(node, new AssociateServer());
         regServer(node, new ReleaseServer());
     }
 
     @Override
-    protected void registerClients(CmsNode node) {
+    protected void registerClients(CmsNode node) throws Exception {
         regClient(node, new AssociateClient(node));
         regClient(node, new ReleaseClient(node));
     }

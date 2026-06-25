@@ -17,12 +17,12 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
     }
 
     @Override
-    protected void registerServers(CmsNode node) {
+    protected void registerServers(CmsNode node) throws Exception {
         regServer(node, new AssociateServer());
     }
 
     @Override
-    protected void registerClients(CmsNode node) {
+    protected void registerClients(CmsNode node) throws Exception {
         regClient(node, new AssociateClient(node));
     }
 

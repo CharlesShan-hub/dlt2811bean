@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.node;
 
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.transport.service.DispatchResult;
 import com.ysh.jcms.utils.transport.service.Dispatcher;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.utils.transport.session.Session;
