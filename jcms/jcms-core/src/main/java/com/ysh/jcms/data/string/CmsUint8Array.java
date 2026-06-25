@@ -28,8 +28,8 @@ public class CmsUint8Array extends CmsType {
     /** 由 write() 分配的 data 内存，用于生命周期管理。 */
     protected Memory ownedData;
 
-    /** 子类可覆盖此方法指定默认缓冲区大小（如 BitString 需要更⼤空间）。 */
-    protected int defaultBufSize() { return 1; }
+    /** 子类可覆盖此方法指定默认缓冲区大小 */
+    protected int defaultBufSize() { return 4096; }
 
     public CmsUint8Array() {
         int sz = defaultBufSize();

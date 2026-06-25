@@ -6,6 +6,7 @@ import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.security.GmAuthenticator;
+import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
@@ -13,7 +14,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.nio.charset.StandardCharsets;
-import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 /**
@@ -31,10 +31,10 @@ public class AssociateServer extends BaseServerHandler {
         super(ServiceName.ASSOCIATE);
     }
 
-    public AssociateServer enableSecurity(GmAuthenticator authenticator, X509Certificate serverCert) throws Exception {
-        this.authenticator = authenticator;
+    public AssociateServer enableSecurity(SecurityContext ctx) throws Exception {
+        this.authenticator = ctx.authenticator();
         this.requireAuthentication = true;
-        this.serverCertificateBytes = serverCert.getEncoded();
+        this.serverCertificateBytes = ctx.certificate().getEncoded();
         return this;
     }
 

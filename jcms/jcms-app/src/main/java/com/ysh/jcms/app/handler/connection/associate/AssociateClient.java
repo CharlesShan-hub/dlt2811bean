@@ -3,16 +3,17 @@ package com.ysh.jcms.app.handler.connection.associate;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
-import com.ysh.jcms.utils.security.GmCredentialManager;
+import com.ysh.jcms.utils.security.GmSignature;
+import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.security.Signature;
 
 /**
  * Client-side handler for Associate service.
@@ -21,16 +22,19 @@ import java.security.Signature;
  */
 public class AssociateClient extends BaseClientHandler {
 
-    private static final String SIGNATURE_ALGORITHM = "SM3withSM2";
-
-    private GmCredentialManager credentialManager;
+    private SecurityContext securityContext;
 
     public AssociateClient(CmsNode node) {
         super(node);
     }
 
-    public AssociateClient credentialManager(GmCredentialManager cm) {
-        this.credentialManager = cm;
+    public AssociateClient(CmsNode node, SecurityContext ctx) {
+        super(node);
+        this.securityContext = ctx;
+    }
+
+    public AssociateClient credentialManager(SecurityContext ctx) {
+        this.securityContext = ctx;
         return this;
     }
 
@@ -40,7 +44,7 @@ public class AssociateClient extends BaseClientHandler {
             .sapRef(dao.sapRef())
             .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
-        if (dao.secure() && credentialManager != null) {
+        if (dao.secure() && securityContext != null) {
             req.authParam(buildAuthParam(dao.sapRef()));
             req.authParamPresent(true);
         }
@@ -63,20 +67,20 @@ public class AssociateClient extends BaseClientHandler {
     }
 
     private CmsAuthenticationParameter buildAuthParam(String sapRef) throws Exception {
-        byte[] certBytes = credentialManager.getCertificate().getEncoded();
+        byte[] certBytes = securityContext.credentialManager().getCertificate().getEncoded();
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
         long now = System.currentTimeMillis();
-        byte[] timeBytes = String.valueOf(now).getBytes(StandardCharsets.UTF_8);
+        byte[] timeBytes = String.valueOf(now / 1000).getBytes(StandardCharsets.UTF_8);
 
         byte[] signedData = new byte[sapBytes.length + timeBytes.length];
         System.arraycopy(sapBytes, 0, signedData, 0, sapBytes.length);
         System.arraycopy(timeBytes, 0, signedData, sapBytes.length, timeBytes.length);
 
-        Signature sig = Signature.getInstance(SIGNATURE_ALGORITHM, "BC");
-        sig.initSign(credentialManager.getPrivateKey());
-        sig.update(signedData);
-        byte[] signatureValue = sig.sign();
+        byte[] signatureValue = GmSignature.sign(securityContext.credentialManager().getPrivateKey(), signedData);
 
-        return new CmsAuthenticationParameter().cert(certBytes).sigVal(signatureValue);
+        return new CmsAuthenticationParameter()
+            .cert(certBytes)
+            .signedTime(new CmsUtcTime().now())
+            .sigVal(signatureValue);
     }
 }

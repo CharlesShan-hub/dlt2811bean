@@ -245,7 +245,7 @@ public class NativeBridge {
 
         public byte[] encode(Pointer ptr) {
             Function fn = LIB.getFunction(prefix + "_encode");
-            byte[] buf = new byte[4096];
+            byte[] buf = new byte[8192];
             IntByReference outLen = new IntByReference(buf.length);
             int rc = fn.invokeInt(new Object[]{ptr, buf, outLen});
             if (rc != 0) throw new RuntimeException(
