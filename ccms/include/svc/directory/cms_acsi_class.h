@@ -40,7 +40,7 @@ extern "C" {
 
 typedef cms_int32_t cms_acsi_class_t;
 
-CMS_EXPORT int cms_acsi_class_encode(const cms_acsi_class_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_acsi_class_encode(const cms_acsi_class_t *v, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_acsi_class_decode(cms_acsi_class_t *v, const uint8_t *in_buf, int in_len);
 int cms_acsi_class_encode_stream(per_stream_t *s, const cms_acsi_class_t *v);
 int cms_acsi_class_decode_stream(per_stream_t *s, cms_acsi_class_t *v);

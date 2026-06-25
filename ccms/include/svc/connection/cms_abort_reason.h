@@ -30,7 +30,7 @@ extern "C" {
 
 typedef cms_int32_t cms_abort_reason_t;
 
-CMS_EXPORT int cms_abort_reason_encode(const cms_abort_reason_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_abort_reason_encode(const cms_abort_reason_t *v, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_abort_reason_decode(cms_abort_reason_t *v, const uint8_t *in_buf, int in_len);
 int cms_abort_reason_encode_stream(per_stream_t *s, const cms_abort_reason_t *v);
 int cms_abort_reason_decode_stream(per_stream_t *s, cms_abort_reason_t *v);

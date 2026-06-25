@@ -27,7 +27,7 @@ typedef struct {
 
 CMS_EXPORT int cms_authentication_parameter_encode(
     const cms_authentication_parameter_t *param,
-    uint8_t *out_buf, int *out_len);
+    uint8_t **out_buf, size_t *out_len);
 
 CMS_EXPORT int cms_authentication_parameter_decode(
     cms_authentication_parameter_t *param,

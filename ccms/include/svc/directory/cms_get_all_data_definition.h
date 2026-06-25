@@ -59,7 +59,7 @@ typedef struct {
 
 CMS_EXPORT int cms_get_all_data_definition_request_encode(
     const cms_get_all_data_definition_request_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_get_all_data_definition_request_decode(
@@ -69,7 +69,7 @@ CMS_EXPORT int cms_get_all_data_definition_request_decode(
 
 CMS_EXPORT int cms_get_all_data_definition_response_encode(
     const cms_get_all_data_definition_response_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_get_all_data_definition_response_decode(
@@ -79,7 +79,7 @@ CMS_EXPORT int cms_get_all_data_definition_response_decode(
 
 CMS_EXPORT int cms_get_all_data_definition_error_encode(
     const cms_get_all_data_definition_error_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_get_all_data_definition_error_decode(

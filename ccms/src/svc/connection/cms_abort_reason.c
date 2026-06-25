@@ -9,7 +9,7 @@ int cms_abort_reason_decode_stream(per_stream_t *s, cms_abort_reason_t *v) {
     return cms_int32_decode_stream(s, v);
 }
 
-int cms_abort_reason_encode(const cms_abort_reason_t *v, uint8_t *out_buf, int *out_len) {
+int cms_abort_reason_encode(const cms_abort_reason_t *v, uint8_t **out_buf, size_t *out_len) {
     return cms_int32_encode(v, out_buf, out_len);
 }
 

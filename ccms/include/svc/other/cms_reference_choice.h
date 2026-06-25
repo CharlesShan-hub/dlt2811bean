@@ -42,7 +42,7 @@ int cms_reference_choice_decode_stream(
 
 CMS_EXPORT int cms_reference_choice_encode(
     const cms_reference_choice_t *v,
-    uint8_t *out_buf, int *out_len);
+    uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_reference_choice_decode(
     cms_reference_choice_t *v,
     const uint8_t *in_buf, int in_len);

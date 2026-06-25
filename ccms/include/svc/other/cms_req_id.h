@@ -19,7 +19,7 @@ typedef cms_int16u_t cms_req_id_t;
 
 int cms_req_id_encode_stream(per_stream_t *s, const cms_req_id_t *v);
 int cms_req_id_decode_stream(per_stream_t *s, cms_req_id_t *v);
-CMS_EXPORT int cms_req_id_encode(const cms_req_id_t *v, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_req_id_encode(const cms_req_id_t *v, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_req_id_decode(cms_req_id_t *v, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus

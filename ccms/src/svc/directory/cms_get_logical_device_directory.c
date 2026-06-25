@@ -9,9 +9,10 @@
 
 /* ── Request ── */
 
-int cms_get_logical_device_directory_request_encode(const cms_get_logical_device_directory_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_logical_device_directory_request_encode(const cms_get_logical_device_directory_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
@@ -81,9 +82,10 @@ int cms_get_logical_device_directory_request_decode(cms_get_logical_device_direc
 
 /* ── Response (no OPTIONAL) ── */
 
-int cms_get_logical_device_directory_response_encode(const cms_get_logical_device_directory_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_logical_device_directory_response_encode(const cms_get_logical_device_directory_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
@@ -110,7 +112,7 @@ int cms_get_logical_device_directory_response_encode(const cms_get_logical_devic
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
     if (err) return err;
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -149,9 +151,10 @@ int cms_get_logical_device_directory_response_decode(cms_get_logical_device_dire
 
 /* ── Error (no OPTIONAL) ── */
 
-int cms_get_logical_device_directory_error_encode(const cms_get_logical_device_directory_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_logical_device_directory_error_encode(const cms_get_logical_device_directory_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
@@ -164,7 +167,7 @@ int cms_get_logical_device_directory_error_encode(const cms_get_logical_device_d
     err = cms_service_error_encode_stream(&s, pdu->service_error);
     if (err) return err;
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

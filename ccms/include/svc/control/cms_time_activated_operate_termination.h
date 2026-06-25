@@ -47,7 +47,7 @@ typedef struct {
     cms_add_cause_t           *add_cause;
 } cms_time_activated_operate_termination_t;
 
-CMS_EXPORT int cms_time_activated_operate_termination_encode(const cms_time_activated_operate_termination_t *pdu, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_time_activated_operate_termination_encode(const cms_time_activated_operate_termination_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_time_activated_operate_termination_decode(cms_time_activated_operate_termination_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus

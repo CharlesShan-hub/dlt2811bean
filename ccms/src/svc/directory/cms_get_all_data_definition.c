@@ -11,10 +11,11 @@
 /* ── Request ── */
 
 int cms_get_all_data_definition_request_encode(
-    const cms_get_all_data_definition_request_t *pdu, uint8_t *out_buf, int *out_len)
+    const cms_get_all_data_definition_request_t *pdu, uint8_t **out_buf, size_t *out_len)
 {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
@@ -96,11 +97,10 @@ int cms_get_all_data_definition_request_decode(
 
 /* ── Response (no OPTIONAL) ── */
 
-int cms_get_all_data_definition_response_encode(
-    const cms_get_all_data_definition_response_t *pdu, uint8_t *out_buf, int *out_len)
-{
+int cms_get_all_data_definition_response_encode(const cms_get_all_data_definition_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId */
@@ -168,11 +168,10 @@ int cms_get_all_data_definition_response_decode(
 
 /* ── Error (no OPTIONAL) ── */
 
-int cms_get_all_data_definition_error_encode(
-    const cms_get_all_data_definition_error_t *pdu, uint8_t *out_buf, int *out_len)
-{
+int cms_get_all_data_definition_error_encode(const cms_get_all_data_definition_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId */

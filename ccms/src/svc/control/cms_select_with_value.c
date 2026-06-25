@@ -12,9 +12,10 @@
 
 /* ── Request ── */
 
-int cms_select_with_value_request_encode(const cms_select_with_value_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_select_with_value_request_encode(const cms_select_with_value_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
@@ -148,9 +149,10 @@ int cms_select_with_value_response_decode(cms_select_with_value_response_t *pdu,
 
 /* ── Error ── */
 
-int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
