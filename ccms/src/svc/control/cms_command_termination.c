@@ -8,15 +8,24 @@
 #include "data/control/cms_add_cause.h"
 #include "data/scalar/cms_boolean.h"
 #include "data/scalar/cms_int8u.h"
+#include "per/cms_sequence.h"
 
 int cms_command_termination_encode(const cms_command_termination_t *pdu, uint8_t *out_buf, int *out_len) {
     per_stream_t s;
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (2 fields: operTm, addCause) */
+    bool opt[2] = {
+        (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm,
+        (pdu->add_cause_present && pdu->add_cause_present->value) && pdu->add_cause
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt, 2);
     if (err) return err;
 
     /* 2. reference — ObjectReference */
@@ -29,16 +38,10 @@ int cms_command_termination_encode(const cms_command_termination_t *pdu, uint8_t
     err = cms_data_encode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. operTm — TimeStamp OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin — Originator */
@@ -66,16 +69,10 @@ int cms_command_termination_encode(const cms_command_termination_t *pdu, uint8_t
     err = cms_check_encode_stream(&s, pdu->check);
     if (err) return err;
 
-    /* 10. addCause — AddCause OPTIONAL */
-    {
-        int present = (pdu->add_cause_present && pdu->add_cause_present->value) && pdu->add_cause;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 10. addCause — AddCause OPTIONAL (bitmap[1]) */
+    if (opt[1]) {
+        err = cms_add_cause_encode_stream(&s, pdu->add_cause);
         if (err) return err;
-        if (present) {
-            err = cms_add_cause_encode_stream(&s, pdu->add_cause);
-            if (err) return err;
-        }
     }
 
     *out_len = (int)per_stream_bytes_written(&s);
@@ -87,10 +84,19 @@ int cms_command_termination_decode(cms_command_termination_t *pdu, const uint8_t
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (2 fields: operTm, addCause) */
+    bool opt[2] = {false, false};
+    err = (int)per_decode_optional_bitmap(&s, opt, 2);
+    if (err) return err;
+    if (pdu->oper_tm_present)
+        pdu->oper_tm_present->value = opt[0] ? 1 : 0;
+    if (pdu->add_cause_present)
+        pdu->add_cause_present->value = opt[1] ? 1 : 0;
 
     /* 2. reference */
     if (!pdu->reference) return CMS_ERR;
@@ -102,17 +108,11 @@ int cms_command_termination_decode(cms_command_termination_t *pdu, const uint8_t
     err = cms_data_decode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 4. operTm OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        if (!pdu->oper_tm) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (pdu->oper_tm_present) pdu->oper_tm_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->oper_tm) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin */
@@ -140,17 +140,11 @@ int cms_command_termination_decode(cms_command_termination_t *pdu, const uint8_t
     err = cms_check_decode_stream(&s, pdu->check);
     if (err) return err;
 
-    /* 10. addCause OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 10. addCause OPTIONAL (bitmap[1]) */
+    if (opt[1]) {
+        if (!pdu->add_cause) return CMS_ERR;
+        err = cms_add_cause_decode_stream(&s, pdu->add_cause);
         if (err) return err;
-        if (pdu->add_cause_present) pdu->add_cause_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->add_cause) return CMS_ERR;
-            err = cms_add_cause_decode_stream(&s, pdu->add_cause);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;

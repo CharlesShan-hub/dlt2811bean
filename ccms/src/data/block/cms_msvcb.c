@@ -1,9 +1,18 @@
 #include "data/block/cms_msvcb.h"
 #include "data/string/cms_visible_string.h"
+#include "per/cms_sequence.h"
 
 int cms_msvcb_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_msvcb_t *pdu = (const cms_msvcb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (2 fields: smpMod, dstAddress) — X.691 §22 */
+    bool opt_present[2] = {
+        pdu->smpMod_present      && pdu->smpMod_present->value      && pdu->smpMod,
+        pdu->dstAddress_present  && pdu->dstAddress_present->value  && pdu->dstAddress
+    };
+    err = (int)per_encode_optional_bitmap(s, opt_present, 2);
+    if (err) return err;
 
     /* 1. svEna — BOOLEAN */
     if (!pdu->svEna) return CMS_ERR;
@@ -25,16 +34,10 @@ int cms_msvcb_encode_stream(per_stream_t *s, const void *ptr) {
     err = cms_int32u_encode_stream(s, pdu->confRev);
     if (err) return err;
 
-    /* 5. smpMod — SmpMod OPTIONAL */
-    {
-        int present = (pdu->smpMod_present && pdu->smpMod_present->value) && pdu->smpMod;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 5. smpMod — SmpMod OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_smp_mod_encode_stream(s, pdu->smpMod);
         if (err) return err;
-        if (present) {
-            err = cms_smp_mod_encode_stream(s, pdu->smpMod);
-            if (err) return err;
-        }
     }
 
     /* 6. smpRate — INT16U */
@@ -47,16 +50,10 @@ int cms_msvcb_encode_stream(per_stream_t *s, const void *ptr) {
     err = cms_msvcb_opt_flds_encode_stream(s, pdu->optFlds);
     if (err) return err;
 
-    /* 8. dstAddress — PHYCOMADDR OPTIONAL */
-    {
-        int present = (pdu->dstAddress_present && pdu->dstAddress_present->value) && pdu->dstAddress;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 8. dstAddress — PHYCOMADDR OPTIONAL (bitmap[1]) */
+    if (opt_present[1]) {
+        err = cms_phy_com_addr_encode_stream(s, pdu->dstAddress);
         if (err) return err;
-        if (present) {
-            err = cms_phy_com_addr_encode_stream(s, pdu->dstAddress);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
@@ -65,6 +62,15 @@ int cms_msvcb_encode_stream(per_stream_t *s, const void *ptr) {
 int cms_msvcb_decode_stream(per_stream_t *s, void *ptr) {
     cms_msvcb_t *pdu = (cms_msvcb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (2 fields: smpMod, dstAddress) — X.691 §22 */
+    bool opt_present[2] = {false, false};
+    err = (int)per_decode_optional_bitmap(s, opt_present, 2);
+    if (err) return err;
+    if (pdu->smpMod_present)
+        pdu->smpMod_present->value = opt_present[0] ? 1 : 0;
+    if (pdu->dstAddress_present)
+        pdu->dstAddress_present->value = opt_present[1] ? 1 : 0;
 
     /* 1. svEna */
     if (!pdu->svEna) return CMS_ERR;
@@ -86,16 +92,10 @@ int cms_msvcb_decode_stream(per_stream_t *s, void *ptr) {
     err = cms_int32u_decode_stream(s, pdu->confRev);
     if (err) return err;
 
-    /* 5. smpMod — SmpMod OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 5. smpMod — SmpMod OPTIONAL (bitmap[0]) */
+    if (opt_present[0] && pdu->smpMod) {
+        err = cms_smp_mod_decode_stream(s, pdu->smpMod);
         if (err) return err;
-        if (bit.value && pdu->smpMod) {
-            err = cms_smp_mod_decode_stream(s, pdu->smpMod);
-            if (err) return err;
-        }
-        if (pdu->smpMod_present) pdu->smpMod_present->value = bit.value;
     }
 
     /* 6. smpRate */
@@ -108,16 +108,10 @@ int cms_msvcb_decode_stream(per_stream_t *s, void *ptr) {
     err = cms_msvcb_opt_flds_decode_stream(s, pdu->optFlds);
     if (err) return err;
 
-    /* 8. dstAddress — PHYCOMADDR OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 8. dstAddress — PHYCOMADDR OPTIONAL (bitmap[1]) */
+    if (opt_present[1] && pdu->dstAddress) {
+        err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
         if (err) return err;
-        if (bit.value && pdu->dstAddress) {
-            err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
-            if (err) return err;
-        }
-        if (pdu->dstAddress_present) pdu->dstAddress_present->value = bit.value;
     }
 
     return CMS_OK;

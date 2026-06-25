@@ -6,6 +6,7 @@
 #include "data/scalar/cms_boolean.h"
 #include "data/string/cms_visible_string.h"
 #include "per/cms_integer.h"
+#include "per/cms_sequence.h"
 
 /* ── Request ── */
 
@@ -14,9 +15,18 @@ int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (3 fields: startTime, stopTime, fileAfter) */
+    bool opt_present[3] = {
+        (pdu->start_time_present && pdu->start_time_present->value) && pdu->start_time,
+        (pdu->stop_time_present && pdu->stop_time_present->value) && pdu->stop_time,
+        (pdu->file_after_present && pdu->file_after_present->value) && pdu->file_after
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt_present, 3);
     if (err) return err;
 
     /* 2. pathName — VisibleString(255) */
@@ -24,40 +34,22 @@ int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t
     err = cms_visible_string_encode_stream(&s, pdu->path_name, 255);
     if (err) return err;
 
-    /* 3. startTime — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->start_time_present && pdu->start_time_present->value) && pdu->start_time;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 3. startTime — TimeStamp OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->start_time);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->start_time);
-            if (err) return err;
-        }
     }
 
-    /* 4. stopTime — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->stop_time_present && pdu->stop_time_present->value) && pdu->stop_time;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. stopTime — TimeStamp OPTIONAL (bitmap[1]) */
+    if (opt_present[1]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->stop_time);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->stop_time);
-            if (err) return err;
-        }
     }
 
-    /* 5. fileAfter — VisibleString(255) OPTIONAL */
-    {
-        int present = (pdu->file_after_present && pdu->file_after_present->value) && pdu->file_after;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 5. fileAfter — VisibleString(255) OPTIONAL (bitmap[2]) */
+    if (opt_present[2]) {
+        err = cms_visible_string_encode_stream(&s, pdu->file_after, 255);
         if (err) return err;
-        if (present) {
-            err = cms_visible_string_encode_stream(&s, pdu->file_after, 255);
-            if (err) return err;
-        }
     }
 
     *out_len = (int)per_stream_bytes_written(&s);
@@ -69,10 +61,18 @@ int cms_get_file_directory_request_decode(cms_get_file_directory_request_t *pdu,
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (3 fields) */
+    bool opt_present[3];
+    err = (int)per_decode_optional_bitmap(&s, opt_present, 3);
+    if (err) return err;
+    if (pdu->start_time_present) pdu->start_time_present->value = opt_present[0];
+    if (pdu->stop_time_present) pdu->stop_time_present->value = opt_present[1];
+    if (pdu->file_after_present) pdu->file_after_present->value = opt_present[2];
 
     /* 2. pathName */
     if (!pdu->path_name) return CMS_ERR;
@@ -80,42 +80,24 @@ int cms_get_file_directory_request_decode(cms_get_file_directory_request_t *pdu,
     if (err) return err;
 
     /* 3. startTime OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[0]) {
+        if (!pdu->start_time) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->start_time);
         if (err) return err;
-        if (pdu->start_time_present) pdu->start_time_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->start_time) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->start_time);
-            if (err) return err;
-        }
     }
 
     /* 4. stopTime OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[1]) {
+        if (!pdu->stop_time) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->stop_time);
         if (err) return err;
-        if (pdu->stop_time_present) pdu->stop_time_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->stop_time) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->stop_time);
-            if (err) return err;
-        }
     }
 
     /* 5. fileAfter OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[2]) {
+        if (!pdu->file_after) return CMS_ERR;
+        err = cms_visible_string_decode_stream(&s, pdu->file_after, 255);
         if (err) return err;
-        if (pdu->file_after_present) pdu->file_after_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->file_after) return CMS_ERR;
-            err = cms_visible_string_decode_stream(&s, pdu->file_after, 255);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
@@ -128,12 +110,12 @@ int cms_get_file_directory_response_encode(const cms_get_file_directory_response
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* 2. fileEntry — SEQUENCE OF FileEntry */
+    /* 1. fileEntry — SEQUENCE OF FileEntry */
     if (!pdu->file_entry) return CMS_ERR;
     {
         uint32_t cnt = (uint32_t)pdu->file_entry->count;
@@ -147,7 +129,7 @@ int cms_get_file_directory_response_encode(const cms_get_file_directory_response
         }
     }
 
-    /* 3. moreFollows — BOOLEAN DEFAULT TRUE */
+    /* 2. moreFollows — BOOLEAN DEFAULT TRUE */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -161,12 +143,12 @@ int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pd
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* 2. fileEntry */
+    /* 1. fileEntry */
     if (!pdu->file_entry) return CMS_ERR;
     {
         uint32_t cnt;
@@ -176,12 +158,12 @@ int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pd
         for (uint32_t i = 0; i < cnt; i++) {
             cms_file_entry_t *e = (cms_file_entry_t*)pdu->file_entry->elements[i];
             if (!e) return CMS_ERR;
-            err = cms_file_entry_decode_stream(&s, e);
+            err = cms_file_entry_encode_stream(&s, e);
             if (err) return err;
         }
     }
 
-    /* 3. moreFollows */
+    /* 2. moreFollows */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -196,12 +178,12 @@ int cms_get_file_directory_error_encode(const cms_get_file_directory_error_t *pd
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* 2. serviceError — ServiceError */
+    /* 1. serviceError — ServiceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_encode_stream(&s, pdu->service_error);
     if (err) return err;
@@ -215,12 +197,12 @@ int cms_get_file_directory_error_decode(cms_get_file_directory_error_t *pdu, con
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* 2. serviceError */
+    /* 1. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_decode_stream(&s, pdu->service_error);
     if (err) return err;

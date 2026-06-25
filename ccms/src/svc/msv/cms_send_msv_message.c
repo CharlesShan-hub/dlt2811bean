@@ -10,15 +10,26 @@
 #include "data/scalar/cms_int8u.h"
 #include "data/string/cms_visible_string.h"
 #include "per/cms_integer.h"
+#include "per/cms_sequence.h"
 
 int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_buf, int *out_len) {
     per_stream_t s;
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (4 fields: datSet, refTm, smpRate, smpMod) */
+    bool opt_present[4] = {
+        (pdu->dat_set_present && pdu->dat_set_present->value) && pdu->dat_set,
+        (pdu->ref_tm_present && pdu->ref_tm_present->value) && pdu->ref_tm,
+        (pdu->smp_rate_present && pdu->smp_rate_present->value) && pdu->smp_rate,
+        (pdu->smp_mod_present && pdu->smp_mod_present->value) && pdu->smp_mod
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt_present, 4);
     if (err) return err;
 
     /* 2. msvID — VisibleString(129) */
@@ -26,16 +37,10 @@ int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_
     err = cms_visible_string_encode_stream(&s, pdu->msv_id, 129);
     if (err) return err;
 
-    /* 3. datSet — ObjectReference OPTIONAL */
-    {
-        int present = (pdu->dat_set_present && pdu->dat_set_present->value) && pdu->dat_set;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 3. datSet — ObjectReference OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_object_reference_encode_stream(&s, pdu->dat_set);
         if (err) return err;
-        if (present) {
-            err = cms_object_reference_encode_stream(&s, pdu->dat_set);
-            if (err) return err;
-        }
     }
 
     /* 4. smpCnt — INT16U */
@@ -48,16 +53,10 @@ int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_
     err = cms_int32u_encode_stream(&s, pdu->conf_rev);
     if (err) return err;
 
-    /* 6. refTm — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->ref_tm_present && pdu->ref_tm_present->value) && pdu->ref_tm;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 6. refTm — TimeStamp OPTIONAL (bitmap[1]) */
+    if (opt_present[1]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->ref_tm);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->ref_tm);
-            if (err) return err;
-        }
     }
 
     /* 7. smpSynch — INT8U */
@@ -65,16 +64,10 @@ int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_
     err = cms_int8u_encode_stream(&s, pdu->smp_synch);
     if (err) return err;
 
-    /* 8. smpRate — INT16U OPTIONAL */
-    {
-        int present = (pdu->smp_rate_present && pdu->smp_rate_present->value) && pdu->smp_rate;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 8. smpRate — INT16U OPTIONAL (bitmap[2]) */
+    if (opt_present[2]) {
+        err = cms_int16u_encode_stream(&s, pdu->smp_rate);
         if (err) return err;
-        if (present) {
-            err = cms_int16u_encode_stream(&s, pdu->smp_rate);
-            if (err) return err;
-        }
     }
 
     /* 9. simulation — BOOLEAN */
@@ -96,16 +89,10 @@ int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_
         }
     }
 
-    /* 11. smpMod — SmpMod OPTIONAL */
-    {
-        int present = (pdu->smp_mod_present && pdu->smp_mod_present->value) && pdu->smp_mod;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 11. smpMod — SmpMod OPTIONAL (bitmap[3]) */
+    if (opt_present[3]) {
+        err = cms_smp_mod_encode_stream(&s, pdu->smp_mod);
         if (err) return err;
-        if (present) {
-            err = cms_smp_mod_encode_stream(&s, pdu->smp_mod);
-            if (err) return err;
-        }
     }
 
     *out_len = (int)per_stream_bytes_written(&s);
@@ -117,10 +104,19 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (4 fields) */
+    bool opt_present[4];
+    err = (int)per_decode_optional_bitmap(&s, opt_present, 4);
+    if (err) return err;
+    if (pdu->dat_set_present) pdu->dat_set_present->value = opt_present[0];
+    if (pdu->ref_tm_present) pdu->ref_tm_present->value = opt_present[1];
+    if (pdu->smp_rate_present) pdu->smp_rate_present->value = opt_present[2];
+    if (pdu->smp_mod_present) pdu->smp_mod_present->value = opt_present[3];
 
     /* 2. msvID */
     if (!pdu->msv_id) return CMS_ERR;
@@ -128,16 +124,10 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
     if (err) return err;
 
     /* 3. datSet OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[0]) {
+        if (!pdu->dat_set) return CMS_ERR;
+        err = cms_object_reference_decode_stream(&s, pdu->dat_set);
         if (err) return err;
-        if (pdu->dat_set_present) pdu->dat_set_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->dat_set) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, pdu->dat_set);
-            if (err) return err;
-        }
     }
 
     /* 4. smpCnt */
@@ -151,16 +141,10 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
     if (err) return err;
 
     /* 6. refTm OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[1]) {
+        if (!pdu->ref_tm) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->ref_tm);
         if (err) return err;
-        if (pdu->ref_tm_present) pdu->ref_tm_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->ref_tm) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->ref_tm);
-            if (err) return err;
-        }
     }
 
     /* 7. smpSynch */
@@ -169,16 +153,10 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
     if (err) return err;
 
     /* 8. smpRate OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[2]) {
+        if (!pdu->smp_rate) return CMS_ERR;
+        err = cms_int16u_decode_stream(&s, pdu->smp_rate);
         if (err) return err;
-        if (pdu->smp_rate_present) pdu->smp_rate_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->smp_rate) return CMS_ERR;
-            err = cms_int16u_decode_stream(&s, pdu->smp_rate);
-            if (err) return err;
-        }
     }
 
     /* 9. simulation */
@@ -202,16 +180,10 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
     }
 
     /* 11. smpMod OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[3]) {
+        if (!pdu->smp_mod) return CMS_ERR;
+        err = cms_smp_mod_decode_stream(&s, pdu->smp_mod);
         if (err) return err;
-        if (pdu->smp_mod_present) pdu->smp_mod_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->smp_mod) return CMS_ERR;
-            err = cms_smp_mod_decode_stream(&s, pdu->smp_mod);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;

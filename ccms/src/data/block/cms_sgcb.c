@@ -1,12 +1,20 @@
 #include "data/block/cms_sgcb.h"
 #include "data/scalar/cms_boolean.h"
+#include "per/cms_sequence.h"
 
 int cms_sgcb_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_sgcb_t *pdu = (const cms_sgcb_t*)ptr;
 
+    /* 0. OPTIONAL bitmap (1 field: resvTms) — X.691 §22 */
+    bool opt_present[1] = {
+        pdu->resvTms_present && pdu->resvTms_present->value && pdu->resvTms
+    };
+    int err = (int)per_encode_optional_bitmap(s, opt_present, 1);
+    if (err) return err;
+
     /* 1. numOfSG — INT8U */
     if (!pdu->numOfSG) return CMS_ERR;
-    int err = cms_int8u_encode_stream(s, pdu->numOfSG);
+    err = cms_int8u_encode_stream(s, pdu->numOfSG);
     if (err) return err;
 
     /* 2. actSG — INT8U */
@@ -24,16 +32,10 @@ int cms_sgcb_encode_stream(per_stream_t *s, const void *ptr) {
     err = cms_time_stamp_encode_stream(s, pdu->tActEdt);
     if (err) return err;
 
-    /* 5. resvTms — INT16U OPTIONAL */
-    {
-        int present = (pdu->resvTms_present && pdu->resvTms_present->value) && pdu->resvTms;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 5. resvTms — INT16U OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_int16u_encode_stream(s, pdu->resvTms);
         if (err) return err;
-        if (present) {
-            err = cms_int16u_encode_stream(s, pdu->resvTms);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
@@ -42,9 +44,16 @@ int cms_sgcb_encode_stream(per_stream_t *s, const void *ptr) {
 int cms_sgcb_decode_stream(per_stream_t *s, void *ptr) {
     cms_sgcb_t *pdu = (cms_sgcb_t*)ptr;
 
+    /* 0. OPTIONAL bitmap (1 field: resvTms) — X.691 §22 */
+    bool opt_present[1] = {false};
+    int err = (int)per_decode_optional_bitmap(s, opt_present, 1);
+    if (err) return err;
+    if (pdu->resvTms_present)
+        pdu->resvTms_present->value = opt_present[0] ? 1 : 0;
+
     /* 1. numOfSG */
     if (!pdu->numOfSG) return CMS_ERR;
-    int err = cms_int8u_decode_stream(s, pdu->numOfSG);
+    err = cms_int8u_decode_stream(s, pdu->numOfSG);
     if (err) return err;
 
     /* 2. actSG */
@@ -62,16 +71,10 @@ int cms_sgcb_decode_stream(per_stream_t *s, void *ptr) {
     err = cms_time_stamp_decode_stream(s, pdu->tActEdt);
     if (err) return err;
 
-    /* 5. resvTms — INT16U OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 5. resvTms — INT16U OPTIONAL (bitmap[0]) */
+    if (opt_present[0] && pdu->resvTms) {
+        err = cms_int16u_decode_stream(s, pdu->resvTms);
         if (err) return err;
-        if (bit.value && pdu->resvTms) {
-            err = cms_int16u_decode_stream(s, pdu->resvTms);
-            if (err) return err;
-        }
-        if (pdu->resvTms_present) pdu->resvTms_present->value = bit.value;
     }
 
     return CMS_OK;

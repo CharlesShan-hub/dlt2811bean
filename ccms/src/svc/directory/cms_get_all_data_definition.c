@@ -5,8 +5,8 @@
 #include "data/common/cms_object_reference.h"
 #include "data/common/cms_service_error.h"
 #include "data/fc/cms_functional_constraint.h"
-#include "data/scalar/cms_boolean.h"
 #include "per/cms_integer.h"
+#include "per/cms_sequence.h"
 
 /* ── Request ── */
 
@@ -17,38 +17,34 @@ int cms_get_all_data_definition_request_encode(
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* reference — ReferenceChoice */
+    /* 1. OPTIONAL bitmap (2 fields: fc, ref_after) */
+    bool opt[2] = {
+        (pdu->fc_present && pdu->fc_present->value) && pdu->fc,
+        (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt, 2);
+    if (err) return err;
+
+    /* 2. reference — ReferenceChoice */
     if (!pdu->reference) return CMS_ERR;
     err = cms_reference_choice_encode_stream(&s, pdu->reference);
     if (err) return err;
 
-    /* fc — FunctionalConstraint OPTIONAL */
-    {
-        int present = (pdu->fc_present && pdu->fc_present->value) && pdu->fc;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 3. fc — FunctionalConstraint OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        err = cms_functional_constraint_encode_stream(&s, pdu->fc);
         if (err) return err;
-        if (present) {
-            err = cms_functional_constraint_encode_stream(&s, pdu->fc);
-            if (err) return err;
-        }
     }
 
-    /* referenceAfter — ObjectReference OPTIONAL */
-    {
-        int present = (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. referenceAfter — ObjectReference OPTIONAL (bitmap[1]) */
+    if (opt[1]) {
+        err = cms_object_reference_encode_stream(&s, pdu->ref_after);
         if (err) return err;
-        if (present) {
-            err = cms_object_reference_encode_stream(&s, pdu->ref_after);
-            if (err) return err;
-        }
     }
 
     *out_len = (int)per_stream_bytes_written(&s);
@@ -62,44 +58,43 @@ int cms_get_all_data_definition_request_decode(
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* reference */
+    /* 1. OPTIONAL bitmap (2 fields: fc, ref_after) */
+    bool opt[2] = {false, false};
+    err = (int)per_decode_optional_bitmap(&s, opt, 2);
+    if (err) return err;
+    if (pdu->fc_present)
+        pdu->fc_present->value = opt[0] ? 1 : 0;
+    if (pdu->ref_after_present)
+        pdu->ref_after_present->value = opt[1] ? 1 : 0;
+
+    /* 2. reference */
     if (!pdu->reference) return CMS_ERR;
     err = cms_reference_choice_decode_stream(&s, pdu->reference);
     if (err) return err;
 
-    /* fc OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 3. fc OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        if (!pdu->fc) return CMS_ERR;
+        err = cms_functional_constraint_decode_stream(&s, pdu->fc);
         if (err) return err;
-        if (bit.value && pdu->fc) {
-            err = cms_functional_constraint_decode_stream(&s, pdu->fc);
-            if (err) return err;
-        }
-        if (pdu->fc_present) pdu->fc_present->value = bit.value;
     }
 
-    /* ref_after OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 4. ref_after OPTIONAL (bitmap[1]) */
+    if (opt[1]) {
+        if (!pdu->ref_after) return CMS_ERR;
+        err = cms_object_reference_decode_stream(&s, pdu->ref_after);
         if (err) return err;
-        if (bit.value && pdu->ref_after) {
-            err = cms_object_reference_decode_stream(&s, pdu->ref_after);
-            if (err) return err;
-        }
-        if (pdu->ref_after_present) pdu->ref_after_present->value = bit.value;
     }
 
     return CMS_OK;
 }
 
-/* ── Response ── */
+/* ── Response (no OPTIONAL) ── */
 
 int cms_get_all_data_definition_response_encode(
     const cms_get_all_data_definition_response_t *pdu, uint8_t *out_buf, int *out_len)
@@ -108,12 +103,12 @@ int cms_get_all_data_definition_response_encode(
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* data — SEQUENCE OF DataDefinitionEntry */
+    /* 1. data — SEQUENCE OF DataDefinitionEntry */
     if (!pdu->data) return CMS_ERR;
     {
         uint32_t cnt = (uint32_t)pdu->data->count;
@@ -127,7 +122,7 @@ int cms_get_all_data_definition_response_encode(
         }
     }
 
-    /* moreFollows — BOOLEAN DEFAULT TRUE */
+    /* 2. moreFollows — BOOLEAN */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -143,12 +138,12 @@ int cms_get_all_data_definition_response_decode(
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* data */
+    /* 1. data */
     if (!pdu->data) return CMS_ERR;
     {
         uint32_t cnt;
@@ -163,7 +158,7 @@ int cms_get_all_data_definition_response_decode(
         }
     }
 
-    /* moreFollows */
+    /* 2. moreFollows */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -171,7 +166,7 @@ int cms_get_all_data_definition_response_decode(
     return CMS_OK;
 }
 
-/* ── Error ── */
+/* ── Error (no OPTIONAL) ── */
 
 int cms_get_all_data_definition_error_encode(
     const cms_get_all_data_definition_error_t *pdu, uint8_t *out_buf, int *out_len)
@@ -180,12 +175,12 @@ int cms_get_all_data_definition_error_encode(
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* serviceError */
+    /* 1. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_encode_stream(&s, pdu->service_error);
     if (err) return err;
@@ -201,12 +196,12 @@ int cms_get_all_data_definition_error_decode(
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* serviceError */
+    /* 1. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_decode_stream(&s, pdu->service_error);
     if (err) return err;

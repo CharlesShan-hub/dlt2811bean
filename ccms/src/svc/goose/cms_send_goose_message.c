@@ -7,15 +7,24 @@
 #include "data/scalar/cms_int32u.h"
 #include "data/string/cms_visible_string.h"
 #include "per/cms_integer.h"
+#include "per/cms_sequence.h"
 
 int cms_send_goose_message_encode(const cms_send_goose_message_t *pdu, uint8_t *out_buf, int *out_len) {
     per_stream_t s;
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (2 fields: datSet, goRef) */
+    bool opt_present[2] = {
+        (pdu->dat_set_present && pdu->dat_set_present->value) && pdu->dat_set,
+        (pdu->go_ref_present && pdu->go_ref_present->value) && pdu->go_ref
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt_present, 2);
     if (err) return err;
 
     /* 2. goID — VisibleString(129) */
@@ -23,28 +32,16 @@ int cms_send_goose_message_encode(const cms_send_goose_message_t *pdu, uint8_t *
     err = cms_visible_string_encode_stream(&s, pdu->go_id, 129);
     if (err) return err;
 
-    /* 3. datSet — ObjectReference OPTIONAL */
-    {
-        int present = (pdu->dat_set_present && pdu->dat_set_present->value) && pdu->dat_set;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 3. datSet — ObjectReference OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_object_reference_encode_stream(&s, pdu->dat_set);
         if (err) return err;
-        if (present) {
-            err = cms_object_reference_encode_stream(&s, pdu->dat_set);
-            if (err) return err;
-        }
     }
 
-    /* 4. goRef — ObjectReference OPTIONAL */
-    {
-        int present = (pdu->go_ref_present && pdu->go_ref_present->value) && pdu->go_ref;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. goRef — ObjectReference OPTIONAL (bitmap[1]) */
+    if (opt_present[1]) {
+        err = cms_object_reference_encode_stream(&s, pdu->go_ref);
         if (err) return err;
-        if (present) {
-            err = cms_object_reference_encode_stream(&s, pdu->go_ref);
-            if (err) return err;
-        }
     }
 
     /* 5. t — TimeStamp */
@@ -100,10 +97,17 @@ int cms_send_goose_message_decode(cms_send_goose_message_t *pdu, const uint8_t *
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (2 fields) */
+    bool opt_present[2];
+    err = (int)per_decode_optional_bitmap(&s, opt_present, 2);
+    if (err) return err;
+    if (pdu->dat_set_present) pdu->dat_set_present->value = opt_present[0];
+    if (pdu->go_ref_present) pdu->go_ref_present->value = opt_present[1];
 
     /* 2. goID */
     if (!pdu->go_id) return CMS_ERR;
@@ -111,29 +115,17 @@ int cms_send_goose_message_decode(cms_send_goose_message_t *pdu, const uint8_t *
     if (err) return err;
 
     /* 3. datSet OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[0]) {
+        if (!pdu->dat_set) return CMS_ERR;
+        err = cms_object_reference_decode_stream(&s, pdu->dat_set);
         if (err) return err;
-        if (pdu->dat_set_present) pdu->dat_set_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->dat_set) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, pdu->dat_set);
-            if (err) return err;
-        }
     }
 
     /* 4. goRef OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    if (opt_present[1]) {
+        if (!pdu->go_ref) return CMS_ERR;
+        err = cms_object_reference_decode_stream(&s, pdu->go_ref);
         if (err) return err;
-        if (pdu->go_ref_present) pdu->go_ref_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->go_ref) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, pdu->go_ref);
-            if (err) return err;
-        }
     }
 
     /* 5. t */

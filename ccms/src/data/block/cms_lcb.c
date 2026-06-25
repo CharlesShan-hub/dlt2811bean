@@ -1,8 +1,17 @@
 #include "data/block/cms_lcb.h"
+#include "per/cms_sequence.h"
 
 int cms_lcb_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_lcb_t *pdu = (const cms_lcb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (2 fields: optFlds, bufTm) — X.691 §22 */
+    bool opt_present[2] = {
+        pdu->optFlds_present && pdu->optFlds_present->value && pdu->optFlds,
+        pdu->bufTm_present   && pdu->bufTm_present->value   && pdu->bufTm
+    };
+    err = (int)per_encode_optional_bitmap(s, opt_present, 2);
+    if (err) return err;
 
     /* 1. logEna — BOOLEAN */
     if (!pdu->logEna) return CMS_ERR;
@@ -29,28 +38,16 @@ int cms_lcb_encode_stream(per_stream_t *s, const void *ptr) {
     err = cms_object_reference_encode_stream(s, pdu->logRef);
     if (err) return err;
 
-    /* 6. optFlds — LCBOptFlds OPTIONAL */
-    {
-        int present = (pdu->optFlds_present && pdu->optFlds_present->value) && pdu->optFlds;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 6. optFlds — LCBOptFlds OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_lcb_opt_flds_encode_stream(s, pdu->optFlds);
         if (err) return err;
-        if (present) {
-            err = cms_lcb_opt_flds_encode_stream(s, pdu->optFlds);
-            if (err) return err;
-        }
     }
 
-    /* 7. bufTm — INT32U OPTIONAL */
-    {
-        int present = (pdu->bufTm_present && pdu->bufTm_present->value) && pdu->bufTm;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 7. bufTm — INT32U OPTIONAL (bitmap[1]) */
+    if (opt_present[1]) {
+        err = cms_int32u_encode_stream(s, pdu->bufTm);
         if (err) return err;
-        if (present) {
-            err = cms_int32u_encode_stream(s, pdu->bufTm);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
@@ -59,6 +56,15 @@ int cms_lcb_encode_stream(per_stream_t *s, const void *ptr) {
 int cms_lcb_decode_stream(per_stream_t *s, void *ptr) {
     cms_lcb_t *pdu = (cms_lcb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (2 fields: optFlds, bufTm) — X.691 §22 */
+    bool opt_present[2] = {false, false};
+    err = (int)per_decode_optional_bitmap(s, opt_present, 2);
+    if (err) return err;
+    if (pdu->optFlds_present)
+        pdu->optFlds_present->value = opt_present[0] ? 1 : 0;
+    if (pdu->bufTm_present)
+        pdu->bufTm_present->value = opt_present[1] ? 1 : 0;
 
     /* 1. logEna */
     if (!pdu->logEna) return CMS_ERR;
@@ -85,28 +91,16 @@ int cms_lcb_decode_stream(per_stream_t *s, void *ptr) {
     err = cms_object_reference_decode_stream(s, pdu->logRef);
     if (err) return err;
 
-    /* 6. optFlds — LCBOptFlds OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 6. optFlds — LCBOptFlds OPTIONAL (bitmap[0]) */
+    if (opt_present[0] && pdu->optFlds) {
+        err = cms_lcb_opt_flds_decode_stream(s, pdu->optFlds);
         if (err) return err;
-        if (bit.value && pdu->optFlds) {
-            err = cms_lcb_opt_flds_decode_stream(s, pdu->optFlds);
-            if (err) return err;
-        }
-        if (pdu->optFlds_present) pdu->optFlds_present->value = bit.value;
     }
 
-    /* 7. bufTm — INT32U OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 7. bufTm — INT32U OPTIONAL (bitmap[1]) */
+    if (opt_present[1] && pdu->bufTm) {
+        err = cms_int32u_decode_stream(s, pdu->bufTm);
         if (err) return err;
-        if (bit.value && pdu->bufTm) {
-            err = cms_int32u_decode_stream(s, pdu->bufTm);
-            if (err) return err;
-        }
-        if (pdu->bufTm_present) pdu->bufTm_present->value = bit.value;
     }
 
     return CMS_OK;

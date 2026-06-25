@@ -3,8 +3,8 @@
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_object_reference.h"
 #include "data/common/cms_service_error.h"
-#include "data/scalar/cms_boolean.h"
 #include "per/cms_integer.h"
+#include "per/cms_sequence.h"
 
 /* ── Request ── */
 
@@ -14,26 +14,27 @@ int cms_get_server_directory_request_encode(const cms_get_server_directory_reque
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* objectClass — ObjectClass */
+    /* 1. OPTIONAL bitmap (1 field: refAfter) */
+    bool opt[1] = {
+        (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt, 1);
+    if (err) return err;
+
+    /* 2. objectClass — ObjectClass */
     if (!pdu->object_class) return CMS_ERR;
     err = cms_object_class_encode_stream(&s, pdu->object_class);
     if (err) return err;
 
-    /* refAfter — ObjectReference OPTIONAL */
-    {
-        int present = (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 3. refAfter — ObjectReference OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        err = cms_object_reference_encode_stream(&s, pdu->ref_after);
         if (err) return err;
-        if (present) {
-            err = cms_object_reference_encode_stream(&s, pdu->ref_after);
-            if (err) return err;
-        }
     }
 
     *out_len = (int)per_stream_bytes_written(&s);
@@ -46,33 +47,34 @@ int cms_get_server_directory_request_decode(cms_get_server_directory_request_t *
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* objectClass */
+    /* 1. OPTIONAL bitmap (1 field: refAfter) */
+    bool opt[1] = {false};
+    err = (int)per_decode_optional_bitmap(&s, opt, 1);
+    if (err) return err;
+    if (pdu->ref_after_present)
+        pdu->ref_after_present->value = opt[0] ? 1 : 0;
+
+    /* 2. objectClass */
     if (!pdu->object_class) return CMS_ERR;
     err = cms_object_class_decode_stream(&s, pdu->object_class);
     if (err) return err;
 
-    /* refAfter OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 3. refAfter OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        if (!pdu->ref_after) return CMS_ERR;
+        err = cms_object_reference_decode_stream(&s, pdu->ref_after);
         if (err) return err;
-        if (pdu->ref_after_present) pdu->ref_after_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->ref_after) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, pdu->ref_after);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
 }
 
-/* ── Response ── */
+/* ── Response (no OPTIONAL) ── */
 
 int cms_get_server_directory_response_encode(const cms_get_server_directory_response_t *pdu, uint8_t *out_buf, int *out_len)
 {
@@ -80,12 +82,12 @@ int cms_get_server_directory_response_encode(const cms_get_server_directory_resp
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* reference — SEQUENCE OF ObjectReference */
+    /* 1. reference — SEQUENCE OF ObjectReference */
     if (!pdu->reference) return CMS_ERR;
     {
         uint32_t count = (uint32_t)pdu->reference->count;
@@ -99,7 +101,7 @@ int cms_get_server_directory_response_encode(const cms_get_server_directory_resp
         }
     }
 
-    /* moreFollows — BOOLEAN DEFAULT TRUE */
+    /* 2. moreFollows — BOOLEAN */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -114,12 +116,12 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* reference */
+    /* 1. reference */
     if (!pdu->reference) return CMS_ERR;
     {
         uint32_t count;
@@ -134,7 +136,7 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
         }
     }
 
-    /* moreFollows */
+    /* 2. moreFollows */
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
@@ -142,7 +144,7 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
     return CMS_OK;
 }
 
-/* ── Error ── */
+/* ── Error (no OPTIONAL) ── */
 
 int cms_get_server_directory_error_encode(const cms_get_server_directory_error_t *pdu, uint8_t *out_buf, int *out_len)
 {
@@ -150,12 +152,12 @@ int cms_get_server_directory_error_encode(const cms_get_server_directory_error_t
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* serviceError */
+    /* 1. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_encode_stream(&s, pdu->service_error);
     if (err) return err;
@@ -170,12 +172,12 @@ int cms_get_server_directory_error_decode(cms_get_server_directory_error_t *pdu,
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
 
-    /* serviceError */
+    /* 1. serviceError */
     if (!pdu->service_error) return CMS_ERR;
     err = cms_service_error_decode_stream(&s, pdu->service_error);
     if (err) return err;

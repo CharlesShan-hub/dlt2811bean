@@ -480,22 +480,23 @@ PER 编码中，SEQUENCE 的所有 OPTIONAL 和 DEFAULT 字段用一个位图（
 
 ```c
 int nfields = 3;  // 3 个 OPTIONAL 字段
-uint64_t bitmap = 0;
+bool opt_present[3] = {
+    field1_present,   // bit 0
+    field2_present,   // bit 1
+    false             // bit 2 — field3 absent
+};
 
-// 字段 0 存在，字段 1 存在，字段 2 不存在
-bitmap |= (1ULL << 0);  // field0 present
-bitmap |= (1ULL << 1);  // field1 present
-// field2 absent — 位保持 0
-
-per_encode_optional_bitmap(&s, bitmap, nfields);  // align + 3 bits
+per_encode_optional_bitmap(&s, opt_present, nfields);  // align + 3 bits
 // 然后编码存在的字段...
+if (opt_present[0]) decode_field0(s, ...);
+if (opt_present[1]) decode_field1(s, ...);
+// field2 absent — 不解码
 
 // 解码
-uint64_t decoded;
-per_decode_optional_bitmap(&s, &decoded, nfields);
-if (decoded & (1ULL << 0)) decode_field0();
-if (decoded & (1ULL << 1)) decode_field1();
-// field2 absent — 不解码
+bool opt_decoded[3];
+per_decode_optional_bitmap(&s, opt_decoded, nfields);
+if (opt_decoded[0]) decode_field0(s, ...);
+if (opt_decoded[1]) decode_field1(s, ...);
 ```
 
 ### 约束

@@ -8,6 +8,7 @@
 #include "data/control/cms_add_cause.h"
 #include "data/scalar/cms_boolean.h"
 #include "data/scalar/cms_int8u.h"
+#include "per/cms_sequence.h"
 
 /* ── Request ── */
 
@@ -16,9 +17,16 @@ int cms_select_with_value_request_encode(const cms_select_with_value_request_t *
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (1 field: operTm) */
+    bool opt[1] = {
+        (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt, 1);
     if (err) return err;
 
     /* 2. reference — ObjectReference */
@@ -31,16 +39,10 @@ int cms_select_with_value_request_encode(const cms_select_with_value_request_t *
     err = cms_data_encode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. operTm — TimeStamp OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin — Originator */
@@ -77,10 +79,17 @@ int cms_select_with_value_request_decode(cms_select_with_value_request_t *pdu, c
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (1 field: operTm) */
+    bool opt[1] = {false};
+    err = (int)per_decode_optional_bitmap(&s, opt, 1);
+    if (err) return err;
+    if (pdu->oper_tm_present)
+        pdu->oper_tm_present->value = opt[0] ? 1 : 0;
 
     /* 2. reference */
     if (!pdu->reference) return CMS_ERR;
@@ -92,17 +101,11 @@ int cms_select_with_value_request_decode(cms_select_with_value_request_t *pdu, c
     err = cms_data_decode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 4. operTm OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        if (!pdu->oper_tm) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (pdu->oper_tm_present) pdu->oper_tm_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->oper_tm) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin */
@@ -150,9 +153,16 @@ int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu,
     per_stream_init_write(&s, out_buf, (size_t)*out_len);
     int err;
 
-    /* 1. reqId — Int16U */
+    /* 0. reqId — Int16U */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_encode_stream(&s, pdu->req_id);
+    if (err) return err;
+
+    /* 1. OPTIONAL bitmap (1 field: operTm) */
+    bool opt[1] = {
+        (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm
+    };
+    err = (int)per_encode_optional_bitmap(&s, opt, 1);
     if (err) return err;
 
     /* 2. reference — ObjectReference */
@@ -165,16 +175,10 @@ int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu,
     err = cms_data_encode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm — TimeStamp OPTIONAL */
-    {
-        int present = (pdu->oper_tm_present && pdu->oper_tm_present->value) && pdu->oper_tm;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(&s, &bit);
+    /* 4. operTm — TimeStamp OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (present) {
-            err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin — Originator */
@@ -216,10 +220,17 @@ int cms_select_with_value_error_decode(cms_select_with_value_error_t *pdu, const
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
 
-    /* 1. reqId */
+    /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
     if (err) return err;
+
+    /* 1. OPTIONAL bitmap (1 field: operTm) */
+    bool opt[1] = {false};
+    err = (int)per_decode_optional_bitmap(&s, opt, 1);
+    if (err) return err;
+    if (pdu->oper_tm_present)
+        pdu->oper_tm_present->value = opt[0] ? 1 : 0;
 
     /* 2. reference */
     if (!pdu->reference) return CMS_ERR;
@@ -231,17 +242,11 @@ int cms_select_with_value_error_decode(cms_select_with_value_error_t *pdu, const
     err = cms_data_decode_stream(&s, pdu->ctl_val);
     if (err) return err;
 
-    /* 4. operTm OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(&s, &bit);
+    /* 4. operTm OPTIONAL (bitmap[0]) */
+    if (opt[0]) {
+        if (!pdu->oper_tm) return CMS_ERR;
+        err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
         if (err) return err;
-        if (pdu->oper_tm_present) pdu->oper_tm_present->value = bit.value;
-        if (bit.value) {
-            if (!pdu->oper_tm) return CMS_ERR;
-            err = cms_time_stamp_decode_stream(&s, pdu->oper_tm);
-            if (err) return err;
-        }
     }
 
     /* 5. origin */

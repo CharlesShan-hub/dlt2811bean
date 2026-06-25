@@ -428,43 +428,58 @@ static void test_sequence_bitmap(void) {
     printf("=== sequence: optional bitmap ===\n");
     uint8_t buf[16];
     per_stream_t s;
-    uint64_t bitmap;
 
     /* 0 fields */
     per_stream_init_write(&s, buf, sizeof(buf));
-    TEST("encode bitmap 0 fields", per_encode_optional_bitmap(&s, 0, 0) == PER_OK);
+    TEST("encode bitmap 0 fields", per_encode_optional_bitmap(&s, NULL, 0) == PER_OK);
+    bool flags00[1] = {false};
     per_stream_init_read(&s, buf, sizeof(buf));
-    TEST("decode bitmap 0 fields", per_decode_optional_bitmap(&s, &bitmap, 0) == PER_OK && bitmap == 0);
+    TEST("decode bitmap 0 fields", per_decode_optional_bitmap(&s, flags00, 0) == PER_OK);
 
-    /* 2 fields: bit0=1, bit1=0 */
+    /* 2 fields: [present, absent] */
     per_stream_init_write(&s, buf, sizeof(buf));
-    TEST("encode bitmap 2 fields", per_encode_optional_bitmap(&s, 0x01, 2) == PER_OK);
+    bool flags2enc[2] = {true, false};
+    TEST("encode bitmap 2 fields", per_encode_optional_bitmap(&s, flags2enc, 2) == PER_OK);
     TEST("tell after 2 bits", per_stream_tell(&s) == 2);
+    bool flags2dec[2] = {false, false};
     per_stream_init_read(&s, buf, sizeof(buf));
-    TEST("decode bitmap 2 fields", per_decode_optional_bitmap(&s, &bitmap, 2) == PER_OK);
-    TEST("bitmap bit0=1", (bitmap & 0x01) != 0);
-    TEST("bitmap bit1=0", (bitmap & 0x02) == 0);
+    TEST("decode bitmap 2 fields", per_decode_optional_bitmap(&s, flags2dec, 2) == PER_OK);
+    TEST("bitmap[0]=true", flags2dec[0] == true);
+    TEST("bitmap[1]=false", flags2dec[1] == false);
 
-    /* 7 fields: all ones */
+    /* 7 fields: all present */
     per_stream_init_write(&s, buf, sizeof(buf));
-    TEST("encode bitmap 7 all-ones", per_encode_optional_bitmap(&s, 0x7F, 7) == PER_OK);
+    bool flags7enc[7] = {true, true, true, true, true, true, true};
+    TEST("encode bitmap 7 all-present", per_encode_optional_bitmap(&s, flags7enc, 7) == PER_OK);
+    bool flags7dec[7] = {false};
     per_stream_init_read(&s, buf, sizeof(buf));
-    TEST("decode bitmap 7 all-ones", per_decode_optional_bitmap(&s, &bitmap, 7) == PER_OK);
-    TEST("bitmap 7 all-ones value", bitmap == 0x7F);
+    TEST("decode bitmap 7 all-present", per_decode_optional_bitmap(&s, flags7dec, 7) == PER_OK);
+    bool all_ok = true;
+    for (int i = 0; i < 7; i++) if (!flags7dec[i]) { all_ok = false; break; }
+    TEST("bitmap 7 all-present value", all_ok);
 
-    /* 8 fields: all ones → should take 1 byte */
+    /* 8 fields: all present → should take 1 byte */
     per_stream_init_write(&s, buf, sizeof(buf));
-    TEST("encode bitmap 8 all-ones", per_encode_optional_bitmap(&s, 0xFF, 8) == PER_OK);
+    bool flags8enc[8] = {true, true, true, true, true, true, true, true};
+    TEST("encode bitmap 8 all-present", per_encode_optional_bitmap(&s, flags8enc, 8) == PER_OK);
+    bool flags8dec[8] = {false};
     per_stream_init_read(&s, buf, sizeof(buf));
-    TEST("decode bitmap 8 all-ones", per_decode_optional_bitmap(&s, &bitmap, 8) == PER_OK);
-    TEST("bitmap 8 all-ones value", bitmap == 0xFF);
+    TEST("decode bitmap 8 all-present", per_decode_optional_bitmap(&s, flags8dec, 8) == PER_OK);
+    all_ok = true;
+    for (int i = 0; i < 8; i++) if (!flags8dec[i]) { all_ok = false; break; }
+    TEST("bitmap 8 all-present value", all_ok);
 
-    /* 64 fields: all ones */
+    /* 64 fields: all present */
     per_stream_init_write(&s, buf, sizeof(buf));
-    TEST("encode bitmap 64 all-ones", per_encode_optional_bitmap(&s, ~0ULL, 64) == PER_OK);
+    bool flags64enc[64];
+    for (int i = 0; i < 64; i++) flags64enc[i] = true;
+    TEST("encode bitmap 64 all-present", per_encode_optional_bitmap(&s, flags64enc, 64) == PER_OK);
+    bool flags64dec[64] = {false};
     per_stream_init_read(&s, buf, sizeof(buf));
-    TEST("decode bitmap 64 all-ones", per_decode_optional_bitmap(&s, &bitmap, 64) == PER_OK);
-    TEST("bitmap 64 all-ones value", bitmap == ~0ULL);
+    TEST("decode bitmap 64 all-present", per_decode_optional_bitmap(&s, flags64dec, 64) == PER_OK);
+    all_ok = true;
+    for (int i = 0; i < 64; i++) if (!flags64dec[i]) { all_ok = false; break; }
+    TEST("bitmap 64 all-present value", all_ok);
 }
 
 /* ==================== main ==================== */

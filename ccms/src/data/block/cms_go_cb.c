@@ -1,9 +1,17 @@
 #include "data/block/cms_go_cb.h"
 #include "data/string/cms_visible_string.h"
+#include "per/cms_sequence.h"
 
 int cms_go_cb_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_go_cb_t *pdu = (const cms_go_cb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (1 field: dstAddress) — X.691 §22 */
+    bool opt_present[1] = {
+        pdu->dstAddress_present && pdu->dstAddress_present->value && pdu->dstAddress
+    };
+    err = (int)per_encode_optional_bitmap(s, opt_present, 1);
+    if (err) return err;
 
     /* 1. goEna — BOOLEAN */
     if (!pdu->goEna) return CMS_ERR;
@@ -30,16 +38,10 @@ int cms_go_cb_encode_stream(per_stream_t *s, const void *ptr) {
     err = cms_boolean_encode_stream(s, pdu->ndsCom);
     if (err) return err;
 
-    /* 6. dstAddress — PHYCOMADDR OPTIONAL */
-    {
-        int present = (pdu->dstAddress_present && pdu->dstAddress_present->value) && pdu->dstAddress;
-        cms_boolean_t bit = { .value = present };
-        err = cms_boolean_encode_stream(s, &bit);
+    /* 6. dstAddress — PHYCOMADDR OPTIONAL (bitmap[0]) */
+    if (opt_present[0]) {
+        err = cms_phy_com_addr_encode_stream(s, pdu->dstAddress);
         if (err) return err;
-        if (present) {
-            err = cms_phy_com_addr_encode_stream(s, pdu->dstAddress);
-            if (err) return err;
-        }
     }
 
     return CMS_OK;
@@ -48,6 +50,13 @@ int cms_go_cb_encode_stream(per_stream_t *s, const void *ptr) {
 int cms_go_cb_decode_stream(per_stream_t *s, void *ptr) {
     cms_go_cb_t *pdu = (cms_go_cb_t*)ptr;
     int err;
+
+    /* 0. OPTIONAL bitmap (1 field: dstAddress) — X.691 §22 */
+    bool opt_present[1] = {false};
+    err = (int)per_decode_optional_bitmap(s, opt_present, 1);
+    if (err) return err;
+    if (pdu->dstAddress_present)
+        pdu->dstAddress_present->value = opt_present[0] ? 1 : 0;
 
     /* 1. goEna */
     if (!pdu->goEna) return CMS_ERR;
@@ -74,16 +83,10 @@ int cms_go_cb_decode_stream(per_stream_t *s, void *ptr) {
     err = cms_boolean_decode_stream(s, pdu->ndsCom);
     if (err) return err;
 
-    /* 6. dstAddress — PHYCOMADDR OPTIONAL */
-    {
-        cms_boolean_t bit = {0};
-        err = cms_boolean_decode_stream(s, &bit);
+    /* 6. dstAddress — PHYCOMADDR OPTIONAL (bitmap[0]) */
+    if (opt_present[0] && pdu->dstAddress) {
+        err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
         if (err) return err;
-        if (bit.value && pdu->dstAddress) {
-            err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
-            if (err) return err;
-        }
-        if (pdu->dstAddress_present) pdu->dstAddress_present->value = bit.value;
     }
 
     return CMS_OK;
