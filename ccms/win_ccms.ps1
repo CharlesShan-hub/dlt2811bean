@@ -97,9 +97,9 @@ if (Test-Path $cacheFile) {
 Write-Host ""
 Write-Host "--- cmake configure ---" -ForegroundColor Cyan
 if ($generator) {
-    cmake $PSScriptRoot -G $generator
+    cmake $PSScriptRoot -G $generator -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 } else {
-    cmake $PSScriptRoot
+    cmake $PSScriptRoot -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 }
 if ($LASTEXITCODE -ne 0) {
     Write-Host "[FAIL] cmake configure failed" -ForegroundColor Red

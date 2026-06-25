@@ -64,7 +64,7 @@ fi
 cd "$BUILD_DIR"
 echo ""
 echo "--- cmake configure ---"
-cmake "$SCRIPT_DIR" -G "$GENERATOR"
+cmake "$SCRIPT_DIR" -G "$GENERATOR" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 if [ $? -ne 0 ]; then
     echo "[FAIL] cmake configure failed"
     exit 1
