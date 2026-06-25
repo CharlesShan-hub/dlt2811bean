@@ -1,7 +1,11 @@
 package com.ysh.jcms.services.connect;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
+import com.sun.jna.ptr.PointerByReference;
 import com.ysh.jcms.datatypes.type.AbstractCmsCompound;
 import com.ysh.jcms.services.type.CmsFFIServices;
 import lombok.Getter;
@@ -52,11 +56,11 @@ public class CmsReleaseRequest extends AbstractCmsCompound<CmsReleaseRequest> {
     public byte[] encode() {
         syncToNative();
         ns.write();
-        byte[] buf = new byte[encodeBufSize()];
-        IntByReference outLen = new IntByReference(buf.length);
-        ffiEncode(buf, outLen);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(buf, 0, result, 0, result.length);
+        PointerByReference outBuf = new PointerByReference();
+        LongByReference outLen = new LongByReference();
+        CmsFFIServices.INSTANCE.cms_release_request_encode(ns, outBuf, outLen);
+        byte[] result = outBuf.getValue().getByteArray(0, (int)outLen.getValue());
+        Native.free(Pointer.nativeValue(outBuf.getValue()));
         return result;
     }
 
@@ -87,7 +91,7 @@ public class CmsReleaseRequest extends AbstractCmsCompound<CmsReleaseRequest> {
 
     @Override
     protected int ffiEncode(byte[] buf, IntByReference outLen) {
-        return CmsFFIServices.INSTANCE.cms_release_request_encode(ns, buf, outLen);
+        return 0; // unused — encode() uses dynamic stream directly
     }
 
     @Override
@@ -95,11 +99,6 @@ public class CmsReleaseRequest extends AbstractCmsCompound<CmsReleaseRequest> {
         CmsFFIServices.INSTANCE.cms_release_request_decode(data, data.length, ns);
         ns.read();
         syncFromNative();
-    }
-
-    @Override
-    protected int encodeBufSize() {
-        return 128;
     }
 
     public static CmsReleaseRequest from(byte[] data) {

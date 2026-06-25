@@ -19,8 +19,8 @@ extern "C" {
  * and bit position within the current byte (MSB-first ordering).
  *
  * Two modes:
- *   - Fixed-buffer mode: writes into a caller-provided buffer.
- *   - Dynamic mode: auto-grows the buffer on write (requires `calloc`/`realloc`).
+ *   - Read  stream: caller provides the buffer to decode from.
+ *   - Write stream: heap-allocated, auto-grows on write.
  */
 
 /* Bit stream state for PER encode/decode operations. */
@@ -29,41 +29,30 @@ typedef struct {
     size_t   capacity;    /* Allocated size of buf. */
     size_t   byte_pos;    /* Current byte position (0-based). */
     int      bit_pos;     /* Current bit position within the byte (0-7, 0=MSB). */
-    bool     is_write;    /* true for write mode, false for read mode. */
-    bool     is_dynamic;  /* true if buf is heap-allocated and auto-grows. */
+    bool     is_write;    /* true for write mode (heap-allocated, auto-grows), false for read mode. */
 } per_stream_t;
 
 /* ---- Stream lifecycle ---- */
 
-/* Fixed-buffer read stream — caller provides buffer. */
+/* Read stream — caller provides buffer. */
 void  per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
 static inline per_stream_t per_stream_new_read(const uint8_t *buf, size_t capacity) {
     per_stream_t s; per_stream_init_read(&s, buf, capacity); return s;
 }
 
-/* Fixed-buffer write stream — caller provides buffer. */
-void per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity);
-static inline per_stream_t per_stream_new_write(uint8_t *buf, size_t capacity) {
-    per_stream_t s; per_stream_init_write(&s, buf, capacity); return s;
-}
-
-/* Dynamic write stream — auto-grows on write (heap-allocated). */
-per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity);
-static inline per_stream_t per_stream_new_dynamic(size_t initial_capacity) {
-    per_stream_t s; per_stream_init_dynamic(&s, initial_capacity); return s;
-}
+/* Write stream — auto-grows on write (heap-allocated). */
+per_error_t per_stream_init_write(per_stream_t *s, size_t initial_capacity);
 
 /*
- * Detach the buffer from a dynamic stream.
+ * Detach the buffer from a write stream.
  * The caller takes ownership of the returned buffer (must be freed with free()).
  * After detach, the stream is no longer usable.
  */
 uint8_t*  per_stream_detach(per_stream_t *s, size_t *out_len);
 
 /*
- * Free resources held by a stream.
- * For dynamic streams, frees the heap-allocated buffer.
- * For fixed-buffer streams, this is a no-op (safe to call either way).
+ * Free resources held by a write stream.
+ * For read streams this is a no-op (caller owns the buffer).
  */
 void per_stream_free(per_stream_t *s);
 

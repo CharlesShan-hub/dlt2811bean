@@ -5,8 +5,7 @@
 /* ---- Stream lifecycle ---- */
 
 /*
- * Initialise a fixed-buffer write stream.
- * The buffer is zeroed up to @p capacity.
+ * Initialise a read stream from a caller-provided buffer.
  */
 void per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity) {
     s->buf = (uint8_t *)buf;
@@ -14,25 +13,22 @@ void per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity) 
     s->byte_pos = 0;
     s->bit_pos = 0;
     s->is_write = false;
-    s->is_dynamic = false;
 }
 
-void per_stream_init_write(per_stream_t *s, uint8_t *buf, size_t capacity) {
-    s->buf = buf;
-    s->capacity = capacity;
-    s->byte_pos = 0;
-    s->bit_pos = 0;
-    s->is_write = true;
-    s->is_dynamic = false;
-    if (capacity > 0) memset(buf, 0, capacity);
-}
-
-per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity) {
+/*
+ * Initialise a write stream with heap-allocated auto-growing buffer.
+ * Initial capacity is rounded up to at least 64 bytes.
+ * Returns PER_ERR_OOM on allocation failure.
+ */
+per_error_t per_stream_init_write(per_stream_t *s, size_t initial_capacity) {
     if (initial_capacity < 64) initial_capacity = 64;
     uint8_t *buf = (uint8_t *)calloc(1, initial_capacity);
     if (!buf) return PER_ERR_OOM;
-    per_stream_init_write(s, buf, initial_capacity);
-    s->is_dynamic = true;
+    s->buf = buf;
+    s->capacity = initial_capacity;
+    s->byte_pos = 0;
+    s->bit_pos = 0;
+    s->is_write = true;
     return PER_OK;
 }
 
@@ -40,8 +36,6 @@ per_error_t per_stream_init_dynamic(per_stream_t *s, size_t initial_capacity) {
 
 static per_error_t ensure_space(per_stream_t *s, size_t need_bytes) {
     if (s->byte_pos + need_bytes <= s->capacity) return PER_OK;
-    if (!s->is_dynamic) return PER_ERR_OVERFLOW;
-
     size_t new_cap = s->capacity > 0 ? s->capacity * 2 : 256;
     while (s->byte_pos + need_bytes > new_cap) {
         new_cap *= 2;
@@ -80,12 +74,11 @@ uint8_t* per_stream_detach(per_stream_t *s, size_t *out_len) {
     s->capacity = 0;
     s->byte_pos = 0;
     s->bit_pos = 0;
-    s->is_dynamic = false;
     return buf;
 }
 
 void per_stream_free(per_stream_t *s) {
-    if (s->is_dynamic && s->buf) {
+    if (s->is_write && s->buf) {
         free(s->buf);
     }
     s->buf = NULL;
@@ -93,7 +86,6 @@ void per_stream_free(per_stream_t *s) {
     s->byte_pos = 0;
     s->bit_pos = 0;
     s->is_write = false;
-    s->is_dynamic = false;
 }
 
 /* ---- Bit-level I/O ---- */

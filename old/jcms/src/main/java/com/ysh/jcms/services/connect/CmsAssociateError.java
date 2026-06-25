@@ -1,7 +1,11 @@
 package com.ysh.jcms.services.connect;
 
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
+import com.sun.jna.ptr.PointerByReference;
 import com.ysh.jcms.CmsException;
 import com.ysh.jcms.services.type.CmsFFIServices;
 import lombok.Getter;
@@ -27,12 +31,12 @@ public class CmsAssociateError extends Structure {
 
     public byte[] encode() {
         write();
-        byte[] outBuf = new byte[64];
-        IntByReference outLen = new IntByReference(outBuf.length);
+        PointerByReference outBuf = new PointerByReference();
+        LongByReference outLen = new LongByReference();
         int ret = CmsFFIServices.INSTANCE.cms_associate_error_encode(this, outBuf, outLen);
         if (ret != 0) throw new CmsException("CmsAssociateError.encode failed: " + ret);
-        byte[] result = new byte[outLen.getValue()];
-        System.arraycopy(outBuf, 0, result, 0, result.length);
+        byte[] result = outBuf.getValue().getByteArray(0, (int)outLen.getValue());
+        Native.free(Pointer.nativeValue(outBuf.getValue()));
         return result;
     }
 

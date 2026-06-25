@@ -4,6 +4,8 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Structure;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
+import com.sun.jna.ptr.PointerByReference;
 
 public interface CmsFFIServices extends Library {
 
@@ -16,35 +18,35 @@ public interface CmsFFIServices extends Library {
 
     /* ==================== Abort ==================== */
 
-    int cms_abort_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_abort_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_abort_decode(byte[] inBuf, int inLen, Structure sdu);
 
     /* ==================== Associate ==================== */
 
-    int cms_associate_request_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_associate_request_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_associate_request_decode(byte[] inBuf, int inLen, Structure sdu);
 
-    int cms_associate_response_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_associate_response_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_associate_response_decode(byte[] inBuf, int inLen, Structure sdu);
 
-    int cms_associate_error_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_associate_error_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_associate_error_decode(byte[] inBuf, int inLen, Structure sdu);
 
     /* ==================== Release ==================== */
 
-    int cms_release_request_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_release_request_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_release_request_decode(byte[] inBuf, int inLen, Structure sdu);
 
-    int cms_release_response_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_release_response_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_release_response_decode(byte[] inBuf, int inLen, Structure sdu);
 
-    int cms_release_error_encode(Structure sdu, byte[] outBuf, IntByReference outLen);
+    int cms_release_error_encode(Structure sdu, PointerByReference outBuf, LongByReference outLen);
 
     int cms_release_error_decode(byte[] inBuf, int inLen, Structure sdu);
 }

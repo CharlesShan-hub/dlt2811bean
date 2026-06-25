@@ -26,7 +26,7 @@ int cms_bit_string_fixed_decode_stream(per_stream_t *s, uint8_t *out, int fixed_
 int cms_bit_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max_nbits);
 int cms_bit_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_nbits);
 
-CMS_EXPORT int cms_bit_string_encode(const void *ptr, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_bit_string_encode(const void *ptr, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_bit_string_decode(void *ptr, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus

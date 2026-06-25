@@ -75,12 +75,13 @@ int cms_associate_request_decode_stream(per_stream_t *s, cms_associate_request_t
     return CMS_OK;
 }
 
-int cms_associate_request_encode(const cms_associate_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_associate_request_encode(const cms_associate_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int rc = cms_associate_request_encode_stream(&s, pdu);
-    if (rc) return rc;
-    *out_len = (int)per_stream_bytes_written(&s);
+    if (rc) { per_stream_free(&s); return rc; }
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -163,12 +164,13 @@ int cms_associate_response_decode_stream(per_stream_t *s, cms_associate_response
     return CMS_OK;
 }
 
-int cms_associate_response_encode(const cms_associate_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_associate_response_encode(const cms_associate_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int rc = cms_associate_response_encode_stream(&s, pdu);
-    if (rc) return rc;
-    *out_len = (int)per_stream_bytes_written(&s);
+    if (rc) { per_stream_free(&s); return rc; }
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -180,23 +182,28 @@ int cms_associate_response_decode(cms_associate_response_t *pdu, const uint8_t *
 
 /* ── Error ── */
 
-int cms_associate_error_encode(const cms_associate_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_associate_error_encode(const cms_associate_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { err = CMS_ERR; goto cleanup; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) goto cleanup;
 
     /* 2. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { err = CMS_ERR; goto cleanup; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) goto cleanup;
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
+
+cleanup:
+    per_stream_free(&s);
+    return err;
 }
 
 int cms_associate_error_decode(cms_associate_error_t *pdu, const uint8_t *in_buf, int in_len) {

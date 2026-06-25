@@ -36,12 +36,13 @@ int cms_reason_code_decode_stream(per_stream_t *s, void *ptr) {
     return CMS_OK;
 }
 
-int cms_reason_code_encode(const void *ptr, uint8_t *out_buf, int *out_len) {
+int cms_reason_code_encode(const void *ptr, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err = per_stream_init_write(&s, 64);
+    if (err) return (int)err;
     int rc = cms_reason_code_encode_stream(&s, ptr);
-    if (rc) return rc;
-    *out_len = (int)per_stream_bytes_written(&s);
+    if (rc) { per_stream_free(&s); return rc; }
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

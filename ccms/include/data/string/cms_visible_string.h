@@ -29,7 +29,7 @@ int cms_visible_string_encode_stream_fixed(per_stream_t *s, const void *ptr, uin
 int cms_visible_string_decode_stream_fixed(per_stream_t *s, void *ptr, uint32_t fixed_len);
 
 /* Buffer-level API (max_len = 129 by default, use for generic VisibleString) */
-CMS_EXPORT int cms_visible_string_encode(const void *ptr, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_visible_string_encode(const void *ptr, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_visible_string_decode(void *ptr, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
