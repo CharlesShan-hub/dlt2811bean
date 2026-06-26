@@ -1,5 +1,10 @@
 package com.ysh.jcms.app.node;
 
+import com.ysh.jcms.utils.scl.model.document.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.Dispatcher;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
@@ -22,11 +27,15 @@ public class InnerServer implements ConnectionListener {
     private final ServerAcceptor acceptor;
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
+    private SclDocument sclDocument;
 
     public InnerServer(int port) {
         this.port = port;
         this.acceptor = new ServerAcceptor(port, this);
     }
+
+    public SclDocument getSclDocument() { return sclDocument; }
+    public void setSclDocument(SclDocument sclDocument) { this.sclDocument = sclDocument; }
 
     public void register(ServiceHandler handler) {
         dispatcher.register(handler);
@@ -50,6 +59,7 @@ public class InnerServer implements ConnectionListener {
     @Override
     public void onConnected(Connection connection) {
         ServerSession ss = new ServerSession(connection);
+        ss.setSclDocument(sclDocument);
         sessions.add(ss);
     }
 
@@ -97,9 +107,34 @@ public class InnerServer implements ConnectionListener {
     }
 
     public static class ServerSession extends Session {
+
+        private SclDocument sclDocument;
+        private SclAccessPoint sclAccessPoint;
+        private SclDataTypeTemplates sclDataTypeTemplates;
+
         public ServerSession(Connection connection) {
             super("srv-" + connection.getSocket().getPort(), connection);
         }
+
         public void close() { getConnection().close(); }
+
+        public SclServer getSclServer() {
+            return sclAccessPoint != null ? sclAccessPoint.getServer() : null;
+        }
+
+        public SclIED getSclIed() {
+            if (sclDocument == null || sclAccessPoint == null) return null;
+            for (SclIED ied : sclDocument.getIeds()) {
+                if (ied.findAccessPointByName(sclAccessPoint.getName()) != null) return ied;
+            }
+            return null;
+        }
+
+        public SclDocument getSclDocument() { return sclDocument; }
+        public void setSclDocument(SclDocument sclDocument) { this.sclDocument = sclDocument; }
+        public SclAccessPoint getSclAccessPoint() { return sclAccessPoint; }
+        public void setSclAccessPoint(SclAccessPoint sclAccessPoint) { this.sclAccessPoint = sclAccessPoint; }
+        public SclDataTypeTemplates getSclDataTypeTemplates() { return sclDataTypeTemplates; }
+        public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) { this.sclDataTypeTemplates = sclDataTypeTemplates; }
     }
 }

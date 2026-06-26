@@ -1,9 +1,12 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
-/**
- * Pure data object for Abort-Request parameters.
- */
+import lombok.Setter;
+import lombok.Getter;
+import lombok.experimental.Accessors;
+
+@Setter
+@Getter
+@Accessors(fluent = true)
 public class AbortClientDao {
-    /** Abort reason code (0-5). Default: 0 (other). */
-    public int reason;
+    private int reason;
 }

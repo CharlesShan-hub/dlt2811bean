@@ -1,5 +1,10 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.app.node.InnerServer;
+import com.ysh.jcms.utils.scl.model.document.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -63,6 +68,50 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * Convenience: build a "no response" return for one-way messages.
      */
     protected static Frame noResponse() {
+        return null;
+    }
+
+    // ──────────────────────────────────────────────
+    //  SCL model access
+    // ──────────────────────────────────────────────
+
+    /**
+     * Get the SCL server model from a session, if available.
+     */
+    protected SclServer getSclServer(Session session) {
+        if (session instanceof InnerServer.ServerSession) {
+            return ((InnerServer.ServerSession) session).getSclServer();
+        }
+        return null;
+    }
+
+    /**
+     * Get the SCL document from a session, if available.
+     */
+    protected SclDocument getSclDocument(Session session) {
+        if (session instanceof InnerServer.ServerSession) {
+            return ((InnerServer.ServerSession) session).getSclDocument();
+        }
+        return null;
+    }
+
+    /**
+     * Get the SCL access point from a session, if available.
+     */
+    protected SclAccessPoint getSclAccessPoint(Session session) {
+        if (session instanceof InnerServer.ServerSession) {
+            return ((InnerServer.ServerSession) session).getSclAccessPoint();
+        }
+        return null;
+    }
+
+    /**
+     * Get the SCL DataTypeTemplates from a session, if available.
+     */
+    protected SclDataTypeTemplates getSclDataTypeTemplates(Session session) {
+        if (session instanceof InnerServer.ServerSession) {
+            return ((InnerServer.ServerSession) session).getSclDataTypeTemplates();
+        }
         return null;
     }
 

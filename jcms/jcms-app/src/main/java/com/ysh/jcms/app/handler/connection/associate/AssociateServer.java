@@ -1,10 +1,14 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.utils.scl.model.document.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.security.GmAuthenticator;
 import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -40,7 +44,6 @@ public class AssociateServer extends BaseServerHandler {
 
     @Override
     public Frame handleRequest(Session session, Frame request) {
-        // 1. Decode request
         CmsAssociateRequest req = new CmsAssociateRequest();
         if (!tryDecode(session, request, req)) {
             return buildAssociateError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -53,7 +56,6 @@ public class AssociateServer extends BaseServerHandler {
             return buildAssociateError(reqId, CmsServiceError.INSTANCE_IN_USE);
         }
 
-        // 2. Resolve server access point reference
         String sapRef = req.sapRefPresent.value() && req.sapRef.len > 0
                 ? new String(req.sapRef.value(), StandardCharsets.UTF_8) : null;
 
@@ -63,7 +65,11 @@ public class AssociateServer extends BaseServerHandler {
         }
         log.debug("Requested access point: {}", sapRef);
 
-        // 3. Validate authentication parameter (if required)
+        if (!resolveAndSetSclAccessPoint(session, sapRef)) {
+            log.warn("Access point not found or unavailable: {}", sapRef);
+            return buildAssociateError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+
         if (requireAuthentication) {
             int authError = validateAuthParam(req, sapRef);
             if (authError != CmsServiceError.NO_ERROR) {
@@ -71,16 +77,13 @@ public class AssociateServer extends BaseServerHandler {
             }
         }
 
-        // 4. Generate association ID
         byte[] assocId = AssociationIdGenerator.generate();
 
-        // 5. Build positive response
         CmsAssociateResponse resp = new CmsAssociateResponse()
             .reqId(reqId)
             .assocId(assocId)
             .serviceError(CmsServiceError.NO_ERROR);
 
-        // Include server certificate for bidirectional authentication
         if (serverCertificateBytes != null) {
             resp.authParam(new CmsAuthenticationParameter()
                 .cert(serverCertificateBytes));
@@ -100,6 +103,43 @@ public class AssociateServer extends BaseServerHandler {
         log.info("Association established: session={}", session.getSessionId());
 
         return buildSuccess(respBytes, reqId);
+    }
+
+    /**
+     * Parse sapRef ("IEDName/AccessPointName") and set the SCL access point on the session.
+     *
+     * @return true if the access point was resolved and set, false otherwise
+     */
+    private boolean resolveAndSetSclAccessPoint(Session session, String sapRef) {
+        if (!(session instanceof InnerServer.ServerSession)) return true;
+        InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
+
+        SclDocument scl = ss.getSclDocument();
+        if (scl == null) {
+            log.warn("No SCL document loaded, skipping access point resolution for {}", sapRef);
+            return true;
+        }
+
+        int slashIdx = sapRef.indexOf('/');
+        String iedName = slashIdx >= 0 ? sapRef.substring(0, slashIdx) : sapRef;
+        String apName = slashIdx >= 0 ? sapRef.substring(slashIdx + 1) : "S1";
+
+        for (SclIED ied : scl.getIeds()) {
+            if (ied.getName().equals(iedName)) {
+                SclAccessPoint ap = ied.findAccessPointByName(apName);
+                if (ap != null) {
+                    ss.setSclAccessPoint(ap);
+                    ss.setSclDataTypeTemplates(scl.getDataTypeTemplates());
+                    log.info("Resolved SCL access point: IED={}, AP={}", iedName, apName);
+                    return true;
+                } else {
+                    log.warn("Access point '{}' not found in IED '{}'", apName, iedName);
+                    return false;
+                }
+            }
+        }
+        log.warn("IED '{}' not found in SCL document", iedName);
+        return false;
     }
 
     private int validateAuthParam(CmsAssociateRequest req, String sapRef) {

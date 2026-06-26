@@ -13,7 +13,6 @@ import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
-import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

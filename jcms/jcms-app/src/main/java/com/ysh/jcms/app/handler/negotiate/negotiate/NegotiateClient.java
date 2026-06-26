@@ -20,9 +20,9 @@ public class NegotiateClient extends BaseClientHandler {
     public void execute(NegotiateClientDao dao) throws Exception {
         byte[] reqBytes = new CmsNegotiateRequest()
             .reqId(nextReqId())
-            .apduSize(dao.apduSize)
-            .asduSize(dao.asduSize)
-            .protocolVersion(dao.protocolVersion)
+            .apduSize(dao.apduSize())
+            .asduSize(dao.asduSize())
+            .protocolVersion(dao.protocolVersion())
             .encode();
 
         send(ServiceName.ASSOCIATE_NEGOTIATE, reqBytes);

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.session.SessionState;
+import com.ysh.jcms.utils.transport.frame.Frame;
 
 /**
  * Client-side handler for Abort service (one-way, no response).
@@ -21,14 +22,16 @@ public class AbortClient extends BaseClientHandler {
     public void execute(AbortClientDao dao) throws Exception {
         byte[] reqBytes = new CmsAbort()
             .reqId(nextReqId())
-            .reason(dao.reason)
+            .reason(dao.reason())
             .encode();
 
-        // Abort is one-way — fire and forget, no PendingRequest
         sendOneWay(ServiceName.ABORT, reqBytes);
+    }
 
+    @Override
+    protected void onSuccess(Frame frame) {
         node.getClient().getSession().clearAssociationId();
         node.getClient().getSession().setState(SessionState.DISCONNECTED);
-        log.info("Abort sent, reason={}", dao.reason);
+        log.info("Abort sent, reason=...");
     }
 }

@@ -54,6 +54,7 @@ public abstract class BaseClientHandler extends BaseHandler {
             new FrameHeader().serviceCode(sc).resp(false).err(false),
             pduBytes, reqId
         ));
+        onSuccess(null);
     }
 
     /**
