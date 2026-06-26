@@ -15,9 +15,9 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class GetLogicalDeviceDirectoryServer extends BaseServerHandler {
+public class LdDirServer extends BaseServerHandler {
 
-    public GetLogicalDeviceDirectoryServer() {
+    public LdDirServer() {
         super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY);
     }
 

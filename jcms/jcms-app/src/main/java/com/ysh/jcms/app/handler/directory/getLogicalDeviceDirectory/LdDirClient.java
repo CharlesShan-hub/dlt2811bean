@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetLogicalDeviceDirectoryClient extends BaseClientHandler {
+public class LdDirClient extends BaseClientHandler {
 
-    public GetLogicalDeviceDirectoryClient(CmsNode node) {
+    public LdDirClient(CmsNode node) {
         super(node);
     }
 
-    public void execute(GetLogicalDeviceDirectoryDao dao) throws Exception {
+    public void execute(LdDirDao dao) throws Exception {
         CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest()
             .reqId(nextReqId());
         if (dao.ldName() != null) {

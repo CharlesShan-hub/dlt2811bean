@@ -8,29 +8,29 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GetLogicalDeviceDirectoryLoopbackTest extends BaseLoopbackTest {
+public class LdDirLoopbackTest extends BaseLoopbackTest {
 
-    public GetLogicalDeviceDirectoryLoopbackTest() {
+    public LdDirLoopbackTest() {
     }
 
     @Override
     protected void registerServers(CmsNode node) throws Exception {
         regServer(node, new AssociateServer());
-        regServer(node, new GetLogicalDeviceDirectoryServer());
+        regServer(node, new LdDirServer());
     }
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
         regClient(node, new AssociateClient(node));
-        regClient(node, new GetLogicalDeviceDirectoryClient(node));
+        regClient(node, new LdDirClient(node));
     }
 
     @Test
     public void get_logical_device_directory() throws Exception {
         associate();
 
-        clientNode().getClient(GetLogicalDeviceDirectoryClient.class)
-            .execute(new GetLogicalDeviceDirectoryDao()
+        clientNode().getClient(LdDirClient.class)
+            .execute(new LdDirDao()
                 .ldName("C1"));
 
         assertEquals(6, clientNode().getContentManager().getLnNames().size());

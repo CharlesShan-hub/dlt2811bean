@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class GetLogicalDeviceDirectoryDao {
+public class LdDirDao {
 
     private String ldName;
     private String referenceAfter;

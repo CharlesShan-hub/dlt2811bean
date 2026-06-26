@@ -13,13 +13,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetLogicalNodeDirectoryClient extends BaseClientHandler {
+public class LnDirClient extends BaseClientHandler {
 
-    public GetLogicalNodeDirectoryClient(CmsNode node) {
+    private int acsiClass;
+
+    public LnDirClient(CmsNode node) {
         super(node);
     }
 
-    public void execute(GetLogicalNodeDirectoryDao dao) throws Exception {
+    public void execute(LnDirDao dao) throws Exception {
+        this.acsiClass = dao.acsiClass();
         CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest()
             .reqId(nextReqId())
             .acsiClass(dao.acsiClass());
@@ -54,8 +57,7 @@ public class GetLogicalNodeDirectoryClient extends BaseClientHandler {
         for (int i = 0; i < resp.reference.count; i++) {
             names.add(new String(resp.reference.items.get(i).value()));
         }
-        // Note: acsiClass is not in the response, so we rely on the caller
-        // to have set it in the DAO. The ContentManager stores by acsiClass.
-        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass unknown here", names.size());
+        node.getContentManager().initNodeDir(acsiClass, names);
+        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", names.size(), acsiClass);
     }
 }

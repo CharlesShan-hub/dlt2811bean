@@ -25,9 +25,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetLogicalNodeDirectoryServer extends BaseServerHandler {
+public class LnDirServer extends BaseServerHandler {
 
-    public GetLogicalNodeDirectoryServer() {
+    public LnDirServer() {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY);
     }
 

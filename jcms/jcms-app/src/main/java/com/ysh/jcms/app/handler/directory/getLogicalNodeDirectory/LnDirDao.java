@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class GetLogicalNodeDirectoryDao {
+public class LnDirDao {
 
     /** ldName (e.g. "C1") — alternative to lnReference */
     private String ldName;

@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetServerDirectoryClient extends BaseClientHandler {
+public class SvrDirClient extends BaseClientHandler {
 
-    public GetServerDirectoryClient(CmsNode node) {
+    public SvrDirClient(CmsNode node) {
         super(node);
     }
 
-    public void execute(GetServerDirectoryDao dao) throws Exception {
+    public void execute(SvrDirDao dao) throws Exception {
         CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest()
             .reqId(nextReqId())
             .objectClass(dao.objectClass());

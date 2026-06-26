@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class GetServerDirectoryDao {
+public class SvrDirDao {
 
     private int objectClass = CmsObjectClass.LOGICAL_DEVICE;
     private String referenceAfter;

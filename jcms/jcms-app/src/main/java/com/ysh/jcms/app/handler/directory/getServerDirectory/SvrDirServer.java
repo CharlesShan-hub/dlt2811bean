@@ -15,9 +15,9 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class GetServerDirectoryServer extends BaseServerHandler {
+public class SvrDirServer extends BaseServerHandler {
 
-    public GetServerDirectoryServer() {
+    public SvrDirServer() {
         super(ServiceName.GET_SERVER_DIRECTORY);
     }
 

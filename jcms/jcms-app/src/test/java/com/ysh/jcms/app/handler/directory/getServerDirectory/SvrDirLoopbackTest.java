@@ -8,29 +8,29 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GetServerDirectoryLoopbackTest extends BaseLoopbackTest {
+public class SvrDirLoopbackTest extends BaseLoopbackTest {
 
-    public GetServerDirectoryLoopbackTest() {
+    public SvrDirLoopbackTest() {
     }
 
     @Override
     protected void registerServers(CmsNode node) throws Exception {
         regServer(node, new AssociateServer());
-        regServer(node, new GetServerDirectoryServer());
+        regServer(node, new SvrDirServer());
     }
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
         regClient(node, new AssociateClient(node));
-        regClient(node, new GetServerDirectoryClient(node));
+        regClient(node, new SvrDirClient(node));
     }
 
     @Test
     public void get_server_directory() throws Exception {
         associate();
 
-        clientNode().getClient(GetServerDirectoryClient.class)
-            .execute(new GetServerDirectoryDao());
+        clientNode().getClient(SvrDirClient.class)
+            .execute(new SvrDirDao());
 
         assertEquals(1, clientNode().getContentManager().getLdNames().size());
         assertTrue(clientNode().getContentManager().getLdNames().contains("C1"));
