@@ -17,6 +17,8 @@ public class CliContext {
     public void node(CmsNode node) { this.node = node; }
 
     public boolean isConnected() {
-        return node != null && node.isClientConnected();
+        return node != null && node.isClientConnected()
+            && node.getClient().getSession() != null
+            && node.getClient().getSession().getState() == com.ysh.jcms.utils.transport.session.SessionState.ASSOCIATED;
     }
 }

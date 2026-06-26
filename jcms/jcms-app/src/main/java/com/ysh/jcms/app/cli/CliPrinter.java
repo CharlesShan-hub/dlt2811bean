@@ -12,11 +12,11 @@ public final class CliPrinter {
     }
 
     public static void success(String msg) {
-        System.out.println("  \u2713 " + msg);
+        System.out.println("  OK  " + msg);
     }
 
     public static void error(String msg) {
-        System.out.println("  \u2717 ERROR: " + msg);
+        System.out.println("  ERR " + msg);
     }
 
     public static void gray(String msg) {

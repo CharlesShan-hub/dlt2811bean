@@ -1,5 +1,6 @@
 package com.ysh.jcms.app;
 
+import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
 import com.ysh.jcms.app.handler.test.test.TestServer;
@@ -18,6 +19,7 @@ public class ServerMain {
         // Register all server handlers
         node.registerServer(new AssociateServer());
         node.registerServer(new ReleaseServer());
+        node.registerServer(new AbortServer());
         node.registerServer(new TestServer());
         node.registerServer(new SvrDirServer());
         node.registerServer(new LdDirServer());
@@ -27,6 +29,9 @@ public class ServerMain {
 
         System.out.println("CMS Server running on port " + port);
         System.out.println("SCL loaded: " + node.getSclManager().isLoaded());
+        if (node.getSclManager().isLoaded()) {
+            System.out.println("SCL file: " + com.ysh.jcms.utils.config.CmsConfigLoader.load().getServer().getResolvedSclFile());
+        }
         System.out.println("Press Enter to stop...");
         System.in.read();
 

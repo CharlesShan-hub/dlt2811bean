@@ -4,6 +4,9 @@ import com.ysh.jcms.app.cli.handler.*;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirCli;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirCli;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirCli;
+import com.ysh.jcms.app.handler.connection.release.ReleaseCli;
+import com.ysh.jcms.app.handler.connection.abort.AbortCli;
+import com.ysh.jcms.app.handler.test.test.TestCli;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -30,6 +33,9 @@ public class CmsCli {
         register(new SvrDirCli());
         register(new LdDirCli());
         register(new LnDirCli());
+        register(new ReleaseCli());
+        register(new AbortCli());
+        register(new TestCli());
     }
 
     public void register(CommandHandler handler) {
@@ -114,7 +120,9 @@ public class CmsCli {
 
             handler.execute(ctx, args);
         } catch (Exception e) {
-            CliPrinter.error(e.getMessage());
+            String msg = e.getMessage();
+            if (msg == null) msg = e.getClass().getSimpleName();
+            CliPrinter.error(msg);
         }
         return true;
     }

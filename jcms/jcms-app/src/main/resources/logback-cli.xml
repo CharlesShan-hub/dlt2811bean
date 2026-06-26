@@ -1,0 +1,4 @@
+<configuration>
+    <!-- CLI 模式只显示 WARN+，避免 INFO 日志污染终端 -->
+    <root level="WARN"/>
+</configuration>

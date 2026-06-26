@@ -19,12 +19,28 @@ public class SclManager {
 
     private SclDocument document;
 
+    /**
+     * Load an SCL file.
+     *
+     * <p>Loading strategy:
+     * <ul>
+     *   <li><b>Absolute path</b> (e.g. {@code C:\...\file.scd}) → file system only</li>
+     *   <li><b>Relative path</b> (e.g. {@code config/sample.scd}) → classpath first, then file system</li>
+     * </ul>
+     */
     public SclManager load(String filePath) {
         if (filePath == null) {
             log.warn("No SCL file path provided");
             return this;
         }
-        String classpathResource = filePath.startsWith("/") ? filePath : filePath;
+
+        // Absolute path → file system only
+        if (isAbsolutePath(filePath)) {
+            return loadFromFile(filePath);
+        }
+
+        // Relative path → classpath first, file system fallback
+        String classpathResource = filePath.startsWith("/") ? filePath.substring(1) : filePath;
         InputStream is = getClass().getClassLoader().getResourceAsStream(classpathResource);
         if (is != null) {
             try {
@@ -37,6 +53,20 @@ public class SclManager {
                 log.warn("Failed to load SCL from classpath {}: {}", classpathResource, e.getMessage());
             }
         }
+        return loadFromFile(filePath);
+    }
+
+    private boolean isAbsolutePath(String path) {
+        // Windows absolute: C:\... or C:/...
+        if (path.length() >= 3 && Character.isLetter(path.charAt(0)) && path.charAt(1) == ':'
+            && (path.charAt(2) == '\\' || path.charAt(2) == '/')) {
+            return true;
+        }
+        // Unix absolute: /...
+        return path.startsWith("/");
+    }
+
+    private SclManager loadFromFile(String filePath) {
         try {
             this.document = new SclReader().read(filePath);
             log.info("SCL model loaded from file: {} (type={}, IEDs={})",

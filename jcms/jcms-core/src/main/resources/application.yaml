@@ -2,10 +2,10 @@ server:
   port: 8102
   sslPort: 9102
   sclFiles:
-    - config/sample-scd-full.scd
+    - C:\Users\17428\Downloads\longyang\big-file.scd
 
 client:
-  defaultIedName: E1Q1SB1
+  defaultIedName: C_B5041X
   defaultAccessPoint: S1
   defaultSecure: false
   connectTimeoutMs: 5000

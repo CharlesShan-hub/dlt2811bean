@@ -20,15 +20,22 @@ public class SvrDirCli implements CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Collections.emptyList();
+        return Collections.singletonList(
+            new Param("referenceAfter", "起始引用（分页，不传则从头开始）", null)
+        );
     }
 
     @Override
     public void execute(CliContext ctx, Map<String, String> args) throws Exception {
         String msg = check(ctx);
         if (msg != null) { CliPrinter.error(msg); return; }
+        SvrDirDao dao = new SvrDirDao();
+        String after = args.get("referenceAfter");
+        if (after != null && !after.isEmpty()) {
+            dao.referenceAfter(after);
+        }
         ctx.node().getClient(SvrDirClient.class)
-            .execute(new SvrDirDao());
+            .execute(dao);
         CliPrinter.list("Logical Devices",
             new ArrayList<>(ctx.node().getContentManager().getLdNames()),
             s -> s);
