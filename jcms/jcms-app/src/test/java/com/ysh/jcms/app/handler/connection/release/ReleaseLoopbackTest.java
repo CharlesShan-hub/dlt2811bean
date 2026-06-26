@@ -30,14 +30,14 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
     @Test
     public void associate_then_release() throws Exception {
         // First associate
-        AssociateClientDao dao = new AssociateClientDao()
-            .sapRef("IED1/AP1").secure(false);
-        exec(clientNode(), AssociateClient.class, dao);
+        AssociateClient associate = clientNode().getClient(AssociateClient.class);
+        associate.execute(new AssociateClientDao()
+            .sapRef("IED1/AP1").secure(false));
         assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
         assertNotNull(clientNode().getClient().getSession().getAssociationId());
 
         // Then release
-        exec(clientNode(), ReleaseClient.class);
+        clientNode().getClient(ReleaseClient.class).execute();
         assertEquals(SessionState.CONNECTED, clientNode().getClient().getSession().getState());
         assertNull(clientNode().getClient().getSession().getAssociationId());
     }
@@ -45,7 +45,7 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
     @Test
     public void release_without_associate_should_fail() throws Exception {
         try {
-            exec(clientNode(), ReleaseClient.class);
+            clientNode().getClient(ReleaseClient.class).execute();
             fail("Should throw when releasing without association");
         } catch (Exception e) {
             // Expected

@@ -4,22 +4,20 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.time.CmsUtcTime;
+import com.ysh.jcms.svc.connection.CmsAssociateError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.security.GmSignature;
 import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-/**
- * Client-side handler for Associate service.
- *
- * <p>Registered via {@link CmsNode#registerClient(Object)}.
- */
 public class AssociateClient extends BaseClientHandler {
 
     private SecurityContext securityContext;
@@ -33,12 +31,7 @@ public class AssociateClient extends BaseClientHandler {
         this.securityContext = ctx;
     }
 
-    public AssociateClient credentialManager(SecurityContext ctx) {
-        this.securityContext = ctx;
-        return this;
-    }
-
-    public CmsAssociateResponse execute(AssociateClientDao dao) throws Exception {
+    public void execute(AssociateClientDao dao) throws Exception {
         CmsAssociateRequest req = new CmsAssociateRequest()
             .reqId(nextReqId())
             .sapRef(dao.sapRef())
@@ -49,9 +42,21 @@ public class AssociateClient extends BaseClientHandler {
             req.authParamPresent(true);
         }
 
-        CmsAssociateResponse resp = decodeFrame(
-            send(ServiceName.ASSOCIATE, req.encode()),
-            new CmsAssociateResponse());
+        send(ServiceName.ASSOCIATE, req.encode());
+    }
+
+    @Override
+    protected void onError(Frame frame) throws IOException {
+        CmsAssociateError err = new CmsAssociateError();
+        err.decode(frame.asduBytes());
+        node.getClient().getSession().setState(SessionState.DISCONNECTED);
+        throw new IOException("Association rejected: error=" + err.serviceError.value());
+    }
+
+    @Override
+    protected void onSuccess(Frame frame) throws IOException {
+        CmsAssociateResponse resp = new CmsAssociateResponse();
+        resp.decode(frame.asduBytes());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
@@ -62,8 +67,6 @@ public class AssociateClient extends BaseClientHandler {
         node.getClient().getSession().setAssociationId(resp.assocId.value());
         node.getClient().getSession().setState(SessionState.ASSOCIATED);
         log.info("Association established: session={}", node.getClient().getSession().getSessionId());
-
-        return resp;
     }
 
     private CmsAuthenticationParameter buildAuthParam(String sapRef) throws Exception {

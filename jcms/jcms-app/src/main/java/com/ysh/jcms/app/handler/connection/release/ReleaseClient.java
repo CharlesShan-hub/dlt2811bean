@@ -3,32 +3,40 @@ package com.ysh.jcms.app.handler.connection.release;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.svc.connection.CmsReleaseError;
 import com.ysh.jcms.svc.connection.CmsReleaseRequest;
 import com.ysh.jcms.svc.connection.CmsReleaseResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.io.IOException;
 
-/**
- * Client-side handler for Release service.
- *
- * <p>Registered via {@link CmsNode#registerClient(Object)}.
- */
 public class ReleaseClient extends BaseClientHandler {
 
     public ReleaseClient(CmsNode node) {
         super(node);
     }
-
+    
     public void execute() throws Exception {
         byte[] reqBytes = new CmsReleaseRequest()
             .reqId(nextReqId())
             .encode();
 
-        CmsReleaseResponse resp = decodeFrame(
-            send(ServiceName.RELEASE, reqBytes),
-            new CmsReleaseResponse());
+        send(ServiceName.RELEASE, reqBytes);
+    }
+
+    @Override
+    protected void onError(Frame frame) throws IOException {
+        CmsReleaseError err = new CmsReleaseError();
+        err.decode(frame.asduBytes());
+        throw new IOException("Release rejected: error=" + err.serviceError.value());
+    }
+
+    @Override
+    protected void onSuccess(Frame frame) throws IOException {
+        CmsReleaseResponse resp = new CmsReleaseResponse();
+        resp.decode(frame.asduBytes());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {

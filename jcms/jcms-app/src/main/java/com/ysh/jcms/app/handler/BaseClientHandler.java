@@ -36,6 +36,8 @@ public abstract class BaseClientHandler extends BaseHandler {
         this.node = node;
     }
 
+
+
     /**
      * Get the next request ID from the session.
      */
@@ -55,12 +57,41 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     /**
-     * Send a request frame and wait for the response.
+     * Send a request, check for timeout, and handle negative response.
      *
-     * @return the response {@link Frame}, or {@code null} on timeout.
+     * <p>On success, calls {@link #onSuccess(Frame)} before returning.
+     * On error, calls {@link #onError(Frame)} which throws.</p>
+     *
+     * @param sc        service name
+     * @param pduBytes  encoded request PDU
+     * @return the response {@link Frame} (err=false, non-null)
+     * @throws IOException on timeout or negative response
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
-        return node.sendRequest(sc, pduBytes);
+        Frame frame = node.sendRequest(sc, pduBytes);
+        if (frame == null) throw new IOException("Request timed out for " + sc);
+        if (frame.header().err()) onError(frame);
+        onSuccess(frame);
+        return frame;
+    }
+
+    /**
+     * Handle a positive response (err=false). Default no-op.
+     *
+     * <p>Subclasses override to decode the success PDU, update session,
+     * log completion, etc.</p>
+     */
+    protected void onSuccess(Frame frame) throws IOException {
+    }
+
+    /**
+     * Handle a negative response (err flag set).
+     *
+     * <p>Default throws a generic IOException. Subclasses with a distinct
+     * error PDU type should override to decode their error and throw.</p>
+     */
+    protected void onError(Frame frame) throws IOException {
+        throw new IOException("Negative response for " + frame.header().serviceCode());
     }
 
     /**
