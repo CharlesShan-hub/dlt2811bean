@@ -1,12 +1,18 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
+import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
+import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
+import com.ysh.jcms.utils.transport.session.SessionState;
 import org.junit.After;
 import org.junit.Before;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+
+import static org.junit.Assert.*;
 
 /**
  * Base class for loopback integration tests.
@@ -86,6 +92,18 @@ public abstract class BaseLoopbackTest {
      */
     protected static <T> T exec(CmsNode node, Class<?> handlerClass, Object... args) throws Exception {
         return node.execute(handlerClass, args);
+    }
+
+    /**
+     * Convenience: associate with the default test sapRef "E1Q1SB1/S1".
+     * <p>Only call this after the {@link AssociateServer} and {@link AssociateClient}
+     * have been registered (otherwise it will fail with NullPointerException).
+     */
+    protected void associate() throws Exception {
+        clientNode().getClient(AssociateClient.class)
+            .execute(new AssociateClientDao()
+                .sapRef("E1Q1SB1/S1").secure(false));
+        assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
     }
 
     /**
