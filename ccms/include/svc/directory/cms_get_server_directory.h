@@ -57,9 +57,19 @@ CMS_EXPORT int cms_get_server_directory_request_encode(
     uint8_t **out_buf, size_t *out_len
 );
 
+CMS_EXPORT int cms_get_server_directory_request_decode(
+    cms_get_server_directory_request_t *pdu,
+    const uint8_t *in_buf, int in_len
+);
+
 CMS_EXPORT int cms_get_server_directory_response_encode(
     const cms_get_server_directory_response_t *pdu,
     uint8_t **out_buf, size_t *out_len
+);
+
+CMS_EXPORT int cms_get_server_directory_response_decode(
+    cms_get_server_directory_response_t *pdu,
+    const uint8_t *in_buf, int in_len
 );
 
 CMS_EXPORT int cms_get_server_directory_error_encode(

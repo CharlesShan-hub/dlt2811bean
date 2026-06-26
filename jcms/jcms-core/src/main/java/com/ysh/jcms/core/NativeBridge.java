@@ -1,9 +1,11 @@
 package com.ysh.jcms.core;
 
 import com.sun.jna.Function;
+import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 import com.sun.jna.Pointer;
-import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.ptr.LongByReference;
+import com.sun.jna.ptr.PointerByReference;
 
 /**
  * jcms FFI — ccms dll bridge.
@@ -245,13 +247,15 @@ public class NativeBridge {
 
         public byte[] encode(Pointer ptr) {
             Function fn = LIB.getFunction(prefix + "_encode");
-            byte[] buf = new byte[8192];
-            IntByReference outLen = new IntByReference(buf.length);
-            int rc = fn.invokeInt(new Object[]{ptr, buf, outLen});
+            PointerByReference outBuf = new PointerByReference();
+            LongByReference outLen = new LongByReference();
+            int rc = fn.invokeInt(new Object[]{ptr, outBuf, outLen});
             if (rc != 0) throw new RuntimeException(
                 "encode failed: rc=" + rc + " for " + prefix);
-            byte[] result = new byte[outLen.getValue()];
-            System.arraycopy(buf, 0, result, 0, result.length);
+            Pointer buf = outBuf.getValue();
+            long len = outLen.getValue();
+            byte[] result = buf.getByteArray(0, (int) len);
+            Native.free(Pointer.nativeValue(buf));
             return result;
         }
 

@@ -69,6 +69,11 @@ CMS_EXPORT int cms_get_logical_device_directory_response_encode(
     uint8_t **out_buf, size_t *out_len
 );
 
+CMS_EXPORT int cms_get_logical_device_directory_response_decode(
+    cms_get_logical_device_directory_response_t *pdu,
+    const uint8_t *in_buf, int in_len
+);
+
 CMS_EXPORT int cms_get_logical_device_directory_error_encode(
     const cms_get_logical_device_directory_error_t *pdu,
     uint8_t **out_buf, size_t *out_len
