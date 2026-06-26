@@ -18,51 +18,51 @@ int cms_time_activated_operate_request_encode(const cms_time_activated_operate_r
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. reference — ObjectReference */
-    if (!pdu->reference) return CMS_ERR;
+    if (!pdu->reference) { per_stream_free(&s); return CMS_ERR; }
     err = cms_object_reference_encode_stream(&s, pdu->reference);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. ctlVal — Data */
-    if (!pdu->ctl_val) return CMS_ERR;
+    if (!pdu->ctl_val) { per_stream_free(&s); return CMS_ERR; }
     err = cms_data_encode_stream(&s, pdu->ctl_val);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 4. operTm — TimeStamp */
-    if (!pdu->oper_tm) return CMS_ERR;
+    if (!pdu->oper_tm) { per_stream_free(&s); return CMS_ERR; }
     err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 5. origin — Originator */
-    if (!pdu->origin) return CMS_ERR;
+    if (!pdu->origin) { per_stream_free(&s); return CMS_ERR; }
     err = cms_originator_encode_stream(&s, pdu->origin);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 6. ctlNum — INT8U */
-    if (!pdu->ctl_num) return CMS_ERR;
+    if (!pdu->ctl_num) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int8u_encode_stream(&s, pdu->ctl_num);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 7. t — TimeStamp */
-    if (!pdu->t) return CMS_ERR;
+    if (!pdu->t) { per_stream_free(&s); return CMS_ERR; }
     err = cms_time_stamp_encode_stream(&s, pdu->t);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 8. test — BOOLEAN */
-    if (!pdu->test) return CMS_ERR;
+    if (!pdu->test) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->test);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 9. check — Check */
-    if (!pdu->check) return CMS_ERR;
+    if (!pdu->check) { per_stream_free(&s); return CMS_ERR; }
     err = cms_check_encode_stream(&s, pdu->check);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -138,56 +138,56 @@ int cms_time_activated_operate_error_encode(const cms_time_activated_operate_err
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. reference — ObjectReference */
-    if (!pdu->reference) return CMS_ERR;
+    if (!pdu->reference) { per_stream_free(&s); return CMS_ERR; }
     err = cms_object_reference_encode_stream(&s, pdu->reference);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. ctlVal — Data */
-    if (!pdu->ctl_val) return CMS_ERR;
+    if (!pdu->ctl_val) { per_stream_free(&s); return CMS_ERR; }
     err = cms_data_encode_stream(&s, pdu->ctl_val);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 4. operTm — TimeStamp */
-    if (!pdu->oper_tm) return CMS_ERR;
+    if (!pdu->oper_tm) { per_stream_free(&s); return CMS_ERR; }
     err = cms_time_stamp_encode_stream(&s, pdu->oper_tm);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 5. origin — Originator */
-    if (!pdu->origin) return CMS_ERR;
+    if (!pdu->origin) { per_stream_free(&s); return CMS_ERR; }
     err = cms_originator_encode_stream(&s, pdu->origin);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 6. ctlNum — INT8U */
-    if (!pdu->ctl_num) return CMS_ERR;
+    if (!pdu->ctl_num) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int8u_encode_stream(&s, pdu->ctl_num);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 7. t — TimeStamp */
-    if (!pdu->t) return CMS_ERR;
+    if (!pdu->t) { per_stream_free(&s); return CMS_ERR; }
     err = cms_time_stamp_encode_stream(&s, pdu->t);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 8. test — BOOLEAN */
-    if (!pdu->test) return CMS_ERR;
+    if (!pdu->test) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->test);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 9. check — Check */
-    if (!pdu->check) return CMS_ERR;
+    if (!pdu->check) { per_stream_free(&s); return CMS_ERR; }
     err = cms_check_encode_stream(&s, pdu->check);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 10. addCause — AddCause */
-    if (!pdu->add_cause) return CMS_ERR;
+    if (!pdu->add_cause) { per_stream_free(&s); return CMS_ERR; }
     err = cms_add_cause_encode_stream(&s, pdu->add_cause);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

@@ -56,7 +56,7 @@ typedef struct {
 
 CMS_EXPORT int cms_report_encode(
     const cms_report_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_report_decode(

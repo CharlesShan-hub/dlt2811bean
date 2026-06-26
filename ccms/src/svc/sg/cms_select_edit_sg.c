@@ -1,4 +1,4 @@
-#include "svc/sg/cms_select_edit_sg.h"
+﻿#include "svc/sg/cms_select_edit_sg.h"
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_object_reference.h"
 #include "data/common/cms_service_error.h"
@@ -6,27 +6,28 @@
 
 /* ── Request ── */
 
-int cms_select_edit_sg_request_encode(const cms_select_edit_sg_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_select_edit_sg_request_encode(const cms_select_edit_sg_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. sgcbReference — ObjectReference */
-    if (!pdu->sgcb_reference) return CMS_ERR;
+    if (!pdu->sgcb_reference) { per_stream_free(&s); return CMS_ERR; }
     err = cms_object_reference_encode_stream(&s, pdu->sgcb_reference);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. settingGroupNumber — INT8U */
-    if (!pdu->setting_group_number) return CMS_ERR;
+    if (!pdu->setting_group_number) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int8u_encode_stream(&s, pdu->setting_group_number);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -55,16 +56,17 @@ int cms_select_edit_sg_request_decode(cms_select_edit_sg_request_t *pdu, const u
 
 /* ── Response (reqId only) ── */
 
-int cms_select_edit_sg_response_encode(const cms_select_edit_sg_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_select_edit_sg_response_encode(const cms_select_edit_sg_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     int err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -79,22 +81,23 @@ int cms_select_edit_sg_response_decode(cms_select_edit_sg_response_t *pdu, const
 
 /* ── Error ── */
 
-int cms_select_edit_sg_error_encode(const cms_select_edit_sg_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_select_edit_sg_error_encode(const cms_select_edit_sg_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

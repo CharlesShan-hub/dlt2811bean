@@ -48,7 +48,7 @@ typedef struct {
 
 CMS_EXPORT int cms_select_active_sg_request_encode(
     const cms_select_active_sg_request_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_select_active_sg_request_decode(
@@ -58,7 +58,7 @@ CMS_EXPORT int cms_select_active_sg_request_decode(
 
 CMS_EXPORT int cms_select_active_sg_response_encode(
     const cms_select_active_sg_response_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_select_active_sg_response_decode(
@@ -68,7 +68,7 @@ CMS_EXPORT int cms_select_active_sg_response_decode(
 
 CMS_EXPORT int cms_select_active_sg_error_encode(
     const cms_select_active_sg_error_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_select_active_sg_error_decode(

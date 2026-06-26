@@ -12,15 +12,16 @@
 #include "per/cms_integer.h"
 #include "per/cms_sequence.h"
 
-int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. OPTIONAL bitmap (4 fields: datSet, refTm, smpRate, smpMod) */
     bool opt_present[4] = {
@@ -30,72 +31,72 @@ int cms_send_msv_message_encode(const cms_send_msv_message_t *pdu, uint8_t *out_
         (pdu->smp_mod_present && pdu->smp_mod_present->value) && pdu->smp_mod
     };
     err = (int)per_encode_optional_bitmap(&s, opt_present, 4);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. msvID — VisibleString(129) */
-    if (!pdu->msv_id) return CMS_ERR;
+    if (!pdu->msv_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_visible_string_encode_stream(&s, pdu->msv_id, 129);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. datSet — ObjectReference OPTIONAL (bitmap[0]) */
     if (opt_present[0]) {
         err = cms_object_reference_encode_stream(&s, pdu->dat_set);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 4. smpCnt — INT16U */
-    if (!pdu->smp_cnt) return CMS_ERR;
+    if (!pdu->smp_cnt) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int16u_encode_stream(&s, pdu->smp_cnt);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 5. confRev — INT32U */
-    if (!pdu->conf_rev) return CMS_ERR;
+    if (!pdu->conf_rev) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int32u_encode_stream(&s, pdu->conf_rev);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 6. refTm — TimeStamp OPTIONAL (bitmap[1]) */
     if (opt_present[1]) {
         err = cms_time_stamp_encode_stream(&s, pdu->ref_tm);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 7. smpSynch — INT8U */
-    if (!pdu->smp_synch) return CMS_ERR;
+    if (!pdu->smp_synch) { per_stream_free(&s); return CMS_ERR; }
     err = cms_int8u_encode_stream(&s, pdu->smp_synch);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 8. smpRate — INT16U OPTIONAL (bitmap[2]) */
     if (opt_present[2]) {
         err = cms_int16u_encode_stream(&s, pdu->smp_rate);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 9. simulation — BOOLEAN */
-    if (!pdu->simulation) return CMS_ERR;
+    if (!pdu->simulation) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->simulation);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 10. sample — SEQUENCE OF Data */
-    if (!pdu->sample) return CMS_ERR;
+    if (!pdu->sample) { per_stream_free(&s); return CMS_ERR; }
     {
         uint32_t cnt = (uint32_t)pdu->sample->count;
         per_error_t perr = per_encode_length(&s, cnt);
-        if (perr) return CMS_ERR;
+        if (perr) { per_stream_free(&s); return CMS_ERR; }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_t *e = (cms_data_t*)pdu->sample->elements[i];
-            if (!e) return CMS_ERR;
+            if (!e) { per_stream_free(&s); return CMS_ERR; }
             err = cms_data_encode_stream(&s, e);
-            if (err) return err;
+            if (err) { per_stream_free(&s); return err; }
         }
     }
 
     /* 11. smpMod — SmpMod OPTIONAL (bitmap[3]) */
     if (opt_present[3]) {
         err = cms_smp_mod_encode_stream(&s, pdu->smp_mod);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

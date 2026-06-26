@@ -1,26 +1,27 @@
-#include "svc/file/cms_delete_file.h"
+﻿#include "svc/file/cms_delete_file.h"
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_service_error.h"
 #include "data/string/cms_visible_string.h"
 
 /* ── Request ── */
 
-int cms_delete_file_request_encode(const cms_delete_file_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_delete_file_request_encode(const cms_delete_file_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. filename — VisibleString(255) */
-    if (!pdu->filename) return CMS_ERR;
+    if (!pdu->filename) { per_stream_free(&s); return CMS_ERR; }
     err = cms_visible_string_encode_stream(&s, pdu->filename, 255);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -44,16 +45,17 @@ int cms_delete_file_request_decode(cms_delete_file_request_t *pdu, const uint8_t
 
 /* ── Response (reqId only) ── */
 
-int cms_delete_file_response_encode(const cms_delete_file_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_delete_file_response_encode(const cms_delete_file_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     int err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -68,22 +70,23 @@ int cms_delete_file_response_decode(cms_delete_file_response_t *pdu, const uint8
 
 /* ── Error ── */
 
-int cms_delete_file_error_encode(const cms_delete_file_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_delete_file_error_encode(const cms_delete_file_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

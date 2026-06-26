@@ -12,25 +12,26 @@
 
 #define RPT_ID_MAX 129
 
-int cms_report_encode(const cms_report_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_report_encode(const cms_report_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. rptID — VisibleString(129) */
-    if (!pdu->rpt_id) return CMS_ERR;
+    if (!pdu->rpt_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_visible_string_encode_stream(&s, pdu->rpt_id, RPT_ID_MAX);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. optFlds — RCBOptFlds */
-    if (!pdu->opt_flds) return CMS_ERR;
+    if (!pdu->opt_flds) { per_stream_free(&s); return CMS_ERR; }
     err = cms_rcb_opt_flds_encode_stream(&s, pdu->opt_flds);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. OPTIONAL bitmap (6 fields: sqNum, subSeqNum, moreSegmentsFollow, dataSet, bufOvfl, confRev) */
     bool opt_present[6] = {
@@ -42,50 +43,50 @@ int cms_report_encode(const cms_report_t *pdu, uint8_t *out_buf, int *out_len) {
         (pdu->conf_rev_present && pdu->conf_rev_present->value) && pdu->conf_rev
     };
     err = (int)per_encode_optional_bitmap(&s, opt_present, 6);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 4. sqNum — INT16U OPTIONAL (bitmap[0]) */
     if (opt_present[0]) {
         err = cms_int16u_encode_stream(&s, pdu->sq_num);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 5. subSeqNum — INT16U OPTIONAL (bitmap[1]) */
     if (opt_present[1]) {
         err = cms_int16u_encode_stream(&s, pdu->sub_seq_num);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 6. moreSegmentsFollow — BOOLEAN OPTIONAL (bitmap[2]) */
     if (opt_present[2]) {
         err = cms_boolean_encode_stream(&s, pdu->more_segments_follow);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 7. dataSet — ObjectReference OPTIONAL (bitmap[3]) */
     if (opt_present[3]) {
         err = cms_object_reference_encode_stream(&s, pdu->data_set);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 8. bufOvfl — BOOLEAN OPTIONAL (bitmap[4]) */
     if (opt_present[4]) {
         err = cms_boolean_encode_stream(&s, pdu->buf_ovfl);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 9. confRev — INT32U OPTIONAL (bitmap[5]) */
     if (opt_present[5]) {
         err = cms_int32u_encode_stream(&s, pdu->conf_rev);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 10. entry — ReportEntry */
-    if (!pdu->entry) return CMS_ERR;
+    if (!pdu->entry) { per_stream_free(&s); return CMS_ERR; }
     err = cms_report_entry_encode_stream(&s, pdu->entry);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

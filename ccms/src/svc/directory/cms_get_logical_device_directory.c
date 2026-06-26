@@ -16,9 +16,9 @@ int cms_get_logical_device_directory_request_encode(const cms_get_logical_device
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. OPTIONAL bitmap (2 fields: ldName, refAfter) */
     bool opt[2] = {
@@ -26,21 +26,21 @@ int cms_get_logical_device_directory_request_encode(const cms_get_logical_device
         (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after
     };
     err = (int)per_encode_optional_bitmap(&s, opt, 2);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. ldName — ObjectName OPTIONAL (bitmap[0]) */
     if (opt[0]) {
         err = cms_object_name_encode_stream(&s, pdu->ld_name);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 3. refAfter — ObjectReference OPTIONAL (bitmap[1]) */
     if (opt[1]) {
         err = cms_object_reference_encode_stream(&s, pdu->ref_after);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -89,28 +89,28 @@ int cms_get_logical_device_directory_response_encode(const cms_get_logical_devic
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. lnReference — SEQUENCE OF SubReference */
-    if (!pdu->ln_reference) return CMS_ERR;
+    if (!pdu->ln_reference) { per_stream_free(&s); return CMS_ERR; }
     {
         uint32_t cnt = (uint32_t)pdu->ln_reference->count;
         per_error_t perr = per_encode_length(&s, cnt);
-        if (perr) return CMS_ERR;
+        if (perr) { per_stream_free(&s); return CMS_ERR; }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_sub_reference_t *e = (cms_sub_reference_t*)pdu->ln_reference->elements[i];
-            if (!e) return CMS_ERR;
+            if (!e) { per_stream_free(&s); return CMS_ERR; }
             err = cms_sub_reference_encode_stream(&s, e);
-            if (err) return err;
+            if (err) { per_stream_free(&s); return err; }
         }
     }
 
     /* 2. moreFollows — BOOLEAN */
-    if (!pdu->more_follows) return CMS_ERR;
+    if (!pdu->more_follows) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
@@ -158,14 +158,14 @@ int cms_get_logical_device_directory_error_encode(const cms_get_logical_device_d
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;

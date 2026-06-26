@@ -99,44 +99,79 @@ if (err != PER_OK) {
 
 ```c
 typedef struct {
-    uint8_t *buf;         // 底层字节缓冲区
+    uint8_t *buf;         // 底层字节缓冲区（write 模式: 堆分配; read 模式: 调用方提供）
     size_t   capacity;    // 缓冲区容量
     size_t   byte_pos;    // 当前字节位置 (0-based)
     int      bit_pos;     // 当前字节内的比特位置 (0-7, 0=MSB)
-    bool     is_write;    // true=写入模式, false=读取模式
-    bool     is_dynamic;  // true=堆分配自动扩容
+    bool     is_write;    // true=写入模式(堆分配自动扩容), false=读取模式
 } per_stream_t;
 ```
 
 ### 两种工作模式
 
 | 模式 | 初始化函数 | 缓冲区来源 | 溢出处理 |
-|------|-----------|-----------|---------|
-| **固定缓冲** | `per_stream_init_read` / `per_stream_init_write` | 调用方提供（栈或静态） | 返回 `PER_ERR_OVERFLOW` |
-| **动态自动扩容** | `per_stream_init_dynamic` | `calloc` 分配，按需 `realloc` | 自动增长（可能返回 `PER_ERR_OOM`） |
+|:----:|-----------|-----------|:--------:|
+| **读取** | `per_stream_init_read` | 调用方提供（栈或静态） | 返回 `PER_ERR_TRUNCATED` |
+| **写入** | `per_stream_init_write(&s, initial_capacity)` | 堆分配，按需 `realloc` 自动扩容 | 自动增长（可能返回 `PER_ERR_OOM`） |
+
+> **注意**: 写入模式统一使用堆分配自动扩容，不再支持固定缓冲区写入。
+> 预分配大小（如 64）仅作为初始容量提示，编码器会根据需要自动增长。
 
 ### 流生命周期
 
 ```c
-// 固定缓冲写入
+// 读取
 uint8_t buf[64];
 per_stream_t s;
-per_stream_init_write(&s, buf, sizeof(buf));
-// ... 写入数据 ...
-size_t written = per_stream_bytes_written(&s);
-
-// 固定缓冲读取
 per_stream_init_read(&s, buf, sizeof(buf));
 // ... 读取数据 ...
 
-// 动态写入
+// 写入（推荐：堆分配自动扩容）
 per_stream_t s;
-per_stream_init_dynamic(&s, 64);
+per_error_t err = per_stream_init_write(&s, 64);   // 初始容量 64 字节
+if (err) return (int)err;
 // ... 写入数据 ...
 size_t out_len;
-uint8_t *result = per_stream_detach(&s, &out_len);
+uint8_t *result = per_stream_detach(&s, &out_len);  // 分离缓冲区
 // 调用方负责 free(result)
+
+// 写入 + 错误处理
+per_stream_t s;
+per_error_t err = per_stream_init_write(&s, 64);
+if (err) return (int)err;
+int err2;
+if (!pdu->field) { per_stream_free(&s); return CMS_ERR; }  // 错误时释放
+err2 = cms_field_encode_stream(&s, pdu->field);
+if (err2) { per_stream_free(&s); return err2; }
+uint8_t *result = per_stream_detach(&s, &out_len);        // 成功时分离
 ```
+
+### 流生命周期（旧模式 — 已废弃）
+
+```c
+// 旧式固定缓冲写入（不再推荐）
+uint8_t buf[64];
+per_stream_t s;
+per_stream_init_write(&s, buf, sizeof(buf));  // 此接口已移除
+```
+
+> 所有 svc 层 encode 函数已统一改为动态扩容模式。
+
+### 核心 API 总览
+
+| 函数 | 说明 |
+|------|------|
+| `per_stream_init_read(s, buf, capacity)` | 初始化读取流（调用方提供缓冲区） |
+| `per_stream_init_write(s, initial_capacity)` | 初始化写入流（堆分配自动扩容） |
+| `per_stream_detach(s, &out_len)` | 分离缓冲区并返回长度（写入流专用，调用方 free） |
+| `per_stream_free(s)` | 释放流资源（写入流专用，读取流为 no-op） |
+| `per_stream_tell(s)` | 当前比特位置 |
+| `per_stream_bytes_written(s)` | 已写入字节数（未对齐进位计为 1） |
+| `per_stream_align(s)` | 字节对齐 |
+| `per_stream_write_bit/read_bit` | 单比特 I/O |
+| `per_stream_write_bits/read_bits` | 多比特 I/O (1-64) |
+| `per_stream_write_byte_aligned/read_byte_aligned` | 字节对齐 I/O |
+| `per_stream_write_bytes/read_bytes` | 批量字节 I/O |
 
 ### 比特读写操作
 

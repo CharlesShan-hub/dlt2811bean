@@ -46,7 +46,7 @@ typedef struct {
 
 CMS_EXPORT int cms_delete_data_set_request_encode(
     const cms_delete_data_set_request_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_delete_data_set_request_decode(
@@ -56,7 +56,7 @@ CMS_EXPORT int cms_delete_data_set_request_decode(
 
 CMS_EXPORT int cms_delete_data_set_response_encode(
     const cms_delete_data_set_response_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_delete_data_set_response_decode(
@@ -66,7 +66,7 @@ CMS_EXPORT int cms_delete_data_set_response_decode(
 
 CMS_EXPORT int cms_delete_data_set_error_encode(
     const cms_delete_data_set_error_t *pdu,
-    uint8_t *out_buf, int *out_len
+    uint8_t **out_buf, size_t *out_len
 );
 
 CMS_EXPORT int cms_delete_data_set_error_decode(

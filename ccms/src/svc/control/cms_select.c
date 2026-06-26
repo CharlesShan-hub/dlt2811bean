@@ -11,16 +11,16 @@ int cms_select_request_encode(const cms_select_request_t *pdu, uint8_t **out_buf
     int err;
 
     /* 1. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. reference — ObjectReference */
-    if (!pdu->reference) return CMS_ERR;
+    if (!pdu->reference) { per_stream_free(&s); return CMS_ERR; }
     err = cms_object_reference_encode_stream(&s, pdu->reference);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

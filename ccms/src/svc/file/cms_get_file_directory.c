@@ -1,4 +1,4 @@
-#include "svc/file/cms_get_file_directory.h"
+﻿#include "svc/file/cms_get_file_directory.h"
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_file_entry.h"
 #include "data/common/cms_service_error.h"
@@ -10,15 +10,16 @@
 
 /* ── Request ── */
 
-int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. OPTIONAL bitmap (3 fields: startTime, stopTime, fileAfter) */
     bool opt_present[3] = {
@@ -27,32 +28,32 @@ int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t
         (pdu->file_after_present && pdu->file_after_present->value) && pdu->file_after
     };
     err = (int)per_encode_optional_bitmap(&s, opt_present, 3);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. pathName — VisibleString(255) */
-    if (!pdu->path_name) return CMS_ERR;
+    if (!pdu->path_name) { per_stream_free(&s); return CMS_ERR; }
     err = cms_visible_string_encode_stream(&s, pdu->path_name, 255);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. startTime — TimeStamp OPTIONAL (bitmap[0]) */
     if (opt_present[0]) {
         err = cms_time_stamp_encode_stream(&s, pdu->start_time);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 4. stopTime — TimeStamp OPTIONAL (bitmap[1]) */
     if (opt_present[1]) {
         err = cms_time_stamp_encode_stream(&s, pdu->stop_time);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
     /* 5. fileAfter — VisibleString(255) OPTIONAL (bitmap[2]) */
     if (opt_present[2]) {
         err = cms_visible_string_encode_stream(&s, pdu->file_after, 255);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -105,36 +106,37 @@ int cms_get_file_directory_request_decode(cms_get_file_directory_request_t *pdu,
 
 /* ── Response ── */
 
-int cms_get_file_directory_response_encode(const cms_get_file_directory_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_file_directory_response_encode(const cms_get_file_directory_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. fileEntry — SEQUENCE OF FileEntry */
-    if (!pdu->file_entry) return CMS_ERR;
+    if (!pdu->file_entry) { per_stream_free(&s); return CMS_ERR; }
     {
         uint32_t cnt = (uint32_t)pdu->file_entry->count;
         per_error_t perr = per_encode_length(&s, cnt);
-        if (perr) return CMS_ERR;
+        if (perr) { per_stream_free(&s); return CMS_ERR; }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_file_entry_t *e = (cms_file_entry_t*)pdu->file_entry->elements[i];
-            if (!e) return CMS_ERR;
+            if (!e) { per_stream_free(&s); return CMS_ERR; }
             err = cms_file_entry_encode_stream(&s, e);
-            if (err) return err;
+            if (err) { per_stream_free(&s); return err; }
         }
     }
 
     /* 2. moreFollows — BOOLEAN DEFAULT TRUE */
-    if (!pdu->more_follows) return CMS_ERR;
+    if (!pdu->more_follows) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -173,22 +175,23 @@ int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pd
 
 /* ── Error ── */
 
-int cms_get_file_directory_error_encode(const cms_get_file_directory_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_file_directory_error_encode(const cms_get_file_directory_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

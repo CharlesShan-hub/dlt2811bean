@@ -1,4 +1,4 @@
-#include "svc/directory/cms_get_all_cb_values.h"
+﻿#include "svc/directory/cms_get_all_cb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/other/cms_reference_choice.h"
 #include "svc/directory/cms_acsi_class.h"
@@ -10,40 +10,41 @@
 
 /* ── Request ── */
 
-int cms_get_all_cb_values_request_encode(const cms_get_all_cb_values_request_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_all_cb_values_request_encode(const cms_get_all_cb_values_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_init = per_stream_init_write(&s, 64);
+    if (err_init) return (int)err_init;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. OPTIONAL bitmap (1 field: refAfter) */
     bool opt[1] = {
         (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after
     };
     err = (int)per_encode_optional_bitmap(&s, opt, 1);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 2. reference — ReferenceChoice */
-    if (!pdu->reference) return CMS_ERR;
+    if (!pdu->reference) { per_stream_free(&s); return CMS_ERR; }
     err = cms_reference_choice_encode_stream(&s, pdu->reference);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 3. acsiClass — AcsiClass */
-    if (!pdu->acsi_class) return CMS_ERR;
+    if (!pdu->acsi_class) { per_stream_free(&s); return CMS_ERR; }
     err = cms_acsi_class_encode_stream(&s, pdu->acsi_class);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 4. refAfter — ObjectReference OPTIONAL (bitmap[0]) */
     if (opt[0]) {
         err = cms_object_reference_encode_stream(&s, pdu->ref_after);
-        if (err) return err;
+        if (err) { per_stream_free(&s); return err; }
     }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -86,36 +87,37 @@ int cms_get_all_cb_values_request_decode(cms_get_all_cb_values_request_t *pdu, c
 
 /* ── Response (no OPTIONAL) ── */
 
-int cms_get_all_cb_values_response_encode(const cms_get_all_cb_values_response_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_all_cb_values_response_encode(const cms_get_all_cb_values_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. cbValue — SEQUENCE OF CbValueEntry */
-    if (!pdu->cb_value) return CMS_ERR;
+    if (!pdu->cb_value) { per_stream_free(&s); return CMS_ERR; }
     {
         uint32_t cnt = (uint32_t)pdu->cb_value->count;
         per_error_t perr = per_encode_length(&s, cnt);
-        if (perr) return CMS_ERR;
+        if (perr) { per_stream_free(&s); return CMS_ERR; }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_cb_value_entry_t *e = (cms_cb_value_entry_t*)pdu->cb_value->elements[i];
-            if (!e) return CMS_ERR;
+            if (!e) { per_stream_free(&s); return CMS_ERR; }
             err = cms_cb_value_entry_encode_stream(&s, e);
-            if (err) return err;
+            if (err) { per_stream_free(&s); return err; }
         }
     }
 
     /* 2. moreFollows — BOOLEAN */
-    if (!pdu->more_follows) return CMS_ERR;
+    if (!pdu->more_follows) { per_stream_free(&s); return CMS_ERR; }
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
@@ -154,22 +156,23 @@ int cms_get_all_cb_values_response_decode(cms_get_all_cb_values_response_t *pdu,
 
 /* ── Error (no OPTIONAL) ── */
 
-int cms_get_all_cb_values_error_encode(const cms_get_all_cb_values_error_t *pdu, uint8_t *out_buf, int *out_len) {
+int cms_get_all_cb_values_error_encode(const cms_get_all_cb_values_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
     per_stream_t s;
-    per_stream_init_write(&s, out_buf, (size_t)*out_len);
+    per_error_t err_i = per_stream_init_write(&s, 64);
+    if (err_i) return (int)err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
     /* 1. serviceError — ServiceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err) { per_stream_free(&s); return err; }
 
-    *out_len = (int)per_stream_bytes_written(&s);
+    *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 

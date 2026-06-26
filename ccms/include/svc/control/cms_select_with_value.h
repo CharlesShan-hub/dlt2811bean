@@ -68,11 +68,11 @@ typedef struct {
     cms_add_cause_t           *add_cause;
 } cms_select_with_value_error_t;
 
-CMS_EXPORT int cms_select_with_value_request_encode(const cms_select_with_value_request_t *pdu, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_select_with_value_request_encode(const cms_select_with_value_request_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_select_with_value_request_decode(cms_select_with_value_request_t *pdu, const uint8_t *in_buf, int in_len);
-CMS_EXPORT int cms_select_with_value_response_encode(const cms_select_with_value_response_t *pdu, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_select_with_value_response_encode(const cms_select_with_value_response_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_select_with_value_response_decode(cms_select_with_value_response_t *pdu, const uint8_t *in_buf, int in_len);
-CMS_EXPORT int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu, uint8_t *out_buf, int *out_len);
+CMS_EXPORT int cms_select_with_value_error_encode(const cms_select_with_value_error_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_select_with_value_error_decode(cms_select_with_value_error_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
