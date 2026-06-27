@@ -1,0 +1,71 @@
+package com.ysh.jcms.core;
+
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Static helpers for equality and hashCode of CmsType trees.
+ */
+public class CmsEqualityUtil {
+
+    private CmsEqualityUtil() {}
+
+    /**
+     * Deep equality check. Container types compare children recursively;
+     * leaf types compare native memory bytes directly.
+     */
+    public static boolean equals(CmsType a, Object b) {
+        if (a == b) return true;
+        if (b == null || a.getClass() != b.getClass()) return false;
+        CmsType other = (CmsType) b;
+
+        List<? extends CmsType> kids = a.children();
+        List<? extends CmsType> otherKids = other.children();
+
+        if (!kids.isEmpty()) {
+            if (kids.size() != otherKids.size()) return false;
+            for (int i = 0; i < kids.size(); i++) {
+                if (!kids.get(i).equals(otherKids.get(i))) return false;
+            }
+            return true;
+        }
+
+        // Leaf type: compare native memory bytes (zero allocation for scalar sizes)
+        if (a.nativeSize != other.nativeSize) return false;
+        switch (a.nativeSize) {
+            case 1: return a.nativePtr.getByte(0) == other.nativePtr.getByte(0);
+            case 2: return a.nativePtr.getShort(0) == other.nativePtr.getShort(0);
+            case 4: return a.nativePtr.getInt(0) == other.nativePtr.getInt(0);
+            case 8: return a.nativePtr.getLong(0) == other.nativePtr.getLong(0);
+            default: return Arrays.equals(
+                a.nativePtr.getByteArray(0, a.nativeSize),
+                other.nativePtr.getByteArray(0, other.nativeSize)
+            );
+        }
+    }
+
+    /**
+     * Hash code for a CmsType. Container types combine children hashes;
+     * leaf types hash native memory bytes.
+     */
+    public static int hashCode(CmsType a) {
+        List<? extends CmsType> kids = a.children();
+        if (!kids.isEmpty()) {
+            int h = 1;
+            for (CmsType child : kids) h = 31 * h + (child != null ? child.hashCode() : 0);
+            return h;
+        }
+        // Leaf: compare using correct width
+        if (a.nativeSize <= 8) {
+            long v;
+            switch (a.nativeSize) {
+                case 1: v = a.nativePtr.getByte(0); break;
+                case 2: v = a.nativePtr.getShort(0); break;
+                case 4: v = a.nativePtr.getInt(0); break;
+                default: v = a.nativePtr.getLong(0); break;
+            }
+            return (int) (v ^ (v >>> 32));
+        }
+        return Arrays.hashCode(a.nativePtr.getByteArray(0, a.nativeSize));
+    }
+}

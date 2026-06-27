@@ -35,9 +35,9 @@ import static org.junit.Assert.*;
  */
 public abstract class BaseLoopbackTest {
 
-    private static final int FREE_PORT = findFreePort();
     private CmsNode serverNode;
     private CmsNode clientNode;
+    private static final int FREE_PORT = findFreePort();
 
     @Before
     public void setup() throws Exception {

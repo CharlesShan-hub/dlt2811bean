@@ -3,14 +3,12 @@ package com.ysh.jcms.core;
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
 import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.List;
 
 /**
- * jcms2 base class.
+ * jcms base class.
  *
  * Two modes:
  *
@@ -108,45 +106,17 @@ public abstract class CmsType {
         read();
     }
 
-    // ==================== equals / hashCode ====================
+    // ==================== equals / hashCode / toString ====================
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        CmsType other = (CmsType) o;
-
-        List<? extends CmsType> kids = children();
-        List<? extends CmsType> otherKids = other.children();
-
-        if (!kids.isEmpty()) {
-            // Compound type: compare children recursively
-            if (kids.size() != otherKids.size()) return false;
-            for (int i = 0; i < kids.size(); i++) {
-                if (!kids.get(i).equals(otherKids.get(i))) return false;
-            }
-            return true;
-        }
-
-        // Leaf type: compare native memory bytes
-        return Arrays.equals(
-            nativePtr.getByteArray(0, nativeSize),
-            other.nativePtr.getByteArray(0, other.nativeSize)
-        );
+        return CmsEqualityUtil.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        List<? extends CmsType> kids = children();
-        if (!kids.isEmpty()) {
-            int h = 1;
-            for (CmsType child : kids) h = 31 * h + child.hashCode();
-            return h;
-        }
-        return Arrays.hashCode(nativePtr.getByteArray(0, nativeSize));
+        return CmsEqualityUtil.hashCode(this);
     }
-
-    // ==================== toString ====================
 
     @Override
     public String toString() {
@@ -154,83 +124,17 @@ public abstract class CmsType {
     }
 
     private String toString(int depth) {
-        List<? extends CmsType> kids = children();
-        if (!kids.isEmpty()) {
-            String indent = repeat("    ", depth + 1);
-            String bracketIndent = repeat("    ", depth);
-            StringBuilder sb = new StringBuilder("(").append(getClass().getSimpleName()).append(") {\n");
-            // Map children to their Java field names (public fields only, toString aid)
-            java.util.Map<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
-            for (java.lang.reflect.Field f : getClass().getFields()) {
-                if (CmsType.class.isAssignableFrom(f.getType())) {
-                    try { fieldNames.put((CmsType) f.get(this), f.getName()); } catch (Exception e) {}
-                }
+        // Build field name map for debug output
+        java.util.Map<CmsType, String> fieldNames = new IdentityHashMap<>();
+        for (java.lang.reflect.Field f : getClass().getFields()) {
+            if (CmsType.class.isAssignableFrom(f.getType())) {
+                try { fieldNames.put((CmsType) f.get(this), f.getName()); } catch (Exception e) {}
             }
-            for (int i = 0; i < kids.size(); i++) {
-                CmsType child = kids.get(i);
-                String name = fieldNames.getOrDefault(child, "[" + i + "]");
-                String val = child.toString(depth + 1);
-                sb.append(indent).append("[").append(i).append("] ").append(name).append(": ").append(val).append(",\n");
-            }
-            if (!kids.isEmpty()) {
-                sb.setLength(sb.length() - 2);
-                sb.append("\n");
-            }
-            sb.append(bracketIndent).append("}");
-            return sb.toString();
         }
-        if (this instanceof CmsUint8Array) {
-            return uint8ArrayToString();
-        }
-        return scalarToString();
+        return CmsFormatUtil.toString(this, depth, fieldNames);
     }
 
-    private String scalarToString() {
-        long val = 0;
-        switch (nativeSize) {
-            case 1: val = nativePtr.getByte(0); break;
-            case 2: val = nativePtr.getShort(0); break;
-            case 4: val = nativePtr.getInt(0); break;
-            case 8: val = nativePtr.getLong(0); break;
-        }
-        return "(" + getClass().getSimpleName() + ") " + val;
-    }
-
-    private String uint8ArrayToString() {
-        CmsUint8Array arr = (CmsUint8Array) this;
-        String prefix = "(" + getClass().getSimpleName() + ") ";
-        byte[] data = arr.value();
-        // Try to show as string
-        if (arr.len > 0 && data.length > 0) {
-            String s = new String(data, StandardCharsets.UTF_8);
-            if (isPrintable(s)) {
-                return prefix + "'" + s + "'";
-            }
-            return prefix + "hex:" + bytesToHex(data);
-        }
-        return prefix + "(empty)";
-    }
-
-    private static boolean isPrintable(String s) {
-        for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-            if (c < 0x20 && c != '\t' && c != '\n' && c != '\r') return false;
-            if (c == 0xFFFD) return false;
-        }
-        return true;
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) sb.append(String.format("%02x", b & 0xFF));
-        return sb.toString();
-    }
-
-    private static String repeat(String s, int count) {
-        StringBuilder sb = new StringBuilder(s.length() * count);
-        for (int i = 0; i < count; i++) sb.append(s);
-        return sb.toString();
-    }
+    // ==================== Memory helper ====================
 
     public void zero() {
         if (nativePtr != null) {

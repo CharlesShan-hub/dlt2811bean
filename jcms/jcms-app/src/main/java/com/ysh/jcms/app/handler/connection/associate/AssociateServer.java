@@ -5,6 +5,7 @@ import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
+import com.ysh.jcms.svc.connection.CmsAssociateError;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.scl.model.document.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;

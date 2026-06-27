@@ -17,21 +17,28 @@ foreach ($m in "jcms-core", "jcms-utils", "jcms-app") {
 Get-ChildItem "$JCMS\jcms-core", "$JCMS\jcms-utils", "$JCMS\jcms-app" -Directory -ErrorAction SilentlyContinue `
     | ForEach-Object { Remove-Item "$_\target" -Recurse -Force -ErrorAction SilentlyContinue }
 
-Write-Host "===== 2. install jcms-core (跳过测试) =====" -ForegroundColor Cyan
+Write-Host "===== 2. install parent POM =====" -ForegroundColor Cyan
+Set-Location "$JCMS"
+$out = mvn install -N --batch-mode 2>&1
+$out | Select-String -Pattern "BUILD"
+$exit = $LASTEXITCODE
+if ($exit -ne 0) { Write-Output $out; throw "parent POM install failed" }
+
+Write-Host "===== 3. install jcms-core (跳过测试) =====" -ForegroundColor Cyan
 Set-Location "$JCMS\jcms-core"
 $out = mvn install -DskipTests --batch-mode 2>&1
 $out | Select-String -Pattern "BUILD"
 $exit = $LASTEXITCODE
 if ($exit -ne 0) { Write-Output $out; throw "jcms-core install failed" }
 
-Write-Host "===== 3. install jcms-utils (跳过测试) =====" -ForegroundColor Cyan
+Write-Host "===== 4. install jcms-utils (跳过测试) =====" -ForegroundColor Cyan
 Set-Location "$JCMS\jcms-utils"
 $out = mvn install -DskipTests --batch-mode 2>&1
 $out | Select-String -Pattern "BUILD"
 $exit = $LASTEXITCODE
 if ($exit -ne 0) { Write-Output $out; throw "jcms-utils install failed" }
 
-Write-Host "===== 4. 测试 jcms-app =====" -ForegroundColor Cyan
+Write-Host "===== 5. 测试 jcms-app =====" -ForegroundColor Cyan
 Set-Location "$JCMS\jcms-app"
 mvn test --batch-mode 2>&1
 $exit = $LASTEXITCODE

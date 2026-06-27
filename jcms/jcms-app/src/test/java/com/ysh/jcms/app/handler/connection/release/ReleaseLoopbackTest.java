@@ -32,7 +32,7 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
         // First associate
         AssociateClient associate = clientNode().getClient(AssociateClient.class);
         associate.execute(new AssociateClientDao()
-            .sapRef("IED1/AP1").secure(false));
+            .sapRef("E1Q1SB1/S1").secure(false));
         assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
         assertNotNull(clientNode().getClient().getSession().getAssociationId());
 
