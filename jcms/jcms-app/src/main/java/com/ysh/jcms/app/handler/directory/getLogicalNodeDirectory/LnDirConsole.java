@@ -19,6 +19,18 @@ public class LnDirConsole implements CommandHandler {
         ACSI_MAP.put("lcb", CmsAcsiClass.LCB);
         ACSI_MAP.put("gocb", CmsAcsiClass.GOCB);
         ACSI_MAP.put("msvcb", CmsAcsiClass.MSVCB);
+        ACSI_MAP.put("log", CmsAcsiClass.LOG);
+        ACSI_MAP.put("sgecb", CmsAcsiClass.SGECB);
+        // integer strings
+        ACSI_MAP.put("1", CmsAcsiClass.DATA_OBJECT);
+        ACSI_MAP.put("2", CmsAcsiClass.DATA_SET);
+        ACSI_MAP.put("3", CmsAcsiClass.BRCB);
+        ACSI_MAP.put("4", CmsAcsiClass.URCB);
+        ACSI_MAP.put("5", CmsAcsiClass.LCB);
+        ACSI_MAP.put("6", CmsAcsiClass.LOG);
+        ACSI_MAP.put("7", CmsAcsiClass.SGECB);
+        ACSI_MAP.put("8", CmsAcsiClass.GOCB);
+        ACSI_MAP.put("10", CmsAcsiClass.MSVCB);
     }
 
     @Override
@@ -30,8 +42,9 @@ public class LnDirConsole implements CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("target", "ldName 或 lnReference", "C1"),
-            new Param("acsi", "ACSI 类", "data-object")
+            new Param("target", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null),
+            new Param("acsi", "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)", "data-object"),
+            new Param("referenceAfter", "起始引用（分页截取）", null)
         );
     }
 
@@ -39,10 +52,16 @@ public class LnDirConsole implements CommandHandler {
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
         String target = args.get("target");
+        if (target == null || target.isEmpty()) {
+            ConsolePrinter.error("Missing target. Usage: ln-dir <ldName|lnReference> [acsi] [referenceAfter]");
+            return;
+        }
+
         String acsiStr = args.get("acsi").toLowerCase();
         Integer acsi = ACSI_MAP.get(acsiStr);
         if (acsi == null) {
-            ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi"));
+            ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi")
+                + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)");
             return;
         }
 
@@ -52,6 +71,11 @@ public class LnDirConsole implements CommandHandler {
             dao.lnReference(target);
         } else {
             dao.ldName(target);
+        }
+
+        String after = args.get("referenceAfter");
+        if (after != null && !after.isEmpty()) {
+            dao.referenceAfter(after);
         }
 
         console.getClient(LnDirClient.class).execute(dao);

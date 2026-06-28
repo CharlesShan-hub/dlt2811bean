@@ -42,6 +42,7 @@ public class SvrDirServer extends BaseServerHandler {
             ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
 
         List<String> ldNames = server.getLDeviceNames(refAfter);
+
         if (ldNames == null) {
             return buildDirError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }

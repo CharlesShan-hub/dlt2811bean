@@ -5,10 +5,10 @@ import java.util.*;
 public class ContentManager {
 
     private String sapRef;
-    private final Set<String> ldNames = new HashSet<>();
-    private final Set<String> lnNames = new HashSet<>();
-    private final Set<String> dataRefs = new HashSet<>();
-    private final Set<String> dataSetRefs = new HashSet<>();
+    private final Set<String> ldNames = new LinkedHashSet<>();
+    private final Set<String> lnNames = new LinkedHashSet<>();
+    private final Set<String> dataRefs = new LinkedHashSet<>();
+    private final Set<String> dataSetRefs = new LinkedHashSet<>();
     private final Map<Integer, Set<String>> lnRefsByAcsiClass = new HashMap<>();
 
     public void initServerDir(String sapRef, List<String> ldNames) {
@@ -33,7 +33,7 @@ public class ContentManager {
     }
 
     public void initNodeDir(int acsiClass, List<String> refs) {
-        Set<String> set = lnRefsByAcsiClass.computeIfAbsent(acsiClass, k -> new HashSet<>());
+        Set<String> set = lnRefsByAcsiClass.computeIfAbsent(acsiClass, k -> new LinkedHashSet<>());
         set.clear();
         set.addAll(refs);
     }

@@ -31,8 +31,8 @@ public class LdDirServer extends BaseServerHandler {
         String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
             ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
 
-        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}",
-            session.getSessionId(), reqId, ldName);
+        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}, refAfter={}",
+            session.getSessionId(), reqId, ldName, refAfter);
 
         SclServer server = getSclServer(session);
         if (server == null) {
