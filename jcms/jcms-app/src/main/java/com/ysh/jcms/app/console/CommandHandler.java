@@ -11,5 +11,5 @@ public interface CommandHandler {
 
     List<Param> params();
 
-    void execute(ConsoleContext ctx, Map<String, String> args) throws Exception;
+    void execute(CmsConsole console, Map<String, String> args) throws Exception;
 }

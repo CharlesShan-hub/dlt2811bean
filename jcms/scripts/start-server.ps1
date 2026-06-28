@@ -13,5 +13,5 @@ mvn -q install -DskipTests -pl jcms-app -am
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 mvn -q exec:java -pl jcms-app `
-    "-Dexec.mainClass=com.ysh.jcms.app.node.CmsServerCli" `
+    "-Dexec.mainClass=com.ysh.jcms.app.console.CmsServerConsole" `
     "-Dexec.args=$Port"

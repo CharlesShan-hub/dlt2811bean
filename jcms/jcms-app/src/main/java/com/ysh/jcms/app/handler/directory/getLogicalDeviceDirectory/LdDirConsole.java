@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
-import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class LdDirCli implements CommandHandler {
+public class LdDirConsole implements CommandHandler {
 
     @Override
     public String name() { return "ld-dir"; }
@@ -27,17 +27,17 @@ public class LdDirCli implements CommandHandler {
     }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
-        if (!ctx.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
+    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        if (!console.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
         LdDirDao dao = new LdDirDao()
             .ldName(args.get("ldName"));
         String after = args.get("referenceAfter");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
         }
-        ctx.node().getClient(LdDirClient.class).execute(dao);
+        console.getClient(LdDirClient.class).execute(dao);
         ConsolePrinter.list("Logical Nodes",
-            new ArrayList<>(ctx.node().getContentManager().getLnNames()),
+            new ArrayList<>(console.getContentManager().getLnNames()),
             s -> s);
     }
 }

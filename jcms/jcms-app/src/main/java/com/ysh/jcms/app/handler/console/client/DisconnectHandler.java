@@ -1,6 +1,6 @@
-package com.ysh.jcms.app.handler.console;
+package com.ysh.jcms.app.handler.console.client;
 
-import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
@@ -19,10 +19,9 @@ public class DisconnectHandler implements CommandHandler {
     public List<Param> params() { return Collections.emptyList(); }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) {
-        if (!ctx.isConnected()) { ConsolePrinter.info("Not connected."); return; }
-        ctx.node().close();
-        ctx.node(null);
+    public void execute(CmsConsole console, Map<String, String> args) {
+        if (!console.isConnected()) { ConsolePrinter.info("Not connected."); return; }
+        console.close();
         ConsolePrinter.success("Disconnected.");
     }
 }

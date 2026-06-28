@@ -107,7 +107,7 @@ public class CmsConfig {
                     return path;
                 }
             }
-            return sclFiles.isEmpty() ? null : sclFiles.get(0);
+            return null;
         }
     }
 
@@ -259,6 +259,9 @@ public class CmsConfig {
                 if (otherFiles.size() > 1 || (otherFiles.size() == 1 && !"config/sample-scd-full.scd".equals(otherFiles.get(0)))) {
                     server.setTestSclFiles(new ArrayList<>(otherFiles));
                 }
+            }
+            if (other.server.getSclFiles() != null && !other.server.getSclFiles().isEmpty()) {
+                server.setSclFiles(new ArrayList<>(other.server.getSclFiles()));
             }
         }
         if (other.client != null) {

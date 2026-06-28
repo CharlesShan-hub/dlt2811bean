@@ -43,7 +43,7 @@ public abstract class BaseLoopbackTest {
     public void setup() throws Exception {
         serverNode = new CmsNode(FREE_PORT);
         registerServers(serverNode);
-        serverNode.start();
+        serverNode.start(true);
 
         clientNode = new CmsNode(0);
         registerClients(clientNode);

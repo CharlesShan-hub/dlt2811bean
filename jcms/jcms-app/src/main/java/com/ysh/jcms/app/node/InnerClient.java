@@ -11,6 +11,7 @@ import com.ysh.jcms.utils.transport.wire.ConnectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 
 /**
@@ -39,6 +40,18 @@ public class InnerClient implements ConnectionListener {
         this.session = new ClientSession(connection);
         connection.startReader();
         log.info("Connected to {}:{}", host, port);
+    }
+
+    /**
+     * Establish a TLS connection to the specified host and port.
+     */
+    public void connectTls(String host, int port, SSLContext sslContext) throws IOException {
+        this.host = host;
+        this.port = port;
+        this.connection = connector.connectTls(host, port, this, sslContext);
+        this.session = new ClientSession(connection);
+        connection.startReader();
+        log.info("TLS connected to {}:{}", host, port);
     }
 
     /**

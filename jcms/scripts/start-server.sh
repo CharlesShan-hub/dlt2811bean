@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
-# 启动 CMS 服务端
-# 用法: ./scripts/start-server.sh [端口号]
+# 启动 CMS 服务端 (端口从 application.yaml 配置读取)
 
 set -euo pipefail
-
-PORT="${1:-18780}"
 cd "$(dirname "$0")/.."
 
-mvn -q install -DskipTests -pl jcms-app -am
+mvn -q clean install -DskipTests -pl jcms-utils,jcms-core,jcms-app -am
 mvn -q exec:java -pl jcms-app \
-    -Dexec.mainClass=com.ysh.jcms.app.node.CmsServerCli \
-    -Dexec.args="$PORT"
+    -Dexec.mainClass=com.ysh.jcms.app.console.CmsServerConsole

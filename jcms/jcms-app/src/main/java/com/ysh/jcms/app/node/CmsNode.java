@@ -6,13 +6,18 @@ import com.ysh.jcms.utils.security.GmCredentialManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
 public class CmsNode {
+
+    private static final Logger log = LoggerFactory.getLogger(CmsNode.class);
 
     private final InnerServer server;
     private final InnerClient client = new InnerClient();
@@ -21,8 +26,16 @@ public class CmsNode {
     private final ContentManager contentManager = new ContentManager();
     private GmCredentialManager credentialManager;
 
+    public CmsNode(boolean createServer) {
+        this.server = createServer ? new InnerServer() : null;
+    }
+
+    /**
+     * Constructor for testing with a specific server port.
+     * The {@link InnerServer} will listen on the given port (no TLS).
+     */
     public CmsNode(int serverPort) {
-        this.server = serverPort > 0 ? new InnerServer(serverPort) : null;
+        this.server = serverPort > 0 ? new InnerServer(serverPort, 0) : null;
     }
 
     public void registerServer(ServiceHandler handler) {
@@ -68,14 +81,22 @@ public class CmsNode {
         throw new IllegalStateException("No execute method with " + args.length + " params on " + handlerClass.getSimpleName());
     }
 
-    public void start() throws IOException {
+    /**
+     * Start the server node.
+     *
+     * @param test if {@code true}, load SCL from {@code testSclFiles} (for unit/integration tests);
+     *             otherwise load from {@code sclFiles} (for production server console)
+     */
+    public void start(boolean test) throws IOException {
         if (server != null) {
             CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
-            String sclFile = cfg.getResolvedSclFile();
-            if (sclFile == null) sclFile = cfg.getResolvedTestSclFile();
+            String sclFile = test ? cfg.getResolvedTestSclFile() : cfg.getResolvedSclFile();
+            log.info("SCL file resolved: {} (test={})", sclFile, test);
             if (sclFile != null) {
                 sclManager.load(sclFile);
-                server.setSclDocument(sclManager.getDocument());
+                if (sclManager.isLoaded()) {
+                    server.setSclDocument(sclManager.getDocument());
+                }
             }
             server.start();
         }
@@ -93,6 +114,10 @@ public class CmsNode {
 
     public void connect(String host, int port) throws IOException {
         client.connect(host, port);
+    }
+
+    public void connectTls(String host, int port, SSLContext sslContext) throws IOException {
+        client.connectTls(host, port, sslContext);
     }
 
     public Frame sendRequest(ServiceName sc, byte[] asduBytes, long timeoutMs) throws IOException {

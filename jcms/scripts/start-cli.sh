@@ -9,4 +9,4 @@ cd "$(dirname "$0")/.."
 mvn -q install -DskipTests -pl jcms-app -am
 mvn -q exec:java -pl jcms-app \
     -Dlogback.configurationFile=jcms-app/src/main/resources/logback-cli.xml \
-    -Dexec.mainClass=com.ysh.jcms.app.console.CmsConsole
+    -Dexec.mainClass=com.ysh.jcms.app.console.CmsClientConsole

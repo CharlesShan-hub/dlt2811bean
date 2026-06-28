@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
-import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
@@ -8,7 +8,7 @@ import com.ysh.jcms.svc.directory.CmsAcsiClass;
 
 import java.util.*;
 
-public class LnDirCli implements CommandHandler {
+public class LnDirConsole implements CommandHandler {
 
     private static final Map<String, Integer> ACSI_MAP = new LinkedHashMap<>();
     static {
@@ -36,8 +36,8 @@ public class LnDirCli implements CommandHandler {
     }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
-        if (!ctx.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
+    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        if (!console.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
         String target = args.get("target");
         String acsiStr = args.get("acsi").toLowerCase();
         Integer acsi = ACSI_MAP.get(acsiStr);
@@ -54,9 +54,9 @@ public class LnDirCli implements CommandHandler {
             dao.ldName(target);
         }
 
-        ctx.node().getClient(LnDirClient.class).execute(dao);
+        console.getClient(LnDirClient.class).execute(dao);
         ConsolePrinter.list("References (" + acsiStr + ")",
-            new ArrayList<>(ctx.node().getContentManager().getNodeRefs(acsi)),
+            new ArrayList<>(console.getContentManager().getNodeRefs(acsi)),
             s -> s);
     }
 }

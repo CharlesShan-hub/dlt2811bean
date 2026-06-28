@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
-import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class SvrDirCli implements CommandHandler {
+public class SvrDirConsole implements CommandHandler {
 
     @Override
     public String name() { return "server-dir"; }
@@ -26,24 +26,24 @@ public class SvrDirCli implements CommandHandler {
     }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
-        String msg = check(ctx);
+    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        String msg = check(console);
         if (msg != null) { ConsolePrinter.error(msg); return; }
         SvrDirDao dao = new SvrDirDao();
         String after = args.get("referenceAfter");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
         }
-        ctx.node().getClient(SvrDirClient.class)
+        console.getClient(SvrDirClient.class)
             .execute(dao);
         ConsolePrinter.list("Logical Devices",
-            new ArrayList<>(ctx.node().getContentManager().getLdNames()),
+            new ArrayList<>(console.getContentManager().getLdNames()),
             s -> s);
     }
 
-    static String check(ConsoleContext ctx) {
-        if (!ctx.isConnected()) return "Not connected. Type 'connect' first.";
-        if (ctx.node().getClient(SvrDirClient.class) == null) return "SvrDirClient not registered.";
+    static String check(CmsConsole console) {
+        if (!console.isConnected()) return "Not connected. Type 'connect' first.";
+        if (console.getClient(SvrDirClient.class) == null) return "SvrDirClient not registered.";
         return null;
     }
 }

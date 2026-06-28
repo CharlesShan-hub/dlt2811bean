@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler.console;
+package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.*;
 
@@ -18,7 +18,7 @@ public class HelpHandler implements CommandHandler {
     public List<Param> params() { return Collections.emptyList(); }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) {
+    public void execute(CmsConsole console, Map<String, String> args) {
         System.out.println();
         System.out.format("  %-16s  %s\n", "命令", "说明");
         System.out.format("  %-16s  %s\n", "---------", "----");

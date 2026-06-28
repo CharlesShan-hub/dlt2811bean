@@ -18,6 +18,7 @@ public class SclManager {
     private static final Logger log = LoggerFactory.getLogger(SclManager.class);
 
     private SclDocument document;
+    private String source;
 
     /**
      * Load an SCL file.
@@ -45,6 +46,7 @@ public class SclManager {
         if (is != null) {
             try {
                 this.document = new SclReader().read(is);
+                this.source = "classpath:" + classpathResource;
                 log.info("SCL model loaded from classpath: {} (type={}, IEDs={})",
                     classpathResource, document.getFileType(),
                     document.getIeds() != null ? document.getIeds().size() : 0);
@@ -55,6 +57,9 @@ public class SclManager {
         }
         return loadFromFile(filePath);
     }
+
+    /** The source path that was loaded. */
+    public String getSource() { return source; }
 
     private boolean isAbsolutePath(String path) {
         // Windows absolute: C:\... or C:/...
@@ -69,6 +74,7 @@ public class SclManager {
     private SclManager loadFromFile(String filePath) {
         try {
             this.document = new SclReader().read(filePath);
+            this.source = filePath;
             log.info("SCL model loaded from file: {} (type={}, IEDs={})",
                 filePath, document.getFileType(),
                 document.getIeds() != null ? document.getIeds().size() : 0);

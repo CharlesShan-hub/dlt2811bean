@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.connection.release;
 
-import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ReleaseCli implements CommandHandler {
+public class ReleaseConsole implements CommandHandler {
 
     @Override
     public String name() { return "release"; }
@@ -23,9 +23,9 @@ public class ReleaseCli implements CommandHandler {
     }
 
     @Override
-    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
-        if (!ctx.isConnected()) { ConsolePrinter.error("Not connected."); return; }
-        ctx.node().getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute();
+    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        if (!console.isConnected()) { ConsolePrinter.error("Not connected."); return; }
+        console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute();
         ConsolePrinter.success("Released.");
     }
 }

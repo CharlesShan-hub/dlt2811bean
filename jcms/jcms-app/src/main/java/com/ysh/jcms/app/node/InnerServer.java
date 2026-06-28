@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.node;
 
+import com.ysh.jcms.utils.config.CmsConfig;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.document.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
@@ -13,10 +15,20 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 import com.ysh.jcms.utils.transport.wire.Connection;
 import com.ysh.jcms.utils.transport.wire.ConnectionListener;
 import com.ysh.jcms.utils.transport.wire.ServerAcceptor;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter;
+import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.*;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class InnerServer implements ConnectionListener {
@@ -24,14 +36,88 @@ public class InnerServer implements ConnectionListener {
     private static final Logger log = LoggerFactory.getLogger(InnerServer.class);
 
     private final int port;
+    private final int sslPort;
     private final ServerAcceptor acceptor;
+    private ServerAcceptor sslAcceptor;
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
     private SclDocument sclDocument;
 
-    public InnerServer(int port) {
-        this.port = port;
+    public InnerServer() {
+        CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
+        this.port = cfg.getPort();
+        this.sslPort = cfg.getSslPort();
         this.acceptor = new ServerAcceptor(port, this);
+        configureTls();
+    }
+
+    /** Constructor for testing with explicit ports (no TLS setup). */
+    public InnerServer(int port, int sslPort) {
+        this.port = port;
+        this.sslPort = sslPort;
+        this.acceptor = new ServerAcceptor(port, this);
+    }
+
+    private void configureTls() {
+        if (sslPort <= 0) return;
+        try {
+            KeyPair kp = generateRsaKeyPair();
+            X509Certificate cert = generateSelfSignedCert(kp);
+            SSLContext ctx = SSLContext.getInstance("TLSv1.2");
+            ctx.init(
+                createKeyManagers(kp, cert),
+                new X509TrustManager[]{
+                    new X509TrustManager() {
+                        public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                    }
+                },
+                new SecureRandom()
+            );
+            this.sslAcceptor = new ServerAcceptor(sslPort, this)
+                .sslContext(ctx)
+                .needClientAuth(false);
+        } catch (Exception e) {
+            log.warn("Failed to configure TLS on port {}: {}", sslPort, e.getMessage());
+        }
+    }
+
+    private static KeyPair generateRsaKeyPair() throws Exception {
+        KeyPairGenerator gen = KeyPairGenerator.getInstance("RSA");
+        gen.initialize(2048, new SecureRandom());
+        return gen.generateKeyPair();
+    }
+
+    private static X509Certificate generateSelfSignedCert(KeyPair kp) throws Exception {
+        long now = System.currentTimeMillis();
+        // Need BC provider for X509v3 certificate building
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
+        X500Name name = new X500Name("CN=CMS Dev Server");
+        JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(
+            name,
+            BigInteger.valueOf(now),
+            new Date(now),
+            new Date(now + 365L * 24 * 60 * 60 * 1000),
+            name,
+            kp.getPublic()
+        );
+        return new JcaX509CertificateConverter()
+            .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            .getCertificate(builder.build(new JcaContentSignerBuilder("SHA256WithRSA")
+                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+                .build(kp.getPrivate())));
+    }
+
+    private static KeyManager[] createKeyManagers(KeyPair kp, X509Certificate cert) throws Exception {
+        KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+        ks.load(null, null);
+        ks.setKeyEntry("key", kp.getPrivate(), "".toCharArray(), new X509Certificate[]{cert});
+        KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        kmf.init(ks, "".toCharArray());
+        return kmf.getKeyManagers();
     }
 
     public SclDocument getSclDocument() { return sclDocument; }
@@ -43,16 +129,22 @@ public class InnerServer implements ConnectionListener {
 
     public void start() throws IOException {
         acceptor.start();
-        log.info("InnerServer started on port {}", port);
+        if (sslAcceptor != null) sslAcceptor.start();
+        log.info("InnerServer started on port {} ({}{})",
+            port, sslAcceptor != null ? "TLS: " : "",
+            sslAcceptor != null ? String.valueOf(sslPort) : "");
     }
 
     public void stop() {
         acceptor.stop();
+        if (sslAcceptor != null) { sslAcceptor.stop(); sslAcceptor = null; }
         for (ServerSession ss : sessions) ss.close();
         sessions.clear();
     }
 
     public int getPort() { return port; }
+    public int getSslPort() { return sslPort; }
+    public boolean hasTls() { return sslAcceptor != null; }
     public boolean isRunning() { return acceptor.isRunning(); }
     public java.util.List<ServerSession> getSessions() { return new java.util.ArrayList<>(sessions); }
 

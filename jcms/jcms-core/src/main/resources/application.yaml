@@ -4,7 +4,6 @@ server:
   testSclFiles:
     - config/sample-scd-full.scd
   sclFiles:
-    - C:\Users\17428\Downloads\big.scd
     - /Users/charles/Downloads/big.scd
 
 client:

@@ -1,12 +1,7 @@
 package com.ysh.jcms.app.console;
 
-import com.ysh.jcms.app.handler.console.*;
-import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirCli;
-import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirCli;
-import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirCli;
-import com.ysh.jcms.app.handler.connection.release.ReleaseCli;
-import com.ysh.jcms.app.handler.connection.abort.AbortCli;
-import com.ysh.jcms.app.handler.test.test.TestCli;
+import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.utils.transport.session.SessionState;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
@@ -15,28 +10,31 @@ import org.jline.reader.UserInterruptException;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class CmsConsole {
+/**
+ * Base class for CMS consoles.
+ *
+ * <p>Extends {@link CmsNode} and provides JLine-based interactive command processing.
+ * Subclasses register their own handlers (client commands or server handlers)
+ * via {@link #register(CommandHandler)} / {@link #registerHandlers()}.
+ */
+public abstract class CmsConsole extends CmsNode {
 
-    private final ConsoleContext ctx = new ConsoleContext();
     private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
     private final LineReader reader;
     private boolean running = true;
 
-    public CmsConsole() {
-        reader = LineReaderBuilder.builder()
+    protected CmsConsole(boolean createServer) {
+        super(createServer);
+        this.reader = LineReaderBuilder.builder()
             .variable(LineReader.HISTORY_FILE,
-                Paths.get(System.getProperty("user.home"), ".cms_cli_history"))
+                Paths.get(System.getProperty("user.home"), ".cms_console_history"))
             .build();
-        register(new HelpHandler(this));
-        register(new ConnectHandler());
-        register(new DisconnectHandler());
-        register(new SvrDirCli());
-        register(new LdDirCli());
-        register(new LnDirCli());
-        register(new ReleaseCli());
-        register(new AbortCli());
-        register(new TestCli());
     }
+
+    /** Subclasses register their command handlers here. */
+    protected abstract void registerHandlers();
+
+    // ── handler management ──
 
     public void register(CommandHandler handler) {
         handlers.put(handler.name(), handler);
@@ -44,12 +42,23 @@ public class CmsConsole {
 
     public Map<String, CommandHandler> handlers() { return handlers; }
 
+    // ── console helpers (used by handlers) ──
+
+    public boolean isConnected() {
+        return isClientConnected()
+            && getClient().getSession() != null
+            && getClient().getSession().getState() == SessionState.ASSOCIATED;
+    }
+
+    // ── main loop ──
+
     public void run() {
-        System.out.println("CMS Console — Type 'help' for commands, 'exit' to quit");
+        registerHandlers();
+        onStart();
         while (running) {
             String raw;
             try {
-                raw = reader.readLine("cms> ").trim();
+                raw = reader.readLine(prompt()).trim();
             } catch (UserInterruptException | EndOfFileException e) {
                 continue;
             } catch (Exception e) {
@@ -62,9 +71,20 @@ public class CmsConsole {
             }
             executeLine(raw);
         }
-        if (ctx.isConnected()) ctx.node().close();
-        System.out.println("Bye.");
+        if (isConnected()) close();
+        onStop();
     }
+
+    /** Override to customise the prompt (default "cms> "). */
+    protected String prompt() { return "cms> "; }
+
+    /** Hook called before the loop starts. */
+    protected void onStart() {}
+
+    /** Hook called after the loop ends. */
+    protected void onStop() { System.out.println("Bye."); }
+
+    // ── command parsing ──
 
     public boolean executeLine(String raw) {
         List<String> tokens = tokenize(raw);
@@ -109,7 +129,7 @@ public class CmsConsole {
                 }
             }
 
-            handler.execute(ctx, args);
+            handler.execute(this, args);
         } catch (Exception e) {
             String msg = e.getMessage();
             if (msg == null) msg = e.getClass().getSimpleName();
@@ -134,9 +154,5 @@ public class CmsConsole {
         }
         if (buf.length() > 0) tokens.add(buf.toString());
         return tokens;
-    }
-
-    public static void main(String[] args) {
-        new CmsConsole().run();
     }
 }
