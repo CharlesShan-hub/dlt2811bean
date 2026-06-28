@@ -1,6 +1,6 @@
-package com.ysh.jcms.app.cli;
+package com.ysh.jcms.app.console;
 
-import com.ysh.jcms.app.cli.handler.*;
+import com.ysh.jcms.app.handler.console.*;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirCli;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirCli;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirCli;
@@ -15,14 +15,14 @@ import org.jline.reader.UserInterruptException;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class CmsCli {
+public class CmsConsole {
 
-    private final CliContext ctx = new CliContext();
+    private final ConsoleContext ctx = new ConsoleContext();
     private final Map<String, CommandHandler> handlers = new LinkedHashMap<>();
     private final LineReader reader;
     private boolean running = true;
 
-    public CmsCli() {
+    public CmsConsole() {
         reader = LineReaderBuilder.builder()
             .variable(LineReader.HISTORY_FILE,
                 Paths.get(System.getProperty("user.home"), ".cms_cli_history"))
@@ -45,14 +45,12 @@ public class CmsCli {
     public Map<String, CommandHandler> handlers() { return handlers; }
 
     public void run() {
-        System.out.println("CMS CLI — Type 'help' for commands, 'exit' to quit");
+        System.out.println("CMS Console — Type 'help' for commands, 'exit' to quit");
         while (running) {
             String raw;
             try {
                 raw = reader.readLine("cms> ").trim();
-            } catch (UserInterruptException e) {
-                continue;
-            } catch (EndOfFileException e) {
+            } catch (UserInterruptException | EndOfFileException e) {
                 continue;
             } catch (Exception e) {
                 continue;
@@ -77,19 +75,13 @@ public class CmsCli {
 
         CommandHandler handler = handlers.get(cmdName);
         if (handler == null) {
-            CliPrinter.error("Unknown command: " + cmdName + "  (type 'help')");
+            ConsolePrinter.error("Unknown command: " + cmdName + "  (type 'help')");
             return true;
         }
-
-        // Empty the ContentManager on each new command run
-        // (the directory handlers repopulate it as needed)
 
         try {
             Map<String, String> args = new LinkedHashMap<>();
             List<Param> params = handler.params();
-            List<String> positional = new ArrayList<>(argTokens);
-
-            // Parse --key value pairs
             Map<String, String> namedArgs = new LinkedHashMap<>();
             List<String> positionalArgs = new ArrayList<>();
             for (int i = 0; i < argTokens.size(); i++) {
@@ -106,7 +98,6 @@ public class CmsCli {
 
             for (int i = 0; i < params.size(); i++) {
                 Param p = params.get(i);
-                // named arg takes priority
                 if (namedArgs.containsKey(p.name())) {
                     args.put(p.name(), namedArgs.get(p.name()));
                 } else if (i < positionalArgs.size()) {
@@ -122,7 +113,7 @@ public class CmsCli {
         } catch (Exception e) {
             String msg = e.getMessage();
             if (msg == null) msg = e.getClass().getSimpleName();
-            CliPrinter.error(msg);
+            ConsolePrinter.error(msg);
         }
         return true;
     }
@@ -136,10 +127,7 @@ public class CmsCli {
             if (c == '"') {
                 inQuote = !inQuote;
             } else if (Character.isWhitespace(c) && !inQuote) {
-                if (buf.length() > 0) {
-                    tokens.add(buf.toString());
-                    buf.setLength(0);
-                }
+                if (buf.length() > 0) { tokens.add(buf.toString()); buf.setLength(0); }
             } else {
                 buf.append(c);
             }
@@ -149,6 +137,6 @@ public class CmsCli {
     }
 
     public static void main(String[] args) {
-        new CmsCli().run();
+        new CmsConsole().run();
     }
 }

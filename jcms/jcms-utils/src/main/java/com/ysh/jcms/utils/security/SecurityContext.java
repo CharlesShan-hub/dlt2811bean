@@ -6,16 +6,14 @@ import java.security.cert.X509Certificate;
 /**
  * 安全上下文 — 封装客户端和服务端双向认证所需的所有材料。
  *
- * <p>客户端用 {@link #credentialManager()} 获取私钥和证书，
- * 服务端用 {@link #authenticator()} 验证客户端签名。
+ * <p>客户端用 {@link #credentialManager()} 获取私钥和证书签名，
+ * 服务端认证由 {@code AssociateServer} 从 {@code application.yaml} 的 {@code server.requireAuthentication} 自动启用。
  *
  * <pre>
- * // 服务端启用安全
- * SecurityContext ctx = SecurityContext.generateSelfSigned();
- * new AssociateServer().enableSecurity(ctx);
- *
  * // 客户端启用安全
- * new AssociateClient(node, ctx);
+ * SecurityContext ctx = SecurityContext.generateSelfSigned();
+ * node.setCredentialManager(ctx.credentialManager());
+ * new AssociateClient(node);
  * </pre>
  */
 public class SecurityContext {

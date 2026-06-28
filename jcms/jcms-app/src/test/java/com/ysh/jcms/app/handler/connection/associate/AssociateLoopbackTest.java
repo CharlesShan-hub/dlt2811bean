@@ -2,7 +2,9 @@ package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseLoopbackTest;
 import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.session.SessionState;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -11,8 +13,13 @@ import static org.junit.Assert.*;
 
 public class AssociateLoopbackTest extends BaseLoopbackTest {
 
-    public AssociateLoopbackTest() {
-        // must use registerServers/registerClients; see superclass
+    private SecurityContext clientCtx;
+
+    @Override
+    @Before
+    public void setup() throws Exception {
+        clientCtx = SecurityContext.generateSelfSigned();
+        super.setup();
     }
 
     @Override
@@ -22,8 +29,11 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
+        node.setCredentialManager(clientCtx.credentialManager());
         regClient(node, new AssociateClient(node));
     }
+
+    // ── without security ──
 
     @Test
     public void associate_without_security() throws Exception {
@@ -63,5 +73,34 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
             assertTrue(e.getMessage().contains("error="));
         }
         assertEquals(SessionState.DISCONNECTED, clientNode().getClient().getSession().getState());
+    }
+
+    // ── with security ──
+
+    @Test
+    public void associate_with_security() throws Exception {
+        clientNode().getClient(AssociateClient.class)
+            .execute(new AssociateClientDao()
+                .sapRef("E1Q1SB1/S1").secure(true));
+
+        assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
+        assertNotNull(clientNode().getClient().getSession().getAssociationId());
+        assertEquals(64, clientNode().getClient().getSession().getAssociationId().length);
+    }
+
+    @Test
+    public void associate_secure_reject_when_already_associated() throws Exception {
+        clientNode().getClient(AssociateClient.class)
+            .execute(new AssociateClientDao()
+                .sapRef("E1Q1SB1/S1").secure(true));
+
+        try {
+            clientNode().getClient(AssociateClient.class)
+                .execute(new AssociateClientDao()
+                    .sapRef("E1Q1SB1/S1").secure(true));
+            fail("Should throw on second associate");
+        } catch (IOException e) {
+            assertTrue(e.getMessage().contains("error="));
+        }
     }
 }

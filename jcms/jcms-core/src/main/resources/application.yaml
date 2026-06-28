@@ -1,8 +1,11 @@
 server:
   port: 8102
   sslPort: 9102
-  sclFiles:
+  testSclFiles:
     - config/sample-scd-full.scd
+  sclFiles:
+    - C:\Users\17428\Downloads\big.scd
+    - /Users/charles/Downloads/big.scd
 
 client:
   defaultIedName: C_B5041X

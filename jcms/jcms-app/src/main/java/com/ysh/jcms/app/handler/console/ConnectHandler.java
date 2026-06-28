@@ -1,9 +1,9 @@
-package com.ysh.jcms.app.cli.handler;
+package com.ysh.jcms.app.handler.console;
 
-import com.ysh.jcms.app.cli.CliContext;
-import com.ysh.jcms.app.cli.CliPrinter;
-import com.ysh.jcms.app.cli.CommandHandler;
-import com.ysh.jcms.app.cli.Param;
+import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
@@ -13,7 +13,6 @@ import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirClient;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirClient;
 import com.ysh.jcms.app.handler.connection.release.ReleaseClient;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,9 +36,9 @@ public class ConnectHandler implements CommandHandler {
     }
 
     @Override
-    public void execute(CliContext ctx, Map<String, String> args) throws Exception {
+    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
         if (ctx.isConnected()) {
-            CliPrinter.error("Already connected. Type 'disconnect' first.");
+            ConsolePrinter.error("Already connected. Type 'disconnect' first.");
             return;
         }
 
@@ -47,10 +46,9 @@ public class ConnectHandler implements CommandHandler {
         int port = Integer.parseInt(args.get("port"));
         String sapRef = args.get("sapRef");
 
-        CliPrinter.info("Connecting to " + host + ":" + port + " ...");
+        ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
 
         CmsNode node = new CmsNode(0);
-        // Register all client handlers
         node.registerClient(new NegotiateClient(node));
         node.registerClient(new AssociateClient(node));
         node.registerClient(new ReleaseClient(node));
@@ -60,13 +58,12 @@ public class ConnectHandler implements CommandHandler {
         node.registerClient(new LdDirClient(node));
 
         node.connect(host, port);
-        CliPrinter.info("Connected, associating with " + sapRef + " ...");
+        ConsolePrinter.info("Connected, associating with " + sapRef + " ...");
 
         node.getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef(sapRef).secure(false));
+            .execute(new AssociateClientDao().sapRef(sapRef).secure(false));
 
         ctx.node(node);
-        CliPrinter.success("Associated: " + sapRef);
+        ConsolePrinter.success("Associated: " + sapRef);
     }
 }

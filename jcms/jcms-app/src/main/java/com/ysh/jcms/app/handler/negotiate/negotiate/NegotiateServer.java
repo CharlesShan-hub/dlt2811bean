@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.negotiate.CmsNegotiateError;
 import com.ysh.jcms.svc.negotiate.CmsNegotiateRequest;
@@ -16,19 +17,12 @@ import java.nio.charset.StandardCharsets;
 public class NegotiateServer extends BaseServerHandler {
 
     public NegotiateServer() {
-        super(ServiceName.ASSOCIATE_NEGOTIATE);
+        super(ServiceName.ASSOCIATE_NEGOTIATE, CmsNegotiateRequest.class, CmsNegotiateError.class);
     }
 
     @Override
-    public Frame handleRequest(Session session, Frame request) {
-        CmsNegotiateRequest req = new CmsNegotiateRequest();
-        if (!tryDecode(session, request, req)) {
-            return buildError(new CmsNegotiateError()
-                .reqId(0)
-                .serviceError(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT)
-                .encode(), 0);
-        }
-
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsNegotiateRequest req = (CmsNegotiateRequest) rawReq;
         int reqId = req.reqId.value();
         CmsConfig.Negotiate config = CmsConfigLoader.load().getNegotiate();
 
@@ -36,10 +30,7 @@ public class NegotiateServer extends BaseServerHandler {
         if (clientProtocolVersion > config.getProtocolVersion()) {
             log.warn("Negotiate rejected: client protocolVersion={} > server protocolVersion={}",
                 clientProtocolVersion, config.getProtocolVersion());
-            return buildError(new CmsNegotiateError()
-                .reqId(reqId)
-                .serviceError(CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT)
-                .encode(), reqId);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
 
         int negotiatedApduSize = Math.min(req.apduSize.value(), config.getApduSize());

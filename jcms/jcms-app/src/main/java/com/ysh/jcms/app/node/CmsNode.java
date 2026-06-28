@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.node;
 
+import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.security.GmCredentialManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class CmsNode {
     private final Map<Class<?>, Object> clientHandlers = new HashMap<>();
     private final SclManager sclManager = new SclManager();
     private final ContentManager contentManager = new ContentManager();
+    private GmCredentialManager credentialManager;
 
     public CmsNode(int serverPort) {
         this.server = serverPort > 0 ? new InnerServer(serverPort) : null;
@@ -68,7 +70,9 @@ public class CmsNode {
 
     public void start() throws IOException {
         if (server != null) {
-            String sclFile = CmsConfigLoader.load().getServer().getResolvedSclFile();
+            CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
+            String sclFile = cfg.getResolvedSclFile();
+            if (sclFile == null) sclFile = cfg.getResolvedTestSclFile();
             if (sclFile != null) {
                 sclManager.load(sclFile);
                 server.setSclDocument(sclManager.getDocument());
@@ -79,6 +83,8 @@ public class CmsNode {
 
     public SclManager getSclManager() { return sclManager; }
     public ContentManager getContentManager() { return contentManager; }
+    public GmCredentialManager getCredentialManager() { return credentialManager; }
+    public void setCredentialManager(GmCredentialManager credentialManager) { this.credentialManager = credentialManager; }
 
     public void stop() {
         client.close();

@@ -48,12 +48,42 @@ public class CmsConfig {
     public static class Server {
         private int port = 8102;
         private int sslPort = 9102;
-        private List<String> sclFiles = new ArrayList<>(Collections.singletonList("config/sample-scd-full.scd"));
+        private List<String> testSclFiles = new ArrayList<>(Collections.singletonList("config/sample-scd-full.scd"));
+        private List<String> sclFiles = new ArrayList<>();
 
         public int getPort() { return port; }
         public void setPort(int port) { this.port = port; }
         public int getSslPort() { return sslPort; }
         public void setSslPort(int sslPort) { this.sslPort = sslPort; }
+        
+        // ── testSclFiles (for unit/integration tests) ──
+        
+        public String getTestSclFile() {
+            return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
+        }
+        
+        public void setTestSclFile(String sclFile) {
+            this.testSclFiles = new ArrayList<>(Collections.singletonList(sclFile));
+        }
+        
+        public List<String> getTestSclFiles() {
+            return testSclFiles;
+        }
+        
+        public void setTestSclFiles(List<String> testSclFiles) {
+            this.testSclFiles = testSclFiles;
+        }
+        
+        public String getResolvedTestSclFile() {
+            for (String path : testSclFiles) {
+                if (Files.exists(Paths.get(path))) {
+                    return path;
+                }
+            }
+            return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
+        }
+        
+        // ── sclFiles (for production server) ──
         
         public String getSclFile() {
             return sclFiles.isEmpty() ? null : sclFiles.get(0);
@@ -224,10 +254,10 @@ public class CmsConfig {
         if (other.server != null) {
             if (other.server.port != 8102) server.port = other.server.port;
             if (other.server.sslPort != 9102) server.sslPort = other.server.sslPort;
-            if (other.server.getSclFiles() != null) {
-                List<String> otherFiles = other.server.getSclFiles();
+            if (other.server.getTestSclFiles() != null) {
+                List<String> otherFiles = other.server.getTestSclFiles();
                 if (otherFiles.size() > 1 || (otherFiles.size() == 1 && !"config/sample-scd-full.scd".equals(otherFiles.get(0)))) {
-                    server.setSclFiles(new ArrayList<>(otherFiles));
+                    server.setTestSclFiles(new ArrayList<>(otherFiles));
                 }
             }
         }

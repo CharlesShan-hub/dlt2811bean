@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
-import com.ysh.jcms.app.cli.CliContext;
-import com.ysh.jcms.app.cli.CliPrinter;
-import com.ysh.jcms.app.cli.CommandHandler;
-import com.ysh.jcms.app.cli.Param;
+import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.Param;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,11 +25,11 @@ public class AbortCli implements CommandHandler {
     }
 
     @Override
-    public void execute(CliContext ctx, Map<String, String> args) throws Exception {
-        if (!ctx.isConnected()) { CliPrinter.error("Not connected."); return; }
+    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
+        if (!ctx.isConnected()) { ConsolePrinter.error("Not connected."); return; }
         int reason = Integer.parseInt(args.get("reason"));
         ctx.node().getClient(AbortClient.class)
             .execute(new AbortClientDao().reason(reason));
-        CliPrinter.success("Abort sent (reason=" + reason + ")");
+        ConsolePrinter.success("Abort sent (reason=" + reason + ")");
     }
 }

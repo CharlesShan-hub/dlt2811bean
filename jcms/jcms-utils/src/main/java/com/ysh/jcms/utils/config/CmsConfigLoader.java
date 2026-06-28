@@ -106,10 +106,10 @@ public class CmsConfigLoader {
                 log.warn("Invalid system property cms.server.port: {}", port);
             }
         }
-        String sclFile = System.getProperty(PROP_PREFIX + "server.sclFile");
+        String sclFile = System.getProperty(PROP_PREFIX + "server.testSclFile");
         if (sclFile != null && !sclFile.isEmpty()) {
-            config.getServer().setSclFile(sclFile);
-            log.info("Override server.sclFile={} from system property", sclFile);
+            config.getServer().setTestSclFile(sclFile);
+            log.info("Override server.testSclFile={} from system property", sclFile);
         }
     }
 }

@@ -9,7 +9,7 @@ import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.security.GmSignature;
-import com.ysh.jcms.utils.security.SecurityContext;
+import com.ysh.jcms.utils.security.GmCredentialManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.SessionState;
@@ -19,15 +19,11 @@ import java.nio.charset.StandardCharsets;
 
 public class AssociateClient extends BaseClientHandler {
 
-    private SecurityContext securityContext;
+    private final GmCredentialManager credentialManager;
 
     public AssociateClient(CmsNode node) {
         super(node);
-    }
-
-    public AssociateClient(CmsNode node, SecurityContext ctx) {
-        super(node);
-        this.securityContext = ctx;
+        this.credentialManager = node.getCredentialManager();
     }
 
     public void execute(AssociateClientDao dao) throws Exception {
@@ -36,8 +32,8 @@ public class AssociateClient extends BaseClientHandler {
             .sapRef(dao.sapRef())
             .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
-        if (dao.secure() && securityContext != null) {
-            req.authParam(buildAuthParam(dao.sapRef()));
+        if (dao.secure() && credentialManager != null) {
+            req.authParam(buildAuthParam(credentialManager, dao.sapRef()));
             req.authParamPresent(true);
         }
 
@@ -68,8 +64,8 @@ public class AssociateClient extends BaseClientHandler {
         log.info("Association established: session={}", node.getClient().getSession().getSessionId());
     }
 
-    private CmsAuthenticationParameter buildAuthParam(String sapRef) throws Exception {
-        byte[] certBytes = securityContext.credentialManager().getCertificate().getEncoded();
+    private CmsAuthenticationParameter buildAuthParam(GmCredentialManager cm, String sapRef) throws Exception {
+        byte[] certBytes = cm.getCertificate().getEncoded();
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
         long now = System.currentTimeMillis();
         byte[] timeBytes = String.valueOf(now / 1000).getBytes(StandardCharsets.UTF_8);
@@ -78,7 +74,7 @@ public class AssociateClient extends BaseClientHandler {
         System.arraycopy(sapBytes, 0, signedData, 0, sapBytes.length);
         System.arraycopy(timeBytes, 0, signedData, sapBytes.length, timeBytes.length);
 
-        byte[] signatureValue = GmSignature.sign(securityContext.credentialManager().getPrivateKey(), signedData);
+        byte[] signatureValue = GmSignature.sign(cm.getPrivateKey(), signedData);
 
         return new CmsAuthenticationParameter()
             .cert(certBytes)

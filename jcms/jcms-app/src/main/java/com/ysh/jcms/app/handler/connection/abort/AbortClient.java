@@ -21,7 +21,7 @@ public class AbortClient extends BaseClientHandler {
 
     public void execute(AbortClientDao dao) throws Exception {
         byte[] reqBytes = new CmsAbort()
-            .reqId(nextReqId())
+            .reqId(0)       // ReqID=0 for one-way (non-request-response) services per DL/T 2811 §6.2.1-c
             .reason(dao.reason())
             .encode();
 

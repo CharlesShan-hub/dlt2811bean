@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
@@ -18,16 +19,12 @@ import java.util.List;
 public class LdDirServer extends BaseServerHandler {
 
     public LdDirServer() {
-        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY);
+        super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, CmsGetLogicalDeviceDirectoryRequest.class, CmsGetLogicalDeviceDirectoryError.class);
     }
 
     @Override
-    public Frame handleRequest(Session session, Frame request) {
-        CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest();
-        if (!tryDecode(session, request, req)) {
-            return buildDirError(request.reqId(), CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsGetLogicalDeviceDirectoryRequest req = (CmsGetLogicalDeviceDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
         String ldName = req.ldNamePresent.value() && req.ldName.len > 0
             ? new String(req.ldName.value(), StandardCharsets.UTF_8) : null;

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryError;
@@ -18,16 +19,12 @@ import java.util.List;
 public class SvrDirServer extends BaseServerHandler {
 
     public SvrDirServer() {
-        super(ServiceName.GET_SERVER_DIRECTORY);
+        super(ServiceName.GET_SERVER_DIRECTORY, CmsGetServerDirectoryRequest.class, CmsGetServerDirectoryError.class);
     }
 
     @Override
-    public Frame handleRequest(Session session, Frame request) {
-        CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest();
-        if (!tryDecode(session, request, req)) {
-            return buildDirError(request.reqId(), CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
         log.info("GetServerDirectory from {}: reqId={}, objectClass={}",
             session.getSessionId(), reqId, req.objectClass.value());

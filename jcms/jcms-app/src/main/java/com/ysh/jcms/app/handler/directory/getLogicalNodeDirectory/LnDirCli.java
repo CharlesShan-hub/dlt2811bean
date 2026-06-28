@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
-import com.ysh.jcms.app.cli.CliContext;
-import com.ysh.jcms.app.cli.CliPrinter;
-import com.ysh.jcms.app.cli.CommandHandler;
-import com.ysh.jcms.app.cli.Param;
+import com.ysh.jcms.app.console.ConsoleContext;
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.svc.directory.CmsAcsiClass;
 
 import java.util.*;
@@ -36,13 +36,13 @@ public class LnDirCli implements CommandHandler {
     }
 
     @Override
-    public void execute(CliContext ctx, Map<String, String> args) throws Exception {
-        if (!ctx.isConnected()) { CliPrinter.error("Not connected. Type 'connect' first."); return; }
+    public void execute(ConsoleContext ctx, Map<String, String> args) throws Exception {
+        if (!ctx.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
         String target = args.get("target");
         String acsiStr = args.get("acsi").toLowerCase();
         Integer acsi = ACSI_MAP.get(acsiStr);
         if (acsi == null) {
-            CliPrinter.error("Unknown ACSI class: " + args.get("acsi"));
+            ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi"));
             return;
         }
 
@@ -55,7 +55,7 @@ public class LnDirCli implements CommandHandler {
         }
 
         ctx.node().getClient(LnDirClient.class).execute(dao);
-        CliPrinter.list("References (" + acsiStr + ")",
+        ConsolePrinter.list("References (" + acsiStr + ")",
             new ArrayList<>(ctx.node().getContentManager().getNodeRefs(acsi)),
             s -> s);
     }

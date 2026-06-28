@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.node.InnerServer;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
@@ -11,7 +12,8 @@ import com.ysh.jcms.utils.scl.model.document.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.security.GmAuthenticator;
-import com.ysh.jcms.utils.security.SecurityContext;
+import com.ysh.jcms.utils.security.GmSignature;
+import com.ysh.jcms.utils.security.GmTrustManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
@@ -19,6 +21,8 @@ import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.nio.charset.StandardCharsets;
+import java.security.KeyPair;
+import java.security.cert.X509Certificate;
 import java.util.Optional;
 
 /**
@@ -29,32 +33,33 @@ import java.util.Optional;
 public class AssociateServer extends BaseServerHandler {
 
     private GmAuthenticator authenticator;
-    private boolean requireAuthentication;
     private byte[] serverCertificateBytes;
 
     public AssociateServer() {
-        super(ServiceName.ASSOCIATE);
+        super(ServiceName.ASSOCIATE, CmsAssociateRequest.class, CmsAssociateError.class);
     }
 
-    public AssociateServer enableSecurity(SecurityContext ctx) throws Exception {
-        this.authenticator = ctx.authenticator();
-        this.requireAuthentication = true;
-        this.serverCertificateBytes = ctx.certificate().getEncoded();
-        return this;
+    private void ensureSecurityInitialized() {
+        if (authenticator != null) return;
+        try {
+            KeyPair kp = GmSignature.generateKeyPair();
+            X509Certificate cert = GmSignature.generateSelfSignedCertificate(kp);
+            this.authenticator = new GmAuthenticator(new GmTrustManager().trustAll());
+            this.serverCertificateBytes = cert.getEncoded();
+            log.info("Server authentication initialized (self-signed, trust-all)");
+        } catch (Exception e) {
+            log.error("Failed to initialize server authentication", e);
+        }
     }
 
     @Override
-    public Frame handleRequest(Session session, Frame request) {
-        CmsAssociateRequest req = new CmsAssociateRequest();
-        if (!tryDecode(session, request, req)) {
-            return buildAssociateError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsAssociateRequest req = (CmsAssociateRequest) rawReq;
         int reqId = req.reqId.value();
         log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (session.isAssociated()) {
-            return buildAssociateError(reqId, CmsServiceError.INSTANCE_IN_USE);
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
         }
 
         String sapRef = req.sapRefPresent.value() && req.sapRef.len > 0
@@ -62,19 +67,20 @@ public class AssociateServer extends BaseServerHandler {
 
         if (sapRef == null || sapRef.isEmpty()) {
             log.warn("No serverAccessPointReference in request");
-            return buildAssociateError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
         log.debug("Requested access point: {}", sapRef);
 
         if (!resolveAndSetSclAccessPoint(session, sapRef)) {
             log.warn("Access point not found or unavailable: {}", sapRef);
-            return buildAssociateError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        if (requireAuthentication) {
+        if (req.authParamPresent.value() && req.authParam.cert.len > 0) {
+            ensureSecurityInitialized();
             int authError = validateAuthParam(req, sapRef);
             if (authError != CmsServiceError.NO_ERROR) {
-                return buildAssociateError(reqId, authError);
+                return onDecodeError(reqId, authError);
             }
         }
 
@@ -96,7 +102,7 @@ public class AssociateServer extends BaseServerHandler {
             respBytes = resp.encode();
         } catch (Exception e) {
             log.error("Failed to encode AssociateResponse", e);
-            return buildAssociateError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
 
         session.setAssociationId(assocId);
@@ -106,11 +112,6 @@ public class AssociateServer extends BaseServerHandler {
         return buildSuccess(respBytes, reqId);
     }
 
-    /**
-     * Parse sapRef ("IEDName/AccessPointName") and set the SCL access point on the session.
-     *
-     * @return true if the access point was resolved and set, false otherwise
-     */
     private boolean resolveAndSetSclAccessPoint(Session session, String sapRef) {
         if (!(session instanceof InnerServer.ServerSession)) return true;
         InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
@@ -172,12 +173,5 @@ public class AssociateServer extends BaseServerHandler {
             return result;
         }
         return sapBytes;
-    }
-
-    private Frame buildAssociateError(int reqId, int errorCode) {
-        return buildError(new CmsAssociateResponse()
-            .reqId(reqId)
-            .serviceError(errorCode)
-            .encode(), reqId);
     }
 }

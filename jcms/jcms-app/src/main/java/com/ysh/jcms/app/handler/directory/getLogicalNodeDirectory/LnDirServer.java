@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.svc.directory.CmsAcsiClass;
@@ -28,16 +29,12 @@ import java.util.List;
 public class LnDirServer extends BaseServerHandler {
 
     public LnDirServer() {
-        super(ServiceName.GET_LOGIC_NODE_DIRECTORY);
+        super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectoryRequest.class, CmsGetLogicalNodeDirectoryError.class);
     }
 
     @Override
-    public Frame handleRequest(Session session, Frame request) {
-        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest();
-        if (!tryDecode(session, request, req)) {
-            return buildNodeError(request.reqId(), CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
         String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
@@ -52,7 +49,6 @@ public class LnDirServer extends BaseServerHandler {
         }
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
-        // Resolve ldName or lnReference
         String ldName = null;
         String lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
@@ -135,14 +131,12 @@ public class LnDirServer extends BaseServerHandler {
                     }
                     break;
                 default:
-                    // RESERVED, LOG, SGECB — not implemented
                     break;
             }
         }
 
         if (all.isEmpty()) return all;
 
-        // Apply referenceAfter pagination
         if (after != null && !after.isEmpty()) {
             int idx = all.indexOf(after);
             if (idx < 0) return null;
