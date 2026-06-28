@@ -38,7 +38,7 @@ public class SclServer {
         if (after == null || after.isEmpty()) return names;
         int idx = names.indexOf(after);
         if (idx < 0) return null;
-        return names.subList(idx + 1, names.size());
+        return names.subList(idx, names.size());
     }
 
     public List<String> getAllLnNames() {
@@ -54,7 +54,7 @@ public class SclServer {
         if (after == null || after.isEmpty()) return names;
         int idx = names.indexOf(after);
         if (idx < 0) return null;
-        return names.subList(idx + 1, names.size());
+        return names.subList(idx, names.size());
     }
 
     /**

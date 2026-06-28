@@ -92,7 +92,7 @@ public class SclQuery {
         if (after == null || after.isEmpty()) return names;
         int idx = names.indexOf(after);
         if (idx < 0) return Collections.emptyList();
-        return names.subList(idx + 1, names.size());
+        return names.subList(idx, names.size());
     }
 
     public Optional<SclLN> ln(String ldInst, String lnFullName) {

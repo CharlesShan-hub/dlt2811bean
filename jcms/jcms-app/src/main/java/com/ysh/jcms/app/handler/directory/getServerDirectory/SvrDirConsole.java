@@ -16,12 +16,12 @@ public class SvrDirConsole implements CommandHandler {
     public String name() { return "server-dir"; }
 
     @Override
-    public String description() { return "获取逻辑设备目录 (GetServerDirectory)"; }
+    public String description() { return "获取逻辑设备目录（referenceAfter 从指定引用开始截取）"; }
 
     @Override
     public List<Param> params() {
         return Collections.singletonList(
-            new Param("referenceAfter", "起始引用（分页，不传则从头开始）", null)
+            new Param("referenceAfter", "起始引用（分页截取，不传则从头开始）", null)
         );
     }
 
