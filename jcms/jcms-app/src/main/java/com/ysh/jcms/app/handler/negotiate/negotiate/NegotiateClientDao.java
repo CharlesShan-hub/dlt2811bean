@@ -9,7 +9,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class NegotiateClientDao {
-    private int apduSize = CmsConfigLoader.load().getNegotiate().getApduSize();
-    private long asduSize = CmsConfigLoader.load().getNegotiate().getAsduSize();
-    private long protocolVersion = CmsConfigLoader.load().getNegotiate().getProtocolVersion();
+    private int apduSize = CmsConfigLoader.load().getProtocol().getNegotiate().getApduSize();
+    private long asduSize = CmsConfigLoader.load().getProtocol().getNegotiate().getAsduSize();
+    private long protocolVersion = CmsConfigLoader.load().getProtocol().getNegotiate().getProtocolVersion();
 }

@@ -18,6 +18,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -27,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LnDirServer extends BaseServerHandler {
+
+    /** Max entries per page to avoid exceeding APDU size. */
+    private static final int MAX_PAGE_SIZE = 500;
 
     public LnDirServer() {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectoryRequest.class, CmsGetLogicalNodeDirectoryError.class);
@@ -72,10 +76,12 @@ public class LnDirServer extends BaseServerHandler {
         CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse()
             .reqId(reqId);
 
-        for (String name : names) {
-            resp.reference.add(new CmsSubReference(name));
+        boolean more = names.size() > MAX_PAGE_SIZE;
+        int limit = more ? MAX_PAGE_SIZE : names.size();
+        for (int i = 0; i < limit; i++) {
+            resp.reference.add(new CmsSubReference(names.get(i)));
         }
-        resp.moreFollows(false);
+        resp.moreFollows(more);
 
         try {
             return buildSuccess(resp.encode(), reqId);
@@ -143,6 +149,10 @@ public class LnDirServer extends BaseServerHandler {
             return all.subList(idx + 1, all.size());
         }
         return all;
+    }
+
+    private static int pageSize() {
+        return CmsConfigLoader.load().getProtocol().getDirectory().getMaxPageSize();
     }
 
     private Frame buildNodeError(int reqId, int errorCode) {

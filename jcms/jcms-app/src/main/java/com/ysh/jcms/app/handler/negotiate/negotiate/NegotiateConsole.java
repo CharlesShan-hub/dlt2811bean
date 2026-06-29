@@ -20,7 +20,7 @@ public class NegotiateConsole implements CommandHandler {
 
     @Override
     public List<Param> params() {
-        com.ysh.jcms.utils.config.CmsConfig.Negotiate cfg = CmsConfigLoader.load().getNegotiate();
+        com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate cfg = CmsConfigLoader.load().getProtocol().getNegotiate();
         return Arrays.asList(
             new Param("apduSize", "APDU 大小", String.valueOf(cfg.getApduSize())),
             new Param("asduSize", "ASDU 大小", String.valueOf(cfg.getAsduSize())),

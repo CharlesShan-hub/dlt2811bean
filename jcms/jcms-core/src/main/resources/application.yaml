@@ -6,6 +6,10 @@ server:
   sclFiles:
     - /Users/charles/Downloads/big.scd
     - C:\Users\17428\Downloads\longyang\big-file.scd
+  keepalive:
+    idleTimeoutMs: 30000
+    retryIntervalMs: 5000
+    maxRetries: 4
 
 client:
   defaultIedName: C_B5041X
@@ -14,16 +18,20 @@ client:
   connectTimeoutMs: 5000
   requestTimeoutMs: 5000
 
-negotiate:
-  apduSize: 65535
-  asduSize: 65531
-  protocolVersion: 1
-  modelVersion: "1.0"
-
-keepalive:
-  idleTimeoutMs: 30000
-  retryIntervalMs: 5000
-  maxRetries: 4
+protocol:
+  negotiate:
+    apduSize: 65535
+    asduSize: 65531
+    protocolVersion: 1
+    modelVersion: "1.0"
+  directory:
+    maxPageSize: 500
+  file:
+    rootPath: config/files
+  setting:
+    numOfSG: 4
+    sgDefaultEnabled: true
+    sgDefaultName: SG1
 
 security:
   enabled: false
@@ -34,14 +42,6 @@ security:
     path: certs/ca.cer
     password: changeit
 
-protocol:
-  pi: 1
-  maxAsduSize: 65531
-  defaultArrayCapacity: 256
-
-file:
-  rootPath: config/files
-
 cli:
   tracePdu: false
   autoExec: ""
@@ -50,7 +50,4 @@ cli:
   apiEnabled: true
   apiPort: 7899
 
-setting:
-  numOfSG: 4
-  sgDefaultEnabled: true
-  sgDefaultName: SG1
+

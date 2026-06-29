@@ -24,7 +24,7 @@ public class NegotiateServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsNegotiateRequest req = (CmsNegotiateRequest) rawReq;
         int reqId = req.reqId.value();
-        CmsConfig.Negotiate config = CmsConfigLoader.load().getNegotiate();
+        CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
 
         long clientProtocolVersion = req.protocolVersion.value();
         if (clientProtocolVersion > config.getProtocolVersion()) {

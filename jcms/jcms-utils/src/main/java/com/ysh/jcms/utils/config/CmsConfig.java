@@ -10,11 +10,8 @@ public class CmsConfig {
 
     private Server server = new Server();
     private Client client = new Client();
-    private KeepAlive keepalive = new KeepAlive();
-    private Security security = new Security();
     private Protocol protocol = new Protocol();
-    private Negotiate negotiate = new Negotiate();
-    private File file = new File();
+    private Security security = new Security();
     private Cli cli = new Cli();
     private Setting setting = new Setting();
 
@@ -24,20 +21,11 @@ public class CmsConfig {
     public Client getClient() { return client; }
     public void setClient(Client client) { this.client = client; }
 
-    public KeepAlive getKeepalive() { return keepalive; }
-    public void setKeepalive(KeepAlive keepalive) { this.keepalive = keepalive; }
-
-    public Security getSecurity() { return security; }
-    public void setSecurity(Security security) { this.security = security; }
-
     public Protocol getProtocol() { return protocol; }
     public void setProtocol(Protocol protocol) { this.protocol = protocol; }
 
-    public Negotiate getNegotiate() { return negotiate; }
-    public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
-
-    public File getFile() { return file; }
-    public void setFile(File file) { this.file = file; }
+    public Security getSecurity() { return security; }
+    public void setSecurity(Security security) { this.security = security; }
 
     public Cli getCli() { return cli; }
     public void setCli(Cli cli) { this.cli = cli; }
@@ -45,35 +33,38 @@ public class CmsConfig {
     public Setting getSetting() { return setting; }
     public void setSetting(Setting setting) { this.setting = setting; }
 
+    // ───────── Server ─────────
+
     public static class Server {
         private int port = 8102;
         private int sslPort = 9102;
         private List<String> testSclFiles = new ArrayList<>(Collections.singletonList("config/sample-scd-full.scd"));
         private List<String> sclFiles = new ArrayList<>();
+        private KeepAlive keepalive = new KeepAlive();
 
         public int getPort() { return port; }
         public void setPort(int port) { this.port = port; }
         public int getSslPort() { return sslPort; }
         public void setSslPort(int sslPort) { this.sslPort = sslPort; }
-        
-        // ── testSclFiles (for unit/integration tests) ──
-        
+        public KeepAlive getKeepalive() { return keepalive; }
+        public void setKeepalive(KeepAlive keepalive) { this.keepalive = keepalive; }
+
+        // ── testSclFiles ──
+
         public String getTestSclFile() {
             return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
         }
-        
+
         public void setTestSclFile(String sclFile) {
             this.testSclFiles = new ArrayList<>(Collections.singletonList(sclFile));
         }
-        
-        public List<String> getTestSclFiles() {
-            return testSclFiles;
-        }
-        
+
+        public List<String> getTestSclFiles() { return testSclFiles; }
+
         public void setTestSclFiles(List<String> testSclFiles) {
             this.testSclFiles = testSclFiles;
         }
-        
+
         public String getResolvedTestSclFile() {
             for (String path : testSclFiles) {
                 if (Files.exists(Paths.get(path))) {
@@ -82,25 +73,23 @@ public class CmsConfig {
             }
             return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
         }
-        
-        // ── sclFiles (for production server) ──
-        
+
+        // ── sclFiles ──
+
         public String getSclFile() {
             return sclFiles.isEmpty() ? null : sclFiles.get(0);
         }
-        
+
         public void setSclFile(String sclFile) {
             this.sclFiles = new ArrayList<>(Collections.singletonList(sclFile));
         }
-        
-        public List<String> getSclFiles() {
-            return sclFiles;
-        }
-        
+
+        public List<String> getSclFiles() { return sclFiles; }
+
         public void setSclFiles(List<String> sclFiles) {
             this.sclFiles = sclFiles;
         }
-        
+
         public String getResolvedSclFile() {
             for (String path : sclFiles) {
                 if (Files.exists(Paths.get(path))) {
@@ -109,7 +98,24 @@ public class CmsConfig {
             }
             return null;
         }
+
+        // ── KeepAlive (server-side heartbeat) ──
+
+        public static class KeepAlive {
+            private int idleTimeoutMs = 30000;
+            private int retryIntervalMs = 5000;
+            private int maxRetries = 4;
+
+            public int getIdleTimeoutMs() { return idleTimeoutMs; }
+            public void setIdleTimeoutMs(int idleTimeoutMs) { this.idleTimeoutMs = idleTimeoutMs; }
+            public int getRetryIntervalMs() { return retryIntervalMs; }
+            public void setRetryIntervalMs(int retryIntervalMs) { this.retryIntervalMs = retryIntervalMs; }
+            public int getMaxRetries() { return maxRetries; }
+            public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
+        }
     }
+
+    // ───────── Client ─────────
 
     public static class Client {
         private String defaultIedName = "E1Q1SB1";
@@ -130,18 +136,51 @@ public class CmsConfig {
         public void setRequestTimeoutMs(int requestTimeoutMs) { this.requestTimeoutMs = requestTimeoutMs; }
     }
 
-    public static class KeepAlive {
-        private int idleTimeoutMs = 30000;
-        private int retryIntervalMs = 5000;
-        private int maxRetries = 4;
+    // ───────── Protocol ─────────
 
-        public int getIdleTimeoutMs() { return idleTimeoutMs; }
-        public void setIdleTimeoutMs(int idleTimeoutMs) { this.idleTimeoutMs = idleTimeoutMs; }
-        public int getRetryIntervalMs() { return retryIntervalMs; }
-        public void setRetryIntervalMs(int retryIntervalMs) { this.retryIntervalMs = retryIntervalMs; }
-        public int getMaxRetries() { return maxRetries; }
-        public void setMaxRetries(int maxRetries) { this.maxRetries = maxRetries; }
+    public static class Protocol {
+        private Negotiate negotiate = new Negotiate();
+        private Directory directory = new Directory();
+        private File file = new File();
+
+        public Negotiate getNegotiate() { return negotiate; }
+        public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
+        public Directory getDirectory() { return directory; }
+        public void setDirectory(Directory directory) { this.directory = directory; }
+        public File getFile() { return file; }
+        public void setFile(File file) { this.file = file; }
+
+        public static class Negotiate {
+            private int apduSize = 65535;
+            private int asduSize = 65531;
+            private int protocolVersion = 1;
+            private String modelVersion = "1.0";
+
+            public int getApduSize() { return apduSize; }
+            public void setApduSize(int apduSize) { this.apduSize = apduSize; }
+            public int getAsduSize() { return asduSize; }
+            public void setAsduSize(int asduSize) { this.asduSize = asduSize; }
+            public int getProtocolVersion() { return protocolVersion; }
+            public void setProtocolVersion(int protocolVersion) { this.protocolVersion = protocolVersion; }
+            public String getModelVersion() { return modelVersion; }
+            public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
+        }
+
+        public static class Directory {
+            private int maxPageSize = 500;
+
+            public int getMaxPageSize() { return maxPageSize; }
+            public void setMaxPageSize(int maxPageSize) { this.maxPageSize = maxPageSize; }
+        }
+
+        public static class File {
+            private String rootPath = "config/files";
+            public String getRootPath() { return rootPath; }
+            public void setRootPath(String rootPath) { this.rootPath = rootPath; }
+        }
     }
+
+    // ───────── Security ─────────
 
     public static class Security {
         private boolean enabled = false;
@@ -158,7 +197,6 @@ public class CmsConfig {
         public static class Keystore {
             private String path = "certs/server.pfx";
             private String password = "changeit";
-
             public String getPath() { return path; }
             public void setPath(String path) { this.path = path; }
             public String getPassword() { return password; }
@@ -168,7 +206,6 @@ public class CmsConfig {
         public static class Truststore {
             private String path = "certs/ca.cer";
             private String password = "changeit";
-
             public String getPath() { return path; }
             public void setPath(String path) { this.path = path; }
             public String getPassword() { return password; }
@@ -176,41 +213,7 @@ public class CmsConfig {
         }
     }
 
-    public static class Protocol {
-        private int pi = 0x01;
-        private int maxAsduSize = 65531;
-        private int defaultArrayCapacity = 256;
-
-        public int getPi() { return pi; }
-        public void setPi(int pi) { this.pi = pi; }
-        public int getMaxAsduSize() { return maxAsduSize; }
-        public void setMaxAsduSize(int maxAsduSize) { this.maxAsduSize = maxAsduSize; }
-        public int getDefaultArrayCapacity() { return defaultArrayCapacity; }
-        public void setDefaultArrayCapacity(int defaultArrayCapacity) { this.defaultArrayCapacity = defaultArrayCapacity; }
-    }
-
-    public static class Negotiate {
-        private int apduSize = 65535;
-        private int asduSize = 65531;
-        private int protocolVersion = 1;
-        private String modelVersion = "1.0";
-
-        public int getApduSize() { return apduSize; }
-        public void setApduSize(int apduSize) { this.apduSize = apduSize; }
-        public int getAsduSize() { return asduSize; }
-        public void setAsduSize(int asduSize) { this.asduSize = asduSize; }
-        public int getProtocolVersion() { return protocolVersion; }
-        public void setProtocolVersion(int protocolVersion) { this.protocolVersion = protocolVersion; }
-        public String getModelVersion() { return modelVersion; }
-        public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
-    }
-
-    public static class File {
-        private String rootPath = "config/files";
-
-        public String getRootPath() { return rootPath; }
-        public void setRootPath(String rootPath) { this.rootPath = rootPath; }
-    }
+    // ───────── CLI ─────────
 
     public static class Cli {
         private boolean tracePdu = false;
@@ -234,6 +237,8 @@ public class CmsConfig {
         public void setApiPort(int apiPort) { this.apiPort = apiPort; }
     }
 
+    // ───────── Setting ─────────
+
     public static class Setting {
         private int numOfSG = 4;
         private boolean sgDefaultEnabled = true;
@@ -241,13 +246,13 @@ public class CmsConfig {
 
         public int getNumOfSG() { return numOfSG; }
         public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
-
         public boolean isSgDefaultEnabled() { return sgDefaultEnabled; }
         public void setSgDefaultEnabled(boolean sgDefaultEnabled) { this.sgDefaultEnabled = sgDefaultEnabled; }
-
         public String getSgDefaultName() { return sgDefaultName; }
         public void setSgDefaultName(String sgDefaultName) { this.sgDefaultName = sgDefaultName; }
     }
+
+    // ───────── Merge ─────────
 
     public void merge(CmsConfig other) {
         if (other == null) return;
@@ -263,6 +268,11 @@ public class CmsConfig {
             if (other.server.getSclFiles() != null && !other.server.getSclFiles().isEmpty()) {
                 server.setSclFiles(new ArrayList<>(other.server.getSclFiles()));
             }
+            if (other.server.keepalive != null) {
+                if (other.server.keepalive.idleTimeoutMs != 30000) server.keepalive.idleTimeoutMs = other.server.keepalive.idleTimeoutMs;
+                if (other.server.keepalive.retryIntervalMs != 5000) server.keepalive.retryIntervalMs = other.server.keepalive.retryIntervalMs;
+                if (other.server.keepalive.maxRetries != 4) server.keepalive.maxRetries = other.server.keepalive.maxRetries;
+            }
         }
         if (other.client != null) {
             if (!other.client.defaultIedName.equals("E1Q1SB1")) client.defaultIedName = other.client.defaultIedName;
@@ -270,42 +280,36 @@ public class CmsConfig {
             if (other.client.connectTimeoutMs != 5000) client.connectTimeoutMs = other.client.connectTimeoutMs;
             if (other.client.requestTimeoutMs != 5000) client.requestTimeoutMs = other.client.requestTimeoutMs;
         }
-        if (other.keepalive != null) {
-            if (other.keepalive.idleTimeoutMs != 30000) keepalive.idleTimeoutMs = other.keepalive.idleTimeoutMs;
-            if (other.keepalive.retryIntervalMs != 5000) keepalive.retryIntervalMs = other.keepalive.retryIntervalMs;
-            if (other.keepalive.maxRetries != 4) keepalive.maxRetries = other.keepalive.maxRetries;
+        if (other.protocol != null) {
+            if (other.protocol.negotiate != null) {
+                if (other.protocol.negotiate.apduSize != 65535) protocol.negotiate.apduSize = other.protocol.negotiate.apduSize;
+                if (other.protocol.negotiate.asduSize != 65531) protocol.negotiate.asduSize = other.protocol.negotiate.asduSize;
+                if (other.protocol.negotiate.protocolVersion != 1) protocol.negotiate.protocolVersion = other.protocol.negotiate.protocolVersion;
+                if (other.protocol.negotiate.modelVersion != null && !other.protocol.negotiate.modelVersion.equals("1.0"))
+                    protocol.negotiate.modelVersion = other.protocol.negotiate.modelVersion;
+            }
+            if (other.protocol.directory != null) {
+                if (other.protocol.directory.maxPageSize != 500) protocol.directory.maxPageSize = other.protocol.directory.maxPageSize;
+            }
+            if (other.protocol.file != null) {
+                if (other.protocol.file.rootPath != null && !other.protocol.file.rootPath.equals("config/files"))
+                    protocol.file.rootPath = other.protocol.file.rootPath;
+            }
         }
         if (other.security != null) {
             security.enabled = other.security.enabled;
-        }
-        if (other.protocol != null) {
-            if (other.protocol.pi != 0x01) protocol.pi = other.protocol.pi;
-            if (other.protocol.maxAsduSize != 65531) protocol.maxAsduSize = other.protocol.maxAsduSize;
-        }
-        if (other.negotiate != null) {
-            if (other.negotiate.apduSize != 65535) negotiate.apduSize = other.negotiate.apduSize;
-            if (other.negotiate.asduSize != 65531) negotiate.asduSize = other.negotiate.asduSize;
-            if (other.negotiate.protocolVersion != 1) negotiate.protocolVersion = other.negotiate.protocolVersion;
-            if (other.negotiate.modelVersion != null && !other.negotiate.modelVersion.equals("1.0"))
-                negotiate.modelVersion = other.negotiate.modelVersion;
-        }
-        if (other.file != null) {
-            if (other.file.rootPath != null && !other.file.rootPath.equals("config/files"))
-                file.rootPath = other.file.rootPath;
         }
         if (other.cli != null) {
             if (other.cli.autoExec != null && !other.cli.autoExec.isEmpty())
                 cli.autoExec = other.cli.autoExec;
             if (other.cli.apiPort != 7899)
                 cli.apiPort = other.cli.apiPort;
-            cli.apiEnabled = other.cli.apiEnabled;
-            cli.showConnectHint = other.cli.showConnectHint;
-            cli.showAutoExec = other.cli.showAutoExec;
         }
         if (other.setting != null) {
             if (other.setting.numOfSG != 4) setting.numOfSG = other.setting.numOfSG;
-            setting.sgDefaultEnabled = other.setting.sgDefaultEnabled;
-            setting.sgDefaultName = other.setting.sgDefaultName;
+            if (other.setting.sgDefaultEnabled) setting.sgDefaultEnabled = other.setting.sgDefaultEnabled;
+            if (other.setting.sgDefaultName != null && !other.setting.sgDefaultName.equals("SG1"))
+                setting.sgDefaultName = other.setting.sgDefaultName;
         }
     }
 }

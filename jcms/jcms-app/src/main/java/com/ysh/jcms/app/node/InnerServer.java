@@ -42,6 +42,7 @@ public class InnerServer implements ConnectionListener {
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
     private SclDocument sclDocument;
+    private KeepAliveManager keepalive;
 
     public InnerServer() {
         CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
@@ -130,12 +131,15 @@ public class InnerServer implements ConnectionListener {
     public void start() throws IOException {
         acceptor.start();
         if (sslAcceptor != null) sslAcceptor.start();
+        this.keepalive = new KeepAliveManager(sessions);
+        keepalive.start();
         log.info("InnerServer started on port {} ({}{})",
             port, sslAcceptor != null ? "TLS: " : "",
             sslAcceptor != null ? String.valueOf(sslPort) : "");
     }
 
     public void stop() {
+        if (keepalive != null) { keepalive.stop(); keepalive = null; }
         acceptor.stop();
         if (sslAcceptor != null) { sslAcceptor.stop(); sslAcceptor = null; }
         for (ServerSession ss : sessions) ss.close();
@@ -152,6 +156,7 @@ public class InnerServer implements ConnectionListener {
     public void onConnected(Connection connection) {
         ServerSession ss = new ServerSession(connection);
         ss.setSclDocument(sclDocument);
+        ss.touchActivity();
         sessions.add(ss);
     }
 
@@ -159,6 +164,7 @@ public class InnerServer implements ConnectionListener {
     public void onFrameReceived(Connection connection, Frame frame) {
         ServerSession ss = findSession(connection);
         if (ss == null) return;
+        ss.touchActivity();
 
         Dispatcher.DispatchOutcome outcome = dispatcher.dispatch(ss, frame);
         switch (outcome.getResult()) {
@@ -203,10 +209,19 @@ public class InnerServer implements ConnectionListener {
         private SclDocument sclDocument;
         private SclAccessPoint sclAccessPoint;
         private SclDataTypeTemplates sclDataTypeTemplates;
+        private volatile long lastActivityTime = System.currentTimeMillis();
+        private volatile int keepaliveRetries;
 
         public ServerSession(Connection connection) {
             super("srv-" + connection.getSocket().getPort(), connection);
         }
+
+        /** Update the last-activity timestamp (called on every received frame). */
+        public void touchActivity() { this.lastActivityTime = System.currentTimeMillis(); this.keepaliveRetries = 0; }
+
+        public long getLastActivityTime() { return lastActivityTime; }
+        public int getKeepaliveRetries() { return keepaliveRetries; }
+        public int incrementKeepaliveRetries() { return ++keepaliveRetries; }
 
         public void close() { getConnection().close(); }
 

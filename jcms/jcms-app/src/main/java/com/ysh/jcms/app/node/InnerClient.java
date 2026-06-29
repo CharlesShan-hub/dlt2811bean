@@ -97,7 +97,22 @@ public class InnerClient implements ConnectionListener {
 
     @Override
     public void onFrameReceived(Connection connection, Frame frame) {
-        if (session != null) session.tryDispatchResponse(frame);
+        if (session == null) return;
+        // Match against pending request (response to a request we sent)
+        if (session.tryDispatchResponse(frame)) return;
+
+        // Handle server-initiated TEST (keepalive probe)
+        if (frame.header().serviceCode() == ServiceName.TEST && !frame.header().resp()) {
+            try {
+                connection.send(new Frame(
+                    new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false),
+                    new byte[0], frame.reqId()
+                ));
+                log.debug("Responded to server TEST probe");
+            } catch (IOException e) {
+                log.warn("Failed to respond to server TEST probe", e);
+            }
+        }
     }
 
     @Override
