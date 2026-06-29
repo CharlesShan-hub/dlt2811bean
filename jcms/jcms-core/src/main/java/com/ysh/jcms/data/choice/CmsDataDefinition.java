@@ -50,7 +50,8 @@ public class CmsDataDefinition extends CmsType {
         this.choice                 = new CmsEnumerated();
         this.alt_error              = new CmsServiceError();
         this.alt_array              = new CmsDataDefinitionArray();
-        this.alt_structure          = new CmsArray<>();
+        this.alt_structure          = new CmsArray<>(CmsDataDefinitionStructElem.class);
+        this.alt_structure.allocSize = 0; /* alloc on demand during read, not write */
         this.alt_bit_string_len     = new CmsInt32();
         this.alt_octet_string_len   = new CmsInt32();
         this.alt_visible_string_len = new CmsInt32();
@@ -60,6 +61,8 @@ public class CmsDataDefinition extends CmsType {
     public CmsDataDefinition choice(int v) { this.choice.value(v); return this; }
     @Override
     public List<? extends CmsType> children() {
+        // Must match cms_data_definition_t C struct slot order:
+        // [0]=choice, [1]=error, [2]=array, [3]=structure, [4]=bit-string, [5]=octet-string, [6]=visible-string, [7]=unicode-string
         return Arrays.asList(choice, alt_error, alt_array, alt_structure,
             alt_bit_string_len, alt_octet_string_len,
             alt_visible_string_len, alt_unicode_string_len);

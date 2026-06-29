@@ -70,9 +70,10 @@ public class CmsArray<T extends CmsType> extends CmsType {
 
     @Override
     public void write() {
-        // During decode: when items is empty but itemClass is set, auto-allocate elements
-        // so the C decoder has valid write targets for elements[i]
-        if (items.isEmpty() && itemClass != null) {
+        // During decode: pre-allocate elements so the C decoder has valid targets.
+        // Only allocate when allocSize > 0 to prevent re-entrant infinite allocation
+        // (e.g. CmsDataDefinition → CmsDataDefinitionStructElem → CmsDataDefinition → CmsArray).
+        if (items.isEmpty() && itemClass != null && allocSize > 0) {
             for (int i = 0; i < allocSize; i++) {
                 try {
                     items.add(itemClass.getDeclaredConstructor().newInstance());
@@ -103,9 +104,17 @@ public class CmsArray<T extends CmsType> extends CmsType {
     public void read() {
         this.elements = nativePtr.getPointer(0);
         this.count = nativePtr.getInt(8);
-        // Sync elements: overwrite Java pre-allocated pointers with C-decoded pointers
+        // Sync elements: grow items if needed, then assign nativePtr to each
         if (elements != null && count > 0) {
-            // Trim items to match the actual decoded count
+            // Grow items list to match decoded count
+            while (items.size() < count && itemClass != null) {
+                try {
+                    items.add(itemClass.getDeclaredConstructor().newInstance());
+                } catch (Exception e) {
+                    break;
+                }
+            }
+            // Trim excess
             while (items.size() > count) {
                 items.remove(items.size() - 1);
             }

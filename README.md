@@ -284,7 +284,10 @@ cms> ln-dir LD0 msvcb
 # 2. 已经可以正常支持中文，使用unicode-string
 # 3. 可以进行FC的筛选，默认是0，不筛选
 # 4. 可以进行referenceAfter的筛选
+# all-data <LD> <FC> <referenceAfter>
 all-data LD0 1 LicIP17
+# all-data <LD/LN> <FC> <referenceAfter>
+all-data LD0/LLN0;
 ```
 
 ```bash
@@ -293,6 +296,11 @@ cms> connect 127.0.0.1 P_B5041A/S1;
   Connected, negotiating parameters ...
   Negotiated, associating with P_B5041A/S1 ...
   OK  Associated: P_B5041A/S1
+cms> all-data LD0/LLN0
+  Data values (3 items):
+    [0] Mod  [visible-string] status-only
+    [1] NamPlt  [unicode-string] 逻辑节点铭牌
+    [2] ActSG  [unicode-string] 运行定值区
 cms> all-data LD0 # 默认是0，不进行ST筛选
   Data values (62 items):
     [0] Mod  [visible-string] status-only
@@ -310,7 +318,28 @@ cms> all-data LD0 1 LicIP17 # 继续加入referenceAfter
     [0] LicIP18  [unicode-string] 白名单IP地址18
 ```
 
-### 8.3.5 获取
+### 8.3.5 获取数据定义
+
+```bash
+# all-def <LD/LN> <SF> <referenceAfter>
+```
+
+```bash
+cms> connect 127.0.0.1 P_B5041A/S1;
+cms> all-def LD0 1 LicIP17
+  Data definitions (1 items):
+    [0] LicIP18  [structure]  cdc=STG
+cms> all-def PROT/LinPTRC2
+  Data definitions (8 items):
+    [0] Mod  [structure]  cdc=INC
+    [1] Beh  [structure]  cdc=INS
+    [2] Health  [structure]  cdc=INS
+    [3] NamPlt  [structure]  cdc=LPL
+    [4] TrStrp  [structure]  cdc=SPC
+    [5] Tr  [structure]  cdc=ACT
+    [6] Op  [structure]  cdc=ACT
+    [7] Str  [structure]  cdc=ACD
+```
 
 ### 8.15 协商
 

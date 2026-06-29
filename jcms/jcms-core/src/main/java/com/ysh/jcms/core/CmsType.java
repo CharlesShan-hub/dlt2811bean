@@ -59,6 +59,10 @@ public abstract class CmsType {
         List<? extends CmsType> kids = children();
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
+            if (child == null) {
+                nativePtr.setPointer(i * 8L, Pointer.NULL);
+                continue;
+            }
             child.write();
             nativePtr.setPointer(i * 8L, child.nativePtr);
         }
@@ -73,6 +77,7 @@ public abstract class CmsType {
         List<? extends CmsType> kids = children();
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
+            if (child == null) continue;
             Pointer ptr = nativePtr.getPointer(i * 8L);
             if (ptr != null) {
                 child.nativePtr = ptr;
@@ -90,7 +95,8 @@ public abstract class CmsType {
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI encode (codec not set)");
         write();
-        return codec.encode(nativePtr);
+        byte[] result = codec.encode(nativePtr);
+        return result;
     }
 
     /**
@@ -102,7 +108,11 @@ public abstract class CmsType {
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI decode (codec not set)");
         write();
-        codec.decode(nativePtr, data);
+        try {
+            codec.decode(nativePtr, data);
+        } catch (Exception e) {
+            throw new RuntimeException("decode failed for " + getClass().getSimpleName(), e);
+        }
         read();
     }
 

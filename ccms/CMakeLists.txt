@@ -80,6 +80,7 @@ set(CMS_SRC
     src/data/choice/cms_data.c
     src/data/choice/cms_data_definition.c
     src/data/choice/cms_data_definition_array.c
+    src/util/cms_log.c
 
     # svc - other
     src/svc/other/cms_req_id.c

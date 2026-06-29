@@ -1,5 +1,6 @@
 #include "data/choice/cms_data_definition.h"
 #include "per/cms_integer.h"
+#include <stdlib.h>
 
 /* ── helper to encode/decode a struct_elem ── */
 static int encode_struct_elem(per_stream_t *s, const cms_data_definition_struct_elem_t *e) {
@@ -61,6 +62,18 @@ static int decode_struct_elem(per_stream_t *s, cms_data_definition_struct_elem_t
 }
 
 /* ── main encode / decode ── */
+
+void cms_data_definition_init(cms_data_definition_t *d) {
+    if (!d) return;
+    d->choice = NULL;
+    d->alt_error = NULL;
+    d->alt_array = NULL;
+    d->alt_structure = NULL;
+    d->alt_bit_string_len = NULL;
+    d->alt_octet_string_len = NULL;
+    d->alt_visible_string_len = NULL;
+    d->alt_unicode_string_len = NULL;
+}
 
 int cms_data_definition_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_data_definition_t *d = (const cms_data_definition_t*)ptr;
@@ -165,9 +178,36 @@ int cms_data_definition_decode_stream(per_stream_t *s, void *ptr) {
         perr = per_decode_length(s, &count);
         if (perr) return CMS_ERR;
         cms_array_t *arr = (cms_array_t*)d->alt_structure;
-        if (arr) arr->count = (int32_t)count;
+        if (!arr) return CMS_ERR;
+        arr->count = (int32_t)count;
         for (uint32_t i = 0; i < count; i++) {
-            if (!arr || !arr->elements || !arr->elements[i]) return CMS_ERR;
+            /* Allocate elements on demand if Java didn't pre-allocate them */
+            if (!arr->elements) {
+                arr->elements = (void**)calloc(count, sizeof(void*));
+                if (!arr->elements) return CMS_ERR;
+            }
+            if (!arr->elements[i]) {
+                arr->elements[i] = (cms_data_definition_struct_elem_t*)calloc(1, sizeof(cms_data_definition_struct_elem_t));
+                if (!arr->elements[i]) return CMS_ERR;
+                /* Init nested pointers so the decoder has valid targets */
+                cms_data_definition_struct_elem_t *e = (cms_data_definition_struct_elem_t*)arr->elements[i];
+                e->name = (cms_object_name_t*)calloc(1, sizeof(cms_object_name_t));
+                e->name->value = (uint8_t*)calloc(65, 1); /* VisibleString max 64 + null */
+                e->fc_present = (cms_boolean_t*)calloc(1, sizeof(cms_boolean_t));
+                e->fc = (cms_functional_constraint_t*)calloc(1, sizeof(cms_functional_constraint_t));
+                e->type = (cms_data_definition_t*)calloc(1, sizeof(cms_data_definition_t));
+                cms_data_definition_init(e->type);
+                e->type->choice = (cms_enumerated_t*)calloc(1, sizeof(cms_enumerated_t));
+                /* Pre-allocate all optional pointer fields so the decoder
+                 * has valid targets regardless of which CHOICE is selected. */
+                e->type->alt_error = (cms_service_error_t*)calloc(1, sizeof(cms_service_error_t));
+                e->type->alt_array = (cms_data_definition_array_t*)calloc(1, sizeof(cms_data_definition_array_t));
+                e->type->alt_array->numberOfElement = (cms_int32_t*)calloc(1, sizeof(cms_int32_t));
+                e->type->alt_bit_string_len   = (cms_int32_t*)calloc(1, sizeof(cms_int32_t));
+                e->type->alt_octet_string_len   = (cms_int32_t*)calloc(1, sizeof(cms_int32_t));
+                e->type->alt_visible_string_len = (cms_int32_t*)calloc(1, sizeof(cms_int32_t));
+                e->type->alt_unicode_string_len = (cms_int32_t*)calloc(1, sizeof(cms_int32_t));
+            }
             int err = decode_struct_elem(s, (cms_data_definition_struct_elem_t*)arr->elements[i]);
             if (err) return err;
         }

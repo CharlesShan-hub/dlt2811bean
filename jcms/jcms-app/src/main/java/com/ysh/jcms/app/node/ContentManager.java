@@ -11,6 +11,7 @@ public class ContentManager {
     private final Set<String> dataSetRefs = new LinkedHashSet<>();
     private final Map<Integer, Set<String>> lnRefsByAcsiClass = new HashMap<>();
     private List<AllDataEntry> allDataEntries = new ArrayList<>();
+    private List<DataDefEntry> dataDefEntries = new ArrayList<>();
 
     // ── all-data entry ──
 
@@ -32,6 +33,28 @@ public class ContentManager {
 
     public List<AllDataEntry> getAllDataEntries() {
         return Collections.unmodifiableList(allDataEntries);
+    }
+
+    // ── all-def entry ──
+
+    public static class DataDefEntry {
+        public final String reference;
+        public final String cdcType;
+        public final int choiceType;
+
+        public DataDefEntry(String reference, String cdcType, int choiceType) {
+            this.reference = reference;
+            this.cdcType = cdcType;
+            this.choiceType = choiceType;
+        }
+    }
+
+    public void initDataDef(List<DataDefEntry> entries) {
+        this.dataDefEntries = entries;
+    }
+
+    public List<DataDefEntry> getDataDefEntries() {
+        return Collections.unmodifiableList(dataDefEntries);
     }
 
     public void initServerDir(String sapRef, List<String> ldNames) {
