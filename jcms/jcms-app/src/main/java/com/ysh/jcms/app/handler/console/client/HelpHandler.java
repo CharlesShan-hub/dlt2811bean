@@ -19,9 +19,9 @@ public class HelpHandler implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) {
-        System.out.println();
-        System.out.format("  %-16s  %s\n", "命令", "说明");
-        System.out.format("  %-16s  %s\n", "---------", "----");
+        ConsolePrinter.gray("");
+        ConsolePrinter.gray(String.format("  %-16s  %s", "命令", "说明"));
+        ConsolePrinter.gray(String.format("  %-16s  %s", "---------", "----"));
         for (CommandHandler h : console.handlers().values()) {
             if (h.name().equals("help")) continue;
             StringBuilder line = new StringBuilder();
@@ -38,8 +38,8 @@ public class HelpHandler implements CommandHandler {
                 }
                 line.append("]");
             }
-            System.out.println(line.toString());
+            ConsolePrinter.gray(line.toString());
         }
-        System.out.println();
+        ConsolePrinter.gray("");
     }
 }

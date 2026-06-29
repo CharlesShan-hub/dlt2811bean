@@ -137,7 +137,18 @@ public abstract class CmsConsole extends CmsNode {
                 if (namedArgs.containsKey(p.name())) {
                     args.put(p.name(), namedArgs.get(p.name()));
                 } else if (i < positionalArgs.size()) {
-                    args.put(p.name(), positionalArgs.get(i));
+                    // If this is the last param and there are more positional args,
+                    // join them all into one value (for multi-value params like references)
+                    if (i == params.size() - 1 && positionalArgs.size() > params.size()) {
+                        StringBuilder sb = new StringBuilder();
+                        for (int j = i; j < positionalArgs.size(); j++) {
+                            if (j > i) sb.append(' ');
+                            sb.append(positionalArgs.get(j));
+                        }
+                        args.put(p.name(), sb.toString());
+                    } else {
+                        args.put(p.name(), positionalArgs.get(i));
+                    }
                 } else if (p.defaultValue() != null) {
                     args.put(p.name(), p.defaultValue());
                 } else {

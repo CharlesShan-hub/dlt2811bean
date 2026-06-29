@@ -110,10 +110,10 @@ public class AllDataValuesClient extends BaseClientHandler {
             }
         }
 
-        private static String bytesToHex(byte[] bytes) {
-            StringBuilder sb = new StringBuilder(bytes.length * 2);
-            for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
-            return sb.toString();
-        }
+        // private static String bytesToHex(byte[] bytes) {
+        //     StringBuilder sb = new StringBuilder(bytes.length * 2);
+        //     for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
+        //     return sb.toString();
+        // }
     }
 }

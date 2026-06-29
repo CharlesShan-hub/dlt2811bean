@@ -279,7 +279,7 @@ cms> ln-dir LD0 msvcb
     [0]
 ```
 
-### 8.3.4 获取数据值
+### 8.3.4 获取全部数据值
 
 ```bash
 # 1. 返回有值的内容，跳过没设置值的内容
@@ -361,6 +361,26 @@ cms> all-cb LD0 brcb
     [0] LLN0.brcbAlarm  [BRCB]
     [1] LLN0.brcbWarning  [BRCB]
     [2] LLN0.brcbCommState  [BRCB]
+```
+
+### 8.4.1 获取指定数据值
+
+```bash
+get-data-values LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm;
+```
+
+```bash
+cms> connect 127.0.0.1 C_B5041X/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm
+  Fetching data values for 3 reference(s)
+  Data values (3 items):
+    [0] LD0/GGIO9.AnIn1  [unicode-string] 光口1发功率
+    [1] LD0/GGIO9.AnIn2  [unicode-string] 光口2发功率
+    [2] LD0/GGIO1.HostTPortAlarm  [unicode-string] 对时信号状态
 ```
 
 ### 8.15 协商

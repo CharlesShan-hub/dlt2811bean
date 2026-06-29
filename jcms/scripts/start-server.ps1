@@ -14,4 +14,5 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 mvn -q exec:java -pl jcms-app `
     "-Dexec.mainClass=com.ysh.jcms.app.console.CmsServerConsole" `
-    "-Dexec.args=$Port"
+    "-Dexec.args=$Port" `
+    "-Dfile.encoding=UTF-8"

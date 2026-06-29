@@ -67,6 +67,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
                 log.error("Failed to instantiate {}", requestType.getSimpleName(), e);
                 return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
+            prepareDecode(decoded);
             if (!tryDecode(session, request, decoded)) {
                 return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
@@ -82,6 +83,17 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
                 response.asduBytes() != null ? response.asduBytes().length : 0);
         }
         return response;
+    }
+
+    /**
+     * Hook called before decoding the request PDU.
+     *
+     * <p>Subclasses can override to set {@code allocSize} on array fields
+     * so that the native decoder can read the correct number of items.
+     *
+     * <p>Default implementation does nothing.
+     */
+    protected void prepareDecode(CmsType decoded) {
     }
 
     /**

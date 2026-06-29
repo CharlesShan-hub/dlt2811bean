@@ -9,7 +9,6 @@ import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.data.SclDataValue;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
