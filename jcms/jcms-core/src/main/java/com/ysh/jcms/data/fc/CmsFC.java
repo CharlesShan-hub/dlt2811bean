@@ -1,14 +1,13 @@
 package com.ysh.jcms.data.fc;
 
 import com.ysh.jcms.core.CmsEnumerated;
+
 /**
  * FunctionalConstraint ::= VisibleString (SIZE(2))  —  7.4
  *
  * PER wire format is VisibleString(SIZE(2)) — 2 ASCII chars.
- * Java API exposes FC as an int value mapped to 2-char FC codes
- * via {@link com.ysh.jcms.info.FunctionalConstraint}.
- *
- * @see com.ysh.jcms.info.FunctionalConstraint
+ * Use {@link #fromCode(String)} to lookup an FC value by its 2-char code
+ * (e.g. "ST" → 0), or {@link #fromString(String)} for case-insensitive lookup.
  */
 public class CmsFC extends CmsEnumerated {
 
@@ -25,6 +24,36 @@ public class CmsFC extends CmsEnumerated {
     public static final int BL  = 10;
     public static final int EX  = 11;
     public static final int XX  = 12;
+
+    /**
+     * Look up by 2-char FC code ("ST", "MX", ...). Returns ST(0) if unknown.
+     */
+    public static int fromCode(String code) {
+        if (code == null) return ST;
+        switch (code) {
+            case "ST": return ST;
+            case "MX": return MX;
+            case "SP": return SP;
+            case "SV": return SV;
+            case "CF": return CF;
+            case "DC": return DC;
+            case "SG": return SG;
+            case "SE": return SE;
+            case "SR": return SR;
+            case "OR": return OR;
+            case "BL": return BL;
+            case "EX": return EX;
+            case "XX": return XX;
+            default:   return ST;
+        }
+    }
+
+    /**
+     * Case-insensitive variant of {@link #fromCode(String)}.
+     */
+    public static int fromString(String s) {
+        return fromCode(s != null ? s.toUpperCase() : null);
+    }
 
     public CmsFC() { super(0, 12, ST); }
 

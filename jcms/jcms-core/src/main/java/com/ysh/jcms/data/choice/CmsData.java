@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
+import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsEnumerated;
@@ -106,6 +107,57 @@ public class CmsData extends CmsType {
     }
     
     public CmsData choice(int v) { this.choice.value(v); return this; }
+
+    /**
+     * Map CHOICE index → the correct child field for debug display.
+     * Separate from children() which matches C struct memory layout.
+     */
+    private CmsType choiceChild() {
+        int v = choice.value();
+        switch (v) {
+            case CHOICE_ERROR:             return alt_error;
+            case CHOICE_ARRAY:
+            case CHOICE_STRUCTURE:         return alt_sequence;
+            case CHOICE_BOOLEAN:           return alt_boolean;
+            case CHOICE_INT8:              return alt_int8;
+            case CHOICE_INT16:             return alt_int16;
+            case CHOICE_INT32:             return alt_int32;
+            case CHOICE_INT64:             return alt_int64;
+            case CHOICE_INT8U:             return alt_int8u;
+            case CHOICE_INT16U:            return alt_int16u;
+            case CHOICE_INT32U:            return alt_int32u;
+            case CHOICE_INT64U:            return alt_int64u;
+            case CHOICE_FLOAT32:           return alt_float32;
+            case CHOICE_FLOAT64:           return alt_float64;
+            case CHOICE_BIT_STRING:        return alt_bit_string;
+            case CHOICE_OCTET_STRING:      return alt_octet_string;
+            case CHOICE_VISIBLE_STRING:    return alt_visible_string;
+            case CHOICE_UNICODE_STRING:    return alt_unicode_string;
+            case CHOICE_UTC_TIME:          return alt_utc_time;
+            case CHOICE_BINARY_TIME:       return alt_binary_time;
+            case CHOICE_QUALITY:           return alt_quality;
+            case CHOICE_DBPOS:             return alt_dbpos;
+            case CHOICE_TCMD:              return alt_tcmd;
+            case CHOICE_CHECK:             return alt_check;
+            default:                       return null;
+        }
+    }
+
+    @Override
+    public String toString() {
+        CmsType child = choiceChild();
+        if (child == null) return "CHOICE {(null)}";
+
+        // Build field name map for the child
+        java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
+        for (java.lang.reflect.Field f : child.getClass().getFields()) {
+            if (CmsType.class.isAssignableFrom(f.getType())) {
+                try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
+            }
+        }
+        return "CHOICE {" + CmsFormatUtil.toString(child, 0, fieldNames) + "}";
+    }
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, alt_sequence,

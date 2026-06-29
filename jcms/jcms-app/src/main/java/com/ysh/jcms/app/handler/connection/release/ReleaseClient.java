@@ -22,6 +22,11 @@ public class ReleaseClient extends BaseClientHandler {
         CmsReleaseRequest req = new CmsReleaseRequest()
             .reqId(nextReqId());
 
+        byte[] assocId = node.getClient().getSession().getAssociationId();
+        if (assocId != null && assocId.length > 0) {
+            req.assocId(assocId);
+        }
+
         send(ServiceName.RELEASE, req);
     }
 

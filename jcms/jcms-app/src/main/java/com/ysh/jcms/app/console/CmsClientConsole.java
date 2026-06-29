@@ -4,6 +4,8 @@ import com.ysh.jcms.app.handler.console.client.*;
 import com.ysh.jcms.app.handler.console.TracePduHandler;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesClient;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesConsole;
+import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
+import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirClient;
@@ -52,6 +54,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new AllDataDefClient(this));
         registerClient(new AllCbValuesClient(this));
         registerClient(new GetDataValuesClient(this));
+        registerClient(new SetDataValuesClient(this));
     }
 
     @Override
@@ -67,6 +70,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new AllDataDefConsole());
         register(new AllCbValuesConsole());
         register(new GetDataValuesConsole());
+        register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());
         register(new AssociateConsole());

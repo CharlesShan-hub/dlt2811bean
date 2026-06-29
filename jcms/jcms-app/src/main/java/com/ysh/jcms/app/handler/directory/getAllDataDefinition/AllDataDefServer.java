@@ -26,9 +26,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class AllDataDefServer extends BaseServerHandler {
 
@@ -53,23 +51,6 @@ public class AllDataDefServer extends BaseServerHandler {
     private static final int SEL_DBPOS          = 21;
     private static final int SEL_TCMD           = 22;
     private static final int SEL_CHECK          = 23;
-
-    private static final Map<String, Integer> FC_MAP = new HashMap<>();
-    static {
-        FC_MAP.put("ST", CmsFC.ST);
-        FC_MAP.put("MX", CmsFC.MX);
-        FC_MAP.put("SP", CmsFC.SP);
-        FC_MAP.put("SV", CmsFC.SV);
-        FC_MAP.put("CF", CmsFC.CF);
-        FC_MAP.put("DC", CmsFC.DC);
-        FC_MAP.put("SG", CmsFC.SG);
-        FC_MAP.put("SE", CmsFC.SE);
-        FC_MAP.put("SR", CmsFC.SR);
-        FC_MAP.put("OR", CmsFC.OR);
-        FC_MAP.put("BL", CmsFC.BL);
-        FC_MAP.put("EX", CmsFC.EX);
-        FC_MAP.put("XX", CmsFC.XX);
-    }
 
     public AllDataDefServer() {
         super(ServiceName.GET_ALL_DATA_DEFINITION, CmsGetAllDataDefinitionRequest.class, CmsGetAllDataDefinitionError.class);
@@ -172,7 +153,7 @@ public class AllDataDefServer extends BaseServerHandler {
             if (bType == null) bType = "BOOLEAN";
             CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem()
                 .name(da.getName())
-                .fc(da.getFc() != null ? FC_MAP.getOrDefault(da.getFc(), 0) : 0)
+                .fc(da.getFc() != null ? CmsFC.fromCode(da.getFc()) : 0)
                 .type(bTypeToDataDefinition(bType));
             arr.add(elem);
         }
