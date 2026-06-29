@@ -187,6 +187,131 @@ cms> ld-dir LD0 LTSM6;
 
 ### 8.3.3 获取逻辑节点目录
 
+```bash
+# data-object：数据对象
+ln-dir LD0 data-object;
+# data-set: 数据集
+ln-dir LD0 data-set;
+# brcb
+ln-dir LD0 brcb;
+# urcb
+ln-dir LD0 urcb;
+# gocb
+ln-dir CTRL gocb;
+```
+* data-object
+* data-set
+* brcb
+* urcb
+* gocb
+```bash
+cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
+  TLS connecting to 127.0.0.1:9102 ...
+  TLS connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  TLS associated: C_B5041X/S1
+cms> ln-dir LD0 data-object;
+  References (data-object):
+    [0] Mod
+    [1] Mod.stVal
+    [2] Mod.q
+    [3] Mod.t
+    [4] Beh
+    [5] Beh.stVal
+    [6] Beh.q
+    [7] Beh.t
+    ... 省略一些
+    [193] DUTSynOfs
+    [194] DUTSynOfs.stVal
+    [195] DUTSynOfs.q
+    [196] DUTSynOfs.t
+cms> ln-dir LD0 data-set;
+  References (data-set):
+    [0] dsAlarm
+    [1] dsWarning
+    [2] dsCommState
+    [3] dsAin
+    [4] dsAin1
+    [5] dsParameter1
+    [6] dsParameter2
+    [7] dsParameter5
+    [8] dsParameter8
+cms> ln-dir LD0 brcb;
+  References (brcb):
+    [0] brcbAlarm
+    [1] brcbWarning
+    [2] brcbCommState
+cms> ln-dir LD0 urcb;
+  References (urcb):
+    [0] urcbAin
+    [1] urcbAinA
+cms> ln-dir CTRL gocb
+  References (gocb):
+    [0] gocb0
+```
+
+* lcb
+* log
+```bash
+cms> connect 127.0.0.1 P_B5041A/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms> server-dir
+  Logical Devices:
+    [0] LD0
+    [1] PROT
+    [2] RCD
+cms> ln-dir LD0 lcb
+  References (lcb):
+    [0] lcblog
+cms> ln-dir LD0 log
+  References (log):
+    [0] LD0
+cms> ln-dir LD0 sgecb
+  References (sgecb):
+    [0]
+cms> ln-dir LD0 msvcb
+  References (msvcb):
+    [0]
+```
+
+### 8.3.4 获取数据值
+
+```bash
+# 1. 返回有值的内容，跳过没设置值的内容
+# 2. 已经可以正常支持中文，使用unicode-string
+# 3. 可以进行FC的筛选，默认是0，不筛选
+# 4. 可以进行referenceAfter的筛选
+all-data LD0 1 LicIP17
+```
+
+```bash
+cms> connect 127.0.0.1 P_B5041A/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms> all-data LD0 # 默认是0，不进行ST筛选
+  Data values (62 items):
+    [0] Mod  [visible-string] status-only
+    [1] NamPlt  [unicode-string] 逻辑节点铭牌
+cms> all-data LD0 1 # FC=ST
+  Data values (62 items):
+    [0] Mod  [visible-string] status-only
+    [1] NamPlt  [unicode-string] 逻辑节点铭牌
+    ...
+    [59] LicIP16  [unicode-string] 白名单IP地址16
+    [60] LicIP17  [unicode-string] 白名单IP地址17
+    [61] LicIP18  [unicode-string] 白名单IP地址18
+cms> all-data LD0 1 LicIP17 # 继续加入referenceAfter
+  Data values (1 items):
+    [0] LicIP18  [unicode-string] 白名单IP地址18
+```
+
+### 8.3.5 获取
+
 ### 8.15 协商
 
 ```bash

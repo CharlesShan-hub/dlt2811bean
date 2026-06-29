@@ -37,8 +37,9 @@ public class SclReader {
     }
 
     public SclDocument read(Path filePath) {
-        try (InputStream is = new FileInputStream(filePath.toFile())) {
-            XMLStreamReader reader = newFactory().createXMLStreamReader(is);
+        try {
+            XMLStreamReader reader = newFactory().createXMLStreamReader(
+                new FileInputStream(filePath.toFile()));
             SclDocument scl = parseDocument(reader);
             scl.setOriginalFilePath(filePath.toString());
             return scl;

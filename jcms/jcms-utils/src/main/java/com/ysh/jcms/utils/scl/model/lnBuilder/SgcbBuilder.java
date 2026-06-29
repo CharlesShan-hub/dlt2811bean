@@ -36,7 +36,7 @@ public class SgcbBuilder {
     }
 
     public static CmsCbValueChoice defaultSgcb() {
-        CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+        CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().getProtocol().getSetting();
         return new SgcbBuilder()
                 .numOfSG(setting.getNumOfSG())
                 .actSG(1)
@@ -48,7 +48,7 @@ public class SgcbBuilder {
      * 构建 SGCB entry reference，如果 SGCB 未启用则返回 null。
      */
     public static String buildEntryRef(SclLNBase ln) {
-        CmsConfig.Setting setting = CmsConfigLoader.load().getSetting();
+        CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().getProtocol().getSetting();
         if (!setting.isSgDefaultEnabled()) return null;
         return ln.getFullName() + "." + setting.getSgDefaultName();
     }

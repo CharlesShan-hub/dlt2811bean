@@ -13,7 +13,6 @@ public class CmsConfig {
     private Protocol protocol = new Protocol();
     private Security security = new Security();
     private Cli cli = new Cli();
-    private Setting setting = new Setting();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -29,9 +28,6 @@ public class CmsConfig {
 
     public Cli getCli() { return cli; }
     public void setCli(Cli cli) { this.cli = cli; }
-
-    public Setting getSetting() { return setting; }
-    public void setSetting(Setting setting) { this.setting = setting; }
 
     // ───────── Server ─────────
 
@@ -139,16 +135,22 @@ public class CmsConfig {
     // ───────── Protocol ─────────
 
     public static class Protocol {
+        private int maxArraySize = 1024;
+        private boolean gbkToUtf8 = false;
         private Negotiate negotiate = new Negotiate();
-        private Directory directory = new Directory();
         private File file = new File();
+        private Setting setting = new Setting();
 
+        public int getMaxArraySize() { return maxArraySize; }
+        public void setMaxArraySize(int maxArraySize) { this.maxArraySize = maxArraySize; }
+        public boolean isGbkToUtf8() { return gbkToUtf8; }
+        public void setGbkToUtf8(boolean gbkToUtf8) { this.gbkToUtf8 = gbkToUtf8; }
         public Negotiate getNegotiate() { return negotiate; }
         public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
-        public Directory getDirectory() { return directory; }
-        public void setDirectory(Directory directory) { this.directory = directory; }
         public File getFile() { return file; }
         public void setFile(File file) { this.file = file; }
+        public Setting getSetting() { return setting; }
+        public void setSetting(Setting setting) { this.setting = setting; }
 
         public static class Negotiate {
             private int apduSize = 65535;
@@ -166,17 +168,23 @@ public class CmsConfig {
             public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
         }
 
-        public static class Directory {
-            private int maxPageSize = 500;
-
-            public int getMaxPageSize() { return maxPageSize; }
-            public void setMaxPageSize(int maxPageSize) { this.maxPageSize = maxPageSize; }
-        }
-
         public static class File {
             private String rootPath = "config/files";
             public String getRootPath() { return rootPath; }
             public void setRootPath(String rootPath) { this.rootPath = rootPath; }
+        }
+
+        public static class Setting {
+            private int numOfSG = 4;
+            private boolean sgDefaultEnabled = true;
+            private String sgDefaultName = "SG1";
+
+            public int getNumOfSG() { return numOfSG; }
+            public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
+            public boolean isSgDefaultEnabled() { return sgDefaultEnabled; }
+            public void setSgDefaultEnabled(boolean sgDefaultEnabled) { this.sgDefaultEnabled = sgDefaultEnabled; }
+            public String getSgDefaultName() { return sgDefaultName; }
+            public void setSgDefaultName(String sgDefaultName) { this.sgDefaultName = sgDefaultName; }
         }
     }
 
@@ -237,21 +245,6 @@ public class CmsConfig {
         public void setApiPort(int apiPort) { this.apiPort = apiPort; }
     }
 
-    // ───────── Setting ─────────
-
-    public static class Setting {
-        private int numOfSG = 4;
-        private boolean sgDefaultEnabled = true;
-        private String sgDefaultName = "SG1";
-
-        public int getNumOfSG() { return numOfSG; }
-        public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
-        public boolean isSgDefaultEnabled() { return sgDefaultEnabled; }
-        public void setSgDefaultEnabled(boolean sgDefaultEnabled) { this.sgDefaultEnabled = sgDefaultEnabled; }
-        public String getSgDefaultName() { return sgDefaultName; }
-        public void setSgDefaultName(String sgDefaultName) { this.sgDefaultName = sgDefaultName; }
-    }
-
     // ───────── Merge ─────────
 
     public void merge(CmsConfig other) {
@@ -281,6 +274,7 @@ public class CmsConfig {
             if (other.client.requestTimeoutMs != 5000) client.requestTimeoutMs = other.client.requestTimeoutMs;
         }
         if (other.protocol != null) {
+            if (other.protocol.maxArraySize != 1024) protocol.maxArraySize = other.protocol.maxArraySize;
             if (other.protocol.negotiate != null) {
                 if (other.protocol.negotiate.apduSize != 65535) protocol.negotiate.apduSize = other.protocol.negotiate.apduSize;
                 if (other.protocol.negotiate.asduSize != 65531) protocol.negotiate.asduSize = other.protocol.negotiate.asduSize;
@@ -288,12 +282,15 @@ public class CmsConfig {
                 if (other.protocol.negotiate.modelVersion != null && !other.protocol.negotiate.modelVersion.equals("1.0"))
                     protocol.negotiate.modelVersion = other.protocol.negotiate.modelVersion;
             }
-            if (other.protocol.directory != null) {
-                if (other.protocol.directory.maxPageSize != 500) protocol.directory.maxPageSize = other.protocol.directory.maxPageSize;
-            }
             if (other.protocol.file != null) {
                 if (other.protocol.file.rootPath != null && !other.protocol.file.rootPath.equals("config/files"))
                     protocol.file.rootPath = other.protocol.file.rootPath;
+            }
+            if (other.protocol.setting != null) {
+                if (other.protocol.setting.numOfSG != 4) protocol.setting.numOfSG = other.protocol.setting.numOfSG;
+                if (other.protocol.setting.sgDefaultEnabled) protocol.setting.sgDefaultEnabled = other.protocol.setting.sgDefaultEnabled;
+                if (other.protocol.setting.sgDefaultName != null && !other.protocol.setting.sgDefaultName.equals("SG1"))
+                    protocol.setting.sgDefaultName = other.protocol.setting.sgDefaultName;
             }
         }
         if (other.security != null) {
@@ -304,12 +301,6 @@ public class CmsConfig {
                 cli.autoExec = other.cli.autoExec;
             if (other.cli.apiPort != 7899)
                 cli.apiPort = other.cli.apiPort;
-        }
-        if (other.setting != null) {
-            if (other.setting.numOfSG != 4) setting.numOfSG = other.setting.numOfSG;
-            if (other.setting.sgDefaultEnabled) setting.sgDefaultEnabled = other.setting.sgDefaultEnabled;
-            if (other.setting.sgDefaultName != null && !other.setting.sgDefaultName.equals("SG1"))
-                setting.sgDefaultName = other.setting.sgDefaultName;
         }
     }
 }

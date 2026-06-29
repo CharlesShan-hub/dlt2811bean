@@ -7,6 +7,8 @@ import org.jline.reader.LineReader;
 import org.jline.reader.LineReaderBuilder;
 import org.jline.reader.UserInterruptException;
 
+import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
 import java.util.*;
 

@@ -6,6 +6,7 @@ import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -52,6 +53,7 @@ public class LnDirClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse();
+        resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.reference.count; i++) {

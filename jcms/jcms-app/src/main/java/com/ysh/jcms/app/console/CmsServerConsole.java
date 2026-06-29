@@ -8,6 +8,7 @@ import com.ysh.jcms.app.handler.test.test.TestServer;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirServer;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirServer;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirServer;
+import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
 import com.ysh.jcms.app.handler.console.server.ListHandler;
 
 /**
@@ -32,6 +33,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new SvrDirServer());
         registerServer(new LdDirServer());
         registerServer(new LnDirServer());
+        registerServer(new AllDataValuesServer());
         register(new ListHandler());
     }
 

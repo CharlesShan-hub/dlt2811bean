@@ -61,15 +61,23 @@ public class SclLN extends SclLNBase {
         if (templates == null || lnType == null || lnType.isEmpty()) return names;
         SclLNodeType lnt = templates.findLNodeTypeById(lnType);
         if (lnt == null) return names;
+        // Cache DOType lookups to avoid repeated searches
+        java.util.HashMap<String, SclDOType> doTypeCache = new java.util.HashMap<>();
         for (SclDO doDef : lnt.getDos()) {
             names.add(doDef.getName());
-            collectSdoNames(templates, doDef.getType(), doDef.getName(), names);
+            collectSdoNames(templates, doDef.getType(), doDef.getName(), names, doTypeCache);
         }
         return names;
     }
 
-    private void collectSdoNames(SclDataTypeTemplates templates, String doTypeId, String prefix, List<String> names) {
-        SclDOType doType = templates.findDoTypeById(doTypeId);
+    private void collectSdoNames(SclDataTypeTemplates templates, String doTypeId, String prefix,
+                                  List<String> names, java.util.HashMap<String, SclDOType> cache) {
+        if (doTypeId == null) return;
+        SclDOType doType = cache.get(doTypeId);
+        if (doType == null) {
+            doType = templates.findDoTypeById(doTypeId);
+            if (doType != null) cache.put(doTypeId, doType);
+        }
         if (doType == null) return;
         for (SclDA da : doType.getDas()) {
             if ("ST".equals(da.getFc())) {

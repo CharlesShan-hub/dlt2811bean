@@ -5,6 +5,7 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryResponse;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -40,6 +41,7 @@ public class LdDirClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse();
+        resp.lnReference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.lnReference.count; i++) {

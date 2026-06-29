@@ -5,6 +5,7 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryResponse;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -38,6 +39,7 @@ public class SvrDirClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
+        resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.reference.count; i++) {

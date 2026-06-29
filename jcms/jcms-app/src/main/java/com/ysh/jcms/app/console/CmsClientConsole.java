@@ -5,6 +5,8 @@ import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirClient;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirConsole;
+import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesClient;
+import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirClient;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirConsole;
 import com.ysh.jcms.app.handler.connection.release.ReleaseClient;
@@ -39,6 +41,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SvrDirClient(this));
         registerClient(new LnDirClient(this));
         registerClient(new LdDirClient(this));
+        registerClient(new AllDataValuesClient(this));
     }
 
     @Override
@@ -50,6 +53,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new SvrDirConsole());
         register(new LdDirConsole());
         register(new LnDirConsole());
+        register(new AllDataValuesConsole());
         register(new ReleaseConsole());
         register(new AssociateConsole());
         register(new AbortConsole());

@@ -29,15 +29,13 @@ import java.util.List;
 
 public class LnDirServer extends BaseServerHandler {
 
-    /** Max entries per page to avoid exceeding APDU size. */
-    private static final int MAX_PAGE_SIZE = 500;
-
     public LnDirServer() {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectoryRequest.class, CmsGetLogicalNodeDirectoryError.class);
     }
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        long t0 = System.currentTimeMillis();
         CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
@@ -49,9 +47,10 @@ public class LnDirServer extends BaseServerHandler {
 
         SclServer server = getSclServer(session);
         if (server == null) {
-            return buildNodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        log.info("TIMING: server+templates resolved in {}ms", System.currentTimeMillis() - t0);
 
         String ldName = null;
         String lnReference = null;
@@ -65,37 +64,47 @@ public class LnDirServer extends BaseServerHandler {
 
         List<SclLN> lns = server.resolveLns(ldName, lnReference);
         if (lns == null) {
-            return buildNodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
+        log.info("TIMING: resolved {} LNs in {}ms", lns.size(), System.currentTimeMillis() - t0);
+
+        List<String> names = collectNamesByAcsiClass(lns, acsiClass, templates, refAfter, t0);
+        if (names == null) {
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        List<String> names = collectNamesByAcsiClass(lns, acsiClass, templates, refAfter);
-        if (names == null) {
-            return buildNodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        log.info("TIMING: collected {} names in {}ms", names.size(), System.currentTimeMillis() - t0);
 
         CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse()
             .reqId(reqId);
 
-        boolean more = names.size() > MAX_PAGE_SIZE;
-        int limit = more ? MAX_PAGE_SIZE : names.size();
+        int pageSize = pageSize();
+        boolean more = names.size() > pageSize;
+        int limit = more ? pageSize : names.size();
         for (int i = 0; i < limit; i++) {
             resp.reference.add(new CmsSubReference(names.get(i)));
         }
         resp.moreFollows(more);
 
+        log.info("TIMING: built response array ({} items) in {}ms", limit, System.currentTimeMillis() - t0);
+
         try {
-            return buildSuccess(resp.encode(), reqId);
+            byte[] encoded = resp.encode();
+            log.info("TIMING: encode finished in {}ms ({} bytes)", System.currentTimeMillis() - t0, encoded.length);
+            return buildSuccess(encoded, reqId);
         } catch (Exception e) {
             log.error("Failed to encode GetLogicalNodeDirectoryResponse", e);
-            return buildNodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
     }
 
     private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass,
                                                   SclDataTypeTemplates templates,
-                                                  String after) {
+                                                  String after, long t0) {
         List<String> all = new ArrayList<>();
+        int lnIdx = 0;
         for (SclLN ln : lns) {
+            long tLn = System.currentTimeMillis();
             switch (acsiClass) {
                 case CmsAcsiClass.DATA_OBJECT:
                     if (templates != null) {
@@ -126,6 +135,14 @@ public class LnDirServer extends BaseServerHandler {
                         all.add(lc.getName());
                     }
                     break;
+                case CmsAcsiClass.LOG:
+                    for (SclLogControl lc : ln.getLogControls()) {
+                        String logName = lc.getLogName();
+                        if (logName != null && !logName.isEmpty()) {
+                            all.add(logName);
+                        }
+                    }
+                    break;
                 case CmsAcsiClass.GOCB:
                     for (SclGSEControl gc : ln.getGseControls()) {
                         all.add(gc.getName());
@@ -139,12 +156,16 @@ public class LnDirServer extends BaseServerHandler {
                 default:
                     break;
             }
+            log.info("TIMING: LN[{}] {} done in {}ms (total names so far: {})",
+                lnIdx++, ln.getFullName(), System.currentTimeMillis() - tLn, all.size());
         }
 
         if (all.isEmpty()) return all;
 
         if (after != null && !after.isEmpty()) {
             int idx = all.indexOf(after);
+            log.info("TIMING: referenceAfter lookup took {}ms",
+                System.currentTimeMillis() - t0);
             if (idx < 0) return null;
             return all.subList(idx + 1, all.size());
         }
@@ -152,13 +173,6 @@ public class LnDirServer extends BaseServerHandler {
     }
 
     private static int pageSize() {
-        return CmsConfigLoader.load().getProtocol().getDirectory().getMaxPageSize();
-    }
-
-    private Frame buildNodeError(int reqId, int errorCode) {
-        return buildError(new CmsGetLogicalNodeDirectoryError()
-            .reqId(reqId)
-            .serviceError(errorCode)
-            .encode(), reqId);
+        return CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 }

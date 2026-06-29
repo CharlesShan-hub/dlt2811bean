@@ -10,6 +10,29 @@ public class ContentManager {
     private final Set<String> dataRefs = new LinkedHashSet<>();
     private final Set<String> dataSetRefs = new LinkedHashSet<>();
     private final Map<Integer, Set<String>> lnRefsByAcsiClass = new HashMap<>();
+    private List<AllDataEntry> allDataEntries = new ArrayList<>();
+
+    // ── all-data entry ──
+
+    public static class AllDataEntry {
+        public final String reference;
+        public final int choiceType;
+        public final String valueString;
+
+        public AllDataEntry(String reference, int choiceType, String valueString) {
+            this.reference = reference;
+            this.choiceType = choiceType;
+            this.valueString = valueString;
+        }
+    }
+
+    public void initAllData(List<AllDataEntry> entries) {
+        this.allDataEntries = entries;
+    }
+
+    public List<AllDataEntry> getAllDataEntries() {
+        return Collections.unmodifiableList(allDataEntries);
+    }
 
     public void initServerDir(String sapRef, List<String> ldNames) {
         this.sapRef = sapRef;

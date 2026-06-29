@@ -5,7 +5,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -17,39 +19,89 @@ public class SclDataTypeTemplates {
     private final List<SclDAType> daTypes = new ArrayList<>();
     private final List<SclEnumType> enumTypes = new ArrayList<>();
 
-    public void addLNodeType(SclLNodeType lnt) { this.lNodeTypes.add(lnt); }
+    // Index maps for O(1) lookups, lazily populated
+    private transient Map<String, SclLNodeType> lNodeTypeIndex;
+    private transient Map<String, SclDOType> doTypeIndex;
+    private transient Map<String, SclDAType> daTypeIndex;
+    private transient Map<String, SclEnumType> enumTypeIndex;
 
-    public void addDoType(SclDOType dot) { this.doTypes.add(dot); }
+    private void ensureLNodeTypeIndex() {
+        if (lNodeTypeIndex == null) {
+            lNodeTypeIndex = new HashMap<>();
+            for (SclLNodeType lnt : lNodeTypes) {
+                lNodeTypeIndex.put(lnt.getId(), lnt);
+            }
+        }
+    }
 
-    public void addDaType(SclDAType dat) { this.daTypes.add(dat); }
+    private void ensureDoTypeIndex() {
+        if (doTypeIndex == null) {
+            doTypeIndex = new HashMap<>();
+            for (SclDOType dot : doTypes) {
+                doTypeIndex.put(dot.getId(), dot);
+            }
+        }
+    }
 
-    public void addEnumType(SclEnumType et) { this.enumTypes.add(et); }
+    private void ensureDaTypeIndex() {
+        if (daTypeIndex == null) {
+            daTypeIndex = new HashMap<>();
+            for (SclDAType dat : daTypes) {
+                daTypeIndex.put(dat.getId(), dat);
+            }
+        }
+    }
+
+    private void ensureEnumTypeIndex() {
+        if (enumTypeIndex == null) {
+            enumTypeIndex = new HashMap<>();
+            for (SclEnumType et : enumTypes) {
+                enumTypeIndex.put(et.getId(), et);
+            }
+        }
+    }
+
+    public void addLNodeType(SclLNodeType lnt) {
+        this.lNodeTypes.add(lnt);
+        if (lNodeTypeIndex != null) lNodeTypeIndex.put(lnt.getId(), lnt);
+    }
+
+    public void addDoType(SclDOType dot) {
+        this.doTypes.add(dot);
+        if (doTypeIndex != null) doTypeIndex.put(dot.getId(), dot);
+    }
+
+    public void addDaType(SclDAType dat) {
+        this.daTypes.add(dat);
+        if (daTypeIndex != null) daTypeIndex.put(dat.getId(), dat);
+    }
+
+    public void addEnumType(SclEnumType et) {
+        this.enumTypes.add(et);
+        if (enumTypeIndex != null) enumTypeIndex.put(et.getId(), et);
+    }
 
     public SclLNodeType findLNodeTypeById(String id) {
-        for (SclLNodeType lnt : lNodeTypes) {
-            if (lnt.getId().equals(id)) return lnt;
-        }
-        return null;
+        if (id == null) return null;
+        ensureLNodeTypeIndex();
+        return lNodeTypeIndex.get(id);
     }
 
     public SclDOType findDoTypeById(String id) {
-        for (SclDOType dot : doTypes) {
-            if (dot.getId().equals(id)) return dot;
-        }
-        return null;
+        if (id == null) return null;
+        ensureDoTypeIndex();
+        return doTypeIndex.get(id);
     }
 
     public SclDAType findDaTypeById(String id) {
-        for (SclDAType dat : daTypes) {
-            if (dat.getId().equals(id)) return dat;
-        }
-        return null;
+        if (id == null) return null;
+        ensureDaTypeIndex();
+        return daTypeIndex.get(id);
     }
 
     public SclEnumType findEnumTypeById(String id) {
-        for (SclEnumType et : enumTypes) {
-            if (et.getId().equals(id)) return et;
-        }
-        return null;
+        if (id == null) return null;
+        ensureEnumTypeIndex();
+        return enumTypeIndex.get(id);
     }
 }
