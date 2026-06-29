@@ -20,7 +20,7 @@ public class AbortConsole implements CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("reason", "中止原因码", "1")
+            new Param("reason", "中止原因码", "0")
         );
     }
 

@@ -5,6 +5,7 @@ server:
     - config/sample-scd-full.scd
   sclFiles:
     - /Users/charles/Downloads/big.scd
+    - C:\Users\17428\Downloads\longyang\big-file.scd
 
 client:
   defaultIedName: C_B5041X

@@ -19,11 +19,10 @@ public class ReleaseClient extends BaseClientHandler {
     }
     
     public void execute() throws Exception {
-        byte[] reqBytes = new CmsReleaseRequest()
-            .reqId(nextReqId())
-            .encode();
+        CmsReleaseRequest req = new CmsReleaseRequest()
+            .reqId(nextReqId());
 
-        send(ServiceName.RELEASE, reqBytes);
+        send(ServiceName.RELEASE, req.encode());
     }
 
     @Override

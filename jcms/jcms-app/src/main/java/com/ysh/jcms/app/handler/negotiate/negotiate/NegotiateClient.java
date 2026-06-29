@@ -18,14 +18,13 @@ public class NegotiateClient extends BaseClientHandler {
     }
 
     public void execute(NegotiateClientDao dao) throws Exception {
-        byte[] reqBytes = new CmsNegotiateRequest()
+        CmsNegotiateRequest req = new CmsNegotiateRequest()
             .reqId(nextReqId())
             .apduSize(dao.apduSize())
             .asduSize(dao.asduSize())
-            .protocolVersion(dao.protocolVersion())
-            .encode();
+            .protocolVersion(dao.protocolVersion());
 
-        send(ServiceName.ASSOCIATE_NEGOTIATE, reqBytes);
+        send(ServiceName.ASSOCIATE_NEGOTIATE, req.encode());
     }
 
     @Override

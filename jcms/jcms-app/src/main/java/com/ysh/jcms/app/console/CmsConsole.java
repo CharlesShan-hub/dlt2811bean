@@ -69,7 +69,23 @@ public abstract class CmsConsole extends CmsNode {
                 running = false;
                 break;
             }
-            executeLine(raw);
+
+            // Batch commands: split by ';', each line supports inline #/ // comments
+            for (String cliLine : raw.split(";")) {
+                String line = cliLine.trim();
+                if (line.isEmpty()) continue;
+                if (line.startsWith("#") || line.startsWith("//")) continue;
+
+                int commentIdx = findCommentStart(line);
+                if (commentIdx >= 0) {
+                    line = line.substring(0, commentIdx).trim();
+                    if (line.isEmpty()) continue;
+                }
+
+                if (!executeLine(line)) {
+                    break;  // stop batch on first failure
+                }
+            }
         }
         if (isConnected()) close();
         onStop();
@@ -96,7 +112,7 @@ public abstract class CmsConsole extends CmsNode {
         CommandHandler handler = handlers.get(cmdName);
         if (handler == null) {
             ConsolePrinter.error("Unknown command: " + cmdName + "  (type 'help')");
-            return true;
+            return false;
         }
 
         try {
@@ -134,6 +150,7 @@ public abstract class CmsConsole extends CmsNode {
             String msg = e.getMessage();
             if (msg == null) msg = e.getClass().getSimpleName();
             ConsolePrinter.error(msg);
+            return false;
         }
         return true;
     }
@@ -154,5 +171,21 @@ public abstract class CmsConsole extends CmsNode {
         }
         if (buf.length() > 0) tokens.add(buf.toString());
         return tokens;
+    }
+
+    /**
+     * Find the start of an inline comment ({@code #} or {@code //}),
+     * respecting double-quote boundaries.
+     */
+    private static int findCommentStart(String s) {
+        boolean inQuote = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '"') { inQuote = !inQuote; continue; }
+            if (inQuote) continue;
+            if (c == '#' && (i == 0 || s.charAt(i - 1) != '\\')) return i;
+            if (c == '/' && i + 1 < s.length() && s.charAt(i + 1) == '/') return i;
+        }
+        return -1;
     }
 }

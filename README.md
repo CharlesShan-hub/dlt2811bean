@@ -15,24 +15,204 @@
 本项目就是制作CMS标准的代码实现。主要的思路是，使用C语言编写per编码部分和基础数据结构部分。后续开发可以基于C/C++，也可以将该模块打包成dll，后续迁移到其他语言平台。项目目录包含下边内容：
 
 * **ccms**
-  * 负责dlt2811协议的per编码
-  * 第七章数据结构实现
-  * 第八章报文段中基础结构实现。
-* **ccmsapp**：（仅用于演示）基于ccms可以继续开发其他功能。
-* **jcms**
-  * 负责将ccms api一一映射到java。同时jcms在dll未成功加载时本身也可以支持per编码。
-  * 第七章数据结构实现
-  * 第八章报文段基础结构与报文段本身实现。
-* **jcmsapp**
-  * 传输层实现
-  * 配置解析
-  * 应用层实现
-  * 客户端服务器cli
+  * [per](docs/ccms-per.md): 底层编码，dlt2811协议使用per编码将asn1转换成字节码。
+  * [data](docs/ccms-data.md): dlt2811 §7 数据结构部分的实现。
+  * [svc](docs/ccms-svc.md): dlt2811 §8 报文段部分的实现。
+* **jcms-core**
+  * core: 负责将ccms api映射到java，并且设计基础的`CmsType`等基类。
+  * info: 一些文档性质的枚举和说明。
+  * data: dlt2811 §7的java封装。
+  * svc: dlt2811 §8的java封装。
+* **jcms-utils**
+  * config: 配置模块。
+  * scl: scd文件解析模块。
+  * security：安全协议。
+  * transport：传输层基础构建。
+* **jcms-app**
+  * node：dlt2811 §6传输层封装。
+  * handler: 各种处理器，比如客户端，服务器，命令行交互界面。
+  * console：命令行交互界面。
+
+---
 
 ### 资料
 
 * [国产自主可控新一代通信标准CMS之总览篇](https://zhuanlan.zhihu.com/p/520653213)
 
+---
+
+## 使用方法
+
+### 8.1 连接
+
+```bash
+# 非加密连接，使用8102端口。需要输入ip和accesspoint。会自动negociate和associate。
+connect 127.0.0.1 C_B5041X/S1;
+# 加密连接，使用9102端口。
+connect-tls 127.0.0.1 C_B5041X/S1;
+# 两种连接都可以指定negociate的参数，如果不指定，就是默认16384 65531 1。
+connect 127.0.0.1 C_B5041X/S1 16384 65531 1;
+# 也可以只进行连接，不自动进行后续操作（没有negociate和associate）
+connect 127.0.0.1;
+# 断开连接
+disconnect
+# 退出程序
+exit
+```
+
+```bash
+cms> connect 127.0.0.1 C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> disconnect
+  OK  Disconnected.
+cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
+  TLS connecting to 127.0.0.1:9102 ...
+  TLS connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  TLS associated: C_B5041X/S1
+cms> associate C_B5041X/S1; # 不能重复associate
+  ERR Already associated. Use 'release' or 'disconnect' first.
+cms> disconnect
+  OK  Disconnected.
+cms> exit
+Bye.
+```
+
+### 8.2.1 确定访问点
+
+```bash
+# 需要先建立tcp连接
+connect 127.0.0.1;
+# 再指定访问点
+associate C_B5041X/S1;
+```
+
+```bash
+cms> connect 127.0.0.1;
+  Connecting to 127.0.0.1:8102 ...
+  OK  Connected: 127.0.0.1:8102
+cms> associate C_B5041X/S1;
+  OK  Associated: C_B5041X/S1
+```
+
+### 8.2.2 正常释放
+
+```bash
+# release是正常释放关联，可以后续更换访问点
+release
+```
+
+```bash
+cms> associate C_B5041X/S1;
+  OK  Associated: C_B5041X/S1
+cms> release
+  OK  Released.
+cms> associate C_B5041X/G1;
+  OK  Associated: C_B5041X/G1
+```
+
+### 8.2.3 异常释放
+
+```bash
+#客户端因为某种异常需要断开连接，不需要服务器内容。
+#服务器任务客户端下线了，会关闭tcp连接
+#abort <reason>
+abort 0; # 默认reason就是0 `others`
+```
+
+```bash
+cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
+  TLS connecting to 127.0.0.1:9102 ...
+  TLS connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  TLS associated: C_B5041X/S1
+cms> abort; # tcp会关掉，后续需要重新connect
+  OK  Abort sent (reason=0)
+cms> associate C_B5041X/G1;
+  ERR Not connected. Use 'connect' first.
+```
+
+### 8.3.1 获取逻辑设备
+
+```bash
+# 获取某一个accesspoint下边的逻辑设备
+server-dir;
+# 指定referenceAfter
+server-dir LD0;
+```
+
+```bash
+cms> server-dir;
+  Logical Devices:
+    [0] LD0
+    [1] MEAS
+    [2] CTRL
+cms> server-dir LD0;
+  Logical Devices:
+    [0] MEAS
+    [1] CTRL
+```
+
+### 8.3.2 获取指定逻辑设备下的所有逻辑节点
+
+```bash
+# ld-dir <ldName> <referenceAfter>;
+# LD0这个设备下的所有节点
+ld-dir LD0;
+# LD0下边有很多节点，获取LTSM6之后的节点
+ld-dir LD0 LTSM6;
+```
+
+```bash
+cms> ld-dir LD0;
+  Logical Nodes:
+    [0] LLN0
+    [1] LPHD1
+    [2] RSYN1
+    [3] GGIO1
+    ... 这里省略一些
+    [76] LTSM6
+    [77] LTSM7
+    [78] LTSM8
+    [79] LTSM9
+cms> ld-dir LD0 LTSM6;
+  Logical Nodes:
+    [0] LTSM7
+    [1] LTSM8
+    [2] LTSM9
+```
+
+### 8.3.3 获取逻辑节点目录
+
+### 8.15 协商
+
+```bash
+# 使用默认参数（从配置文件读取）
+negotiate
+# 手动指定参数
+negotiate 16384 65531 1;
+```
+
+```bash
+cms> negotiate
+  OK  Negotiate completed.
+cms> negotiate 16384 65531 1;
+  OK  Negotiate completed.
+```
+
+### 8.16 测试ip
+
+```bash
+# 也可以用来实现心跳机制
+test
+```
+
+```bash
+cms> test
+  OK  Ping/pong OK
 ---
 
 ## ccms
@@ -122,12 +302,6 @@ chmod +x ccms.sh
 ### svc
 
 ccms主要进行的是基础数据结构的构建。所以svc（service）模块虽然负责对第八章的数据结构进行编码解码，但是主要负责的是对数据结构的编码解码，而不是对协议报文段本身的实现。
-
----
-
-## jcms
-
-本项目是
 
 
 

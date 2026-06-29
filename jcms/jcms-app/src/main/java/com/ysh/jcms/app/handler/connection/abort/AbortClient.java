@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
-import com.ysh.jcms.utils.transport.session.SessionState;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 /**
@@ -20,18 +19,16 @@ public class AbortClient extends BaseClientHandler {
     }
 
     public void execute(AbortClientDao dao) throws Exception {
-        byte[] reqBytes = new CmsAbort()
+        CmsAbort req = new CmsAbort()
             .reqId(0)       // ReqID=0 for one-way (non-request-response) services per DL/T 2811 §6.2.1-c
-            .reason(dao.reason())
-            .encode();
+            .reason(dao.reason());
 
-        sendOneWay(ServiceName.ABORT, reqBytes);
+        sendOneWay(ServiceName.ABORT, req.encode());
     }
 
     @Override
     protected void onSuccess(Frame frame) {
-        node.getClient().getSession().clearAssociationId();
-        node.getClient().getSession().setState(SessionState.DISCONNECTED);
-        log.info("Abort sent, reason=...");
+        node.getClient().close();
+        log.info("Abort sent, connection closed.");
     }
 }

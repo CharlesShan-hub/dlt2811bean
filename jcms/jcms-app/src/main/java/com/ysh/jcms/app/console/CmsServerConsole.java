@@ -3,6 +3,7 @@ package com.ysh.jcms.app.console;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
+import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateServer;
 import com.ysh.jcms.app.handler.test.test.TestServer;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirServer;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirServer;
@@ -26,6 +27,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new AssociateServer());
         registerServer(new ReleaseServer());
         registerServer(new AbortServer());
+        registerServer(new NegotiateServer());
         registerServer(new TestServer());
         registerServer(new SvrDirServer());
         registerServer(new LdDirServer());
