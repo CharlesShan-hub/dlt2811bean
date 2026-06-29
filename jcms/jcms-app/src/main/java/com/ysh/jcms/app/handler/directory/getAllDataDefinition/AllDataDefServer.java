@@ -12,7 +12,6 @@ import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
@@ -247,9 +246,5 @@ public class AllDataDefServer extends BaseServerHandler {
             case "STRUCT":       return new CmsDataDefinition().choice(SEL_BOOLEAN);
             default:             return nullDataDefinition();
         }
-    }
-
-    private static int pageSize() {
-        return CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 }

@@ -26,7 +26,7 @@ public class SvrDirClient extends BaseClientHandler {
         if (dao.referenceAfter() != null) {
             req.refAfter(dao.referenceAfter());
         }
-        send(ServiceName.GET_SERVER_DIRECTORY, req.encode());
+        send(ServiceName.GET_SERVER_DIRECTORY, req);
     }
 
     @Override
@@ -41,6 +41,7 @@ public class SvrDirClient extends BaseClientHandler {
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
         resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.reference.count; i++) {
             names.add(new String(resp.reference.items.get(i).value()));

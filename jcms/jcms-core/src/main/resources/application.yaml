@@ -17,6 +17,8 @@ client:
   defaultSecure: false
   connectTimeoutMs: 5000
   requestTimeoutMs: 5000
+  console:
+    tracePdu: false
 
 protocol:
   maxArraySize: 1024
@@ -41,13 +43,3 @@ security:
   truststore:
     path: certs/ca.cer
     password: changeit
-
-cli:
-  tracePdu: false
-  autoExec: ""
-  showAutoExec: true
-  showConnectHint: true
-  apiEnabled: true
-  apiPort: 7899
-
-

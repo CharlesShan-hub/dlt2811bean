@@ -3,6 +3,7 @@ package com.ysh.jcms.app.node;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.security.GmCredentialManager;
+import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
@@ -24,18 +25,25 @@ public class CmsNode {
     private final Map<Class<?>, Object> clientHandlers = new HashMap<>();
     private final SclManager sclManager = new SclManager();
     private final ContentManager contentManager = new ContentManager();
-    private GmCredentialManager credentialManager;
+    private final GmCredentialManager credentialManager;
 
     public CmsNode(boolean createServer) {
         this.server = createServer ? new InnerServer() : null;
+        this.credentialManager = initCredentialManager();
     }
 
-    /**
-     * Constructor for testing with a specific server port.
-     * The {@link InnerServer} will listen on the given port (no TLS).
-     */
     public CmsNode(int serverPort) {
         this.server = serverPort > 0 ? new InnerServer(serverPort, 0) : null;
+        this.credentialManager = initCredentialManager();
+    }
+
+    /** Initialize credential manager with a self-signed context. */
+    private static GmCredentialManager initCredentialManager() {
+        try {
+            return SecurityContext.generateSelfSigned().credentialManager();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to initialize GmCredentialManager", e);
+        }
     }
 
     public void registerServer(ServiceHandler handler) {
@@ -105,7 +113,6 @@ public class CmsNode {
     public SclManager getSclManager() { return sclManager; }
     public ContentManager getContentManager() { return contentManager; }
     public GmCredentialManager getCredentialManager() { return credentialManager; }
-    public void setCredentialManager(GmCredentialManager credentialManager) { this.credentialManager = credentialManager; }
 
     public void stop() {
         client.close();

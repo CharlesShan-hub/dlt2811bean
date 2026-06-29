@@ -24,7 +24,7 @@ public class NegotiateClient extends BaseClientHandler {
             .asduSize(dao.asduSize())
             .protocolVersion(dao.protocolVersion());
 
-        send(ServiceName.ASSOCIATE_NEGOTIATE, req.encode());
+        send(ServiceName.ASSOCIATE_NEGOTIATE, req);
     }
 
     @Override
@@ -38,6 +38,7 @@ public class NegotiateClient extends BaseClientHandler {
     protected void onSuccess(Frame frame) throws IOException {
         CmsNegotiateResponse resp = new CmsNegotiateResponse();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
 
         ClientSession session = node.getClient().getSession();
         session.setNegotiatedApduSize(resp.apduSize.value());

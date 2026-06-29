@@ -88,6 +88,8 @@ Bye.
 connect 127.0.0.1;
 # 再指定访问点
 associate C_B5041X/S1;
+# 单独的associate可以指定加密
+associate C_B5041X/S1 true;
 ```
 
 ```bash
@@ -339,6 +341,26 @@ cms> all-def PROT/LinPTRC2
     [5] Tr  [structure]  cdc=ACT
     [6] Op  [structure]  cdc=ACT
     [7] Str  [structure]  cdc=ACD
+```
+
+### 8.3.6 获取控制块的值
+
+```bash
+all-cb LD0 brcb;
+```
+
+```bash
+cms> connect 127.0.0.1 C_B5041X/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> all-cb LD0 brcb
+  Fetching CB values: target=LD0 type=BRCB
+  CB values (3 items):
+    [0] LLN0.brcbAlarm  [BRCB]
+    [1] LLN0.brcbWarning  [BRCB]
+    [2] LLN0.brcbCommState  [BRCB]
 ```
 
 ### 8.15 协商

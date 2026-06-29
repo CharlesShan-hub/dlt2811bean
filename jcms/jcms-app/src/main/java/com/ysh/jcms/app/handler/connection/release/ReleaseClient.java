@@ -22,7 +22,7 @@ public class ReleaseClient extends BaseClientHandler {
         CmsReleaseRequest req = new CmsReleaseRequest()
             .reqId(nextReqId());
 
-        send(ServiceName.RELEASE, req.encode());
+        send(ServiceName.RELEASE, req);
     }
 
     @Override
@@ -36,6 +36,7 @@ public class ReleaseClient extends BaseClientHandler {
     protected void onSuccess(Frame frame) throws IOException {
         CmsReleaseResponse resp = new CmsReleaseResponse();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {

@@ -23,12 +23,37 @@ public class CmsFormatUtil {
         List<? extends CmsType> kids = type.children();
 
         if (!kids.isEmpty()) {
+            // Detect CHOICE: first child is CmsEnumerated (the selector)
+            if (isChoice(kids)) {
+                return choiceToString(type, kids, depth, fieldNames);
+            }
             return containerToString(type, kids, depth, fieldNames);
         }
         if (type instanceof CmsUint8Array) {
             return uint8ArrayToString((CmsUint8Array) type);
         }
         return scalarToString(type);
+    }
+
+    /** Check if children look like a CHOICE (first child is CmsEnumerated). */
+    private static boolean isChoice(List<? extends CmsType> kids) {
+        return !kids.isEmpty() && kids.get(0) instanceof CmsEnumerated;
+    }
+
+    /**
+     * Render a CHOICE: only the selected alternative.
+     * kids = [choice, alt0, alt1, ...]
+     */
+    private static String choiceToString(
+            CmsType type, List<? extends CmsType> kids,
+            int depth, Map<CmsType, String> fieldNames) {
+        CmsEnumerated choice = (CmsEnumerated) kids.get(0);
+        int idx = 1 + choice.value();  // alt starts at index 1
+        CmsType selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
+        String val = (selected != null)
+            ? toString(selected, depth, fieldNames)
+            : "(null)";
+        return "CHOICE {" + val + "}";
     }
 
     // ==================== Container ====================
@@ -45,7 +70,11 @@ public class CmsFormatUtil {
             String name = (fieldNames != null)
                 ? fieldNames.getOrDefault(child, "[" + i + "]")
                 : "[" + i + "]";
-            sb.append(indent).append("[").append(i).append("] ").append(name).append(": ");
+            // Skip duplicate index when name is already a positional tag
+            boolean skipPos = name.startsWith("[");
+            sb.append(indent);
+            if (!skipPos) sb.append("[").append(i).append("] ");
+            sb.append(name).append(": ");
             String val = (child != null)
                 ? toString(child, depth + 1, fieldNames)
                 : "(null)";

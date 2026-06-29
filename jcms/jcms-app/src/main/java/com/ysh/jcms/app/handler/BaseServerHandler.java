@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.document.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
@@ -69,10 +70,18 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
             if (!tryDecode(session, request, decoded)) {
                 return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
+            if (traceEnabled()) log.info("[TRACE] <<< {} reqId={}:\n{}",
+                serviceName, request.reqId(), decoded);
         } else {
             decoded = null;
         }
-        return onDecodeSuccess(session, decoded);
+        Frame response = onDecodeSuccess(session, decoded);
+        if (response != null && traceEnabled()) {
+            log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)",
+                serviceName, response.reqId(), response.header().err(),
+                response.asduBytes() != null ? response.asduBytes().length : 0);
+        }
+        return response;
     }
 
     /**
@@ -189,5 +198,21 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
                 pdu.getClass().getSimpleName(), session.getSessionId(), e.getMessage());
             return false;
         }
+    }
+
+    // ──────────────────────────────────────────────
+    //  Misc helpers
+    // ──────────────────────────────────────────────
+
+    /**
+     * Maximum number of elements to return in one response page.
+     * Used by directory services for pagination.
+     */
+    protected static int pageSize() {
+        return CmsConfigLoader.load().getProtocol().getMaxArraySize();
+    }
+
+    private static boolean traceEnabled() {
+        return CmsConfigLoader.load().getClient().getConsole().isTracePdu();
     }
 }

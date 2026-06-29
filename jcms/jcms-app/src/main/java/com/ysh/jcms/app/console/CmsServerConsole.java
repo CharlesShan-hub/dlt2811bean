@@ -8,9 +8,11 @@ import com.ysh.jcms.app.handler.test.test.TestServer;
 import com.ysh.jcms.app.handler.directory.getServerDirectory.SvrDirServer;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirServer;
 import com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory.LnDirServer;
+import com.ysh.jcms.app.handler.directory.getAllCbValues.AllCbValuesServer;
 import com.ysh.jcms.app.handler.directory.getAllDataDefinition.AllDataDefServer;
 import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
 import com.ysh.jcms.app.handler.console.server.ListHandler;
+import com.ysh.jcms.app.handler.console.TracePduHandler;
 
 /**
  * Server-side CMS console.
@@ -36,7 +38,9 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new LnDirServer());
         registerServer(new AllDataValuesServer());
         registerServer(new AllDataDefServer());
+        registerServer(new AllCbValuesServer());
         register(new ListHandler());
+        register(new TracePduHandler());
     }
 
     @Override

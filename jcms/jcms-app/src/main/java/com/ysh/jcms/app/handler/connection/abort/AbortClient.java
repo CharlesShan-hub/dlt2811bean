@@ -20,10 +20,10 @@ public class AbortClient extends BaseClientHandler {
 
     public void execute(AbortClientDao dao) throws Exception {
         CmsAbort req = new CmsAbort()
-            .reqId(0)       // ReqID=0 for one-way (non-request-response) services per DL/T 2811 §6.2.1-c
+            .reqId(0)
             .reason(dao.reason());
 
-        sendOneWay(ServiceName.ABORT, req.encode());
+        sendOneWay(ServiceName.ABORT, req);
     }
 
     @Override

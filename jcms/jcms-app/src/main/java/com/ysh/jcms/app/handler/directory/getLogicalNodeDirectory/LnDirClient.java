@@ -40,7 +40,7 @@ public class LnDirClient extends BaseClientHandler {
             req.refAfter(dao.referenceAfter());
         }
 
-        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, req.encode());
+        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, req);
     }
 
     @Override
@@ -55,6 +55,7 @@ public class LnDirClient extends BaseClientHandler {
         CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse();
         resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.reference.count; i++) {
             names.add(new String(resp.reference.items.get(i).value()));

@@ -1,6 +1,5 @@
 package com.ysh.jcms.app.console;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
@@ -14,16 +13,10 @@ public final class ConsolePrinter {
     private static final String RED  = "\u001B[31m";
     private static final String GRY  = "\u001B[90m";
 
-    /** Write UTF-8 bytes directly, bypassing System.out charset encoding. */
+    /** Print to stdout with system default charset. */
     private static void println(String s) {
-        try {
-            System.out.write(s.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            System.out.write('\n');
-            System.out.flush();
-        } catch (IOException e) {
-            // fallback
-            System.out.println(s);
-        }
+        System.out.println(s);
+        System.out.flush();
     }
 
     public static void info(String msg)    { println(CYAN + "  " + msg + RST); }

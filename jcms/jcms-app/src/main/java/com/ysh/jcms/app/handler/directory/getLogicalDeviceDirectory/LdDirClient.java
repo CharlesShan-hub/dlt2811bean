@@ -28,7 +28,7 @@ public class LdDirClient extends BaseClientHandler {
         if (dao.referenceAfter() != null) {
             req.refAfter(dao.referenceAfter());
         }
-        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, req.encode());
+        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, req);
     }
 
     @Override
@@ -43,6 +43,7 @@ public class LdDirClient extends BaseClientHandler {
         CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse();
         resp.lnReference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
         List<String> names = new ArrayList<>();
         for (int i = 0; i < resp.lnReference.count; i++) {
             names.add(new String(resp.lnReference.items.get(i).value()));

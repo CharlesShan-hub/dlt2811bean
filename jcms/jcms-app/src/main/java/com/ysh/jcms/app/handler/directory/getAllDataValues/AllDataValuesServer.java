@@ -200,8 +200,4 @@ public class AllDataValuesServer extends BaseServerHandler {
         }
         return false;
     }
-
-    private static int pageSize() {
-        return CmsConfigLoader.load().getProtocol().getMaxArraySize();
-    }
 }

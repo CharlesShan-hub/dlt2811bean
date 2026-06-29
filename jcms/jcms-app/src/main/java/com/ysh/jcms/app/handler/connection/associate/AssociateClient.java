@@ -32,12 +32,12 @@ public class AssociateClient extends BaseClientHandler {
             .sapRef(dao.sapRef())
             .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
-        if (dao.secure() && credentialManager != null) {
+        if (dao.secure()) {
             req.authParam(buildAuthParam(credentialManager, dao.sapRef()));
             req.authParamPresent(true);
         }
 
-        send(ServiceName.ASSOCIATE, req.encode());
+        send(ServiceName.ASSOCIATE, req);
     }
 
     @Override
@@ -52,6 +52,7 @@ public class AssociateClient extends BaseClientHandler {
     protected void onSuccess(Frame frame) throws IOException {
         CmsAssociateResponse resp = new CmsAssociateResponse();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {

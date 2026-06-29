@@ -43,7 +43,7 @@ public class AllDataDefClient extends BaseClientHandler {
             req.refAfter(dao.referenceAfter());
         }
 
-        send(ServiceName.GET_ALL_DATA_DEFINITION, req.encode());
+        send(ServiceName.GET_ALL_DATA_DEFINITION, req);
     }
 
     @Override
@@ -58,6 +58,7 @@ public class AllDataDefClient extends BaseClientHandler {
         CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse();
         resp.data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
+        traceResp(resp);
 
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {

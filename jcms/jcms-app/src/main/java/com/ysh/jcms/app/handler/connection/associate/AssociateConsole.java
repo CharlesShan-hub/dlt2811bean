@@ -20,7 +20,8 @@ public class AssociateConsole implements CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("sapRef", "ServerAccessPoint 引用")
+            new Param("sapRef", "ServerAccessPoint 引用"),
+            new Param("secure", "加密关联 (true/false, 默认 false)")
         );
     }
 
@@ -41,9 +42,11 @@ public class AssociateConsole implements CommandHandler {
             return;
         }
 
-        console.getClient(AssociateClient.class)
-            .execute(new AssociateClientDao().sapRef(sapRef).secure(false));
+        boolean secure = Boolean.parseBoolean(args.getOrDefault("secure", "false"));
 
-        ConsolePrinter.success("Associated: " + sapRef);
+        console.getClient(AssociateClient.class)
+            .execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
+
+        ConsolePrinter.success("Associated: " + sapRef + (secure ? " (secure)" : ""));
     }
 }

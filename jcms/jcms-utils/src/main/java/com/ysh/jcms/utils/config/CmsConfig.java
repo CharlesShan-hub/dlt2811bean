@@ -12,7 +12,6 @@ public class CmsConfig {
     private Client client = new Client();
     private Protocol protocol = new Protocol();
     private Security security = new Security();
-    private Cli cli = new Cli();
 
     public Server getServer() { return server; }
     public void setServer(Server server) { this.server = server; }
@@ -25,9 +24,6 @@ public class CmsConfig {
 
     public Security getSecurity() { return security; }
     public void setSecurity(Security security) { this.security = security; }
-
-    public Cli getCli() { return cli; }
-    public void setCli(Cli cli) { this.cli = cli; }
 
     // ───────── Server ─────────
 
@@ -119,6 +115,7 @@ public class CmsConfig {
         private boolean defaultSecure = false;
         private int connectTimeoutMs = 5000;
         private int requestTimeoutMs = 5000;
+        private Console console = new Console();
 
         public String getDefaultIedName() { return defaultIedName; }
         public void setDefaultIedName(String defaultIedName) { this.defaultIedName = defaultIedName; }
@@ -130,6 +127,32 @@ public class CmsConfig {
         public void setConnectTimeoutMs(int connectTimeoutMs) { this.connectTimeoutMs = connectTimeoutMs; }
         public int getRequestTimeoutMs() { return requestTimeoutMs; }
         public void setRequestTimeoutMs(int requestTimeoutMs) { this.requestTimeoutMs = requestTimeoutMs; }
+        public Console getConsole() { return console; }
+        public void setConsole(Console console) { this.console = console; }
+
+        // ── Console settings ──
+
+        public static class Console {
+            private boolean tracePdu = false;
+            private String autoExec = "";
+            private boolean showAutoExec = true;
+            private boolean showConnectHint = true;
+            private boolean apiEnabled = true;
+            private int apiPort = 7899;
+
+            public boolean isTracePdu() { return tracePdu; }
+            public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
+            public String getAutoExec() { return autoExec; }
+            public void setAutoExec(String autoExec) { this.autoExec = autoExec; }
+            public boolean isShowAutoExec() { return showAutoExec; }
+            public void setShowAutoExec(boolean showAutoExec) { this.showAutoExec = showAutoExec; }
+            public boolean isShowConnectHint() { return showConnectHint; }
+            public void setShowConnectHint(boolean showConnectHint) { this.showConnectHint = showConnectHint; }
+            public boolean isApiEnabled() { return apiEnabled; }
+            public void setApiEnabled(boolean apiEnabled) { this.apiEnabled = apiEnabled; }
+            public int getApiPort() { return apiPort; }
+            public void setApiPort(int apiPort) { this.apiPort = apiPort; }
+        }
     }
 
     // ───────── Protocol ─────────
@@ -221,30 +244,6 @@ public class CmsConfig {
         }
     }
 
-    // ───────── CLI ─────────
-
-    public static class Cli {
-        private boolean tracePdu = false;
-        private String autoExec = "";
-        private boolean showAutoExec = true;
-        private boolean showConnectHint = true;
-        private boolean apiEnabled = true;
-        private int apiPort = 7899;
-
-        public boolean isTracePdu() { return tracePdu; }
-        public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
-        public String getAutoExec() { return autoExec; }
-        public void setAutoExec(String autoExec) { this.autoExec = autoExec; }
-        public boolean isShowAutoExec() { return showAutoExec; }
-        public void setShowAutoExec(boolean showAutoExec) { this.showAutoExec = showAutoExec; }
-        public boolean isShowConnectHint() { return showConnectHint; }
-        public void setShowConnectHint(boolean showConnectHint) { this.showConnectHint = showConnectHint; }
-        public boolean isApiEnabled() { return apiEnabled; }
-        public void setApiEnabled(boolean apiEnabled) { this.apiEnabled = apiEnabled; }
-        public int getApiPort() { return apiPort; }
-        public void setApiPort(int apiPort) { this.apiPort = apiPort; }
-    }
-
     // ───────── Merge ─────────
 
     public void merge(CmsConfig other) {
@@ -296,11 +295,11 @@ public class CmsConfig {
         if (other.security != null) {
             security.enabled = other.security.enabled;
         }
-        if (other.cli != null) {
-            if (other.cli.autoExec != null && !other.cli.autoExec.isEmpty())
-                cli.autoExec = other.cli.autoExec;
-            if (other.cli.apiPort != 7899)
-                cli.apiPort = other.cli.apiPort;
+        if (other.client != null && other.client.console != null) {
+            if (other.client.console.autoExec != null && !other.client.console.autoExec.isEmpty())
+                client.console.autoExec = other.client.console.autoExec;
+            if (other.client.console.apiPort != 7899)
+                client.console.apiPort = other.client.console.apiPort;
         }
     }
 }

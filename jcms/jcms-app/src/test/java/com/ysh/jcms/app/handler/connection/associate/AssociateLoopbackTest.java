@@ -29,7 +29,6 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        node.setCredentialManager(clientCtx.credentialManager());
         regClient(node, new AssociateClient(node));
     }
 

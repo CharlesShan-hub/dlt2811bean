@@ -131,6 +131,11 @@ public class CmsArray<T extends CmsType> extends CmsType {
     // ==================== equals / hashCode ====================
 
     @Override
+    public List<? extends CmsType> children() {
+        return items;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof CmsArray)) return false;
