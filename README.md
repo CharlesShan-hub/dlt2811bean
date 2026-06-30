@@ -585,7 +585,38 @@ cms> data-dir --ref LD0/LLN0.Mod --after q
     [0] [ST]  t
 ```
 
-### 8.4.4
+### 8.4.4 获取数据定义
+
+```bash
+# 用法: get-data-def --refs "<ref1> <ref2>..." [--fc FC]
+# DO 级定义（含 CDC 类型）
+get-data-def --refs "LD0/LLN0.Mod LD0/LLN0.Beh"
+# DA 级定义
+get-data-def --refs "LD0/LLN0.Mod.stVal"
+# 带 fc 过滤
+get-data-def --refs "LD0/LLN0.Mod" --fc ST
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> get-data-def --refs "LD0/LLN0.Mod LD0/LLN0.Beh"
+  Fetching data definitions for 2 reference(s)
+  Data definitions (2 items):
+    [0] LD0/LLN0.Mod  [structure]  cdc=INC
+    [1] LD0/LLN0.Beh  [structure]  cdc=INS
+cms> get-data-def --refs "LD0/LLN0.Mod.stVal"
+  Fetching data definitions for 1 reference(s)
+  Data definitions (1 items):
+    [0] LD0/LLN0.Mod.stVal  [boolean]
+cms> get-data-def --refs "LD0/LLN0.Mod" --fc ST
+  Fetching data definitions for 1 reference(s)
+  Data definitions (1 items):
+    [0] LD0/LLN0.Mod  [structure]  cdc=INC
+```
 
 
 ### 8.15 协商

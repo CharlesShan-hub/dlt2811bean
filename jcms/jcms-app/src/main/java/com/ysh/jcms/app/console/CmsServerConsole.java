@@ -2,6 +2,7 @@ package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesServer;
 import com.ysh.jcms.app.handler.data.getDataDirectory.GetDataDirectoryServer;
+import com.ysh.jcms.app.handler.data.getDataDefinition.GetDataDefinitionServer;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
@@ -45,6 +46,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new GetDataValuesServer());
         registerServer(new SetDataValuesServer());
         registerServer(new GetDataDirectoryServer());
+        registerServer(new GetDataDefinitionServer());
         register(new ListHandler());
         register(new TracePduHandler());
     }

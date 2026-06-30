@@ -23,7 +23,7 @@ public class CmsGetDataDefinitionResponse extends CmsType {
 
     public CmsGetDataDefinitionResponse() { super(Codec.GET_DATA_DEFINITION_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.data        = new CmsArray<>();
+        this.data        = new CmsArray<>(CmsDataDefResultEntry.class);
         this.moreFollows = new CmsBoolean();
     }
     

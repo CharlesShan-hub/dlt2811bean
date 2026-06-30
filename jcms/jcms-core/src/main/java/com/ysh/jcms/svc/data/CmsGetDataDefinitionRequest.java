@@ -20,7 +20,7 @@ public class CmsGetDataDefinitionRequest extends CmsType {
 
     public CmsGetDataDefinitionRequest() { super(Codec.GET_DATA_DEFINITION_REQUEST);
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>();
+        this.data  = new CmsArray<>(CmsDataRefEntry.class);
     }
     
     public CmsGetDataDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
