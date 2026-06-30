@@ -746,6 +746,27 @@ cms> get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
   No dataset values returned
 ```
 
+### 8.6.1 
+
+### 8.6.6 读定值组控制块值
+
+```bash
+# 用法: sgcb-vals --refs "<ref1> <ref2>..."
+sgcb-vals --refs "LD0/LLN0.SG1"
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> sgcb-vals --refs "LD0/LLN0.SG1"
+  Fetching SGCB values for 1 reference(s)
+  SGCB values (1 items):
+    [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
+```
+
 ### 8.15 协商
 
 ```bash

@@ -18,6 +18,8 @@ import com.ysh.jcms.app.handler.dataset.createDataSet.CreateDataSetClient;
 import com.ysh.jcms.app.handler.dataset.createDataSet.CreateDataSetConsole;
 import com.ysh.jcms.app.handler.dataset.deleteDataSet.DeleteDataSetClient;
 import com.ysh.jcms.app.handler.dataset.deleteDataSet.DeleteDataSetConsole;
+import com.ysh.jcms.app.handler.sg.getSgcbValues.GetSgcbValuesClient;
+import com.ysh.jcms.app.handler.sg.getSgcbValues.GetSgcbValuesConsole;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
@@ -76,6 +78,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SetDataSetValuesClient(this));
         registerClient(new CreateDataSetClient(this));
         registerClient(new DeleteDataSetClient(this));
+        registerClient(new GetSgcbValuesClient(this));
     }
 
     @Override
@@ -97,6 +100,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new SetDataSetValuesConsole());
         register(new CreateDataSetConsole());
         register(new DeleteDataSetConsole());
+        register(new GetSgcbValuesConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());

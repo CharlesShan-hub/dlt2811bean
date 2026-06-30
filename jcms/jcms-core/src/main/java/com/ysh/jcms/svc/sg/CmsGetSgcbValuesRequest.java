@@ -21,7 +21,7 @@ public class CmsGetSgcbValuesRequest extends CmsType {
 
     public CmsGetSgcbValuesRequest() { super(Codec.GET_SGCB_VALUES_REQUEST);
         this.reqId         = new CmsReqId();
-        this.sgcbReference = new CmsArray<>();
+        this.sgcbReference = new CmsArray<>(CmsObjectReference.class);
     }
     
     public CmsGetSgcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }

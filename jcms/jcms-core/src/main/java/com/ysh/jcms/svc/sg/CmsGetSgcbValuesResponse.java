@@ -23,7 +23,7 @@ public class CmsGetSgcbValuesResponse extends CmsType {
 
     public CmsGetSgcbValuesResponse() { super(Codec.GET_SGCB_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.sgscb       = new CmsArray<>();
+        this.sgscb       = new CmsArray<>(CmsSgcbValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
     
