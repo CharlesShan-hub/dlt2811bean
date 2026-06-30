@@ -13,19 +13,16 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
+import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 public class GetSgcbValuesServer extends BaseServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GetSgcbValuesServer.class);
-
-    /** Per-session SGCB state (actSG, editSG). */
-    private static final ConcurrentMap<String, SgcState> SESSION_STATES = new ConcurrentHashMap<>();
 
     public GetSgcbValuesServer() {
         super(ServiceName.GET_SGCB_VALUES, CmsGetSgcbValuesRequest.class, CmsGetSgcbValuesError.class);
@@ -80,18 +77,13 @@ public class GetSgcbValuesServer extends BaseServerHandler {
     }
 
     private static CmsSgcb buildSgcb(String ref, Session session, int numOfSG) {
-        SgcState state = SESSION_STATES.computeIfAbsent(session.getSessionId(), k -> new SgcState());
+        SgcState state = SgSessionState.getState(session.getSessionId());
         CmsSgcb sgcb = new CmsSgcb()
             .numOfSG(numOfSG)
-            .actSG(state.actSG)
-            .editSG(state.editSG);
+            .actSG(state.getActSG())
+            .editSG(state.getEditSG());
         sgcb.tActEdt.now();
         sgcb.resvTms_present(false);
         return sgcb;
-    }
-
-    private static class SgcState {
-        int actSG = 1;
-        int editSG = 1;
     }
 }

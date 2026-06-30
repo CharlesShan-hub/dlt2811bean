@@ -746,7 +746,58 @@ cms> get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
   No dataset values returned
 ```
 
-### 8.6.1 
+### 8.6.1 选择激活定值组
+
+```bash
+# 用法: select-active-sg --ref <sgcbRef> --num <groupNumber>
+# 选择定值组 2 为激活组
+select-active-sg --ref "LD0/LLN0.SG1" --num 2
+```
+
+```bash
+cms> connect --ap C_B5041X/S1; # 连接
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> sgcb-vals --refs "LD0/LLN0.SG1" # 先看
+  Fetching SGCB values for 1 reference(s)
+  SGCB values (1 items):
+    [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
+cms> select-active-sg --ref "LD0/LLN0.SG1" --num 2 # 修改
+  Selecting active SG: ref=LD0/LLN0.SG1 num=2
+  OK  Active SG set to 2 for LD0/LLN0.SG1
+cms> sgcb-vals --refs "LD0/LLN0.SG1" # 再看
+  Fetching SGCB values for 1 reference(s)
+  SGCB values (1 items):
+    [0] LD0/LLN0.SG1  numOfSG=4 actSG=2 editSG=1
+```
+
+### 8.6.2 选择编辑定值组
+
+```bash
+# 用法: select-edit-sg --ref <sgcbRef> --num <groupNumber>
+select-edit-sg --ref "LD0/LLN0.SG1" --num 2
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> sgcb-vals --refs "LD0/LLN0.SG1"
+  Fetching SGCB values for 1 reference(s)
+  SGCB values (1 items):
+    [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
+cms> select-edit-sg --ref "LD0/LLN0.SG1" --num 2
+  Selecting edit SG: ref=LD0/LLN0.SG1 num=2
+  OK  Edit SG set to 2 for LD0/LLN0.SG1
+cms> sgcb-vals --refs "LD0/LLN0.SG1"
+  Fetching SGCB values for 1 reference(s)
+  SGCB values (1 items):
+    [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=2
+```
 
 ### 8.6.6 读定值组控制块值
 

@@ -1,0 +1,64 @@
+package com.ysh.jcms.app.handler.sg.selectEditSg;
+
+import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
+import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.svc.sg.CmsSelectEditSgError;
+import com.ysh.jcms.svc.sg.CmsSelectEditSgRequest;
+import com.ysh.jcms.svc.sg.CmsSelectEditSgResponse;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.session.Session;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
+
+public class SelectEditSgServer extends BaseServerHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(SelectEditSgServer.class);
+
+    public SelectEditSgServer() {
+        super(ServiceName.SELECT_EDIT_SG, CmsSelectEditSgRequest.class, CmsSelectEditSgError.class);
+    }
+
+    @Override
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsSelectEditSgRequest req = (CmsSelectEditSgRequest) rawReq;
+        int reqId = req.reqId.value();
+
+        String ref = req.sgcbReference.len > 0
+            ? new String(req.sgcbReference.value(), StandardCharsets.UTF_8) : null;
+        int sgNum = req.settingGroupNumber.value() & 0xFF;
+
+        log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}",
+            session.getSessionId(), reqId, ref, sgNum);
+
+        if (ref == null || ref.isEmpty()) {
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        }
+
+        int numOfSG = CmsConfigLoader.load().getProtocol().getSetting().getNumOfSG();
+        if (sgNum < 1 || sgNum > numOfSG) {
+            log.warn("SelectEditSG: invalid group number {} (max={})", sgNum, numOfSG);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        }
+
+        SgcState state = SgSessionState.getState(session.getSessionId());
+        state.setEditSG(sgNum);
+
+        log.info("SelectEditSG: set editSG={} for session={}", sgNum, session.getSessionId());
+
+        try {
+            CmsSelectEditSgResponse resp = new CmsSelectEditSgResponse()
+                .reqId(reqId);
+            return buildSuccess(resp.encode(), reqId);
+        } catch (Exception e) {
+            log.error("Failed to encode SelectEditSGResponse", e);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+    }
+}
