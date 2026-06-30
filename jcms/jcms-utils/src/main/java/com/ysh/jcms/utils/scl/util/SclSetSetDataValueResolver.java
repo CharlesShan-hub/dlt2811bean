@@ -93,8 +93,65 @@ public class SclSetSetDataValueResolver {
             return CmsServiceError.INSTANCE_NOT_AVAILABLE;
         }
 
-        dai.setVal(value);
+        // Validate and canonicalize value against DA's bType before storing
+        String bType = resolveDaBType(templates, ln, doName, dai.getName(), parts);
+        if (bType != null) {
+            String validated = validateAndConvert(value, bType);
+            if (validated == null) {
+                return CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;
+            }
+            dai.setVal(validated);
+        } else {
+            dai.setVal(value);
+        }
         return CmsServiceError.NO_ERROR;
+    }
+
+    /** Resolve the bType for the target DA or BDA. */
+    private static String resolveDaBType(SclDataTypeTemplates templates, SclLN ln,
+                                          String doName, String daName, String[] parts) {
+        if (templates == null || ln.getLnType() == null) return null;
+        if (parts.length == 4) {
+            // LD/LN.DO.SDI.BDA → use resolveSdiBdaBType
+            return SclDataValueResolver.resolveSdiBdaBType(templates, ln, doName, parts[2], daName);
+        }
+        // LD/LN.DO.DA or LD/LN.DO → use resolveDaBType
+        return SclDataValueResolver.resolveDaBType(templates, ln, doName, daName);
+    }
+
+    /** Validate and canonicalize value according to bType. Returns null if invalid. */
+    private static String validateAndConvert(String value, String bType) {
+        if (value == null) return null;
+        switch (bType.toUpperCase()) {
+            case "BOOLEAN":
+                if ("true".equalsIgnoreCase(value) || "1".equals(value)) return "true";
+                if ("false".equalsIgnoreCase(value) || "0".equals(value)) return "false";
+                return null; // invalid boolean
+            case "INT8":
+                try { Byte.parseByte(value); return value; } catch (NumberFormatException e) { return null; }
+            case "INT16":
+                try { Short.parseShort(value); return value; } catch (NumberFormatException e) { return null; }
+            case "INT32":
+            case "ENUM":
+            case "ENUMERATED":
+            case "CODED_ENUM":
+                try { Integer.parseInt(value); return value; } catch (NumberFormatException e) { return null; }
+            case "INT64":
+                try { Long.parseLong(value); return value; } catch (NumberFormatException e) { return null; }
+            case "INT8U":
+                try { int v = Short.parseShort(value); if (v >= 0 && v <= 255) return Integer.toString(v); return null; } catch (NumberFormatException e) { return null; }
+            case "INT16U":
+                try { int v = Integer.parseInt(value); if (v >= 0 && v <= 65535) return Integer.toString(v); return null; } catch (NumberFormatException e) { return null; }
+            case "INT32U":
+                try { long v = Long.parseLong(value); if (v >= 0 && v <= 0xFFFFFFFFL) return Long.toString(v); return null; } catch (NumberFormatException e) { return null; }
+            case "FLOAT32":
+                try { Float.parseFloat(value); return value; } catch (NumberFormatException e) { return null; }
+            case "FLOAT64":
+                try { Double.parseDouble(value); return value; } catch (NumberFormatException e) { return null; }
+            default:
+                // Unicode255, VisString255, etc. — any string is valid
+                return value;
+        }
     }
 
     private static String findFirstDaName(SclDataTypeTemplates templates, SclLN ln, String doName) {

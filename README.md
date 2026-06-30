@@ -383,6 +383,79 @@ cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm
     [2] LD0/GGIO1.HostTPortAlarm  [unicode-string] 对时信号状态
 ```
 
+### 8.4.2 设置指定数据值
+
+```bash
+set-data-values <ref1>=<value1> <ref2>=<value2> ...;
+```
+
+```bash
+cms> connect 127.0.0.1 C_B5041X/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> # 字符串类型
+cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/GGIO9.AnIn1  [unicode-string] 光口1发功率
+    [1] LD0/GGIO1.HostTPortAlarm  [unicode-string] 对时信号状态
+cms> set-data-values LD0/GGIO9.AnIn1=光口1发功率修改 LD0/GGIO1.HostTPortAlarm=对时信号状态修改
+  Setting 2 data value(s)...
+  OK  Set 2 data value(s) successfully
+cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/GGIO9.AnIn1  [visible-string] 光口1发功率修改
+    [1] LD0/GGIO1.HostTPortAlarm  [visible-string] 对时信号状态修改
+cms>
+cms>
+cms> # 数值类型
+cms> get-data-values LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/LLN0.Mod.stVal  [visible-string] status-only
+    [1] LD0/LLN0.Beh.stVal  [visible-string] (unavailable)
+cms> set-data-values LD0/LLN0.Mod.stVal=10 LD0/LLN0.Beh.stVal=20
+  Setting 2 data value(s)...
+  OK  Set 2 data value(s) successfully
+cms> get-data-values LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/LLN0.Mod.stVal  [int32] 10
+    [1] LD0/LLN0.Beh.stVal  [int32] 20
+cms>
+cms>
+cms> # 浮点数类型
+cms> set-data-values LD0/GGIO2.BusVRtgPri.setMag.f=123.45
+  Setting 1 data value(s)...
+  OK  Set 1 data value(s) successfully
+cms> get-data-values LD0/GGIO2.BusVRtgPri.setMag.f
+  Fetching data values for 1 reference(s)
+  Data values (1 items):
+    [0] LD0/GGIO2.BusVRtgPri.setMag.f  [float32] 123.45
+cms>
+cms>
+cms> # 布尔类型
+cms> get-data-values LD0/LLN0.CommTstMet.stVal
+  Fetching data values for 1 reference(s)
+  Data values (1 items):
+    [0] LD0/LLN0.CommTstMet.stVal  [visible-string] (unavailable)
+cms> set-data-values LD0/LLN0.CommTstMet.stVal=111 # 错误的类型会被拒绝
+  Setting 1 data value(s)...
+  ERR SetDataValues rejected:
+cms> set-data-values LD0/LLN0.CommTstMet.stVal=true
+  Setting 1 data value(s)...
+  OK  Set 1 data value(s) successfully
+cms> get-data-values LD0/LLN0.CommTstMet.stVal
+  Fetching data values for 1 reference(s)
+  Data values (1 items):
+    [0] LD0/LLN0.CommTstMet.stVal  [boolean] true
+```
+
+
+
 ### 8.15 协商
 
 ```bash

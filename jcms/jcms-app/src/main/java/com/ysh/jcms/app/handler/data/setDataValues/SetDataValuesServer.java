@@ -78,6 +78,11 @@ public class SetDataValuesServer extends BaseServerHandler {
 
         log.info("SetDataValues: {}/{} entries set successfully", successCount, req.data.count);
 
+        if (successCount < req.data.count) {
+            log.warn("SetDataValues: {} entries failed on server side", req.data.count - successCount);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+
         try {
             return buildSuccess(new CmsSetDataValuesResponse().reqId(reqId).encode(), reqId);
         } catch (Exception e) {

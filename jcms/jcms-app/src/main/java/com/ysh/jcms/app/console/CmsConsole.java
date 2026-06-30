@@ -89,6 +89,17 @@ public abstract class CmsConsole extends CmsNode {
         }
         if (isConnected()) close();
         onStop();
+        closeReader();
+        System.exit(0);
+    }
+
+    /** Close JLine reader/terminal to restore console mode (important on Windows). */
+    private void closeReader() {
+        try {
+            reader.getTerminal().close();
+        } catch (Exception ignored) {
+            // best-effort
+        }
     }
 
     /** Override to customise the prompt (default "cms> "). */

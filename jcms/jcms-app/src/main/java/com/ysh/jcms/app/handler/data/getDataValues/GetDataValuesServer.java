@@ -68,17 +68,11 @@ public class GetDataValuesServer extends BaseServerHandler {
                 log.debug("GetDataValues: resolved ref={} bType={} val={}", ref, sv.bType, sv.val);
                 resp.value.add(toCmsData(sv));
             } else {
-                // Try simpler path: maybe LN name has prefix
-                SclDataValue sv2 = resolveWithFallback(server, templates, ref);
-                if (sv2 != null) {
-                    resp.value.add(toCmsData(sv2));
-                } else {
-                    log.warn("GetDataValues: cannot resolve data value for ref={}", ref);
-                    CmsData err = new CmsData();
-                    err.choice(CmsData.CHOICE_VISIBLE_STRING);
-                    err.alt_visible_string.value("(unavailable)");
-                    resp.value.add(err);
-                }
+                log.warn("GetDataValues: cannot resolve data value for ref={}", ref);
+                CmsData err = new CmsData();
+                err.choice(CmsData.CHOICE_VISIBLE_STRING);
+                err.alt_visible_string.value("(unavailable)");
+                resp.value.add(err);
             }
         }
 
@@ -115,6 +109,7 @@ public class GetDataValuesServer extends BaseServerHandler {
                     data.alt_int16.value(Short.parseShort(val));
                     break;
                 case "INT32":
+                case "ENUM":
                 case "ENUMERATED":
                 case "CODED_ENUM":
                     data.choice(CmsData.CHOICE_INT32);
@@ -182,36 +177,5 @@ public class GetDataValuesServer extends BaseServerHandler {
             if (s.charAt(i) > 127) return true;
         }
         return false;
-    }
-
-    /**
-     * Fallback resolver: if the specified LN doesn't have the DO (DOI),
-     * search all LNs in the same device for a DOI with the same name.
-     */
-    private static SclDataValue resolveWithFallback(SclServer server, SclDataTypeTemplates templates, String ref) {
-        int slashIdx = ref.indexOf('/');
-        if (slashIdx < 0) return null;
-        String ldName = ref.substring(0, slashIdx);
-        String rest = ref.substring(slashIdx + 1);
-        String[] parts = rest.split("\\.");
-        if (parts.length < 2) return null;
-
-        SclLDevice device = server.findLDeviceByInst(ldName);
-        if (device == null) return null;
-
-        String doName = parts[1];
-        // Search all LNs for this DO name
-        for (SclLN ln : device.getLns()) {
-            SclDOI doi = ln.findDoiByName(doName);
-            if (doi == null) continue;
-            for (SclDAI dai : doi.getDais()) {
-                if (dai.getVal() != null && !dai.getVal().isEmpty()) {
-                    String bType = com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDaBType(
-                        templates, ln, doName, dai.getName());
-                    return new SclDataValue(ref, dai.getVal(), bType);
-                }
-            }
-        }
-        return null;
     }
 }
