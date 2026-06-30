@@ -660,6 +660,58 @@ cms> get-dataset-values --ds "LD0/LLN0.dsAlarm"
     [2] [boolean] true
 ```
 
+### 8.5.3 新建数据库
+
+```bash
+# 用法: create-dataset --ds <ref> --members "<ref1>,<fc1> <ref2>,<fc2>..."
+# 创建新数据集
+create-dataset --ds "LD0/LLN0.myDs" --members "LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST"
+# 追加成员到已有数据集
+create-dataset --ds "LD0/LLN0.myDs" --members "LD0/GGIO1.Alm3,ST" --after "LD0/GGIO1.Alm2"
+```
+
+```bash
+# 案例请看 8.5.4
+```
+
+### 8.5.4 删除数据库
+
+```bash
+# 用法: delete-dataset --ds <ref>
+delete-dataset --ds "LD0/LLN0.myDs"
+```
+
+下边这个案例是创建一个新的数据集，然后添加值，查找，删除，确认删除成功
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> create-dataset --ds "LD0/LLN0.myDs" --members "LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST"
+  Creating dataset LD0/LLN0.myDs with 2 member(s)
+  OK  Created dataset LD0/LLN0.myDs successfully
+cms> get-dataset-dir --ds "LD0/LLN0.myDs"
+  Fetching dataset directory for LD0/LLN0.myDs
+  DataSet directory (2 items):
+    [0] [ST]  LD0/GGIO1.Alm1
+    [1] [ST]  LD0/GGIO1.Alm2
+cms> set-dataset-values --ds "LD0/LLN0.myDs" --values "false true"
+  Setting 2 dataset value(s) for LD0/LLN0.myDs
+  OK  Set 2 dataset value(s) successfully
+cms> get-dataset-values --ds "LD0/LLN0.myDs"
+  Fetching dataset values for LD0/LLN0.myDs
+  DataSet values (2 items):
+    [0] [boolean] false
+    [1] [boolean] true
+cms> delete-dataset --ds "LD0/LLN0.myDs"
+  Deleting dataset LD0/LLN0.myDs
+  OK  Deleted dataset LD0/LLN0.myDs successfully
+cms> get-dataset-dir --ds "LD0/LLN0.myDs"
+  Fetching dataset directory for LD0/LLN0.myDs
+  ERR GetDataSetDirectory rejected: error=1
+```
+
 ### 8.5.5 读数据集的成员目录（key）
 
 ```bash

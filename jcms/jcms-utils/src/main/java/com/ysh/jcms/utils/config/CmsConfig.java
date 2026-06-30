@@ -163,6 +163,7 @@ public class CmsConfig {
         private Negotiate negotiate = new Negotiate();
         private File file = new File();
         private Setting setting = new Setting();
+        private Dataset dataset = new Dataset();
 
         public int getMaxArraySize() { return maxArraySize; }
         public void setMaxArraySize(int maxArraySize) { this.maxArraySize = maxArraySize; }
@@ -174,6 +175,8 @@ public class CmsConfig {
         public void setFile(File file) { this.file = file; }
         public Setting getSetting() { return setting; }
         public void setSetting(Setting setting) { this.setting = setting; }
+        public Dataset getDataset() { return dataset; }
+        public void setDataset(Dataset dataset) { this.dataset = dataset; }
 
         public static class Negotiate {
             private int apduSize = 65535;
@@ -208,6 +211,13 @@ public class CmsConfig {
             public void setSgDefaultEnabled(boolean sgDefaultEnabled) { this.sgDefaultEnabled = sgDefaultEnabled; }
             public String getSgDefaultName() { return sgDefaultName; }
             public void setSgDefaultName(String sgDefaultName) { this.sgDefaultName = sgDefaultName; }
+        }
+
+        public static class Dataset {
+            private boolean setDataSetPersistent = false;
+
+            public boolean isSetDataSetPersistent() { return setDataSetPersistent; }
+            public void setSetDataSetPersistent(boolean setDataSetPersistent) { this.setDataSetPersistent = setDataSetPersistent; }
         }
     }
 

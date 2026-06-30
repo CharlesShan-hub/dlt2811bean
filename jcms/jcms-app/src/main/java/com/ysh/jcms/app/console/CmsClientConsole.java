@@ -10,10 +10,14 @@ import com.ysh.jcms.app.handler.data.getDataDefinition.GetDataDefinitionClient;
 import com.ysh.jcms.app.handler.data.getDataDefinition.GetDataDefinitionConsole;
 import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesClient;
 import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesConsole;
-import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryClient;
-import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryConsole;
 import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesClient;
 import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesConsole;
+import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryClient;
+import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryConsole;
+import com.ysh.jcms.app.handler.dataset.createDataSet.CreateDataSetClient;
+import com.ysh.jcms.app.handler.dataset.createDataSet.CreateDataSetConsole;
+import com.ysh.jcms.app.handler.dataset.deleteDataSet.DeleteDataSetClient;
+import com.ysh.jcms.app.handler.dataset.deleteDataSet.DeleteDataSetConsole;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
@@ -70,6 +74,8 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetDataSetValuesClient(this));
         registerClient(new GetDataSetDirectoryClient(this));
         registerClient(new SetDataSetValuesClient(this));
+        registerClient(new CreateDataSetClient(this));
+        registerClient(new DeleteDataSetClient(this));
     }
 
     @Override
@@ -89,6 +95,8 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetDataSetValuesConsole());
         register(new GetDataSetDirectoryConsole());
         register(new SetDataSetValuesConsole());
+        register(new CreateDataSetConsole());
+        register(new DeleteDataSetConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());
