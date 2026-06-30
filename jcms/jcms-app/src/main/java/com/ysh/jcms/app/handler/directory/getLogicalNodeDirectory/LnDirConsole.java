@@ -37,23 +37,23 @@ public class LnDirConsole implements CommandHandler {
     public String name() { return "ln-dir"; }
 
     @Override
-    public String description() { return "获取逻辑节点子目录 (GetLogicalNodeDirectory)"; }
+    public String description() { return "获取逻辑节点子目录 (GetLogicalNodeDirectory)。用法: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("target", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null),
+            new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null),
             new Param("acsi", "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)", "data-object"),
-            new Param("referenceAfter", "起始引用（分页截取）", null)
+            new Param("after", "起始引用（分页截取）", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
-        String target = args.get("target");
+        String target = args.get("ln");
         if (target == null || target.isEmpty()) {
-            ConsolePrinter.error("Missing target. Usage: ln-dir <ldName|lnReference> [acsi] [referenceAfter]");
+            ConsolePrinter.error("Missing --ln. Usage: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF]");
             return;
         }
 
@@ -73,7 +73,7 @@ public class LnDirConsole implements CommandHandler {
             dao.ldName(target);
         }
 
-        String after = args.get("referenceAfter");
+        String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
         }

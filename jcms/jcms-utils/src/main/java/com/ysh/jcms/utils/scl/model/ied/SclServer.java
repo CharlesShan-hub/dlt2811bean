@@ -98,7 +98,11 @@ public class SclServer {
     }
 
     public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates) {
-        return com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates);
+        return com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates, null);
+    }
+
+    public SclDataValue resolveDataValue(String ref, SclDataTypeTemplates templates, String fc) {
+        return com.ysh.jcms.utils.scl.util.SclDataValueResolver.resolveDataValue(this, ref, templates, fc);
     }
 
     public int setDataValue(String ref, String value, SclDataTypeTemplates templates) {

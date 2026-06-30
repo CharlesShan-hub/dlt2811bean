@@ -14,9 +14,12 @@ import com.ysh.jcms.utils.scl.model.instance.SclSDI;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDAType;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class SclDataValueResolver {
+    private static final Logger log = LoggerFactory.getLogger(SclDataValueResolver.class);
     // -------------------------------------------------------------------------
     // Data value resolution (for GetDataValues service)
     // -------------------------------------------------------------------------
@@ -25,12 +28,28 @@ public class SclDataValueResolver {
      * Resolves a single data value from a reference string like "LD0/LLN0.DO.DA"
      * or "LD0/LLN0.DO.SDI.BDA".
      * <p>Looks up the DAI instance value and resolves the bType from the data type templates.
+     * <p>For DO-level references (parts.length == 2), see {@link #resolveDataValue(SclServer, String, SclDataTypeTemplates, String)}.
      *
      * @param ref       the data reference (e.g. "LD0/LLN0.Pos.stVal")
      * @param templates the data type templates for bType resolution
      * @return the data value with resolved bType, or null if not found
      */
     public static SclDataValue resolveDataValue(SclServer server, String ref, SclDataTypeTemplates templates) {
+        return resolveDataValue(server, ref, templates, null);
+    }
+
+    /**
+     * Resolves a data value with optional fc filtering.
+     * <p>When {@code fc} is non-null and not "XX"/empty, DO-level references will be
+     * filtered to find the first DAI whose fc matches. When {@code fc} is null (legacy
+     * callers), the old behavior is preserved: return the first DAI with any value.
+     *
+     * @param ref       the data reference (e.g. "LD0/LLN0.Pos.stVal" or "LD0/LLN0.Pos")
+     * @param templates the data type templates for bType resolution
+     * @param fc        functional constraint filter ("ST", "MX", etc.), null = legacy, "" or "XX" = ambiguous
+     * @return the data value with resolved bType, or null if not found
+     */
+    public static SclDataValue resolveDataValue(SclServer server, String ref, SclDataTypeTemplates templates, String fc) {
         if (ref == null || ref.isEmpty()) return null;
         int slashIdx = ref.indexOf('/');
         if (slashIdx < 0) return null;
@@ -52,12 +71,46 @@ public class SclDataValueResolver {
         if (doi == null) return null;
 
         if (parts.length == 2) {
-            // DO-level: find first DAI with a value
-            for (SclDAI dai : doi.getDais()) {
-                if (dai.getVal() != null && !dai.getVal().isEmpty()) {
-                    String bType = resolveDaBType(templates, ln, doName, dai.getName());
-                    return new SclDataValue(ref, dai.getVal(), bType);
+            // DO-level
+            if (fc == null) {
+                // Legacy callers (e.g. GetAllDataValues): return first DAI with a value
+                for (SclDAI dai : doi.getDais()) {
+                    if (dai.getVal() != null && !dai.getVal().isEmpty()) {
+                        String bType = resolveDaBType(templates, ln, doName, dai.getName());
+                        return new SclDataValue(ref, dai.getVal(), bType);
+                    }
                 }
+                return null;
+            }
+            // fc specified: "XX" or empty → ambiguous, return null (error)
+            if (fc.isEmpty() || "XX".equals(fc)) {
+                return null;
+            }
+            // Specific fc filter: scan DOType for DAs with matching fc,
+            // then find the first corresponding DAI/SDI with a value
+            SclDOType doType = resolveDoType(templates, ln, doName);
+            if (doType != null) {
+                for (SclDA da : doType.getDas()) {
+                    if (fc.equalsIgnoreCase(da.getFc())) {
+                        // Try DAI first (simple or Struct DA stored as DAI)
+                        SclDAI dai = doi.findDaiByName(da.getName());
+                        if (dai != null && dai.getVal() != null && !dai.getVal().isEmpty()) {
+                            return new SclDataValue(ref, dai.getVal(), resolveDaBType(templates, ln, doName, da.getName()));
+                        }
+                        // Try SDI (Struct DA with sub-elements stored as SDI)
+                        SclSDI sdi = doi.findSdiByName(da.getName());
+                        if (sdi != null) {
+                            for (SclDAI sdai : sdi.getDais()) {
+                                if (sdai.getVal() != null && !sdai.getVal().isEmpty()) {
+                                    String bType = resolveSdiBdaBType(templates, ln, doName, sdi.getName(), sdai.getName());
+                                    return new SclDataValue(ref, sdai.getVal(), bType);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                log.warn("resolveDataValue: cannot resolve DOType for doName={} lnType={}", doName, ln.getLnType());
             }
             return null;
         }
@@ -100,6 +153,34 @@ public class SclDataValueResolver {
         if (doType == null) return null;
         SclDA da = doType.findDaByName(daName);
         return da != null ? da.getBType() : null;
+    }
+
+    /**
+     * Resolves the fc (functional constraint) of a DA from the type templates.
+     * The fc is defined on the DA in the DOType, not on the DAI instance.
+     */
+    public static String resolveDaFc(SclDataTypeTemplates templates, SclLN ln, String doName, String daName) {
+        if (templates == null || ln.getLnType() == null) return null;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.getLnType());
+        if (lnt == null) return null;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef == null || doDef.getType() == null) return null;
+        SclDOType doType = templates.findDoTypeById(doDef.getType());
+        if (doType == null) return null;
+        SclDA da = doType.findDaByName(daName);
+        return da != null ? da.getFc() : null;
+    }
+
+    /**
+     * Resolves the DOType for a given DO within an LN's type template.
+     */
+    private static SclDOType resolveDoType(SclDataTypeTemplates templates, SclLN ln, String doName) {
+        if (templates == null || ln.getLnType() == null) return null;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.getLnType());
+        if (lnt == null) return null;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef == null || doDef.getType() == null) return null;
+        return templates.findDoTypeById(doDef.getType());
     }
 
     public static String resolveSdiBdaBType(SclDataTypeTemplates templates, SclLN ln,

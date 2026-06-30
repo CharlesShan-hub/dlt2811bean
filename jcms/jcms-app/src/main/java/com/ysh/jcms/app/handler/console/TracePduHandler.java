@@ -22,12 +22,12 @@ public class TracePduHandler implements CommandHandler {
     public String name() { return "trace-pdu"; }
 
     @Override
-    public String description() { return "开启/关闭 PDU 跟踪 (trace-pdu true/false)"; }
+    public String description() { return "开启/关闭 PDU 跟踪。用法: trace-pdu [--value true/false]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("value", "true 或 false", null)
+            new Param("value", "true 或 false", "")
         );
     }
 

@@ -127,43 +127,20 @@ public abstract class CmsConsole extends CmsNode {
         }
 
         try {
+            // Build args: default values from params(), overridden by --name value
             Map<String, String> args = new LinkedHashMap<>();
-            List<Param> params = handler.params();
-            Map<String, String> namedArgs = new LinkedHashMap<>();
-            List<String> positionalArgs = new ArrayList<>();
+            for (Param p : handler.params()) {
+                args.put(p.name(), p.defaultValue() != null ? p.defaultValue() : "");
+            }
             for (int i = 0; i < argTokens.size(); i++) {
                 String t = argTokens.get(i);
                 if (t.startsWith("--") && t.length() > 2) {
                     String key = t.substring(2);
-                    String val = (i + 1 < argTokens.size() && !argTokens.get(i + 1).startsWith("--"))
-                        ? argTokens.get(++i) : "";
-                    namedArgs.put(key, val);
-                } else {
-                    positionalArgs.add(t);
-                }
-            }
-
-            for (int i = 0; i < params.size(); i++) {
-                Param p = params.get(i);
-                if (namedArgs.containsKey(p.name())) {
-                    args.put(p.name(), namedArgs.get(p.name()));
-                } else if (i < positionalArgs.size()) {
-                    // If this is the last param and there are more positional args,
-                    // join them all into one value (for multi-value params like references)
-                    if (i == params.size() - 1 && positionalArgs.size() > params.size()) {
-                        StringBuilder sb = new StringBuilder();
-                        for (int j = i; j < positionalArgs.size(); j++) {
-                            if (j > i) sb.append(' ');
-                            sb.append(positionalArgs.get(j));
-                        }
-                        args.put(p.name(), sb.toString());
+                    if (i + 1 < argTokens.size() && !argTokens.get(i + 1).startsWith("--")) {
+                        args.put(key, argTokens.get(++i));
                     } else {
-                        args.put(p.name(), positionalArgs.get(i));
+                        args.put(key, "true");  // boolean flag: --secure → true
                     }
-                } else if (p.defaultValue() != null) {
-                    args.put(p.name(), p.defaultValue());
-                } else {
-                    args.put(p.name(), "");
                 }
             }
 

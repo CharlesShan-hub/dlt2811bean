@@ -23,14 +23,14 @@ public class AllDataValuesConsole implements CommandHandler {
     public String name() { return "all-data"; }
 
     @Override
-    public String description() { return "获取所有数据值 (GetAllDataValues)"; }
+    public String description() { return "获取所有数据值 (GetAllDataValues)。用法: all-data --target <ldName|lnReference> [--fc FC] [--after REF]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("target", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
-            new Param("fc", "功能约束过滤（0=不过滤）", "0"),
-            new Param("referenceAfter", "起始引用（分页截取）", null)
+            new Param("fc", "功能约束过滤（如 ST, MX），默认 0 即不过滤", "0"),
+            new Param("after", "起始引用（分页截取）", "")
         );
     }
 
@@ -42,7 +42,7 @@ public class AllDataValuesConsole implements CommandHandler {
         }
         String target = args.get("target");
         if (target == null || target.isEmpty()) {
-            ConsolePrinter.error("Missing target. Usage: all-data <ldName|lnReference> [fc] [referenceAfter]");
+            ConsolePrinter.error("Missing --target. Usage: all-data --target <ldName|lnReference> [--fc FC] [--after REF]");
             return;
         }
 
@@ -61,7 +61,7 @@ public class AllDataValuesConsole implements CommandHandler {
             }
         }
 
-        String after = args.get("referenceAfter");
+        String after = args.get("after");
         if (after != null && !after.isEmpty() && !after.equals("0")) {
             dao.referenceAfter(after);
         }

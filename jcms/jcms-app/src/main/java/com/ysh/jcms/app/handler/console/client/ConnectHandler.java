@@ -10,6 +10,10 @@ import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.X509TrustManager;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +24,19 @@ public class ConnectHandler implements CommandHandler {
     public String name() { return "connect"; }
 
     @Override
-    public String description() { return "连接到 CMS 服务器（默认端口 8102）；可附带 negotiate 参数"; }
+    public String description() {
+        return "连接到 CMS 服务器。用法: connect [--ip addr] [--ap IED/AP] [--secure] [--apdu N] [--asdu N] [--version N]";
+    }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("host", "服务器地址", "127.0.0.1"),
-            new Param("sapRef", "ServerAccessPoint 引用"),
-            new Param("apduSize", "APDU 大小（可选，未传则使用默认值）"),
-            new Param("asduSize", "ASDU 大小（可选，未传则使用默认值）"),
-            new Param("protocolVersion", "协议版本（可选，未传则使用默认值）")
+            new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
+            new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""),
+            new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
+            new Param("apdu", "APDU 大小", ""),
+            new Param("asdu", "ASDU 大小", ""),
+            new Param("version", "协议版本", "")
         );
     }
 
@@ -40,26 +47,40 @@ public class ConnectHandler implements CommandHandler {
             return;
         }
 
-        String host = args.get("host");
-        int port = CmsConfigLoader.load().getServer().getPort();
-        String sapRef = args.get("sapRef");
+        String host = args.get("ip");
+        boolean secure = "true".equals(args.get("secure"));
+        int port = secure ? CmsConfigLoader.load().getServer().getSslPort()
+                          : CmsConfigLoader.load().getServer().getPort();
+        String sapRef = args.get("ap");
 
-        ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
-
-        console.connect(host, port);
+        if (secure) {
+            ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
+            SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
+            sslContext.init(null, new X509TrustManager[]{
+                new X509TrustManager() {
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                }
+            }, new SecureRandom());
+            console.connectTls(host, port, sslContext);
+        } else {
+            ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
+            console.connect(host, port);
+        }
 
         // 只给了 host → 纯 connect，不做 negotiate/associate
         if (sapRef == null || sapRef.isEmpty()) {
-            ConsolePrinter.success("Connected: " + host + ":" + port);
+            ConsolePrinter.success((secure ? "TLS " : "") + "Connected: " + host + ":" + port);
             return;
         }
 
         ConsolePrinter.info("Connected, negotiating parameters ...");
 
         NegotiateClientDao negotiateDao = new NegotiateClientDao();
-        String apduStr = args.get("apduSize");
-        String asduStr = args.get("asduSize");
-        String protoStr = args.get("protocolVersion");
+        String apduStr = args.get("apdu");
+        String asduStr = args.get("asdu");
+        String protoStr = args.get("version");
         if (apduStr != null && !apduStr.isEmpty()) negotiateDao.apduSize(Integer.parseInt(apduStr));
         if (asduStr != null && !asduStr.isEmpty()) negotiateDao.asduSize(Long.parseLong(asduStr));
         if (protoStr != null && !protoStr.isEmpty()) negotiateDao.protocolVersion(Long.parseLong(protoStr));
@@ -69,8 +90,8 @@ public class ConnectHandler implements CommandHandler {
         ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
 
         console.getClient(AssociateClient.class)
-            .execute(new AssociateClientDao().sapRef(sapRef).secure(false));
+            .execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
 
-        ConsolePrinter.success("Associated: " + sapRef);
+        ConsolePrinter.success((secure ? "TLS " : "") + "Associated: " + sapRef);
     }
 }

@@ -15,13 +15,13 @@ public class AssociateConsole implements CommandHandler {
     public String name() { return "associate"; }
 
     @Override
-    public String description() { return "建立关联 (Associate)"; }
+    public String description() { return "建立关联 (Associate)。用法: associate --ap <IED/AP> [--secure]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("sapRef", "ServerAccessPoint 引用"),
-            new Param("secure", "加密关联 (true/false, 默认 false)")
+            new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""),
+            new Param("secure", "加密关联（不传值，出现即启用）", "")
         );
     }
 
@@ -36,13 +36,13 @@ public class AssociateConsole implements CommandHandler {
             return;
         }
 
-        String sapRef = args.get("sapRef");
+        String sapRef = args.get("ap");
         if (sapRef == null || sapRef.isEmpty()) {
-            ConsolePrinter.error("sapRef is required");
+            ConsolePrinter.error("--ap is required");
             return;
         }
 
-        boolean secure = Boolean.parseBoolean(args.getOrDefault("secure", "false"));
+        boolean secure = "true".equals(args.get("secure"));
 
         console.getClient(AssociateClient.class)
             .execute(new AssociateClientDao().sapRef(sapRef).secure(secure));

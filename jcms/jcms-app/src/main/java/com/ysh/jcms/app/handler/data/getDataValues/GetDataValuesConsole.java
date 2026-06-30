@@ -22,12 +22,13 @@ public class GetDataValuesConsole implements CommandHandler {
     public String name() { return "get-data-values"; }
 
     @Override
-    public String description() { return "获取数据值 (GetDataValues) —— 用法: get-data-values <reference1> <reference2> ..."; }
+    public String description() { return "获取数据值 (GetDataValues) —— 用法: get-data-values --refs \"<ref1> <ref2>...\" [--fc FC]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("references", "数据引用列表（空格分隔），如 LD0/LLN0.Mod LD0/LLN0.Beh", null)
+            new Param("refs", "数据引用列表（空格分隔），如 \"LD0/LLN0.Mod LD0/LLN0.Beh\"", null),
+            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX")
         );
     }
 
@@ -38,17 +39,21 @@ public class GetDataValuesConsole implements CommandHandler {
             return;
         }
 
-        String refsStr = args.get("references");
+        String refsStr = args.get("refs");
         if (refsStr == null || refsStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing references. Usage: get-data-values <reference1> <reference2> ...");
+            ConsolePrinter.error("Missing --refs. Usage: get-data-values --refs \"<ref1> <ref2>...\" [--fc FC]");
             return;
         }
+
+        String fcStr = args.get("fc");
+        boolean hasFc = fcStr != null && !fcStr.isEmpty();
+        int fcCode = hasFc ? com.ysh.jcms.data.fc.CmsFC.fromString(fcStr) : com.ysh.jcms.data.fc.CmsFC.XX;
 
         String[] refs = refsStr.trim().split("\\s+");
         GetDataValuesDao dao = new GetDataValuesDao();
         for (String ref : refs) {
             if (!ref.isEmpty()) {
-                dao.addRef(ref);
+                dao.addRef(ref, fcCode);
             }
         }
 
@@ -62,7 +67,6 @@ public class GetDataValuesConsole implements CommandHandler {
             return;
         }
 
-        // Pair ref + value for display
         List<RefValuePair> displayPairs = new java.util.ArrayList<>();
         for (int i = 0; i < values.size(); i++) {
             GetDataValuesClient.DataValue v = values.get(i);

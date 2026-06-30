@@ -15,12 +15,13 @@ public class SetDataValuesConsole implements CommandHandler {
     public String name() { return "set-data-values"; }
 
     @Override
-    public String description() { return "设置数据值 (SetDataValues) —— 用法: set-data-values <ref1>=<value1> <ref2>=<value2> ..."; }
+    public String description() { return "设置数据值 (SetDataValues) —— 用法: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("pairs", "数据引用=值 对（空格分隔），如 LD0/LLN0.Mod.stVal=true LD0/LLN0.Beh.stVal=1", null)
+            new Param("pairs", "数据引用=值 对（空格分隔），如 \"LD0/LLN0.Mod.stVal=true LD0/LLN0.Beh.stVal=1\"", null),
+            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX")
         );
     }
 
@@ -33,7 +34,7 @@ public class SetDataValuesConsole implements CommandHandler {
 
         String pairsStr = args.get("pairs");
         if (pairsStr == null || pairsStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing pairs. Usage: set-data-values <ref1>=<value1> <ref2>=<value2> ...");
+            ConsolePrinter.error("Missing --pairs. Usage: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]");
             return;
         }
 

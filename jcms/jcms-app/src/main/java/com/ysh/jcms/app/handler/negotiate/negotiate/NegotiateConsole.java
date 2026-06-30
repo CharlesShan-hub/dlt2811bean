@@ -16,7 +16,7 @@ public class NegotiateConsole implements CommandHandler {
     public String name() { return "negotiate"; }
 
     @Override
-    public String description() { return "协商参数 (Negotiate) — 无参使用默认值，或指定 apduSize asduSize protocolVersion"; }
+    public String description() { return "协商参数 (Negotiate) — 用法: negotiate [--apduSize N] [--asduSize N] [--protocolVersion N]"; }
 
     @Override
     public List<Param> params() {

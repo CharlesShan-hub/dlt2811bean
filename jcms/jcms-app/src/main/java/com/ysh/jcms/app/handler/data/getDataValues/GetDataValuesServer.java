@@ -4,6 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataValuesError;
 import com.ysh.jcms.svc.data.CmsGetDataValuesRequest;
@@ -62,8 +63,17 @@ public class GetDataValuesServer extends BaseServerHandler {
                 continue;
             }
 
-            // Resolve data value from SCL
-            SclDataValue sv = server.resolveDataValue(ref, templates);
+            // Resolve fc from request
+            String fcCode = null;
+            if (refEntry.fcPresent.value()) {
+                int fcVal = refEntry.fc.value();
+                if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
+                    fcCode = FunctionalConstraint.values()[fcVal].name();
+                }
+            }
+
+            // Resolve data value from SCL (with optional fc filter)
+            SclDataValue sv = server.resolveDataValue(ref, templates, fcCode);
             if (sv != null && sv.val != null && !sv.val.isEmpty()) {
                 log.debug("GetDataValues: resolved ref={} bType={} val={}", ref, sv.bType, sv.val);
                 resp.value.add(toCmsData(sv));

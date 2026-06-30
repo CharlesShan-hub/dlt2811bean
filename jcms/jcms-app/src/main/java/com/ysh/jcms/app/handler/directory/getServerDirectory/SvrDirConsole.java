@@ -16,12 +16,12 @@ public class SvrDirConsole implements CommandHandler {
     public String name() { return "server-dir"; }
 
     @Override
-    public String description() { return "获取逻辑设备目录（referenceAfter 从指定引用开始截取）"; }
+    public String description() { return "获取逻辑设备目录 (GetServerDirectory)。用法: server-dir [--after REF]"; }
 
     @Override
     public List<Param> params() {
-        return Collections.singletonList(
-            new Param("referenceAfter", "起始引用（分页截取，不传则从头开始）", null)
+        return java.util.Collections.singletonList(
+            new Param("after", "起始引用（分页截取，不传则从头开始）", "")
         );
     }
 
@@ -30,7 +30,7 @@ public class SvrDirConsole implements CommandHandler {
         String msg = check(console);
         if (msg != null) { ConsolePrinter.error(msg); return; }
         SvrDirDao dao = new SvrDirDao();
-        String after = args.get("referenceAfter");
+        String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
         }

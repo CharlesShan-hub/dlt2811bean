@@ -46,14 +46,14 @@
 ### 8.1 连接
 
 ```bash
-# 非加密连接，使用8102端口。需要输入ip和accesspoint。会自动negociate和associate。
-connect 127.0.0.1 C_B5041X/S1;
-# 加密连接，使用9102端口。
-connect-tls 127.0.0.1 C_B5041X/S1;
-# 两种连接都可以指定negociate的参数，如果不指定，就是默认16384 65531 1。
-connect 127.0.0.1 C_B5041X/S1 16384 65531 1;
-# 也可以只进行连接，不自动进行后续操作（没有negociate和associate）
-connect 127.0.0.1;
+# 非加密连接，默认IP 127.0.0.1、端口 8102。指定访问点会自动 negotiate + associate。
+connect --ap C_B5041X/S1;
+# 加密连接（TLS），使用 9102 端口
+connect --secure --ap C_B5041X/S1;
+# 两种连接都可以指定 negotiate 参数，不指定则使用默认值
+connect --ap C_B5041X/S1 --apdu 16384 --asdu 65531 --version 1;
+# 也可以只进行 TCP 连接，不自动后续操作（没有 negotiate 和 associate）
+connect;
 # 断开连接
 disconnect
 # 退出程序
@@ -61,22 +61,36 @@ exit
 ```
 
 ```bash
-cms> connect 127.0.0.1 C_B5041X/S1;
+cms> connect --ap C_B5041X/S1;
   Connecting to 127.0.0.1:8102 ...
   Connected, negotiating parameters ...
   Negotiated, associating with C_B5041X/S1 ...
   OK  Associated: C_B5041X/S1
 cms> disconnect
   OK  Disconnected.
-cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
+cms> connect --secure --ap C_B5041X/S1;
   TLS connecting to 127.0.0.1:9102 ...
-  TLS connected, negotiating parameters ...
+  Connected, negotiating parameters ...
   Negotiated, associating with C_B5041X/S1 ...
-  OK  TLS associated: C_B5041X/S1
-cms> associate C_B5041X/S1; # 不能重复associate
-  ERR Already associated. Use 'release' or 'disconnect' first.
+  OK  TLS Associated: C_B5041X/S1
 cms> disconnect
   OK  Disconnected.
+cms> connect --ap C_B5041X/S1 --apdu 16384 --asdu 65531 --version 1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> disconnect
+  OK  Disconnected.
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> disconnect
+  OK  Disconnected.
+cms> connect
+  Connecting to 127.0.0.1:8102 ...
+  OK  Connected: 127.0.0.1:8102
+cms> disconnect
+  Not connected.
 cms> exit
 Bye.
 ```
@@ -84,20 +98,24 @@ Bye.
 ### 8.2.1 确定访问点
 
 ```bash
-# 需要先建立tcp连接
-connect 127.0.0.1;
+# 需要先建立 tcp 连接
+connect;
 # 再指定访问点
-associate C_B5041X/S1;
-# 单独的associate可以指定加密
-associate C_B5041X/S1 true;
+associate --ap C_B5041X/S1;
+# 单独的 associate 可以指定加密（是associate的加密，和connect的加密是并行的）
+associate --ap C_B5041X/S1 --secure;
 ```
 
 ```bash
-cms> connect 127.0.0.1;
+cms> connect;
   Connecting to 127.0.0.1:8102 ...
   OK  Connected: 127.0.0.1:8102
-cms> associate C_B5041X/S1;
+cms> associate --ap C_B5041X/S1;
   OK  Associated: C_B5041X/S1
+cms> release
+  OK  Released.
+cms> associate --ap C_B5041X/S1 --secure;
+  OK  Associated: C_B5041X/S1 (secure)
 ```
 
 ### 8.2.2 正常释放
@@ -107,52 +125,43 @@ cms> associate C_B5041X/S1;
 release
 ```
 
-```bash
-cms> associate C_B5041X/S1;
-  OK  Associated: C_B5041X/S1
-cms> release
-  OK  Released.
-cms> associate C_B5041X/G1;
-  OK  Associated: C_B5041X/G1
-```
-
 ### 8.2.3 异常释放
 
 ```bash
-#客户端因为某种异常需要断开连接，不需要服务器内容。
-#服务器任务客户端下线了，会关闭tcp连接
-#abort <reason>
-abort 0; # 默认reason就是0 `others`
+# 客户端因为某种异常需要断开连接，不需要服务器响应。
+# 服务器认为客户端已下线，会关闭 tcp 连接。
+# abort <reason>
+abort --reason 0; # 默认 reason 就是 0 `others`
 ```
 
 ```bash
-cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
-  TLS connecting to 127.0.0.1:9102 ...
-  TLS connected, negotiating parameters ...
-  Negotiated, associating with C_B5041X/S1 ...
-  OK  TLS associated: C_B5041X/S1
-cms> abort; # tcp会关掉，后续需要重新connect
+cms> associate --ap C_B5041X/S1 --secure;
+  OK  Associated: C_B5041X/S1 (secure)
+cms> abort 0
   OK  Abort sent (reason=0)
-cms> associate C_B5041X/G1;
-  ERR Not connected. Use 'connect' first.
 ```
 
 ### 8.3.1 获取逻辑设备
 
 ```bash
-# 获取某一个accesspoint下边的逻辑设备
+# 获取某一个 accesspoint 下边的逻辑设备
 server-dir;
-# 指定referenceAfter
-server-dir LD0;
+# 指定 referenceAfter
+server-dir --after LD0;
 ```
 
 ```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
 cms> server-dir;
   Logical Devices:
     [0] LD0
     [1] MEAS
     [2] CTRL
-cms> server-dir LD0;
+cms> server-dir --after LD0;
   Logical Devices:
     [0] MEAS
     [1] CTRL
@@ -161,26 +170,31 @@ cms> server-dir LD0;
 ### 8.3.2 获取指定逻辑设备下的所有逻辑节点
 
 ```bash
-# ld-dir <ldName> <referenceAfter>;
-# LD0这个设备下的所有节点
-ld-dir LD0;
-# LD0下边有很多节点，获取LTSM6之后的节点
-ld-dir LD0 LTSM6;
+# LD0 这个设备下的所有逻辑节点
+ld-dir --ld LD0;
+# LD0 下有很多节点，获取 LTSM6 之后的节点
+ld-dir --ld LD0 --after LTSM6;
 ```
 
 ```bash
-cms> ld-dir LD0;
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> ld-dir --ld LD0;
   Logical Nodes:
     [0] LLN0
     [1] LPHD1
     [2] RSYN1
     [3] GGIO1
-    ... 这里省略一些
+    ...
+    [75] LTSM5
     [76] LTSM6
     [77] LTSM7
     [78] LTSM8
     [79] LTSM9
-cms> ld-dir LD0 LTSM6;
+cms> ld-dir --ld LD0 --after LTSM6;
   Logical Nodes:
     [0] LTSM7
     [1] LTSM8
@@ -191,15 +205,15 @@ cms> ld-dir LD0 LTSM6;
 
 ```bash
 # data-object：数据对象
-ln-dir LD0 data-object;
-# data-set: 数据集
-ln-dir LD0 data-set;
+ln-dir --ln LD0 --acsi data-object;
+# data-set：数据集
+ln-dir --ln LD0 --acsi data-set;
 # brcb
-ln-dir LD0 brcb;
+ln-dir --ln LD0 --acsi brcb;
 # urcb
-ln-dir LD0 urcb;
+ln-dir --ln LD0 --acsi urcb;
 # gocb
-ln-dir CTRL gocb;
+ln-dir --ln CTRL --acsi gocb;
 ```
 * data-object
 * data-set
@@ -207,12 +221,12 @@ ln-dir CTRL gocb;
 * urcb
 * gocb
 ```bash
-cms> connect-tls 127.0.0.1 C_B5041X/S1 16384 65531 1;
-  TLS connecting to 127.0.0.1:9102 ...
-  TLS connected, negotiating parameters ...
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
   Negotiated, associating with C_B5041X/S1 ...
-  OK  TLS associated: C_B5041X/S1
-cms> ln-dir LD0 data-object;
+  OK  Associated: C_B5041X/S1
+cms> ln-dir --ln LD0 --acsi data-object;
   References (data-object):
     [0] Mod
     [1] Mod.stVal
@@ -222,12 +236,20 @@ cms> ln-dir LD0 data-object;
     [5] Beh.stVal
     [6] Beh.q
     [7] Beh.t
-    ... 省略一些
+    ...
+    [185] Ind1
+    [186] Ind1.stVal
+    [187] Ind1.q
+    [188] Ind1.t
+    [189] Ind2
+    [190] Ind2.stVal
+    [191] Ind2.q
+    [192] Ind2.t
     [193] DUTSynOfs
     [194] DUTSynOfs.stVal
     [195] DUTSynOfs.q
     [196] DUTSynOfs.t
-cms> ln-dir LD0 data-set;
+cms> ln-dir --ln LD0 --acsi data-set;
   References (data-set):
     [0] dsAlarm
     [1] dsWarning
@@ -238,16 +260,16 @@ cms> ln-dir LD0 data-set;
     [6] dsParameter2
     [7] dsParameter5
     [8] dsParameter8
-cms> ln-dir LD0 brcb;
+cms> ln-dir --ln LD0 --acsi brcb;
   References (brcb):
     [0] brcbAlarm
     [1] brcbWarning
     [2] brcbCommState
-cms> ln-dir LD0 urcb;
+cms> ln-dir --ln LD0 --acsi urcb;
   References (urcb):
     [0] urcbAin
     [1] urcbAinA
-cms> ln-dir CTRL gocb
+cms> ln-dir --ln CTRL --acsi gocb
   References (gocb):
     [0] gocb0
 ```
@@ -255,26 +277,21 @@ cms> ln-dir CTRL gocb
 * lcb
 * log
 ```bash
-cms> connect 127.0.0.1 P_B5041A/S1;
+cms> connect --ap P_B5041A/S1;
   Connecting to 127.0.0.1:8102 ...
   Connected, negotiating parameters ...
   Negotiated, associating with P_B5041A/S1 ...
   OK  Associated: P_B5041A/S1
-cms> server-dir
-  Logical Devices:
-    [0] LD0
-    [1] PROT
-    [2] RCD
-cms> ln-dir LD0 lcb
+cms> ln-dir --ln LD0 --acsi lcb
   References (lcb):
     [0] lcblog
-cms> ln-dir LD0 log
+cms> ln-dir --ln LD0 --acsi log
   References (log):
     [0] LD0
-cms> ln-dir LD0 sgecb
+cms> ln-dir --ln LD0 --acsi sgecb
   References (sgecb):
     [0]
-cms> ln-dir LD0 msvcb
+cms> ln-dir --ln LD0 --acsi msvcb
   References (msvcb):
     [0]
 ```
@@ -454,6 +471,7 @@ cms> get-data-values LD0/LLN0.CommTstMet.stVal
     [0] LD0/LLN0.CommTstMet.stVal  [boolean] true
 ```
 
+### 8.4.3 
 
 
 ### 8.15 协商

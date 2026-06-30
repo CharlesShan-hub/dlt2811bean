@@ -62,7 +62,6 @@ public class CmsClientConsole extends CmsConsole {
         register(new HelpHandler(this));
         register(new ConnectHandler());
         register(new DisconnectHandler());
-        register(new ConnectTlsHandler());
         register(new SvrDirConsole());
         register(new LdDirConsole());
         register(new LnDirConsole());

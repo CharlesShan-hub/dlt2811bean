@@ -16,13 +16,13 @@ public class LdDirConsole implements CommandHandler {
     public String name() { return "ld-dir"; }
 
     @Override
-    public String description() { return "获取逻辑节点目录 (GetLogicalDeviceDirectory)"; }
+    public String description() { return "获取逻辑节点目录 (GetLogicalDeviceDirectory)。用法: ld-dir [--ld LD] [--after REF]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("ldName", "逻辑设备名", "C1"),
-            new Param("referenceAfter", "起始引用", null)
+            new Param("ld", "逻辑设备名（默认 C1）", "C1"),
+            new Param("after", "起始引用（分页截取）", "")
         );
     }
 
@@ -30,8 +30,8 @@ public class LdDirConsole implements CommandHandler {
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.isConnected()) { ConsolePrinter.error("Not connected. Type 'connect' first."); return; }
         LdDirDao dao = new LdDirDao()
-            .ldName(args.get("ldName"));
-        String after = args.get("referenceAfter");
+            .ldName(args.get("ld"));
+        String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
         }

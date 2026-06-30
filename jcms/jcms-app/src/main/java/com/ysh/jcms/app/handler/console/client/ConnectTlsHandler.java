@@ -24,16 +24,16 @@ public class ConnectTlsHandler implements CommandHandler {
     public String name() { return "connect-tls"; }
 
     @Override
-    public String description() { return "TLS 连接 CMS 服务器（默认端口 9102）；可附带 negotiate 参数"; }
+    public String description() { return "TLS 连接 CMS 服务器（默认端口 9102）。用法: connect-tls [--host ip] [--sap-ref IED/AP] [--apduSize N] [--asduSize N]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("host", "服务器地址", "127.0.0.1"),
-            new Param("sapRef", "ServerAccessPoint 引用"),
-            new Param("apduSize", "APDU 大小（可选，未传则使用默认值）"),
-            new Param("asduSize", "ASDU 大小（可选，未传则使用默认值）"),
-            new Param("protocolVersion", "协议版本（可选，未传则使用默认值）")
+            new Param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
+            new Param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""),
+            new Param("apduSize", "APDU 大小", ""),
+            new Param("asduSize", "ASDU 大小", ""),
+            new Param("protocolVersion", "协议版本", "")
         );
     }
 
@@ -46,7 +46,7 @@ public class ConnectTlsHandler implements CommandHandler {
 
         String host = args.get("host");
         int port = CmsConfigLoader.load().getServer().getSslPort();
-        String sapRef = args.get("sapRef");
+        String sapRef = args.get("sap-ref");
 
         ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
 

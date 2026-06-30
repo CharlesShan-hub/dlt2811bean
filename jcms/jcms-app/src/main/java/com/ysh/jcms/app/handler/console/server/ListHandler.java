@@ -17,13 +17,13 @@ public class ListHandler implements CommandHandler {
     public String name() { return "list"; }
 
     @Override
-    public String description() { return "列出资源  ap: 访问点"; }
+    public String description() { return "列出资源。用法: list [--type ap] [--limit N] [--offset N]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("type", "资源类型: ap", "ap"),
-            new Param("limit", "数量（不传则列出全部）", null),
+            new Param("limit", "数量（不传则列出全部）", ""),
             new Param("offset", "起始索引", "0")
         );
     }
