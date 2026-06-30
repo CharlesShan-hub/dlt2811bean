@@ -537,7 +537,55 @@ cms> get-data-values --refs "LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm"
     [1] LD0/GGIO1.HostTPortAlarm  [visible-string] 对时信号状态修改
 ```
 
-### 8.4.3 
+### 8.4.3 获取数据目录
+
+```bash
+# LN 级：列出该 LN 下的所有 DO（不含 fc）
+data-dir --ref LD0/LLN0
+# DO 级：列出该 DO 下的所有 DA（含 fc）
+data-dir --ref LD0/LLN0.Mod
+# 分页
+data-dir --ref LD0/LLN0 --after Beh
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+cms> data-dir --ref LD0/LLN0
+  Data directory (16 items):
+    [0] Mod
+    [1] NamPlt
+    [2] LEDRs
+    [3] Outage
+    [4] CommTest
+    [5] CommTstMet
+    [6] U0AlarmEn
+    [7] Set3U0
+    [8] Meter2En
+    [9] YKYXASSO
+    [10] TimeZone
+    [11] SntpAddr
+    [12] YCDeadZone
+    [13] Beh
+    [14] Health
+    [15] Loc
+cms> data-dir --ref LD0/LLN0.Mod
+  Data directory (5 items):
+    [0] [CF]  ctlModel
+    [1] [DC]  dU
+    [2] [ST]  stVal
+    [3] [ST]  q
+    [4] [ST]  t
+cms> data-dir --ref LD0/LLN0 --after Health
+  Fetching data directory for LD0/LLN0
+  Data directory (1 items):
+    [0] Loc
+cms> data-dir --ref LD0/LLN0.Mod --after q
+  Fetching data directory for LD0/LLN0.Mod
+  Data directory (1 items):
+    [0] [ST]  t
+```
+
+### 8.4.4
 
 
 ### 8.15 协商
