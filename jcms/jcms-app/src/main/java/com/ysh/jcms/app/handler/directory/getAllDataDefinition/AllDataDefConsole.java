@@ -23,13 +23,13 @@ public class AllDataDefConsole implements CommandHandler {
     public String name() { return "all-def"; }
 
     @Override
-    public String description() { return "获取所有数据定义 (GetAllDataDefinition)。用法: all-def --target <ldName|lnReference> [--fc FC] [--after REF]"; }
+    public String description() { return "获取所有数据定义 (GetAllDataDefinition)。用法: all-def --ln <ldName|lnReference> [--fc FC] [--after REF]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("target", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
-            new Param("fc", "功能约束过滤（如 ST, MX），默认 0 即不过滤", "0"),
+            new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
+            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"),
             new Param("after", "起始引用（分页截取）", "")
         );
     }
@@ -40,9 +40,9 @@ public class AllDataDefConsole implements CommandHandler {
             ConsolePrinter.error("Not connected. Type 'connect' first.");
             return;
         }
-        String target = args.get("target");
+        String target = args.get("ln");
         if (target == null || target.isEmpty()) {
-            ConsolePrinter.error("Missing --target. Usage: all-def --target <ldName|lnReference> [--fc FC] [--after REF]");
+            ConsolePrinter.error("Missing --ln. Usage: all-def --ln <ldName|lnReference> [--fc FC] [--after REF]");
             return;
         }
 
@@ -54,9 +54,8 @@ public class AllDataDefConsole implements CommandHandler {
         }
 
         String fcStr = args.get("fc");
-        if (fcStr != null && !fcStr.isEmpty()) {
-            int fcVal = Integer.parseInt(fcStr);
-            if (fcVal != 0) dao.fc(fcVal);
+        if (fcStr != null && !fcStr.isEmpty() && !"XX".equalsIgnoreCase(fcStr)) {
+            dao.fc(com.ysh.jcms.data.fc.CmsFC.fromString(fcStr));
         }
 
         String after = args.get("after");

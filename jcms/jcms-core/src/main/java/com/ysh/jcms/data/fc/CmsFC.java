@@ -26,10 +26,10 @@ public class CmsFC extends CmsEnumerated {
     public static final int XX  = 12;
 
     /**
-     * Look up by 2-char FC code ("ST", "MX", ...). Returns ST(0) if unknown.
+     * Look up by 2-char FC code ("ST", "MX", ...). Returns XX if unknown.
      */
     public static int fromCode(String code) {
-        if (code == null) return ST;
+        if (code == null) return XX;
         switch (code) {
             case "ST": return ST;
             case "MX": return MX;
@@ -44,7 +44,7 @@ public class CmsFC extends CmsEnumerated {
             case "BL": return BL;
             case "EX": return EX;
             case "XX": return XX;
-            default:   return ST;
+            default:   return XX;
         }
     }
 

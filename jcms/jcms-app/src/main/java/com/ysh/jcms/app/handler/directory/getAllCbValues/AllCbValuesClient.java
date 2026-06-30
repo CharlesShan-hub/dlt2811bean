@@ -73,6 +73,7 @@ public class AllCbValuesClient extends BaseClientHandler {
         for (int i = 0; i < resp.cbValue.count; i++) {
             CmsCbValueEntry src = resp.cbValue.items.get(i);
             String ref = new String(src.reference.value(), java.nio.charset.StandardCharsets.UTF_8);
+            if (ref.isEmpty()) continue; // skip empty entries
             entries.add(new CbEntry(ref, src.value.choice.value()));
         }
         this.lastEntries = entries;

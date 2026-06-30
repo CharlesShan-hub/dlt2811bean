@@ -63,10 +63,11 @@ public class AllDataDefClient extends BaseClientHandler {
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {
             CmsDataDefinitionEntry src = resp.data.items.get(i);
+            int choice = src.definition.choice.value();
+            if (choice == 0) continue; // skip error/empty entries
             String ref = new String(src.reference.value(), StandardCharsets.UTF_8);
             String cdc = src.cdcTypePresent.value()
                 ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
-            int choice = src.definition.choice.value();
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
         node.getContentManager().initDataDef(entries);

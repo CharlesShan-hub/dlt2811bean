@@ -37,12 +37,12 @@ public class AllCbValuesConsole implements CommandHandler {
     public String name() { return "all-cb"; }
 
     @Override
-    public String description() { return "获取所有控制块值 (GetAllCBValues)。用法: all-cb --target <ldName|lnReference> --acsi <type> [--after REF]"; }
+    public String description() { return "获取所有控制块值 (GetAllCBValues)。用法: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("target", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
+            new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
             new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgecb/gocb/msvcb 或数字", null),
             new Param("after", "起始引用（分页截取）", "")
         );
@@ -55,15 +55,15 @@ public class AllCbValuesConsole implements CommandHandler {
             return;
         }
 
-        String target = args.get("target");
+        String target = args.get("ln");
         if (target == null || target.isEmpty()) {
-            ConsolePrinter.error("Missing --target. Usage: all-cb --target <ldName|lnReference> --acsi <type> [--after REF]");
+            ConsolePrinter.error("Missing --ln. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
             return;
         }
 
         String acsiStr = args.get("acsi");
         if (acsiStr == null || acsiStr.isEmpty()) {
-            ConsolePrinter.error("Missing --acsi. Usage: all-cb --target <ldName|lnReference> --acsi <type> [--after REF]");
+            ConsolePrinter.error("Missing --acsi. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
             return;
         }
         Integer acsiClass = ACSI_MAP.get(acsiStr.toLowerCase());

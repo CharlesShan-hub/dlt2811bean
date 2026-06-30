@@ -43,7 +43,7 @@ public class GetDataValuesClient extends BaseClientHandler {
         for (GetDataValuesDao.DataRef ref : dao.dataRefs()) {
             CmsDataRefEntry entry = new CmsDataRefEntry()
                 .reference(ref.reference());
-            if (ref.fc() != null && ref.fc() != 0) {
+            if (ref.fc() != null) {
                 entry.fcPresent(true);
                 entry.fc(ref.fc());
             }

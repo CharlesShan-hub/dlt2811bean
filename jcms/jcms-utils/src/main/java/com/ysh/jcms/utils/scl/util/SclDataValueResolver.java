@@ -72,7 +72,7 @@ public class SclDataValueResolver {
 
         if (parts.length == 2) {
             // DO-level
-            if (fc == null) {
+            if (fc == null || fc.isEmpty() || "XX".equalsIgnoreCase(fc)) {
                 // Legacy callers (e.g. GetAllDataValues): return first DAI with a value
                 for (SclDAI dai : doi.getDais()) {
                     if (dai.getVal() != null && !dai.getVal().isEmpty()) {
@@ -80,10 +80,6 @@ public class SclDataValueResolver {
                         return new SclDataValue(ref, dai.getVal(), bType);
                     }
                 }
-                return null;
-            }
-            // fc specified: "XX" or empty → ambiguous, return null (error)
-            if (fc.isEmpty() || "XX".equals(fc)) {
                 return null;
             }
             // Specific fc filter: scan DOType for DAs with matching fc,

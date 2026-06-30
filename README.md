@@ -300,144 +300,190 @@ cms> ln-dir --ln LD0 --acsi msvcb
 
 ```bash
 # 1. 返回有值的内容，跳过没设置值的内容
-# 2. 已经可以正常支持中文，使用unicode-string
-# 3. 可以进行FC的筛选，默认是0，不筛选
-# 4. 可以进行referenceAfter的筛选
-# all-data <LD> <FC> <referenceAfter>
-all-data LD0 1 LicIP17
-# all-data <LD/LN> <FC> <referenceAfter>
-all-data LD0/LLN0;
+# 2. 已经可以正常支持中文，使用 unicode-string
+# 3. 可以进行 FC 筛选，默认 XX 不筛选
+# 4. 可以进行 referenceAfter 筛选
+# all-data --ln <LD|LD/LN> [--fc FC] [--after REF]
+all-data --ln LD0 --fc XX --after LicIP17
+all-data --ln LD0/LLN0;
 ```
 
 ```bash
-cms> connect 127.0.0.1 P_B5041A/S1;
+cms> connect --ap C_B5041X/S1;
   Connecting to 127.0.0.1:8102 ...
   Connected, negotiating parameters ...
-  Negotiated, associating with P_B5041A/S1 ...
-  OK  Associated: P_B5041A/S1
-cms> all-data LD0/LLN0
-  Data values (3 items):
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> all-data --ln LD0/LLN0
+  Data values (13 items):
     [0] Mod  [visible-string] status-only
-    [1] NamPlt  [unicode-string] 逻辑节点铭牌
-    [2] ActSG  [unicode-string] 运行定值区
-cms> all-data LD0 # 默认是0，不进行ST筛选
-  Data values (62 items):
-    [0] Mod  [visible-string] status-only
-    [1] NamPlt  [unicode-string] 逻辑节点铭牌
-cms> all-data LD0 1 # FC=ST
-  Data values (62 items):
-    [0] Mod  [visible-string] status-only
-    [1] NamPlt  [unicode-string] 逻辑节点铭牌
-    ...
-    [59] LicIP16  [unicode-string] 白名单IP地址16
-    [60] LicIP17  [unicode-string] 白名单IP地址17
-    [61] LicIP18  [unicode-string] 白名单IP地址18
-cms> all-data LD0 1 LicIP17 # 继续加入referenceAfter
+    [1] NamPlt  [visible-string] Name Plate
+    [2] LEDRs  [visible-string] direct-with-normal-security
+    [3] Outage  [visible-string] Out of range
+    [4] CommTest  [visible-string] communication for testing
+    [5] CommTstMet  [visible-string] communication for measuring test
+    [6] U0AlarmEn  [visible-string] U0 Alarm enable
+    [7] Set3U0  [visible-string] setting for 3U0
+    [8] Meter2En  [visible-string] Meter2En
+    [9] YKYXASSO  [visible-string] YKYXASSO
+    [10] TimeZone  [visible-string] TimeZone
+    [11] SntpAddr  [visible-string] SntpAddr
+    [12] YCDeadZone  [visible-string] YCDeadZone
+cms> all-data --ln LD0/LLN0 --after SntpAddr
   Data values (1 items):
-    [0] LicIP18  [unicode-string] 白名单IP地址18
+    [0] YCDeadZone  [visible-string] YCDeadZone
+cms> all-data --ln LD0/LLN0 --fc CF
+  Data values (2 items):
+    [0] Mod  [visible-string] status-only
+    [1] LEDRs  [visible-string] direct-with-normal-security
+cms> all-data --ln LD0/LLN0 --fc MX
+  Data values (0 items): (empty)
+cms> all-data --ln LD0
+  Data values (616 items):
+    [0] Mod  [visible-string] status-only
+    [1] NamPlt  [visible-string] Name Plate
+    [2] LEDRs  [visible-string] direct-with-normal-security
+    ...
 ```
 
 ### 8.3.5 获取数据定义
 
 ```bash
-# all-def <LD/LN> <SF> <referenceAfter>
+# all-def --ln <LD|LD/LN> [--fc FC] [--after REF]
 ```
 
 ```bash
-cms> connect 127.0.0.1 P_B5041A/S1;
-cms> all-def LD0 1 LicIP17
-  Data definitions (1 items):
-    [0] LicIP18  [structure]  cdc=STG
-cms> all-def PROT/LinPTRC2
-  Data definitions (8 items):
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> all-def --ln LD0/LLN0
+  Data definitions (16 items):
     [0] Mod  [structure]  cdc=INC
     [1] Beh  [structure]  cdc=INS
     [2] Health  [structure]  cdc=INS
     [3] NamPlt  [structure]  cdc=LPL
-    [4] TrStrp  [structure]  cdc=SPC
-    [5] Tr  [structure]  cdc=ACT
-    [6] Op  [structure]  cdc=ACT
-    [7] Str  [structure]  cdc=ACD
+    [4] Loc  [structure]  cdc=SPS
+    [5] LEDRs  [structure]  cdc=SPC
+    [6] Outage  [structure]  cdc=SPS
+    [7] CommTest  [structure]  cdc=SPS
+    [8] CommTstMet  [structure]  cdc=SPS
+    [9] U0AlarmEn  [structure]  cdc=SPG
+    [10] Set3U0  [structure]  cdc=ASG
+    [11] Meter2En  [structure]  cdc=SPG
+    [12] YKYXASSO  [structure]  cdc=SPG
+    [13] TimeZone  [structure]  cdc=ING
+    [14] SntpAddr  [structure]  cdc=ING
+    [15] YCDeadZone  [structure]  cdc=ASG
+cms> all-def --ln LD0/LLN0 --after SntpAddr
+  Data definitions (1 items):
+    [0] YCDeadZone  [structure]  cdc=ASG
+cms> all-def --ln LD0/LLN0 --fc CF
+  Data definitions (6 items):
+    [0] Mod  [structure]  cdc=INC
+    [1] LEDRs  [structure]  cdc=SPC
+    [2] Set3U0  [structure]  cdc=ASG
+    [3] TimeZone  [structure]  cdc=ING
+    [4] SntpAddr  [structure]  cdc=ING
+    [5] YCDeadZone  [structure]  cdc=ASG
+cms> all-def --ln LD0/LLN0 --fc MX
+  Data definitions (0 items): (empty)
+cms> all-def --ln LD0
+  Data definitions (256 items):
+    [0] Mod  [structure]  cdc=INC
+    [1] Beh  [structure]  cdc=INS
+    [2] Health  [structure]  cdc=INS
+    [3] NamPlt  [structure]  cdc=LPL
+    [4] Loc  [structure]  cdc=SPS
+    [5] LEDRs  [structure]  cdc=SPC
+    [6] Outage  [structure]  cdc=SPS
+    [7] CommTest  [structure]  cdc=SPS
+    [8] CommTstMet  [structure]  cdc=SPS
+    ...
+    [253] Beh  [structure]  cdc=INS
+    [254] Health  [structure]  cdc=INS
+    [255] NamPlt  [structure]  cdc=LPL   # 因为我设置了做多256后边的需要再次请求
 ```
 
 ### 8.3.6 获取控制块的值
 
 ```bash
-all-cb LD0 brcb;
+all-cb --ln LD0 --acsi brcb;
 ```
 
 ```bash
-cms> connect 127.0.0.1 C_B5041X/S1
+cms> connect --ap C_B5041X/S1;
   Connecting to 127.0.0.1:8102 ...
   Connected, negotiating parameters ...
   Negotiated, associating with C_B5041X/S1 ...
   OK  Associated: C_B5041X/S1
-cms> all-cb LD0 brcb
+cms> all-cb --ln LD0 --acsi brcb;
   Fetching CB values: target=LD0 type=BRCB
   CB values (3 items):
     [0] LLN0.brcbAlarm  [BRCB]
     [1] LLN0.brcbWarning  [BRCB]
     [2] LLN0.brcbCommState  [BRCB]
+cms> all-cb --ln LD0 --acsi urcb
+  Fetching CB values: target=LD0 type=URCB
+  CB values (2 items):
+    [0] LLN0.urcbAin  [URCB]
+    [1] LLN0.urcbAinA  [URCB]
+cms> all-cb --ln LD0 --acsi lcb
+  Fetching CB values: target=LD0 type=LCB
+  No CB values found
+cms> all-cb --ln LD0 --acsi gocb
+  Fetching CB values: target=LD0 type=MSVCB
+  No CB values found
+cms> all-cb --ln LD0 --acsi msvcb
+  Fetching CB values: target=LD0 type=MSVCB
+  No CB values found
+cms> all-cb --ln LD0 --acsi log # 输入错误
+  ERR Invalid acsiClass: log. Valid values: brcb, urcb, lcb, sgecb, gocb, msvcb   
+cms> all-cb --ln LD0 --acsi sgecb
+  Fetching CB values: target=LD0 type=GOCB
+  CB values (80 items):
+    [0] LLN0.LLN0.SG1  [SGECB]
+    [1] LPHD1.LPHD1.SG1  [SGECB]
+    [2] RSYN1.RSYN1.SG1  [SGECB]
+    [3] GGIO1.GGIO1.SG1  [SGECB]
+    [4] GGIO2.GGIO2.SG1  [SGECB]
+    [5] GGIO3.GGIO3.SG1  [SGECB]
+    ...
+    [75] LTSM5.LTSM5.SG1  [SGECB]
+    [76] LTSM6.LTSM6.SG1  [SGECB]
+    [77] LTSM7.LTSM7.SG1  [SGECB]
+    [78] LTSM8.LTSM8.SG1  [SGECB]
+    [79] LTSM9.LTSM9.SG1  [SGECB]
 ```
 
 ### 8.4.1 获取指定数据值
 
 ```bash
-get-data-values LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm;
-```
-
-```bash
-cms> connect 127.0.0.1 C_B5041X/S1
-  Connecting to 127.0.0.1:8102 ...
-  Connected, negotiating parameters ...
-  Negotiated, associating with C_B5041X/S1 ...
-  OK  Associated: C_B5041X/S1
-cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm
-  Fetching data values for 3 reference(s)
-  Data values (3 items):
-    [0] LD0/GGIO9.AnIn1  [unicode-string] 光口1发功率
-    [1] LD0/GGIO9.AnIn2  [unicode-string] 光口2发功率
-    [2] LD0/GGIO1.HostTPortAlarm  [unicode-string] 对时信号状态
+# 用法: get-data-values --refs "<ref1> <ref2> ..." [--fc FC]
+get-data-values --refs "LD0/GGIO9.AnIn1 LD0/GGIO9.AnIn2 LD0/GGIO1.HostTPortAlarm";
 ```
 
 ### 8.4.2 设置指定数据值
 
 ```bash
-set-data-values <ref1>=<value1> <ref2>=<value2> ...;
+set-data-values --pairs "<ref1>=<value1> <ref2>=<value2> ...";
 ```
 
 ```bash
-cms> connect 127.0.0.1 C_B5041X/S1
-  Connecting to 127.0.0.1:8102 ...
-  Connected, negotiating parameters ...
-  Negotiated, associating with C_B5041X/S1 ...
-  OK  Associated: C_B5041X/S1
-cms> # 字符串类型
-cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm
-  Fetching data values for 2 reference(s)
-  Data values (2 items):
-    [0] LD0/GGIO9.AnIn1  [unicode-string] 光口1发功率
-    [1] LD0/GGIO1.HostTPortAlarm  [unicode-string] 对时信号状态
-cms> set-data-values LD0/GGIO9.AnIn1=光口1发功率修改 LD0/GGIO1.HostTPortAlarm=对时信号状态修改
-  Setting 2 data value(s)...
-  OK  Set 2 data value(s) successfully
-cms> get-data-values LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm
-  Fetching data values for 2 reference(s)
-  Data values (2 items):
-    [0] LD0/GGIO9.AnIn1  [visible-string] 光口1发功率修改
-    [1] LD0/GGIO1.HostTPortAlarm  [visible-string] 对时信号状态修改
-cms>
-cms>
+cms> connect --ap C_B5041X/S1;
+cms> 
+cms> 
 cms> # 数值类型
-cms> get-data-values LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal
+cms> get-data-values --refs "LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal"
   Fetching data values for 2 reference(s)
   Data values (2 items):
-    [0] LD0/LLN0.Mod.stVal  [visible-string] status-only
+    [0] LD0/LLN0.Mod.stVal  [visible-string] (unavailable)
     [1] LD0/LLN0.Beh.stVal  [visible-string] (unavailable)
-cms> set-data-values LD0/LLN0.Mod.stVal=10 LD0/LLN0.Beh.stVal=20
+cms> set-data-values --pairs "LD0/LLN0.Mod.stVal=10 LD0/LLN0.Beh.stVal=20"
   Setting 2 data value(s)...
   OK  Set 2 data value(s) successfully
-cms> get-data-values LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal
+cms> get-data-values --refs "LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal"
   Fetching data values for 2 reference(s)
   Data values (2 items):
     [0] LD0/LLN0.Mod.stVal  [int32] 10
@@ -445,30 +491,50 @@ cms> get-data-values LD0/LLN0.Mod.stVal LD0/LLN0.Beh.stVal
 cms>
 cms>
 cms> # 浮点数类型
-cms> set-data-values LD0/GGIO2.BusVRtgPri.setMag.f=123.45
+cms> get-data-values --refs "LD0/GGIO2.BusVRtgPri.setMag.f"
+  Fetching data values for 1 reference(s)
+  Data values (1 items):
+    [0] LD0/GGIO2.BusVRtgPri.setMag.f  [visible-string] (unavailable)
+cms> set-data-values --pairs "LD0/GGIO2.BusVRtgPri.setMag.f=123.45"
   Setting 1 data value(s)...
   OK  Set 1 data value(s) successfully
-cms> get-data-values LD0/GGIO2.BusVRtgPri.setMag.f
+cms> get-data-values --refs "LD0/GGIO2.BusVRtgPri.setMag.f"
   Fetching data values for 1 reference(s)
   Data values (1 items):
     [0] LD0/GGIO2.BusVRtgPri.setMag.f  [float32] 123.45
 cms>
 cms>
 cms> # 布尔类型
-cms> get-data-values LD0/LLN0.CommTstMet.stVal
+cms> get-data-values --refs "LD0/LLN0.CommTstMet.stVal"
   Fetching data values for 1 reference(s)
   Data values (1 items):
     [0] LD0/LLN0.CommTstMet.stVal  [visible-string] (unavailable)
-cms> set-data-values LD0/LLN0.CommTstMet.stVal=111 # 错误的类型会被拒绝
+cms> set-data-values --pairs "LD0/LLN0.CommTstMet.stVal=111" # 错误的类型会被拒绝
   Setting 1 data value(s)...
   ERR SetDataValues rejected:
-cms> set-data-values LD0/LLN0.CommTstMet.stVal=true
+cms> set-data-values --pairs "LD0/LLN0.CommTstMet.stVal=true"
   Setting 1 data value(s)...
   OK  Set 1 data value(s) successfully
-cms> get-data-values LD0/LLN0.CommTstMet.stVal
+cms> get-data-values --refs "LD0/LLN0.CommTstMet.stVal"
   Fetching data values for 1 reference(s)
   Data values (1 items):
     [0] LD0/LLN0.CommTstMet.stVal  [boolean] true
+cms>
+cms>
+cms> # 字符串类型
+cms> get-data-values --refs "LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm"
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/GGIO9.AnIn1  [visible-string] (unavailable)
+    [1] LD0/GGIO1.HostTPortAlarm  [visible-string] (unavailable)
+cms> set-data-values --pairs "LD0/GGIO9.AnIn1=光口1发功率修改 LD0/GGIO1.HostTPortAlarm=对时信号状态修改"
+  Setting 2 data value(s)...
+  OK  Set 2 data value(s) successfully
+cms> get-data-values --refs "LD0/GGIO9.AnIn1 LD0/GGIO1.HostTPortAlarm"
+  Fetching data values for 2 reference(s)
+  Data values (2 items):
+    [0] LD0/GGIO9.AnIn1  [visible-string] 光口1发功率修改
+    [1] LD0/GGIO1.HostTPortAlarm  [visible-string] 对时信号状态修改
 ```
 
 ### 8.4.3 

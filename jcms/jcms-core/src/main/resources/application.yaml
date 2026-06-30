@@ -21,7 +21,7 @@ client:
     tracePdu: false
 
 protocol:
-  maxArraySize: 1024
+  maxArraySize: 256
   negotiate:
     apduSize: 65535
     asduSize: 65531

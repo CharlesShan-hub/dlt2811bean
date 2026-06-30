@@ -62,6 +62,7 @@ public class AllDataValuesClient extends BaseClientHandler {
         List<ContentManager.AllDataEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {
             CmsDataValueEntryWrap entry = new CmsDataValueEntryWrap(resp.data.items.get(i));
+            if (entry.choiceType == 0) continue; // skip error/empty entries
             entries.add(new ContentManager.AllDataEntry(
                 entry.reference,
                 entry.choiceType,

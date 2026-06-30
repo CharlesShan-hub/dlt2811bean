@@ -57,6 +57,16 @@ public class AllDataValuesServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        // Resolve fc filter from request
+        String fcFilter = null;
+        if (req.fcPresent.value()) {
+            int fcVal = req.fc.value();
+            if (fcVal >= 0 && fcVal < com.ysh.jcms.info.FunctionalConstraint.values().length) {
+                fcFilter = com.ysh.jcms.info.FunctionalConstraint.values()[fcVal].name();
+                if ("XX".equals(fcFilter)) fcFilter = null;
+            }
+        }
+
         // Collect data object names and resolve values
         List<CmsDataValueEntry> entries = new ArrayList<>();
         int pageSize = pageSize();
@@ -74,8 +84,8 @@ public class AllDataValuesServer extends BaseServerHandler {
 
                 // Try to resolve value
                 String fullRef = (ldName != null ? ldName + "/" + ln.getFullName() : lnReference) + "." + name;
-                SclDataValue sv = server.resolveDataValue(fullRef, templates);
-                if (sv != null && sv.val != null && !sv.val.isEmpty()) {
+                SclDataValue sv = server.resolveDataValue(fullRef, templates, fcFilter);
+                if (sv != null && sv.val != null && !sv.val.isEmpty() && sv.bType != null && !sv.bType.isEmpty()) {
                     CmsDataValueEntry entry = new CmsDataValueEntry();
                     entry.reference(name);
                     entry.value(toCmsData(sv));

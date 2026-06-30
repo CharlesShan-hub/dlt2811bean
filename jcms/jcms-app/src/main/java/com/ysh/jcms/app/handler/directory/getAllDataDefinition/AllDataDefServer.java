@@ -7,6 +7,7 @@ import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.choice.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.fc.CmsFC;
+import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionRequest;
@@ -86,6 +87,16 @@ public class AllDataDefServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
+        // Resolve fc filter from request
+        String fcFilter = null;
+        if (req.fcPresent.value()) {
+            int fcVal = req.fc.value();
+            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
+                fcFilter = FunctionalConstraint.values()[fcVal].name();
+                if ("XX".equals(fcFilter)) fcFilter = null;
+            }
+        }
+
         // Collect DO definitions
         List<CmsDataDefinitionEntry> entries = new ArrayList<>();
         int pageSize = pageSize();
@@ -106,12 +117,26 @@ public class AllDataDefServer extends BaseServerHandler {
                     continue;
                 }
 
+                // fc filter: skip DO if no DA in its DOType matches the requested fc
+                if (fcFilter != null) {
+                    SclDOType doType = doDef.getType() != null ? templates.findDoTypeById(doDef.getType()) : null;
+                    if (doType == null) continue;
+                    boolean hasFc = false;
+                    for (SclDA da : doType.getDas()) {
+                        if (fcFilter.equalsIgnoreCase(da.getFc())) {
+                            hasFc = true;
+                            break;
+                        }
+                    }
+                    if (!hasFc) continue;
+                }
+
                 CmsDataDefinition def = buildDoDefinition(templates, doDef, ln);
                 if (def == null) continue;
 
                 // Resolve CDC from DOType
-                SclDOType doType = doDef.getType() != null ? templates.findDoTypeById(doDef.getType()) : null;
-                String cdc = doType != null ? doType.getCdc() : null;
+                SclDOType doType2 = doDef.getType() != null ? templates.findDoTypeById(doDef.getType()) : null;
+                String cdc = doType2 != null ? doType2.getCdc() : null;
 
                 CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry()
                     .reference(doName);

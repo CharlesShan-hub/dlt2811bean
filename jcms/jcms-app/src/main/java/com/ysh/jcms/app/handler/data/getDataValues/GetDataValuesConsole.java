@@ -46,14 +46,17 @@ public class GetDataValuesConsole implements CommandHandler {
         }
 
         String fcStr = args.get("fc");
-        boolean hasFc = fcStr != null && !fcStr.isEmpty();
-        int fcCode = hasFc ? com.ysh.jcms.data.fc.CmsFC.fromString(fcStr) : com.ysh.jcms.data.fc.CmsFC.XX;
 
         String[] refs = refsStr.trim().split("\\s+");
         GetDataValuesDao dao = new GetDataValuesDao();
-        for (String ref : refs) {
-            if (!ref.isEmpty()) {
-                dao.addRef(ref, fcCode);
+        if (fcStr != null && !fcStr.isEmpty() && !"XX".equalsIgnoreCase(fcStr)) {
+            int fcCode = com.ysh.jcms.data.fc.CmsFC.fromString(fcStr);
+            for (String ref : refs) {
+                if (!ref.isEmpty()) dao.addRef(ref, fcCode);
+            }
+        } else {
+            for (String ref : refs) {
+                if (!ref.isEmpty()) dao.addRef(ref);
             }
         }
 
