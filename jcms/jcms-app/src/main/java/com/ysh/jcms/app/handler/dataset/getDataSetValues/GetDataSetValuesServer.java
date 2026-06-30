@@ -99,7 +99,8 @@ public class GetDataSetValuesServer extends BaseServerHandler {
             }
 
             String fcdaRef = fcda.buildFcdaRef();
-            SclDataValue sv = server.resolveDataValue(fcdaRef, templates);
+            String fcCode = fcda.getFc(); // fc from FCDA (e.g. "ST")
+            SclDataValue sv = server.resolveDataValue(fcdaRef, templates, fcCode);
             if (sv != null && sv.val != null && !sv.val.isEmpty()) {
                 resp.value.add(toCmsData(sv));
                 count++;

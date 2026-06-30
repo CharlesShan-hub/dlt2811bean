@@ -94,15 +94,21 @@ public class SclSetSetDataValueResolver {
         }
 
         // Validate and canonicalize value against DA's bType before storing
-        String bType = resolveDaBType(templates, ln, doName, dai.getName(), parts);
-        if (bType != null) {
-            String validated = validateAndConvert(value, bType);
-            if (validated == null) {
-                return CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;
-            }
-            dai.setVal(validated);
-        } else {
+        // DO-level writes (parts.length == 2) skip validation since the caller
+        // doesn't know which DA is used — just store the raw string.
+        if (parts.length == 2) {
             dai.setVal(value);
+        } else {
+            String bType = resolveDaBType(templates, ln, doName, dai.getName(), parts);
+            if (bType != null) {
+                String validated = validateAndConvert(value, bType);
+                if (validated == null) {
+                    return CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;
+                }
+                dai.setVal(validated);
+            } else {
+                dai.setVal(value);
+            }
         }
         return CmsServiceError.NO_ERROR;
     }

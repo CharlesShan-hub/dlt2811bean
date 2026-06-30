@@ -5,6 +5,7 @@ import com.ysh.jcms.app.handler.data.getDataDirectory.GetDataDirectoryServer;
 import com.ysh.jcms.app.handler.data.getDataDefinition.GetDataDefinitionServer;
 import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesServer;
 import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryServer;
+import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesServer;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
@@ -51,6 +52,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new GetDataDefinitionServer());
         registerServer(new GetDataSetValuesServer());
         registerServer(new GetDataSetDirectoryServer());
+        registerServer(new SetDataSetValuesServer());
         register(new ListHandler());
         register(new TracePduHandler());
     }

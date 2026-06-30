@@ -73,7 +73,7 @@ public class SclDataValueResolver {
         if (parts.length == 2) {
             // DO-level
             if (fc == null || fc.isEmpty() || "XX".equalsIgnoreCase(fc)) {
-                // Legacy callers (e.g. GetAllDataValues): return first DAI with a value
+                // No fc filter: return first DAI with a value
                 for (SclDAI dai : doi.getDais()) {
                     if (dai.getVal() != null && !dai.getVal().isEmpty()) {
                         String bType = resolveDaBType(templates, ln, doName, dai.getName());
@@ -88,12 +88,12 @@ public class SclDataValueResolver {
             if (doType != null) {
                 for (SclDA da : doType.getDas()) {
                     if (fc.equalsIgnoreCase(da.getFc())) {
-                        // Try DAI first (simple or Struct DA stored as DAI)
+                        // Try DAI first
                         SclDAI dai = doi.findDaiByName(da.getName());
                         if (dai != null && dai.getVal() != null && !dai.getVal().isEmpty()) {
                             return new SclDataValue(ref, dai.getVal(), resolveDaBType(templates, ln, doName, da.getName()));
                         }
-                        // Try SDI (Struct DA with sub-elements stored as SDI)
+                        // Try SDI
                         SclSDI sdi = doi.findSdiByName(da.getName());
                         if (sdi != null) {
                             for (SclDAI sdai : sdi.getDais()) {
@@ -105,9 +105,8 @@ public class SclDataValueResolver {
                         }
                     }
                 }
-            } else {
-                log.warn("resolveDataValue: cannot resolve DOType for doName={} lnType={}", doName, ln.getLnType());
             }
+            // Fallback: no matching fc value found
             return null;
         }
 

@@ -635,6 +635,30 @@ get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
 
 ### 8.5.2 写数据集的值
 
+```bash
+# 用法: set-dataset-values --ds <ref> --values "<val1> <val2>..." [--after REF]
+set-dataset-values --ds "LD0/LLN0.dsAlarm" --values "true false true"
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> set-dataset-values --ds "LD0/LLN0.dsAlarm" --values "true false true"
+cms> get-dataset-values --ds "LD0/LLN0.dsAlarm"
+  Fetching dataset values for LD0/LLN0.dsAlarm
+  No dataset values returned
+  Setting 3 dataset value(s) for LD0/LLN0.dsAlarm
+  OK  Set 3 dataset value(s) successfully
+cms> get-dataset-values --ds "LD0/LLN0.dsAlarm"
+  DataSet values (3 items):
+  Fetching dataset values for LD0/LLN0.dsAlarm
+    [0] [boolean] true
+    [1] [boolean] false
+    [2] [boolean] true
+```
 
 ### 8.5.5 读数据集的成员目录（key）
 
@@ -647,26 +671,27 @@ get-dataset-dir --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
 ```
 
 ```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
 cms> get-dataset-dir --ds "LD0/LLN0.dsAlarm"
   Fetching dataset directory for LD0/LLN0.dsAlarm
   DataSet directory (3 items):
     [0] [ST]  LD0/GGIO1.Alm2
     [1] [ST]  LD0/GGIO1.Alm1
     [2] [ST]  LD0/GGIO1.Alm3
-cms> get-dataset-values --ds "LD0/LLN0.dsAlarm"
+cms> get-dataset-values --ds "LD0/LLN0.dsAlarm" # 因为还没有设置值呢，这三个应该是boolean
   Fetching dataset values for LD0/LLN0.dsAlarm
-  DataSet values (3 items):
-    [0] [visible-string] 装置告警
-    [1] [visible-string] 装置闭锁
-    [2] [visible-string] 装置自检异常
+  No dataset values returned
 cms> get-dataset-dir --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
   Fetching dataset directory for LD0/LLN0.dsAlarm
   DataSet directory (1 items):
     [0] [ST]  LD0/GGIO1.Alm3
 cms> get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
-  Fetching dataset values for LD0/LLN0.dsAlarm
-  DataSet values (1 items):
-    [0] [visible-string] 装置自检异常
+  Fetching dataset values for LD0/LLN0.dsAlarm # 还没设置值所以是空的
+  No dataset values returned
 ```
 
 ### 8.15 协商

@@ -12,6 +12,8 @@ import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesClient;
 import com.ysh.jcms.app.handler.dataset.getDataSetValues.GetDataSetValuesConsole;
 import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryClient;
 import com.ysh.jcms.app.handler.dataset.getDataSetDirectory.GetDataSetDirectoryConsole;
+import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesClient;
+import com.ysh.jcms.app.handler.dataset.setDataSetValues.SetDataSetValuesConsole;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
@@ -67,6 +69,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetDataDefinitionClient(this));
         registerClient(new GetDataSetValuesClient(this));
         registerClient(new GetDataSetDirectoryClient(this));
+        registerClient(new SetDataSetValuesClient(this));
     }
 
     @Override
@@ -85,6 +88,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetDataDefinitionConsole());
         register(new GetDataSetValuesConsole());
         register(new GetDataSetDirectoryConsole());
+        register(new SetDataSetValuesConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());
