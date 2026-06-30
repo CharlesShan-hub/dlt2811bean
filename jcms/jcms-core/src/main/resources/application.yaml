@@ -19,6 +19,8 @@ client:
   requestTimeoutMs: 5000
   console:
     tracePdu: false
+    apiPort: 7899
+    apiHost: http://127.0.0.1
 
 protocol:
   maxArraySize: 256

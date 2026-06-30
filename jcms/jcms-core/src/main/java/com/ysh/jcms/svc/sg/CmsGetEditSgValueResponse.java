@@ -24,7 +24,7 @@ public class CmsGetEditSgValueResponse extends CmsType {
 
     public CmsGetEditSgValueResponse() { super(Codec.GET_EDIT_SG_VALUE_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.value       = new CmsArray<>();
+        this.value       = new CmsArray<>(CmsData.class);
         this.moreFollows = new CmsBoolean();
     }
     

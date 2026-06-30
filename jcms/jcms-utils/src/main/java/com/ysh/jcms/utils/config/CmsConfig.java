@@ -139,6 +139,7 @@ public class CmsConfig {
             private boolean showConnectHint = true;
             private boolean apiEnabled = true;
             private int apiPort = 7899;
+            private String apiHost = "http://127.0.0.1";
 
             public boolean isTracePdu() { return tracePdu; }
             public void setTracePdu(boolean tracePdu) { this.tracePdu = tracePdu; }
@@ -152,6 +153,8 @@ public class CmsConfig {
             public void setApiEnabled(boolean apiEnabled) { this.apiEnabled = apiEnabled; }
             public int getApiPort() { return apiPort; }
             public void setApiPort(int apiPort) { this.apiPort = apiPort; }
+            public String getApiHost() { return apiHost; }
+            public void setApiHost(String apiHost) { this.apiHost = apiHost; }
         }
     }
 
@@ -310,6 +313,8 @@ public class CmsConfig {
                 client.console.autoExec = other.client.console.autoExec;
             if (other.client.console.apiPort != 7899)
                 client.console.apiPort = other.client.console.apiPort;
+            if (other.client.console.apiHost != null && !other.client.console.apiHost.equals("http://127.0.0.1"))
+                client.console.apiHost = other.client.console.apiHost;
         }
     }
 }

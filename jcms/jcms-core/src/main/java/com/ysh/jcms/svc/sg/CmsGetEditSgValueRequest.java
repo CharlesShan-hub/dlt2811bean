@@ -20,7 +20,7 @@ public class CmsGetEditSgValueRequest extends CmsType {
 
     public CmsGetEditSgValueRequest() { super(Codec.GET_EDIT_SG_VALUE_REQUEST);
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>();
+        this.data  = new CmsArray<>(CmsSgRefFcEntry.class);
     }
     
     public CmsGetEditSgValueRequest reqId(int v) { this.reqId.value(v); return this; }

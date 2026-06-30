@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.session.SessionState;
 import org.jline.reader.EndOfFileException;
 import org.jline.reader.LineReader;
@@ -55,6 +56,23 @@ public abstract class CmsConsole extends CmsNode {
     public void run() {
         registerHandlers();
         onStart();
+        // Auto-exec: config autoExec first, then CMS_AUTO_EXEC env var
+        String autoExec = CmsConfigLoader.load().getClient().getConsole().getAutoExec();
+        String envAutoExec = System.getenv("CMS_AUTO_EXEC");
+        if (envAutoExec != null && !envAutoExec.isEmpty()) {
+            if (autoExec == null || autoExec.isEmpty()) {
+                autoExec = envAutoExec;
+            } else {
+                autoExec = autoExec + ";" + envAutoExec;
+            }
+        }
+        if (autoExec != null && !autoExec.isEmpty()) {
+            ConsolePrinter.gray("Auto-exec: " + autoExec);
+            for (String cmd : autoExec.split(";")) {
+                String trimmed = cmd.trim();
+                if (!trimmed.isEmpty()) executeLine(trimmed);
+            }
+        }
         while (running) {
             String raw;
             try {

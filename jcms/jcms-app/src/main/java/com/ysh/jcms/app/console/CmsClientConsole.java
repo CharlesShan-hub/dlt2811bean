@@ -24,6 +24,10 @@ import com.ysh.jcms.app.handler.sg.selectActiveSg.SelectActiveSgClient;
 import com.ysh.jcms.app.handler.sg.selectActiveSg.SelectActiveSgConsole;
 import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgClient;
 import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgConsole;
+import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueClient;
+import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueConsole;
+import com.ysh.jcms.app.console.api.CliApiServer;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesConsole;
 import com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory.LdDirClient;
@@ -56,9 +60,34 @@ import com.ysh.jcms.app.handler.test.test.TestConsole;
  */
 public class CmsClientConsole extends CmsConsole {
 
+    private volatile CliApiServer apiServer;
+
     public CmsClientConsole() {
         super(false);
         registerClients();
+    }
+
+    @Override
+    protected void onStart() {
+        // Start embedded API server (for remote execution via cms.ps1)
+        String apiEnabled = System.getProperty("cms.api.enabled", "true");
+        if (!"false".equalsIgnoreCase(apiEnabled)) {
+            int apiPort = Integer.parseInt(System.getProperty("cms.api.port",
+                String.valueOf(CmsConfigLoader.load().getClient().getConsole().getApiPort())));
+            try {
+                apiServer = new CliApiServer(apiPort, this);
+                apiServer.start();
+            } catch (Exception e) {
+                ConsolePrinter.gray("ApiServer not started (port " + apiPort + "): " + e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        if (apiServer != null) {
+            apiServer.stop();
+        }
     }
 
     private void registerClients() {
@@ -85,6 +114,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetSgcbValuesClient(this));
         registerClient(new SelectActiveSgClient(this));
         registerClient(new SelectEditSgClient(this));
+        registerClient(new GetEditSgValueClient(this));
     }
 
     @Override
@@ -109,6 +139,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetSgcbValuesConsole());
         register(new SelectActiveSgConsole());
         register(new SelectEditSgConsole());
+        register(new GetEditSgValueConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());

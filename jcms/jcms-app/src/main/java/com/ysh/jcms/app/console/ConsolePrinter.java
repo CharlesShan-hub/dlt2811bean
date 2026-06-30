@@ -2,6 +2,7 @@ package com.ysh.jcms.app.console;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.function.Function;
@@ -15,9 +16,13 @@ public final class ConsolePrinter {
     private static final String GRN  = "\u001B[32m";
     private static final String RED  = "\u001B[31m";
     private static final String GRY  = "\u001B[90m";
+    private static final String BOLD = "\u001B[1m";
 
     /** Write to stdout FD as UTF-8 (console code page is 65001). */
     private static final FileOutputStream STDOUT;
+
+    /** Optional capture output stream for API server. */
+    private static volatile OutputStream captureStream;
 
     static {
         FileOutputStream fd = null;
@@ -27,7 +32,20 @@ public final class ConsolePrinter {
         STDOUT = fd;
     }
 
+    /** Set a capture stream for API server output. null = restore to console. */
+    public static void setCaptureStream(OutputStream os) {
+        captureStream = os;
+    }
+
     private static void println(String s) {
+        OutputStream cs = captureStream;
+        if (cs != null) {
+            try {
+                cs.write((s + "\n").getBytes(StandardCharsets.UTF_8));
+                cs.flush();
+                return;
+            } catch (IOException ignored) {}
+        }
         if (STDOUT != null) {
             try {
                 STDOUT.write((s + "\n").getBytes(StandardCharsets.UTF_8));
