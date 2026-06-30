@@ -24,7 +24,7 @@ public class CmsGetDataSetValuesResponse extends CmsType {
 
     public CmsGetDataSetValuesResponse() { super(Codec.GET_DATA_SET_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.value       = new CmsArray<>();
+        this.value       = new CmsArray<>(CmsData.class);
         this.moreFollows = new CmsBoolean();
     }
     

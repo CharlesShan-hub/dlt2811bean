@@ -618,6 +618,56 @@ cms> get-data-def --refs "LD0/LLN0.Mod" --fc ST
     [0] LD0/LLN0.Mod  [structure]  cdc=INC
 ```
 
+### 8.5.1 读数据集的值
+
+```bash
+# 用法: get-dataset-values --ds <完整数据集引用> [--after REF]
+# 获取数据集所有成员的值
+get-dataset-values --ds "LD0/LLN0.dsAlarm"
+# 从指定成员之后开始（分页）
+get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
+```
+
+```bash
+# 具体内容看后边的8.5.5
+```
+
+
+### 8.5.2 写数据集的值
+
+
+### 8.5.5 读数据集的成员目录（key）
+
+```bash
+# 用法: get-dataset-dir --ds <完整数据集引用> [--after REF]
+# 列出数据集的所有成员引用（含 fc）
+get-dataset-dir --ds "LD0/LLN0.dsAlarm"
+# 从指定成员之后开始（分页）
+get-dataset-dir --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
+```
+
+```bash
+cms> get-dataset-dir --ds "LD0/LLN0.dsAlarm"
+  Fetching dataset directory for LD0/LLN0.dsAlarm
+  DataSet directory (3 items):
+    [0] [ST]  LD0/GGIO1.Alm2
+    [1] [ST]  LD0/GGIO1.Alm1
+    [2] [ST]  LD0/GGIO1.Alm3
+cms> get-dataset-values --ds "LD0/LLN0.dsAlarm"
+  Fetching dataset values for LD0/LLN0.dsAlarm
+  DataSet values (3 items):
+    [0] [visible-string] 装置告警
+    [1] [visible-string] 装置闭锁
+    [2] [visible-string] 装置自检异常
+cms> get-dataset-dir --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
+  Fetching dataset directory for LD0/LLN0.dsAlarm
+  DataSet directory (1 items):
+    [0] [ST]  LD0/GGIO1.Alm3
+cms> get-dataset-values --ds "LD0/LLN0.dsAlarm" --after "LD0/GGIO1.Alm1"
+  Fetching dataset values for LD0/LLN0.dsAlarm
+  DataSet values (1 items):
+    [0] [visible-string] 装置自检异常
+```
 
 ### 8.15 协商
 

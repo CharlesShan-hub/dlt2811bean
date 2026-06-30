@@ -23,7 +23,7 @@ public class CmsGetDataSetDirectoryResponse extends CmsType {
 
     public CmsGetDataSetDirectoryResponse() { super(Codec.GET_DATA_SET_DIRECTORY_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.memberData  = new CmsArray<>();
+        this.memberData  = new CmsArray<>(CmsDataRefFcEntry.class);
         this.moreFollows = new CmsBoolean();
     }
     
