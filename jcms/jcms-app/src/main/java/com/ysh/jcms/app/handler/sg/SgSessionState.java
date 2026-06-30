@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.sg;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Shared SGCB session state across all setting group services.
@@ -20,12 +21,12 @@ public class SgSessionState {
     }
 
     public static class SgcState {
-        int actSG = 1;
-        int editSG = 1;
+        private final AtomicInteger actSG = new AtomicInteger(1);
+        private final AtomicInteger editSG = new AtomicInteger(1);
 
-        public int getActSG() { return actSG; }
-        public void setActSG(int actSG) { this.actSG = actSG; }
-        public int getEditSG() { return editSG; }
-        public void setEditSG(int editSG) { this.editSG = editSG; }
+        public int getActSG() { return actSG.get(); }
+        public void setActSG(int actSG) { this.actSG.set(actSG); }
+        public int getEditSG() { return editSG.get(); }
+        public void setEditSG(int editSG) { this.editSG.set(editSG); }
     }
 }

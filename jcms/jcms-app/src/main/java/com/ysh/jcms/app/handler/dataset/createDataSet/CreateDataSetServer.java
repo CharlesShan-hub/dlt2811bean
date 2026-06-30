@@ -89,15 +89,21 @@ public class CreateDataSetServer extends BaseServerHandler {
             ln.addDataSet(dataSet);
         }
 
+        int addedCount = 0;
+        int failCount = 0;
         for (int i = 0; i < req.memberData.count; i++) {
             CmsDataRefFcEntry src = req.memberData.items.get(i);
             String memberRef = src.reference.len > 0
                 ? new String(src.reference.value(), StandardCharsets.UTF_8) : null;
-            if (memberRef == null || memberRef.isEmpty()) continue;
+            if (memberRef == null || memberRef.isEmpty()) {
+                failCount++;
+                continue;
+            }
 
             SclFCDA fcda = server.parseRefToFcda(memberRef);
             if (fcda == null) {
                 log.warn("CreateDataSet: cannot resolve member ref={}", memberRef);
+                failCount++;
                 continue;
             }
             int fcVal = src.fc.value();
@@ -109,9 +115,15 @@ public class CreateDataSetServer extends BaseServerHandler {
                 fcda.setFc(fcCode);
             }
             dataSet.addFcda(fcda);
+            addedCount++;
         }
 
-        log.info("CreateDataSet: '{}' -> {} members (dynamic={})", ref, dataSet.getFcDas().size(), dataSet.isDynamic());
+        if (addedCount == 0) {
+            log.warn("CreateDataSet: no valid members for ref={}", ref);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        }
+
+        log.info("CreateDataSet: '{}' -> {} members ({} failed, dynamic={})", ref, dataSet.getFcDas().size(), failCount, dataSet.isDynamic());
 
         try {
             return buildSuccess(new CmsCreateDataSetResponse().reqId(reqId).encode(), reqId);

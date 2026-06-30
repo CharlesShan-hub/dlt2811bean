@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.svc.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -24,6 +25,7 @@ public class AbortServer extends BaseServerHandler {
             session.getSessionId(), req.reason.value());
 
         session.clearAssociationId();
+        SgSessionState.clear(session.getSessionId());
         session.setState(SessionState.DISCONNECTED);
         return noResponse();
     }

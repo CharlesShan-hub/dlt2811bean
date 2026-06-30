@@ -21,8 +21,8 @@ public final class ConsolePrinter {
     /** Write to stdout FD as UTF-8 (console code page is 65001). */
     private static final FileOutputStream STDOUT;
 
-    /** Optional capture output stream for API server. */
-    private static volatile OutputStream captureStream;
+    /** Per-thread capture output stream for API server (avoids concurrent request corruption). */
+    private static final ThreadLocal<OutputStream> captureStream = new ThreadLocal<>();
 
     static {
         FileOutputStream fd = null;
@@ -32,13 +32,17 @@ public final class ConsolePrinter {
         STDOUT = fd;
     }
 
-    /** Set a capture stream for API server output. null = restore to console. */
+    /** Set a capture stream for the current thread (API server output). null = restore to console. */
     public static void setCaptureStream(OutputStream os) {
-        captureStream = os;
+        if (os == null) {
+            captureStream.remove();
+        } else {
+            captureStream.set(os);
+        }
     }
 
     private static void println(String s) {
-        OutputStream cs = captureStream;
+        OutputStream cs = captureStream.get();
         if (cs != null) {
             try {
                 cs.write((s + "\n").getBytes(StandardCharsets.UTF_8));
