@@ -45,19 +45,9 @@ public class GetEditSgValueServer extends BaseServerHandler {
 
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        // Check runtime edit buffer first (populated by SetEditSGValue)
         SgcState state = SgSessionState.getState(session.getSessionId());
-        boolean hasRuntimeValues = !state.getEditValues().isEmpty();
-
         SclServer server = null;
         SclDataTypeTemplates templates = null;
-        if (!hasRuntimeValues) {
-            server = getSclServer(session);
-            if (server == null) {
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-            templates = getSclDataTypeTemplates(session);
-        }
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse()
             .reqId(reqId);
@@ -73,16 +63,22 @@ public class GetEditSgValueServer extends BaseServerHandler {
                 continue;
             }
 
-            // Try runtime edit buffer first
-            byte[] runtimeVal = state.getEditValue(ref);
-            if (runtimeVal != null) {
+            // Determine fc: SG → committed layer, SE → edit buffer (strictly per standard)
+            int fcVal = entry.fc.value();
+            boolean isSE = false;
+            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
+                isSE = "SE".equals(FunctionalConstraint.values()[fcVal].name());
+            }
+
+            byte[] val = isSE ? state.getEditValue(ref) : state.getCommittedValue(ref);
+            if (val != null) {
                 try {
                     CmsData data = new CmsData();
-                    data.decode(runtimeVal);
+                    data.decode(val);
                     resp.value.add(data);
                     continue;
                 } catch (Exception e) {
-                    log.warn("GetEditSGValue: failed to decode runtime value for ref={}", ref, e);
+                    log.warn("GetEditSGValue: failed to decode {} value for ref={}", isSE ? "SE" : "SG", ref, e);
                 }
             }
 
@@ -96,7 +92,6 @@ public class GetEditSgValueServer extends BaseServerHandler {
             }
 
             String fcCode = null;
-            int fcVal = entry.fc.value();
             if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
                 fcCode = FunctionalConstraint.values()[fcVal].name();
                 if ("XX".equals(fcCode)) fcCode = null;

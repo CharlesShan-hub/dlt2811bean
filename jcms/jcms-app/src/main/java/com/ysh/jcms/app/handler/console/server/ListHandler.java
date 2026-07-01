@@ -14,15 +14,14 @@ import java.util.Map;
 public class ListHandler implements CommandHandler {
 
     @Override
-    public String name() { return "list"; }
+    public String name() { return "list-ap"; }
 
     @Override
-    public String description() { return "列出资源。用法: list [--type ap] [--limit N] [--offset N]"; }
+    public String description() { return "列出全部访问点。用法: list-ap [--limit N] [--offset N]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("type", "资源类型: ap", "ap"),
             new Param("limit", "数量（不传则列出全部）", ""),
             new Param("offset", "起始索引", "0")
         );
@@ -35,16 +34,6 @@ public class ListHandler implements CommandHandler {
             return;
         }
 
-        String type = args.get("type");
-
-        if ("ap".equals(type)) {
-            listAccessPoints(console, args);
-        } else {
-            ConsolePrinter.error("Unknown list type: " + type + "  (available: ap)");
-        }
-    }
-
-    private void listAccessPoints(CmsConsole console, Map<String, String> args) {
         List<String> aps = new ArrayList<>();
         for (SclIED ied : console.getSclManager().getIeds()) {
             ied.getAccessPoints().forEach(ap -> aps.add(ied.getName() + "/" + ap.getName()));

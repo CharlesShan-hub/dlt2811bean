@@ -14,6 +14,7 @@ import com.ysh.jcms.app.handler.sg.selectActiveSg.SelectActiveSgServer;
 import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgServer;
 import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueServer;
 import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueServer;
+import com.ysh.jcms.app.handler.sg.confirmEditSgValues.ConfirmEditSgValuesServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
@@ -27,6 +28,7 @@ import com.ysh.jcms.app.handler.directory.getAllDataDefinition.AllDataDefServer;
 import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
 import com.ysh.jcms.app.handler.console.server.ListHandler;
 import com.ysh.jcms.app.handler.console.TracePduHandler;
+import com.ysh.jcms.app.handler.console.ClearHandler;
 
 /**
  * Server-side CMS console.
@@ -67,6 +69,8 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new SelectEditSgServer());
         registerServer(new GetEditSgValueServer());
         registerServer(new SetEditSgValueServer());
+        registerServer(new ConfirmEditSgValuesServer());
+        register(new ClearHandler());
         register(new ListHandler());
         register(new TracePduHandler());
     }

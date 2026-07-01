@@ -806,13 +806,23 @@ get-edit-sg --refs "PROT/OCPTOC2.StrVal"
 ```
 
 ```bash
-具体内容看下边8.6.5
+具体内容看下边8.6.6
 ```
 
 ### 8.6.5 设置定值组值
 
 ```bash
 set-edit-sg --refs "PROT/OCPTOC2.StrVal" --values "100" --type int32
+```
+
+```bash
+具体内容看下边8.6.6
+```
+
+### 8.6.6 定制组生效（confirm）
+
+```bash
+confirm-edit-sg --ref "PROT/DeZonePTOC1.SG1"
 ```
 
 ```bash
@@ -830,10 +840,18 @@ cms> set-edit-sg --refs "PROT/OCPTOC2.StrVal" --values "100" --type int32
 cms> get-edit-sg --refs "PROT/OCPTOC2.StrVal"
   Fetching edit SG values (SG) for 1 ref(s)
   Edit SG values (1 items):
+    [0] PROT/OCPTOC2.StrVal  [visible-string] (unavailable)
+cms> confirm-edit-sg --ref "PROT/DeZonePTOC1.SG1"
+  Confirming edit SG values: ref=PROT/DeZonePTOC1.SG1
+  OK  Edit SG values confirmed for PROT/DeZonePTOC1.SG1
+cms> get-edit-sg --refs "PROT/OCPTOC2.StrVal"
+  Fetching edit SG values (SG) for 1 ref(s)
+  Edit SG values (1 items):
     [0] PROT/OCPTOC2.StrVal  [int32] 100
 ```
 
-### 8.6.6 定制组生效
+
+### 8.6.7 定制组信息查看
 
 ```bash
 # 用法: sgcb-vals --refs "<ref1> <ref2>..."
@@ -851,6 +869,8 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
   SGCB values (1 items):
     [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
 ```
+
+### 8.7
 
 ### 8.15 协商
 
