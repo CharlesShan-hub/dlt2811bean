@@ -26,6 +26,8 @@ import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgClient;
 import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgConsole;
 import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueClient;
 import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueConsole;
+import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueClient;
+import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueConsole;
 import com.ysh.jcms.app.console.api.CliApiServer;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
@@ -115,6 +117,7 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SelectActiveSgClient(this));
         registerClient(new SelectEditSgClient(this));
         registerClient(new GetEditSgValueClient(this));
+        registerClient(new SetEditSgValueClient(this));
     }
 
     @Override
@@ -140,6 +143,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new SelectActiveSgConsole());
         register(new SelectEditSgConsole());
         register(new GetEditSgValueConsole());
+        register(new SetEditSgValueConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ReleaseConsole());

@@ -802,6 +802,40 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
 ### 8.6.6 读定值组控制块值
 
 ```bash
+get-edit-sg --refs "PROT/OCPTOC2.StrVal"
+```
+
+```bash
+具体内容看下边8.6.5
+```
+
+### 8.6.5 设置定值组值
+
+```bash
+set-edit-sg --refs "PROT/OCPTOC2.StrVal" --values "100" --type int32
+```
+
+```bash
+cms> connect --ap P_B5041A/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms> select-edit-sg --ref "PROT/DeZonePTOC1.SG1" --num 1
+  Selecting edit SG: ref=PROT/DeZonePTOC1.SG1 num=1
+  OK  Edit SG set to 1 for PROT/DeZonePTOC1.SG1
+cms> set-edit-sg --refs "PROT/OCPTOC2.StrVal" --values "100" --type int32
+  Setting edit SG values (int32) for 1 ref(s)
+  OK  Edit SG values set successfully
+cms> get-edit-sg --refs "PROT/OCPTOC2.StrVal"
+  Fetching edit SG values (SG) for 1 ref(s)
+  Edit SG values (1 items):
+    [0] PROT/OCPTOC2.StrVal  [int32] 100
+```
+
+### 8.6.6 定制组生效
+
+```bash
 # 用法: sgcb-vals --refs "<ref1> <ref2>..."
 sgcb-vals --refs "LD0/LLN0.SG1"
 ```

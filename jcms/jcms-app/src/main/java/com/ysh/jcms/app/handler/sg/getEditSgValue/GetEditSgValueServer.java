@@ -1,6 +1,8 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.sg.SgSessionState;
+import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
@@ -43,11 +45,19 @@ public class GetEditSgValueServer extends BaseServerHandler {
 
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        // Check runtime edit buffer first (populated by SetEditSGValue)
+        SgcState state = SgSessionState.getState(session.getSessionId());
+        boolean hasRuntimeValues = !state.getEditValues().isEmpty();
+
+        SclServer server = null;
+        SclDataTypeTemplates templates = null;
+        if (!hasRuntimeValues) {
+            server = getSclServer(session);
+            if (server == null) {
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            templates = getSclDataTypeTemplates(session);
         }
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse()
             .reqId(reqId);
@@ -61,6 +71,28 @@ public class GetEditSgValueServer extends BaseServerHandler {
             if (ref == null || ref.isEmpty()) {
                 log.warn("GetEditSGValue: empty reference at index {}", i);
                 continue;
+            }
+
+            // Try runtime edit buffer first
+            byte[] runtimeVal = state.getEditValue(ref);
+            if (runtimeVal != null) {
+                try {
+                    CmsData data = new CmsData();
+                    data.decode(runtimeVal);
+                    resp.value.add(data);
+                    continue;
+                } catch (Exception e) {
+                    log.warn("GetEditSGValue: failed to decode runtime value for ref={}", ref, e);
+                }
+            }
+
+            // Fall back to SCD resolution
+            if (server == null) {
+                server = getSclServer(session);
+                if (server == null) {
+                    return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                }
+                templates = getSclDataTypeTemplates(session);
             }
 
             String fcCode = null;

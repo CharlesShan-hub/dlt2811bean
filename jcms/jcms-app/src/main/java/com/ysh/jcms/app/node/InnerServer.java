@@ -8,6 +8,7 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.service.Dispatcher;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -176,6 +177,17 @@ public class InnerServer implements ConnectionListener {
                 break;
             case NOT_REGISTERED:
                 log.warn("No handler for service: {}", frame.header().serviceCode());
+                // Send a minimal error response so client doesn't time out
+                try {
+                    connection.send(new Frame(
+                        new FrameHeader()
+                            .serviceCode(frame.header().serviceCode())
+                            .resp(true).err(true),
+                        new byte[]{0, 0}, frame.reqId()
+                    ));
+                } catch (IOException e) {
+                    log.error("Failed to send NOT_REGISTERED error", e);
+                }
                 break;
             case ERROR_OCCURRED:
                 log.error("Handler error for service: {}", frame.header().serviceCode());

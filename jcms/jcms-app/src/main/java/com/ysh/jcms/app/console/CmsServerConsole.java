@@ -13,6 +13,7 @@ import com.ysh.jcms.app.handler.sg.getSgcbValues.GetSgcbValuesServer;
 import com.ysh.jcms.app.handler.sg.selectActiveSg.SelectActiveSgServer;
 import com.ysh.jcms.app.handler.sg.selectEditSg.SelectEditSgServer;
 import com.ysh.jcms.app.handler.sg.getEditSgValue.GetEditSgValueServer;
+import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
@@ -65,6 +66,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new SelectActiveSgServer());
         registerServer(new SelectEditSgServer());
         registerServer(new GetEditSgValueServer());
+        registerServer(new SetEditSgValueServer());
         register(new ListHandler());
         register(new TracePduHandler());
     }
