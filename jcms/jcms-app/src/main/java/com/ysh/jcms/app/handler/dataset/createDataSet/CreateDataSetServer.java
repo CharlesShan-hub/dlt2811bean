@@ -44,9 +44,10 @@ public class CreateDataSetServer extends BaseServerHandler {
         if (p == null || p.doName == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         String dsName = p.doName;
 
-        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
-        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclLN ln = r.ln;
+        // Resolve LN first (DataSet may not exist yet since we're creating it)
+        RefUtil.DataResolveResult rr = RefUtil.resolveData(server, p.lnRef());
+        if (rr == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclLN ln = rr.ln;
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
         boolean isPersistent = CmsConfigLoader.load().getProtocol().getDataset().isSetDataSetPersistent();

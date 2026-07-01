@@ -50,12 +50,12 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         SclLN ln;
         List<SclDataDirectoryEntry> allEntries;
         if (isDoLevel) {
-            RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
+            RefUtil.DataResolveResult r = RefUtil.resolveData(server, ref);
             if (r == null || r.doi == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             ln = r.ln;
             allEntries = r.doi.collectDataDirectory(getSclDataTypeTemplates(session), ln);
         } else {
-            RefUtil.ResolveResult r = RefUtil.resolve(server, parts.ldName + "/" + parts.lnName);
+            RefUtil.DataResolveResult r = RefUtil.resolveData(server, parts.ldName + "/" + parts.lnName);
             if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             ln = r.ln;
             allEntries = ln.collectDataDirectory(getSclDataTypeTemplates(session));

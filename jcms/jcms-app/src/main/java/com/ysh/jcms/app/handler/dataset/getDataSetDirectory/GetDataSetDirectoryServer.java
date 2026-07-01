@@ -39,11 +39,9 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
         String ref = str(req.datasetReference);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
-        if (r == null || r.ref.doName == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-
-        SclDataSet dataSet = r.ln.findDataSetByName(r.ref.doName);
-        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        RefUtil.DataSetResolveResult r = RefUtil.resolveDataSet(server, ref);
+        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDataSet dataSet = r.dataSet;
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 

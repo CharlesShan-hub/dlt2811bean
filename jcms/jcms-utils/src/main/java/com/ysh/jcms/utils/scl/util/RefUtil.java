@@ -71,15 +71,17 @@ public final class RefUtil {
     //  SCL model resolution
     // ─────────────────────────────────────────────
 
-    /** Result of resolving a reference against the SCL model. */
-    public static final class ResolveResult {
+    /**
+     * Result of resolving a data reference (DO/DA/SDI) against the SCL model.
+     */
+    public static final class DataResolveResult {
         public final RefParts ref;
         public final SclLDevice device;
         public final SclLN ln;
         public final SclDOI doi;   // null for LN-level refs
         public final SclSDI sdi;   // null for DO-level refs
 
-        public ResolveResult(RefParts ref, SclLDevice device, SclLN ln, SclDOI doi, SclSDI sdi) {
+        public DataResolveResult(RefParts ref, SclLDevice device, SclLN ln, SclDOI doi, SclSDI sdi) {
             this.ref = ref;
             this.device = device;
             this.ln = ln;
@@ -89,20 +91,41 @@ public final class RefUtil {
     }
 
     /**
-     * Resolve a reference to LN (and optionally DOI) from the SCL model.
+     * Result of resolving a DataSet reference ("LD0/LLN0.dsName") against the SCL model.
+     */
+    public static final class DataSetResolveResult {
+        public final RefParts ref;
+        public final SclLDevice device;
+        public final SclLN ln;
+        public final com.ysh.jcms.utils.scl.model.input.SclDataSet dataSet;
+        public final String dsName;
+
+        public DataSetResolveResult(RefParts ref, SclLDevice device, SclLN ln,
+                                     com.ysh.jcms.utils.scl.model.input.SclDataSet dataSet, String dsName) {
+            this.ref = ref;
+            this.device = device;
+            this.ln = ln;
+            this.dataSet = dataSet;
+            this.dsName = dsName;
+        }
+    }
+
+    /**
+     * Resolve a data reference to LN (and optionally DOI/SDI) from the SCL model.
+     * For references like "LD0/LLN0.DO.DA" that point to data objects, not DataSets.
      *
      * @return result with device/ln/doi populated, or null if any part not found
      */
-    public static ResolveResult resolve(SclServer server, String ref) {
+    public static DataResolveResult resolveData(SclServer server, String ref) {
         RefParts parts = parse(ref);
         if (parts == null) return null;
-        return resolve(server, parts);
+        return resolveData(server, parts);
     }
 
     /**
      * Resolve parsed parts to LN (and optionally DOI) from the SCL model.
      */
-    public static ResolveResult resolve(SclServer server, RefParts parts) {
+    public static DataResolveResult resolveData(SclServer server, RefParts parts) {
         SclLDevice device = server.findLDeviceByInst(parts.ldName);
         if (device == null) return null;
         SclLN ln = device.findLnByFullName(parts.lnName);
@@ -111,7 +134,25 @@ public final class RefUtil {
         if (parts.doName != null && doi == null) return null;
         SclSDI sdi = parts.sdiName != null ? (doi != null ? doi.findSdiByName(parts.sdiName) : null) : null;
         if (parts.sdiName != null && sdi == null) return null;
-        return new ResolveResult(parts, device, ln, doi, sdi);
+        return new DataResolveResult(parts, device, ln, doi, sdi);
+    }
+
+    /**
+     * Resolve a DataSet reference ("LD0/LLN0.dsName") from the SCL model.
+     * The {@code doName} field in RefParts holds the DataSet name.
+     *
+     * @return result with device/ln/dataSet populated, or null if any part not found
+     */
+    public static DataSetResolveResult resolveDataSet(SclServer server, String ref) {
+        RefParts parts = parse(ref);
+        if (parts == null || parts.doName == null) return null;
+        SclLDevice device = server.findLDeviceByInst(parts.ldName);
+        if (device == null) return null;
+        SclLN ln = device.findLnByFullName(parts.lnName);
+        if (ln == null) return null;
+        com.ysh.jcms.utils.scl.model.input.SclDataSet dataSet = ln.findDataSetByName(parts.doName);
+        if (dataSet == null) return null;
+        return new DataSetResolveResult(parts, device, ln, dataSet, parts.doName);
     }
 
     // ─────────────────────────────────────────────

@@ -7,11 +7,12 @@ import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
-import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -23,7 +24,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
     private static final Logger log = LoggerFactory.getLogger(SetDataSetValuesServer.class);
 
     public SetDataSetValuesServer() {
-        super(ServiceName.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, null);
+        super(ServiceName.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, CmsSetDataSetValuesError.class);
     }
 
     @Override
@@ -39,11 +40,20 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         String ref = str(req.datasetReference);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
-        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        // Parse "LD0/LLN0.dsName"
+        int slashIdx = ref.indexOf('/');
+        int dotIdx = ref.indexOf('.');
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        String ldName = ref.substring(0, slashIdx);
+        String lnName = ref.substring(slashIdx + 1, dotIdx);
+        String dsName = ref.substring(dotIdx + 1);
 
-        RefUtil.RefParts p = r.ref;
-        SclDataSet dataSet = (p.doName != null) ? r.ln.findDataSetByName(p.doName) : null;
+        SclLDevice device = server.findLDeviceByInst(ldName);
+        if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclLN ln = device.findLnByFullName(lnName);
+        if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDataSet dataSet = ln.findDataSetByName(dsName);
         if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);

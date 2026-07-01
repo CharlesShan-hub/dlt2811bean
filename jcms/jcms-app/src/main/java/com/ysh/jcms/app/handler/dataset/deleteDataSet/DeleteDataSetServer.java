@@ -36,17 +36,10 @@ public class DeleteDataSetServer extends BaseServerHandler {
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Parse "LD0/LLN0.dsName"
-        RefUtil.RefParts parts = RefUtil.parse(ref);
-        if (parts == null || parts.doName == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        String dsName = parts.doName;
-
-        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
+        RefUtil.DataSetResolveResult r = RefUtil.resolveDataSet(server, ref);
         if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-
-        SclDataSet ds = r.ln.findDataSetByName(dsName);
-        if (ds == null || !ds.isDynamic())
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDataSet ds = r.dataSet;
+        if (!ds.isDynamic()) return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
 
         r.ln.getDataSets().remove(ds);
         log.info("DeleteDataSet: removed '{}'", ref);
