@@ -8,6 +8,7 @@ import com.ysh.jcms.svc.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
+import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
@@ -78,58 +79,108 @@ public class GetBrcbValuesServer extends BaseServerHandler {
     }
 
     static CmsBrcb resolveBrcb(SclServer server, String ref) {
-        // ref format: LD/LN.brcbName
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
-            log.warn("resolveBrcb: invalid ref format {}", ref);
-            return null;
-        }
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
 
         String ldName = ref.substring(0, slashIdx);
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        log.warn("resolveBrcb: trying findLnByRef({})", ldName + "/" + lnName);
         SclLN ln = server.findLnByRef(ldName + "/" + lnName);
-        if (ln == null) {
-            log.warn("resolveBrcb: cannot find LN {} in LD {}, listing available LNs", lnName, ldName);
-            return null;
-        }
+        if (ln == null) return null;
 
-        log.warn("resolveBrcb: found LN, reportControls count={}", ln.getReportControls().size());
-        for (SclReportControl rc : ln.getReportControls()) {
-            log.warn("resolveBrcb:   rc={} buffered={} isBuffered={}", rc.getName(), rc.getBuffered(), rc.isBuffered());
-            if (!rc.isBuffered()) continue;
-            if (!rc.getName().equals(cbName)) continue;
-
-            CmsBrcb brcb = new CmsBrcb();
-
-            if (rc.getRptID() != null) brcb.rptID(rc.getRptID());
-            brcb.rptEna(false);
-            if (rc.getDatSet() != null) brcb.datSet(rc.getDatSet());
-            if (rc.getConfRev() != null) {
-                try { brcb.confRev(Long.parseLong(rc.getConfRev())); } catch (NumberFormatException ignored) {}
+        // Find the SCL report control
+        SclReportControl rc = null;
+        for (SclReportControl c : ln.getReportControls()) {
+            if (c.isBuffered() && c.getName().equals(cbName)) {
+                rc = c;
+                break;
             }
-            // optFlds: individual boolean sub-fields, leave at default (all false)
+        }
+        if (rc == null) return null;
+
+        // Build from SCL defaults
+        CmsBrcb brcb = new CmsBrcb();
+
+        if (rc.getRptID() != null) brcb.rptID(rc.getRptID());
+        if (rc.getDatSet() != null) brcb.datSet(rc.getDatSet());
+        if (rc.getConfRev() != null) {
+            try { brcb.confRev(Long.parseLong(rc.getConfRev())); } catch (NumberFormatException ignored) {}
+        }
+        if (rc.getBufTime() != null) {
+            try { brcb.bufTm(Long.parseLong(rc.getBufTime())); } catch (NumberFormatException ignored) {}
+        }
+        if (rc.getIntgPd() != null) {
+            try { brcb.intgPd(Long.parseLong(rc.getIntgPd())); } catch (NumberFormatException ignored) {}
+        }
+        brcb.rptEna(false);
+        brcb.sqNum(0);
+        brcb.gi(false);
+        brcb.purgeBuf(false);
+        brcb.entryID(new byte[0]);
+        brcb.resvTms_present(false);
+        brcb.owner_present(false);
+
+        // Overlay runtime state if present
+        CmsBrcb runtime = SclRcbStateManager.get(ref);
+        if (runtime != null) {
+            // rptID
+            if (runtime.rptID != null && runtime.rptID.len > 0) {
+                brcb.rptID(runtime.rptID.value());
+            }
+            // rptEna
+            brcb.rptEna(runtime.rptEna.value());
+            // datSet
+            if (runtime.datSet != null && runtime.datSet.len > 0) {
+                brcb.datSet(runtime.datSet.value());
+            }
+            // optFlds
+            if (runtime.optFlds != null) {
+                brcb.optFlds = runtime.optFlds;
+            }
             // bufTm
-            if (rc.getBufTime() != null) {
-                try { brcb.bufTm(Long.parseLong(rc.getBufTime())); } catch (NumberFormatException ignored) {}
+            if (runtime.bufTm != null) {
+                brcb.bufTm(runtime.bufTm.value());
             }
-            brcb.sqNum(0);
-            // trgOps: individual boolean sub-fields, leave at default (all false)
-            if (rc.getIntgPd() != null) {
-                try { brcb.intgPd(Long.parseLong(rc.getIntgPd())); } catch (NumberFormatException ignored) {}
+            // sqNum
+            if (runtime.sqNum != null) {
+                brcb.sqNum(runtime.sqNum.value());
             }
-            brcb.gi(false);
-            brcb.purgeBuf(false);
-            brcb.entryID(new byte[0]);
-            // timeOfEntry: default (epoch)
-            brcb.resvTms_present(false);
-            brcb.owner_present(false);
-
-            return brcb;
+            // trgOps
+            if (runtime.trgOps != null) {
+                brcb.trgOps = runtime.trgOps;
+            }
+            // intgPd
+            if (runtime.intgPd != null) {
+                brcb.intgPd(runtime.intgPd.value());
+            }
+            // gi
+            brcb.gi(runtime.gi.value());
+            // purgeBuf
+            brcb.purgeBuf(runtime.purgeBuf.value());
+            // entryID
+            if (runtime.entryID != null && runtime.entryID.len > 0) {
+                brcb.entryID(runtime.entryID.value());
+            }
+            // timeOfEntry
+            if (runtime.timeOfEntry != null) {
+                brcb.timeOfEntry = runtime.timeOfEntry;
+            }
+            // resvTms
+            if (runtime.resvTms_present != null && runtime.resvTms_present.value()) {
+                brcb.resvTms_present(true);
+                brcb.resvTms(runtime.resvTms.value());
+            }
+            // owner
+            if (runtime.owner_present != null && runtime.owner_present.value()) {
+                brcb.owner_present(true);
+                if (runtime.owner != null && runtime.owner.len > 0) {
+                    brcb.owner(runtime.owner.value());
+                }
+            }
         }
-        return null;
+
+        return brcb;
     }
 }

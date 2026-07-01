@@ -15,19 +15,23 @@ public class SetBrcbValuesClient extends BaseClientHandler {
     public SetBrcbValuesClient(CmsNode node) { super(node); }
 
     public void execute(SetBrcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_BRCB_VALUES, dao.toRequest(nextReqId()));
+        CmsSetBrcbValuesRequest req = dao.toRequest(nextReqId());
+        send(ServiceName.SET_BRCB_VALUES, req);
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetBrcbValuesError err = new CmsSetBrcbValuesError();
+        err.result.allocSize = 64;
         err.decode(frame.asduBytes());
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("SetBRCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {
-            if (sb.length() > 0) sb.append(", ");
-            sb.append("entry[").append(i).append("]=err_" + err.result.items.get(i).error.value());
+            if (err.result.items.get(i).errorPresent.value()) {
+                sb.append(" entry[").append(i).append("] error=")
+                  .append(err.result.items.get(i).error.value());
+            }
         }
-        throw new IOException("SetBRCBValues rejected: " + sb);
+        throw new IOException(sb.toString());
     }
 
     @Override

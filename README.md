@@ -872,6 +872,130 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
 
 ### 8.7
 
+```bash
+
+```
+
+```bash
+cms> # ======== 连接 ========
+cms> connect --ap P_B5041A/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms>
+```
+```bash
+cms> # ======== 1. URCB: 改 rptID ========
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=LD0/LLN0$RP$urcbAin rptEna=false datSet=dsAin confRev=1 bufTm=0 sqNum=0 intgPd=0
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --rpt-id "MyCustomRptID
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=MyCustomRptID rptEna=false datSet=dsAin confRev=1 bufTm=5000 sqNum=0 intgPd=30000
+cms>
+```
+```bash
+cms> # ======== 2. URCB: 改 bufTm 和 intgPd ========
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --buf-tm 5000 --intg-pd 30000
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=MyCustomRptID rptEna=false datSet=dsAin confRev=1 bufTm=5000 sqNum=0 intgPd=30000
+cms>
+```
+```bash
+cms> # ======== 3. URCB: 启用报告 ========
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --rpt-ena true
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=MyCustomRptID rptEna=true datSet=dsAin confRev=1 bufTm=5000 sqNum=0 intgPd=30000
+cms>
+```
+```bash
+cms> # ======== 4. URCB: 触发总召唤 ========
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --gi true
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=MyCustomRptID rptEna=true datSet=dsAin confRev=1 bufTm=5000 sqNum=0 intgPd=30000
+cms>
+```
+```bash
+cms> # ======== 5. BRCB: get start ========
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=0 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 6. BRCB: 改 datSet 和 bufTm ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --dat-set "dsDeviceState" --buf-tm 2000
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 7. BRCB: 清空缓存 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --purge-buf true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 8. BRCB: 总召唤 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --gi true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 9. BRCB: 关闭报告 + 保留时间 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --rpt-ena false --resv-tms 30
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 10. BRCB: 再启用报告（看 rptEna 顺序规则） ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --intg-pd 60000 --rpt-ena true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=true datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=60000
+```
+
 ### 8.15 协商
 
 ```bash

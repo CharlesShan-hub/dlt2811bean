@@ -5,7 +5,6 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesResponse;
-import com.ysh.jcms.svc.report.CmsSetUrcbEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -16,17 +15,23 @@ public class SetUrcbValuesClient extends BaseClientHandler {
     public SetUrcbValuesClient(CmsNode node) { super(node); }
 
     public void execute(SetUrcbValuesDao dao) throws Exception {
-        CmsSetUrcbValuesRequest req = new CmsSetUrcbValuesRequest().reqId(nextReqId());
-        req.urcb.add(new CmsSetUrcbEntry()
-            .reference(dao.ref() != null ? dao.ref() : ""));
+        CmsSetUrcbValuesRequest req = dao.toRequest(nextReqId());
         send(ServiceName.SET_URCB_VALUES, req);
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetUrcbValuesError err = new CmsSetUrcbValuesError();
+        err.result.allocSize = 64;
         err.decode(frame.asduBytes());
-        throw new IOException("SetURCBValues rejected");
+        StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
+        for (int i = 0; i < err.result.count; i++) {
+            if (err.result.items.get(i).errorPresent.value()) {
+                sb.append(" entry[").append(i).append("] error=")
+                  .append(err.result.items.get(i).error.value());
+            }
+        }
+        throw new IOException(sb.toString());
     }
 
     @Override
