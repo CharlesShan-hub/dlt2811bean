@@ -39,6 +39,7 @@ import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesClient;
 import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesConsole;
 import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesClient;
 import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesConsole;
+import com.ysh.jcms.app.handler.report.report.ReportClient;
 import com.ysh.jcms.app.console.api.CliApiServer;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
@@ -134,6 +135,15 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SetBrcbValuesClient(this));
         registerClient(new GetUrcbValuesClient(this));
         registerClient(new SetUrcbValuesClient(this));
+        registerClient(new ReportClient(this));
+
+        // Set up push handler for incoming REPORT frames from server
+        getClient().setReportHandler(frame -> {
+            ReportClient rc = getClient(ReportClient.class);
+            if (rc != null) {
+                rc.handleReport(frame);
+            }
+        });
     }
 
     @Override

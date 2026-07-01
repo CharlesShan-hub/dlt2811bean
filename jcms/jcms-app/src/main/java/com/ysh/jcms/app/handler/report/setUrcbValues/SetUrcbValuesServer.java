@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsServiceError;
@@ -66,7 +67,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             CmsSetUrcbEntry entry = req.urcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetUrcbResult result = processEntry(server, entry, ref);
+            CmsSetUrcbResult result = processEntry(server, entry, ref, session);
             results.add(result);
 
             if (hasEntryError(result)) {
@@ -111,7 +112,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetUrcbResult processEntry(SclServer server, CmsSetUrcbEntry entry, String ref) {
+    private CmsSetUrcbResult processEntry(SclServer server, CmsSetUrcbEntry entry, String ref, Session session) {
         CmsSetUrcbResult result = new CmsSetUrcbResult();
 
         int slashIdx = ref.indexOf('/');
@@ -167,6 +168,28 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         }
 
         log.info("SetURCBValues: applied fields to ref={}", ref);
+
+        // 8.7.1 — ReportEngine hooks
+        if (!hasEntryError(result)) {
+            ReportEngine engine = ReportEngine.getInstance();
+            if (engine != null) {
+                if (hasRptEna) {
+                    if (rptEnaVal) {
+                        engine.subscribe(ref, session);
+                        if (entry.intgPdPresent.value() && entry.intgPd.value() > 0) {
+                            engine.startIntegrityTimer(ref, entry.intgPd.value());
+                        }
+                    } else {
+                        engine.unsubscribe(ref, session);
+                        engine.stopIntegrityTimer(ref);
+                    }
+                }
+                if (entry.giPresent.value() && entry.gi.value()) {
+                    engine.triggerGi(ref);
+                }
+            }
+        }
+
         return result;
     }
 

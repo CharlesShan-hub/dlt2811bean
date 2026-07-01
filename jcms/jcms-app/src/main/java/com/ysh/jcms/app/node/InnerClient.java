@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.IOException;
+import java.util.function.Consumer;
 
 /**
  * InnerClient — pure sender.
@@ -31,7 +32,12 @@ public class InnerClient implements ConnectionListener {
     private volatile String host;
     private volatile int port;
 
+    private volatile Consumer<Frame> reportHandler;
+
     public InnerClient() {}
+
+    /** Register a handler for incoming REPORT (unsolicited push) frames. */
+    public void setReportHandler(Consumer<Frame> handler) { this.reportHandler = handler; }
 
     public void connect(String host, int port) throws IOException {
         this.host = host;
@@ -112,6 +118,12 @@ public class InnerClient implements ConnectionListener {
             } catch (IOException e) {
                 log.warn("Failed to respond to server TEST probe", e);
             }
+            return;
+        }
+
+        // Handle server-pushed REPORT (unsolicited)
+        if (frame.header().serviceCode() == ServiceName.REPORT && reportHandler != null) {
+            reportHandler.accept(frame);
         }
     }
 

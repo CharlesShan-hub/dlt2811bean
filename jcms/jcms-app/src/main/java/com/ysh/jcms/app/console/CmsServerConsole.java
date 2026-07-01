@@ -19,6 +19,7 @@ import com.ysh.jcms.app.handler.report.getBrcbValues.GetBrcbValuesServer;
 import com.ysh.jcms.app.handler.report.setBrcbValues.SetBrcbValuesServer;
 import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesServer;
 import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesServer;
+import com.ysh.jcms.app.handler.report.report.ReportServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
@@ -78,6 +79,7 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new SetBrcbValuesServer());
         registerServer(new GetUrcbValuesServer());
         registerServer(new SetUrcbValuesServer());
+        registerServer(new ReportServer());
         register(new ClearHandler());
         register(new ListHandler());
         register(new TracePduHandler());

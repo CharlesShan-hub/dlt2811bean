@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.report.CmsSetBrcbValuesError;
@@ -66,7 +67,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
             CmsSetBrcbEntry entry = req.brcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetBrcbResult result = processEntry(server, entry, ref);
+            CmsSetBrcbResult result = processEntry(server, entry, ref, session);
             results.add(result);
 
             // 8.7.3.2.e) Per-entry: result is empty when all fields succeed,
@@ -116,7 +117,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetBrcbResult processEntry(SclServer server, CmsSetBrcbEntry entry, String ref) {
+    private CmsSetBrcbResult processEntry(SclServer server, CmsSetBrcbEntry entry, String ref, Session session) {
         CmsSetBrcbResult result = new CmsSetBrcbResult();
 
         // Validate ref format
@@ -182,6 +183,29 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         }
 
         log.info("SetBRCBValues: applied fields to ref={}", ref);
+
+        // 8.7.1 — ReportEngine hooks
+        if (!hasEntryError(result)) {
+            ReportEngine engine = ReportEngine.getInstance();
+            if (engine != null) {
+                if (hasRptEna) {
+                    if (rptEnaVal) {
+                        engine.subscribe(ref, session);
+                        // Start integrity timer if intgPd was set
+                        if (entry.intgPdPresent.value() && entry.intgPd.value() > 0) {
+                            engine.startIntegrityTimer(ref, entry.intgPd.value());
+                        }
+                    } else {
+                        engine.unsubscribe(ref, session);
+                        engine.stopIntegrityTimer(ref);
+                    }
+                }
+                if (entry.giPresent.value() && entry.gi.value()) {
+                    engine.triggerGi(ref);
+                }
+            }
+        }
+
         return result;
     }
 

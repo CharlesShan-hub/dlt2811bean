@@ -7,6 +7,9 @@ import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
+import com.ysh.jcms.app.handler.report.report.ReportEngine;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +107,23 @@ public class CmsNode {
                 sclManager.load(sclFile);
                 if (sclManager.isLoaded()) {
                     server.setSclDocument(sclManager.getDocument());
+                    // Initialize ReportEngine with the loaded SCL server
+                    // Find the first IED with an access point that has a server
+                    java.util.List<SclIED> iedsList = sclManager.getDocument().getIeds();
+                    boolean engineStarted = false;
+                    for (SclIED ied : iedsList) {
+                        for (SclAccessPoint ap : ied.getAccessPoints()) {
+                            if (ap.getServer() != null) {
+                                new ReportEngine(ap.getServer(), sclManager.getDocument().getDataTypeTemplates());
+                                engineStarted = true;
+                                break;
+                            }
+                        }
+                        if (engineStarted) break;
+                    }
+                    if (!engineStarted) {
+                        log.warn("No SCL server found in any IED - ReportEngine not initialized");
+                    }
                 }
             }
             server.start();
