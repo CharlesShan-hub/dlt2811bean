@@ -31,6 +31,14 @@ import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueClient;
 import com.ysh.jcms.app.handler.sg.setEditSgValue.SetEditSgValueConsole;
 import com.ysh.jcms.app.handler.sg.confirmEditSgValues.ConfirmEditSgValuesClient;
 import com.ysh.jcms.app.handler.sg.confirmEditSgValues.ConfirmEditSgValuesConsole;
+import com.ysh.jcms.app.handler.report.getBrcbValues.GetBrcbValuesClient;
+import com.ysh.jcms.app.handler.report.getBrcbValues.GetBrcbValuesConsole;
+import com.ysh.jcms.app.handler.report.setBrcbValues.SetBrcbValuesClient;
+import com.ysh.jcms.app.handler.report.setBrcbValues.SetBrcbValuesConsole;
+import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesClient;
+import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesConsole;
+import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesClient;
+import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesConsole;
 import com.ysh.jcms.app.console.api.CliApiServer;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
@@ -122,6 +130,10 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetEditSgValueClient(this));
         registerClient(new SetEditSgValueClient(this));
         registerClient(new ConfirmEditSgValuesClient(this));
+        registerClient(new GetBrcbValuesClient(this));
+        registerClient(new SetBrcbValuesClient(this));
+        registerClient(new GetUrcbValuesClient(this));
+        registerClient(new SetUrcbValuesClient(this));
     }
 
     @Override
@@ -149,6 +161,10 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetEditSgValueConsole());
         register(new SetEditSgValueConsole());
         register(new ConfirmEditSgValuesConsole());
+        register(new GetBrcbValuesConsole());
+        register(new SetBrcbValuesConsole());
+        register(new GetUrcbValuesConsole());
+        register(new SetUrcbValuesConsole());
         register(new SetDataValuesConsole());
         register(new TracePduHandler());
         register(new ClearHandler());

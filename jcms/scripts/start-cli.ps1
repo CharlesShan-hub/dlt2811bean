@@ -28,6 +28,13 @@ if ($help) {
 # 切换到 UTF-8 代码页
 & chcp 65001 | Out-Null
 
+# 清理旧 CLI 进程（不杀服务端）
+$oldPids = wmic process where "name='java.exe' and commandline like '%CmsClientConsole%'" get processid 2>$null | Select-Object -Skip 1
+foreach ($procId in $oldPids) {
+    $procId = $procId.Trim()
+    if ($procId -ne '') { taskkill /f /pid $procId 2>$null }
+}
+
 $autoExec = ""
 if ($connect) {
     $autoExec = "connect --ap $connect;"

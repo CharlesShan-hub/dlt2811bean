@@ -569,6 +569,8 @@ public class SclReader {
         rc.setBufTime(getAttr(reader, "bufTime"));
         rc.setIntgPd(getAttr(reader, "intgPd"));
         rc.setRptEnabled(getAttr(reader, "rptEnabled"));
+        rc.setOptFields(getAttr(reader, "optFields"));
+        rc.setTrgOps(getAttr(reader, "trgOps"));
         skipElement(reader);
         return rc;
     }
