@@ -12,8 +12,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.nio.charset.StandardCharsets;
-
 public class NegotiateServer extends BaseServerHandler {
 
     public NegotiateServer() {
@@ -26,35 +24,25 @@ public class NegotiateServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
 
-        long clientProtocolVersion = req.protocolVersion.value();
-        if (clientProtocolVersion > config.getProtocolVersion()) {
-            log.warn("Negotiate rejected: client protocolVersion={} > server protocolVersion={}",
-                clientProtocolVersion, config.getProtocolVersion());
+        if (req.protocolVersion.value() > config.getProtocolVersion())
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
 
         int negotiatedApduSize = Math.min(req.apduSize.value(), config.getApduSize());
-
         session.setNegotiatedApduSize(negotiatedApduSize);
         session.setPeerAsduSize((int) req.asduSize.value());
-        session.setPeerProtocolVersion((int) clientProtocolVersion);
+        session.setPeerProtocolVersion((int) req.protocolVersion.value());
         session.setNegotiated(true);
-
         session.getConnection().setMaxFrameSize(negotiatedApduSize);
-
-        byte[] modelBytes = config.getModelVersion().getBytes(StandardCharsets.UTF_8);
-
-        byte[] respBytes = new CmsNegotiateResponse()
-            .reqId(reqId)
-            .apduSize(negotiatedApduSize)
-            .asduSize(config.getAsduSize())
-            .protocolVersion(config.getProtocolVersion())
-            .modelVersion(modelBytes)
-            .encode();
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}",
             negotiatedApduSize, config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
 
-        return buildSuccess(respBytes, reqId);
+        return buildSuccess(new CmsNegotiateResponse()
+            .reqId(reqId)
+            .apduSize(negotiatedApduSize)
+            .asduSize(config.getAsduSize())
+            .protocolVersion(config.getProtocolVersion())
+            .modelVersion(config.getModelVersion().getBytes(java.nio.charset.StandardCharsets.UTF_8))
+            .encode(), reqId);
     }
 }

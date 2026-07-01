@@ -61,8 +61,7 @@ public class AllDataDefServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsGetAllDataDefinitionRequest req = (CmsGetAllDataDefinitionRequest) rawReq;
         int reqId = req.reqId.value();
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -75,11 +74,9 @@ public class AllDataDefServer extends BaseServerHandler {
         String ldName = null;
         String lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = req.reference.altLdName.len > 0
-                ? new String(req.reference.altLdName.value(), StandardCharsets.UTF_8) : null;
+            ldName = str(req.reference.altLdName);
         } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
-            lnReference = req.reference.altLnReference.len > 0
-                ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8) : null;
+            lnReference = str(req.reference.altLnReference);
         }
 
         List<SclLN> lns = server.resolveLns(ldName, lnReference);
@@ -157,13 +154,7 @@ public class AllDataDefServer extends BaseServerHandler {
         resp.moreFollows(entries.size() >= pageSize());
 
         log.info("GetAllDataDefinition: returning {} entries", entries.size());
-
-        try {
-            return buildSuccess(resp.encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode GetAllDataDefinitionResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        return ok(resp, reqId);
     }
 
     private CmsDataDefinition buildDoDefinition(SclDataTypeTemplates templates, SclDO doDef, SclLN ln) {

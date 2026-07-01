@@ -15,8 +15,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-
 public class SelectEditSgServer extends BaseServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(SelectEditSgServer.class);
@@ -29,17 +27,12 @@ public class SelectEditSgServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsSelectEditSgRequest req = (CmsSelectEditSgRequest) rawReq;
         int reqId = req.reqId.value();
-
-        String ref = req.sgcbReference.len > 0
-            ? new String(req.sgcbReference.value(), StandardCharsets.UTF_8) : null;
+        String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
 
-        log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}",
-            session.getSessionId(), reqId, ref, sgNum);
+        log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.getSessionId(), reqId, ref, sgNum);
 
-        if (ref == null || ref.isEmpty()) {
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
+        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         int numOfSG = CmsConfigLoader.load().getProtocol().getSetting().getNumOfSG();
         if (sgNum < 1 || sgNum > numOfSG) {
@@ -47,18 +40,8 @@ public class SelectEditSgServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        SgcState state = SgSessionState.getState(session.getSessionId());
-        state.setEditSG(sgNum);
-
+        SgSessionState.getState(session.getSessionId()).setEditSG(sgNum);
         log.info("SelectEditSG: set editSG={} for session={}", sgNum, session.getSessionId());
-
-        try {
-            CmsSelectEditSgResponse resp = new CmsSelectEditSgResponse()
-                .reqId(reqId);
-            return buildSuccess(resp.encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode SelectEditSGResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        return ok(new CmsSelectEditSgResponse().reqId(reqId), reqId);
     }
 }

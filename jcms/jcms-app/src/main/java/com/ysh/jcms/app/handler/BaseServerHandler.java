@@ -8,6 +8,7 @@ import com.ysh.jcms.utils.scl.model.document.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -163,6 +164,38 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
 
     protected static Frame noResponse() {
         return null;
+    }
+
+    /**
+     * Convenience: encode a response PDU and wrap in a success frame.
+     * Auto-catches encoding exceptions and returns an error frame instead.
+     */
+    protected Frame ok(CmsType resp, int reqId) {
+        try {
+            return buildSuccess(resp.encode(), reqId);
+        } catch (Exception e) {
+            log.error("Failed to encode {} response", resp.getClass().getSimpleName(), e);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+        }
+    }
+
+    // ──────────────────────────────────────────────
+    //  String extraction helpers (delegate to RefUtil)
+    // ──────────────────────────────────────────────
+
+    /** Extract a non-empty String from a PER-decoded byte array. */
+    protected static String str(byte[] arr) {
+        return RefUtil.str(arr);
+    }
+
+    /** Extract a String from a PER-decoded CmsUint8Array. */
+    protected static String str(com.ysh.jcms.data.string.CmsUint8Array arr) {
+        return RefUtil.str(arr);
+    }
+
+    /** Extract an optional String field controlled by a Present marker. */
+    protected static String opt(com.ysh.jcms.data.scalar.CmsBoolean present, com.ysh.jcms.data.string.CmsUint8Array arr) {
+        return RefUtil.opt(present, arr);
     }
 
     // ──────────────────────────────────────────────

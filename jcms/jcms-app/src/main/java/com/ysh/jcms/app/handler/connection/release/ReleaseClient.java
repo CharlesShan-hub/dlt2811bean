@@ -48,7 +48,7 @@ public class ReleaseClient extends BaseClientHandler {
             throw new IOException("Release rejected: error=" + serviceError);
         }
 
-        node.getClient().getSession().clearAssociationId();
+        node.getClient().getSession().clear();
         node.getClient().getSession().setState(SessionState.CONNECTED);
         log.info("Release completed");
     }

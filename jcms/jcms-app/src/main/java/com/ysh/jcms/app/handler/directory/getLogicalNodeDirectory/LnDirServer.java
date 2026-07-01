@@ -38,8 +38,7 @@ public class LnDirServer extends BaseServerHandler {
         CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}",
             session.getSessionId(), reqId, acsiClass);
@@ -54,11 +53,9 @@ public class LnDirServer extends BaseServerHandler {
         String ldName = null;
         String lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = req.reference.altLdName.len > 0
-                ? new String(req.reference.altLdName.value(), StandardCharsets.UTF_8) : null;
+            ldName = str(req.reference.altLdName);
         } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
-            lnReference = req.reference.altLnReference.len > 0
-                ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8) : null;
+            lnReference = str(req.reference.altLnReference);
         }
 
         List<SclLN> lns = server.resolveLns(ldName, lnReference);
@@ -86,15 +83,7 @@ public class LnDirServer extends BaseServerHandler {
         resp.moreFollows(more);
 
         log.info("TIMING: built response array ({} items) in {}ms", limit, System.currentTimeMillis() - t0);
-
-        try {
-            byte[] encoded = resp.encode();
-            log.info("TIMING: encode finished in {}ms ({} bytes)", System.currentTimeMillis() - t0, encoded.length);
-            return buildSuccess(encoded, reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode GetLogicalNodeDirectoryResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        return ok(resp, reqId);
     }
 
     private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass,

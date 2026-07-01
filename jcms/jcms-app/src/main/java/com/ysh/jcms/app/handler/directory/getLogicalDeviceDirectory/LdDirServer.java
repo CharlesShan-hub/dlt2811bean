@@ -13,7 +13,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class LdDirServer extends BaseServerHandler {
@@ -26,54 +25,26 @@ public class LdDirServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsGetLogicalDeviceDirectoryRequest req = (CmsGetLogicalDeviceDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
-        String ldName = req.ldNamePresent.value() && req.ldName.len > 0
-            ? new String(req.ldName.value(), StandardCharsets.UTF_8) : null;
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
-
-        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}, refAfter={}",
-            session.getSessionId(), reqId, ldName, refAfter);
+        String ldName = opt(req.ldNamePresent, req.ldName);
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}", session.getSessionId(), reqId, ldName);
 
         SclServer server = getSclServer(session);
-        if (server == null) {
-            return buildDirError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         List<String> lnNames;
         if (ldName != null) {
             SclLDevice device = server.findLDeviceByInst(ldName);
-            if (device == null) {
-                return buildDirError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
+            if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             lnNames = device.getLnNames(refAfter);
         } else {
             lnNames = server.getAllLnNames(refAfter);
         }
+        if (lnNames == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        if (lnNames == null) {
-            return buildDirError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-
-        CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse()
-            .reqId(reqId);
-
-        for (String name : lnNames) {
-            resp.lnReference.add(new CmsSubReference(name));
-        }
+        CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse().reqId(reqId);
+        for (String name : lnNames) resp.lnReference.add(new CmsSubReference(name));
         resp.moreFollows(false);
-
-        try {
-            return buildSuccess(resp.encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode GetLogicalDeviceDirectoryResponse", e);
-            return buildDirError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
-    }
-
-    private Frame buildDirError(int reqId, int errorCode) {
-        return buildError(new CmsGetLogicalDeviceDirectoryError()
-            .reqId(reqId)
-            .serviceError(errorCode)
-            .encode(), reqId);
+        return ok(resp, reqId);
     }
 }

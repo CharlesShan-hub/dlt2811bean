@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.node;
 
+import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.document.SclDocument;
@@ -255,5 +256,11 @@ public class InnerServer implements ConnectionListener {
         public void setSclAccessPoint(SclAccessPoint sclAccessPoint) { this.sclAccessPoint = sclAccessPoint; }
         public SclDataTypeTemplates getSclDataTypeTemplates() { return sclDataTypeTemplates; }
         public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) { this.sclDataTypeTemplates = sclDataTypeTemplates; }
+
+        @Override
+        public void clear() {
+            SgSessionState.clear(getSessionId());
+            super.clear();
+        }
     }
 }

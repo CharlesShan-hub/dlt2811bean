@@ -1,20 +1,11 @@
 package com.ysh.jcms.app.handler.report.report;
 
-import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.data.scalar.CmsInt32U;
-import com.ysh.jcms.data.scalar.CmsInt8;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.svc.report.CmsReport;
 import com.ysh.jcms.svc.report.CmsReportDataEntry;
-import com.ysh.jcms.svc.report.CmsReportEntry;
-import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
@@ -28,8 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.app.node.InnerServer.ServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -170,7 +159,7 @@ public class ReportEngine {
         SclReportControl rc = rcb.getSclReportControl();
         if (rc == null || rc.getDatSet() == null) return null;
 
-        SclDataSet dataSet = resolveDataSet(rc);
+        SclDataSet dataSet = resolveDataSet(rc, rcb.getRef());
         if (dataSet == null) {
             log.warn("DataSet {} not found for ref={}", rc.getDatSet(), rcb.getRef());
             return null;
@@ -278,6 +267,13 @@ public class ReportEngine {
     /** Convert a string value to CmsData. */
     private CmsData stringToData(String val) {
         CmsData data = new CmsData();
+        // Boolean
+        if ("true".equalsIgnoreCase(val) || "false".equalsIgnoreCase(val)
+                || "0".equals(val) || "1".equals(val)) {
+            data.choice(CmsData.CHOICE_BOOLEAN);
+            data.alt_boolean.value("true".equalsIgnoreCase(val) || "1".equals(val));
+            return data;
+        }
         try {
             long intVal = Long.parseLong(val);
             if (intVal >= Byte.MIN_VALUE && intVal <= Byte.MAX_VALUE) {
@@ -316,16 +312,17 @@ public class ReportEngine {
         return null;
     }
 
-    /** Resolve DataSet by name from the report control. */
-    private SclDataSet resolveDataSet(SclReportControl rc) {
+    /** Resolve DataSet by name from the report control, scoped to the correct LN. */
+    private SclDataSet resolveDataSet(SclReportControl rc, String rcbRef) {
         if (rc == null || rc.getDatSet() == null) return null;
-        for (SclLDevice ld : sclServer.getLDevices()) {
-            for (SclLN ln : ld.getLns()) {
-                SclDataSet ds = ln.findDataSetByName(rc.getDatSet());
-                if (ds != null) return ds;
-            }
-        }
-        return null;
+        // Parse the RCB ref to find the owning LN: e.g. "LD0/LLN0.brcbAlarm"
+        int slashIdx = rcbRef.indexOf('/');
+        int dotIdx = rcbRef.indexOf('.');
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
+        String lnRef = rcbRef.substring(0, dotIdx);  // "LD0/LLN0"
+        SclLN ln = sclServer.findLnByRef(lnRef);
+        if (ln == null) return null;
+        return ln.findDataSetByName(rc.getDatSet());
     }
 
     // ── ReportControlBlock inner class ──

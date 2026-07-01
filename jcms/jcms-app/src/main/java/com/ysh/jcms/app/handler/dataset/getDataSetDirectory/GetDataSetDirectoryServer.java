@@ -3,24 +3,21 @@ package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.info.FunctionalConstraint;
+import com.ysh.jcms.data.fc.CmsFC;
 import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
 
 public class GetDataSetDirectoryServer extends BaseServerHandler {
 
@@ -34,87 +31,38 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsGetDataSetDirectoryRequest req = (CmsGetDataSetDirectoryRequest) rawReq;
         int reqId = req.reqId.value();
-
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         SclServer server = getSclServer(session);
-        if (server == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String ref = req.datasetReference.len > 0
-            ? new String(req.datasetReference.value(), StandardCharsets.UTF_8) : null;
-        if (ref == null || ref.isEmpty()) {
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
+        String ref = str(req.datasetReference);
+        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
+        if (r == null || r.ref.doName == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        int slashIdx = ref.indexOf('/');
-        if (slashIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String ldName = ref.substring(0, slashIdx);
-        String rest = ref.substring(slashIdx + 1);
-        int dotIdx = rest.indexOf('.');
-        if (dotIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String lnName = rest.substring(0, dotIdx);
-        String dsName = rest.substring(dotIdx + 1);
+        SclDataSet dataSet = r.ln.findDataSetByName(r.ref.doName);
+        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLDevice device = server.findLDeviceByInst(ldName);
-        if (device == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        SclDataSet dataSet = ln.findDataSetByName(dsName);
-        if (dataSet == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
 
-        CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse()
-            .reqId(reqId);
+        CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse().reqId(reqId);
         resp.memberData.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
-        int pageSize = pageSize();
-        int count = 0;
+        int ps = pageSize(), count = 0;
 
-        boolean skipUntilAfter = (refAfter != null && !refAfter.isEmpty());
         for (SclFCDA fcda : dataSet.getFcDas()) {
-            if (skipUntilAfter) {
-                String fcdaRef = fcda.buildFcdaRef();
-                if (fcdaRef.equals(refAfter)) {
-                    skipUntilAfter = false;
-                }
+            if (refAfter != null) {
+                if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
                 continue;
             }
-
-            String fcdaRef = fcda.buildFcdaRef();
-            int fcVal = 0;
-            if (fcda.getFc() != null && !fcda.getFc().isEmpty()) {
-                fcVal = com.ysh.jcms.data.fc.CmsFC.fromCode(fcda.getFc());
-            }
-
             resp.memberData.add(new CmsDataRefFcEntry()
-                .reference(fcdaRef)
-                .fc(fcVal));
-            count++;
-            if (count >= pageSize) break;
+                .reference(fcda.buildFcdaRef())
+                .fc(fcda.getFc() != null ? CmsFC.fromCode(fcda.getFc()) : 0));
+            if (++count >= ps) break;
         }
-
-        resp.moreFollows(count >= pageSize);
-
+        resp.moreFollows(count >= ps);
         log.info("GetDataSetDirectory: '{}' -> {} members", ref, count);
-
-        try {
-            return buildSuccess(resp.encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode GetDataSetDirectoryResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        return ok(resp, reqId);
     }
 }

@@ -18,8 +18,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-
 public class GetUrcbValuesServer extends BaseServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GetUrcbValuesServer.class);
@@ -38,44 +36,30 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) rawReq;
         int reqId = req.reqId.value();
-
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
         SclServer server = getSclServer(session);
-        if (server == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
         resp.urcb.allocSize = pageSize();
 
         for (int i = 0; i < req.reference.count; i++) {
-            String ref = new String(req.reference.items.get(i).value(), StandardCharsets.UTF_8);
-            log.debug("GetURCBValues: resolving ref={}", ref);
-
+            String ref = str(req.reference.items.get(i));
             CmsRcbValueChoice choice = new CmsRcbValueChoice();
             CmsBrcb urcb = resolveUrcb(server, ref);
             if (urcb != null) {
                 choice.choice(CmsRcbValueChoice.VALUE);
                 choice.altValue = urcb;
             } else {
-                log.warn("GetURCBValues: cannot resolve ref={}", ref);
                 choice.choice(CmsRcbValueChoice.ERROR);
                 choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             resp.urcb.add(choice);
         }
-
         resp.moreFollows(false);
-
         log.info("GetURCBValues: returning {} entries", resp.urcb.items.size());
-
-        try {
-            return buildSuccess(resp.encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode GetURCBValuesResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        return ok(resp, reqId);
     }
 
     static CmsBrcb resolveUrcb(SclServer server, String ref) {

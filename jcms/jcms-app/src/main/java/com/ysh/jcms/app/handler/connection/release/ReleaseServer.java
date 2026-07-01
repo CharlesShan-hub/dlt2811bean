@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsReleaseError;
@@ -36,8 +35,7 @@ public class ReleaseServer extends BaseServerHandler {
             .serviceError(CmsServiceError.NO_ERROR)
             .encode();
 
-        session.clearAssociationId();
-        SgSessionState.clear(session.getSessionId());
+        session.clear();
         session.setState(SessionState.CONNECTED);
         log.info("Release completed: session={}", session.getSessionId());
 

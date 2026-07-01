@@ -102,6 +102,11 @@ public abstract class CmsType {
     /**
      * PER decode: decodes from a byte array into the current structure.
      * Uses {@link #codec} if set, otherwise throws.
+     *
+     * <p>Calling {@link #write()} first ensures any CmsArray has its native
+     * {@code elements} pointer array allocated, which the C decoder needs
+     * as valid write targets. Without this, decoders that iterate
+     * {@code elements[i]} will see NULL pointers and return CMS_ERR.
      */
     public void decode(byte[] data) {
         if (codec == null)

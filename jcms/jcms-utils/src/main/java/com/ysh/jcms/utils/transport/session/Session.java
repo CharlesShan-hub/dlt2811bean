@@ -1,5 +1,6 @@
 package com.ysh.jcms.utils.transport.session;
 
+import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
 import com.ysh.jcms.utils.transport.wire.Connection;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,12 @@ public abstract class Session {
     private volatile int peerAsduSize;
     private volatile int peerProtocolVersion;
 
+    /** Full cleanup: associationId and RCB runtime state. Subclasses may override to add more. */
+    public void clear() {
+        this.associationId = null;
+        SclRcbStateManager.clear();
+    }
+
     protected Session(String sessionId, Connection connection) {
         this.sessionId = sessionId;
         this.connection = connection;
@@ -28,6 +35,4 @@ public abstract class Session {
     public boolean isConnected() { return connection != null && connection.isConnected(); }
 
     public boolean isAssociated() { return state == SessionState.ASSOCIATED && associationId != null; }
-
-    public void clearAssociationId() { this.associationId = null; }
 }

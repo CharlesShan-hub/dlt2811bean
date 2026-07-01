@@ -21,7 +21,7 @@ public class CmsSetDataValuesError extends CmsType {
 
     public CmsSetDataValuesError() { super(Codec.SET_DATA_VALUES_ERROR);
         this.reqId  = new CmsReqId();
-        this.result = new CmsArray<>();
+        this.result = new CmsArray<>(CmsServiceError.class);
     }
     
     public CmsSetDataValuesError reqId(int v) { this.reqId.value(v); return this; }

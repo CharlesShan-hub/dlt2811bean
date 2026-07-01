@@ -3,22 +3,22 @@ package com.ysh.jcms.app.handler.dataset.createDataSet;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetResponse;
 import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
 
 public class CreateDataSetServer extends BaseServerHandler {
 
@@ -32,104 +32,56 @@ public class CreateDataSetServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
         int reqId = req.reqId.value();
-
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.count);
 
         SclServer server = getSclServer(session);
-        if (server == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String ref = req.datasetReference.len > 0
-            ? new String(req.datasetReference.value(), StandardCharsets.UTF_8) : null;
-        if (ref == null || ref.isEmpty()) {
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
+        String ref = str(req.datasetReference);
+        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        int slashIdx = ref.indexOf('/');
-        if (slashIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String ldName = ref.substring(0, slashIdx);
-        String rest = ref.substring(slashIdx + 1);
-        int dotIdx = rest.indexOf('.');
-        if (dotIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String lnName = rest.substring(0, dotIdx);
-        String dsName = rest.substring(dotIdx + 1);
+        RefUtil.RefParts p = RefUtil.parse(ref);
+        if (p == null || p.doName == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        String dsName = p.doName;
 
-        SclLDevice device = server.findLDeviceByInst(ldName);
-        if (device == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
+        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclLN ln = r.ln;
 
-        // Check if refAfter present — if so, extend existing dataset
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        boolean isPersistent = CmsConfigLoader.load().getProtocol().getDataset().isSetDataSetPersistent();
 
         SclDataSet dataSet;
-        if (refAfter != null && !refAfter.isEmpty()) {
-            // Extend existing dataset: find it first
+        if (refAfter != null) {
             dataSet = ln.findDataSetByName(dsName);
-            if (dataSet == null) {
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
+            if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         } else {
-            // Create new dataset
-            boolean persistent = com.ysh.jcms.utils.config.CmsConfigLoader.load()
-                .getProtocol().getDataset().isSetDataSetPersistent();
             dataSet = new SclDataSet();
             dataSet.setName(dsName);
-            dataSet.setDynamic(!persistent);
+            dataSet.setDynamic(!isPersistent);
             ln.addDataSet(dataSet);
         }
 
-        int addedCount = 0;
-        int failCount = 0;
+        int added = 0, failed = 0;
         for (int i = 0; i < req.memberData.count; i++) {
             CmsDataRefFcEntry src = req.memberData.items.get(i);
-            String memberRef = src.reference.len > 0
-                ? new String(src.reference.value(), StandardCharsets.UTF_8) : null;
-            if (memberRef == null || memberRef.isEmpty()) {
-                failCount++;
-                continue;
-            }
+            String memberRef = str(src.reference);
+            if (memberRef == null) { failed++; continue; }
 
             SclFCDA fcda = server.parseRefToFcda(memberRef);
-            if (fcda == null) {
-                log.warn("CreateDataSet: cannot resolve member ref={}", memberRef);
-                failCount++;
-                continue;
-            }
+            if (fcda == null) { log.warn("CreateDataSet: cannot resolve {}", memberRef); failed++; continue; }
+
             int fcVal = src.fc.value();
-            String fcCode = null;
-            if (fcVal >= 0 && fcVal < com.ysh.jcms.info.FunctionalConstraint.values().length) {
-                fcCode = com.ysh.jcms.info.FunctionalConstraint.values()[fcVal].name();
-            }
-            if (fcCode != null && !"XX".equals(fcCode)) {
-                fcda.setFc(fcCode);
+            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
+                String fcCode = FunctionalConstraint.values()[fcVal].name();
+                if (!"XX".equals(fcCode)) fcda.setFc(fcCode);
             }
             dataSet.addFcda(fcda);
-            addedCount++;
+            added++;
         }
+        if (added == 0) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        if (addedCount == 0) {
-            log.warn("CreateDataSet: no valid members for ref={}", ref);
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
-
-        log.info("CreateDataSet: '{}' -> {} members ({} failed, dynamic={})", ref, dataSet.getFcDas().size(), failCount, dataSet.isDynamic());
-
-        try {
-            return buildSuccess(new CmsCreateDataSetResponse().reqId(reqId).encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode CreateDataSetResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+        log.info("CreateDataSet: '{}' -> {} members ({} failed, dynamic={})", ref, dataSet.getFcDas().size(), failed, dataSet.isDynamic());
+        return ok(new CmsCreateDataSetResponse().reqId(reqId), reqId);
     }
 }

@@ -43,6 +43,7 @@ public class SetDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetDataValuesError err = new CmsSetDataValuesError();
+        err.result.allocSize = 256;
         err.decode(frame.asduBytes());
         int errorCount = err.result.count;
         StringBuilder sb = new StringBuilder("SetDataValues rejected:");

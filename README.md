@@ -82,10 +82,6 @@ cms> connect --ap C_B5041X/S1 --apdu 16384 --asdu 65531 --version 1;
   OK  Associated: C_B5041X/S1
 cms> disconnect
   OK  Disconnected.
-  Negotiated, associating with C_B5041X/S1 ...
-  OK  Associated: C_B5041X/S1
-cms> disconnect
-  OK  Disconnected.
 cms> connect
   Connecting to 127.0.0.1:8102 ...
   OK  Connected: 127.0.0.1:8102
@@ -237,18 +233,12 @@ cms> ln-dir --ln LD0 --acsi data-object;
     [6] Beh.q
     [7] Beh.t
     ...
-    [185] Ind1
-    [186] Ind1.stVal
-    [187] Ind1.q
-    [188] Ind1.t
-    [189] Ind2
-    [190] Ind2.stVal
-    [191] Ind2.q
-    [192] Ind2.t
-    [193] DUTSynOfs
-    [194] DUTSynOfs.stVal
-    [195] DUTSynOfs.q
-    [196] DUTSynOfs.t
+    [171] Frdb
+    [172] TapChgMod
+    [173] CtrlOPTmms1
+    [174] CtrlCPTmms1
+    [175] CtrlOPTmms2
+    [176] CtrlCPTmms2
 cms> ln-dir --ln LD0 --acsi data-set;
   References (data-set):
     [0] dsAlarm
@@ -511,7 +501,7 @@ cms> get-data-values --refs "LD0/LLN0.CommTstMet.stVal"
     [0] LD0/LLN0.CommTstMet.stVal  [visible-string] (unavailable)
 cms> set-data-values --pairs "LD0/LLN0.CommTstMet.stVal=111" # 错误的类型会被拒绝
   Setting 1 data value(s)...
-  ERR SetDataValues rejected:
+  ERR SetDataValues rejected: [0] error=12
 cms> set-data-values --pairs "LD0/LLN0.CommTstMet.stVal=true"
   Setting 1 data value(s)...
   OK  Set 1 data value(s) successfully

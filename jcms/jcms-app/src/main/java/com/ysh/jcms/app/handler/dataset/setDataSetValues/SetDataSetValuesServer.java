@@ -7,19 +7,16 @@ import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesResponse;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.nio.charset.StandardCharsets;
 
 public class SetDataSetValuesServer extends BaseServerHandler {
 
@@ -33,90 +30,43 @@ public class SetDataSetValuesServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsSetDataSetValuesRequest req = (CmsSetDataSetValuesRequest) rawReq;
         int reqId = req.reqId.value();
-
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
 
         SclServer server = getSclServer(session);
-        if (server == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
-        String ref = req.datasetReference.len > 0
-            ? new String(req.datasetReference.value(), StandardCharsets.UTF_8) : null;
-        if (ref == null || ref.isEmpty()) {
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
+        String ref = str(req.datasetReference);
+        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        int slashIdx = ref.indexOf('/');
-        if (slashIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String ldName = ref.substring(0, slashIdx);
-        String rest = ref.substring(slashIdx + 1);
-        int dotIdx = rest.indexOf('.');
-        if (dotIdx < 0) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        String lnName = rest.substring(0, dotIdx);
-        String dsName = rest.substring(dotIdx + 1);
+        RefUtil.ResolveResult r = RefUtil.resolve(server, ref);
+        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLDevice device = server.findLDeviceByInst(ldName);
-        if (device == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
-        SclDataSet dataSet = ln.findDataSetByName(dsName);
-        if (dataSet == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        RefUtil.RefParts p = r.ref;
+        SclDataSet dataSet = (p.doName != null) ? r.ln.findDataSetByName(p.doName) : null;
+        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+        String refAfter = opt(req.refAfterPresent, req.refAfter);
 
-        int successCount = 0;
-        int valueIdx = 0;
-        boolean skipUntilAfter = (refAfter != null && !refAfter.isEmpty());
+        int successCount = 0, valueIdx = 0;
         for (SclFCDA fcda : dataSet.getFcDas()) {
-            if (skipUntilAfter) {
-                String fcdaRef = fcda.buildFcdaRef();
-                if (fcdaRef.equals(refAfter)) {
-                    skipUntilAfter = false;
-                }
+            if (refAfter != null) {
+                if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
                 continue;
             }
             if (valueIdx >= req.value.count) break;
 
-            CmsData data = req.value.items.get(valueIdx);
-            String valueStr = extractValue(data);
-            if (valueStr != null) {
-                String fcdaRef = fcda.buildFcdaRef();
-                int err = server.setDataValue(fcdaRef, valueStr, templates);
-                if (err == CmsServiceError.NO_ERROR) {
-                    successCount++;
-                    log.debug("SetDataSetValues: set {} = {}", fcdaRef, valueStr);
-                } else {
-                    log.warn("SetDataSetValues: failed to set {} (err={})", fcdaRef, err);
-                }
-            }
-            valueIdx++;
+            String valueStr = extractValue(req.value.items.get(valueIdx++));
+            if (valueStr != null && server.setDataValue(fcda.buildFcdaRef(), valueStr, templates) == CmsServiceError.NO_ERROR)
+                successCount++;
         }
 
         if (successCount == req.value.count) {
             log.info("SetDataSetValues: all {} values set successfully", successCount);
-            try {
-                return buildSuccess(new CmsSetDataSetValuesResponse().reqId(reqId).encode(), reqId);
-            } catch (Exception e) {
-                log.error("Failed to encode SetDataSetValuesResponse", e);
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-            }
-        } else {
-            log.warn("SetDataSetValues: {}/{} succeeded, returning error", successCount, req.value.count);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return ok(new CmsSetDataSetValuesResponse().reqId(reqId), reqId);
         }
+        log.warn("SetDataSetValues: {}/{} succeeded", successCount, req.value.count);
+        return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
     }
 
     private static String extractValue(CmsData d) {
@@ -132,10 +82,8 @@ public class SetDataSetValuesServer extends BaseServerHandler {
             case CmsData.CHOICE_INT32U:         return Long.toString(d.alt_int32u.value());
             case CmsData.CHOICE_FLOAT32:        return Float.toString(d.alt_float32.value());
             case CmsData.CHOICE_FLOAT64:        return Double.toString(d.alt_float64.value());
-            case CmsData.CHOICE_VISIBLE_STRING:
-                return new String(d.alt_visible_string.value(), StandardCharsets.UTF_8);
-            case CmsData.CHOICE_UNICODE_STRING:
-                return new String(d.alt_unicode_string.value(), StandardCharsets.UTF_8);
+            case CmsData.CHOICE_VISIBLE_STRING: return str(d.alt_visible_string.value());
+            case CmsData.CHOICE_UNICODE_STRING: return str(d.alt_unicode_string.value());
             default:                            return null;
         }
     }

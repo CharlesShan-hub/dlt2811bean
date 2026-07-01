@@ -21,7 +21,7 @@ public class CmsSetEditSgValueError extends CmsType {
 
     public CmsSetEditSgValueError() { super(Codec.SET_EDIT_SG_VALUE_ERROR);
         this.reqId  = new CmsReqId();
-        this.result = new CmsArray<>();
+        this.result = new CmsArray<>(CmsServiceError.class);
     }
     
     public CmsSetEditSgValueError reqId(int v) { this.reqId.value(v); return this; }
