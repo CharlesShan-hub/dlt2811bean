@@ -860,11 +860,7 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
     [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
 ```
 
-### 8.7
-
-```bash
-
-```
+### 8.7 REPORT
 
 ```bash
 cms> # ======== 连接 ========
@@ -985,6 +981,10 @@ cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
   BRCB values (1 items):
     [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=true datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=60000
 ```
+
+### 8.8
+
+
 
 ### 8.15 协商
 

@@ -40,6 +40,16 @@ import com.ysh.jcms.app.handler.report.getUrcbValues.GetUrcbValuesConsole;
 import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesClient;
 import com.ysh.jcms.app.handler.report.setUrcbValues.SetUrcbValuesConsole;
 import com.ysh.jcms.app.handler.report.report.ReportClient;
+import com.ysh.jcms.app.handler.log.getLcbValues.GetLcbValuesClient;
+import com.ysh.jcms.app.handler.log.getLcbValues.GetLcbValuesConsole;
+import com.ysh.jcms.app.handler.log.setLcbValues.SetLcbValuesClient;
+import com.ysh.jcms.app.handler.log.setLcbValues.SetLcbValuesConsole;
+import com.ysh.jcms.app.handler.log.queryLogByTime.QueryLogByTimeClient;
+import com.ysh.jcms.app.handler.log.queryLogByTime.QueryLogByTimeConsole;
+import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterClient;
+import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterConsole;
+import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesClient;
+import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesConsole;
 import com.ysh.jcms.app.console.api.CliApiServer;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
@@ -136,6 +146,11 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetUrcbValuesClient(this));
         registerClient(new SetUrcbValuesClient(this));
         registerClient(new ReportClient(this));
+        registerClient(new GetLcbValuesClient(this));
+        registerClient(new SetLcbValuesClient(this));
+        registerClient(new QueryLogByTimeClient(this));
+        registerClient(new QueryLogAfterClient(this));
+        registerClient(new GetLogStatusValuesClient(this));
 
         // Set up push handler for incoming REPORT frames from server
         getClient().setReportHandler(frame -> {
@@ -176,6 +191,11 @@ public class CmsClientConsole extends CmsConsole {
         register(new GetUrcbValuesConsole());
         register(new SetUrcbValuesConsole());
         register(new SetDataValuesConsole());
+        register(new GetLcbValuesConsole());
+        register(new SetLcbValuesConsole());
+        register(new QueryLogByTimeConsole());
+        register(new QueryLogAfterConsole());
+        register(new GetLogStatusValuesConsole());
         register(new TracePduHandler());
         register(new ClearHandler());
         register(new ReleaseConsole());
