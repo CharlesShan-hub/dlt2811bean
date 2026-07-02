@@ -6,6 +6,8 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * jcms base class.
@@ -22,6 +24,8 @@ import java.util.List;
  *    - encode()/decode() handled by C side (requires C function support)
  */
 public abstract class CmsType {
+
+    private static final Logger log = LoggerFactory.getLogger(CmsType.class);
 
     public Pointer nativePtr;
     public int nativeSize;
@@ -94,8 +98,12 @@ public abstract class CmsType {
         if (codec == null)
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI encode (codec not set)");
+        log.debug("encode {} start", getClass().getSimpleName());
+        logAllocSizes(this, "  BEFORE write");
         write();
+        logAllocSizes(this, "  AFTER write, BEFORE C encode");
         byte[] result = codec.encode(nativePtr);
+        log.debug("encode {} OK, resultLen={}", getClass().getSimpleName(), result.length);
         return result;
     }
 
@@ -103,58 +111,95 @@ public abstract class CmsType {
      * PER decode: decodes from a byte array into the current structure.
      * Uses {@link #codec} if set, otherwise throws.
      *
-     * <p>Auto-retries with exponentially increasing allocSize (8, 16, 32, 64…)
-     * for nested {@link CmsArray} fields, so you never need to guess
-     * the element count in advance.
+     * <p>Auto-retry decode: each decode attempt pre-allocates
+     * {@link CmsArray#allocSize} slots per CmsArray in the tree. If a
+     * SEQUENCE OF has more elements than slots, the C decoder writes the
+     * actual count into {@code cms_array_t.count} then returns
+     * {@code CMS_RETRY (-2)}.  Java reads the count, adjusts allocSize,
+     * clears items, and retries.  Loops up to 3 times.
      */
     public void decode(byte[] data) {
         if (codec == null)
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI decode (codec not set)");
-        int guess = 8;
-        while (true) {
-            // 1) Re-allocate fresh native memory
+
+        log.debug("decode {} start, dataLen={}", getClass().getSimpleName(), data.length);
+
+        for (int retry = 0; retry < 3; retry++) {
+            log.debug("decode {} retry={}", getClass().getSimpleName(), retry);
+
+            // Fresh native memory
             allocate();
-            // 2) Apply the current guess to all nested CmsArrays
-            applyAllocSize(this, guess);
-            // 3) Pre-allocate with the guess
+            log.trace("  allocate: nativePtr={}, nativeSize={}", nativePtr, nativeSize);
+
             write();
-            // 4) Try to decode
-            Exception failure = null;
-            try {
-                codec.decode(nativePtr, data);
-            } catch (Exception e) {
-                failure = e;
-            }
-            if (failure == null) {
+            log.trace("  write done");
+
+            int rc = codec.decodeRaw(nativePtr, data);
+            log.debug("  decodeRaw rc={}", rc);
+
+            if (rc == 0) {
+                log.trace("  calling read()...");
                 read();
+                log.debug("decode {} OK", getClass().getSimpleName());
                 return;
             }
-            // 5) Guess was too small — double and retry
-            int next = guess * 2;
-            if (next > 65536)  // hard safety cap
+            if (rc != -2)  // not CMS_RETRY → real error
                 throw new RuntimeException(
-                    "decode failed for " + getClass().getSimpleName() +
-                    " after retry up to allocSize=" + guess, failure);
-            guess = next;
+                    "decode failed: rc=" + rc + " for " + getClass().getSimpleName());
+
+            // CMS_RETRY: C wrote the actual count(s); read them and resize
+            log.debug("  CMS_RETRY: reading array counts from native memory");
+            logAllocSizes(this, "  BEFORE readAllArrayCounts");
+            readAllArrayCounts(this);
+            logAllocSizes(this, "  AFTER readAllArrayCounts");
+        }
+
+        throw new RuntimeException(
+            "decode failed: retry exhausted for " + getClass().getSimpleName());
+    }
+
+    /** Log allocSize for every CmsArray in the tree. */
+    private static void logAllocSizes(CmsType node, String prefix) {
+        if (node instanceof CmsArray) {
+            CmsArray<?> arr = (CmsArray<?>) node;
+            int count = (arr.nativePtr != null) ? arr.nativePtr.getInt(8) : -1;
+            log.debug("{} [CmsArray {}] items={} allocSize={} nativeCount={}",
+                prefix, node.getClass().getSimpleName(),
+                arr.items.size(), arr.allocSize, count);
+        }
+        for (CmsType child : node.children()) {
+            if (child != null) logAllocSizes(child, prefix + "  ");
         }
     }
 
-    /** Allocate (or re-allocate) native memory of the right size. */
+    /**
+     * After CMS_RETRY, read the actual count that C wrote into each CmsArray's
+     * native memory, and set allocSize accordingly for the retry.
+     * Clears items after reading children so write() re-creates with correct size.
+     */
+    private static void readAllArrayCounts(CmsType node) {
+        if (node == null) return;
+        // First, read count from ALL children recursively
+        for (CmsType child : node.children()) {
+            if (child != null) readAllArrayCounts(child);
+        }
+        // Then apply to this node and clear items
+        if (node instanceof CmsArray) {
+            CmsArray<?> arr = (CmsArray<?>) node;
+            if (arr.nativePtr != null) {
+                int c = arr.nativePtr.getInt(8); // cms_array_t.count at offset 8
+                arr.allocSize = Math.max(c, 1);
+            }
+            arr.items.clear(); // clear AFTER reading children
+        }
+    }
+
+    /** Allocate (or re-allocate) native memory to a clean zeroed state. */
     private void allocate() {
         this.nativeSize = calcNativeSize();
         this.nativePtr = new Memory(nativeSize);
         zero();
-    }
-
-    /** Recursively set allocSize on every CmsArray child. */
-    private static void applyAllocSize(CmsType node, int size) {
-        if (node instanceof CmsArray) {
-            ((CmsArray<?>) node).allocSize = size;
-        }
-        for (CmsType child : node.children()) {
-            if (child != null) applyAllocSize(child, size);
-        }
     }
 
     // ==================== equals / hashCode / toString ====================

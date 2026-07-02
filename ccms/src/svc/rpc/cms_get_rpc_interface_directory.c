@@ -1,4 +1,4 @@
-﻿#include "svc/rpc/cms_get_rpc_interface_directory.h"
+#include "svc/rpc/cms_get_rpc_interface_directory.h"
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_service_error.h"
 #include "data/scalar/cms_boolean.h"
@@ -114,6 +114,10 @@ int cms_get_rpc_interface_directory_response_decode(cms_get_rpc_interface_direct
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_uint8_array_t *e = (cms_uint8_array_t*)pdu->reference->elements[i];

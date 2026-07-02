@@ -171,6 +171,10 @@ int cms_send_msv_message_decode(cms_send_msv_message_t *pdu, const uint8_t *in_b
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->sample->count < (int32_t)cnt) {
+            pdu->sample->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->sample->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_t *e = (cms_data_t*)pdu->sample->elements[i];

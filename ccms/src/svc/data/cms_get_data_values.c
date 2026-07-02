@@ -1,4 +1,4 @@
-﻿#include "svc/data/cms_get_data_values.h"
+#include "svc/data/cms_get_data_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/data/cms_data_ref_entry.h"
 #include "data/choice/cms_data.h"
@@ -53,6 +53,10 @@ int cms_get_data_values_request_decode(cms_get_data_values_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->data->count < (int32_t)cnt) {
+            pdu->data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_ref_entry_t *e = (cms_data_ref_entry_t*)pdu->data->elements[i];
@@ -117,6 +121,10 @@ int cms_get_data_values_response_decode(cms_get_data_values_response_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->value->count < (int32_t)cnt) {
+            pdu->value->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->value->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_t *e = (cms_data_t*)pdu->value->elements[i];

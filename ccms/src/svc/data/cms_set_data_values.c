@@ -1,4 +1,4 @@
-﻿#include "svc/data/cms_set_data_values.h"
+#include "svc/data/cms_set_data_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/data/cms_data_ref_value_entry.h"
 #include "data/common/cms_service_error.h"
@@ -51,6 +51,10 @@ int cms_set_data_values_request_decode(cms_set_data_values_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->data->count < (int32_t)cnt) {
+            pdu->data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_ref_value_entry_t *e = (cms_data_ref_value_entry_t*)pdu->data->elements[i];
@@ -133,7 +137,10 @@ int cms_set_data_values_error_decode(cms_set_data_values_error_t *pdu, const uin
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        pdu->result->count = (int32_t)cnt;
+        if (pdu->result->count < (int32_t)cnt) {
+            pdu->result->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_service_error_t *e = (cms_service_error_t*)pdu->result->elements[i];
             if (!e) return CMS_ERR;

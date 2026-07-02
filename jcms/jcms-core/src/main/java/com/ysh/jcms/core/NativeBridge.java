@@ -265,5 +265,17 @@ public class NativeBridge {
             if (rc != 0) throw new RuntimeException(
                 "decode failed: rc=" + rc + " for " + prefix);
         }
+
+        /**
+         * Like {@link #decode(Pointer, byte[])} but returns the raw rc
+         * instead of throwing on failure.
+         * <p>Returns {@code CMS_OK (0)} on success, {@code CMS_RETRY (-2)} when
+         * a SEQUENCE OF needs more pre-allocated slots, or other negative
+         * error codes.
+         */
+        public int decodeRaw(Pointer ptr, byte[] data) {
+            Function fn = LIB.getFunction(prefix + "_decode");
+            return fn.invokeInt(new Object[]{ptr, data, data.length});
+        }
     }
 }

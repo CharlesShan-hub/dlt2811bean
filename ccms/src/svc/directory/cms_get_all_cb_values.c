@@ -1,4 +1,4 @@
-﻿#include "svc/directory/cms_get_all_cb_values.h"
+#include "svc/directory/cms_get_all_cb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/other/cms_reference_choice.h"
 #include "svc/directory/cms_acsi_class.h"
@@ -137,6 +137,10 @@ int cms_get_all_cb_values_response_decode(cms_get_all_cb_values_response_t *pdu,
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->cb_value->count < (int32_t)cnt) {
+            pdu->cb_value->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->cb_value->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_cb_value_entry_t *e = (cms_cb_value_entry_t*)pdu->cb_value->elements[i];

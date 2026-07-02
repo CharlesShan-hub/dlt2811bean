@@ -1,4 +1,4 @@
-﻿#include "svc/data/cms_get_data_directory.h"
+#include "svc/data/cms_get_data_directory.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/data/cms_sub_ref_entry.h"
 #include "data/common/cms_object_reference.h"
@@ -125,6 +125,10 @@ int cms_get_data_directory_response_decode(cms_get_data_directory_response_t *pd
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->data_attribute->count < (int32_t)cnt) {
+            pdu->data_attribute->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->data_attribute->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_sub_ref_entry_t *e = (cms_sub_ref_entry_t*)pdu->data_attribute->elements[i];

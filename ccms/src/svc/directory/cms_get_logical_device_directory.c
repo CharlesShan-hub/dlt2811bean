@@ -132,6 +132,10 @@ int cms_get_logical_device_directory_response_decode(cms_get_logical_device_dire
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->ln_reference->count < (int32_t)cnt) {
+            pdu->ln_reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->ln_reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_sub_reference_t *e = (cms_sub_reference_t*)pdu->ln_reference->elements[i];

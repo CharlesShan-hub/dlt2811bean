@@ -1,4 +1,4 @@
-﻿#include "svc/log/cms_get_log_status_values.h"
+#include "svc/log/cms_get_log_status_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/log/cms_log_status_value_choice.h"
 #include "data/common/cms_object_reference.h"
@@ -49,6 +49,10 @@ int cms_get_log_status_values_request_decode(cms_get_log_status_values_request_t
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->log_reference->count < (int32_t)cnt) {
+            pdu->log_reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->log_reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_object_reference_t *e = (cms_object_reference_t*)pdu->log_reference->elements[i];
@@ -108,7 +112,10 @@ int cms_get_log_status_values_response_decode(cms_get_log_status_values_response
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        pdu->log->count = (int32_t)cnt;
+        if (pdu->log->count < (int32_t)cnt) {
+            pdu->log->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_log_status_value_choice_t *e = (cms_log_status_value_choice_t*)pdu->log->elements[i];
             if (!e) return CMS_ERR;

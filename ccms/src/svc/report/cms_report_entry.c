@@ -74,6 +74,10 @@ int cms_report_entry_decode_stream(per_stream_t *s, cms_report_entry_t *v) {
         uint32_t cnt;
         per_error_t perr = per_decode_length(s, &cnt);
         if (perr) return CMS_ERR;
+        if (v->entry_data->count < (int32_t)cnt) {
+            v->entry_data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         v->entry_data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_report_data_entry_t *e = (cms_report_data_entry_t*)v->entry_data->elements[i];

@@ -1,4 +1,4 @@
-﻿#include "svc/dataset/cms_create_data_set.h"
+#include "svc/dataset/cms_create_data_set.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/dataset/cms_data_ref_fc_entry.h"
 #include "data/common/cms_object_reference.h"
@@ -90,6 +90,10 @@ int cms_create_data_set_request_decode(cms_create_data_set_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->member_data->count < (int32_t)cnt) {
+            pdu->member_data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->member_data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_ref_fc_entry_t *e = (cms_data_ref_fc_entry_t*)pdu->member_data->elements[i];

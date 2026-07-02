@@ -1,4 +1,4 @@
-﻿#include "svc/dataset/cms_get_data_set_values.h"
+#include "svc/dataset/cms_get_data_set_values.h"
 #include "svc/other/cms_req_id.h"
 #include "data/choice/cms_data.h"
 #include "data/common/cms_object_reference.h"
@@ -126,6 +126,10 @@ int cms_get_data_set_values_response_decode(cms_get_data_set_values_response_t *
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->value->count < (int32_t)cnt) {
+            pdu->value->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->value->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_t *e = (cms_data_t*)pdu->value->elements[i];

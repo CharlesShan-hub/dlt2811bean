@@ -1,4 +1,4 @@
-﻿#include "svc/goose/cms_set_go_cb_values.h"
+#include "svc/goose/cms_set_go_cb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/goose/cms_set_go_cb_entry.h"
 #include "svc/goose/cms_set_go_cb_result.h"
@@ -51,6 +51,10 @@ int cms_set_go_cb_values_request_decode(cms_set_go_cb_values_request_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->gocb->count < (int32_t)cnt) {
+            pdu->gocb->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->gocb->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_set_go_cb_entry_t *e = (cms_set_go_cb_entry_t*)pdu->gocb->elements[i];
@@ -135,6 +139,10 @@ int cms_set_go_cb_values_error_decode(cms_set_go_cb_values_error_t *pdu, const u
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->result->count < (int32_t)cnt) {
+            pdu->result->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->result->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_set_go_cb_result_t *e = (cms_set_go_cb_result_t*)pdu->result->elements[i];

@@ -1,4 +1,4 @@
-﻿#include "svc/report/cms_get_urcb_values.h"
+#include "svc/report/cms_get_urcb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/report/cms_rcb_value_choice.h"
 #include "data/common/cms_object_reference.h"
@@ -18,7 +18,23 @@ int cms_get_urcb_values_request_encode(const cms_get_urcb_values_request_t *pdu,
 int cms_get_urcb_values_request_decode(cms_get_urcb_values_request_t *pdu, const uint8_t *in_buf, int in_len) {
     per_stream_t s; per_stream_init_read(&s, in_buf, (size_t)in_len); int err;
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
-    if (!pdu->reference) return CMS_ERR; { uint32_t cnt; per_error_t perr=per_decode_length(&s,&cnt); if(perr)return CMS_ERR; pdu->reference->count=(int32_t)cnt; for(uint32_t i=0;i<cnt;i++){cms_object_reference_t*e=(cms_object_reference_t*)pdu->reference->elements[i];if(!e)return CMS_ERR;err=cms_object_reference_decode_stream(&s,e);if(err)return err;} }
+    if (!pdu->reference) return CMS_ERR;
+    {
+        uint32_t cnt;
+        per_error_t perr = per_decode_length(&s, &cnt);
+        if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
+        pdu->reference->count = (int32_t)cnt;
+        for (uint32_t i = 0; i < cnt; i++) {
+            cms_object_reference_t *e = (cms_object_reference_t*)pdu->reference->elements[i];
+            if (!e) return CMS_ERR;
+            err = cms_object_reference_decode_stream(&s, e);
+            if (err) return err;
+        }
+    }
     return CMS_OK;
 }
 int cms_get_urcb_values_response_encode(const cms_get_urcb_values_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
@@ -54,7 +70,7 @@ int cms_get_urcb_values_response_encode(const cms_get_urcb_values_response_t *pd
 int cms_get_urcb_values_response_decode(cms_get_urcb_values_response_t *pdu, const uint8_t *in_buf, int in_len) {
     per_stream_t s; per_stream_init_read(&s, in_buf, (size_t)in_len); int err;
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
-    if (!pdu->urcb) return CMS_ERR; { uint32_t cnt; per_error_t perr=per_decode_length(&s,&cnt); if(perr)return CMS_ERR; pdu->urcb->count=(int32_t)cnt; for(uint32_t i=0;i<cnt;i++){cms_rcb_value_choice_t*e=(cms_rcb_value_choice_t*)pdu->urcb->elements[i];if(!e)return CMS_ERR;err=cms_rcb_value_choice_decode_stream(&s,e);if(err)return err;} }
+    if (!pdu->urcb) return CMS_ERR; { uint32_t cnt; per_error_t perr=per_decode_length(&s,&cnt); if(perr)return CMS_ERR; if(pdu->urcb->count<(int32_t)cnt){pdu->urcb->count=(int32_t)cnt;return CMS_RETRY;} pdu->urcb->count=(int32_t)cnt; for(uint32_t i=0;i<cnt;i++){cms_rcb_value_choice_t*e=(cms_rcb_value_choice_t*)pdu->urcb->elements[i];if(!e)return CMS_ERR;err=cms_rcb_value_choice_decode_stream(&s,e);if(err)return err;} }
     if (!pdu->more_follows) return CMS_ERR; err = cms_boolean_decode_stream(&s, pdu->more_follows); if (err) return err;
     return CMS_OK;
 }

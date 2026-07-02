@@ -982,7 +982,46 @@ cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
     [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=true datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=60000
 ```
 
-### 8.8
+### 8.8 Log
+
+```bash
+# 获取 LCB 值
+get-lcb-vals --refs "<ref1> <ref2>..."
+# 设置 LCB 值
+set-lcb-vals --ref <logRef> [--log-ena true|false] [--intg-pd <ms>] [--datSet <name>]
+# 按时间查询日志
+query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]
+# 查询指定条目之后的日志
+query-log-after --ref <logRef> --entry <entryId> [--start <ms>]
+# 获取日志状态值
+get-log-status --refs "<ref1> <ref2>..."
+```
+
+```bash
+cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
+  Fetching LCB values for 1 reference(s)
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=0 logRef=LD0 trgOps=falsefalsefalsefalsefalse
+
+cms> set-lcb-vals --ref LD0/LLN0.lcblog --log-ena true --intg-pd 5000
+  Setting LCB values: ref=LD0/LLN0.lcblog
+  OK  LCB values set for LD0/LLN0.lcblog
+
+cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
+  Fetching LCB values for 1 reference(s)
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=5000 logRef=LD0 trgOps=falsefalsefalsefalsefalse
+
+cms> query-log-by-time --ref LD0/LLN0.lcblog
+  Querying log by time: ref=LD0/LLN0.lcblog
+  OK  QueryLogByTime completed
+
+cms> query-log-after --ref LD0/LLN0.lcblog --entry "000001"
+  Querying log after entry: ref=LD0/LLN0.lcblog entry=000001
+  OK  QueryLogAfter completed
+
+cms> get-log-status --refs "LD0/LLN0.lcblog"
+  Fetching log status for 1 reference(s)
+    [LD0/LLN0.lcblog] oldEntrTm=0/0 newEntrTm=0/0
+```
 
 
 

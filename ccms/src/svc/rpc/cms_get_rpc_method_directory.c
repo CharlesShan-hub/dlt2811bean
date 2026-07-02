@@ -1,4 +1,4 @@
-﻿#include "svc/rpc/cms_get_rpc_method_directory.h"
+#include "svc/rpc/cms_get_rpc_method_directory.h"
 #include "svc/other/cms_req_id.h"
 #include "data/common/cms_service_error.h"
 #include "data/scalar/cms_boolean.h"
@@ -112,7 +112,22 @@ int cms_get_rpc_method_directory_response_decode(cms_get_rpc_method_directory_re
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
 
     if (!pdu->reference) return CMS_ERR;
-    { uint32_t cnt; per_error_t perr=per_decode_length(&s,&cnt); if(perr)return CMS_ERR; pdu->reference->count=(int32_t)cnt; for(uint32_t i=0;i<cnt;i++){cms_uint8_array_t*e=(cms_uint8_array_t*)pdu->reference->elements[i];if(!e)return CMS_ERR;err=cms_visible_string_decode_stream(&s,e,UINT32_MAX);if(err)return err;} }
+    {
+        uint32_t cnt;
+        per_error_t perr = per_decode_length(&s, &cnt);
+        if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
+        pdu->reference->count = (int32_t)cnt;
+        for (uint32_t i = 0; i < cnt; i++) {
+            cms_uint8_array_t *e = (cms_uint8_array_t*)pdu->reference->elements[i];
+            if (!e) return CMS_ERR;
+            err = cms_visible_string_decode_stream(&s, e, UINT32_MAX);
+            if (err) return err;
+        }
+    }
 
     if (!pdu->more_follows) return CMS_ERR; err = cms_boolean_decode_stream(&s, pdu->more_follows); if (err) return err;
 

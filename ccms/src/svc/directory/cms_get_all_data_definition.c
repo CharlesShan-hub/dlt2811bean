@@ -149,6 +149,10 @@ int cms_get_all_data_definition_response_decode(
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->data->count < (int32_t)cnt) {
+            pdu->data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_data_definition_entry_t *e = (cms_data_definition_entry_t*)pdu->data->elements[i];

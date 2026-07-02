@@ -165,6 +165,7 @@ public class CmsConfig {
         private boolean gbkToUtf8 = false;
         private Negotiate negotiate = new Negotiate();
         private File file = new File();
+        private Log log = new Log();
         private Setting setting = new Setting();
         private Dataset dataset = new Dataset();
 
@@ -176,6 +177,8 @@ public class CmsConfig {
         public void setNegotiate(Negotiate negotiate) { this.negotiate = negotiate; }
         public File getFile() { return file; }
         public void setFile(File file) { this.file = file; }
+        public Log getLog() { return log; }
+        public void setLog(Log log) { this.log = log; }
         public Setting getSetting() { return setting; }
         public void setSetting(Setting setting) { this.setting = setting; }
         public Dataset getDataset() { return dataset; }
@@ -199,6 +202,12 @@ public class CmsConfig {
 
         public static class File {
             private String rootPath = "config/files";
+            public String getRootPath() { return rootPath; }
+            public void setRootPath(String rootPath) { this.rootPath = rootPath; }
+        }
+
+        public static class Log {
+            private String rootPath = "config/logs";
             public String getRootPath() { return rootPath; }
             public void setRootPath(String rootPath) { this.rootPath = rootPath; }
         }
@@ -297,6 +306,10 @@ public class CmsConfig {
             if (other.protocol.file != null) {
                 if (other.protocol.file.rootPath != null && !other.protocol.file.rootPath.equals("config/files"))
                     protocol.file.rootPath = other.protocol.file.rootPath;
+            }
+            if (other.protocol.log != null) {
+                if (other.protocol.log.rootPath != null && !other.protocol.log.rootPath.equals("config/logs"))
+                    protocol.log.rootPath = other.protocol.log.rootPath;
             }
             if (other.protocol.setting != null) {
                 if (other.protocol.setting.numOfSG != 4) protocol.setting.numOfSG = other.protocol.setting.numOfSG;

@@ -1,4 +1,4 @@
-﻿#include "svc/log/cms_query_log_after.h"
+#include "svc/log/cms_query_log_after.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/log/cms_log_entry.h"
 #include "data/common/cms_entry_id.h"
@@ -130,6 +130,10 @@ int cms_query_log_after_response_decode(cms_query_log_after_response_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->log_entry->count < (int32_t)cnt) {
+            pdu->log_entry->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->log_entry->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_log_entry_t *e = (cms_log_entry_t*)pdu->log_entry->elements[i];

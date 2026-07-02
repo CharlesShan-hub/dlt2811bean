@@ -33,6 +33,8 @@ protocol:
     setDataSetPersistent: false
   file:
     rootPath: config/files
+  log:
+    rootPath: config/logs
   setting:
     numOfSG: 4
     sgDefaultEnabled: true

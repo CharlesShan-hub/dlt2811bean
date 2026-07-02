@@ -1,4 +1,4 @@
-﻿#include "svc/rpc/cms_get_rpc_interface_definition.h"
+#include "svc/rpc/cms_get_rpc_interface_definition.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/rpc/cms_rpc_method_entry.h"
 #include "data/common/cms_service_error.h"
@@ -125,6 +125,10 @@ int cms_get_rpc_interface_definition_response_decode(cms_get_rpc_interface_defin
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->method->count < (int32_t)cnt) {
+            pdu->method->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->method->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_rpc_method_entry_t *e = (cms_rpc_method_entry_t*)pdu->method->elements[i];

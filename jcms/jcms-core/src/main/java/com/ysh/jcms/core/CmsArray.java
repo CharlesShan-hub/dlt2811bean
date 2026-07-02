@@ -37,8 +37,8 @@ public class CmsArray<T extends CmsType> extends CmsType {
     /** Element type for auto-creation during decode. null means manual pre-allocation. */
     private Class<T> itemClass;
 
-    /** Number of elements to pre-allocate during decode (default 128, adjustable externally). */
-    public int allocSize = 128;
+    /** Number of elements to pre-allocate during decode (adjustable externally). */
+    public int allocSize = 8;
 
     public CmsArray() {}
 
@@ -83,18 +83,21 @@ public class CmsArray<T extends CmsType> extends CmsType {
             }
         }
         this.count = items.size();
-        if (count == 0) {
-            this.elements = null;
-        } else {
-            // Allocate Pointer array (count x 8 bytes)
-            Memory ptrs = new Memory(count * 8L);
-            for (int i = 0; i < count; i++) {
-                CmsType item = items.get(i);
-                item.write();
-                ptrs.setPointer(i * 8L, item.nativePtr);
-            }
-            this.elements = ptrs;
+        // Allocate enough slots for the C decoder: items.size() is the real count,
+        // but allocSize serves as a safety margin so the C code can safely check
+        // elements[i] for NULL (triggering CMS_RETRY) instead of reading garbage.
+        int slotCount = Math.max(Math.max(count, allocSize), 1);
+        Memory ptrs = new Memory(slotCount * 8L);
+        for (int i = 0; i < count; i++) {
+            CmsType item = items.get(i);
+            item.write();
+            ptrs.setPointer(i * 8L, item.nativePtr);
         }
+        // Zero-fill unused slots so C sees NULL for out-of-range indices
+        for (int i = count; i < slotCount; i++) {
+            ptrs.setPointer(i * 8L, null);
+        }
+        this.elements = ptrs;
         // Write struct fields
         nativePtr.setPointer(0, elements);
         nativePtr.setInt(8, count);

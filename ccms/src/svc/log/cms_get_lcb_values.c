@@ -1,4 +1,4 @@
-﻿#include "svc/log/cms_get_lcb_values.h"
+#include "svc/log/cms_get_lcb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/log/cms_lcb_value_choice.h"
 #include "data/common/cms_object_reference.h"
@@ -49,6 +49,10 @@ int cms_get_lcb_values_request_decode(cms_get_lcb_values_request_t *pdu, const u
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_object_reference_t *e = (cms_object_reference_t*)pdu->reference->elements[i];
@@ -108,6 +112,10 @@ int cms_get_lcb_values_response_decode(cms_get_lcb_values_response_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->lcb->count < (int32_t)cnt) {
+            pdu->lcb->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->lcb->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_lcb_value_choice_t *e = (cms_lcb_value_choice_t*)pdu->lcb->elements[i];

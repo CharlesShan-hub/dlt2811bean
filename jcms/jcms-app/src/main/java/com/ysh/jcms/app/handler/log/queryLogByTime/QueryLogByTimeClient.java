@@ -40,6 +40,9 @@ public class QueryLogByTimeClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
+        // 使用配置的 maxArraySize（默认 128），内层 entryData/alt_sequence 的 allocSize=0
+        // 不会再发生嵌套预分配爆炸
+        resp.logEntry.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
         log.info("QueryLogByTime returned {} entries, moreFollows={}",

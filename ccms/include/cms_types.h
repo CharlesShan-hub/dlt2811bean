@@ -12,6 +12,12 @@
 #endif
 
 #define CMS_OK   0
+/*
+ * CMS_RETRY — returned by decode when a SEQUENCE OF has more elements
+ * than pre-allocated slots (elements[i] == NULL). The count field has
+ * already been written; caller can read it, resize, and retry.
+ */
+#define CMS_RETRY -2
 #define CMS_ERR -1
 
 #ifdef __cplusplus

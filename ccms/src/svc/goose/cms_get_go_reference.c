@@ -1,4 +1,4 @@
-﻿#include "svc/goose/cms_get_go_reference.h"
+#include "svc/goose/cms_get_go_reference.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/goose/cms_go_ref_fc_entry.h"
 #include "data/common/cms_object_reference.h"
@@ -64,7 +64,10 @@ int cms_get_go_reference_request_decode(cms_get_go_reference_request_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        pdu->member_ofs->count = (int32_t)cnt;
+        if (pdu->member_ofs->count < (int32_t)cnt) {
+            pdu->member_ofs->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_int16u_t *e = (cms_int16u_t*)pdu->member_ofs->elements[i];
             if (!e) return CMS_ERR;
@@ -153,6 +156,10 @@ int cms_get_go_reference_response_decode(cms_get_go_reference_response_t *pdu, c
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->member_data->count < (int32_t)cnt) {
+            pdu->member_data->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->member_data->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_go_ref_fc_entry_t *e = (cms_go_ref_fc_entry_t*)pdu->member_data->elements[i];

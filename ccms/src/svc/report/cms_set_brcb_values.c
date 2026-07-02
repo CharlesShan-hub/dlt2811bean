@@ -26,7 +26,22 @@ int cms_set_brcb_values_request_decode(cms_set_brcb_values_request_t *pdu, const
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
 
     if (!pdu->brcb) return CMS_ERR;
-    { uint32_t cnt; per_error_t perr=per_decode_length(&s,&cnt); if(perr)return CMS_ERR; pdu->brcb->count=(int32_t)cnt; for(uint32_t i=0;i<cnt;i++){cms_set_brcb_entry_t*e=(cms_set_brcb_entry_t*)pdu->brcb->elements[i];if(!e)return CMS_ERR;err=cms_set_brcb_entry_decode_stream(&s,e);if(err)return err;} }
+    {
+        uint32_t cnt;
+        per_error_t perr = per_decode_length(&s, &cnt);
+        if (perr) return CMS_ERR;
+        if (pdu->brcb->count < (int32_t)cnt) {
+            pdu->brcb->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
+        pdu->brcb->count = (int32_t)cnt;
+        for (uint32_t i = 0; i < cnt; i++) {
+            cms_set_brcb_entry_t *e = (cms_set_brcb_entry_t*)pdu->brcb->elements[i];
+            if (!e) return CMS_ERR;
+            err = cms_set_brcb_entry_decode_stream(&s, e);
+            if (err) return err;
+        }
+    }
 
     return CMS_OK;
 }

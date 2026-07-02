@@ -137,6 +137,10 @@ int cms_get_logical_node_directory_response_decode(cms_get_logical_node_director
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_sub_reference_t *e = (cms_sub_reference_t*)pdu->reference->elements[i];

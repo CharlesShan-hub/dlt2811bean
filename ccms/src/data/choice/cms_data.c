@@ -4,18 +4,20 @@
 #include "data/string/cms_bit_string.h"
 #include "data/string/cms_utf8_string.h"
 #include "per/cms_integer.h"
+#include <stdio.h>
 
 int cms_data_encode_stream(per_stream_t *s, const void *ptr) {
     const cms_data_t *d = (const cms_data_t*)ptr;
-    if (!d || !d->choice) return CMS_ERR;
+    if (!d) { fprintf(stderr, "[CMS_DEBUG] data_encode: d is NULL\n"); return CMS_ERR; }
+    if (!d->choice) { fprintf(stderr, "[CMS_DEBUG] data_encode: choice is NULL\n"); return CMS_ERR; }
     int sel = d->choice->value;
-    if (sel < 0 || sel > 23) return CMS_ERR;
+    if (sel < 0 || sel > 23) { fprintf(stderr, "[CMS_DEBUG] data_encode: invalid sel=%d\n", sel); return CMS_ERR; }
 
     int err;
 
     /* 1. Encode CHOICE index — 24 alts → small non-negative */
     err = (int)per_encode_small_non_negative(s, (uint32_t)sel);
-    if (err) return err;
+    if (err) { fprintf(stderr, "[CMS_DEBUG] data_encode: per_encode_small_non_negative failed sel=%d\n", sel); return err; }
 
     /* 2. Encode the selected alternative */
     switch (sel) {
@@ -52,31 +54,31 @@ int cms_data_encode_stream(per_stream_t *s, const void *ptr) {
         return cms_int16_encode_stream(s, d->alt_int16);
 
     case CMS_DATA_CHOICE_INT32:
-        if (!d->alt_int32) return CMS_ERR;
+        if (!d->alt_int32) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int32 is NULL\n"); return CMS_ERR; }
         return cms_int32_encode_stream(s, d->alt_int32);
 
     case CMS_DATA_CHOICE_INT64:
-        if (!d->alt_int64) return CMS_ERR;
+        if (!d->alt_int64) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int64 is NULL\n"); return CMS_ERR; }
         return cms_int64_encode_stream(s, d->alt_int64);
 
     case CMS_DATA_CHOICE_INT8U:
-        if (!d->alt_int8u) return CMS_ERR;
+        if (!d->alt_int8u) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int8u is NULL\n"); return CMS_ERR; }
         return cms_int8u_encode_stream(s, d->alt_int8u);
 
     case CMS_DATA_CHOICE_INT16U:
-        if (!d->alt_int16u) return CMS_ERR;
+        if (!d->alt_int16u) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int16u is NULL\n"); return CMS_ERR; }
         return cms_int16u_encode_stream(s, d->alt_int16u);
 
     case CMS_DATA_CHOICE_INT32U:
-        if (!d->alt_int32u) return CMS_ERR;
+        if (!d->alt_int32u) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int32u is NULL\n"); return CMS_ERR; }
         return cms_int32u_encode_stream(s, d->alt_int32u);
 
     case CMS_DATA_CHOICE_INT64U:
-        if (!d->alt_int64u) return CMS_ERR;
+        if (!d->alt_int64u) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_int64u is NULL\n"); return CMS_ERR; }
         return cms_int64u_encode_stream(s, d->alt_int64u);
 
     case CMS_DATA_CHOICE_FLOAT32:
-        if (!d->alt_float32) return CMS_ERR;
+        if (!d->alt_float32) { fprintf(stderr, "[CMS_DEBUG] data_encode: alt_float32 is NULL\n"); return CMS_ERR; }
         return cms_float32_encode_stream(s, d->alt_float32);
 
     case CMS_DATA_CHOICE_FLOAT64:
@@ -155,9 +157,14 @@ int cms_data_decode_stream(per_stream_t *s, void *ptr) {
         perr = per_decode_length(s, &count);
         if (perr) return CMS_ERR;
         cms_array_t *arr = (cms_array_t*)d->alt_sequence;
-        if (arr) arr->count = (int32_t)count;
+        if (!arr) return CMS_ERR;
+        if (arr->count < (int32_t)count) {
+            arr->count = (int32_t)count;
+            return CMS_RETRY;
+        }
+        arr->count = (int32_t)count;
         for (uint32_t i = 0; i < count; i++) {
-            if (!arr || !arr->elements || !arr->elements[i]) return CMS_ERR;
+            if (!arr->elements || !arr->elements[i]) return CMS_ERR;
             err = cms_data_decode_stream(s, arr->elements[i]);
             if (err) return err;
         }

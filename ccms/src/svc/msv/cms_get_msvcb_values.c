@@ -1,4 +1,4 @@
-﻿#include "svc/msv/cms_get_msvcb_values.h"
+#include "svc/msv/cms_get_msvcb_values.h"
 #include "svc/other/cms_req_id.h"
 #include "svc/msv/cms_msvcb_value_choice.h"
 #include "data/common/cms_object_reference.h"
@@ -49,7 +49,10 @@ int cms_get_msvcb_values_request_decode(cms_get_msvcb_values_request_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        pdu->reference->count = (int32_t)cnt;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         for (uint32_t i = 0; i < cnt; i++) {
             cms_object_reference_t *e = (cms_object_reference_t*)pdu->reference->elements[i];
             if (!e) return CMS_ERR;
@@ -108,6 +111,10 @@ int cms_get_msvcb_values_response_decode(cms_get_msvcb_values_response_t *pdu, c
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->msvcb->count < (int32_t)cnt) {
+            pdu->msvcb->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->msvcb->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_msvcb_value_choice_t *e = (cms_msvcb_value_choice_t*)pdu->msvcb->elements[i];

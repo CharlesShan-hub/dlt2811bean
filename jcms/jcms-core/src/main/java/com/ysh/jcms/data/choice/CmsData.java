@@ -82,6 +82,7 @@ public class CmsData extends CmsType {
     public CmsData() { super(Codec.DATA);
         this.choice           = new CmsEnumerated();
         this.alt_sequence     = new CmsArray<>(CmsData.class);
+        this.alt_sequence.allocSize = 0; // 避免嵌套预分配导致 GC 超限
         this.alt_error        = new CmsServiceError();
         this.alt_boolean      = new CmsBoolean();
         this.alt_int8         = new CmsInt8();

@@ -49,6 +49,10 @@ int cms_get_brcb_values_request_decode(cms_get_brcb_values_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)cnt) {
+            pdu->reference->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->reference->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_object_reference_t *e = (cms_object_reference_t*)pdu->reference->elements[i];
@@ -108,6 +112,10 @@ int cms_get_brcb_values_response_decode(cms_get_brcb_values_response_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
+        if (pdu->brcb->count < (int32_t)cnt) {
+            pdu->brcb->count = (int32_t)cnt;
+            return CMS_RETRY;
+        }
         pdu->brcb->count = (int32_t)cnt;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_rcb_value_choice_t *e = (cms_rcb_value_choice_t*)pdu->brcb->elements[i];
