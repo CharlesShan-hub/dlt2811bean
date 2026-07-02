@@ -160,6 +160,34 @@ public class CmsData extends CmsType {
     }
 
     @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof CmsData)) return false;
+        CmsData other = (CmsData) o;
+        if (!choice.equals(other.choice)) return false;
+        // Only compare the selected alternative
+        CmsType myChild = choiceChild();
+        CmsType otherChild = other.choiceChild();
+        if (myChild == null && otherChild == null) return true;
+        if (myChild == null || otherChild == null) return false;
+        return myChild.equals(otherChild);
+    }
+
+    @Override
+    protected String toString(int depth) {
+        CmsType child = choiceChild();
+        if (child == null) return "CHOICE {(null)}";
+
+        java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
+        for (java.lang.reflect.Field f : child.getClass().getFields()) {
+            if (CmsType.class.isAssignableFrom(f.getType())) {
+                try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
+            }
+        }
+        return "CHOICE {" + CmsFormatUtil.toString(child, depth, fieldNames) + "}";
+    }
+
+    @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(choice, alt_sequence,
             alt_boolean, alt_int8, alt_int16, alt_int32, alt_int64,

@@ -129,6 +129,10 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
         uint32_t count;
         per_error_t perr = per_decode_length(&s, &count);
         if (perr) return CMS_ERR;
+        if (pdu->reference->count < (int32_t)count) {
+            pdu->reference->count = (int32_t)count;
+            return CMS_RETRY;
+        }
         pdu->reference->count = (int32_t)count;
         for (uint32_t i = 0; i < count; i++) {
             cms_object_reference_t *elem = (cms_object_reference_t*)pdu->reference->elements[i];

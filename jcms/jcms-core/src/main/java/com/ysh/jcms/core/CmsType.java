@@ -99,9 +99,7 @@ public abstract class CmsType {
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI encode (codec not set)");
         log.debug("encode {} start", getClass().getSimpleName());
-        logAllocSizes(this, "  BEFORE write");
         write();
-        logAllocSizes(this, "  AFTER write, BEFORE C encode");
         byte[] result = codec.encode(nativePtr);
         log.debug("encode {} OK, resultLen={}", getClass().getSimpleName(), result.length);
         return result;
@@ -116,7 +114,8 @@ public abstract class CmsType {
      * SEQUENCE OF has more elements than slots, the C decoder writes the
      * actual count into {@code cms_array_t.count} then returns
      * {@code CMS_RETRY (-2)}.  Java reads the count, adjusts allocSize,
-     * clears items, and retries.  Loops up to 3 times.
+     * clears items, and retries.  Retries in a while loop until C returns
+     * 0 (success) or a genuine error.
      */
     public void decode(byte[] data) {
         if (codec == null)
@@ -125,8 +124,9 @@ public abstract class CmsType {
 
         log.debug("decode {} start, dataLen={}", getClass().getSimpleName(), data.length);
 
-        for (int retry = 0; retry < 3; retry++) {
-            log.debug("decode {} retry={}", getClass().getSimpleName(), retry);
+        int retry = 10;
+        while (retry-- > 0) {
+            log.debug("decode {} retry={}", getClass().getSimpleName(), 10 - retry - 1);
 
             // Fresh native memory
             allocate();
@@ -150,48 +150,21 @@ public abstract class CmsType {
 
             // CMS_RETRY: C wrote the actual count(s); read them and resize
             log.debug("  CMS_RETRY: reading array counts from native memory");
-            logAllocSizes(this, "  BEFORE readAllArrayCounts");
-            readAllArrayCounts(this);
-            logAllocSizes(this, "  AFTER readAllArrayCounts");
-        }
-
-        throw new RuntimeException(
-            "decode failed: retry exhausted for " + getClass().getSimpleName());
-    }
-
-    /** Log allocSize for every CmsArray in the tree. */
-    private static void logAllocSizes(CmsType node, String prefix) {
-        if (node instanceof CmsArray) {
-            CmsArray<?> arr = (CmsArray<?>) node;
-            int count = (arr.nativePtr != null) ? arr.nativePtr.getInt(8) : -1;
-            log.debug("{} [CmsArray {}] items={} allocSize={} nativeCount={}",
-                prefix, node.getClass().getSimpleName(),
-                arr.items.size(), arr.allocSize, count);
-        }
-        for (CmsType child : node.children()) {
-            if (child != null) logAllocSizes(child, prefix + "  ");
+            resize();
         }
     }
 
     /**
-     * After CMS_RETRY, read the actual count that C wrote into each CmsArray's
-     * native memory, and set allocSize accordingly for the retry.
-     * Clears items after reading children so write() re-creates with correct size.
+     * After CMS_RETRY, resize the tree so that every CmsArray has enough
+     * slots for the actual element count reported by C.
+     * Default implementation: recurse into children.
+     * CmsArray overrides this to read its native count and resize items.
      */
-    private static void readAllArrayCounts(CmsType node) {
-        if (node == null) return;
-        // First, read count from ALL children recursively
-        for (CmsType child : node.children()) {
-            if (child != null) readAllArrayCounts(child);
-        }
-        // Then apply to this node and clear items
-        if (node instanceof CmsArray) {
-            CmsArray<?> arr = (CmsArray<?>) node;
-            if (arr.nativePtr != null) {
-                int c = arr.nativePtr.getInt(8); // cms_array_t.count at offset 8
-                arr.allocSize = Math.max(c, 1);
-            }
-            arr.items.clear(); // clear AFTER reading children
+    void resize() {
+        List<? extends CmsType> kids = children();
+        for (int i = 0; i < kids.size(); i++) {
+            CmsType child = kids.get(i);
+            if (child != null) child.resize();
         }
     }
 
@@ -219,7 +192,7 @@ public abstract class CmsType {
         return toString(0);
     }
 
-    private String toString(int depth) {
+    protected String toString(int depth) {
         // Build field name map for debug output
         java.util.Map<CmsType, String> fieldNames = new IdentityHashMap<>();
         for (java.lang.reflect.Field f : getClass().getFields()) {

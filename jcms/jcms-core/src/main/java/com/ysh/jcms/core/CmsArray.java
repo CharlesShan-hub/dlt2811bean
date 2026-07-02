@@ -38,7 +38,9 @@ public class CmsArray<T extends CmsType> extends CmsType {
     private Class<T> itemClass;
 
     /** Number of elements to pre-allocate during decode (adjustable externally). */
-    public int allocSize = 8;
+    public int allocSize = 1;
+
+    public Class<T> getItemClass() { return itemClass; }
 
     public CmsArray() {}
 
@@ -131,6 +133,24 @@ public class CmsArray<T extends CmsType> extends CmsType {
         }
     }
 
+    @Override
+    void resize() {
+        super.resize();  // 先递归扩子数组
+        if (nativePtr != null) {
+            int c = nativePtr.getInt(8);
+            allocSize = Math.max(c, 1);
+        }
+        while (items.size() < allocSize && itemClass != null) {
+            try {
+                items.add(itemClass.getDeclaredConstructor().newInstance());
+            } catch (Exception e) {
+                break;
+            }
+        }
+        while (items.size() > allocSize) {
+            items.remove(items.size() - 1);
+        }
+    }
     // ==================== equals / hashCode ====================
 
     @Override
