@@ -20,7 +20,7 @@ public class CmsSetLcbValuesError extends CmsType {
 
     public CmsSetLcbValuesError() { super(Codec.SET_LCB_VALUES_ERROR);
         this.reqId  = new CmsReqId();
-        this.result = new CmsArray<>();
+        this.result = new CmsArray<>(CmsSetLcbResult.class);
     }
     
     public CmsSetLcbValuesError reqId(int v) { this.reqId.value(v); return this; }

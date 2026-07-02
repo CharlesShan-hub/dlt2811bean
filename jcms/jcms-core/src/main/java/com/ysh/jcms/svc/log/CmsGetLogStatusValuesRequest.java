@@ -21,7 +21,7 @@ public class CmsGetLogStatusValuesRequest extends CmsType {
 
     public CmsGetLogStatusValuesRequest() { super(Codec.GET_LOG_STATUS_VALUES_REQUEST);
         this.reqId        = new CmsReqId();
-        this.logReference = new CmsArray<>();
+        this.logReference = new CmsArray<>(CmsObjectReference.class);
     }
     
     public CmsGetLogStatusValuesRequest reqId(int v) { this.reqId.value(v); return this; }

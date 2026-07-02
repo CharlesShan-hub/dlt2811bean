@@ -20,7 +20,7 @@ public class CmsSetLcbValuesRequest extends CmsType {
 
     public CmsSetLcbValuesRequest() { super(Codec.SET_LCB_VALUES_REQUEST);
         this.reqId = new CmsReqId();
-        this.lcb   = new CmsArray<>();
+        this.lcb   = new CmsArray<>(CmsSetLcbEntry.class);
     }
     
     public CmsSetLcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }

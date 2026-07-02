@@ -23,7 +23,7 @@ public class CmsQueryLogAfterResponse extends CmsType {
 
     public CmsQueryLogAfterResponse() { super(Codec.QUERY_LOG_AFTER_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.logEntry    = new CmsArray<>();
+        this.logEntry    = new CmsArray<>(CmsLogEntry.class);
         this.moreFollows = new CmsBoolean();
     }
     

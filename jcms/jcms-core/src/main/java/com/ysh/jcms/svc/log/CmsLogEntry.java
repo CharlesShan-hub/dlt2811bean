@@ -23,7 +23,7 @@ public class CmsLogEntry extends CmsType {
     public CmsLogEntry() {
         this.timeOfEntry = new CmsBinaryTime();
         this.entryId     = new CmsEntryId();
-        this.entryData   = new CmsArray<>();
+        this.entryData   = new CmsArray<>(CmsLogDataEntry.class);
     }
     
     public CmsLogEntry timeOfEntry(CmsBinaryTime v) { this.timeOfEntry = v; return this; }

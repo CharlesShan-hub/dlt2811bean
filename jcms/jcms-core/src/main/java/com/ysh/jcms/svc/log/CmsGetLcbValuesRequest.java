@@ -21,7 +21,7 @@ public class CmsGetLcbValuesRequest extends CmsType {
 
     public CmsGetLcbValuesRequest() { super(Codec.GET_LCB_VALUES_REQUEST);
         this.reqId     = new CmsReqId();
-        this.reference = new CmsArray<>();
+        this.reference = new CmsArray<>(CmsObjectReference.class);
     }
     
     public CmsGetLcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }

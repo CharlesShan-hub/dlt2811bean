@@ -23,7 +23,7 @@ public class CmsGetLcbValuesResponse extends CmsType {
 
     public CmsGetLcbValuesResponse() { super(Codec.GET_LCB_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.lcb         = new CmsArray<>();
+        this.lcb         = new CmsArray<>(CmsLcbValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
     

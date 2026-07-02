@@ -23,7 +23,7 @@ public class CmsGetLogStatusValuesResponse extends CmsType {
 
     public CmsGetLogStatusValuesResponse() { super(Codec.GET_LOG_STATUS_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.log         = new CmsArray<>();
+        this.log         = new CmsArray<>(CmsLogStatusValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
     

@@ -23,7 +23,7 @@ public class CmsGetRpcMethodDefinitionResponse extends CmsType {
 
     public CmsGetRpcMethodDefinitionResponse() { super(Codec.GET_RPC_METHOD_DEFINITION_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>();
+        this.reference   = new CmsArray<>(CmsRpcMethodDefChoice.class);
         this.moreFollows = new CmsBoolean();
     }
     

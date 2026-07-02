@@ -23,7 +23,7 @@ public class CmsQueryLogByTimeResponse extends CmsType {
 
     public CmsQueryLogByTimeResponse() { super(Codec.QUERY_LOG_BY_TIME_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.logEntry    = new CmsArray<>();
+        this.logEntry    = new CmsArray<>(CmsLogEntry.class);
         this.moreFollows = new CmsBoolean();
     }
     
