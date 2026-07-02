@@ -46,7 +46,6 @@ public class GetBrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse();
-        resp.brcb.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

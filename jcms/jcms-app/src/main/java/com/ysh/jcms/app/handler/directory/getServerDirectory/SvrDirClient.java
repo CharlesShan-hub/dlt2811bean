@@ -39,7 +39,6 @@ public class SvrDirClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
-        resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
         List<String> names = new ArrayList<>();

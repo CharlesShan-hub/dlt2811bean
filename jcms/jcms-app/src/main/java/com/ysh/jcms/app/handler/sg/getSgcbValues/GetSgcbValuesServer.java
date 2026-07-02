@@ -29,7 +29,6 @@ public class GetSgcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsGetSgcbValuesRequest req = (CmsGetSgcbValuesRequest) decoded;
-        req.sgcbReference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 
     @Override
@@ -39,7 +38,6 @@ public class GetSgcbValuesServer extends BaseServerHandler {
         log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.count);
 
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse().reqId(reqId);
-        resp.sgscb.allocSize = Math.max(req.sgcbReference.count, 1);
 
         CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().getProtocol().getSetting();
         int numOfSG = setting.getNumOfSG();

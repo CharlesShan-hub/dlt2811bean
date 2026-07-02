@@ -64,7 +64,6 @@ public class GetDataSetValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetDataSetValuesResponse resp = new CmsGetDataSetValuesResponse();
-        resp.value.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

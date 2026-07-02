@@ -28,7 +28,6 @@ public class GetDataDefinitionServer extends BaseServerHandler {
 
     @Override
     protected void prepareDecode(CmsType decoded) {
-        ((CmsGetDataDefinitionRequest) decoded).data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 
     @Override
@@ -42,7 +41,6 @@ public class GetDataDefinitionServer extends BaseServerHandler {
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
-        resp.data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
 
         int ps = pageSize();
         for (int i = 0; i < req.data.count && resp.data.count < ps; i++) {

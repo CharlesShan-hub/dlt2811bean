@@ -1,7 +1,6 @@
 package com.ysh.jcms.data.choice;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsEnumerated;
@@ -82,7 +81,7 @@ public class CmsData extends CmsType {
     public CmsData() { super(Codec.DATA);
         this.choice           = new CmsEnumerated();
         this.alt_sequence     = new CmsArray<>(CmsData.class);
-        this.alt_sequence.allocSize = 0; // 避免嵌套预分配导致 GC 超限
+        this.alt_sequence.allocSize = 0; // 避免嵌套预分配导致栈溢出
         this.alt_error        = new CmsServiceError();
         this.alt_boolean      = new CmsBoolean();
         this.alt_int8         = new CmsInt8();
@@ -156,7 +155,7 @@ public class CmsData extends CmsType {
                 try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
             }
         }
-        return "CHOICE {" + CmsFormatUtil.toString(child, 0, fieldNames) + "}";
+        return "CHOICE {" + child.toString() + "}";
     }
 
     @Override
@@ -177,14 +176,14 @@ public class CmsData extends CmsType {
     protected String toString(int depth) {
         CmsType child = choiceChild();
         if (child == null) return "CHOICE {(null)}";
+        return "(CmsData) {" + child.toString() + "}";
+    }
 
-        java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
-        for (java.lang.reflect.Field f : child.getClass().getFields()) {
-            if (CmsType.class.isAssignableFrom(f.getType())) {
-                try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
-            }
-        }
-        return "CHOICE {" + CmsFormatUtil.toString(child, depth, fieldNames) + "}";
+    @Override
+    protected List<? extends CmsType> resizeList() {
+        CmsType child = choiceChild();
+        if (child == null) return java.util.Collections.emptyList();
+        return java.util.Collections.singletonList(child);
     }
 
     @Override

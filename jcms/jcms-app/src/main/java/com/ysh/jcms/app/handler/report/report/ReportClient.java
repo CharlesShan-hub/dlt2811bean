@@ -22,7 +22,6 @@ public class ReportClient extends BaseClientHandler {
     public void handleReport(Frame frame) {
         try {
             CmsReport report = new CmsReport();
-            report.entry.entryData.allocSize = 256;
             report.decode(frame.asduBytes());
 
             StringBuilder sb = new StringBuilder();

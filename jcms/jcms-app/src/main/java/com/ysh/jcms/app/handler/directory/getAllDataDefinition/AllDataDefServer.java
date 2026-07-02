@@ -147,7 +147,6 @@ public class AllDataDefServer extends BaseServerHandler {
 
         CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse()
             .reqId(reqId);
-        resp.data.allocSize = pageSize;
         for (CmsDataDefinitionEntry e : entries) {
             resp.data.add(e);
         }
@@ -163,7 +162,6 @@ public class AllDataDefServer extends BaseServerHandler {
         if (doType == null) return null;
 
         CmsArray<CmsDataDefinitionStructElem> arr = new CmsArray<>();
-        arr.allocSize = Math.max(doType.getDas().size() + doType.getSdos().size(), 1);
         for (SclDA da : doType.getDas()) {
             String bType = da.getBType();
             if (bType == null) bType = "BOOLEAN";

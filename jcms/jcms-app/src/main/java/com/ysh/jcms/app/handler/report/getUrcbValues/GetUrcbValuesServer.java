@@ -29,7 +29,6 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) decoded;
-        req.reference.allocSize = pageSize();
     }
 
     @Override
@@ -42,7 +41,6 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
-        resp.urcb.allocSize = pageSize();
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));

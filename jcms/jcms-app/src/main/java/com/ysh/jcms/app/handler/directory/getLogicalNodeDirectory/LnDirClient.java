@@ -53,7 +53,6 @@ public class LnDirClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse();
-        resp.reference.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
         List<String> names = new ArrayList<>();

@@ -160,8 +160,17 @@ public abstract class CmsType {
      * Default implementation: recurse into children.
      * CmsArray overrides this to read its native count and resize items.
      */
+    /**
+     * Which children to resize after CMS_RETRY.
+     * Default: all children(). CHOICE types override to return only the
+     * selected alternative, preventing expansion of unselected branches.
+     */
+    protected List<? extends CmsType> resizeList() {
+        return children();
+    }
+
     void resize() {
-        List<? extends CmsType> kids = children();
+        List<? extends CmsType> kids = resizeList();
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
             if (child != null) child.resize();

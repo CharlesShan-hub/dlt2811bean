@@ -202,7 +202,7 @@ public class LogStorage {
         dos.write(eidPadded);
 
         // data entries
-        int numData = entry.entryData.count;
+        int numData = entry.entryData.items.size();
         dos.writeInt(numData);
         for (int i = 0; i < numData; i++) {
             CmsLogDataEntry de = entry.entryData.items.get(i);

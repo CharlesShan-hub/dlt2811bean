@@ -22,7 +22,6 @@ public class SetBrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetBrcbValuesError err = new CmsSetBrcbValuesError();
-        err.result.allocSize = 64;
         err.decode(frame.asduBytes());
         StringBuilder sb = new StringBuilder("SetBRCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {

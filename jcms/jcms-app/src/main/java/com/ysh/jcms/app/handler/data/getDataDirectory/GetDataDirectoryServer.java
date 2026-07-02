@@ -68,7 +68,6 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         // Build paged response
         CmsGetDataDirectoryResponse resp = new CmsGetDataDirectoryResponse().reqId(reqId);
         int ps = pageSize();
-        resp.dataAttribute.allocSize = Math.max(ps, 1);
         int count = 0;
         for (int i = startIdx; i < allEntries.size() && count < ps; i++) {
             SclDataDirectoryEntry e = allEntries.get(i);

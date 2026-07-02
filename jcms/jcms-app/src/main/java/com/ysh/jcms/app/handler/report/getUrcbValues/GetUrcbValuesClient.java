@@ -46,7 +46,6 @@ public class GetUrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse();
-        resp.urcb.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

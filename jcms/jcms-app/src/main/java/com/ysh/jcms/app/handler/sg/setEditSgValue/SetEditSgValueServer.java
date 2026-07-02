@@ -26,7 +26,6 @@ public class SetEditSgValueServer extends BaseServerHandler {
     protected void prepareDecode(CmsType decoded) {
         CmsSetEditSgValueRequest req = (CmsSetEditSgValueRequest) decoded;
         int n = pageSize();
-        req.data.allocSize = n;
         for (int i = 0; i < n; i++) {
             req.data.items.add(new CmsSgRefValueEntry());
         }

@@ -50,7 +50,6 @@ public class GetEditSgValueClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse();
-        resp.value.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

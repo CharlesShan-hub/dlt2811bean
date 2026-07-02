@@ -33,7 +33,6 @@ public class GetEditSgValueServer extends BaseServerHandler {
 
     @Override
     protected void prepareDecode(CmsType decoded) {
-        ((CmsGetEditSgValueRequest) decoded).data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 
     @Override
@@ -47,7 +46,6 @@ public class GetEditSgValueServer extends BaseServerHandler {
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse().reqId(reqId);
-        resp.value.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
 
         for (int i = 0; i < req.data.count; i++) {
             CmsSgRefFcEntry entry = req.data.items.get(i);

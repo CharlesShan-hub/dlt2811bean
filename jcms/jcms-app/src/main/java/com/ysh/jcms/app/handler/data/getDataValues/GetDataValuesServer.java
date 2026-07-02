@@ -26,7 +26,6 @@ public class GetDataValuesServer extends BaseServerHandler {
 
     @Override
     protected void prepareDecode(CmsType decoded) {
-        ((CmsGetDataValuesRequest) decoded).data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
     }
 
     @Override
@@ -40,7 +39,6 @@ public class GetDataValuesServer extends BaseServerHandler {
         SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
 
         CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse().reqId(reqId);
-        resp.value.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
 
         for (int i = 0; i < req.data.count; i++) {
             CmsDataRefEntry refEntry = req.data.items.get(i);

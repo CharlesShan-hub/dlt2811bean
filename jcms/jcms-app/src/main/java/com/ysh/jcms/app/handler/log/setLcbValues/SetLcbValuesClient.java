@@ -22,7 +22,6 @@ public class SetLcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetLcbValuesError err = new CmsSetLcbValuesError();
-        err.result.allocSize = 64;
         err.decode(frame.asduBytes());
         StringBuilder sb = new StringBuilder("SetLCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {

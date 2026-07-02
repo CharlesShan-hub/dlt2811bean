@@ -33,7 +33,6 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) decoded;
-        req.logReference.allocSize = pageSize();
     }
 
     @Override

@@ -62,7 +62,6 @@ public class GetSgcbValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
-        resp.sgscb.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

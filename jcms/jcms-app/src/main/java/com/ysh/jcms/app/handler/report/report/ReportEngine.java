@@ -193,7 +193,6 @@ public class ReportEngine {
 
         // Pre-allocate entryData array
         int totalFcdas = dataSet.getFcDas().size();
-        report.entry.entryData.allocSize = totalFcdas > 0 ? totalFcdas : 1;
 
         // entryData — for each FCDA in DataSet
         int entryId = 1;

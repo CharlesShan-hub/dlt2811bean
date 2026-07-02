@@ -2,6 +2,8 @@ package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.svc.log.CmsLogDataEntry;
+import com.ysh.jcms.svc.log.CmsLogEntry;
 import com.ysh.jcms.svc.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.svc.log.CmsQueryLogByTimeRequest;
 import com.ysh.jcms.svc.log.CmsQueryLogByTimeResponse;
@@ -40,11 +42,16 @@ public class QueryLogByTimeClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
-        // 使用配置的 maxArraySize（默认 128），内层 entryData/alt_sequence 的 allocSize=0
-        // 不会再发生嵌套预分配爆炸
-        resp.logEntry.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
+        try {
+            CmsLogEntry first = resp.logEntry.items.get(0);
+            CmsLogDataEntry de = first.entryData.items.get(0);
+            System.out.println(">>> choice=" + de.value.choice.value() + " alt_int32=" + de.value.alt_int32.value());
+        } catch (Exception e) {
+            System.out.println(">>> debug error: " + e.getMessage());
+            System.out.println(">>> items.size=" + resp.logEntry.items.size());
+        }
         log.info("QueryLogByTime returned {} entries, moreFollows={}",
             resp.logEntry.count, resp.moreFollows.value());
     }

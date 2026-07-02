@@ -46,7 +46,6 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse().reqId(reqId);
-        resp.memberData.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         int ps = pageSize(), count = 0;
 
         for (SclFCDA fcda : dataSet.getFcDas()) {

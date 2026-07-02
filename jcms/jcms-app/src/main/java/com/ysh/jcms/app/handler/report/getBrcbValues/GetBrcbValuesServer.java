@@ -29,7 +29,6 @@ public class GetBrcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsGetBrcbValuesRequest req = (CmsGetBrcbValuesRequest) decoded;
-        req.reference.allocSize = pageSize();
     }
 
     @Override
@@ -42,7 +41,6 @@ public class GetBrcbValuesServer extends BaseServerHandler {
         if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse().reqId(reqId);
-        resp.brcb.allocSize = pageSize();
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));

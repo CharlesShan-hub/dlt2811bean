@@ -61,7 +61,6 @@ public class GetDataSetValuesServer extends BaseServerHandler {
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         CmsGetDataSetValuesResponse resp = new CmsGetDataSetValuesResponse().reqId(reqId);
-        resp.value.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         int ps = pageSize(), count = 0;
 
         for (SclFCDA fcda : dataSet.getFcDas()) {

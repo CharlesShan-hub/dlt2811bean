@@ -58,7 +58,6 @@ public class QueryLogByTimeServer extends BaseServerHandler {
         for (CmsLogEntry e : entries) {
             resp.logEntry.add(e);
         }
-        resp.logEntry.allocSize = 0;
         resp.moreFollows(false);
 
         log.info("QueryLogByTime: returning {} entries for ref={}", entries.size(), logRef);

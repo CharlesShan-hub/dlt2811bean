@@ -89,7 +89,6 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     /**
      * Hook called before decoding the request PDU.
      *
-     * <p>Subclasses can override to set {@code allocSize} on array fields
      * so that the native decoder can read the correct number of items.
      *
      * <p>Default implementation does nothing.

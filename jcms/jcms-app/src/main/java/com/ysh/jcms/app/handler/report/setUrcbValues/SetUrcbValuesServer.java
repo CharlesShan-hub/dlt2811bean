@@ -35,7 +35,6 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) decoded;
-        req.urcb.allocSize = pageSize();
     }
 
     @Override

@@ -41,7 +41,6 @@ public class SetDataSetValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetDataSetValuesError err = new CmsSetDataSetValuesError();
-        err.result.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         err.decode(frame.asduBytes());
         StringBuilder sb = new StringBuilder("SetDataSetValues partially failed: ");
         for (int i = 0; i < err.result.count; i++) {

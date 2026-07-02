@@ -74,7 +74,7 @@ public class CmsArray<T extends CmsType> extends CmsType {
     public void write() {
         // During decode: pre-allocate elements so the C decoder has valid targets.
         // Only allocate when allocSize > 0 to prevent re-entrant infinite allocation
-        // (e.g. CmsDataDefinition → CmsDataDefinitionStructElem → CmsDataDefinition → CmsArray).
+        // (e.g. CmsData → CmsArray<CmsData> → CmsData → ...).
         if (items.isEmpty() && itemClass != null && allocSize > 0) {
             for (int i = 0; i < allocSize; i++) {
                 try {
@@ -84,7 +84,7 @@ public class CmsArray<T extends CmsType> extends CmsType {
                 }
             }
         }
-        this.count = items.size();
+        int count = items.size();
         // Allocate enough slots for the C decoder: items.size() is the real count,
         // but allocSize serves as a safety margin so the C code can safely check
         // elements[i] for NULL (triggering CMS_RETRY) instead of reading garbage.
@@ -135,10 +135,10 @@ public class CmsArray<T extends CmsType> extends CmsType {
 
     @Override
     void resize() {
-        super.resize();  // 先递归扩子数组
+        int c = 0;
         if (nativePtr != null) {
-            int c = nativePtr.getInt(8);
-            allocSize = Math.max(c, 1);
+            c = nativePtr.getInt(8);  // cms_array_t.count at offset 8
+            if (c > 0) allocSize = c;
         }
         while (items.size() < allocSize && itemClass != null) {
             try {

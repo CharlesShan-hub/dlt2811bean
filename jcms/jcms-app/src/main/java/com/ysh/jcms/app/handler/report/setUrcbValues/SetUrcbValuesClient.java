@@ -22,7 +22,6 @@ public class SetUrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetUrcbValuesError err = new CmsSetUrcbValuesError();
-        err.result.allocSize = 64;
         err.decode(frame.asduBytes());
         StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {

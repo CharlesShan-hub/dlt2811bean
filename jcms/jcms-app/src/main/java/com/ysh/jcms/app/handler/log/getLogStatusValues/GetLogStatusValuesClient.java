@@ -44,7 +44,6 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse();
-        resp.log.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

@@ -32,7 +32,6 @@ public class SetLcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsSetLcbValuesRequest req = (CmsSetLcbValuesRequest) decoded;
-        req.lcb.allocSize = pageSize();
     }
 
     @Override

@@ -35,7 +35,6 @@ public class SetBrcbValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsSetBrcbValuesRequest req = (CmsSetBrcbValuesRequest) decoded;
-        req.brcb.allocSize = pageSize();
     }
 
     @Override

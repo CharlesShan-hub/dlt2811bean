@@ -56,7 +56,6 @@ public class AllDataDefClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse();
-        resp.data.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

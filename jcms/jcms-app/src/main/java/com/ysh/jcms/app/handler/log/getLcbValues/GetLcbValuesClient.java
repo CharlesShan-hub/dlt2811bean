@@ -46,7 +46,6 @@ public class GetLcbValuesClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse();
-        resp.lcb.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 

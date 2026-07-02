@@ -83,14 +83,18 @@ public class MockLogGenerator {
 
                 entry.entryData.add(de);
             }
-            entry.entryData.count = entry.entryData.items.size();
+
+            System.out.println("  entry[" + i + "] before append:");
+            System.out.println(entry);
+            System.out.println("  entry[" + i + "] entryData[0] value:");
+            System.out.println(entry.entryData.items.get(0).value);
 
             storage.append(LOG_REF, entry);
 
             LocalDateTime dt = LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(entryEpochMs), ZoneId.systemDefault());
             System.out.printf("  [%s] entryId=%s  %d data entries%n",
-                dt.toString().replace("T", " "), entryId, entry.entryData.count);
+                dt.toString().replace("T", " "), entryId, entry.entryData.items.size());
         }
 
         System.out.println();

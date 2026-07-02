@@ -24,12 +24,7 @@ public class SetDataValuesServer extends BaseServerHandler {
     @Override
     protected void prepareDecode(CmsType decoded) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) decoded;
-        int allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
-        req.data.allocSize = allocSize;
-        for (int i = 0; i < allocSize; i++) {
-            req.data.add(new CmsDataRefValueEntry());
-        }
-        req.data.write();
+        req.data.add(new CmsDataRefValueEntry());
     }
 
     @Override

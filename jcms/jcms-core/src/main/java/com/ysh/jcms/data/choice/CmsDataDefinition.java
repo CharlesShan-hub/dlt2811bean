@@ -51,7 +51,7 @@ public class CmsDataDefinition extends CmsType {
         this.alt_error              = new CmsServiceError();
         this.alt_array              = new CmsDataDefinitionArray();
         this.alt_structure          = new CmsArray<>(CmsDataDefinitionStructElem.class);
-        this.alt_structure.allocSize = 0; /* alloc on demand during read, not write */
+        this.alt_structure.allocSize = 0; // 避免嵌套预分配导致栈溢出
         this.alt_bit_string_len     = new CmsInt32();
         this.alt_octet_string_len   = new CmsInt32();
         this.alt_visible_string_len = new CmsInt32();
@@ -66,5 +66,25 @@ public class CmsDataDefinition extends CmsType {
         return Arrays.asList(choice, alt_error, alt_array, alt_structure,
             alt_bit_string_len, alt_octet_string_len,
             alt_visible_string_len, alt_unicode_string_len);
+    }
+
+    private CmsType choiceChild() {
+        switch (choice.value()) {
+            case 0:  return null; // CHOICE_ERROR — not a real field
+            case 1:  return alt_array;
+            case 2:  return alt_structure;
+            case 3:  return alt_bit_string_len;
+            case 4:  return alt_octet_string_len;
+            case 5:  return alt_visible_string_len;
+            case 6:  return alt_unicode_string_len;
+            default: return null;
+        }
+    }
+
+    @Override
+    protected List<? extends CmsType> resizeList() {
+        CmsType child = choiceChild();
+        if (child == null) return java.util.Collections.emptyList();
+        return java.util.Collections.singletonList(child);
     }
 }

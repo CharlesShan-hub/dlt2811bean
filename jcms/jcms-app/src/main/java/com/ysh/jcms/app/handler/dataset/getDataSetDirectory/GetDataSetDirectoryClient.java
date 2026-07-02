@@ -58,7 +58,6 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse();
-        resp.memberData.allocSize = CmsConfigLoader.load().getProtocol().getMaxArraySize();
         resp.decode(frame.asduBytes());
         traceResp(resp);
 
