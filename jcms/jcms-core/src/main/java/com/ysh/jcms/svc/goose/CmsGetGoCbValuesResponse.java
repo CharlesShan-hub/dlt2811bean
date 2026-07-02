@@ -23,7 +23,7 @@ public class CmsGetGoCbValuesResponse extends CmsType {
 
     public CmsGetGoCbValuesResponse() { super(Codec.GET_GO_CB_VALUES_RESPONSE);
         this.reqId       = new CmsReqId();
-        this.gocb        = new CmsArray<>();
+        this.gocb        = new CmsArray<>(CmsGocbValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
     

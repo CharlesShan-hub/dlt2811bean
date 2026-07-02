@@ -25,7 +25,7 @@ public class CmsGetGoReferenceRequest extends CmsType {
     public CmsGetGoReferenceRequest() { super(Codec.GET_GO_REFERENCE_REQUEST);
         this.reqId         = new CmsReqId();
         this.gocbReference = new CmsObjectReference();
-        this.memberOfs     = new CmsArray<>();
+        this.memberOfs     = new CmsArray<>(CmsInt16U.class);
     }
     
     public CmsGetGoReferenceRequest reqId(int v) { this.reqId.value(v); return this; }

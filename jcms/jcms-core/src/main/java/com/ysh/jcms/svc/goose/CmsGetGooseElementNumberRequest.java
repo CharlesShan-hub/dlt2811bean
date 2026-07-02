@@ -24,7 +24,7 @@ public class CmsGetGooseElementNumberRequest extends CmsType {
     public CmsGetGooseElementNumberRequest() { super(Codec.GET_GOOSE_ELEMENT_NUMBER_REQUEST);
         this.reqId         = new CmsReqId();
         this.gocbReference = new CmsObjectReference();
-        this.memberData    = new CmsArray<>();
+        this.memberData    = new CmsArray<>(CmsGoRefFcEntry.class);
     }
     
     public CmsGetGooseElementNumberRequest reqId(int v) { this.reqId.value(v); return this; }

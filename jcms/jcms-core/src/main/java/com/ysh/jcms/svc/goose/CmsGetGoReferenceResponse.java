@@ -31,7 +31,7 @@ public class CmsGetGoReferenceResponse extends CmsType {
         this.gocbReference = new CmsObjectReference();
         this.confRev       = new CmsInt32U();
         this.datSet        = new CmsObjectReference();
-        this.memberData    = new CmsArray<>();
+        this.memberData    = new CmsArray<>(CmsGoRefFcEntry.class);
     }
     
     public CmsGetGoReferenceResponse reqId(int v) { this.reqId.value(v); return this; }

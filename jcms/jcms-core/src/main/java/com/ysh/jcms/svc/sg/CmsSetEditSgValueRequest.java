@@ -20,7 +20,7 @@ public class CmsSetEditSgValueRequest extends CmsType {
 
     public CmsSetEditSgValueRequest() { super(Codec.SET_EDIT_SG_VALUE_REQUEST);
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>();
+        this.data  = new CmsArray<>(CmsSgRefValueEntry.class);
     }
     
     public CmsSetEditSgValueRequest reqId(int v) { this.reqId.value(v); return this; }

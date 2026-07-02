@@ -20,7 +20,7 @@ public class CmsSetMsvcbValuesError extends CmsType {
 
     public CmsSetMsvcbValuesError() { super(Codec.SET_MSVCB_VALUES_ERROR);
         this.reqId  = new CmsReqId();
-        this.result = new CmsArray<>();
+        this.result = new CmsArray<>(CmsSetMsvcbResult.class);
     }
     
     public CmsSetMsvcbValuesError reqId(int v) { this.reqId.value(v); return this; }

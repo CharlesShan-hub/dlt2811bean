@@ -20,7 +20,7 @@ public class CmsSetGoCbValuesError extends CmsType {
 
     public CmsSetGoCbValuesError() { super(Codec.SET_GO_CB_VALUES_ERROR);
         this.reqId  = new CmsReqId();
-        this.result = new CmsArray<>();
+        this.result = new CmsArray<>(CmsSetGoCbResult.class);
     }
     
     public CmsSetGoCbValuesError reqId(int v) { this.reqId.value(v); return this; }

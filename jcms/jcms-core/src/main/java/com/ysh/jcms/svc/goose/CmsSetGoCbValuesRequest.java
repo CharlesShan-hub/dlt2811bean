@@ -20,7 +20,7 @@ public class CmsSetGoCbValuesRequest extends CmsType {
 
     public CmsSetGoCbValuesRequest() { super(Codec.SET_GO_CB_VALUES_REQUEST);
         this.reqId = new CmsReqId();
-        this.gocb  = new CmsArray<>();
+        this.gocb  = new CmsArray<>(CmsSetGoCbEntry.class);
     }
     
     public CmsSetGoCbValuesRequest reqId(int v) { this.reqId.value(v); return this; }

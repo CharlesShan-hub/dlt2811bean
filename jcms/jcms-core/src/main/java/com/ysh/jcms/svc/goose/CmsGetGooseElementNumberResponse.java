@@ -32,7 +32,7 @@ public class CmsGetGooseElementNumberResponse extends CmsType {
         this.gocbReference = new CmsObjectReference();
         this.confRev       = new CmsInt32U();
         this.datSet        = new CmsObjectReference();
-        this.memberOffset  = new CmsArray<>();
+        this.memberOffset  = new CmsArray<>(CmsInt16U.class);
     }
     
     public CmsGetGooseElementNumberResponse reqId(int v) { this.reqId.value(v); return this; }

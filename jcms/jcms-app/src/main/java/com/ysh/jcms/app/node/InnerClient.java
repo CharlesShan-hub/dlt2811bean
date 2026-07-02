@@ -103,27 +103,36 @@ public class InnerClient implements ConnectionListener {
 
     @Override
     public void onFrameReceived(Connection connection, Frame frame) {
-        if (session == null) return;
-        // Match against pending request (response to a request we sent)
-        if (session.tryDispatchResponse(frame)) return;
+        try {
+            if (session == null) return;
+            // Match against pending request (response to a request we sent)
+            if (session.tryDispatchResponse(frame)) return;
 
-        // Handle server-initiated TEST (keepalive probe)
-        if (frame.header().serviceCode() == ServiceName.TEST && !frame.header().resp()) {
-            try {
-                connection.send(new Frame(
-                    new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false),
-                    new byte[0], frame.reqId()
-                ));
-                log.debug("Responded to server TEST probe");
-            } catch (IOException e) {
-                log.warn("Failed to respond to server TEST probe", e);
+            // Handle server-initiated TEST (keepalive probe)
+            if (frame.header().serviceCode() == ServiceName.TEST && !frame.header().resp()) {
+                try {
+                    connection.send(new Frame(
+                        new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false),
+                        new byte[0], frame.reqId()
+                    ));
+                    log.debug("Responded to server TEST probe");
+                } catch (IOException e) {
+                    log.warn("Failed to respond to server TEST probe", e);
+                }
+                return;
             }
-            return;
-        }
 
-        // Handle server-pushed REPORT (unsolicited)
-        if (frame.header().serviceCode() == ServiceName.REPORT && reportHandler != null) {
-            reportHandler.accept(frame);
+            // Handle server-pushed REPORT (unsolicited)
+            if (frame.header().serviceCode() == ServiceName.REPORT && reportHandler != null) {
+                try {
+                    reportHandler.accept(frame);
+                } catch (Exception e) {
+                    log.warn("Report handler failed", e);
+                }
+                return;
+            }
+        } catch (Exception e) {
+            log.warn("Unhandled exception in onFrameReceived: {}", e.getMessage(), e);
         }
     }
 

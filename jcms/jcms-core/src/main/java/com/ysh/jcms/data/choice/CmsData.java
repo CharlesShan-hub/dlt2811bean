@@ -81,7 +81,7 @@ public class CmsData extends CmsType {
 
     public CmsData() { super(Codec.DATA);
         this.choice           = new CmsEnumerated();
-        this.alt_sequence     = new CmsArray<>();
+        this.alt_sequence     = new CmsArray<>(CmsData.class);
         this.alt_error        = new CmsServiceError();
         this.alt_boolean      = new CmsBoolean();
         this.alt_int8         = new CmsInt8();

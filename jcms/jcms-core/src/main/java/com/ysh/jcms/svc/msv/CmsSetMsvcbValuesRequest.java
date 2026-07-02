@@ -20,7 +20,7 @@ public class CmsSetMsvcbValuesRequest extends CmsType {
 
     public CmsSetMsvcbValuesRequest() { super(Codec.SET_MSVCB_VALUES_REQUEST);
         this.reqId = new CmsReqId();
-        this.msvcb = new CmsArray<>();
+        this.msvcb = new CmsArray<>(CmsSetMsvcbEntry.class);
     }
     
     public CmsSetMsvcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }

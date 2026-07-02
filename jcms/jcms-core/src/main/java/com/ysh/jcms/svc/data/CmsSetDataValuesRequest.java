@@ -20,7 +20,7 @@ public class CmsSetDataValuesRequest extends CmsType {
 
     public CmsSetDataValuesRequest() { super(Codec.SET_DATA_VALUES_REQUEST);
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>();
+        this.data  = new CmsArray<>(CmsDataRefValueEntry.class);
     }
     
     public CmsSetDataValuesRequest reqId(int v) { this.reqId.value(v); return this; }

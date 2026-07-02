@@ -30,7 +30,7 @@ public class CmsReportEntry extends CmsType {
         this.timeOfEntry        = new CmsBinaryTime();
         this.entryIdPresent     = new CmsBoolean();
         this.entryId            = new CmsEntryId();
-        this.entryData          = new CmsArray<>();
+        this.entryData          = new CmsArray<>(CmsReportDataEntry.class);
     }
     
     public CmsReportEntry timeOfEntryPresent(boolean v) { this.timeOfEntryPresent.value(v); return this; }
