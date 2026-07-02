@@ -8,6 +8,7 @@ import com.ysh.jcms.svc.log.CmsQueryLogByTimeResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import java.io.IOException;
 
 public class QueryLogByTimeClient extends BaseClientHandler {
@@ -39,7 +40,6 @@ public class QueryLogByTimeClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
-        resp.logEntry.allocSize = 1024;
         resp.decode(frame.asduBytes());
         traceResp(resp);
         log.info("QueryLogByTime returned {} entries, moreFollows={}",

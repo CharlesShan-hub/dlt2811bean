@@ -103,22 +103,58 @@ public abstract class CmsType {
      * PER decode: decodes from a byte array into the current structure.
      * Uses {@link #codec} if set, otherwise throws.
      *
-     * <p>Calling {@link #write()} first ensures any CmsArray has its native
-     * {@code elements} pointer array allocated, which the C decoder needs
-     * as valid write targets. Without this, decoders that iterate
-     * {@code elements[i]} will see NULL pointers and return CMS_ERR.
+     * <p>Auto-retries with exponentially increasing allocSize (8, 16, 32, 64…)
+     * for nested {@link CmsArray} fields, so you never need to guess
+     * the element count in advance.
      */
     public void decode(byte[] data) {
         if (codec == null)
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI decode (codec not set)");
-        write();
-        try {
-            codec.decode(nativePtr, data);
-        } catch (Exception e) {
-            throw new RuntimeException("decode failed for " + getClass().getSimpleName(), e);
+        int guess = 8;
+        while (true) {
+            // 1) Re-allocate fresh native memory
+            allocate();
+            // 2) Apply the current guess to all nested CmsArrays
+            applyAllocSize(this, guess);
+            // 3) Pre-allocate with the guess
+            write();
+            // 4) Try to decode
+            Exception failure = null;
+            try {
+                codec.decode(nativePtr, data);
+            } catch (Exception e) {
+                failure = e;
+            }
+            if (failure == null) {
+                read();
+                return;
+            }
+            // 5) Guess was too small — double and retry
+            int next = guess * 2;
+            if (next > 65536)  // hard safety cap
+                throw new RuntimeException(
+                    "decode failed for " + getClass().getSimpleName() +
+                    " after retry up to allocSize=" + guess, failure);
+            guess = next;
         }
-        read();
+    }
+
+    /** Allocate (or re-allocate) native memory of the right size. */
+    private void allocate() {
+        this.nativeSize = calcNativeSize();
+        this.nativePtr = new Memory(nativeSize);
+        zero();
+    }
+
+    /** Recursively set allocSize on every CmsArray child. */
+    private static void applyAllocSize(CmsType node, int size) {
+        if (node instanceof CmsArray) {
+            ((CmsArray<?>) node).allocSize = size;
+        }
+        for (CmsType child : node.children()) {
+            if (child != null) applyAllocSize(child, size);
+        }
     }
 
     // ==================== equals / hashCode / toString ====================

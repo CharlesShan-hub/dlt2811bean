@@ -85,6 +85,11 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new GetUrcbValuesServer());
         registerServer(new SetUrcbValuesServer());
         registerServer(new ReportServer());
+        registerServer(new GetLcbValuesServer());
+        registerServer(new SetLcbValuesServer());
+        registerServer(new QueryLogByTimeServer());
+        registerServer(new QueryLogAfterServer());
+        registerServer(new GetLogStatusValuesServer());
         register(new ClearHandler());
         register(new ListHandler());
         register(new TracePduHandler());

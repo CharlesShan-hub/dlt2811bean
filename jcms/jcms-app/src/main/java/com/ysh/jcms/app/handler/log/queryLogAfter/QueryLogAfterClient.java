@@ -7,7 +7,6 @@ import com.ysh.jcms.svc.log.CmsQueryLogAfterRequest;
 import com.ysh.jcms.svc.log.CmsQueryLogAfterResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-
 import java.io.IOException;
 
 public class QueryLogAfterClient extends BaseClientHandler {
@@ -36,7 +35,6 @@ public class QueryLogAfterClient extends BaseClientHandler {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsQueryLogAfterResponse resp = new CmsQueryLogAfterResponse();
-        resp.logEntry.allocSize = 1024;
         resp.decode(frame.asduBytes());
         traceResp(resp);
         log.info("QueryLogAfter returned {} entries, moreFollows={}",

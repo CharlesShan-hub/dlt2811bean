@@ -152,28 +152,31 @@ public class SetLcbValuesServer extends BaseServerHandler {
 
         if (hasLogEna && !logEnaVal) {
             // logEna=false → set logEna first
+            lc.setLogEna("false");
             result.logEnaErrPresent(false);
-            setOtherLcbFields(result, entry);
+            setOtherLcbFields(result, entry, lc);
         } else if (hasLogEna && logEnaVal) {
             // logEna=true → set others first, then logEna
-            setOtherLcbFields(result, entry);
+            setOtherLcbFields(result, entry, lc);
             if (!hasEntryError(result)) {
+                lc.setLogEna("true");
                 result.logEnaErrPresent(false);
             }
         } else {
             // No logEna in entry
-            setOtherLcbFields(result, entry);
+            setOtherLcbFields(result, entry, lc);
         }
 
         log.info("SetLCBValues: applied fields to ref={}", ref);
         return result;
     }
 
-    private void setOtherLcbFields(CmsSetLcbResult result, CmsSetLcbEntry entry) {
+    private void setOtherLcbFields(CmsSetLcbResult result, CmsSetLcbEntry entry, SclLogControl lc) {
         // datSet
         if (entry.datSetPresent.value()) {
             byte[] val = entry.datSet.value();
             if (val != null && val.length > 0) {
+                lc.setDatSet(new String(val, StandardCharsets.UTF_8));
                 result.datSetErrPresent(false);
             } else {
                 result.datSetErrPresent(true).datSetErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -181,16 +184,20 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
         // trgOps
         if (entry.trgOpsPresent.value()) {
+            lc.setTrgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," +
+                entry.trgOps.data_update.value() + "," + entry.trgOps.integrity.value());
             result.trgOpsErrPresent(false);
         }
         // intgPd
         if (entry.intgPdPresent.value()) {
+            lc.setIntgPd(String.valueOf(entry.intgPd.value()));
             result.intgPdErrPresent(false);
         }
         // logRef
         if (entry.logRefPresent.value()) {
             byte[] val = entry.logRef.value();
             if (val != null && val.length > 0) {
+                lc.setLogName(new String(val, StandardCharsets.UTF_8));
                 result.logRefErrPresent(false);
             } else {
                 result.logRefErrPresent(true).logRefErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

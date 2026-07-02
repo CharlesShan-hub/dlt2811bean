@@ -37,6 +37,7 @@ public class QueryLogAfterServer extends BaseServerHandler {
         CmsQueryLogAfterResponse resp = new CmsQueryLogAfterResponse()
             .reqId(reqId)
             .moreFollows(false);
+        resp.logEntry.allocSize = 0;  // 空结果，避免预分配大量嵌套对象
 
         log.info("QueryLogAfter: returning 0 entries (log storage not yet implemented)");
         return ok(resp, reqId);

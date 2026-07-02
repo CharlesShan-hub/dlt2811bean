@@ -24,6 +24,7 @@ public class CmsLogEntry extends CmsType {
         this.timeOfEntry = new CmsBinaryTime();
         this.entryId     = new CmsEntryId();
         this.entryData   = new CmsArray<>(CmsLogDataEntry.class);
+        this.entryData.allocSize = 0;  // 避免嵌套预分配导致 GC 超限（LogDataEntry 含 CmsData 较深）
     }
     
     public CmsLogEntry timeOfEntry(CmsBinaryTime v) { this.timeOfEntry = v; return this; }
