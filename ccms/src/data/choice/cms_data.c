@@ -134,6 +134,7 @@ int cms_data_encode_stream(per_stream_t *s, const void *ptr) {
 
 int cms_data_decode_stream(per_stream_t *s, void *ptr) {
     cms_data_t *d = (cms_data_t*)ptr;
+    int retry_needed = 0;
 
     /* 1. Decode CHOICE index — small non-negative (always needed for virtual mode) */
     uint32_t sel32;
@@ -157,20 +158,18 @@ int cms_data_decode_stream(per_stream_t *s, void *ptr) {
         if (perr) return CMS_ERR;
         cms_array_t *arr = d ? (cms_array_t*)d->alt_sequence : NULL;
         if (d && !arr) return CMS_ERR;
-        if (arr && arr->count < (int32_t)count) {
+        if (arr) {
+            if (arr->count < (int32_t)count) retry_needed = 1;
             arr->count = (int32_t)count;
-            return CMS_RETRY;
         }
-        int retry_needed = 0;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < count; i++) {
-            void *elem = NULL;
-            if (arr && arr->elements && arr->elements[i]) elem = arr->elements[i];
-            err = cms_data_decode_stream(s, elem);
-            if (err == CMS_RETRY) retry_needed = 1;
+            err = cms_data_decode_stream(s, (!arr || retry_needed) ? NULL : arr->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
             else if (err) return err;
         }
-        if (retry_needed) return CMS_RETRY;
-        return CMS_OK;
+        if (inner_retry_needed) retry_needed = 1;
+        break;
     }
 
     case CMS_DATA_CHOICE_BOOLEAN:
@@ -268,6 +267,7 @@ int cms_data_decode_stream(per_stream_t *s, void *ptr) {
     default:
         return CMS_ERR;
     }
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 int cms_data_encode(const void *ptr, uint8_t **out_buf, size_t *out_len) {

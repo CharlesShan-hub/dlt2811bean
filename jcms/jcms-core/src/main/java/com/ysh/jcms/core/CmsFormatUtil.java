@@ -53,7 +53,7 @@ public class CmsFormatUtil {
         String val = (selected != null)
             ? toString(selected, depth, fieldNames)
             : "(null)";
-        return "CHOICE {" + val + "}";
+        return "(" + type.getClass().getSimpleName() + ") {CHOICE {" + val + "}}";
     }
 
     // ==================== Container ====================

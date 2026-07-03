@@ -13,10 +13,23 @@ public class CmsEqualityUtil {
     /**
      * Deep equality check. Container types compare children recursively;
      * leaf types compare native memory bytes directly.
+     *
+     * <p>CmsUint8Array and its subclasses (CmsSubReference, CmsObjectReference,
+     * CmsObjectName, CmsEntryId, CmsBitString) compare by data content
+     * rather than exact class, so array elements decoded as the wrong
+     * subclass still compare equal.</p>
      */
     public static boolean equals(CmsType a, Object b) {
         if (a == b) return true;
-        if (b == null || a.getClass() != b.getClass()) return false;
+        if (b == null) return false;
+        // CmsUint8Array hierarchy: compare by content, not by exact class
+        if (a instanceof com.ysh.jcms.data.string.CmsUint8Array
+                && b instanceof com.ysh.jcms.data.string.CmsUint8Array) {
+            return Arrays.equals(
+                ((com.ysh.jcms.data.string.CmsUint8Array) a).value(),
+                ((com.ysh.jcms.data.string.CmsUint8Array) b).value());
+        }
+        if (a.getClass() != b.getClass()) return false;
         CmsType other = (CmsType) b;
 
         List<? extends CmsType> kids = a.children();

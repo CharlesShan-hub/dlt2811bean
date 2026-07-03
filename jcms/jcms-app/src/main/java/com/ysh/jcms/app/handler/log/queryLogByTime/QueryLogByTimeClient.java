@@ -44,14 +44,6 @@ public class QueryLogByTimeClient extends BaseClientHandler {
         CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
         resp.decode(frame.asduBytes());
         traceResp(resp);
-        try {
-            CmsLogEntry first = resp.logEntry.items.get(0);
-            CmsLogDataEntry de = first.entryData.items.get(0);
-            System.out.println(">>> choice=" + de.value.choice.value() + " alt_int32=" + de.value.alt_int32.value());
-        } catch (Exception e) {
-            System.out.println(">>> debug error: " + e.getMessage());
-            System.out.println(">>> items.size=" + resp.logEntry.items.size());
-        }
         log.info("QueryLogByTime returned {} entries, moreFollows={}",
             resp.logEntry.count, resp.moreFollows.value());
     }

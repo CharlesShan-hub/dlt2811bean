@@ -172,10 +172,10 @@ public class CmsArray<T extends CmsType> extends CmsType {
         if (this == o) return true;
         if (!(o instanceof CmsArray)) return false;
         CmsArray<?> other = (CmsArray<?>) o;
-        if (count != other.count) return false;
-        for (int i = 0; i < count; i++) {
-            T thisItem = i < items.size() ? items.get(i) : null;
-            Object otherItem = i < other.items.size() ? other.items.get(i) : null;
+        if (items.size() != other.items.size()) return false;
+        for (int i = 0; i < items.size(); i++) {
+            T thisItem = items.get(i);
+            Object otherItem = other.items.get(i);
             if (thisItem == null && otherItem == null) continue;
             if (thisItem == null || otherItem == null) return false;
             if (!thisItem.equals(otherItem)) return false;
