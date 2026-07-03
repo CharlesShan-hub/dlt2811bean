@@ -37,6 +37,7 @@ int cms_set_urcb_values_request_decode(cms_set_urcb_values_request_t *pdu, const
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
@@ -47,20 +48,18 @@ int cms_set_urcb_values_request_decode(cms_set_urcb_values_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->urcb->count < (int32_t)cnt) {
-            pdu->urcb->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->urcb->count < (int32_t)cnt) retry_needed = 1;
         pdu->urcb->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_set_urcb_entry_t *e = (cms_set_urcb_entry_t*)pdu->urcb->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_set_urcb_entry_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_set_urcb_entry_decode_stream(&s, retry_needed ? NULL : pdu->urcb->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Response ── */
@@ -119,6 +118,7 @@ int cms_set_urcb_values_error_decode(cms_set_urcb_values_error_t *pdu, const uin
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
@@ -129,18 +129,16 @@ int cms_set_urcb_values_error_decode(cms_set_urcb_values_error_t *pdu, const uin
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->result->count < (int32_t)cnt) {
-            pdu->result->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->result->count < (int32_t)cnt) retry_needed = 1;
         pdu->result->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_set_urcb_result_t *e = (cms_set_urcb_result_t*)pdu->result->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_set_urcb_result_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_set_urcb_result_decode_stream(&s, retry_needed ? NULL : pdu->result->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }

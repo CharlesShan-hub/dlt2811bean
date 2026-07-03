@@ -98,10 +98,10 @@ public abstract class CmsType {
         if (codec == null)
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI encode (codec not set)");
-        log.debug("encode {} start", getClass().getSimpleName());
+        //log.debug("encode {} start", getClass().getSimpleName());
         write();
         byte[] result = codec.encode(nativePtr);
-        log.debug("encode {} OK, resultLen={}", getClass().getSimpleName(), result.length);
+        //log.debug("encode {} OK, resultLen={}", getClass().getSimpleName(), result.length);
         return result;
     }
 
@@ -122,11 +122,11 @@ public abstract class CmsType {
             throw new UnsupportedOperationException(
                 getClass().getSimpleName() + " has no FFI decode (codec not set)");
 
-        log.debug("decode {} start, dataLen={}", getClass().getSimpleName(), data.length);
+        // log.debug("decode {} start, dataLen={}", getClass().getSimpleName(), data.length);
 
         int retry = 200;
         while (retry-- > 0) {
-            log.debug("decode {} retry={}", getClass().getSimpleName(), 200 - retry - 1);
+            // log.debug("decode {} retry={}", getClass().getSimpleName(), 200 - retry - 1);
 
             // Fresh native memory
             allocate();
@@ -136,12 +136,12 @@ public abstract class CmsType {
             log.trace("  write done");
 
             int rc = codec.decodeRaw(nativePtr, data);
-            log.debug("  decodeRaw rc={}", rc);
+            // log.debug("  decodeRaw rc={}", rc);
 
             if (rc == 0) {
                 log.trace("  calling read()...");
                 read();
-                log.debug("decode {} OK", getClass().getSimpleName());
+                // log.debug("decode {} OK", getClass().getSimpleName());
                 return;
             }
             if (rc != -2)  // not CMS_RETRY → real error
@@ -149,7 +149,7 @@ public abstract class CmsType {
                     "decode failed: rc=" + rc + " for " + getClass().getSimpleName());
 
             // CMS_RETRY: C wrote the actual count(s); read them and resize
-            log.debug("  CMS_RETRY: reading array counts from native memory");
+            // log.debug("  CMS_RETRY: reading array counts from native memory");
             resize();
         }
     }

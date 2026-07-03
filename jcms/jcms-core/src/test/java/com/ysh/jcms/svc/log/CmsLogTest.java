@@ -125,12 +125,12 @@ public class CmsLogTest {
         a.moreFollows.value(false);
 
         byte[] encoded = a.encode();
-        System.out.println("mock_generator test: encoded " + encoded.length + " bytes");
+        // System.out.println("mock_generator test: encoded " + encoded.length + " bytes");
 
         CmsQueryLogByTimeResponse b = new CmsQueryLogByTimeResponse();
         b.decode(encoded);
 
-        System.out.println(b.toString());
+        // System.out.println(b.toString());
 
         assertEquals(10, b.logEntry.items.size());
         assertEquals(123, b.reqId.value());

@@ -117,6 +117,7 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* 0. reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -129,17 +130,15 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
         uint32_t count;
         per_error_t perr = per_decode_length(&s, &count);
         if (perr) return CMS_ERR;
-        if (pdu->reference->count < (int32_t)count) {
-            pdu->reference->count = (int32_t)count;
-            return CMS_RETRY;
-        }
+        if (pdu->reference->count < (int32_t)count) retry_needed = 1;
         pdu->reference->count = (int32_t)count;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < count; i++) {
-            cms_object_reference_t *elem = (cms_object_reference_t*)pdu->reference->elements[i];
-            if (!elem) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, elem);
-            if (err) return err;
+            err = cms_object_reference_decode_stream(&s, retry_needed ? NULL : pdu->reference->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
     /* 2. moreFollows */
@@ -147,7 +146,7 @@ int cms_get_server_directory_response_decode(cms_get_server_directory_response_t
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error (no OPTIONAL) ── */

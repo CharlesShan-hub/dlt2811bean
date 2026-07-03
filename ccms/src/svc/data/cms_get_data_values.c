@@ -41,6 +41,7 @@ int cms_get_data_values_request_decode(cms_get_data_values_request_t *pdu, const
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -53,20 +54,18 @@ int cms_get_data_values_request_decode(cms_get_data_values_request_t *pdu, const
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->data->count < (int32_t)cnt) {
-            pdu->data->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->data->count < (int32_t)cnt) retry_needed = 1;
         pdu->data->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_data_ref_entry_t *e = (cms_data_ref_entry_t*)pdu->data->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_data_ref_entry_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_data_ref_entry_decode_stream(&s, retry_needed ? NULL : pdu->data->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Response ── */
@@ -109,6 +108,7 @@ int cms_get_data_values_response_decode(cms_get_data_values_response_t *pdu, con
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -121,17 +121,15 @@ int cms_get_data_values_response_decode(cms_get_data_values_response_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->value->count < (int32_t)cnt) {
-            pdu->value->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->value->count < (int32_t)cnt) retry_needed = 1;
         pdu->value->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_data_t *e = (cms_data_t*)pdu->value->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_data_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_data_decode_stream(&s, retry_needed ? NULL : pdu->value->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
     /* moreFollows */
@@ -139,7 +137,7 @@ int cms_get_data_values_response_decode(cms_get_data_values_response_t *pdu, con
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error ── */

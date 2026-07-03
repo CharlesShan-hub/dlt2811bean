@@ -39,6 +39,7 @@ int cms_get_rpc_method_definition_request_encode(const cms_get_rpc_method_defini
 
 int cms_get_rpc_method_definition_request_decode(cms_get_rpc_method_definition_request_t *pdu, const uint8_t *in_buf, int in_len) {
     per_stream_t s; per_stream_init_read(&s, in_buf, (size_t)in_len); int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
@@ -48,20 +49,18 @@ int cms_get_rpc_method_definition_request_decode(cms_get_rpc_method_definition_r
     { 
         uint32_t cnt; per_error_t perr = per_decode_length(&s, &cnt); 
         if (perr) return CMS_ERR; 
-        if(pdu->reference->count<(int32_t)cnt){
-            pdu->reference->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if(pdu->reference->count<(int32_t)cnt) retry_needed = 1;
         pdu->reference->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) { 
-            cms_uint8_array_t *e = (cms_uint8_array_t*)pdu->reference->elements[i]; 
-            if (!e) return CMS_ERR; 
-            err = cms_visible_string_decode_stream(&s, e, UINT32_MAX); 
-            if (err) return err; 
+            err = cms_visible_string_decode_stream(&s, retry_needed ? NULL : pdu->reference->elements[i], UINT32_MAX); 
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         } 
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Response ── */
@@ -102,18 +101,19 @@ int cms_get_rpc_method_definition_response_encode(const cms_get_rpc_method_defin
 
 int cms_get_rpc_method_definition_response_decode(cms_get_rpc_method_definition_response_t *pdu, const uint8_t *in_buf, int in_len) {
     per_stream_t s; per_stream_init_read(&s, in_buf, (size_t)in_len); int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR; err = cms_req_id_decode_stream(&s, pdu->req_id); if (err) return err;
 
     /* 2. reference */
     if (!pdu->reference) return CMS_ERR;
-    { uint32_t cnt; per_error_t perr = per_decode_length(&s, &cnt); if (perr) return CMS_ERR; if(pdu->reference->count<(int32_t)cnt){pdu->reference->count = (int32_t)cnt;return CMS_RETRY;} pdu->reference->count = (int32_t)cnt; for (uint32_t i = 0; i < cnt; i++) { cms_rpc_method_def_choice_t *e = (cms_rpc_method_def_choice_t*)pdu->reference->elements[i]; if (!e) return CMS_ERR; err = cms_rpc_method_def_choice_decode_stream(&s, e); if (err) return err; } }
+    { uint32_t cnt; per_error_t perr = per_decode_length(&s, &cnt); if (perr) return CMS_ERR; if(pdu->reference->count<(int32_t)cnt) retry_needed = 1; pdu->reference->count = (int32_t)cnt; int inner_retry_needed = 0; for (uint32_t i = 0; i < cnt; i++) { err = cms_rpc_method_def_choice_decode_stream(&s, retry_needed ? NULL : pdu->reference->elements[i]); if (err == CMS_RETRY) inner_retry_needed = 1; else if (err) return err; } if (inner_retry_needed) retry_needed = 1; }
 
     /* 3. moreFollows */
     if (!pdu->more_follows) return CMS_ERR; err = cms_boolean_decode_stream(&s, pdu->more_follows); if (err) return err;
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error ── */

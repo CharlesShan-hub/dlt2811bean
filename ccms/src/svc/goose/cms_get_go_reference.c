@@ -14,6 +14,7 @@ int cms_get_go_reference_request_encode(const cms_get_go_reference_request_t *pd
     per_error_t err_init = per_stream_init_write(&s, 64);
     if (err_init) return (int)err_init;
     int err;
+    int retry_needed = 0;
 
     /* 1. reqId — Int16U */
     if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
@@ -47,6 +48,7 @@ int cms_get_go_reference_request_decode(cms_get_go_reference_request_t *pdu, con
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -64,19 +66,18 @@ int cms_get_go_reference_request_decode(cms_get_go_reference_request_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->member_ofs->count < (int32_t)cnt) {
-            pdu->member_ofs->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->member_ofs->count < (int32_t)cnt) retry_needed = 1;
+        pdu->member_ofs->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_int16u_t *e = (cms_int16u_t*)pdu->member_ofs->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_int16u_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_int16u_decode_stream(&s, retry_needed ? NULL : pdu->member_ofs->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Response ── */
@@ -129,6 +130,7 @@ int cms_get_go_reference_response_decode(cms_get_go_reference_response_t *pdu, c
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -156,20 +158,18 @@ int cms_get_go_reference_response_decode(cms_get_go_reference_response_t *pdu, c
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->member_data->count < (int32_t)cnt) {
-            pdu->member_data->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->member_data->count < (int32_t)cnt) retry_needed = 1;
         pdu->member_data->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_go_ref_fc_entry_t *e = (cms_go_ref_fc_entry_t*)pdu->member_data->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_go_ref_fc_entry_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_go_ref_fc_entry_decode_stream(&s, retry_needed ? NULL : pdu->member_data->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error ── */

@@ -120,6 +120,7 @@ int cms_query_log_after_response_decode(cms_query_log_after_response_t *pdu, con
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     if (!pdu->req_id) return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
@@ -130,24 +131,22 @@ int cms_query_log_after_response_decode(cms_query_log_after_response_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->log_entry->count < (int32_t)cnt) {
-            pdu->log_entry->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->log_entry->count < (int32_t)cnt) retry_needed = 1;
         pdu->log_entry->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_log_entry_t *e = (cms_log_entry_t*)pdu->log_entry->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_log_entry_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_log_entry_decode_stream(&s, retry_needed ? NULL : pdu->log_entry->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
     if (!pdu->more_follows) return CMS_ERR;
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error ── */

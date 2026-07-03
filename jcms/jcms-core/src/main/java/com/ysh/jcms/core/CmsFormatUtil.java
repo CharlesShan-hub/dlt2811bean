@@ -53,7 +53,7 @@ public class CmsFormatUtil {
         String val = (selected != null)
             ? toString(selected, depth, fieldNames)
             : "(null)";
-        return "(" + type.getClass().getSimpleName() + ") {CHOICE {" + val + "}}";
+        return "(" + type.getClass().getSimpleName() + ") " + val;
     }
 
     // ==================== Container ====================
@@ -62,9 +62,8 @@ public class CmsFormatUtil {
             CmsType type, List<? extends CmsType> kids,
             int depth, Map<CmsType, String> fieldNames) {
         String indent = repeat("    ", depth + 1);
-        String bracketIndent = repeat("    ", depth);
         StringBuilder sb = new StringBuilder()
-            .append("(").append(type.getClass().getSimpleName()).append(") {\n");
+            .append("(").append(type.getClass().getSimpleName()).append(")\n");
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
             String name = (fieldNames != null)
@@ -78,13 +77,11 @@ public class CmsFormatUtil {
             String val = (child != null)
                 ? toString(child, depth + 1, fieldNames)
                 : "(null)";
-            sb.append(val).append(",\n");
+            sb.append(val).append("\n");
         }
         if (!kids.isEmpty()) {
-            sb.setLength(sb.length() - 2);
-            sb.append("\n");
+            sb.setLength(sb.length() - 1);
         }
-        sb.append(bracketIndent).append("}");
         return sb.toString();
     }
 

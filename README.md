@@ -43,6 +43,18 @@
 
 ## 使用方法
 
+### 自定义功能
+
+```bash
+# 清空显示：有时候屏幕内容输出杂乱，可以手动清空
+clear
+# 显示帮助信息
+help
+# 设置显示报文具体信息，可以用来调试
+trace-pdu --value true
+trace-pdu --value false
+```
+
 ### 8.1 连接
 
 ```bash
@@ -840,7 +852,6 @@ cms> get-edit-sg --refs "PROT/OCPTOC2.StrVal"
     [0] PROT/OCPTOC2.StrVal  [int32] 100
 ```
 
-
 ### 8.6.7 定制组信息查看
 
 ```bash
@@ -860,7 +871,42 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
     [0] LD0/LLN0.SG1  numOfSG=4 actSG=1 editSG=1
 ```
 
-### 8.7 REPORT
+### 8.7.1 REPORT
+
+这个是服务器定期发送，客户端接收的。
+
+#### 案例：URCB — 连接 → 启用报告 → 收到 REPORT
+
+```bash
+cms> # ======== 1. 连接服务器 ========
+cms> connect --ap C_B5041X/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+
+cms> # ======== 2. 查看当前 URCB 配置 ========
+cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
+  Fetching URCB values for 1 reference(s)
+  URCB values (1 items):
+    [0] LD0/LLN0.urcbAin  rptID=LD0/LLN0$RP$urcbAin rptEna=false datSet=dsAin confRev=1 bufTm=0 sqNum=0 intgPd=0
+
+cms> # ======== 3. 启用报告 ========
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --rpt-ena true
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+
+cms> # ======== 4. 触发总召唤（GI），服务端立即推送 REPORT ========
+cms> set-urcb-vals --ref LD0/LLN0.urcbAin --gi true
+  Setting URCB values: ref=LD0/LLN0.urcbAin
+  OK  URCB values set for LD0/LLN0.urcbAin
+
+# 客户端自动收到服务端推送的 REPORT 帧：
+  Report Received: rptID=LD0/LLN0$RP$urcbAin sqNum=1 dataSet=dsAin entries=2
+
+# 后续数据变化会再次自动推送：
+  Report Received: rptID=LD0/LLN0$RP$urcbAin sqNum=2 dataSet=dsAin entries=1
+```
 
 ```bash
 cms> # ======== 连接 ========

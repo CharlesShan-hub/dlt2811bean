@@ -41,6 +41,7 @@ int cms_get_go_cb_values_request_decode(cms_get_go_cb_values_request_t *pdu, con
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -53,20 +54,18 @@ int cms_get_go_cb_values_request_decode(cms_get_go_cb_values_request_t *pdu, con
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->reference->count < (int32_t)cnt) {
-            pdu->reference->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->reference->count < (int32_t)cnt) retry_needed = 1;
         pdu->reference->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_object_reference_t *e = (cms_object_reference_t*)pdu->reference->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_object_reference_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_object_reference_decode_stream(&s, retry_needed ? NULL : pdu->reference->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Response ── */
@@ -109,6 +108,7 @@ int cms_get_go_cb_values_response_decode(cms_get_go_cb_values_response_t *pdu, c
     per_stream_t s;
     per_stream_init_read(&s, in_buf, (size_t)in_len);
     int err;
+    int retry_needed = 0;
 
     /* 1. reqId */
     if (!pdu->req_id) return CMS_ERR;
@@ -121,16 +121,15 @@ int cms_get_go_cb_values_response_decode(cms_get_go_cb_values_response_t *pdu, c
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
         if (perr) return CMS_ERR;
-        if (pdu->gocb->count < (int32_t)cnt) {
-            pdu->gocb->count = (int32_t)cnt;
-            return CMS_RETRY;
-        }
+        if (pdu->gocb->count < (int32_t)cnt) retry_needed = 1;
+        pdu->gocb->count = (int32_t)cnt;
+        int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_gocb_value_choice_t *e = (cms_gocb_value_choice_t*)pdu->gocb->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_gocb_value_choice_decode_stream(&s, e);
-            if (err) return err;
+            err = cms_gocb_value_choice_decode_stream(&s, retry_needed ? NULL : pdu->gocb->elements[i]);
+            if (err == CMS_RETRY) inner_retry_needed = 1;
+            else if (err) return err;
         }
+        if (inner_retry_needed) retry_needed = 1;
     }
 
     /* 3. moreFollows */
@@ -138,7 +137,7 @@ int cms_get_go_cb_values_response_decode(cms_get_go_cb_values_response_t *pdu, c
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
     if (err) return err;
 
-    return CMS_OK;
+    return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error ── */

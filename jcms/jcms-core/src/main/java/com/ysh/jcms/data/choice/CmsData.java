@@ -146,7 +146,7 @@ public class CmsData extends CmsType {
     @Override
     public String toString() {
         CmsType child = choiceChild();
-        if (child == null) return "(CmsData) {(null)}";
+        if (child == null) return "(CmsData) (null)";
 
         // Build field name map for the child
         java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
@@ -155,7 +155,7 @@ public class CmsData extends CmsType {
                 try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
             }
         }
-        return "(CmsData) {" + child.toString() + "}";
+        return "(CmsData) " + child.toString();
     }
 
     @Override
@@ -175,8 +175,8 @@ public class CmsData extends CmsType {
     @Override
     protected String toString(int depth) {
         CmsType child = choiceChild();
-        if (child == null) return "(CmsData) {(null)}";
-        return "(CmsData) {" + child.toString() + "}";
+        if (child == null) return "(CmsData) (null)";
+        return "(CmsData) " + child.toString();
     }
 
     @Override
