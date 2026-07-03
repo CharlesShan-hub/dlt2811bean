@@ -24,7 +24,7 @@ extern "C" {
 typedef struct cms_data_definition_s cms_data_definition_t;
 
 typedef struct {
-    cms_int32_t           *numberOfElement;
+    cms_int32_t *numberOfElement;
     cms_data_definition_t *elementType;
 } cms_data_definition_array_t;
 

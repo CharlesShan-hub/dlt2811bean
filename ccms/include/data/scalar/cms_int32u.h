@@ -9,7 +9,9 @@ extern "C" {
 #endif
 
 /* Int32U ::= INTEGER (0..4294967295)  —  7.1.2 */
-typedef struct { uint32_t value; } cms_int32u_t;
+typedef struct {
+    uint32_t value;
+} cms_int32u_t;
 
 int cms_int32u_encode_stream(per_stream_t *s, const void *ptr);
 int cms_int32u_decode_stream(per_stream_t *s, void *ptr);

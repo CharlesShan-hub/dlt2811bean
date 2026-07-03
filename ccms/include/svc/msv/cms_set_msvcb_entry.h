@@ -30,18 +30,18 @@ extern "C" {
  */
 typedef struct {
     cms_object_reference_t *reference;
-    cms_boolean_t          *sv_ena_present;
-    cms_boolean_t          *sv_ena;
-    cms_boolean_t          *msv_id_present;
-    cms_uint8_array_t      *msv_id;
-    cms_boolean_t          *dat_set_present;
+    cms_boolean_t *sv_ena_present;
+    cms_boolean_t *sv_ena;
+    cms_boolean_t *msv_id_present;
+    cms_uint8_array_t *msv_id;
+    cms_boolean_t *dat_set_present;
     cms_object_reference_t *dat_set;
-    cms_boolean_t          *smp_mod_present;
-    cms_smp_mod_t          *smp_mod;
-    cms_boolean_t          *smp_rate_present;
-    cms_int16u_t           *smp_rate;
-    cms_boolean_t          *opt_flds_present;
-    cms_msvcb_opt_flds_t   *opt_flds;
+    cms_boolean_t *smp_mod_present;
+    cms_smp_mod_t *smp_mod;
+    cms_boolean_t *smp_rate_present;
+    cms_int16u_t *smp_rate;
+    cms_boolean_t *opt_flds_present;
+    cms_msvcb_opt_flds_t *opt_flds;
 } cms_set_msvcb_entry_t;
 
 int cms_set_msvcb_entry_encode_stream(per_stream_t *s, const cms_set_msvcb_entry_t *v);

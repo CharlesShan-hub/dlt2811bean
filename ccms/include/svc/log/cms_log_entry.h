@@ -20,9 +20,9 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_entry_time_t  *time_of_entry;
-    cms_entry_id_t    *entry_id;
-    cms_array_t       *entry_data;    /* SEQUENCE OF LogDataEntry */
+    cms_entry_time_t *time_of_entry;
+    cms_entry_id_t *entry_id;
+    cms_array_t *entry_data; /* SEQUENCE OF LogDataEntry */
 } cms_log_entry_t;
 
 int cms_log_entry_encode_stream(per_stream_t *s, const cms_log_entry_t *v);

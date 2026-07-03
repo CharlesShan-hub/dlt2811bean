@@ -38,27 +38,27 @@ extern "C" {
  * }  —  8.4
  */
 
-#define CMS_BRCB_RPT_ID_MAX_LEN   129
-#define CMS_BRCB_OWNER_MAX_LEN     64
+#define CMS_BRCB_RPT_ID_MAX_LEN 129
+#define CMS_BRCB_OWNER_MAX_LEN 64
 
 typedef struct {
-    cms_uint8_array_t        *rptID;         /* VisibleString (SIZE(129)) */
-    cms_boolean_t            *rptEna;        /* BOOLEAN */
-    cms_object_reference_t   *datSet;        /* ObjectReference */
-    cms_int32u_t             *confRev;       /* INT32U */
-    cms_rcb_opt_flds_t       *optFlds;       /* RCBOptFlds */
-    cms_int32u_t             *bufTm;         /* INT32U */
-    cms_int16u_t             *sqNum;         /* INT16U */
-    cms_trigger_conditions_t *trgOps;        /* TriggerConditions */
-    cms_int32u_t             *intgPd;        /* INT32U */
-    cms_boolean_t            *gi;            /* BOOLEAN */
-    cms_boolean_t            *purgeBuf;      /* BOOLEAN */
-    cms_entry_id_t           *entryID;       /* EntryID */
-    cms_entry_time_t         *timeOfEntry;   /* EntryTime */
-    cms_boolean_t            *resvTms_present;
-    cms_int16_t              *resvTms;       /* INT16 OPTIONAL */
-    cms_boolean_t            *owner_present;
-    cms_uint8_array_t        *owner;         /* OCTET STRING (SIZE(0..64)) OPTIONAL */
+    cms_uint8_array_t *rptID;         /* VisibleString (SIZE(129)) */
+    cms_boolean_t *rptEna;            /* BOOLEAN */
+    cms_object_reference_t *datSet;   /* ObjectReference */
+    cms_int32u_t *confRev;            /* INT32U */
+    cms_rcb_opt_flds_t *optFlds;      /* RCBOptFlds */
+    cms_int32u_t *bufTm;              /* INT32U */
+    cms_int16u_t *sqNum;              /* INT16U */
+    cms_trigger_conditions_t *trgOps; /* TriggerConditions */
+    cms_int32u_t *intgPd;             /* INT32U */
+    cms_boolean_t *gi;                /* BOOLEAN */
+    cms_boolean_t *purgeBuf;          /* BOOLEAN */
+    cms_entry_id_t *entryID;          /* EntryID */
+    cms_entry_time_t *timeOfEntry;    /* EntryTime */
+    cms_boolean_t *resvTms_present;
+    cms_int16_t *resvTms; /* INT16 OPTIONAL */
+    cms_boolean_t *owner_present;
+    cms_uint8_array_t *owner; /* OCTET STRING (SIZE(0..64)) OPTIONAL */
 } cms_brcb_t;
 
 int cms_brcb_encode_stream(per_stream_t *s, const void *ptr);

@@ -25,10 +25,10 @@ extern "C" {
  *   [24] checkSum     → cms_int32u_t*
  */
 typedef struct {
-    void *fileName;       /* cms_uint8_array_t* */
-    void *fileSize;       /* cms_int32u_t* */
-    void *lastModified;   /* cms_utc_time_t* */
-    void *checkSum;       /* cms_int32u_t* */
+    void *fileName;     /* cms_uint8_array_t* */
+    void *fileSize;     /* cms_int32u_t* */
+    void *lastModified; /* cms_utc_time_t* */
+    void *checkSum;     /* cms_int32u_t* */
 } cms_file_entry_t;
 
 int cms_file_entry_encode_stream(per_stream_t *s, const void *ptr);

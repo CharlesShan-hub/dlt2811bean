@@ -33,36 +33,30 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_REPORT_RPT_ID_MAX_LEN  129
+#define CMS_REPORT_RPT_ID_MAX_LEN 129
 
 typedef struct {
-    cms_req_id_t              *req_id;
-    cms_uint8_array_t         *rpt_id;           /* VisibleString129 */
-    cms_rcb_opt_flds_t        *opt_flds;
-    cms_boolean_t             *sq_num_present;
-    cms_int16u_t              *sq_num;
-    cms_boolean_t             *sub_seq_num_present;
-    cms_int16u_t              *sub_seq_num;
-    cms_boolean_t             *more_segments_follow_present;
-    cms_boolean_t             *more_segments_follow;
-    cms_boolean_t             *data_set_present;
-    cms_object_reference_t    *data_set;
-    cms_boolean_t             *buf_ovfl_present;
-    cms_boolean_t             *buf_ovfl;
-    cms_boolean_t             *conf_rev_present;
-    cms_int32u_t              *conf_rev;
-    cms_report_entry_t        *entry;
+    cms_req_id_t *req_id;
+    cms_uint8_array_t *rpt_id; /* VisibleString129 */
+    cms_rcb_opt_flds_t *opt_flds;
+    cms_boolean_t *sq_num_present;
+    cms_int16u_t *sq_num;
+    cms_boolean_t *sub_seq_num_present;
+    cms_int16u_t *sub_seq_num;
+    cms_boolean_t *more_segments_follow_present;
+    cms_boolean_t *more_segments_follow;
+    cms_boolean_t *data_set_present;
+    cms_object_reference_t *data_set;
+    cms_boolean_t *buf_ovfl_present;
+    cms_boolean_t *buf_ovfl;
+    cms_boolean_t *conf_rev_present;
+    cms_int32u_t *conf_rev;
+    cms_report_entry_t *entry;
 } cms_report_t;
 
-CMS_EXPORT int cms_report_encode(
-    const cms_report_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_report_encode(const cms_report_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_report_decode(
-    cms_report_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_report_decode(cms_report_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

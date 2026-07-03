@@ -18,7 +18,7 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t            *req_id;
+    cms_req_id_t *req_id;
     cms_visible_string255_t *filename;
 } cms_delete_file_request_t;
 
@@ -30,7 +30,7 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t    *req_id;
+    cms_req_id_t *req_id;
 } cms_delete_file_response_t;
 
 /*
@@ -39,13 +39,14 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_delete_file_error_t;
 
 CMS_EXPORT int cms_delete_file_request_encode(const cms_delete_file_request_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_delete_file_request_decode(cms_delete_file_request_t *pdu, const uint8_t *in_buf, int in_len);
-CMS_EXPORT int cms_delete_file_response_encode(const cms_delete_file_response_t *pdu, uint8_t **out_buf, size_t *out_len);
+CMS_EXPORT int cms_delete_file_response_encode(const cms_delete_file_response_t *pdu, uint8_t **out_buf,
+                                               size_t *out_len);
 CMS_EXPORT int cms_delete_file_response_decode(cms_delete_file_response_t *pdu, const uint8_t *in_buf, int in_len);
 CMS_EXPORT int cms_delete_file_error_encode(const cms_delete_file_error_t *pdu, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_delete_file_error_decode(cms_delete_file_error_t *pdu, const uint8_t *in_buf, int in_len);

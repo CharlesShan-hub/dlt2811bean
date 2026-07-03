@@ -21,10 +21,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_object_reference_t    *reference;
-    cms_boolean_t             *fc_present;
+    cms_object_reference_t *reference;
+    cms_boolean_t *fc_present;
     cms_functional_constraint_t *fc;
-    cms_data_t                *value;
+    cms_data_t *value;
 } cms_data_ref_value_entry_t;
 
 int cms_data_ref_value_entry_encode_stream(per_stream_t *s, const cms_data_ref_value_entry_t *v);

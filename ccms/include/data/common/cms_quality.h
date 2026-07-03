@@ -31,13 +31,13 @@ extern "C" {
  *   bit 12:    operatorBlocked
  */
 
-#define CMS_QUALITY_GOOD          0
-#define CMS_QUALITY_INVALID       1
-#define CMS_QUALITY_RESERVED      2
-#define CMS_QUALITY_QUESTIONABLE  3
+#define CMS_QUALITY_GOOD 0
+#define CMS_QUALITY_INVALID 1
+#define CMS_QUALITY_RESERVED 2
+#define CMS_QUALITY_QUESTIONABLE 3
 
 typedef struct {
-    cms_int32_t   *validity;
+    cms_int32_t *validity;
     cms_boolean_t *overflow;
     cms_boolean_t *outOfRange;
     cms_boolean_t *badReference;

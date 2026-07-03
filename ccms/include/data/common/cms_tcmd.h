@@ -14,10 +14,10 @@ extern "C" {
  * PER: constrained integer (0..3), 2 bits
  */
 
-#define CMS_TCMD_RESERVED  0
-#define CMS_TCMD_SELECT    1
-#define CMS_TCMD_OPERATE   2
-#define CMS_TCMD_CANCEL    3
+#define CMS_TCMD_RESERVED 0
+#define CMS_TCMD_SELECT 1
+#define CMS_TCMD_OPERATE 2
+#define CMS_TCMD_CANCEL 3
 
 typedef cms_enumerated_t cms_tcmd_t;
 

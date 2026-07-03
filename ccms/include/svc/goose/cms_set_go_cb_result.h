@@ -22,14 +22,14 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_boolean_t        *error_present;
-    cms_service_error_t  *error;
-    cms_boolean_t        *go_ena_err_present;
-    cms_service_error_t  *go_ena_err;
-    cms_boolean_t        *go_id_err_present;
-    cms_service_error_t  *go_id_err;
-    cms_boolean_t        *dat_set_err_present;
-    cms_service_error_t  *dat_set_err;
+    cms_boolean_t *error_present;
+    cms_service_error_t *error;
+    cms_boolean_t *go_ena_err_present;
+    cms_service_error_t *go_ena_err;
+    cms_boolean_t *go_id_err_present;
+    cms_service_error_t *go_id_err;
+    cms_boolean_t *dat_set_err_present;
+    cms_service_error_t *dat_set_err;
 } cms_set_go_cb_result_t;
 
 int cms_set_go_cb_result_encode_stream(per_stream_t *s, const cms_set_go_cb_result_t *v);

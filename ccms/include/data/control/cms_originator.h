@@ -24,8 +24,8 @@ extern "C" {
 #define CMS_OR_IDENT_MAX_LEN 64
 
 typedef struct {
-    void *orCat;       /* cms_or_cat_t* */
-    void *orIdent;     /* cms_uint8_array_t* */
+    void *orCat;   /* cms_or_cat_t* */
+    void *orIdent; /* cms_uint8_array_t* */
 } cms_originator_t;
 
 int cms_originator_encode_stream(per_stream_t *s, const void *ptr);

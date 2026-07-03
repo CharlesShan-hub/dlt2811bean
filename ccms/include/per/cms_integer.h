@@ -26,12 +26,10 @@ extern "C" {
  *   256..65536     → align + big-endian bytes
  *   >65536         → length(constrained 1..maxLen) + align + content
  */
-per_error_t per_encode_constrained_int(per_stream_t *s, int64_t value,
-                                       int64_t lower_bound, int64_t upper_bound);
+per_error_t per_encode_constrained_int(per_stream_t *s, int64_t value, int64_t lower_bound, int64_t upper_bound);
 
 /* Decode a constrained integer (inverse of per_encode_constrained_int). */
-per_error_t per_decode_constrained_int(per_stream_t *s, int64_t *out,
-                                       int64_t lower_bound, int64_t upper_bound);
+per_error_t per_decode_constrained_int(per_stream_t *s, int64_t *out, int64_t lower_bound, int64_t upper_bound);
 
 /*
  * Encode a PER length determinant (X.691 §11.9).

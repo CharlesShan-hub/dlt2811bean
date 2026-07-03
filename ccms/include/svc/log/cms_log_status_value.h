@@ -22,10 +22,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_entry_time_t  *old_entr_tm;
-    cms_entry_time_t  *new_entr_tm;
-    cms_entry_id_t    *old_entr;
-    cms_entry_id_t    *new_entr;
+    cms_entry_time_t *old_entr_tm;
+    cms_entry_time_t *new_entr_tm;
+    cms_entry_id_t *old_entr;
+    cms_entry_id_t *new_entr;
 } cms_log_status_value_t;
 
 int cms_log_status_value_encode_stream(per_stream_t *s, const cms_log_status_value_t *v);

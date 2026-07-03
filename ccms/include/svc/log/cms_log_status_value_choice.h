@@ -22,12 +22,12 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_LOG_STATUS_VALUE_CHOICE_ERROR  0
-#define CMS_LOG_STATUS_VALUE_CHOICE_VALUE  1
+#define CMS_LOG_STATUS_VALUE_CHOICE_ERROR 0
+#define CMS_LOG_STATUS_VALUE_CHOICE_VALUE 1
 
 typedef struct {
-    cms_enumerated_t     *choice;
-    cms_service_error_t  *alt_error;
+    cms_enumerated_t *choice;
+    cms_service_error_t *alt_error;
     cms_log_status_value_t *alt_value;
 } cms_log_status_value_choice_t;
 

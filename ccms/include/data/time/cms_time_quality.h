@@ -21,10 +21,10 @@ extern "C" {
  * PER: fixed 8-bit BIT STRING (align + 1 byte)
  */
 typedef struct {
-    cms_boolean_t *leap_seconds_known;       /* bit 0 */
-    cms_boolean_t *clock_failure;            /* bit 1 */
-    cms_boolean_t *clock_not_synchronized;   /* bit 2 */
-    cms_int32_t   *precision;                /* bits 3-7, 0..31 */
+    cms_boolean_t *leap_seconds_known;     /* bit 0 */
+    cms_boolean_t *clock_failure;          /* bit 1 */
+    cms_boolean_t *clock_not_synchronized; /* bit 2 */
+    cms_int32_t *precision;                /* bits 3-7, 0..31 */
 } cms_time_quality_t;
 
 /* Stream-level (internal) */

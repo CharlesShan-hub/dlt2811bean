@@ -10,12 +10,14 @@ extern "C" {
 
 /*
  * ENUMERATED ::= Int8  —  7.1.6
- * 
+ *
  * 虽然是 Int8 编码，但 ENUMERATED 是独立的 C 类型。
  * 当备选 > 128 时改用 Int16。
  */
 
-typedef struct { int value; } cms_enumerated_t;
+typedef struct {
+    int value;
+} cms_enumerated_t;
 
 int cms_enumerated_encode_stream(per_stream_t *s, const void *ptr);
 int cms_enumerated_decode_stream(per_stream_t *s, void *ptr);

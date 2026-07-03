@@ -24,11 +24,11 @@ extern "C" {
  */
 typedef struct {
     cms_object_reference_t *reference;
-    cms_boolean_t          *go_ena_present;
-    cms_boolean_t          *go_ena;
-    cms_boolean_t          *go_id_present;
-    cms_uint8_array_t      *go_id;
-    cms_boolean_t          *dat_set_present;
+    cms_boolean_t *go_ena_present;
+    cms_boolean_t *go_ena;
+    cms_boolean_t *go_id_present;
+    cms_uint8_array_t *go_id;
+    cms_boolean_t *dat_set_present;
     cms_object_reference_t *dat_set;
 } cms_set_go_cb_entry_t;
 

@@ -20,7 +20,7 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_sub_reference_t   *reference;
+    cms_sub_reference_t *reference;
     cms_cb_value_choice_t *value;
 } cms_cb_value_entry_t;
 

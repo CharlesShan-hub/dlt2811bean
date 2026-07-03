@@ -22,8 +22,8 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_int32u_t          *version;
-    cms_int32u_t          *timeout;
+    cms_int32u_t *version;
+    cms_int32u_t *timeout;
     cms_data_definition_t *request;
     cms_data_definition_t *response;
 } cms_rpc_method_def_t;

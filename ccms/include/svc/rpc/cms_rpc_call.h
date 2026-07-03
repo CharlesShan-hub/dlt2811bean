@@ -21,8 +21,8 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t             *req_id;
-    cms_uint8_array_t        *method;       /* VisibleString */
+    cms_req_id_t *req_id;
+    cms_uint8_array_t *method; /* VisibleString */
     cms_rpc_call_req_choice_t *req;
 } cms_rpc_call_request_t;
 
@@ -36,10 +36,10 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t        *req_id;
-    cms_data_t          *rsp_data;
-    cms_boolean_t       *next_call_id_present;
-    cms_uint8_array_t   *next_call_id;    /* OCTET STRING */
+    cms_req_id_t *req_id;
+    cms_data_t *rsp_data;
+    cms_boolean_t *next_call_id_present;
+    cms_uint8_array_t *next_call_id; /* OCTET STRING */
 } cms_rpc_call_response_t;
 
 /*
@@ -48,8 +48,8 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_rpc_call_error_t;
 
 CMS_EXPORT int cms_rpc_call_request_encode(const cms_rpc_call_request_t *pdu, uint8_t **out_buf, size_t *out_len);

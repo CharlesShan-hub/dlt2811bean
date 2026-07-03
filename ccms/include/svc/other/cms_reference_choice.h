@@ -26,26 +26,20 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_REFERENCE_CHOICE_LD_NAME      0
+#define CMS_REFERENCE_CHOICE_LD_NAME 0
 #define CMS_REFERENCE_CHOICE_LN_REFERENCE 1
 
 typedef struct {
-    cms_enumerated_t        *choice;       /* 0=ldName, 1=lnReference */
-    cms_object_name_t       *alt_ld_name;
-    cms_object_reference_t  *alt_ln_reference;
+    cms_enumerated_t *choice; /* 0=ldName, 1=lnReference */
+    cms_object_name_t *alt_ld_name;
+    cms_object_reference_t *alt_ln_reference;
 } cms_reference_choice_t;
 
-int cms_reference_choice_encode_stream(
-    per_stream_t *s, const cms_reference_choice_t *v);
-int cms_reference_choice_decode_stream(
-    per_stream_t *s, void *ptr);
+int cms_reference_choice_encode_stream(per_stream_t *s, const cms_reference_choice_t *v);
+int cms_reference_choice_decode_stream(per_stream_t *s, void *ptr);
 
-CMS_EXPORT int cms_reference_choice_encode(
-    const cms_reference_choice_t *v,
-    uint8_t **out_buf, size_t *out_len);
-CMS_EXPORT int cms_reference_choice_decode(
-    cms_reference_choice_t *v,
-    const uint8_t *in_buf, int in_len);
+CMS_EXPORT int cms_reference_choice_encode(const cms_reference_choice_t *v, uint8_t **out_buf, size_t *out_len);
+CMS_EXPORT int cms_reference_choice_decode(cms_reference_choice_t *v, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

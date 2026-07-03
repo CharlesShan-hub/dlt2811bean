@@ -17,13 +17,13 @@ extern "C" {
  * or a specific error condition.
  */
 typedef enum {
-    PER_OK               = 0,   /* Operation completed successfully. */
-    PER_ERR_OVERFLOW     = -1,  /* Buffer overflow — output buffer too small. */
-    PER_ERR_RANGE        = -2,  /* Value out of constrained range. */
-    PER_ERR_INVALID_ARG  = -3,  /* NULL pointer or invalid argument. */
-    PER_ERR_TRUNCATED    = -4,  /* Input truncated during decode. */
-    PER_ERR_LENGTH       = -5,  /* Length constraint violation. */
-    PER_ERR_OOM          = -6,  /* Out of memory (dynamic mode only). */
+    PER_OK = 0,               /* Operation completed successfully. */
+    PER_ERR_OVERFLOW = -1,    /* Buffer overflow — output buffer too small. */
+    PER_ERR_RANGE = -2,       /* Value out of constrained range. */
+    PER_ERR_INVALID_ARG = -3, /* NULL pointer or invalid argument. */
+    PER_ERR_TRUNCATED = -4,   /* Input truncated during decode. */
+    PER_ERR_LENGTH = -5,      /* Length constraint violation. */
+    PER_ERR_OOM = -6,         /* Out of memory (dynamic mode only). */
 } per_error_t;
 
 #ifdef __cplusplus

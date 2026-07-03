@@ -20,7 +20,7 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_object_reference_t    *reference;
+    cms_object_reference_t *reference;
     cms_functional_constraint_t *fc;
 } cms_data_ref_fc_entry_t;
 

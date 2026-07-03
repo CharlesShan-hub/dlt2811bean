@@ -18,7 +18,7 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t           *req_id;
+    cms_req_id_t *req_id;
     cms_object_reference_t *reference;
 } cms_select_request_t;
 
@@ -29,7 +29,7 @@ typedef struct {
  * }
  */
 typedef struct {
-    cms_req_id_t           *req_id;
+    cms_req_id_t *req_id;
     cms_object_reference_t *reference;
 } cms_select_response_t;
 
@@ -40,7 +40,7 @@ typedef struct {
  * }
  */
 typedef struct {
-    cms_req_id_t           *req_id;
+    cms_req_id_t *req_id;
     cms_object_reference_t *reference;
 } cms_select_error_t;
 

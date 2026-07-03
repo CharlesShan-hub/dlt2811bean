@@ -21,8 +21,8 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_boolean_t        *cdc_type_present;
-    cms_uint8_array_t    *cdc_type;
+    cms_boolean_t *cdc_type_present;
+    cms_uint8_array_t *cdc_type;
     cms_data_definition_t *definition;
 } cms_data_def_result_entry_t;
 

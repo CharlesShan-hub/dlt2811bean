@@ -11,7 +11,8 @@
  */
 
 static inline void pack_bit(uint8_t *buf, int nth, int val) {
-    if (val) *buf |= (uint8_t)(0x80 >> nth);
+    if (val)
+        *buf |= (uint8_t) (0x80 >> nth);
 }
 
 static inline int unpack_bit(uint8_t byte, int nth) {
@@ -20,7 +21,8 @@ static inline int unpack_bit(uint8_t byte, int nth) {
 
 /* 对于 >8 位的 BIT STRING，用 pack_bit16 / unpack_bit16 */
 static inline void pack_bit16(uint16_t *buf, int nth, int val) {
-    if (val) *buf |= (uint16_t)(0x8000 >> nth);
+    if (val)
+        *buf |= (uint16_t) (0x8000 >> nth);
 }
 
 static inline int unpack_bit16(uint16_t bits, int nth) {

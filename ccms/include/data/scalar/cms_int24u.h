@@ -13,7 +13,9 @@ extern "C" {
  * sizeof = 4 (stored in uint32_t)
  */
 #define CMS_INT24U_MAX 16777215
-typedef struct { uint32_t value; } cms_int24u_t;
+typedef struct {
+    uint32_t value;
+} cms_int24u_t;
 
 int cms_int24u_encode_stream(per_stream_t *s, const void *ptr);
 int cms_int24u_decode_stream(per_stream_t *s, void *ptr);

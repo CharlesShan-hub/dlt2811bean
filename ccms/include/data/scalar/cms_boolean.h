@@ -13,7 +13,9 @@ extern "C" {
  * PER: constrained integer, 1 bit
  * sizeof = 4
  */
-typedef struct { int value; } cms_boolean_t;
+typedef struct {
+    int value;
+} cms_boolean_t;
 
 /* Stream-level (internal, for parent SEQUENCE/CHOICE) */
 int cms_boolean_encode_stream(per_stream_t *s, const void *ptr);

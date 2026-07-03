@@ -9,7 +9,9 @@ extern "C" {
 #endif
 
 /* Int8 ::= INTEGER (-128..127)  —  7.1.2 */
-typedef struct { int8_t value; } cms_int8_t;
+typedef struct {
+    int8_t value;
+} cms_int8_t;
 
 int cms_int8_encode_stream(per_stream_t *s, const void *ptr);
 int cms_int8_decode_stream(per_stream_t *s, void *ptr);

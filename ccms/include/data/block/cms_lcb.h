@@ -26,15 +26,15 @@ extern "C" {
  */
 
 typedef struct {
-    cms_boolean_t            *logEna;         /* BOOLEAN */
-    cms_object_reference_t   *datSet;         /* ObjectReference */
-    cms_trigger_conditions_t *trgOps;         /* TriggerConditions */
-    cms_int32u_t             *intgPd;         /* INT32U */
-    cms_object_reference_t   *logRef;         /* ObjectReference */
-    cms_boolean_t            *optFlds_present;
-    cms_lcb_opt_flds_t       *optFlds;        /* LCBOptFlds OPTIONAL */
-    cms_boolean_t            *bufTm_present;
-    cms_int32u_t             *bufTm;          /* INT32U OPTIONAL */
+    cms_boolean_t *logEna;            /* BOOLEAN */
+    cms_object_reference_t *datSet;   /* ObjectReference */
+    cms_trigger_conditions_t *trgOps; /* TriggerConditions */
+    cms_int32u_t *intgPd;             /* INT32U */
+    cms_object_reference_t *logRef;   /* ObjectReference */
+    cms_boolean_t *optFlds_present;
+    cms_lcb_opt_flds_t *optFlds; /* LCBOptFlds OPTIONAL */
+    cms_boolean_t *bufTm_present;
+    cms_int32u_t *bufTm; /* INT32U OPTIONAL */
 } cms_lcb_t;
 
 int cms_lcb_encode_stream(per_stream_t *s, const void *ptr);

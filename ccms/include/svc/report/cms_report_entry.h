@@ -23,11 +23,11 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_boolean_t      *time_of_entry_present;
-    cms_entry_time_t   *time_of_entry;
-    cms_boolean_t      *entry_id_present;
-    cms_entry_id_t     *entry_id;
-    cms_array_t        *entry_data;     /* SEQUENCE OF ReportDataEntry */
+    cms_boolean_t *time_of_entry_present;
+    cms_entry_time_t *time_of_entry;
+    cms_boolean_t *entry_id_present;
+    cms_entry_id_t *entry_id;
+    cms_array_t *entry_data; /* SEQUENCE OF ReportDataEntry */
 } cms_report_entry_t;
 
 int cms_report_entry_encode_stream(per_stream_t *s, const cms_report_entry_t *v);

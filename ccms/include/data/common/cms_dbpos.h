@@ -14,10 +14,10 @@ extern "C" {
  * PER: constrained integer (0..3), 2 bits
  */
 
-#define CMS_DBPOS_INTERMEDIATE  0
-#define CMS_DBPOS_OFF           1
-#define CMS_DBPOS_ON            2
-#define CMS_DBPOS_BAD_STATE     3
+#define CMS_DBPOS_INTERMEDIATE 0
+#define CMS_DBPOS_OFF 1
+#define CMS_DBPOS_ON 2
+#define CMS_DBPOS_BAD_STATE 3
 
 typedef cms_enumerated_t cms_dbpos_t;
 

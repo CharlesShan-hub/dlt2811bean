@@ -32,16 +32,16 @@ extern "C" {
 #define CMS_MSVCB_MSV_ID_MAX_LEN 129
 
 typedef struct {
-    cms_boolean_t          *svEna;          /* BOOLEAN */
-    cms_uint8_array_t      *msvID;          /* VisibleString129 */
-    cms_object_reference_t *datSet;         /* ObjectReference */
-    cms_int32u_t           *confRev;        /* INT32U */
-    cms_boolean_t          *smpMod_present;
-    cms_smp_mod_t          *smpMod;         /* SmpMod OPTIONAL */
-    cms_int16u_t           *smpRate;        /* INT16U */
-    cms_msvcb_opt_flds_t   *optFlds;        /* MSVCBOptFlds */
-    cms_boolean_t          *dstAddress_present;
-    cms_phy_com_addr_t     *dstAddress;     /* PHYCOMADDR OPTIONAL */
+    cms_boolean_t *svEna;           /* BOOLEAN */
+    cms_uint8_array_t *msvID;       /* VisibleString129 */
+    cms_object_reference_t *datSet; /* ObjectReference */
+    cms_int32u_t *confRev;          /* INT32U */
+    cms_boolean_t *smpMod_present;
+    cms_smp_mod_t *smpMod;         /* SmpMod OPTIONAL */
+    cms_int16u_t *smpRate;         /* INT16U */
+    cms_msvcb_opt_flds_t *optFlds; /* MSVCBOptFlds */
+    cms_boolean_t *dstAddress_present;
+    cms_phy_com_addr_t *dstAddress; /* PHYCOMADDR OPTIONAL */
 } cms_msvcb_t;
 
 int cms_msvcb_encode_stream(per_stream_t *s, const void *ptr);

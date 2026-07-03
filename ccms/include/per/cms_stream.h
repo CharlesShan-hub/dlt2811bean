@@ -25,19 +25,21 @@ extern "C" {
 
 /* Bit stream state for PER encode/decode operations. */
 typedef struct {
-    uint8_t *buf;         /* Underlying byte buffer. */
-    size_t   capacity;    /* Allocated size of buf. */
-    size_t   byte_pos;    /* Current byte position (0-based). */
-    int      bit_pos;     /* Current bit position within the byte (0-7, 0=MSB). */
-    bool     is_write;    /* true for write mode (heap-allocated, auto-grows), false for read mode. */
+    uint8_t *buf;    /* Underlying byte buffer. */
+    size_t capacity; /* Allocated size of buf. */
+    size_t byte_pos; /* Current byte position (0-based). */
+    int bit_pos;     /* Current bit position within the byte (0-7, 0=MSB). */
+    bool is_write;   /* true for write mode (heap-allocated, auto-grows), false for read mode. */
 } per_stream_t;
 
 /* ---- Stream lifecycle ---- */
 
 /* Read stream — caller provides buffer. */
-void  per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
+void per_stream_init_read(per_stream_t *s, const uint8_t *buf, size_t capacity);
 static inline per_stream_t per_stream_new_read(const uint8_t *buf, size_t capacity) {
-    per_stream_t s; per_stream_init_read(&s, buf, capacity); return s;
+    per_stream_t s;
+    per_stream_init_read(&s, buf, capacity);
+    return s;
 }
 
 /* Write stream — auto-grows on write (heap-allocated). */
@@ -48,7 +50,7 @@ per_error_t per_stream_init_write(per_stream_t *s, size_t initial_capacity);
  * The caller takes ownership of the returned buffer (must be freed with free()).
  * After detach, the stream is no longer usable.
  */
-uint8_t*  per_stream_detach(per_stream_t *s, size_t *out_len);
+uint8_t *per_stream_detach(per_stream_t *s, size_t *out_len);
 
 /*
  * Free resources held by a write stream.

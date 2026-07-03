@@ -18,8 +18,8 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_association_id_t  *assoc_id;
+    cms_req_id_t *req_id;
+    cms_association_id_t *assoc_id;
 } cms_release_request_t;
 
 /*
@@ -32,9 +32,9 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_association_id_t  *assoc_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_association_id_t *assoc_id;
+    cms_service_error_t *service_error;
 } cms_release_response_t;
 
 /*
@@ -43,39 +43,21 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_release_error_t;
 
-CMS_EXPORT int cms_release_request_encode(
-    const cms_release_request_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_release_request_encode(const cms_release_request_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_release_request_decode(
-    cms_release_request_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_release_request_decode(cms_release_request_t *pdu, const uint8_t *in_buf, int in_len);
 
-CMS_EXPORT int cms_release_response_encode(
-    const cms_release_response_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_release_response_encode(const cms_release_response_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_release_response_decode(
-    cms_release_response_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_release_response_decode(cms_release_response_t *pdu, const uint8_t *in_buf, int in_len);
 
-CMS_EXPORT int cms_release_error_encode(
-    const cms_release_error_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_release_error_encode(const cms_release_error_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_release_error_decode(
-    cms_release_error_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_release_error_decode(cms_release_error_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

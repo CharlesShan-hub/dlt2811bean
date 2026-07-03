@@ -21,11 +21,11 @@ extern "C" {
  * } (0..5)
  * ============================================================
  */
-#define CMS_ABORT_OTHER                         0
-#define CMS_ABORT_UNRECOGNIZED_SERVICE          1
-#define CMS_ABORT_INVALID_REQ_ID                2
-#define CMS_ABORT_INVALID_ARGUMENT              3
-#define CMS_ABORT_INVALID_RESULT                4
+#define CMS_ABORT_OTHER 0
+#define CMS_ABORT_UNRECOGNIZED_SERVICE 1
+#define CMS_ABORT_INVALID_REQ_ID 2
+#define CMS_ABORT_INVALID_ARGUMENT 3
+#define CMS_ABORT_INVALID_RESULT 4
 #define CMS_ABORT_MAX_SERV_OUTSTANDING_EXCEEDED 5
 
 typedef cms_int32_t cms_abort_reason_t;

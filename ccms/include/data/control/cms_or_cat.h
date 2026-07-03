@@ -14,15 +14,15 @@ extern "C" {
  * PER: constrained integer (0..8), 4 bits
  */
 
-#define CMS_OR_CAT_NOT_SUPPORTED      0
-#define CMS_OR_CAT_BAY_CONTROL        1
-#define CMS_OR_CAT_STATION_CONTROL    2
-#define CMS_OR_CAT_REMOTE_CONTROL     3
-#define CMS_OR_CAT_AUTOMATIC_BAY      4
-#define CMS_OR_CAT_AUTOMATIC_STATION  5
-#define CMS_OR_CAT_AUTOMATIC_REMOTE   6
-#define CMS_OR_CAT_MAINTENANCE        7
-#define CMS_OR_CAT_PROCESS            8
+#define CMS_OR_CAT_NOT_SUPPORTED 0
+#define CMS_OR_CAT_BAY_CONTROL 1
+#define CMS_OR_CAT_STATION_CONTROL 2
+#define CMS_OR_CAT_REMOTE_CONTROL 3
+#define CMS_OR_CAT_AUTOMATIC_BAY 4
+#define CMS_OR_CAT_AUTOMATIC_STATION 5
+#define CMS_OR_CAT_AUTOMATIC_REMOTE 6
+#define CMS_OR_CAT_MAINTENANCE 7
+#define CMS_OR_CAT_PROCESS 8
 
 typedef cms_enumerated_t cms_or_cat_t;
 

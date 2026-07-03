@@ -27,16 +27,16 @@ extern "C" {
  * 编码为 constrained integer (0..10), 4 bits
  * ============================================================
  */
-#define CMS_ACSI_CLASS_RESERVED       0
-#define CMS_ACSI_CLASS_DATA_OBJECT    1
-#define CMS_ACSI_CLASS_DATA_SET       2
-#define CMS_ACSI_CLASS_BRCB           3
-#define CMS_ACSI_CLASS_URCB           4
-#define CMS_ACSI_CLASS_LCB            5
-#define CMS_ACSI_CLASS_LOG            6
-#define CMS_ACSI_CLASS_SGECB          7
-#define CMS_ACSI_CLASS_GOCB           8
-#define CMS_ACSI_CLASS_MSVCB         10
+#define CMS_ACSI_CLASS_RESERVED 0
+#define CMS_ACSI_CLASS_DATA_OBJECT 1
+#define CMS_ACSI_CLASS_DATA_SET 2
+#define CMS_ACSI_CLASS_BRCB 3
+#define CMS_ACSI_CLASS_URCB 4
+#define CMS_ACSI_CLASS_LCB 5
+#define CMS_ACSI_CLASS_LOG 6
+#define CMS_ACSI_CLASS_SGECB 7
+#define CMS_ACSI_CLASS_GOCB 8
+#define CMS_ACSI_CLASS_MSVCB 10
 
 typedef cms_int32_t cms_acsi_class_t;
 

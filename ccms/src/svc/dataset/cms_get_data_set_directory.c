@@ -9,66 +9,92 @@
 
 /* ── Request ── */
 
-int cms_get_data_set_directory_request_encode(const cms_get_data_set_directory_request_t *pdu, uint8_t **out_buf, size_t *out_len) {
+int cms_get_data_set_directory_request_encode(const cms_get_data_set_directory_request_t *pdu, uint8_t **out_buf,
+                                              size_t *out_len) {
     per_stream_t s;
     per_error_t err_i = per_stream_init_write(&s, 64);
-    if (err_i) return (int)err_i;
+    if (err_i)
+        return (int) err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->req_id) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     /* 1. OPTIONAL bitmap (1 field: referenceAfter) */
-    bool opt[1] = {
-        (pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after
-    };
-    err = (int)per_encode_optional_bitmap(&s, opt, 1);
-    if (err) { per_stream_free(&s); return err; }
+    bool opt[1] = {(pdu->ref_after_present && pdu->ref_after_present->value) && pdu->ref_after};
+    err = (int) per_encode_optional_bitmap(&s, opt, 1);
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     /* 2. datasetReference — ObjectReference */
-    if (!pdu->dataset_reference) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->dataset_reference) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_object_reference_encode_stream(&s, pdu->dataset_reference);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     /* 3. referenceAfter — ObjectReference OPTIONAL (bitmap[0]) */
     if (opt[0]) {
         err = cms_object_reference_encode_stream(&s, pdu->ref_after);
-        if (err) { per_stream_free(&s); return err; }
+        if (err) {
+            per_stream_free(&s);
+            return err;
+        }
     }
 
     *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
-int cms_get_data_set_directory_request_decode(cms_get_data_set_directory_request_t *pdu, const uint8_t *in_buf, int in_len) {
+int cms_get_data_set_directory_request_decode(cms_get_data_set_directory_request_t *pdu, const uint8_t *in_buf,
+                                              int in_len) {
     per_stream_t s;
-    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    per_stream_init_read(&s, in_buf, (size_t) in_len);
     int err;
 
     /* 0. reqId */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id)
+        return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err)
+        return err;
 
     /* 1. OPTIONAL bitmap (1 field: referenceAfter) */
     bool opt[1] = {false};
-    err = (int)per_decode_optional_bitmap(&s, opt, 1);
-    if (err) return err;
+    err = (int) per_decode_optional_bitmap(&s, opt, 1);
+    if (err)
+        return err;
     if (pdu->ref_after_present)
         pdu->ref_after_present->value = opt[0] ? 1 : 0;
 
     /* 2. datasetReference */
-    if (!pdu->dataset_reference) return CMS_ERR;
+    if (!pdu->dataset_reference)
+        return CMS_ERR;
     err = cms_object_reference_decode_stream(&s, pdu->dataset_reference);
-    if (err) return err;
+    if (err)
+        return err;
 
     /* 3. referenceAfter OPTIONAL (bitmap[0]) */
     if (opt[0]) {
-        if (!pdu->ref_after) return CMS_ERR;
+        if (!pdu->ref_after)
+            return CMS_ERR;
         err = cms_object_reference_decode_stream(&s, pdu->ref_after);
-        if (err) return err;
+        if (err)
+            return err;
     }
 
     return CMS_OK;
@@ -76,112 +102,168 @@ int cms_get_data_set_directory_request_decode(cms_get_data_set_directory_request
 
 /* ── Response (no OPTIONAL) ── */
 
-int cms_get_data_set_directory_response_encode(const cms_get_data_set_directory_response_t *pdu, uint8_t **out_buf, size_t *out_len) {
+int cms_get_data_set_directory_response_encode(const cms_get_data_set_directory_response_t *pdu, uint8_t **out_buf,
+                                               size_t *out_len) {
     per_stream_t s;
     per_error_t err_i = per_stream_init_write(&s, 64);
-    if (err_i) return (int)err_i;
+    if (err_i)
+        return (int) err_i;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->req_id) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     /* 1. memberData — SEQUENCE OF DataRefFcEntry */
-    if (!pdu->member_data) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->member_data) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     {
-        uint32_t cnt = (uint32_t)pdu->member_data->count;
+        uint32_t cnt = (uint32_t) pdu->member_data->count;
         per_error_t perr = per_encode_length(&s, cnt);
-        if (perr) { per_stream_free(&s); return CMS_ERR; }
+        if (perr) {
+            per_stream_free(&s);
+            return CMS_ERR;
+        }
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_data_ref_fc_entry_t *e = (cms_data_ref_fc_entry_t*)pdu->member_data->elements[i];
-            if (!e) { per_stream_free(&s); return CMS_ERR; }
+            cms_data_ref_fc_entry_t *e = (cms_data_ref_fc_entry_t *) pdu->member_data->elements[i];
+            if (!e) {
+                per_stream_free(&s);
+                return CMS_ERR;
+            }
             err = cms_data_ref_fc_entry_encode_stream(&s, e);
-            if (err) { per_stream_free(&s); return err; }
+            if (err) {
+                per_stream_free(&s);
+                return err;
+            }
         }
     }
 
     /* 2. moreFollows — BOOLEAN */
-    if (!pdu->more_follows) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->more_follows) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_boolean_encode_stream(&s, pdu->more_follows);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
-int cms_get_data_set_directory_response_decode(cms_get_data_set_directory_response_t *pdu, const uint8_t *in_buf, int in_len) {
+int cms_get_data_set_directory_response_decode(cms_get_data_set_directory_response_t *pdu, const uint8_t *in_buf,
+                                               int in_len) {
     per_stream_t s;
-    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    per_stream_init_read(&s, in_buf, (size_t) in_len);
     int err;
     int retry_needed = 0;
 
     /* 0. reqId */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id)
+        return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err)
+        return err;
 
     /* 1. memberData */
-    if (!pdu->member_data) return CMS_ERR;
+    if (!pdu->member_data)
+        return CMS_ERR;
     {
         uint32_t cnt;
         per_error_t perr = per_decode_length(&s, &cnt);
-        if (perr) return CMS_ERR;
-        if (pdu->member_data->count < (int32_t)cnt) retry_needed = 1;
-        pdu->member_data->count = (int32_t)cnt;
+        if (perr)
+            return CMS_ERR;
+        if (pdu->member_data->count < (int32_t) cnt)
+            retry_needed = 1;
+        pdu->member_data->count = (int32_t) cnt;
         int inner_retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
             err = cms_data_ref_fc_entry_decode_stream(&s, retry_needed ? NULL : pdu->member_data->elements[i]);
-            if (err == CMS_RETRY) inner_retry_needed = 1;
-            else if (err) return err;
+            if (err == CMS_RETRY)
+                inner_retry_needed = 1;
+            else if (err)
+                return err;
         }
-        if (inner_retry_needed) retry_needed = 1;
+        if (inner_retry_needed)
+            retry_needed = 1;
     }
 
     /* 2. moreFollows */
-    if (!pdu->more_follows) return CMS_ERR;
+    if (!pdu->more_follows)
+        return CMS_ERR;
     err = cms_boolean_decode_stream(&s, pdu->more_follows);
-    if (err) return err;
+    if (err)
+        return err;
 
     return retry_needed ? CMS_RETRY : CMS_OK;
 }
 
 /* ── Error (no OPTIONAL) ── */
 
-int cms_get_data_set_directory_error_encode(const cms_get_data_set_directory_error_t *pdu, uint8_t **out_buf, size_t *out_len) {
+int cms_get_data_set_directory_error_encode(const cms_get_data_set_directory_error_t *pdu, uint8_t **out_buf,
+                                            size_t *out_len) {
     per_stream_t s;
     per_error_t err_init = per_stream_init_write(&s, 64);
-    if (err_init) return (int)err_init;
+    if (err_init)
+        return (int) err_init;
     int err;
 
     /* 0. reqId — Int16U */
-    if (!pdu->req_id) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->req_id) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_req_id_encode_stream(&s, pdu->req_id);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     /* 1. serviceError — ServiceError */
-    if (!pdu->service_error) { per_stream_free(&s); return CMS_ERR; }
+    if (!pdu->service_error) {
+        per_stream_free(&s);
+        return CMS_ERR;
+    }
     err = cms_service_error_encode_stream(&s, pdu->service_error);
-    if (err) { per_stream_free(&s); return err; }
+    if (err) {
+        per_stream_free(&s);
+        return err;
+    }
 
     *out_buf = per_stream_detach(&s, out_len);
     return CMS_OK;
 }
 
-int cms_get_data_set_directory_error_decode(cms_get_data_set_directory_error_t *pdu, const uint8_t *in_buf, int in_len) {
+int cms_get_data_set_directory_error_decode(cms_get_data_set_directory_error_t *pdu, const uint8_t *in_buf,
+                                            int in_len) {
     per_stream_t s;
-    per_stream_init_read(&s, in_buf, (size_t)in_len);
+    per_stream_init_read(&s, in_buf, (size_t) in_len);
     int err;
 
     /* 0. reqId */
-    if (!pdu->req_id) return CMS_ERR;
+    if (!pdu->req_id)
+        return CMS_ERR;
     err = cms_req_id_decode_stream(&s, pdu->req_id);
-    if (err) return err;
+    if (err)
+        return err;
 
     /* 1. serviceError */
-    if (!pdu->service_error) return CMS_ERR;
+    if (!pdu->service_error)
+        return CMS_ERR;
     err = cms_service_error_decode_stream(&s, pdu->service_error);
-    if (err) return err;
+    if (err)
+        return err;
 
     return CMS_OK;
 }

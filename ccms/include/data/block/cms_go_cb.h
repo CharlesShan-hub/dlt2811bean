@@ -27,13 +27,13 @@ extern "C" {
 #define CMS_GO_CB_GO_ID_MAX_LEN 129
 
 typedef struct {
-    cms_boolean_t          *goEna;         /* BOOLEAN */
-    cms_uint8_array_t      *goID;          /* VisibleString129 */
-    cms_object_reference_t *datSet;        /* ObjectReference */
-    cms_int32u_t           *confRev;       /* INT32U */
-    cms_boolean_t          *ndsCom;        /* BOOLEAN */
-    cms_boolean_t          *dstAddress_present;
-    cms_phy_com_addr_t     *dstAddress;    /* PHYCOMADDR OPTIONAL */
+    cms_boolean_t *goEna;           /* BOOLEAN */
+    cms_uint8_array_t *goID;        /* VisibleString129 */
+    cms_object_reference_t *datSet; /* ObjectReference */
+    cms_int32u_t *confRev;          /* INT32U */
+    cms_boolean_t *ndsCom;          /* BOOLEAN */
+    cms_boolean_t *dstAddress_present;
+    cms_phy_com_addr_t *dstAddress; /* PHYCOMADDR OPTIONAL */
 } cms_go_cb_t;
 
 int cms_go_cb_encode_stream(per_stream_t *s, const void *ptr);

@@ -24,13 +24,13 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_RCB_VALUE_CHOICE_ERROR  0
-#define CMS_RCB_VALUE_CHOICE_VALUE  1
+#define CMS_RCB_VALUE_CHOICE_ERROR 0
+#define CMS_RCB_VALUE_CHOICE_VALUE 1
 
 typedef struct {
-    cms_enumerated_t    *choice;
+    cms_enumerated_t *choice;
     cms_service_error_t *alt_error;
-    cms_brcb_t          *alt_value;      /* BRCB or URCB in same slot */
+    cms_brcb_t *alt_value; /* BRCB or URCB in same slot */
 } cms_rcb_value_choice_t;
 
 int cms_rcb_value_choice_encode_stream(per_stream_t *s, const cms_rcb_value_choice_t *v);

@@ -22,12 +22,12 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_RPC_METHOD_DEF_CHOICE_ERROR  0
+#define CMS_RPC_METHOD_DEF_CHOICE_ERROR 0
 #define CMS_RPC_METHOD_DEF_CHOICE_METHOD 1
 
 typedef struct {
-    cms_enumerated_t     *choice;
-    cms_service_error_t  *alt_error;
+    cms_enumerated_t *choice;
+    cms_service_error_t *alt_error;
     cms_rpc_method_def_t *alt_method;
 } cms_rpc_method_def_choice_t;
 

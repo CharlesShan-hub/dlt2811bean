@@ -22,11 +22,11 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t           *req_id;
+    cms_req_id_t *req_id;
     cms_object_reference_t *dataset_reference;
-    cms_boolean_t          *ref_after_present;
+    cms_boolean_t *ref_after_present;
     cms_object_reference_t *ref_after;
-    cms_array_t            *value;         /* SEQUENCE OF Data */
+    cms_array_t *value; /* SEQUENCE OF Data */
 } cms_set_data_set_values_request_t;
 
 /*
@@ -38,7 +38,7 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t    *req_id;
+    cms_req_id_t *req_id;
 } cms_set_data_set_values_response_t;
 
 /*
@@ -50,39 +50,27 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_array_t           *result;        /* SEQUENCE OF ServiceError */
+    cms_req_id_t *req_id;
+    cms_array_t *result; /* SEQUENCE OF ServiceError */
 } cms_set_data_set_values_error_t;
 
-CMS_EXPORT int cms_set_data_set_values_request_encode(
-    const cms_set_data_set_values_request_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_set_data_set_values_request_encode(const cms_set_data_set_values_request_t *pdu, uint8_t **out_buf,
+                                                      size_t *out_len);
 
-CMS_EXPORT int cms_set_data_set_values_request_decode(
-    cms_set_data_set_values_request_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_set_data_set_values_request_decode(cms_set_data_set_values_request_t *pdu, const uint8_t *in_buf,
+                                                      int in_len);
 
-CMS_EXPORT int cms_set_data_set_values_response_encode(
-    const cms_set_data_set_values_response_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_set_data_set_values_response_encode(const cms_set_data_set_values_response_t *pdu, uint8_t **out_buf,
+                                                       size_t *out_len);
 
-CMS_EXPORT int cms_set_data_set_values_response_decode(
-    cms_set_data_set_values_response_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_set_data_set_values_response_decode(cms_set_data_set_values_response_t *pdu, const uint8_t *in_buf,
+                                                       int in_len);
 
-CMS_EXPORT int cms_set_data_set_values_error_encode(
-    const cms_set_data_set_values_error_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_set_data_set_values_error_encode(const cms_set_data_set_values_error_t *pdu, uint8_t **out_buf,
+                                                    size_t *out_len);
 
-CMS_EXPORT int cms_set_data_set_values_error_decode(
-    cms_set_data_set_values_error_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_set_data_set_values_error_decode(cms_set_data_set_values_error_t *pdu, const uint8_t *in_buf,
+                                                    int in_len);
 
 #ifdef __cplusplus
 }

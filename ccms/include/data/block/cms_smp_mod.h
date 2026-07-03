@@ -14,9 +14,9 @@ extern "C" {
  * PER: constrained integer, encoded as Int8 (-128..127)
  */
 
-#define CMS_SMP_MOD_SAMPLES_PER_NOMINAL_PERIOD  0
-#define CMS_SMP_MOD_SAMPLES_PER_SECOND          1
-#define CMS_SMP_MOD_SECONDS_PER_SAMPLE          2
+#define CMS_SMP_MOD_SAMPLES_PER_NOMINAL_PERIOD 0
+#define CMS_SMP_MOD_SAMPLES_PER_SECOND 1
+#define CMS_SMP_MOD_SECONDS_PER_SAMPLE 2
 
 typedef cms_enumerated_t cms_smp_mod_t;
 

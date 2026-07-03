@@ -34,21 +34,23 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t              *req_id;
-    cms_object_reference_t    *reference;
-    cms_data_t                *ctl_val;
-    cms_time_stamp_t          *oper_tm;       /* mandatory */
-    cms_originator_t          *origin;
-    cms_int8u_t               *ctl_num;
-    cms_time_stamp_t          *t;
-    cms_boolean_t             *test;
-    cms_check_t               *check;
-    cms_boolean_t             *add_cause_present;
-    cms_add_cause_t           *add_cause;
+    cms_req_id_t *req_id;
+    cms_object_reference_t *reference;
+    cms_data_t *ctl_val;
+    cms_time_stamp_t *oper_tm; /* mandatory */
+    cms_originator_t *origin;
+    cms_int8u_t *ctl_num;
+    cms_time_stamp_t *t;
+    cms_boolean_t *test;
+    cms_check_t *check;
+    cms_boolean_t *add_cause_present;
+    cms_add_cause_t *add_cause;
 } cms_time_activated_operate_termination_t;
 
-CMS_EXPORT int cms_time_activated_operate_termination_encode(const cms_time_activated_operate_termination_t *pdu, uint8_t **out_buf, size_t *out_len);
-CMS_EXPORT int cms_time_activated_operate_termination_decode(cms_time_activated_operate_termination_t *pdu, const uint8_t *in_buf, int in_len);
+CMS_EXPORT int cms_time_activated_operate_termination_encode(const cms_time_activated_operate_termination_t *pdu,
+                                                             uint8_t **out_buf, size_t *out_len);
+CMS_EXPORT int cms_time_activated_operate_termination_decode(cms_time_activated_operate_termination_t *pdu,
+                                                             const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

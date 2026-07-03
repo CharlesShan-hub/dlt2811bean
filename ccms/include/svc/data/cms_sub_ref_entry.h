@@ -21,8 +21,8 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_sub_reference_t       *reference;
-    cms_boolean_t             *fc_present;
+    cms_sub_reference_t *reference;
+    cms_boolean_t *fc_present;
     cms_functional_constraint_t *fc;
 } cms_sub_ref_entry_t;
 

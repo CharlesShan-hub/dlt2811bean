@@ -20,9 +20,9 @@ extern "C" {
  * 编码为 constrained integer (0..2), 2 bits
  * ============================================================
  */
-#define CMS_OBJECT_CLASS_RESERVED        0
-#define CMS_OBJECT_CLASS_LOGICAL_DEVICE  1
-#define CMS_OBJECT_CLASS_FILE_SYSTEM     2
+#define CMS_OBJECT_CLASS_RESERVED 0
+#define CMS_OBJECT_CLASS_LOGICAL_DEVICE 1
+#define CMS_OBJECT_CLASS_FILE_SYSTEM 2
 
 typedef cms_int32_t cms_object_class_t;
 

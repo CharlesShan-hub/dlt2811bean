@@ -22,9 +22,9 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t           *req_id;
+    cms_req_id_t *req_id;
     cms_visible_string255_t *filename;
-    cms_int32u_t           *start_position;
+    cms_int32u_t *start_position;
 } cms_get_file_request_t;
 
 /*
@@ -37,9 +37,9 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t        *req_id;
-    cms_uint8_array_t   *file_data;
-    cms_boolean_t       *end_of_file;    /* DEFAULT FALSE */
+    cms_req_id_t *req_id;
+    cms_uint8_array_t *file_data;
+    cms_boolean_t *end_of_file; /* DEFAULT FALSE */
 } cms_get_file_response_t;
 
 /*
@@ -48,8 +48,8 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_get_file_error_t;
 
 CMS_EXPORT int cms_get_file_request_encode(const cms_get_file_request_t *pdu, uint8_t **out_buf, size_t *out_len);

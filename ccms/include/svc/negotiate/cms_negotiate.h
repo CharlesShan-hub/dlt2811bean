@@ -22,10 +22,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t    *req_id;
-    cms_int16u_t    *apdu_size;
-    cms_int32u_t    *asdu_size;
-    cms_int32u_t    *protocol_version;
+    cms_req_id_t *req_id;
+    cms_int16u_t *apdu_size;
+    cms_int32u_t *asdu_size;
+    cms_int32u_t *protocol_version;
 } cms_negotiate_request_t;
 
 /*
@@ -40,11 +40,11 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t        *req_id;
-    cms_int16u_t        *apdu_size;
-    cms_int32u_t        *asdu_size;
-    cms_int32u_t        *protocol_version;
-    cms_uint8_array_t   *model_version;   /* VisibleString */
+    cms_req_id_t *req_id;
+    cms_int16u_t *apdu_size;
+    cms_int32u_t *asdu_size;
+    cms_int32u_t *protocol_version;
+    cms_uint8_array_t *model_version; /* VisibleString */
 } cms_negotiate_response_t;
 
 /*
@@ -53,8 +53,8 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_negotiate_error_t;
 
 CMS_EXPORT int cms_negotiate_request_encode(const cms_negotiate_request_t *pdu, uint8_t **out_buf, size_t *out_len);

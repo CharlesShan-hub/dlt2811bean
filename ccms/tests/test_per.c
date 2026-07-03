@@ -9,13 +9,18 @@
 
 static int failed = 0;
 
-#define TEST(name, expr) do { \
-    if (!(expr)) { printf("  FAIL: %s\n", name); failed++; } \
-    else { printf("  PASS: %s\n", name); } \
-} while(0)
+#define TEST(name, expr)                                                                                               \
+    do {                                                                                                               \
+        if (!(expr)) {                                                                                                 \
+            printf("  FAIL: %s\n", name);                                                                              \
+            failed++;                                                                                                  \
+        } else {                                                                                                       \
+            printf("  PASS: %s\n", name);                                                                              \
+        }                                                                                                              \
+    } while (0)
 
 /* Helper: create a write stream, detach the buffer for read-back. */
-static uint8_t* finish_write(per_stream_t *s, size_t *out_len) {
+static uint8_t *finish_write(per_stream_t *s, size_t *out_len) {
     uint8_t *buf = per_stream_detach(s, out_len);
     per_stream_init_read(s, buf, *out_len);
     return buf;
@@ -109,7 +114,7 @@ static void test_stream_byte_io(void) {
 
     per_stream_init_write(&s, 16);
 
-    uint8_t data[] = { 0x01, 0x02, 0x03 };
+    uint8_t data[] = {0x01, 0x02, 0x03};
     TEST("write bytes", per_stream_write_bytes(&s, data, 3) == PER_OK);
     TEST("tell after 3 bytes", per_stream_tell(&s) == 24);
 
@@ -297,7 +302,7 @@ static void test_integer_unsigned_to_bytes(void) {
 static void test_string_octet(void) {
     printf("=== string: octet ===\n");
     per_stream_t s;
-    uint8_t data[] = { 0xCA, 0xFE, 0xBA, 0xBE };
+    uint8_t data[] = {0xCA, 0xFE, 0xBA, 0xBE};
     size_t out_len;
     uint8_t *buf;
 
@@ -333,7 +338,7 @@ static void test_string_octet(void) {
 static void test_string_visible(void) {
     printf("=== string: visible ===\n");
     per_stream_t s;
-    const uint8_t *str = (const uint8_t *)"hello";
+    const uint8_t *str = (const uint8_t *) "hello";
     size_t out_len;
     uint8_t *buf;
 
@@ -343,7 +348,7 @@ static void test_string_visible(void) {
     buf = finish_write(&s, &out_len);
     uint8_t out[16] = {0};
     TEST("decode visible", per_decode_visible_string(&s, out, 10) == PER_OK);
-    TEST("visible content", strcmp((const char *)out, "hello") == 0);
+    TEST("visible content", strcmp((const char *) out, "hello") == 0);
     free(buf);
 
     /* fixed length */
@@ -352,7 +357,7 @@ static void test_string_visible(void) {
     buf = finish_write(&s, &out_len);
     memset(out, 0, sizeof(out));
     TEST("decode visible fixed", per_decode_visible_string_fixed(&s, out, 8) == PER_OK);
-    TEST("visible fixed content", strcmp((const char *)out, "hello") == 0);
+    TEST("visible fixed content", strcmp((const char *) out, "hello") == 0);
     /* trailing bytes should be zero-padded */
     TEST("visible fixed pad", out[5] == 0 && out[7] == 0);
     free(buf);
@@ -365,14 +370,14 @@ static void test_string_visible(void) {
     uint32_t out_len_u32;
     TEST("decode visible unconstrained", per_decode_visible_string_unconstrained(&s, out, &out_len_u32) == PER_OK);
     TEST("visible unconstrained length", out_len_u32 == 5);
-    TEST("visible unconstrained content", strcmp((const char *)out, "hello") == 0);
+    TEST("visible unconstrained content", strcmp((const char *) out, "hello") == 0);
     free(buf);
 }
 
 static void test_string_utf8(void) {
     printf("=== string: utf8 ===\n");
     per_stream_t s;
-    const uint8_t *str = (const uint8_t *)"héllo";
+    const uint8_t *str = (const uint8_t *) "héllo";
 
     per_stream_init_write(&s, 64);
     TEST("encode utf8", per_encode_utf8_string(&s, str, 10) == PER_OK);
@@ -380,7 +385,7 @@ static void test_string_utf8(void) {
     uint8_t *buf = finish_write(&s, &out_len);
     uint8_t out[16] = {0};
     TEST("decode utf8", per_decode_utf8_string(&s, out, 10) == PER_OK);
-    TEST("utf8 content", strcmp((const char *)out, (const char *)str) == 0);
+    TEST("utf8 content", strcmp((const char *) out, (const char *) str) == 0);
     free(buf);
 }
 
@@ -388,7 +393,7 @@ static void test_string_bit_fixed(void) {
     printf("=== string: bit string fixed ===\n");
     per_stream_t s;
     /* 13 bits: 1010101010101 */
-    uint8_t data[2] = { 0xAA, 0xA8 };
+    uint8_t data[2] = {0xAA, 0xA8};
 
     per_stream_init_write(&s, 64);
     TEST("encode bit fixed 13", per_encode_bit_string_fixed(&s, data, 13) == PER_OK);
@@ -403,7 +408,7 @@ static void test_string_bit_fixed(void) {
 static void test_string_bit_variable(void) {
     printf("=== string: bit string variable ===\n");
     per_stream_t s;
-    uint8_t data[2] = { 0xAA, 0xA8 };
+    uint8_t data[2] = {0xAA, 0xA8};
     size_t out_len;
     uint8_t *buf;
 
@@ -505,7 +510,11 @@ static void test_sequence_bitmap(void) {
     bool flags7dec[7] = {false};
     TEST("decode bitmap 7 all-present", per_decode_optional_bitmap(&s, flags7dec, 7) == PER_OK);
     bool all_ok = true;
-    for (int i = 0; i < 7; i++) if (!flags7dec[i]) { all_ok = false; break; }
+    for (int i = 0; i < 7; i++)
+        if (!flags7dec[i]) {
+            all_ok = false;
+            break;
+        }
     TEST("bitmap 7 all-present value", all_ok);
     free(buf);
 
@@ -517,20 +526,29 @@ static void test_sequence_bitmap(void) {
     bool flags8dec[8] = {false};
     TEST("decode bitmap 8 all-present", per_decode_optional_bitmap(&s, flags8dec, 8) == PER_OK);
     all_ok = true;
-    for (int i = 0; i < 8; i++) if (!flags8dec[i]) { all_ok = false; break; }
+    for (int i = 0; i < 8; i++)
+        if (!flags8dec[i]) {
+            all_ok = false;
+            break;
+        }
     TEST("bitmap 8 all-present value", all_ok);
     free(buf);
 
     /* 64 fields: all present */
     per_stream_init_write(&s, 16);
     bool flags64enc[64];
-    for (int i = 0; i < 64; i++) flags64enc[i] = true;
+    for (int i = 0; i < 64; i++)
+        flags64enc[i] = true;
     TEST("encode bitmap 64 all-present", per_encode_optional_bitmap(&s, flags64enc, 64) == PER_OK);
     buf = finish_write(&s, &out_len);
     bool flags64dec[64] = {false};
     TEST("decode bitmap 64 all-present", per_decode_optional_bitmap(&s, flags64dec, 64) == PER_OK);
     all_ok = true;
-    for (int i = 0; i < 64; i++) if (!flags64dec[i]) { all_ok = false; break; }
+    for (int i = 0; i < 64; i++)
+        if (!flags64dec[i]) {
+            all_ok = false;
+            break;
+        }
     TEST("bitmap 64 all-present value", all_ok);
     free(buf);
 }

@@ -22,13 +22,13 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_GOCB_VALUE_CHOICE_ERROR  0
-#define CMS_GOCB_VALUE_CHOICE_VALUE  1
+#define CMS_GOCB_VALUE_CHOICE_ERROR 0
+#define CMS_GOCB_VALUE_CHOICE_VALUE 1
 
 typedef struct {
-    cms_enumerated_t    *choice;
+    cms_enumerated_t *choice;
     cms_service_error_t *alt_error;
-    cms_go_cb_t         *alt_value;
+    cms_go_cb_t *alt_value;
 } cms_gocb_value_choice_t;
 
 int cms_gocb_value_choice_encode_stream(per_stream_t *s, const cms_gocb_value_choice_t *v);

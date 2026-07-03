@@ -29,15 +29,15 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t              *req_id;
-    cms_object_reference_t    *reference;
-    cms_data_t                *ctl_val;
-    cms_boolean_t             *oper_tm_present;
-    cms_time_stamp_t          *oper_tm;
-    cms_originator_t          *origin;
-    cms_int8u_t               *ctl_num;
-    cms_time_stamp_t          *t;
-    cms_boolean_t             *test;
+    cms_req_id_t *req_id;
+    cms_object_reference_t *reference;
+    cms_data_t *ctl_val;
+    cms_boolean_t *oper_tm_present;
+    cms_time_stamp_t *oper_tm;
+    cms_originator_t *origin;
+    cms_int8u_t *ctl_num;
+    cms_time_stamp_t *t;
+    cms_boolean_t *test;
 } cms_cancel_request_t;
 
 /*
@@ -52,16 +52,16 @@ typedef cms_cancel_request_t cms_cancel_response_t;
  * }
  */
 typedef struct {
-    cms_req_id_t              *req_id;
-    cms_object_reference_t    *reference;
-    cms_data_t                *ctl_val;
-    cms_boolean_t             *oper_tm_present;
-    cms_time_stamp_t          *oper_tm;
-    cms_originator_t          *origin;
-    cms_int8u_t               *ctl_num;
-    cms_time_stamp_t          *t;
-    cms_boolean_t             *test;
-    cms_add_cause_t           *add_cause;
+    cms_req_id_t *req_id;
+    cms_object_reference_t *reference;
+    cms_data_t *ctl_val;
+    cms_boolean_t *oper_tm_present;
+    cms_time_stamp_t *oper_tm;
+    cms_originator_t *origin;
+    cms_int8u_t *ctl_num;
+    cms_time_stamp_t *t;
+    cms_boolean_t *test;
+    cms_add_cause_t *add_cause;
 } cms_cancel_error_t;
 
 CMS_EXPORT int cms_cancel_request_encode(const cms_cancel_request_t *pdu, uint8_t **out_buf, size_t *out_len);

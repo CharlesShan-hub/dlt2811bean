@@ -3,17 +3,21 @@
 #include "data/string/cms_octet_string.h"
 
 int cms_rpc_call_req_choice_encode_stream(per_stream_t *s, const cms_rpc_call_req_choice_t *v) {
-    if (!v || !v->choice) return CMS_ERR;
+    if (!v || !v->choice)
+        return CMS_ERR;
     int sel = v->choice->value;
-    per_error_t perr = per_encode_small_non_negative(s, (uint32_t)sel);
-    if (perr) return CMS_ERR;
+    per_error_t perr = per_encode_small_non_negative(s, (uint32_t) sel);
+    if (perr)
+        return CMS_ERR;
 
     switch (sel) {
     case CMS_RPC_CALL_REQ_CHOICE_REQ_DATA:
-        if (!v->alt_req_data) return CMS_ERR;
+        if (!v->alt_req_data)
+            return CMS_ERR;
         return cms_data_encode_stream(s, v->alt_req_data);
     case CMS_RPC_CALL_REQ_CHOICE_CALL_ID:
-        if (!v->alt_call_id) return CMS_ERR;
+        if (!v->alt_call_id)
+            return CMS_ERR;
         return cms_octet_string_encode_stream(s, v->alt_call_id, UINT32_MAX);
     default:
         return CMS_ERR;
@@ -21,19 +25,24 @@ int cms_rpc_call_req_choice_encode_stream(per_stream_t *s, const cms_rpc_call_re
 }
 
 int cms_rpc_call_req_choice_decode_stream(per_stream_t *s, void *ptr) {
-    cms_rpc_call_req_choice_t *v = (cms_rpc_call_req_choice_t*)ptr;
+    cms_rpc_call_req_choice_t *v = (cms_rpc_call_req_choice_t *) ptr;
     uint32_t sel;
     per_error_t perr = per_decode_small_non_negative(s, &sel);
-    if (perr) return CMS_ERR;
-    if (sel > 1) return CMS_ERR;
-    if (v) v->choice->value = (int)sel;
+    if (perr)
+        return CMS_ERR;
+    if (sel > 1)
+        return CMS_ERR;
+    if (v)
+        v->choice->value = (int) sel;
 
     switch (sel) {
     case CMS_RPC_CALL_REQ_CHOICE_REQ_DATA:
-        if (v && !v->alt_req_data) return CMS_ERR;
+        if (v && !v->alt_req_data)
+            return CMS_ERR;
         return cms_data_decode_stream(s, v ? v->alt_req_data : NULL);
     case CMS_RPC_CALL_REQ_CHOICE_CALL_ID:
-        if (v && !v->alt_call_id) return CMS_ERR;
+        if (v && !v->alt_call_id)
+            return CMS_ERR;
         return cms_octet_string_decode_stream(s, v ? v->alt_call_id : NULL, UINT32_MAX);
     default:
         return CMS_ERR;

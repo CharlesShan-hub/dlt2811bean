@@ -24,10 +24,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t                  *req_id;
-    cms_boolean_t                 *sap_ref_present;
-    cms_uint8_array_t             *sap_ref;
-    cms_boolean_t                 *auth_param_present;
+    cms_req_id_t *req_id;
+    cms_boolean_t *sap_ref_present;
+    cms_uint8_array_t *sap_ref;
+    cms_boolean_t *auth_param_present;
     cms_authentication_parameter_t *auth_param;
 } cms_associate_request_t;
 
@@ -42,10 +42,10 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t                  *req_id;
-    cms_association_id_t          *assoc_id;
-    cms_service_error_t           *service_error;
-    cms_boolean_t                 *auth_param_present;
+    cms_req_id_t *req_id;
+    cms_association_id_t *assoc_id;
+    cms_service_error_t *service_error;
+    cms_boolean_t *auth_param_present;
     cms_authentication_parameter_t *auth_param;
 } cms_associate_response_t;
 
@@ -55,39 +55,21 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_associate_error_t;
 
-CMS_EXPORT int cms_associate_request_encode(
-    const cms_associate_request_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_associate_request_encode(const cms_associate_request_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_associate_request_decode(
-    cms_associate_request_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_associate_request_decode(cms_associate_request_t *pdu, const uint8_t *in_buf, int in_len);
 
-CMS_EXPORT int cms_associate_response_encode(
-    const cms_associate_response_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_associate_response_encode(const cms_associate_response_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_associate_response_decode(
-    cms_associate_response_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_associate_response_decode(cms_associate_response_t *pdu, const uint8_t *in_buf, int in_len);
 
-CMS_EXPORT int cms_associate_error_encode(
-    const cms_associate_error_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_associate_error_encode(const cms_associate_error_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_associate_error_decode(
-    cms_associate_error_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_associate_error_decode(cms_associate_error_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

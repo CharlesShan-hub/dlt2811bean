@@ -24,13 +24,13 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t            *req_id;
+    cms_req_id_t *req_id;
     cms_visible_string255_t *path_name;
-    cms_boolean_t           *start_time_present;
-    cms_time_stamp_t        *start_time;
-    cms_boolean_t           *stop_time_present;
-    cms_time_stamp_t        *stop_time;
-    cms_boolean_t           *file_after_present;
+    cms_boolean_t *start_time_present;
+    cms_time_stamp_t *start_time;
+    cms_boolean_t *stop_time_present;
+    cms_time_stamp_t *stop_time;
+    cms_boolean_t *file_after_present;
     cms_visible_string255_t *file_after;
 } cms_get_file_directory_request_t;
 
@@ -44,9 +44,9 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t    *req_id;
-    cms_array_t     *file_entry;    /* SEQUENCE OF FileEntry */
-    cms_boolean_t   *more_follows;  /* DEFAULT TRUE */
+    cms_req_id_t *req_id;
+    cms_array_t *file_entry;     /* SEQUENCE OF FileEntry */
+    cms_boolean_t *more_follows; /* DEFAULT TRUE */
 } cms_get_file_directory_response_t;
 
 /*
@@ -55,16 +55,22 @@ typedef struct {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_service_error_t   *service_error;
+    cms_req_id_t *req_id;
+    cms_service_error_t *service_error;
 } cms_get_file_directory_error_t;
 
-CMS_EXPORT int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t *pdu, uint8_t **out_buf, size_t *out_len);
-CMS_EXPORT int cms_get_file_directory_request_decode(cms_get_file_directory_request_t *pdu, const uint8_t *in_buf, int in_len);
-CMS_EXPORT int cms_get_file_directory_response_encode(const cms_get_file_directory_response_t *pdu, uint8_t **out_buf, size_t *out_len);
-CMS_EXPORT int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pdu, const uint8_t *in_buf, int in_len);
-CMS_EXPORT int cms_get_file_directory_error_encode(const cms_get_file_directory_error_t *pdu, uint8_t **out_buf, size_t *out_len);
-CMS_EXPORT int cms_get_file_directory_error_decode(cms_get_file_directory_error_t *pdu, const uint8_t *in_buf, int in_len);
+CMS_EXPORT int cms_get_file_directory_request_encode(const cms_get_file_directory_request_t *pdu, uint8_t **out_buf,
+                                                     size_t *out_len);
+CMS_EXPORT int cms_get_file_directory_request_decode(cms_get_file_directory_request_t *pdu, const uint8_t *in_buf,
+                                                     int in_len);
+CMS_EXPORT int cms_get_file_directory_response_encode(const cms_get_file_directory_response_t *pdu, uint8_t **out_buf,
+                                                      size_t *out_len);
+CMS_EXPORT int cms_get_file_directory_response_decode(cms_get_file_directory_response_t *pdu, const uint8_t *in_buf,
+                                                      int in_len);
+CMS_EXPORT int cms_get_file_directory_error_encode(const cms_get_file_directory_error_t *pdu, uint8_t **out_buf,
+                                                   size_t *out_len);
+CMS_EXPORT int cms_get_file_directory_error_decode(cms_get_file_directory_error_t *pdu, const uint8_t *in_buf,
+                                                   int in_len);
 
 #ifdef __cplusplus
 }

@@ -9,7 +9,9 @@ extern "C" {
 #endif
 
 /* Float32 ::= OCTET STRING (SIZE(4))  —  7.1.4 */
-typedef struct { uint8_t value[4]; } cms_float32_t;
+typedef struct {
+    uint8_t value[4];
+} cms_float32_t;
 
 int cms_float32_encode_stream(per_stream_t *s, const void *ptr);
 int cms_float32_decode_stream(per_stream_t *s, void *ptr);

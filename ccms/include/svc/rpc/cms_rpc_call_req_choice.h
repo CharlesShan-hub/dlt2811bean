@@ -22,13 +22,13 @@ extern "C" {
  * ============================================================
  */
 
-#define CMS_RPC_CALL_REQ_CHOICE_REQ_DATA  0
-#define CMS_RPC_CALL_REQ_CHOICE_CALL_ID   1
+#define CMS_RPC_CALL_REQ_CHOICE_REQ_DATA 0
+#define CMS_RPC_CALL_REQ_CHOICE_CALL_ID 1
 
 typedef struct {
-    cms_enumerated_t   *choice;
-    cms_data_t         *alt_req_data;
-    cms_uint8_array_t  *alt_call_id;
+    cms_enumerated_t *choice;
+    cms_data_t *alt_req_data;
+    cms_uint8_array_t *alt_call_id;
 } cms_rpc_call_req_choice_t;
 
 int cms_rpc_call_req_choice_encode_stream(per_stream_t *s, const cms_rpc_call_req_choice_t *v);

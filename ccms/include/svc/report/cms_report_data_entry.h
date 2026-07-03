@@ -27,14 +27,14 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_boolean_t             *ref_present;
-    cms_object_reference_t    *reference;
-    cms_boolean_t             *fc_present;
+    cms_boolean_t *ref_present;
+    cms_object_reference_t *reference;
+    cms_boolean_t *fc_present;
     cms_functional_constraint_t *fc;
-    cms_int16u_t              *id;
-    cms_data_t                *value;
-    cms_boolean_t             *reason_present;
-    cms_reason_code_t         *reason;
+    cms_int16u_t *id;
+    cms_data_t *value;
+    cms_boolean_t *reason_present;
+    cms_reason_code_t *reason;
 } cms_report_data_entry_t;
 
 int cms_report_data_entry_encode_stream(per_stream_t *s, const cms_report_data_entry_t *v);

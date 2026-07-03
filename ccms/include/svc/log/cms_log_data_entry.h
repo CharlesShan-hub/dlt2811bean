@@ -24,10 +24,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_object_reference_t    *reference;
+    cms_object_reference_t *reference;
     cms_functional_constraint_t *fc;
-    cms_data_t                *value;
-    cms_reason_code_t         *reason;
+    cms_data_t *value;
+    cms_reason_code_t *reason;
 } cms_log_data_entry_t;
 
 int cms_log_data_entry_encode_stream(per_stream_t *s, const cms_log_data_entry_t *v);

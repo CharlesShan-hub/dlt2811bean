@@ -28,20 +28,14 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_req_id_t          *req_id;
-    cms_association_id_t  *assoc_id;
-    cms_abort_reason_t    *reason;
+    cms_req_id_t *req_id;
+    cms_association_id_t *assoc_id;
+    cms_abort_reason_t *reason;
 } cms_abort_t;
 
-CMS_EXPORT int cms_abort_encode(
-    const cms_abort_t *pdu,
-    uint8_t **out_buf, size_t *out_len
-);
+CMS_EXPORT int cms_abort_encode(const cms_abort_t *pdu, uint8_t **out_buf, size_t *out_len);
 
-CMS_EXPORT int cms_abort_decode(
-    cms_abort_t *pdu,
-    const uint8_t *in_buf, int in_len
-);
+CMS_EXPORT int cms_abort_decode(cms_abort_t *pdu, const uint8_t *in_buf, int in_len);
 
 #ifdef __cplusplus
 }

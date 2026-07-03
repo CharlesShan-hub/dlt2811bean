@@ -24,8 +24,8 @@ extern "C" {
  *   [7]    time_quality          (packed 8-bit BIT STRING)
  */
 typedef struct {
-    cms_int32u_t       *seconds_since_epoch;
-    cms_int24u_t       *fraction_of_second;
+    cms_int32u_t *seconds_since_epoch;
+    cms_int24u_t *fraction_of_second;
     cms_time_quality_t *time_quality;
 } cms_utc_time_t;
 

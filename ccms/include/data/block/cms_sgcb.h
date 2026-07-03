@@ -30,12 +30,12 @@ extern "C" {
  */
 
 typedef struct {
-    cms_int8u_t       *numOfSG;
-    cms_int8u_t       *actSG;
-    cms_int8u_t       *editSG;
-    cms_time_stamp_t  *tActEdt;
-    cms_boolean_t     *resvTms_present;
-    cms_int16u_t      *resvTms;   /* OPTIONAL */
+    cms_int8u_t *numOfSG;
+    cms_int8u_t *actSG;
+    cms_int8u_t *editSG;
+    cms_time_stamp_t *tActEdt;
+    cms_boolean_t *resvTms_present;
+    cms_int16u_t *resvTms; /* OPTIONAL */
 } cms_sgcb_t;
 
 int cms_sgcb_encode_stream(per_stream_t *s, const void *ptr);

@@ -26,10 +26,10 @@ extern "C" {
  *   [24] appid     → cms_int16u_t*
  */
 typedef struct {
-    cms_uint8_array_t *addr;        /* OCTET STRING (SIZE(6)) */
-    cms_int8u_t       *priority;    /* Int8U */
-    cms_int16u_t      *vid;         /* Int16U */
-    cms_int16u_t      *appid;       /* Int16U */
+    cms_uint8_array_t *addr; /* OCTET STRING (SIZE(6)) */
+    cms_int8u_t *priority;   /* Int8U */
+    cms_int16u_t *vid;       /* Int16U */
+    cms_int16u_t *appid;     /* Int16U */
 } cms_phy_com_addr_t;
 
 int cms_phy_com_addr_encode_stream(per_stream_t *s, const void *ptr);

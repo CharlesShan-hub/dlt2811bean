@@ -16,8 +16,8 @@ extern "C" {
  * sizeof = 16 (value* 8 + len 4 + padding 4)
  */
 typedef struct {
-    uint8_t *value;     /* 8 bytes */
-    int32_t  len;       /* 4 bytes */
+    uint8_t *value; /* 8 bytes */
+    int32_t len;    /* 4 bytes */
 } cms_uint8_array_t;
 
 #ifdef __cplusplus

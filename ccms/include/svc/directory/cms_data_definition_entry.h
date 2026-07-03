@@ -23,10 +23,10 @@ extern "C" {
  * ============================================================
  */
 typedef struct {
-    cms_sub_reference_t        *reference;
-    cms_boolean_t              *cdc_type_present;
-    cms_uint8_array_t          *cdc_type;
-    cms_data_definition_t      *definition;
+    cms_sub_reference_t *reference;
+    cms_boolean_t *cdc_type_present;
+    cms_uint8_array_t *cdc_type;
+    cms_data_definition_t *definition;
 } cms_data_definition_entry_t;
 
 int cms_data_definition_entry_encode_stream(per_stream_t *s, const cms_data_definition_entry_t *v);

@@ -6,12 +6,12 @@
 #include <stdbool.h>
 
 #ifdef _MSC_VER
-  #define CMS_EXPORT __declspec(dllexport)
+#define CMS_EXPORT __declspec(dllexport)
 #else
-  #define CMS_EXPORT __attribute__((visibility("default")))
+#define CMS_EXPORT __attribute__((visibility("default")))
 #endif
 
-#define CMS_OK   0
+#define CMS_OK 0
 /*
  * CMS_RETRY — returned by decode when a SEQUENCE OF has more elements
  * than pre-allocated slots (elements[i] == NULL). The count field has
@@ -27,9 +27,9 @@ extern "C" {
 /* ==================== Generic Array (all pointers) ==================== */
 
 typedef struct {
-    void  **elements;
+    void **elements;
     int32_t count;
-} cms_array_t;          /* sizeof=16 */
+} cms_array_t; /* sizeof=16 */
 
 #ifdef __cplusplus
 }

@@ -28,10 +28,10 @@ extern "C" {
 typedef struct cms_data_definition_s cms_data_definition_t;
 
 typedef struct {
-    cms_object_name_t            *name;           /* ObjectName */
-    cms_boolean_t                *fc_present;
-    cms_functional_constraint_t  *fc;             /* FunctionalConstraint OPTIONAL */
-    cms_data_definition_t        *type;           /* DataDefinition */
+    cms_object_name_t *name; /* ObjectName */
+    cms_boolean_t *fc_present;
+    cms_functional_constraint_t *fc; /* FunctionalConstraint OPTIONAL */
+    cms_data_definition_t *type;     /* DataDefinition */
 } cms_data_definition_struct_elem_t;
 
 #ifdef __cplusplus
