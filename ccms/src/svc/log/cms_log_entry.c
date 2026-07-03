@@ -36,16 +36,18 @@ int cms_log_entry_encode_stream(per_stream_t *s, const cms_log_entry_t *v) {
     return CMS_OK;
 }
 
-int cms_log_entry_decode_stream(per_stream_t *s, cms_log_entry_t *v) {
-    if (!v || !v->time_of_entry || !v->entry_id || !v->entry_data) return CMS_ERR;
+int cms_log_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_log_entry_t *v = (cms_log_entry_t*)ptr;
     int err;
 
     /* 1. timeOfEntry */
-    err = cms_entry_time_decode_stream(s, v->time_of_entry);
+    if (v && !v->time_of_entry) return CMS_ERR;
+    err = cms_entry_time_decode_stream(s, v ? v->time_of_entry : NULL);
     if (err) return err;
 
     /* 2. entryID */
-    err = cms_entry_id_decode_stream(s, v->entry_id);
+    if (v && !v->entry_id) return CMS_ERR;
+    err = cms_entry_id_decode_stream(s, v ? v->entry_id : NULL);
     if (err) return err;
 
     /* 3. entryData */
@@ -53,17 +55,22 @@ int cms_log_entry_decode_stream(per_stream_t *s, cms_log_entry_t *v) {
         uint32_t cnt;
         per_error_t perr = per_decode_length(s, &cnt);
         if (perr) return CMS_ERR;
-        if (v->entry_data->count < (int32_t)cnt) {
-            v->entry_data->count = (int32_t)cnt;
+        cms_array_t *arr = v ? v->entry_data : NULL;
+        if (v && !arr) return CMS_ERR;
+        if (arr && arr->count < (int32_t)cnt) {
+            arr->count = (int32_t)cnt;
             return CMS_RETRY;
         }
-        v->entry_data->count = (int32_t)cnt;
+        if (arr) arr->count = (int32_t)cnt;
+        int retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_log_data_entry_t *e = (cms_log_data_entry_t*)v->entry_data->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_log_data_entry_decode_stream(s, e);
-            if (err) return err;
+            void *elem = NULL;
+            if (arr && arr->elements && arr->elements[i]) elem = arr->elements[i];
+            err = cms_log_data_entry_decode_stream(s, elem);
+            if (err == CMS_RETRY) retry_needed = 1;
+            else if (err) return err;
         }
+        if (retry_needed) return CMS_RETRY;
     }
 
     return CMS_OK;

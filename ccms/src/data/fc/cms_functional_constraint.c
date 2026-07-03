@@ -53,7 +53,6 @@ int cms_functional_constraint_encode_stream(per_stream_t *s, const void *ptr)
 
 int cms_functional_constraint_decode_stream(per_stream_t *s, void *ptr)
 {
-    cms_functional_constraint_t *v = (cms_functional_constraint_t*)ptr;
     cms_uint8_array_t arr;
     uint8_t buf[FC_FIXED_LEN + 1]; /* +1 for null terminator */
     int idx;
@@ -67,7 +66,7 @@ int cms_functional_constraint_decode_stream(per_stream_t *s, void *ptr)
     idx = fc_code_to_int(arr.value);
     if (idx < 0) return CMS_ERR;
 
-    v->value = idx;
+    if (ptr) ((cms_functional_constraint_t*)ptr)->value = idx;
     return CMS_OK;
 }
 

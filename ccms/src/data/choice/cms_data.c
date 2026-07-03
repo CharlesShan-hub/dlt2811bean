@@ -134,132 +134,136 @@ int cms_data_encode_stream(per_stream_t *s, const void *ptr) {
 
 int cms_data_decode_stream(per_stream_t *s, void *ptr) {
     cms_data_t *d = (cms_data_t*)ptr;
-    if (!d || !d->choice) return CMS_ERR;
 
-    /* 1. Decode CHOICE index — small non-negative */
+    /* 1. Decode CHOICE index — small non-negative (always needed for virtual mode) */
     uint32_t sel32;
     per_error_t perr = per_decode_small_non_negative(s, &sel32);
     if (perr) return CMS_ERR;
     if (sel32 > 23) return CMS_ERR;
-    d->choice->value = (int)sel32;
+    if (d) d->choice->value = (int)sel32;
 
     /* 2. Decode the selected alternative */
     int err = 0;
-    switch (d->choice->value) {
+    switch ((int)sel32) {
 
     case CMS_DATA_CHOICE_ERROR:
-        if (!d->alt_error) return CMS_ERR;
-        return cms_service_error_decode_stream(s, d->alt_error);
+        if (d && !d->alt_error) return CMS_ERR;
+        return cms_service_error_decode_stream(s, d ? d->alt_error : NULL);
 
     case CMS_DATA_CHOICE_ARRAY:
     case CMS_DATA_CHOICE_STRUCTURE: {
         uint32_t count;
         perr = per_decode_length(s, &count);
         if (perr) return CMS_ERR;
-        cms_array_t *arr = (cms_array_t*)d->alt_sequence;
-        if (!arr) return CMS_ERR;
-        if (arr->count < (int32_t)count) {
+        cms_array_t *arr = d ? (cms_array_t*)d->alt_sequence : NULL;
+        if (d && !arr) return CMS_ERR;
+        if (arr && arr->count < (int32_t)count) {
             arr->count = (int32_t)count;
             return CMS_RETRY;
         }
-        arr->count = (int32_t)count;
+        int retry_needed = 0;
         for (uint32_t i = 0; i < count; i++) {
-            if (!arr->elements || !arr->elements[i]) return CMS_ERR;
-            err = cms_data_decode_stream(s, arr->elements[i]);
-            if (err) return err;
+            void *elem = NULL;
+            if (arr && arr->elements && arr->elements[i]) elem = arr->elements[i];
+            err = cms_data_decode_stream(s, elem);
+            if (err == CMS_RETRY) retry_needed = 1;
+            else if (err) return err;
         }
+        if (retry_needed) return CMS_RETRY;
         return CMS_OK;
     }
 
     case CMS_DATA_CHOICE_BOOLEAN:
-        if (!d->alt_boolean) return CMS_ERR;
-        return cms_boolean_decode_stream(s, d->alt_boolean);
+        if (d && !d->alt_boolean) return CMS_ERR;
+        return cms_boolean_decode_stream(s, d ? d->alt_boolean : NULL);
 
     case CMS_DATA_CHOICE_INT8:
-        if (!d->alt_int8) return CMS_ERR;
-        return cms_int8_decode_stream(s, d->alt_int8);
+        if (d && !d->alt_int8) return CMS_ERR;
+        return cms_int8_decode_stream(s, d ? d->alt_int8 : NULL);
 
     case CMS_DATA_CHOICE_INT16:
-        if (!d->alt_int16) return CMS_ERR;
-        return cms_int16_decode_stream(s, d->alt_int16);
+        if (d && !d->alt_int16) return CMS_ERR;
+        return cms_int16_decode_stream(s, d ? d->alt_int16 : NULL);
 
     case CMS_DATA_CHOICE_INT32:
-        if (!d->alt_int32) return CMS_ERR;
-        return cms_int32_decode_stream(s, d->alt_int32);
+        if (d && !d->alt_int32) return CMS_ERR;
+        return cms_int32_decode_stream(s, d ? d->alt_int32 : NULL);
 
     case CMS_DATA_CHOICE_INT64:
-        if (!d->alt_int64) return CMS_ERR;
-        return cms_int64_decode_stream(s, d->alt_int64);
+        if (d && !d->alt_int64) return CMS_ERR;
+        return cms_int64_decode_stream(s, d ? d->alt_int64 : NULL);
 
     case CMS_DATA_CHOICE_INT8U:
-        if (!d->alt_int8u) return CMS_ERR;
-        return cms_int8u_decode_stream(s, d->alt_int8u);
+        if (d && !d->alt_int8u) return CMS_ERR;
+        return cms_int8u_decode_stream(s, d ? d->alt_int8u : NULL);
 
     case CMS_DATA_CHOICE_INT16U:
-        if (!d->alt_int16u) return CMS_ERR;
-        return cms_int16u_decode_stream(s, d->alt_int16u);
+        if (d && !d->alt_int16u) return CMS_ERR;
+        return cms_int16u_decode_stream(s, d ? d->alt_int16u : NULL);
 
     case CMS_DATA_CHOICE_INT32U:
-        if (!d->alt_int32u) return CMS_ERR;
-        return cms_int32u_decode_stream(s, d->alt_int32u);
+        if (d && !d->alt_int32u) return CMS_ERR;
+        return cms_int32u_decode_stream(s, d ? d->alt_int32u : NULL);
 
     case CMS_DATA_CHOICE_INT64U:
-        if (!d->alt_int64u) return CMS_ERR;
-        return cms_int64u_decode_stream(s, d->alt_int64u);
+        if (d && !d->alt_int64u) return CMS_ERR;
+        return cms_int64u_decode_stream(s, d ? d->alt_int64u : NULL);
 
     case CMS_DATA_CHOICE_FLOAT32:
-        if (!d->alt_float32) return CMS_ERR;
-        return cms_float32_decode_stream(s, d->alt_float32);
+        if (d && !d->alt_float32) return CMS_ERR;
+        return cms_float32_decode_stream(s, d ? d->alt_float32 : NULL);
 
     case CMS_DATA_CHOICE_FLOAT64:
-        if (!d->alt_float64) return CMS_ERR;
-        return cms_float64_decode_stream(s, d->alt_float64);
+        if (d && !d->alt_float64) return CMS_ERR;
+        return cms_float64_decode_stream(s, d ? d->alt_float64 : NULL);
 
     case CMS_DATA_CHOICE_BIT_STRING: {
-        if (!d->alt_bit_string) return CMS_ERR;
-        uint8_t *data = d->alt_bit_string->value;
+        if (d && !d->alt_bit_string) return CMS_ERR;
+        uint8_t *data = d ? d->alt_bit_string->value : NULL;
+        if (d && !data) return CMS_ERR;
+        uint8_t tmp[64];
         int out_nbits;
-        per_error_t perr = per_decode_bit_string(s, data, &out_nbits, INT32_MAX);
+        per_error_t perr = per_decode_bit_string(s, data ? data : tmp, &out_nbits, INT32_MAX);
         if (perr) return CMS_ERR;
-        d->alt_bit_string->len = out_nbits;  /* len is in bits */
+        if (d) d->alt_bit_string->len = out_nbits;
         return CMS_OK;
     }
 
     case CMS_DATA_CHOICE_OCTET_STRING:
-        if (!d->alt_octet_string) return CMS_ERR;
-        return cms_octet_string_decode_stream(s, d->alt_octet_string, INT32_MAX);
+        if (d && !d->alt_octet_string) return CMS_ERR;
+        return cms_octet_string_decode_stream(s, d ? d->alt_octet_string : NULL, INT32_MAX);
 
     case CMS_DATA_CHOICE_VISIBLE_STRING:
-        if (!d->alt_visible_string) return CMS_ERR;
-        return cms_visible_string_decode_stream(s, d->alt_visible_string, INT32_MAX);
+        if (d && !d->alt_visible_string) return CMS_ERR;
+        return cms_visible_string_decode_stream(s, d ? d->alt_visible_string : NULL, INT32_MAX);
 
     case CMS_DATA_CHOICE_UNICODE_STRING:
-        if (!d->alt_unicode_string) return CMS_ERR;
-        return cms_utf8_string_decode_stream(s, d->alt_unicode_string, INT32_MAX);
+        if (d && !d->alt_unicode_string) return CMS_ERR;
+        return cms_utf8_string_decode_stream(s, d ? d->alt_unicode_string : NULL, INT32_MAX);
 
     case CMS_DATA_CHOICE_UTC_TIME:
-        if (!d->alt_utc_time) return CMS_ERR;
-        return cms_utc_time_decode_stream(s, d->alt_utc_time);
+        if (d && !d->alt_utc_time) return CMS_ERR;
+        return cms_utc_time_decode_stream(s, d ? d->alt_utc_time : NULL);
 
     case CMS_DATA_CHOICE_BINARY_TIME:
-        if (!d->alt_binary_time) return CMS_ERR;
-        return cms_binary_time_decode_stream(s, d->alt_binary_time);
+        if (d && !d->alt_binary_time) return CMS_ERR;
+        return cms_binary_time_decode_stream(s, d ? d->alt_binary_time : NULL);
 
     case CMS_DATA_CHOICE_QUALITY:
-        if (!d->alt_quality) return CMS_ERR;
-        return cms_quality_decode_stream(s, d->alt_quality);
+        if (d && !d->alt_quality) return CMS_ERR;
+        return cms_quality_decode_stream(s, d ? d->alt_quality : NULL);
 
     case CMS_DATA_CHOICE_DBPOS:
-        if (!d->alt_dbpos) return CMS_ERR;
-        return cms_dbpos_decode_stream(s, d->alt_dbpos);
+        if (d && !d->alt_dbpos) return CMS_ERR;
+        return cms_dbpos_decode_stream(s, d ? d->alt_dbpos : NULL);
 
     case CMS_DATA_CHOICE_TCMD:
-        if (!d->alt_tcmd) return CMS_ERR;
-        return cms_tcmd_decode_stream(s, d->alt_tcmd);
+        if (d && !d->alt_tcmd) return CMS_ERR;
+        return cms_tcmd_decode_stream(s, d ? d->alt_tcmd : NULL);
 
     case CMS_DATA_CHOICE_CHECK:
-        if (!d->alt_check) return CMS_ERR;
-        return cms_check_decode_stream(s, d->alt_check);
+        if (d && !d->alt_check) return CMS_ERR;
+        return cms_check_decode_stream(s, d ? d->alt_check : NULL);
 
     default:
         return CMS_ERR;

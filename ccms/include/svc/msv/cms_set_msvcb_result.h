@@ -42,7 +42,7 @@ typedef struct {
 } cms_set_msvcb_result_t;
 
 int cms_set_msvcb_result_encode_stream(per_stream_t *s, const cms_set_msvcb_result_t *v);
-int cms_set_msvcb_result_decode_stream(per_stream_t *s, cms_set_msvcb_result_t *v);
+int cms_set_msvcb_result_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

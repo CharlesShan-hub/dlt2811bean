@@ -5,8 +5,8 @@ int cms_acsi_class_encode_stream(per_stream_t *s, const cms_acsi_class_t *v) {
     return cms_int32_encode_stream(s, v);
 }
 
-int cms_acsi_class_decode_stream(per_stream_t *s, cms_acsi_class_t *v) {
-    return cms_int32_decode_stream(s, v);
+int cms_acsi_class_decode_stream(per_stream_t *s, void *ptr) {
+    return cms_int32_decode_stream(s, ptr);
 }
 
 int cms_acsi_class_encode(const cms_acsi_class_t *v, uint8_t **out_buf, size_t *out_len) {

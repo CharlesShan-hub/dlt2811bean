@@ -67,50 +67,50 @@ int cms_msvcb_decode_stream(per_stream_t *s, void *ptr) {
     bool opt_present[2] = {false, false};
     err = (int)per_decode_optional_bitmap(s, opt_present, 2);
     if (err) return err;
-    if (pdu->smpMod_present)
-        pdu->smpMod_present->value = opt_present[0] ? 1 : 0;
-    if (pdu->dstAddress_present)
-        pdu->dstAddress_present->value = opt_present[1] ? 1 : 0;
+    if (pdu) {
+        if (pdu->smpMod_present)     pdu->smpMod_present->value     = opt_present[0] ? 1 : 0;
+        if (pdu->dstAddress_present) pdu->dstAddress_present->value = opt_present[1] ? 1 : 0;
+    }
 
     /* 1. svEna */
-    if (!pdu->svEna) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->svEna);
+    if (pdu && !pdu->svEna) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->svEna : NULL);
     if (err) return err;
 
     /* 2. msvID */
-    if (!pdu->msvID) return CMS_ERR;
-    err = cms_visible_string_decode_stream(s, pdu->msvID, CMS_MSVCB_MSV_ID_MAX_LEN);
+    if (pdu && !pdu->msvID) return CMS_ERR;
+    err = cms_visible_string_decode_stream(s, pdu ? pdu->msvID : NULL, CMS_MSVCB_MSV_ID_MAX_LEN);
     if (err) return err;
 
     /* 3. datSet */
-    if (!pdu->datSet) return CMS_ERR;
-    err = cms_object_reference_decode_stream(s, pdu->datSet);
+    if (pdu && !pdu->datSet) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, pdu ? pdu->datSet : NULL);
     if (err) return err;
 
     /* 4. confRev */
-    if (!pdu->confRev) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->confRev);
+    if (pdu && !pdu->confRev) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->confRev : NULL);
     if (err) return err;
 
     /* 5. smpMod — SmpMod OPTIONAL (bitmap[0]) */
-    if (opt_present[0] && pdu->smpMod) {
-        err = cms_smp_mod_decode_stream(s, pdu->smpMod);
+    if (opt_present[0]) {
+        err = cms_smp_mod_decode_stream(s, pdu ? pdu->smpMod : NULL);
         if (err) return err;
     }
 
     /* 6. smpRate */
-    if (!pdu->smpRate) return CMS_ERR;
-    err = cms_int16u_decode_stream(s, pdu->smpRate);
+    if (pdu && !pdu->smpRate) return CMS_ERR;
+    err = cms_int16u_decode_stream(s, pdu ? pdu->smpRate : NULL);
     if (err) return err;
 
     /* 7. optFlds */
-    if (!pdu->optFlds) return CMS_ERR;
-    err = cms_msvcb_opt_flds_decode_stream(s, pdu->optFlds);
+    if (pdu && !pdu->optFlds) return CMS_ERR;
+    err = cms_msvcb_opt_flds_decode_stream(s, pdu ? pdu->optFlds : NULL);
     if (err) return err;
 
     /* 8. dstAddress — PHYCOMADDR OPTIONAL (bitmap[1]) */
-    if (opt_present[1] && pdu->dstAddress) {
-        err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
+    if (opt_present[1]) {
+        err = cms_phy_com_addr_decode_stream(s, pdu ? pdu->dstAddress : NULL);
         if (err) return err;
     }
 

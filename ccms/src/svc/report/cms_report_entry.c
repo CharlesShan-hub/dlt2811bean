@@ -46,26 +46,30 @@ int cms_report_entry_encode_stream(per_stream_t *s, const cms_report_entry_t *v)
     return CMS_OK;
 }
 
-int cms_report_entry_decode_stream(per_stream_t *s, cms_report_entry_t *v) {
-    if (!v || !v->entry_data) return CMS_ERR;
+int cms_report_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_report_entry_t *v = (cms_report_entry_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (2 fields: timeOfEntry, entryID) */
     bool opt_present[2];
     err = (int)per_decode_optional_bitmap(s, opt_present, 2);
     if (err) return err;
-    if (v->time_of_entry_present) v->time_of_entry_present->value = opt_present[0];
-    if (v->entry_id_present) v->entry_id_present->value = opt_present[1];
+    if (v) {
+        if (v->time_of_entry_present) v->time_of_entry_present->value = opt_present[0];
+        if (v->entry_id_present)      v->entry_id_present->value      = opt_present[1];
+    }
 
     /* 1. timeOfEntry OPTIONAL */
-    if (opt_present[0] && v->time_of_entry) {
-        err = cms_entry_time_decode_stream(s, v->time_of_entry);
+    if (opt_present[0]) {
+        if (v && !v->time_of_entry) return CMS_ERR;
+        err = cms_entry_time_decode_stream(s, v ? v->time_of_entry : NULL);
         if (err) return err;
     }
 
     /* 2. entryID OPTIONAL */
-    if (opt_present[1] && v->entry_id) {
-        err = cms_entry_id_decode_stream(s, v->entry_id);
+    if (opt_present[1]) {
+        if (v && !v->entry_id) return CMS_ERR;
+        err = cms_entry_id_decode_stream(s, v ? v->entry_id : NULL);
         if (err) return err;
     }
 
@@ -74,17 +78,22 @@ int cms_report_entry_decode_stream(per_stream_t *s, cms_report_entry_t *v) {
         uint32_t cnt;
         per_error_t perr = per_decode_length(s, &cnt);
         if (perr) return CMS_ERR;
-        if (v->entry_data->count < (int32_t)cnt) {
-            v->entry_data->count = (int32_t)cnt;
+        cms_array_t *arr = v ? v->entry_data : NULL;
+        if (v && !arr) return CMS_ERR;
+        if (arr && arr->count < (int32_t)cnt) {
+            arr->count = (int32_t)cnt;
             return CMS_RETRY;
         }
-        v->entry_data->count = (int32_t)cnt;
+        if (arr) arr->count = (int32_t)cnt;
+        int retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
-            cms_report_data_entry_t *e = (cms_report_data_entry_t*)v->entry_data->elements[i];
-            if (!e) return CMS_ERR;
-            err = cms_report_data_entry_decode_stream(s, e);
-            if (err) return err;
+            void *elem = NULL;
+            if (arr && arr->elements && arr->elements[i]) elem = arr->elements[i];
+            err = cms_report_data_entry_decode_stream(s, elem);
+            if (err == CMS_RETRY) retry_needed = 1;
+            else if (err) return err;
         }
+        if (retry_needed) return CMS_RETRY;
     }
 
     return CMS_OK;

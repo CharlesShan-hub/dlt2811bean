@@ -51,7 +51,7 @@ int cms_quality_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t buf[2];
     int err = cms_bit_string_fixed_decode_stream(s, buf, 13);
     if (err) return CMS_ERR;
-    unpack_quality(buf, (cms_quality_t*)ptr);
+    if (ptr) unpack_quality(buf, (cms_quality_t*)ptr);
     return CMS_OK;
 }
 

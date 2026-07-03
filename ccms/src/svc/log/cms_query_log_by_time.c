@@ -155,12 +155,15 @@ int cms_query_log_by_time_response_decode(cms_query_log_by_time_response_t *pdu,
             return CMS_RETRY;
         }
         pdu->log_entry->count = (int32_t)cnt;
+        int retry_needed = 0;
         for (uint32_t i = 0; i < cnt; i++) {
             cms_log_entry_t *e = (cms_log_entry_t*)pdu->log_entry->elements[i];
             if (!e) return CMS_ERR;
             err = cms_log_entry_decode_stream(&s, e);
-            if (err) return err;
+            if (err == CMS_RETRY) retry_needed = 1;
+            else if (err) return err;
         }
+        if (retry_needed) return CMS_RETRY;
     }
 
     if (!pdu->more_follows) return CMS_ERR;

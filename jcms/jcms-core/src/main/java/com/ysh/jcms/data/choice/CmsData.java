@@ -146,7 +146,7 @@ public class CmsData extends CmsType {
     @Override
     public String toString() {
         CmsType child = choiceChild();
-        if (child == null) return "CHOICE {(null)}";
+        if (child == null) return "(CmsData) {(null)}";
 
         // Build field name map for the child
         java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
@@ -155,7 +155,7 @@ public class CmsData extends CmsType {
                 try { fieldNames.put((CmsType) f.get(child), f.getName()); } catch (Exception e) {}
             }
         }
-        return "CHOICE {" + child.toString() + "}";
+        return "(CmsData) {" + child.toString() + "}";
     }
 
     @Override
@@ -175,8 +175,19 @@ public class CmsData extends CmsType {
     @Override
     protected String toString(int depth) {
         CmsType child = choiceChild();
-        if (child == null) return "CHOICE {(null)}";
+        if (child == null) return "(CmsData) {(null)}";
         return "(CmsData) {" + child.toString() + "}";
+    }
+
+    @Override
+    protected void resize() {
+        // After decodeRaw (-2 / CMS_RETRY), C has written the choice value
+        // into native memory, but Java read() hasn't been called yet.
+        // Sync choice so that resizeList() → choiceChild() picks the right branch.
+        if (choice != null) {
+            choice.read();
+        }
+        super.resize();
     }
 
     @Override

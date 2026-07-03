@@ -43,37 +43,38 @@ int cms_sgcb_encode_stream(per_stream_t *s, const void *ptr) {
 
 int cms_sgcb_decode_stream(per_stream_t *s, void *ptr) {
     cms_sgcb_t *pdu = (cms_sgcb_t*)ptr;
+    int err;
 
     /* 0. OPTIONAL bitmap (1 field: resvTms) — X.691 §22 */
     bool opt_present[1] = {false};
-    int err = (int)per_decode_optional_bitmap(s, opt_present, 1);
+    err = (int)per_decode_optional_bitmap(s, opt_present, 1);
     if (err) return err;
-    if (pdu->resvTms_present)
+    if (pdu && pdu->resvTms_present)
         pdu->resvTms_present->value = opt_present[0] ? 1 : 0;
 
     /* 1. numOfSG */
-    if (!pdu->numOfSG) return CMS_ERR;
-    err = cms_int8u_decode_stream(s, pdu->numOfSG);
+    if (pdu && !pdu->numOfSG) return CMS_ERR;
+    err = cms_int8u_decode_stream(s, pdu ? pdu->numOfSG : NULL);
     if (err) return err;
 
     /* 2. actSG */
-    if (!pdu->actSG) return CMS_ERR;
-    err = cms_int8u_decode_stream(s, pdu->actSG);
+    if (pdu && !pdu->actSG) return CMS_ERR;
+    err = cms_int8u_decode_stream(s, pdu ? pdu->actSG : NULL);
     if (err) return err;
 
     /* 3. editSG */
-    if (!pdu->editSG) return CMS_ERR;
-    err = cms_int8u_decode_stream(s, pdu->editSG);
+    if (pdu && !pdu->editSG) return CMS_ERR;
+    err = cms_int8u_decode_stream(s, pdu ? pdu->editSG : NULL);
     if (err) return err;
 
     /* 4. tActEdt — TimeStamp */
-    if (!pdu->tActEdt) return CMS_ERR;
-    err = cms_time_stamp_decode_stream(s, pdu->tActEdt);
+    if (pdu && !pdu->tActEdt) return CMS_ERR;
+    err = cms_time_stamp_decode_stream(s, pdu ? pdu->tActEdt : NULL);
     if (err) return err;
 
     /* 5. resvTms — INT16U OPTIONAL (bitmap[0]) */
-    if (opt_present[0] && pdu->resvTms) {
-        err = cms_int16u_decode_stream(s, pdu->resvTms);
+    if (opt_present[0]) {
+        err = cms_int16u_decode_stream(s, pdu ? pdu->resvTms : NULL);
         if (err) return err;
     }
 

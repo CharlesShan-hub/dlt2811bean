@@ -32,24 +32,28 @@ int cms_log_data_entry_encode_stream(per_stream_t *s, const cms_log_data_entry_t
     return CMS_OK;
 }
 
-int cms_log_data_entry_decode_stream(per_stream_t *s, cms_log_data_entry_t *v) {
-    if (!v || !v->reference || !v->fc || !v->value || !v->reason) return CMS_ERR;
+int cms_log_data_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_log_data_entry_t *v = (cms_log_data_entry_t*)ptr;
     int err;
 
     /* 1. reference */
-    err = cms_object_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 2. fc */
-    err = cms_functional_constraint_decode_stream(s, v->fc);
+    if (v && !v->fc) return CMS_ERR;
+    err = cms_functional_constraint_decode_stream(s, v ? v->fc : NULL);
     if (err) return err;
 
     /* 3. value */
-    err = cms_data_decode_stream(s, v->value);
+    if (v && !v->value) return CMS_ERR;
+    err = cms_data_decode_stream(s, v ? v->value : NULL);
     if (err) return err;
 
     /* 4. reason */
-    err = cms_reason_code_decode_stream(s, v->reason);
+    if (v && !v->reason) return CMS_ERR;
+    err = cms_reason_code_decode_stream(s, v ? v->reason : NULL);
     if (err) return err;
 
     return CMS_OK;

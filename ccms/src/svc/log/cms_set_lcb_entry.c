@@ -72,74 +72,39 @@ int cms_set_lcb_entry_encode_stream(per_stream_t *s, const cms_set_lcb_entry_t *
     return CMS_OK;
 }
 
-int cms_set_lcb_entry_decode_stream(per_stream_t *s, cms_set_lcb_entry_t *v) {
-    if (!v || !v->reference) return CMS_ERR;
+int cms_set_lcb_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_set_lcb_entry_t *v = (cms_set_lcb_entry_t*)ptr;
     int err;
 
     /* 0. reference */
-    err = cms_object_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 1. OPTIONAL bitmap (7 fields) */
     bool opt_present[7];
     err = (int)per_decode_optional_bitmap(s, opt_present, 7);
     if (err) return err;
-    if (v->log_ena_present) v->log_ena_present->value = opt_present[0];
-    if (v->dat_set_present) v->dat_set_present->value = opt_present[1];
-    if (v->trg_ops_present) v->trg_ops_present->value = opt_present[2];
-    if (v->intg_pd_present) v->intg_pd_present->value = opt_present[3];
-    if (v->log_ref_present) v->log_ref_present->value = opt_present[4];
-    if (v->opt_flds_present) v->opt_flds_present->value = opt_present[5];
-    if (v->buf_tm_present) v->buf_tm_present->value = opt_present[6];
-
-    /* 2. logEna OPTIONAL */
-    if (opt_present[0]) {
-        if (!v->log_ena) return CMS_ERR;
-        err = cms_boolean_decode_stream(s, v->log_ena);
-        if (err) return err;
+    if (v) {
+        if (v->log_ena_present)  v->log_ena_present->value  = opt_present[0];
+        if (v->dat_set_present)  v->dat_set_present->value  = opt_present[1];
+        if (v->trg_ops_present)  v->trg_ops_present->value  = opt_present[2];
+        if (v->intg_pd_present)  v->intg_pd_present->value  = opt_present[3];
+        if (v->log_ref_present)  v->log_ref_present->value  = opt_present[4];
+        if (v->opt_flds_present) v->opt_flds_present->value = opt_present[5];
+        if (v->buf_tm_present)   v->buf_tm_present->value   = opt_present[6];
     }
 
-    /* 3. datSet OPTIONAL */
-    if (opt_present[1]) {
-        if (!v->dat_set) return CMS_ERR;
-        err = cms_object_reference_decode_stream(s, v->dat_set);
-        if (err) return err;
-    }
+    #define DECODE_OPT(field, fn, arg) do { if (opt_present[field]) { if (v && !(arg)) return CMS_ERR; err = fn(s, v ? (arg) : NULL); if (err) return err; } } while(0)
 
-    /* 4. trgOps OPTIONAL */
-    if (opt_present[2]) {
-        if (!v->trg_ops) return CMS_ERR;
-        err = cms_trigger_conditions_decode_stream(s, v->trg_ops);
-        if (err) return err;
-    }
+    DECODE_OPT(0, cms_boolean_decode_stream, v->log_ena);
+    DECODE_OPT(1, cms_object_reference_decode_stream, v->dat_set);
+    DECODE_OPT(2, cms_trigger_conditions_decode_stream, v->trg_ops);
+    DECODE_OPT(3, cms_int32u_decode_stream, v->intg_pd);
+    DECODE_OPT(4, cms_object_reference_decode_stream, v->log_ref);
+    DECODE_OPT(5, cms_lcb_opt_flds_decode_stream, v->opt_flds);
+    DECODE_OPT(6, cms_int32u_decode_stream, v->buf_tm);
 
-    /* 5. intgPd OPTIONAL */
-    if (opt_present[3]) {
-        if (!v->intg_pd) return CMS_ERR;
-        err = cms_int32u_decode_stream(s, v->intg_pd);
-        if (err) return err;
-    }
-
-    /* 6. logRef OPTIONAL */
-    if (opt_present[4]) {
-        if (!v->log_ref) return CMS_ERR;
-        err = cms_object_reference_decode_stream(s, v->log_ref);
-        if (err) return err;
-    }
-
-    /* 7. optFlds OPTIONAL */
-    if (opt_present[5]) {
-        if (!v->opt_flds) return CMS_ERR;
-        err = cms_lcb_opt_flds_decode_stream(s, v->opt_flds);
-        if (err) return err;
-    }
-
-    /* 8. bufTm OPTIONAL */
-    if (opt_present[6]) {
-        if (!v->buf_tm) return CMS_ERR;
-        err = cms_int32u_decode_stream(s, v->buf_tm);
-        if (err) return err;
-    }
-
+    #undef DECODE_OPT
     return CMS_OK;
 }

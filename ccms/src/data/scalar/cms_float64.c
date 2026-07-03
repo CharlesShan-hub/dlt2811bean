@@ -6,7 +6,11 @@ int cms_float64_encode_stream(per_stream_t *s, const void *ptr) {
 }
 
 int cms_float64_decode_stream(per_stream_t *s, void *ptr) {
-    return cms_octet_string_fixed_decode_stream(s, (uint8_t*)ptr, 8);
+    uint8_t buf[8];
+    int err = cms_octet_string_fixed_decode_stream(s, buf, 8);
+    if (err) return CMS_ERR;
+    if (ptr) *(uint64_t*)ptr = *(uint64_t*)buf;
+    return CMS_OK;
 }
 
 int cms_float64_encode(const void *ptr, uint8_t **out_buf, size_t *out_len) {

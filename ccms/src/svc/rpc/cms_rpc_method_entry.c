@@ -30,28 +30,33 @@ int cms_rpc_method_entry_encode_stream(per_stream_t *s, const cms_rpc_method_ent
     return CMS_OK;
 }
 
-int cms_rpc_method_entry_decode_stream(per_stream_t *s, cms_rpc_method_entry_t *v) {
-    if (!v || !v->name || !v->version || !v->timeout || !v->request || !v->response) return CMS_ERR;
+int cms_rpc_method_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_rpc_method_entry_t *v = (cms_rpc_method_entry_t*)ptr;
     int err;
 
     /* 1. name */
-    err = cms_visible_string_decode_stream(s, v->name, UINT32_MAX);
+    if (v && !v->name) return CMS_ERR;
+    err = cms_visible_string_decode_stream(s, v ? v->name : NULL, UINT32_MAX);
     if (err) return err;
 
     /* 2. version */
-    err = cms_int32u_decode_stream(s, v->version);
+    if (v && !v->version) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, v ? v->version : NULL);
     if (err) return err;
 
     /* 3. timeout */
-    err = cms_int32u_decode_stream(s, v->timeout);
+    if (v && !v->timeout) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, v ? v->timeout : NULL);
     if (err) return err;
 
     /* 4. request */
-    err = cms_data_definition_decode_stream(s, v->request);
+    if (v && !v->request) return CMS_ERR;
+    err = cms_data_definition_decode_stream(s, v ? v->request : NULL);
     if (err) return err;
 
     /* 5. response */
-    err = cms_data_definition_decode_stream(s, v->response);
+    if (v && !v->response) return CMS_ERR;
+    err = cms_data_definition_decode_stream(s, v ? v->response : NULL);
     if (err) return err;
 
     return CMS_OK;

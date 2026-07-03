@@ -38,7 +38,7 @@ typedef struct {
 int cms_reference_choice_encode_stream(
     per_stream_t *s, const cms_reference_choice_t *v);
 int cms_reference_choice_decode_stream(
-    per_stream_t *s, cms_reference_choice_t *v);
+    per_stream_t *s, void *ptr);
 
 CMS_EXPORT int cms_reference_choice_encode(
     const cms_reference_choice_t *v,

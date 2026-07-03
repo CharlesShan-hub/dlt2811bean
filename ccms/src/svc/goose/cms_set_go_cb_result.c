@@ -44,46 +44,25 @@ int cms_set_go_cb_result_encode_stream(per_stream_t *s, const cms_set_go_cb_resu
     return CMS_OK;
 }
 
-int cms_set_go_cb_result_decode_stream(per_stream_t *s, cms_set_go_cb_result_t *v) {
-    if (!v) return CMS_ERR;
+int cms_set_go_cb_result_decode_stream(per_stream_t *s, void *ptr) {
+    cms_set_go_cb_result_t *v = (cms_set_go_cb_result_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (4 fields) */
     bool opt_present[4];
     err = (int)per_decode_optional_bitmap(s, opt_present, 4);
     if (err) return err;
-    if (v->error_present) v->error_present->value = opt_present[0];
-    if (v->go_ena_err_present) v->go_ena_err_present->value = opt_present[1];
-    if (v->go_id_err_present) v->go_id_err_present->value = opt_present[2];
-    if (v->dat_set_err_present) v->dat_set_err_present->value = opt_present[3];
-
-    /* 1. error OPTIONAL */
-    if (opt_present[0]) {
-        if (!v->error) return CMS_ERR;
-        err = cms_service_error_decode_stream(s, v->error);
-        if (err) return err;
+    if (v) {
+        if (v->error_present)       v->error_present->value       = opt_present[0];
+        if (v->go_ena_err_present)  v->go_ena_err_present->value  = opt_present[1];
+        if (v->go_id_err_present)   v->go_id_err_present->value   = opt_present[2];
+        if (v->dat_set_err_present) v->dat_set_err_present->value = opt_present[3];
     }
 
-    /* 2. goEnaErr OPTIONAL */
-    if (opt_present[1]) {
-        if (!v->go_ena_err) return CMS_ERR;
-        err = cms_service_error_decode_stream(s, v->go_ena_err);
-        if (err) return err;
-    }
-
-    /* 3. goIdErr OPTIONAL */
-    if (opt_present[2]) {
-        if (!v->go_id_err) return CMS_ERR;
-        err = cms_service_error_decode_stream(s, v->go_id_err);
-        if (err) return err;
-    }
-
-    /* 4. datSetErr OPTIONAL */
-    if (opt_present[3]) {
-        if (!v->dat_set_err) return CMS_ERR;
-        err = cms_service_error_decode_stream(s, v->dat_set_err);
-        if (err) return err;
-    }
+    /* 1. error OPTIONAL */    if (opt_present[0]) { if (v && !v->error) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->error : NULL); if (err) return err; }
+    /* 2. goEnaErr OPTIONAL */ if (opt_present[1]) { if (v && !v->go_ena_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->go_ena_err : NULL); if (err) return err; }
+    /* 3. goIdErr OPTIONAL */  if (opt_present[2]) { if (v && !v->go_id_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->go_id_err : NULL); if (err) return err; }
+    /* 4. datSetErr OPTIONAL */ if (opt_present[3]) { if (v && !v->dat_set_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->dat_set_err : NULL); if (err) return err; }
 
     return CMS_OK;
 }

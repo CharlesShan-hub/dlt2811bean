@@ -53,12 +53,16 @@ public class CmsArray<T extends CmsType> extends CmsType {
 
     public CmsArray<T> add(T item) {
         items.add(item);
+        if (allocSize < items.size()) allocSize = items.size();
         return this;
     }
 
     @SafeVarargs
     public final CmsArray<T> addAll(T... items) {
-        for (T item : items) this.items.add(item);
+        for (T item : items) {
+            this.items.add(item);
+        }
+        if (allocSize < this.items.size()) allocSize = this.items.size();
         return this;
     }
 
@@ -134,7 +138,7 @@ public class CmsArray<T extends CmsType> extends CmsType {
     }
 
     @Override
-    void resize() {
+    protected void resize() {
         int c = 0;
         if (nativePtr != null) {
             c = nativePtr.getInt(8);  // cms_array_t.count at offset 8
@@ -149,6 +153,11 @@ public class CmsArray<T extends CmsType> extends CmsType {
         }
         while (items.size() > allocSize) {
             items.remove(items.size() - 1);
+        }
+        // 递归 resize items。即使 nativePtr 当前为 null（刚创建），
+        // 下一轮 write() 会分配内存，C decoder 就可以用。
+        for (T item : items) {
+            if (item != null) item.resize();
         }
     }
     // ==================== equals / hashCode ====================

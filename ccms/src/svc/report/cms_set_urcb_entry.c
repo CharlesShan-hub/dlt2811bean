@@ -87,81 +87,40 @@ int cms_set_urcb_entry_encode_stream(per_stream_t *s, const cms_set_urcb_entry_t
     return CMS_OK;
 }
 
-int cms_set_urcb_entry_decode_stream(per_stream_t *s, cms_set_urcb_entry_t *v) {
-    if (!v || !v->reference) return CMS_ERR;
+int cms_set_urcb_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_set_urcb_entry_t *v = (cms_set_urcb_entry_t*)ptr;
     int err;
 
     /* 0. reference */
-    err = cms_object_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 1. OPTIONAL bitmap (9 fields) */
     bool opt_present[9];
     err = (int)per_decode_optional_bitmap(s, opt_present, 9);
     if (err) return err;
-    if (v->rpt_id_present) v->rpt_id_present->value = opt_present[0];
-    if (v->rpt_ena_present) v->rpt_ena_present->value = opt_present[1];
-    if (v->dat_set_present) v->dat_set_present->value = opt_present[2];
-    if (v->opt_flds_present) v->opt_flds_present->value = opt_present[3];
-    if (v->buf_tm_present) v->buf_tm_present->value = opt_present[4];
-    if (v->trg_ops_present) v->trg_ops_present->value = opt_present[5];
-    if (v->intg_pd_present) v->intg_pd_present->value = opt_present[6];
-    if (v->gi_present) v->gi_present->value = opt_present[7];
-    if (v->resv_present) v->resv_present->value = opt_present[8];
-
-    /* 2. rptID OPTIONAL */
-    if (opt_present[0] && v->rpt_id) {
-        err = cms_visible_string_decode_stream(s, v->rpt_id, 129);
-        if (err) return err;
+    if (v) {
+        if (v->rpt_id_present)    v->rpt_id_present->value    = opt_present[0];
+        if (v->rpt_ena_present)   v->rpt_ena_present->value   = opt_present[1];
+        if (v->dat_set_present)   v->dat_set_present->value   = opt_present[2];
+        if (v->opt_flds_present)  v->opt_flds_present->value  = opt_present[3];
+        if (v->buf_tm_present)    v->buf_tm_present->value    = opt_present[4];
+        if (v->trg_ops_present)   v->trg_ops_present->value   = opt_present[5];
+        if (v->intg_pd_present)   v->intg_pd_present->value   = opt_present[6];
+        if (v->gi_present)        v->gi_present->value        = opt_present[7];
+        if (v->resv_present)      v->resv_present->value      = opt_present[8];
     }
 
-    /* 3. rptEna OPTIONAL */
-    if (opt_present[1] && v->rpt_ena) {
-        err = cms_boolean_decode_stream(s, v->rpt_ena);
-        if (err) return err;
-    }
-
-    /* 4. datSet OPTIONAL */
-    if (opt_present[2] && v->dat_set) {
-        err = cms_object_reference_decode_stream(s, v->dat_set);
-        if (err) return err;
-    }
-
-    /* 5. optFlds OPTIONAL */
-    if (opt_present[3] && v->opt_flds) {
-        err = cms_rcb_opt_flds_decode_stream(s, v->opt_flds);
-        if (err) return err;
-    }
-
-    /* 6. bufTm OPTIONAL */
-    if (opt_present[4] && v->buf_tm) {
-        err = cms_int32u_decode_stream(s, v->buf_tm);
-        if (err) return err;
-    }
-
-    /* 7. trgOps OPTIONAL */
-    if (opt_present[5] && v->trg_ops) {
-        err = cms_trigger_conditions_decode_stream(s, v->trg_ops);
-        if (err) return err;
-    }
-
-    /* 8. intgPd OPTIONAL */
-    if (opt_present[6] && v->intg_pd) {
-        err = cms_int32u_decode_stream(s, v->intg_pd);
-        if (err) return err;
-    }
-
-    /* 9. gi OPTIONAL */
-    if (opt_present[7] && v->gi) {
-        err = cms_boolean_decode_stream(s, v->gi);
-        if (err) return err;
-    }
-
-    /* 10. resv OPTIONAL */
-    if (opt_present[8] && v->resv) {
-        err = cms_boolean_decode_stream(s, v->resv);
-        if (err) return err;
-    }
+    /* 2. rptID OPTIONAL */   if (opt_present[0]) { if (v && !v->rpt_id) return CMS_ERR; err = cms_visible_string_decode_stream(s, v ? v->rpt_id : NULL, 129); if (err) return err; }
+    /* 3. rptEna OPTIONAL */  if (opt_present[1]) { if (v && !v->rpt_ena) return CMS_ERR; err = cms_boolean_decode_stream(s, v ? v->rpt_ena : NULL); if (err) return err; }
+    /* 4. datSet OPTIONAL */  if (opt_present[2]) { if (v && !v->dat_set) return CMS_ERR; err = cms_object_reference_decode_stream(s, v ? v->dat_set : NULL); if (err) return err; }
+    /* 5. optFlds OPTIONAL */ if (opt_present[3]) { if (v && !v->opt_flds) return CMS_ERR; err = cms_rcb_opt_flds_decode_stream(s, v ? v->opt_flds : NULL); if (err) return err; }
+    /* 6. bufTm OPTIONAL */   if (opt_present[4]) { if (v && !v->buf_tm) return CMS_ERR; err = cms_int32u_decode_stream(s, v ? v->buf_tm : NULL); if (err) return err; }
+    /* 7. trgOps OPTIONAL */  if (opt_present[5]) { if (v && !v->trg_ops) return CMS_ERR; err = cms_trigger_conditions_decode_stream(s, v ? v->trg_ops : NULL); if (err) return err; }
+    /* 8. intgPd OPTIONAL */  if (opt_present[6]) { if (v && !v->intg_pd) return CMS_ERR; err = cms_int32u_decode_stream(s, v ? v->intg_pd : NULL); if (err) return err; }
+    /* 9. gi OPTIONAL */      if (opt_present[7]) { if (v && !v->gi) return CMS_ERR; err = cms_boolean_decode_stream(s, v ? v->gi : NULL); if (err) return err; }
+    /* 10. resv OPTIONAL */   if (opt_present[8]) { if (v && !v->resv) return CMS_ERR; err = cms_boolean_decode_stream(s, v ? v->resv : NULL); if (err) return err; }
 
     return CMS_OK;
 }

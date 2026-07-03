@@ -13,12 +13,11 @@ int cms_visible_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t 
 }
 
 int cms_visible_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_len) {
-    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
-    if (!vptr) return CMS_ERR;
-    per_error_t err = per_decode_visible_string(s, vptr, max_len);
+    uint8_t tmp[256];
+    uint8_t *target = ptr ? ARRAY_PTR_MUT(ptr) : tmp;
+    per_error_t err = per_decode_visible_string(s, target, max_len);
     if (err) return CMS_ERR;
-    /* update len field */
-    *(int32_t*)((uint8_t*)ptr + 8) = (int32_t)strlen((const char*)vptr);
+    if (ptr) *(int32_t*)((uint8_t*)ptr + 8) = (int32_t)strlen((const char*)target);
     return CMS_OK;
 }
 
@@ -30,11 +29,11 @@ int cms_visible_string_encode_stream_fixed(per_stream_t *s, const void *ptr, uin
 }
 
 int cms_visible_string_decode_stream_fixed(per_stream_t *s, void *ptr, uint32_t fixed_len) {
-    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
-    if (!vptr) return CMS_ERR;
-    per_error_t err = per_decode_visible_string_fixed(s, vptr, fixed_len);
+    uint8_t tmp[256];
+    uint8_t *target = ptr ? ARRAY_PTR_MUT(ptr) : tmp;
+    per_error_t err = per_decode_visible_string_fixed(s, target, fixed_len);
     if (err) return CMS_ERR;
-    *(int32_t*)((uint8_t*)ptr + 8) = (int32_t)fixed_len;
+    if (ptr) *(int32_t*)((uint8_t*)ptr + 8) = (int32_t)fixed_len;
     return CMS_OK;
 }
 

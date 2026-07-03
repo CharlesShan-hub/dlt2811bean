@@ -25,7 +25,7 @@ typedef struct {
 } cms_data_value_entry_t;
 
 int cms_data_value_entry_encode_stream(per_stream_t *s, const cms_data_value_entry_t *v);
-int cms_data_value_entry_decode_stream(per_stream_t *s, cms_data_value_entry_t *v);
+int cms_data_value_entry_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

@@ -32,13 +32,13 @@ static int encode_struct_elem(per_stream_t *s, const cms_data_definition_struct_
     return CMS_OK;
 }
 
-static int decode_struct_elem(per_stream_t *s, cms_data_definition_struct_elem_t *e) {
-    if (!e) return CMS_ERR;
+static int decode_struct_elem(per_stream_t *s, void *ptr) {
+    cms_data_definition_struct_elem_t *e = (cms_data_definition_struct_elem_t*)ptr;
     int err;
 
     /* name */
-    if (!e->name) return CMS_ERR;
-    err = cms_object_name_decode_stream(s, e->name);
+    if (e && !e->name) return CMS_ERR;
+    err = cms_object_name_decode_stream(s, e ? e->name : NULL);
     if (err) return err;
 
     /* fc OPTIONAL */
@@ -46,16 +46,16 @@ static int decode_struct_elem(per_stream_t *s, cms_data_definition_struct_elem_t
         cms_boolean_t bit = {0};
         err = cms_boolean_decode_stream(s, &bit);
         if (err) return err;
-        if (bit.value && e->fc) {
+        if (e && bit.value && e->fc) {
             err = cms_functional_constraint_decode_stream(s, e->fc);
             if (err) return err;
         }
-        if (e->fc_present) e->fc_present->value = bit.value;
+        if (e && e->fc_present) e->fc_present->value = bit.value;
     }
 
     /* type */
-    if (!e->type) return CMS_ERR;
-    err = cms_data_definition_decode_stream(s, e->type);
+    if (e && !e->type) return CMS_ERR;
+    err = cms_data_definition_decode_stream(s, e ? e->type : NULL);
     if (err) return err;
 
     return CMS_OK;
@@ -153,41 +153,44 @@ int cms_data_definition_encode_stream(per_stream_t *s, const void *ptr) {
 
 int cms_data_definition_decode_stream(per_stream_t *s, void *ptr) {
     cms_data_definition_t *d = (cms_data_definition_t*)ptr;
-    if (!d || !d->choice) return CMS_ERR;
 
     /* 1. Decode CHOICE index */
     uint32_t sel32;
     per_error_t perr = per_decode_small_non_negative(s, &sel32);
     if (perr) return CMS_ERR;
     if (sel32 > 23) return CMS_ERR;
-    d->choice->value = (int)sel32;
+    if (d) d->choice->value = (int)sel32;
 
     /* 2. Decode payload */
-    switch (d->choice->value) {
+    switch ((int)sel32) {
 
     case CMS_DATA_DEFINITION_CHOICE_ERROR:
-        if (!d->alt_error) return CMS_ERR;
-        return cms_service_error_decode_stream(s, d->alt_error);
+        if (d && !d->alt_error) return CMS_ERR;
+        return cms_service_error_decode_stream(s, d ? d->alt_error : NULL);
 
     case CMS_DATA_DEFINITION_CHOICE_ARRAY:
-        if (!d->alt_array) return CMS_ERR;
-        return cms_data_definition_array_decode_stream(s, d->alt_array);
+        if (d && !d->alt_array) return CMS_ERR;
+        return cms_data_definition_array_decode_stream(s, d ? d->alt_array : NULL);
 
     case CMS_DATA_DEFINITION_CHOICE_STRUCTURE: {
         uint32_t count;
         perr = per_decode_length(s, &count);
         if (perr) return CMS_ERR;
-        cms_array_t *arr = (cms_array_t*)d->alt_structure;
-        if (!arr) return CMS_ERR;
-        if (arr->count < (int32_t)count) {
+        cms_array_t *arr = d ? (cms_array_t*)d->alt_structure : NULL;
+        if (d && !arr) return CMS_ERR;
+        if (arr && arr->count < (int32_t)count) {
             arr->count = (int32_t)count;
             return CMS_RETRY;
         }
+        int retry_needed = 0;
         for (uint32_t i = 0; i < count; i++) {
-            if (!arr->elements || !arr->elements[i]) return CMS_ERR;
-            int err = decode_struct_elem(s, (cms_data_definition_struct_elem_t*)arr->elements[i]);
-            if (err) return err;
+            void *elem = NULL;
+            if (arr && arr->elements && arr->elements[i]) elem = arr->elements[i];
+            int err = decode_struct_elem(s, elem);
+            if (err == CMS_RETRY) retry_needed = 1;
+            else if (err) return err;
         }
+        if (retry_needed) return CMS_RETRY;
         return CMS_OK;
     }
 
@@ -213,20 +216,20 @@ int cms_data_definition_decode_stream(per_stream_t *s, void *ptr) {
 
     /* [14..17] — INTEGER max length */
     case CMS_DATA_DEFINITION_CHOICE_BIT_STRING:
-        if (!d->alt_bit_string_len) return CMS_ERR;
-        return cms_int32_decode_stream(s, d->alt_bit_string_len);
+        if (d && !d->alt_bit_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d ? d->alt_bit_string_len : NULL);
 
     case CMS_DATA_DEFINITION_CHOICE_OCTET_STRING:
-        if (!d->alt_octet_string_len) return CMS_ERR;
-        return cms_int32_decode_stream(s, d->alt_octet_string_len);
+        if (d && !d->alt_octet_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d ? d->alt_octet_string_len : NULL);
 
     case CMS_DATA_DEFINITION_CHOICE_VISIBLE_STRING:
-        if (!d->alt_visible_string_len) return CMS_ERR;
-        return cms_int32_decode_stream(s, d->alt_visible_string_len);
+        if (d && !d->alt_visible_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d ? d->alt_visible_string_len : NULL);
 
     case CMS_DATA_DEFINITION_CHOICE_UNICODE_STRING:
-        if (!d->alt_unicode_string_len) return CMS_ERR;
-        return cms_int32_decode_stream(s, d->alt_unicode_string_len);
+        if (d && !d->alt_unicode_string_len) return CMS_ERR;
+        return cms_int32_decode_stream(s, d ? d->alt_unicode_string_len : NULL);
 
     default:
         return CMS_ERR;

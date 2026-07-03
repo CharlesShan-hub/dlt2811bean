@@ -305,4 +305,51 @@ public class CmsDataTest {
 
         assertEquals(a, b);
     }
+
+    @Test
+    public void roundup_array_of_data() {
+        /* CmsData with CHOICE_ARRAY → CmsArray<CmsData> */
+        CmsData outer = new CmsData();
+        outer.choice.value(CmsData.CHOICE_ARRAY);
+
+        CmsData d1 = new CmsData();
+        d1.choice.value(CmsData.CHOICE_INT32);
+        d1.alt_int32.value(12345);
+
+        CmsData d2 = new CmsData();
+        d2.choice.value(CmsData.CHOICE_BOOLEAN);
+        d2.alt_boolean.value(true);
+
+        CmsData d3 = new CmsData();
+        d3.choice.value(CmsData.CHOICE_FLOAT64);
+        d3.alt_float64.value(3.14159);
+
+        outer.alt_sequence.add(d1).add(d2).add(d3);
+        System.out.println("before encode: " + outer.toString());
+
+        byte[] encoded = outer.encode();
+        System.out.println("after encode, encoded " + encoded.length + " bytes");
+
+        CmsData decoded = new CmsData();
+        decoded.decode(encoded);
+
+        System.out.println("decoded.choice = " + decoded.choice.value() + " (expected " + CmsData.CHOICE_ARRAY + ")");
+        System.out.println("decoded.alt_sequence.items.size = " + decoded.alt_sequence.items.size() + " (expected 3)");
+        for (int i = 0; i < decoded.alt_sequence.items.size(); i++) {
+            CmsData item = decoded.alt_sequence.items.get(i);
+            System.out.println("  item[" + i + "].choice = " + item.choice.value());
+        }
+        System.out.println("item[0].alt_int32.value = " + decoded.alt_sequence.items.get(0).alt_int32.value() + " (expected 12345)");
+        System.out.println("item[1].alt_boolean.value = " + decoded.alt_sequence.items.get(1).alt_boolean.value() + " (expected true)");
+        System.out.println("item[2].alt_float64.value = " + decoded.alt_sequence.items.get(2).alt_float64.value() + " (expected 3.14159)");
+
+        assertEquals(1, decoded.choice.value());
+        assertEquals(3, decoded.alt_sequence.items.size());
+        assertEquals(6, decoded.alt_sequence.items.get(0).choice.value());
+        assertEquals(12345, decoded.alt_sequence.items.get(0).alt_int32.value());
+        assertEquals(3, decoded.alt_sequence.items.get(1).choice.value());
+        assertEquals(true, decoded.alt_sequence.items.get(1).alt_boolean.value());
+        assertEquals(13, decoded.alt_sequence.items.get(2).choice.value());
+        assertEquals(3.14159, decoded.alt_sequence.items.get(2).alt_float64.value(), 1e-10);
+    }
 }

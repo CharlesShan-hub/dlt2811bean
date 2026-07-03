@@ -18,9 +18,11 @@ int cms_int64u_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t content[8];
     err = per_stream_read_bytes(s, content, len);
     if (err) return CMS_ERR;
-    uint64_t val = 0;
-    for (uint32_t i = 0; i < len; i++) val = (val << 8) | content[i];
-    *(uint64_t*)ptr = val;
+    if (ptr) {
+        uint64_t val = 0;
+        for (uint32_t i = 0; i < len; i++) val = (val << 8) | content[i];
+        *(uint64_t*)ptr = val;
+    }
     return CMS_OK;
 }
 

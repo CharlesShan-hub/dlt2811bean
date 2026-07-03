@@ -55,7 +55,7 @@ int cms_utc_time_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t buf[8];
     int err = cms_octet_string_fixed_decode_stream(s, buf, 8);
     if (err) return CMS_ERR;
-    unpack_utc_time(buf, (cms_utc_time_t*)ptr);
+    if (ptr) unpack_utc_time(buf, (cms_utc_time_t*)ptr);
     return CMS_OK;
 }
 

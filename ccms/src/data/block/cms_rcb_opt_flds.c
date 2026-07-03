@@ -39,8 +39,10 @@ int cms_rcb_opt_flds_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t buf[2];
     int err = cms_bit_string_fixed_decode_stream(s, buf, 10);
     if (err) return CMS_ERR;
-    uint16_t bits = ((uint16_t)buf[0] << 8) | buf[1];
-    unpack_rcb(bits, (cms_rcb_opt_flds_t*)ptr);
+    if (ptr) {
+        uint16_t bits = ((uint16_t)buf[0] << 8) | buf[1];
+        unpack_rcb(bits, (cms_rcb_opt_flds_t*)ptr);
+    }
     return CMS_OK;
 }
 

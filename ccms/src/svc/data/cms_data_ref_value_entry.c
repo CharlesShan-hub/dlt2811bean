@@ -33,30 +33,33 @@ int cms_data_ref_value_entry_encode_stream(per_stream_t *s, const cms_data_ref_v
     return CMS_OK;
 }
 
-int cms_data_ref_value_entry_decode_stream(per_stream_t *s, cms_data_ref_value_entry_t *v) {
-    if (!v || !v->reference || !v->value) return CMS_ERR;
+int cms_data_ref_value_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_data_ref_value_entry_t *v = (cms_data_ref_value_entry_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (1 field: fc) */
     bool opt[1] = {false};
     err = (int)per_decode_optional_bitmap(s, opt, 1);
     if (err) return err;
-    if (v->fc_present)
-        v->fc_present->value = opt[0] ? 1 : 0;
+    if (v) {
+        if (v->fc_present) v->fc_present->value = opt[0] ? 1 : 0;
+    }
 
     /* 1. reference */
-    err = cms_object_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 2. fc OPTIONAL (bitmap[0]) */
     if (opt[0]) {
-        if (!v->fc) return CMS_ERR;
-        err = cms_functional_constraint_decode_stream(s, v->fc);
+        if (v && !v->fc) return CMS_ERR;
+        err = cms_functional_constraint_decode_stream(s, v ? v->fc : NULL);
         if (err) return err;
     }
 
     /* 3. value */
-    err = cms_data_decode_stream(s, v->value);
+    if (v && !v->value) return CMS_ERR;
+    err = cms_data_decode_stream(s, v ? v->value : NULL);
     if (err) return err;
 
     return CMS_OK;

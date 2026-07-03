@@ -31,7 +31,7 @@ int cms_binary_time_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t buf[6];
     int err = cms_octet_string_fixed_decode_stream(s, buf, 6);
     if (err) return CMS_ERR;
-    unpack_binary_time(buf, (cms_binary_time_t*)ptr);
+    if (ptr) unpack_binary_time(buf, (cms_binary_time_t*)ptr);
     return CMS_OK;
 }
 

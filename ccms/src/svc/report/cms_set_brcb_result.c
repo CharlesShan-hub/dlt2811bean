@@ -100,98 +100,41 @@ int cms_set_brcb_result_encode_stream(per_stream_t *s, const cms_set_brcb_result
     return CMS_OK;
 }
 
-int cms_set_brcb_result_decode_stream(per_stream_t *s, cms_set_brcb_result_t *v) {
-    if (!v) return CMS_ERR;
+int cms_set_brcb_result_decode_stream(per_stream_t *s, void *ptr) {
+    cms_set_brcb_result_t *v = (cms_set_brcb_result_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (12 fields) */
     bool opt_present[12];
     err = (int)per_decode_optional_bitmap(s, opt_present, 12);
     if (err) return err;
-    if (v->error_present) v->error_present->value = opt_present[0];
-    if (v->rpt_id_err_present) v->rpt_id_err_present->value = opt_present[1];
-    if (v->rpt_ena_err_present) v->rpt_ena_err_present->value = opt_present[2];
-    if (v->dat_set_err_present) v->dat_set_err_present->value = opt_present[3];
-    if (v->opt_flds_err_present) v->opt_flds_err_present->value = opt_present[4];
-    if (v->buf_tm_err_present) v->buf_tm_err_present->value = opt_present[5];
-    if (v->trg_ops_err_present) v->trg_ops_err_present->value = opt_present[6];
-    if (v->intg_pd_err_present) v->intg_pd_err_present->value = opt_present[7];
-    if (v->gi_err_present) v->gi_err_present->value = opt_present[8];
-    if (v->purge_buf_err_present) v->purge_buf_err_present->value = opt_present[9];
-    if (v->entry_id_err_present) v->entry_id_err_present->value = opt_present[10];
-    if (v->resv_tms_err_present) v->resv_tms_err_present->value = opt_present[11];
-
-    /* 1. error OPTIONAL */
-    if (opt_present[0] && v->error) {
-        err = cms_service_error_decode_stream(s, v->error);
-        if (err) return err;
+    if (v) {
+        if (v->error_present)         v->error_present->value         = opt_present[0];
+        if (v->rpt_id_err_present)    v->rpt_id_err_present->value    = opt_present[1];
+        if (v->rpt_ena_err_present)   v->rpt_ena_err_present->value   = opt_present[2];
+        if (v->dat_set_err_present)   v->dat_set_err_present->value   = opt_present[3];
+        if (v->opt_flds_err_present)  v->opt_flds_err_present->value  = opt_present[4];
+        if (v->buf_tm_err_present)    v->buf_tm_err_present->value    = opt_present[5];
+        if (v->trg_ops_err_present)   v->trg_ops_err_present->value   = opt_present[6];
+        if (v->intg_pd_err_present)   v->intg_pd_err_present->value   = opt_present[7];
+        if (v->gi_err_present)        v->gi_err_present->value        = opt_present[8];
+        if (v->purge_buf_err_present) v->purge_buf_err_present->value = opt_present[9];
+        if (v->entry_id_err_present)  v->entry_id_err_present->value  = opt_present[10];
+        if (v->resv_tms_err_present)  v->resv_tms_err_present->value  = opt_present[11];
     }
 
-    /* 2. rptIdErr OPTIONAL */
-    if (opt_present[1] && v->rpt_id_err) {
-        err = cms_service_error_decode_stream(s, v->rpt_id_err);
-        if (err) return err;
-    }
-
-    /* 3. rptEnaErr OPTIONAL */
-    if (opt_present[2] && v->rpt_ena_err) {
-        err = cms_service_error_decode_stream(s, v->rpt_ena_err);
-        if (err) return err;
-    }
-
-    /* 4. datSetErr OPTIONAL */
-    if (opt_present[3] && v->dat_set_err) {
-        err = cms_service_error_decode_stream(s, v->dat_set_err);
-        if (err) return err;
-    }
-
-    /* 5. optFldsErr OPTIONAL */
-    if (opt_present[4] && v->opt_flds_err) {
-        err = cms_service_error_decode_stream(s, v->opt_flds_err);
-        if (err) return err;
-    }
-
-    /* 6. bufTmErr OPTIONAL */
-    if (opt_present[5] && v->buf_tm_err) {
-        err = cms_service_error_decode_stream(s, v->buf_tm_err);
-        if (err) return err;
-    }
-
-    /* 7. trgOpsErr OPTIONAL */
-    if (opt_present[6] && v->trg_ops_err) {
-        err = cms_service_error_decode_stream(s, v->trg_ops_err);
-        if (err) return err;
-    }
-
-    /* 8. intgPdErr OPTIONAL */
-    if (opt_present[7] && v->intg_pd_err) {
-        err = cms_service_error_decode_stream(s, v->intg_pd_err);
-        if (err) return err;
-    }
-
-    /* 9. giErr OPTIONAL */
-    if (opt_present[8] && v->gi_err) {
-        err = cms_service_error_decode_stream(s, v->gi_err);
-        if (err) return err;
-    }
-
-    /* 10. purgeBufErr OPTIONAL */
-    if (opt_present[9] && v->purge_buf_err) {
-        err = cms_service_error_decode_stream(s, v->purge_buf_err);
-        if (err) return err;
-    }
-
-    /* 11. entryIdErr OPTIONAL */
-    if (opt_present[10] && v->entry_id_err) {
-        err = cms_service_error_decode_stream(s, v->entry_id_err);
-        if (err) return err;
-    }
-
-    /* 12. resvTmsErr OPTIONAL */
-    if (opt_present[11] && v->resv_tms_err) {
-        err = cms_service_error_decode_stream(s, v->resv_tms_err);
-        if (err) return err;
-    }
+    /* 1. error OPTIONAL */         if (opt_present[0])  { if (v && !v->error) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->error : NULL); if (err) return err; }
+    /* 2. rptIdErr OPTIONAL */      if (opt_present[1])  { if (v && !v->rpt_id_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->rpt_id_err : NULL); if (err) return err; }
+    /* 3. rptEnaErr OPTIONAL */     if (opt_present[2])  { if (v && !v->rpt_ena_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->rpt_ena_err : NULL); if (err) return err; }
+    /* 4. datSetErr OPTIONAL */     if (opt_present[3])  { if (v && !v->dat_set_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->dat_set_err : NULL); if (err) return err; }
+    /* 5. optFldsErr OPTIONAL */    if (opt_present[4])  { if (v && !v->opt_flds_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->opt_flds_err : NULL); if (err) return err; }
+    /* 6. bufTmErr OPTIONAL */      if (opt_present[5])  { if (v && !v->buf_tm_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->buf_tm_err : NULL); if (err) return err; }
+    /* 7. trgOpsErr OPTIONAL */     if (opt_present[6])  { if (v && !v->trg_ops_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->trg_ops_err : NULL); if (err) return err; }
+    /* 8. intgPdErr OPTIONAL */     if (opt_present[7])  { if (v && !v->intg_pd_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->intg_pd_err : NULL); if (err) return err; }
+    /* 9. giErr OPTIONAL */         if (opt_present[8])  { if (v && !v->gi_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->gi_err : NULL); if (err) return err; }
+    /* 10. purgeBufErr OPTIONAL */  if (opt_present[9])  { if (v && !v->purge_buf_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->purge_buf_err : NULL); if (err) return err; }
+    /* 11. entryIdErr OPTIONAL */   if (opt_present[10]) { if (v && !v->entry_id_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->entry_id_err : NULL); if (err) return err; }
+    /* 12. resvTmsErr OPTIONAL */   if (opt_present[11]) { if (v && !v->resv_tms_err) return CMS_ERR; err = cms_service_error_decode_stream(s, v ? v->resv_tms_err : NULL); if (err) return err; }
 
     return CMS_OK;
 }

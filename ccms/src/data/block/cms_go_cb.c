@@ -55,37 +55,37 @@ int cms_go_cb_decode_stream(per_stream_t *s, void *ptr) {
     bool opt_present[1] = {false};
     err = (int)per_decode_optional_bitmap(s, opt_present, 1);
     if (err) return err;
-    if (pdu->dstAddress_present)
+    if (pdu && pdu->dstAddress_present)
         pdu->dstAddress_present->value = opt_present[0] ? 1 : 0;
 
     /* 1. goEna */
-    if (!pdu->goEna) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->goEna);
+    if (pdu && !pdu->goEna) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->goEna : NULL);
     if (err) return err;
 
     /* 2. goID */
-    if (!pdu->goID) return CMS_ERR;
-    err = cms_visible_string_decode_stream(s, pdu->goID, CMS_GO_CB_GO_ID_MAX_LEN);
+    if (pdu && !pdu->goID) return CMS_ERR;
+    err = cms_visible_string_decode_stream(s, pdu ? pdu->goID : NULL, CMS_GO_CB_GO_ID_MAX_LEN);
     if (err) return err;
 
     /* 3. datSet */
-    if (!pdu->datSet) return CMS_ERR;
-    err = cms_object_reference_decode_stream(s, pdu->datSet);
+    if (pdu && !pdu->datSet) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, pdu ? pdu->datSet : NULL);
     if (err) return err;
 
     /* 4. confRev */
-    if (!pdu->confRev) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->confRev);
+    if (pdu && !pdu->confRev) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->confRev : NULL);
     if (err) return err;
 
     /* 5. ndsCom */
-    if (!pdu->ndsCom) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->ndsCom);
+    if (pdu && !pdu->ndsCom) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->ndsCom : NULL);
     if (err) return err;
 
     /* 6. dstAddress — PHYCOMADDR OPTIONAL (bitmap[0]) */
-    if (opt_present[0] && pdu->dstAddress) {
-        err = cms_phy_com_addr_decode_stream(s, pdu->dstAddress);
+    if (opt_present[0]) {
+        err = cms_phy_com_addr_decode_stream(s, pdu ? pdu->dstAddress : NULL);
         if (err) return err;
     }
 

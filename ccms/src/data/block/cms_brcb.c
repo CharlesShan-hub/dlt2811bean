@@ -103,85 +103,85 @@ int cms_brcb_decode_stream(per_stream_t *s, void *ptr) {
     bool opt_present[2] = {false, false};
     err = (int)per_decode_optional_bitmap(s, opt_present, 2);
     if (err) return err;
-    if (pdu->resvTms_present)
-        pdu->resvTms_present->value = opt_present[0] ? 1 : 0;
-    if (pdu->owner_present)
-        pdu->owner_present->value = opt_present[1] ? 1 : 0;
+    if (pdu) {
+        if (pdu->resvTms_present) pdu->resvTms_present->value = opt_present[0] ? 1 : 0;
+        if (pdu->owner_present)   pdu->owner_present->value   = opt_present[1] ? 1 : 0;
+    }
 
     /* 1. rptID */
-    if (!pdu->rptID) return CMS_ERR;
-    err = cms_visible_string_decode_stream(s, pdu->rptID, CMS_BRCB_RPT_ID_MAX_LEN);
+    if (pdu && !pdu->rptID) return CMS_ERR;
+    err = cms_visible_string_decode_stream(s, pdu ? pdu->rptID : NULL, CMS_BRCB_RPT_ID_MAX_LEN);
     if (err) return err;
 
     /* 2. rptEna */
-    if (!pdu->rptEna) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->rptEna);
+    if (pdu && !pdu->rptEna) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->rptEna : NULL);
     if (err) return err;
 
     /* 3. datSet */
-    if (!pdu->datSet) return CMS_ERR;
-    err = cms_object_reference_decode_stream(s, pdu->datSet);
+    if (pdu && !pdu->datSet) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, pdu ? pdu->datSet : NULL);
     if (err) return err;
 
     /* 4. confRev */
-    if (!pdu->confRev) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->confRev);
+    if (pdu && !pdu->confRev) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->confRev : NULL);
     if (err) return err;
 
     /* 5. optFlds */
-    if (!pdu->optFlds) return CMS_ERR;
-    err = cms_rcb_opt_flds_decode_stream(s, pdu->optFlds);
+    if (pdu && !pdu->optFlds) return CMS_ERR;
+    err = cms_rcb_opt_flds_decode_stream(s, pdu ? pdu->optFlds : NULL);
     if (err) return err;
 
     /* 6. bufTm */
-    if (!pdu->bufTm) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->bufTm);
+    if (pdu && !pdu->bufTm) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->bufTm : NULL);
     if (err) return err;
 
     /* 7. sqNum */
-    if (!pdu->sqNum) return CMS_ERR;
-    err = cms_int16u_decode_stream(s, pdu->sqNum);
+    if (pdu && !pdu->sqNum) return CMS_ERR;
+    err = cms_int16u_decode_stream(s, pdu ? pdu->sqNum : NULL);
     if (err) return err;
 
     /* 8. trgOps */
-    if (!pdu->trgOps) return CMS_ERR;
-    err = cms_trigger_conditions_decode_stream(s, pdu->trgOps);
+    if (pdu && !pdu->trgOps) return CMS_ERR;
+    err = cms_trigger_conditions_decode_stream(s, pdu ? pdu->trgOps : NULL);
     if (err) return err;
 
     /* 9. intgPd */
-    if (!pdu->intgPd) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->intgPd);
+    if (pdu && !pdu->intgPd) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->intgPd : NULL);
     if (err) return err;
 
     /* 10. gi */
-    if (!pdu->gi) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->gi);
+    if (pdu && !pdu->gi) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->gi : NULL);
     if (err) return err;
 
     /* 11. purgeBuf */
-    if (!pdu->purgeBuf) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->purgeBuf);
+    if (pdu && !pdu->purgeBuf) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->purgeBuf : NULL);
     if (err) return err;
 
     /* 12. entryID */
-    if (!pdu->entryID) return CMS_ERR;
-    err = cms_entry_id_decode_stream(s, pdu->entryID);
+    if (pdu && !pdu->entryID) return CMS_ERR;
+    err = cms_entry_id_decode_stream(s, pdu ? pdu->entryID : NULL);
     if (err) return err;
 
     /* 13. timeOfEntry */
-    if (!pdu->timeOfEntry) return CMS_ERR;
-    err = cms_entry_time_decode_stream(s, pdu->timeOfEntry);
+    if (pdu && !pdu->timeOfEntry) return CMS_ERR;
+    err = cms_entry_time_decode_stream(s, pdu ? pdu->timeOfEntry : NULL);
     if (err) return err;
 
     /* 14. resvTms — INT16 OPTIONAL (bitmap[0]) */
-    if (opt_present[0] && pdu->resvTms) {
-        err = cms_int16_decode_stream(s, pdu->resvTms);
+    if (opt_present[0]) {
+        err = cms_int16_decode_stream(s, pdu ? pdu->resvTms : NULL);
         if (err) return err;
     }
 
     /* 15. owner — OCTET STRING (SIZE(0..64)) OPTIONAL (bitmap[1]) */
-    if (opt_present[1] && pdu->owner) {
-        err = cms_octet_string_decode_stream(s, pdu->owner, CMS_BRCB_OWNER_MAX_LEN);
+    if (opt_present[1]) {
+        err = cms_octet_string_decode_stream(s, pdu ? pdu->owner : NULL, CMS_BRCB_OWNER_MAX_LEN);
         if (err) return err;
     }
 

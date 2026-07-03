@@ -5,8 +5,8 @@ int cms_association_id_encode_stream(per_stream_t *s, const cms_association_id_t
     return cms_octet_string_encode_stream(s, id, CMS_ASSOCIATION_ID_MAX);
 }
 
-int cms_association_id_decode_stream(per_stream_t *s, cms_association_id_t *id) {
-    return cms_octet_string_decode_stream(s, id, CMS_ASSOCIATION_ID_MAX);
+int cms_association_id_decode_stream(per_stream_t *s, void *ptr) {
+    return cms_octet_string_decode_stream(s, ptr, CMS_ASSOCIATION_ID_MAX);
 }
 
 int cms_association_id_encode(const cms_association_id_t *id, uint8_t **out_buf, size_t *out_len) {

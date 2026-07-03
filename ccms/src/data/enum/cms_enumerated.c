@@ -11,7 +11,7 @@ int cms_enumerated_decode_stream(per_stream_t *s, void *ptr) {
     int64_t val;
     per_error_t err = per_decode_constrained_int(s, &val, -128, 127);
     if (err) return CMS_ERR;
-    ((cms_enumerated_t*)ptr)->value = (int)val;
+    if (ptr) ((cms_enumerated_t*)ptr)->value = (int)val;
     return CMS_OK;
 }
 

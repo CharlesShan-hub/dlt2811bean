@@ -32,7 +32,7 @@ typedef struct {
 } cms_log_status_value_choice_t;
 
 int cms_log_status_value_choice_encode_stream(per_stream_t *s, const cms_log_status_value_choice_t *v);
-int cms_log_status_value_choice_decode_stream(per_stream_t *s, cms_log_status_value_choice_t *v);
+int cms_log_status_value_choice_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

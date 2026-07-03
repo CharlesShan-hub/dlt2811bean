@@ -8,11 +8,15 @@ int cms_entry_id_encode_stream(per_stream_t *s, const void *ptr) {
 }
 
 int cms_entry_id_decode_stream(per_stream_t *s, void *ptr) {
-    uint8_t *vptr = *(uint8_t **)ptr;
-    if (!vptr) return CMS_ERR;
-    int err = cms_octet_string_fixed_decode_stream(s, vptr, CMS_ENTRY_ID_LEN);
-    if (err) return err;
-    *(int32_t*)((uint8_t*)ptr + 8) = CMS_ENTRY_ID_LEN;
+    uint8_t buf[CMS_ENTRY_ID_LEN];
+    int err = cms_octet_string_fixed_decode_stream(s, buf, CMS_ENTRY_ID_LEN);
+    if (err) return CMS_ERR;
+    if (ptr) {
+        uint8_t *vptr = *(uint8_t**)ptr;
+        if (!vptr) return CMS_ERR;
+        memcpy(vptr, buf, CMS_ENTRY_ID_LEN);
+        *(int32_t*)((uint8_t*)ptr + 8) = CMS_ENTRY_ID_LEN;
+    }
     return CMS_OK;
 }
 

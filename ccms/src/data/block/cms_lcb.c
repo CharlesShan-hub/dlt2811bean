@@ -61,45 +61,45 @@ int cms_lcb_decode_stream(per_stream_t *s, void *ptr) {
     bool opt_present[2] = {false, false};
     err = (int)per_decode_optional_bitmap(s, opt_present, 2);
     if (err) return err;
-    if (pdu->optFlds_present)
-        pdu->optFlds_present->value = opt_present[0] ? 1 : 0;
-    if (pdu->bufTm_present)
-        pdu->bufTm_present->value = opt_present[1] ? 1 : 0;
+    if (pdu) {
+        if (pdu->optFlds_present) pdu->optFlds_present->value = opt_present[0] ? 1 : 0;
+        if (pdu->bufTm_present)   pdu->bufTm_present->value   = opt_present[1] ? 1 : 0;
+    }
 
     /* 1. logEna */
-    if (!pdu->logEna) return CMS_ERR;
-    err = cms_boolean_decode_stream(s, pdu->logEna);
+    if (pdu && !pdu->logEna) return CMS_ERR;
+    err = cms_boolean_decode_stream(s, pdu ? pdu->logEna : NULL);
     if (err) return err;
 
     /* 2. datSet */
-    if (!pdu->datSet) return CMS_ERR;
-    err = cms_object_reference_decode_stream(s, pdu->datSet);
+    if (pdu && !pdu->datSet) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, pdu ? pdu->datSet : NULL);
     if (err) return err;
 
     /* 3. trgOps */
-    if (!pdu->trgOps) return CMS_ERR;
-    err = cms_trigger_conditions_decode_stream(s, pdu->trgOps);
+    if (pdu && !pdu->trgOps) return CMS_ERR;
+    err = cms_trigger_conditions_decode_stream(s, pdu ? pdu->trgOps : NULL);
     if (err) return err;
 
     /* 4. intgPd */
-    if (!pdu->intgPd) return CMS_ERR;
-    err = cms_int32u_decode_stream(s, pdu->intgPd);
+    if (pdu && !pdu->intgPd) return CMS_ERR;
+    err = cms_int32u_decode_stream(s, pdu ? pdu->intgPd : NULL);
     if (err) return err;
 
     /* 5. logRef */
-    if (!pdu->logRef) return CMS_ERR;
-    err = cms_object_reference_decode_stream(s, pdu->logRef);
+    if (pdu && !pdu->logRef) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, pdu ? pdu->logRef : NULL);
     if (err) return err;
 
     /* 6. optFlds — LCBOptFlds OPTIONAL (bitmap[0]) */
-    if (opt_present[0] && pdu->optFlds) {
-        err = cms_lcb_opt_flds_decode_stream(s, pdu->optFlds);
+    if (opt_present[0]) {
+        err = cms_lcb_opt_flds_decode_stream(s, pdu ? pdu->optFlds : NULL);
         if (err) return err;
     }
 
     /* 7. bufTm — INT32U OPTIONAL (bitmap[1]) */
-    if (opt_present[1] && pdu->bufTm) {
-        err = cms_int32u_decode_stream(s, pdu->bufTm);
+    if (opt_present[1]) {
+        err = cms_int32u_decode_stream(s, pdu ? pdu->bufTm : NULL);
         if (err) return err;
     }
 

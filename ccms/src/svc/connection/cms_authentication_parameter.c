@@ -23,20 +23,21 @@ int cms_authentication_parameter_encode_stream(
 }
 
 int cms_authentication_parameter_decode_stream(
-    per_stream_t *s, cms_authentication_parameter_t *param)
+    per_stream_t *s, void *ptr)
 {
+    cms_authentication_parameter_t *param = (cms_authentication_parameter_t*)ptr;
     int err;
 
     /* 1. cert */
-    err = cms_octet_string_decode_stream(s, param->cert, UINT32_MAX);
+    err = cms_octet_string_decode_stream(s, param ? param->cert : NULL, UINT32_MAX);
     if (err) return CMS_ERR;
 
     /* 2. signedTime */
-    err = cms_utc_time_decode_stream(s, param->signed_time);
+    err = cms_utc_time_decode_stream(s, param ? param->signed_time : NULL);
     if (err) return CMS_ERR;
 
     /* 3. sigVal */
-    err = cms_octet_string_decode_stream(s, param->sig_val, UINT32_MAX);
+    err = cms_octet_string_decode_stream(s, param ? param->sig_val : NULL, UINT32_MAX);
     if (err) return CMS_ERR;
 
     return CMS_OK;

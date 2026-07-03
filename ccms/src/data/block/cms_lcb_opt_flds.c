@@ -12,8 +12,8 @@ int cms_lcb_opt_flds_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t byte = 0;
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 1);
     if (err) return CMS_ERR;
-    cms_lcb_opt_flds_t *q = (cms_lcb_opt_flds_t*)ptr;
-    if (q->value) q->value->value = unpack_bit(byte, 0);
+    if (ptr && ((cms_lcb_opt_flds_t*)ptr)->value)
+        ((cms_lcb_opt_flds_t*)ptr)->value->value = unpack_bit(byte, 0);
     return CMS_OK;
 }
 

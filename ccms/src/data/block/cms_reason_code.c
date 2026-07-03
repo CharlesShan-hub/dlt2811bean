@@ -32,7 +32,7 @@ int cms_reason_code_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t byte = 0;
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 7);
     if (err) return CMS_ERR;
-    unpack_reason(byte, (cms_reason_code_t*)ptr);
+    if (ptr) unpack_reason(byte, (cms_reason_code_t*)ptr);
     return CMS_OK;
 }
 

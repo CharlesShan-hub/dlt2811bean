@@ -30,7 +30,7 @@ int cms_trigger_conditions_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t byte = 0;
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 6);
     if (err) return CMS_ERR;
-    unpack_trigger(byte, (cms_trigger_conditions_t*)ptr);
+    if (ptr) unpack_trigger(byte, (cms_trigger_conditions_t*)ptr);
     return CMS_OK;
 }
 

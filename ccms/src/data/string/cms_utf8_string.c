@@ -13,11 +13,11 @@ int cms_utf8_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max
 }
 
 int cms_utf8_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_len) {
-    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
-    if (!vptr) return CMS_ERR;
-    per_error_t err = per_decode_utf8_string(s, vptr, max_len);
+    uint8_t tmp[256];
+    uint8_t *target = ptr ? ARRAY_PTR_MUT(ptr) : tmp;
+    per_error_t err = per_decode_utf8_string(s, target, max_len);
     if (err) return CMS_ERR;
-    *(ARRAY_LEN_PTR(ptr)) = (int32_t)strlen((const char*)vptr);
+    if (ptr) *(ARRAY_LEN_PTR(ptr)) = (int32_t)strlen((const char*)target);
     return CMS_OK;
 }
 

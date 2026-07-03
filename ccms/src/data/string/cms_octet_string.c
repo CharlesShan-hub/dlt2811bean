@@ -12,7 +12,9 @@ int cms_octet_string_fixed_encode_stream(per_stream_t *s, const uint8_t *data, i
 }
 
 int cms_octet_string_fixed_decode_stream(per_stream_t *s, uint8_t *out, int fixed_len) {
-    return (int)per_decode_octet_string_fixed(s, out, (size_t)fixed_len);
+    uint8_t tmp[256];
+    uint8_t *target = out ? out : tmp;
+    return (int)per_decode_octet_string_fixed(s, target, (size_t)fixed_len);
 }
 
 /* Variable length: SIZE(lb..ub) */
@@ -24,12 +26,12 @@ int cms_octet_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t ma
 }
 
 int cms_octet_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_len) {
-    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
-    if (!vptr) return CMS_ERR;
+    uint8_t tmp[256];
+    uint8_t *target = ptr ? ARRAY_PTR_MUT(ptr) : tmp;
     size_t out_len = 0;
-    per_error_t err = per_decode_octet_string(s, vptr, &out_len, max_len);
+    per_error_t err = per_decode_octet_string(s, target, &out_len, max_len);
     if (err) return CMS_ERR;
-    *(ARRAY_LEN_PTR(ptr)) = (int32_t)out_len;
+    if (ptr) *(ARRAY_LEN_PTR(ptr)) = (int32_t)out_len;
     return CMS_OK;
 }
 

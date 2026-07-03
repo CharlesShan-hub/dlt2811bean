@@ -31,32 +31,33 @@ int cms_cb_value_choice_encode_stream(per_stream_t *s, const cms_cb_value_choice
     }
 }
 
-int cms_cb_value_choice_decode_stream(per_stream_t *s, cms_cb_value_choice_t *v) {
-    if (!v || !v->choice) return CMS_ERR;
+int cms_cb_value_choice_decode_stream(per_stream_t *s, void *ptr) {
+    cms_cb_value_choice_t *v = (cms_cb_value_choice_t*)ptr;
     uint32_t sel;
     per_error_t perr = per_decode_small_non_negative(s, &sel);
     if (perr) return CMS_ERR;
-    v->choice->value = (int)sel;
+    if (sel > 5) return CMS_ERR;
+    if (v) v->choice->value = (int)sel;
 
     switch (sel) {
     case CMS_CB_VALUE_CHOICE_BRCB:
-        if (!v->alt_brcb) return CMS_ERR;
-        return cms_brcb_decode_stream(s, v->alt_brcb);
+        if (v && !v->alt_brcb) return CMS_ERR;
+        return cms_brcb_decode_stream(s, v ? v->alt_brcb : NULL);
     case CMS_CB_VALUE_CHOICE_URCB:
-        if (!v->alt_urcb) return CMS_ERR;
-        return cms_urcb_decode_stream(s, v->alt_urcb);
+        if (v && !v->alt_urcb) return CMS_ERR;
+        return cms_urcb_decode_stream(s, v ? v->alt_urcb : NULL);
     case CMS_CB_VALUE_CHOICE_LCB:
-        if (!v->alt_lcb) return CMS_ERR;
-        return cms_lcb_decode_stream(s, v->alt_lcb);
+        if (v && !v->alt_lcb) return CMS_ERR;
+        return cms_lcb_decode_stream(s, v ? v->alt_lcb : NULL);
     case CMS_CB_VALUE_CHOICE_SGECB:
-        if (!v->alt_sgecb) return CMS_ERR;
-        return cms_sgcb_decode_stream(s, v->alt_sgecb);
+        if (v && !v->alt_sgecb) return CMS_ERR;
+        return cms_sgcb_decode_stream(s, v ? v->alt_sgecb : NULL);
     case CMS_CB_VALUE_CHOICE_GOCB:
-        if (!v->alt_gocb) return CMS_ERR;
-        return cms_go_cb_decode_stream(s, v->alt_gocb);
+        if (v && !v->alt_gocb) return CMS_ERR;
+        return cms_go_cb_decode_stream(s, v ? v->alt_gocb : NULL);
     case CMS_CB_VALUE_CHOICE_MSVCB:
-        if (!v->alt_msvcb) return CMS_ERR;
-        return cms_msvcb_decode_stream(s, v->alt_msvcb);
+        if (v && !v->alt_msvcb) return CMS_ERR;
+        return cms_msvcb_decode_stream(s, v ? v->alt_msvcb : NULL);
     default:
         return CMS_ERR;
     }

@@ -66,66 +66,34 @@ int cms_set_msvcb_entry_encode_stream(per_stream_t *s, const cms_set_msvcb_entry
     return CMS_OK;
 }
 
-int cms_set_msvcb_entry_decode_stream(per_stream_t *s, cms_set_msvcb_entry_t *v) {
-    if (!v || !v->reference) return CMS_ERR;
+int cms_set_msvcb_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_set_msvcb_entry_t *v = (cms_set_msvcb_entry_t*)ptr;
     int err;
 
     /* 0. reference */
-    err = cms_object_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 1. OPTIONAL bitmap (6 fields) */
     bool opt_present[6];
     err = (int)per_decode_optional_bitmap(s, opt_present, 6);
     if (err) return err;
-    if (v->sv_ena_present) v->sv_ena_present->value = opt_present[0];
-    if (v->msv_id_present) v->msv_id_present->value = opt_present[1];
-    if (v->dat_set_present) v->dat_set_present->value = opt_present[2];
-    if (v->smp_mod_present) v->smp_mod_present->value = opt_present[3];
-    if (v->smp_rate_present) v->smp_rate_present->value = opt_present[4];
-    if (v->opt_flds_present) v->opt_flds_present->value = opt_present[5];
-
-    /* 2. svEna OPTIONAL */
-    if (opt_present[0]) {
-        if (!v->sv_ena) return CMS_ERR;
-        err = cms_boolean_decode_stream(s, v->sv_ena);
-        if (err) return err;
+    if (v) {
+        if (v->sv_ena_present)    v->sv_ena_present->value    = opt_present[0];
+        if (v->msv_id_present)    v->msv_id_present->value    = opt_present[1];
+        if (v->dat_set_present)   v->dat_set_present->value   = opt_present[2];
+        if (v->smp_mod_present)   v->smp_mod_present->value   = opt_present[3];
+        if (v->smp_rate_present)  v->smp_rate_present->value  = opt_present[4];
+        if (v->opt_flds_present)  v->opt_flds_present->value  = opt_present[5];
     }
 
-    /* 3. msvID OPTIONAL */
-    if (opt_present[1]) {
-        if (!v->msv_id) return CMS_ERR;
-        err = cms_visible_string_decode_stream(s, v->msv_id, 129);
-        if (err) return err;
-    }
-
-    /* 4. datSet OPTIONAL */
-    if (opt_present[2]) {
-        if (!v->dat_set) return CMS_ERR;
-        err = cms_object_reference_decode_stream(s, v->dat_set);
-        if (err) return err;
-    }
-
-    /* 5. smpMod OPTIONAL */
-    if (opt_present[3]) {
-        if (!v->smp_mod) return CMS_ERR;
-        err = cms_smp_mod_decode_stream(s, v->smp_mod);
-        if (err) return err;
-    }
-
-    /* 6. smpRate OPTIONAL */
-    if (opt_present[4]) {
-        if (!v->smp_rate) return CMS_ERR;
-        err = cms_int16u_decode_stream(s, v->smp_rate);
-        if (err) return err;
-    }
-
-    /* 7. optFlds OPTIONAL */
-    if (opt_present[5]) {
-        if (!v->opt_flds) return CMS_ERR;
-        err = cms_msvcb_opt_flds_decode_stream(s, v->opt_flds);
-        if (err) return err;
-    }
+    /* 2. svEna OPTIONAL */   if (opt_present[0]) { if (v && !v->sv_ena) return CMS_ERR; err = cms_boolean_decode_stream(s, v ? v->sv_ena : NULL); if (err) return err; }
+    /* 3. msvID OPTIONAL */   if (opt_present[1]) { if (v && !v->msv_id) return CMS_ERR; err = cms_visible_string_decode_stream(s, v ? v->msv_id : NULL, 129); if (err) return err; }
+    /* 4. datSet OPTIONAL */  if (opt_present[2]) { if (v && !v->dat_set) return CMS_ERR; err = cms_object_reference_decode_stream(s, v ? v->dat_set : NULL); if (err) return err; }
+    /* 5. smpMod OPTIONAL */  if (opt_present[3]) { if (v && !v->smp_mod) return CMS_ERR; err = cms_smp_mod_decode_stream(s, v ? v->smp_mod : NULL); if (err) return err; }
+    /* 6. smpRate OPTIONAL */ if (opt_present[4]) { if (v && !v->smp_rate) return CMS_ERR; err = cms_int16u_decode_stream(s, v ? v->smp_rate : NULL); if (err) return err; }
+    /* 7. optFlds OPTIONAL */ if (opt_present[5]) { if (v && !v->opt_flds) return CMS_ERR; err = cms_msvcb_opt_flds_decode_stream(s, v ? v->opt_flds : NULL); if (err) return err; }
 
     return CMS_OK;
 }

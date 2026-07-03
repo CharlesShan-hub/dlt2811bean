@@ -34,31 +34,33 @@ int cms_data_definition_entry_encode_stream(per_stream_t *s, const cms_data_defi
     return CMS_OK;
 }
 
-int cms_data_definition_entry_decode_stream(per_stream_t *s, cms_data_definition_entry_t *v) {
-    if (!v || !v->reference) return CMS_ERR;
+int cms_data_definition_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_data_definition_entry_t *v = (cms_data_definition_entry_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (1 field: cdcType) */
     bool opt[1] = {false};
     err = (int)per_decode_optional_bitmap(s, opt, 1);
     if (err) return err;
-    if (v->cdc_type_present)
-        v->cdc_type_present->value = opt[0] ? 1 : 0;
+    if (v) {
+        if (v->cdc_type_present) v->cdc_type_present->value = opt[0] ? 1 : 0;
+    }
 
     /* 1. reference */
-    err = cms_sub_reference_decode_stream(s, v->reference);
+    if (v && !v->reference) return CMS_ERR;
+    err = cms_sub_reference_decode_stream(s, v ? v->reference : NULL);
     if (err) return err;
 
     /* 2. cdcType OPTIONAL (bitmap[0]) */
     if (opt[0]) {
-        if (!v->cdc_type) return CMS_ERR;
-        err = cms_visible_string_decode_stream(s, v->cdc_type, 129);
+        if (v && !v->cdc_type) return CMS_ERR;
+        err = cms_visible_string_decode_stream(s, v ? v->cdc_type : NULL, 129);
         if (err) return err;
     }
 
     /* 3. definition */
-    if (!v->definition) return CMS_ERR;
-    err = cms_data_definition_decode_stream(s, v->definition);
+    if (v && !v->definition) return CMS_ERR;
+    err = cms_data_definition_decode_stream(s, v ? v->definition : NULL);
     if (err) return err;
 
     return CMS_OK;

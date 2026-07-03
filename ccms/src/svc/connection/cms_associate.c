@@ -128,36 +128,36 @@ int cms_associate_response_encode_stream(per_stream_t *s, const cms_associate_re
     return CMS_OK;
 }
 
-int cms_associate_response_decode_stream(per_stream_t *s, cms_associate_response_t *pdu) {
-    if (!pdu) return CMS_ERR;
+int cms_associate_response_decode_stream(per_stream_t *s, void *ptr) {
+    cms_associate_response_t *pdu = (cms_associate_response_t*)ptr;
     int err;
 
     /* 0. reqId */
-    if (!pdu->req_id) return CMS_ERR;
-    err = cms_req_id_decode_stream(s, pdu->req_id);
+    if (pdu && !pdu->req_id) return CMS_ERR;
+    err = cms_req_id_decode_stream(s, pdu ? pdu->req_id : NULL);
     if (err) return err;
 
     /* 1. OPTIONAL bitmap (1 field: authParam) */
     bool res_opt[1] = {false};
     err = (int)per_decode_optional_bitmap(s, res_opt, 1);
     if (err) return err;
-    if (pdu->auth_param_present)
+    if (pdu && pdu->auth_param_present)
         pdu->auth_param_present->value = res_opt[0] ? 1 : 0;
 
     /* 2. assocId */
-    if (!pdu->assoc_id) return CMS_ERR;
-    err = cms_association_id_decode_stream(s, pdu->assoc_id);
+    if (pdu && !pdu->assoc_id) return CMS_ERR;
+    err = cms_association_id_decode_stream(s, pdu ? pdu->assoc_id : NULL);
     if (err) return err;
 
     /* 3. serviceError */
-    if (!pdu->service_error) return CMS_ERR;
-    err = cms_service_error_decode_stream(s, pdu->service_error);
+    if (pdu && !pdu->service_error) return CMS_ERR;
+    err = cms_service_error_decode_stream(s, pdu ? pdu->service_error : NULL);
     if (err) return err;
 
     /* 4. authParam OPTIONAL (bitmap[0]) */
     if (res_opt[0]) {
-        if (!pdu->auth_param) return CMS_ERR;
-        err = cms_authentication_parameter_decode_stream(s, pdu->auth_param);
+        if (pdu && !pdu->auth_param) return CMS_ERR;
+        err = cms_authentication_parameter_decode_stream(s, pdu ? pdu->auth_param : NULL);
         if (err) return err;
     }
 

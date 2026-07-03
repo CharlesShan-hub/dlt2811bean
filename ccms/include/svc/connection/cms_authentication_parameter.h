@@ -36,7 +36,7 @@ CMS_EXPORT int cms_authentication_parameter_decode(
 int cms_authentication_parameter_encode_stream(
     per_stream_t *s, const cms_authentication_parameter_t *param);
 int cms_authentication_parameter_decode_stream(
-    per_stream_t *s, cms_authentication_parameter_t *param);
+    per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

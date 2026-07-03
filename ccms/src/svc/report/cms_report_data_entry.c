@@ -49,41 +49,48 @@ int cms_report_data_entry_encode_stream(per_stream_t *s, const cms_report_data_e
     return CMS_OK;
 }
 
-int cms_report_data_entry_decode_stream(per_stream_t *s, cms_report_data_entry_t *v) {
-    if (!v || !v->id || !v->value) return CMS_ERR;
+int cms_report_data_entry_decode_stream(per_stream_t *s, void *ptr) {
+    cms_report_data_entry_t *v = (cms_report_data_entry_t*)ptr;
     int err;
 
     /* 0. OPTIONAL bitmap (3 fields: ref, fc, reason) */
     bool opt_present[3];
     err = (int)per_decode_optional_bitmap(s, opt_present, 3);
     if (err) return err;
-    if (v->ref_present) v->ref_present->value = opt_present[0];
-    if (v->fc_present) v->fc_present->value = opt_present[1];
-    if (v->reason_present) v->reason_present->value = opt_present[2];
+    if (v) {
+        if (v->ref_present)    v->ref_present->value    = opt_present[0];
+        if (v->fc_present)     v->fc_present->value     = opt_present[1];
+        if (v->reason_present) v->reason_present->value = opt_present[2];
+    }
 
     /* 1. reference OPTIONAL */
-    if (opt_present[0] && v->reference) {
-        err = cms_object_reference_decode_stream(s, v->reference);
+    if (opt_present[0]) {
+        if (v && !v->reference) return CMS_ERR;
+        err = cms_object_reference_decode_stream(s, v ? v->reference : NULL);
         if (err) return err;
     }
 
     /* 2. fc OPTIONAL */
-    if (opt_present[1] && v->fc) {
-        err = cms_functional_constraint_decode_stream(s, v->fc);
+    if (opt_present[1]) {
+        if (v && !v->fc) return CMS_ERR;
+        err = cms_functional_constraint_decode_stream(s, v ? v->fc : NULL);
         if (err) return err;
     }
 
     /* 3. id */
-    err = cms_int16u_decode_stream(s, v->id);
+    if (v && !v->id) return CMS_ERR;
+    err = cms_int16u_decode_stream(s, v ? v->id : NULL);
     if (err) return err;
 
     /* 4. value */
-    err = cms_data_decode_stream(s, v->value);
+    if (v && !v->value) return CMS_ERR;
+    err = cms_data_decode_stream(s, v ? v->value : NULL);
     if (err) return err;
 
     /* 5. reason OPTIONAL */
-    if (opt_present[2] && v->reason) {
-        err = cms_reason_code_decode_stream(s, v->reason);
+    if (opt_present[2]) {
+        if (v && !v->reason) return CMS_ERR;
+        err = cms_reason_code_decode_stream(s, v ? v->reason : NULL);
         if (err) return err;
     }
 

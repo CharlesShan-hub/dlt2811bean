@@ -13,7 +13,9 @@ int cms_bit_string_fixed_encode_stream(per_stream_t *s, const uint8_t *data, int
 }
 
 int cms_bit_string_fixed_decode_stream(per_stream_t *s, uint8_t *out, int fixed_nbits) {
-    return (int)per_decode_bit_string_fixed(s, out, fixed_nbits);
+    uint8_t tmp[64];
+    uint8_t *target = out ? out : tmp;
+    return (int)per_decode_bit_string_fixed(s, target, fixed_nbits);
 }
 
 /* Variable length: SIZE(0..max_nbits) */
@@ -26,17 +28,19 @@ int cms_bit_string_encode_stream(per_stream_t *s, const void *ptr, uint32_t max_
 }
 
 int cms_bit_string_decode_stream(per_stream_t *s, void *ptr, uint32_t max_nbits) {
-    uint8_t *vptr = ptr ? ARRAY_PTR_MUT(ptr) : NULL;
-    if (!vptr) return CMS_ERR;
     int out_nbits = 0;
+    uint8_t tmp[64];
     per_error_t err;
     if (max_nbits > 0) {
-        err = per_decode_bit_string(s, vptr, &out_nbits, (int)max_nbits);
+        err = per_decode_bit_string(s, tmp, &out_nbits, (int)max_nbits);
     } else {
-        err = per_decode_bit_string_unconstrained(s, vptr, &out_nbits);
+        err = per_decode_bit_string_unconstrained(s, tmp, &out_nbits);
     }
     if (err) return CMS_ERR;
-    *(ARRAY_LEN_PTR(ptr)) = out_nbits;
+    if (ptr) {
+        memcpy(ARRAY_PTR_MUT(ptr), tmp, (out_nbits + 7) / 8);
+        *(ARRAY_LEN_PTR(ptr)) = out_nbits;
+    }
     return CMS_OK;
 }
 

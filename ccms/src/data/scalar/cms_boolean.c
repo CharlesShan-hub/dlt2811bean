@@ -10,7 +10,7 @@ int cms_boolean_decode_stream(per_stream_t *s, void *ptr) {
     int64_t val;
     per_error_t err = per_decode_constrained_int(s, &val, 0, 1);
     if (err) return CMS_ERR;
-    *(int*)ptr = (int)val;
+    if (ptr) *(int*)ptr = (int)val;
     return CMS_OK;
 }
 

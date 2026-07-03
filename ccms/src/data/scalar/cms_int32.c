@@ -10,7 +10,7 @@ int cms_int32_decode_stream(per_stream_t *s, void *ptr) {
     int64_t val;
     per_error_t err = per_decode_constrained_int(s, &val, -2147483648LL, 2147483647LL);
     if (err) return CMS_ERR;
-    *(int32_t*)ptr = (int32_t)val;
+    if (ptr) *(int32_t*)ptr = (int32_t)val;
     return CMS_OK;
 }
 

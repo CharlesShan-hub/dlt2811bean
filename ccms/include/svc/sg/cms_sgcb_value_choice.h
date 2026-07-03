@@ -32,7 +32,7 @@ typedef struct {
 } cms_sgcb_value_choice_t;
 
 int cms_sgcb_value_choice_encode_stream(per_stream_t *s, const cms_sgcb_value_choice_t *v);
-int cms_sgcb_value_choice_decode_stream(per_stream_t *s, cms_sgcb_value_choice_t *v);
+int cms_sgcb_value_choice_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

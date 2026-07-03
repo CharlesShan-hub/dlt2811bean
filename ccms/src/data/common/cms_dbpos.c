@@ -14,7 +14,7 @@ int cms_dbpos_decode_stream(per_stream_t *s, void *ptr) {
     uint8_t byte = 0;
     int err = cms_bit_string_fixed_decode_stream(s, &byte, 2);
     if (err) return CMS_ERR;
-    ((cms_dbpos_t*)ptr)->value = (unpack_bit(byte, 0) << 1) | unpack_bit(byte, 1);
+    if (ptr) ((cms_dbpos_t*)ptr)->value = (unpack_bit(byte, 0) << 1) | unpack_bit(byte, 1);
     return CMS_OK;
 }
 

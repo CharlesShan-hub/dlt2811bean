@@ -29,7 +29,7 @@ typedef cms_int32_t cms_object_class_t;
 CMS_EXPORT int cms_object_class_encode(const cms_object_class_t *v, uint8_t **out_buf, size_t *out_len);
 CMS_EXPORT int cms_object_class_decode(cms_object_class_t *v, const uint8_t *in_buf, int in_len);
 int cms_object_class_encode_stream(per_stream_t *s, const cms_object_class_t *v);
-int cms_object_class_decode_stream(per_stream_t *s, cms_object_class_t *v);
+int cms_object_class_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

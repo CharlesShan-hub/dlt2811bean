@@ -10,7 +10,7 @@ int cms_int32u_decode_stream(per_stream_t *s, void *ptr) {
     int64_t val;
     per_error_t err = per_decode_constrained_int(s, &val, 0, 4294967295U);
     if (err) return CMS_ERR;
-    *(uint32_t*)ptr = (uint32_t)val;
+    if (ptr) *(uint32_t*)ptr = (uint32_t)val;
     return CMS_OK;
 }
 

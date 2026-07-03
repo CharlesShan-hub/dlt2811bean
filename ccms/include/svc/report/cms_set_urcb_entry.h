@@ -54,7 +54,7 @@ typedef struct {
 } cms_set_urcb_entry_t;
 
 int cms_set_urcb_entry_encode_stream(per_stream_t *s, const cms_set_urcb_entry_t *v);
-int cms_set_urcb_entry_decode_stream(per_stream_t *s, cms_set_urcb_entry_t *v);
+int cms_set_urcb_entry_decode_stream(per_stream_t *s, void *ptr);
 
 #ifdef __cplusplus
 }

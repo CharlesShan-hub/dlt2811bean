@@ -124,9 +124,9 @@ public abstract class CmsType {
 
         log.debug("decode {} start, dataLen={}", getClass().getSimpleName(), data.length);
 
-        int retry = 10;
+        int retry = 200;
         while (retry-- > 0) {
-            log.debug("decode {} retry={}", getClass().getSimpleName(), 10 - retry - 1);
+            log.debug("decode {} retry={}", getClass().getSimpleName(), 200 - retry - 1);
 
             // Fresh native memory
             allocate();
@@ -169,7 +169,7 @@ public abstract class CmsType {
         return children();
     }
 
-    void resize() {
+    protected void resize() {
         List<? extends CmsType> kids = resizeList();
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
