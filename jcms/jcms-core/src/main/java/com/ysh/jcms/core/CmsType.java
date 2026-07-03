@@ -152,6 +152,8 @@ public abstract class CmsType {
             // log.debug("  CMS_RETRY: reading array counts from native memory");
             resize();
         }
+        throw new RuntimeException(
+            "decode failed: too many retries (200) for " + getClass().getSimpleName());
     }
 
     /**
