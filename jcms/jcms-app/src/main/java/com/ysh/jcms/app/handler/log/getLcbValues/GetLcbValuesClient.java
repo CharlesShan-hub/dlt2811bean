@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.log.CmsGetLcbValuesError;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesResponse;
 import com.ysh.jcms.svc.log.CmsLcbValueChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -59,11 +58,11 @@ public class GetLcbValuesClient extends BaseClientHandler {
                 sb.append(" datSet=").append(new String(b.datSet.value(), java.nio.charset.StandardCharsets.UTF_8));
                 sb.append(" intgPd=").append(b.intgPd.value());
                 sb.append(" logRef=").append(new String(b.logRef.value(), java.nio.charset.StandardCharsets.UTF_8));
-                sb.append(" trgOps=").append(b.trgOps.data_change.value())
-                  .append(b.trgOps.quality_change.value())
-                  .append(b.trgOps.data_update.value())
-                  .append(b.trgOps.integrity.value())
-                  .append(b.trgOps.general_interrogation.value());
+                sb.append(" trgOps=dc:").append(b.trgOps.data_change.value())
+                  .append(",qc:").append(b.trgOps.quality_change.value())
+                  .append(",du:").append(b.trgOps.data_update.value())
+                  .append(",integrity:").append(b.trgOps.integrity.value())
+                  .append(",gi:").append(b.trgOps.general_interrogation.value());
                 entries.add(new LcbEntry(sb.toString()));
             } else {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));

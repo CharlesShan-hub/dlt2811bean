@@ -873,9 +873,7 @@ cms> sgcb-vals --refs "LD0/LLN0.SG1"
 
 ### 8.7.1 REPORT
 
-这个是服务器定期发送，客户端接收的。
-
-#### 案例：URCB — 连接 → 启用报告 → 收到 REPORT
+这个是服务器定期发送，客户端接收的。案例：URCB — 连接 → 启用报告 → 收到 REPORT
 
 ```bash
 cms> # ======== 1. 连接服务器 ========
@@ -900,12 +898,131 @@ cms> # ======== 4. 触发总召唤（GI），服务端立即推送 REPORT ======
 cms> set-urcb-vals --ref LD0/LLN0.urcbAin --gi true
   Setting URCB values: ref=LD0/LLN0.urcbAin
   OK  URCB values set for LD0/LLN0.urcbAin
+cms>
+  Report Received: rptID=LD0/LLN0$RP$urcbAin sqNum=1 dataSet=dsAin entries=35
+```
 
-# 客户端自动收到服务端推送的 REPORT 帧：
-  Report Received: rptID=LD0/LLN0$RP$urcbAin sqNum=1 dataSet=dsAin entries=2
+### 8.7.2 读缓存报告控制块值服务(GetBRCBValues)
 
-# 后续数据变化会再次自动推送：
-  Report Received: rptID=LD0/LLN0$RP$urcbAin sqNum=2 dataSet=dsAin entries=1
+```bash
+get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+```
+
+```bash
+看8.7.3
+```
+
+### 8.7.3 设置缓存报告控制块值服务(SetBRCBValues)
+
+```bash
+set-brcb-vals --ref LD0/LLN0.brcbDeviceState --dat-set "dsDeviceState" --buf-tm 2000
+```
+
+```bash
+cms> connect --ap P_B5041A/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=0 sqNum=0 intgPd=0
+cms> # ======== BRCB: 改 datSet 和 bufTm ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --dat-set "dsDeviceState" --buf-tm 2000
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+```
+
+```bash
+cms> # ======== 5. BRCB: get start ========
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=0 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 6. BRCB: 改 datSet 和 bufTm ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --dat-set "dsDeviceState" --buf-tm 2000
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+cms> # ======== BRCB: 清空缓存 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --purge-buf true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+```
+```bash
+cms> # ======== 7. BRCB: 清空缓存 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --purge-buf true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 8. BRCB: 总召唤 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --gi true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 9. BRCB: 关闭报告 + 保留时间 ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --rpt-ena false --resv-tms 30
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
+cms>
+```
+```bash
+cms> # ======== 10. BRCB: 再启用报告（看 rptEna 顺序规则） ========
+cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --intg-pd 60000 --rpt-ena true
+  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
+  OK  BRCB values set for LD0/LLN0.brcbDeviceState
+cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
+  Fetching BRCB values for 1 reference(s)
+  BRCB values (1 items):
+    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=true datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=60000
+```
+
+#### 8.7.4 读非缓存报告控制块值服务(GetURCBValues)
+
+```bash
+get-urcb-vals --refs "LD0/LLN0.urcbAin"
+```
+
+```bash
+见8.7.5
+```
+
+### 8.7.5 设置非缓存报告控制块值服务(SetURCBValues)
+
+```bash
+set-urcb-vals --ref LD0/LLN0.urcbAin --rpt-id "MyCustomRptID
 ```
 
 ```bash
@@ -965,68 +1082,6 @@ cms> get-urcb-vals --refs "LD0/LLN0.urcbAin"
     [0] LD0/LLN0.urcbAin  rptID=MyCustomRptID rptEna=true datSet=dsAin confRev=1 bufTm=5000 sqNum=0 intgPd=30000
 cms>
 ```
-```bash
-cms> # ======== 5. BRCB: get start ========
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=0 sqNum=0 intgPd=0
-cms>
-```
-```bash
-cms> # ======== 6. BRCB: 改 datSet 和 bufTm ========
-cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --dat-set "dsDeviceState" --buf-tm 2000
-  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
-  OK  BRCB values set for LD0/LLN0.brcbDeviceState
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
-cms>
-```
-```bash
-cms> # ======== 7. BRCB: 清空缓存 ========
-cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --purge-buf true
-  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
-  OK  BRCB values set for LD0/LLN0.brcbDeviceState
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
-cms>
-```
-```bash
-cms> # ======== 8. BRCB: 总召唤 ========
-cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --gi true
-  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
-  OK  BRCB values set for LD0/LLN0.brcbDeviceState
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
-cms>
-```
-```bash
-cms> # ======== 9. BRCB: 关闭报告 + 保留时间 ========
-cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --rpt-ena false --resv-tms 30
-  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
-  OK  BRCB values set for LD0/LLN0.brcbDeviceState
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=false datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=0
-cms>
-```
-```bash
-cms> # ======== 10. BRCB: 再启用报告（看 rptEna 顺序规则） ========
-cms> set-brcb-vals --ref LD0/LLN0.brcbDeviceState --intg-pd 60000 --rpt-ena true
-  Setting BRCB values: ref=LD0/LLN0.brcbDeviceState
-  OK  BRCB values set for LD0/LLN0.brcbDeviceState
-cms> get-brcb-vals --refs "LD0/LLN0.brcbDeviceState"
-  Fetching BRCB values for 1 reference(s)
-  BRCB values (1 items):
-    [0] LD0/LLN0.brcbDeviceState  rptID=LD0/LLN0$BR$brcbDeviceState rptEna=true datSet=dsDeviceState confRev=1 bufTm=2000 sqNum=0 intgPd=60000
-```
 
 ### 8.8 Log
 
@@ -1046,7 +1101,7 @@ get-log-status --refs "<ref1> <ref2>..."
 ```bash
 cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
   Fetching LCB values for 1 reference(s)
-    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=0 logRef=LD0 trgOps=falsefalsefalsefalsefalse
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=0 logRef=LD0 trgOps=dc:false,qc:false,du:false,integrity:false,gi:false
 
 cms> set-lcb-vals --ref LD0/LLN0.lcblog --log-ena true --intg-pd 5000
   Setting LCB values: ref=LD0/LLN0.lcblog
@@ -1054,7 +1109,7 @@ cms> set-lcb-vals --ref LD0/LLN0.lcblog --log-ena true --intg-pd 5000
 
 cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
   Fetching LCB values for 1 reference(s)
-    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=5000 logRef=LD0 trgOps=falsefalsefalsefalsefalse
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=5000 logRef=LD0 trgOps=dc:false,qc:false,du:false,integrity:false,gi:false
 
 cms> query-log-by-time --ref LD0/LLN0.lcblog
   Querying log by time: ref=LD0/LLN0.lcblog
@@ -1069,7 +1124,123 @@ cms> get-log-status --refs "LD0/LLN0.lcblog"
     [LD0/LLN0.lcblog] oldEntrTm=0/0 newEntrTm=0/0
 ```
 
+#### 8.8.1 日志条目(LogEntry)
 
+数据结构的定义，并不是服务
+
+#### 8.8.2 读日志控制块值服务(GetLCBValues)
+
+获取日志控制块(LCB)的所有属性。参数见标准 **表52**。
+
+```bash
+get-lcb-vals --refs "<ref1> <ref2>..."
+```
+
+```bash
+cms> connect --ap P_B5041A/S1
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with P_B5041A/S1 ...
+  OK  Associated: P_B5041A/S1
+cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
+  Fetching LCB values for 1 reference(s)
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=0 logRef=LD0 trgOps=dc:false,qc:false,du:false,integrity:false,gi:false
+```
+
+#### 8.8.3 设置日志控制块值服务(SetLCBValues)
+
+修改日志控制块(LCB)内的一个或多个属性。属性设置顺序符合标准要求：`logEna` 为 `true` 时先设其他属性再设 `logEna`；为 `false` 时先设 `logEna` 再设其他属性。参数见标准 **表53**。
+
+```bash
+set-lcb-vals --ref <logRef> [--log-ena true|false] [--intg-pd <ms>] [--datSet <name>] [--opt-flds <flags>] [--log-ref <ref>] [--trg-ops <flags>] [--buf-tm <ms>]
+```
+
+```bash
+cms> set-lcb-vals --ref LD0/LLN0.lcblog --log-ena true --intg-pd 5000
+  Setting LCB values: ref=LD0/LLN0.lcblog
+  OK  LCB values set for LD0/LLN0.lcblog
+cms> get-lcb-vals --refs "LD0/LLN0.lcblog"
+  Fetching LCB values for 1 reference(s)
+    [LD0/LLN0.lcblog] logEna=true datSet=dsLog intgPd=5000 logRef=LD0 trgOps=dc:false,qc:false,du:false,integrity:false,gi:false
+```
+
+> **注意**：仅修改 `logEna`、`intgPd`、`datSet`、`optFlds`、`logRef`、`trgOps`、`bufTm` 属性，**不包含** `query-log-by-time` 和 `query-log-after` 服务参数。
+
+### 8.8.4 按时间查询日志服务(QueryLogByTime)
+
+```bash
+query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]
+```
+
+下边是用脚本生成了10条模拟的本地log，然后用命令请求
+```bash
+cms> query-log-by-time --ref LD0/LLN0.lcblog --start 1700000000000 --stop 1700000100000
+  Querying log by time: ref=LD0/LLN0.lcblog
+  Log entries (1 entries):
+    [0] 1970-01-01 08:00  id=
+           [0]   value=0
+  OK  QueryLogByTime completed
+cms> query-log-by-time --ref LD0/LLN0.lcblog
+  Querying log by time: ref=LD0/LLN0.lcblog
+  Log entries (10 entries):
+    [0] 2024-02-29 08:01  id=000001
+           [0] LD0/LLN0.Mod.stVal  value=11
+           [1] LD0/LLN0.Beh.stVal  value=12
+           [2] LD0/LLN0.Health.stVal  value=13
+    [1] 2024-02-29 08:02  id=000002
+           [0] LD0/LLN0.Mod.stVal  value=21
+           [1] LD0/LLN0.Beh.stVal  value=22
+           [2] LD0/LLN0.Health.stVal  value=23
+    [2] 2024-02-29 08:03  id=000003
+           [0] LD0/LLN0.Mod.stVal  value=31
+           [1] LD0/LLN0.Beh.stVal  value=32
+           [2] LD0/LLN0.Health.stVal  value=33
+    [3] 2024-02-29 08:04  id=000004
+           [0] LD0/LLN0.Mod.stVal  value=41
+           [1] LD0/LLN0.Beh.stVal  value=42
+           [2] LD0/LLN0.Health.stVal  value=43
+    [4] 2024-02-29 08:05  id=000005
+           [0] LD0/LLN0.Mod.stVal  value=51
+           [1] LD0/LLN0.Beh.stVal  value=52
+           [2] LD0/LLN0.Health.stVal  value=53
+    [5] 2024-02-29 08:06  id=000006
+           [0] LD0/LLN0.Mod.stVal  value=61
+           [1] LD0/LLN0.Beh.stVal  value=62
+           [2] LD0/LLN0.Health.stVal  value=63
+    [6] 2024-02-29 08:07  id=000007
+           [0] LD0/LLN0.Mod.stVal  value=71
+           [1] LD0/LLN0.Beh.stVal  value=72
+           [2] LD0/LLN0.Health.stVal  value=73
+    [7] 2024-02-29 08:08  id=000008
+           [0] LD0/LLN0.Mod.stVal  value=81
+           [1] LD0/LLN0.Beh.stVal  value=82
+           [2] LD0/LLN0.Health.stVal  value=83
+    [8] 2024-02-29 08:09  id=000009
+           [0] LD0/LLN0.Mod.stVal  value=91
+           [1] LD0/LLN0.Beh.stVal  value=92
+           [2] LD0/LLN0.Health.stVal  value=93
+    [9] 2024-02-29 08:10  id=000010
+           [0] LD0/LLN0.Mod.stVal  value=101
+           [1] LD0/LLN0.Beh.stVal  value=102
+           [2] LD0/LLN0.Health.stVal  value=103
+  OK  QueryLogByTime completed
+```
+
+#### 8.8.5 查询指定条目之后的日志服务(QueryLogAfter)
+
+```bash
+cms> query-log-after --ref LD0/LLN0.lcblog --entry "000001"
+  Querying log after entry: ref=LD0/LLN0.lcblog entry=000001
+  OK  QueryLogAfter completed
+```
+
+#### 8.8.6 读日志状态值服务(GetLogStatusValues)
+
+```bash
+cms> get-log-status --refs "LD0/LLN0.lcblog"
+  Fetching log status for 1 reference(s)
+    [LD0/LLN0.lcblog] oldEntrTm=60000/19782 newEntrTm=600000/19782
+```
 
 ### 8.15 协商
 
