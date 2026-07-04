@@ -1242,6 +1242,62 @@ cms> get-log-status --refs "LD0/LLN0.lcblog"
     [LD0/LLN0.lcblog] oldEntrTm=60000/19782 newEntrTm=600000/19782
 ```
 
+### 8.9.1 发送GOOSE消息服务(SendGOOSEMessage)
+
+这个是服务器通过给其他设备发送GOOSE消息，不属于客户端服务。
+
+### 8.9.2 读GOOSE引用服务(GetGoReference)
+
+```bash
+
+```
+
+### 8.9.3 读GOOSE元素序号服务(GetGOOSEElementNumber)
+
+```bash
+
+```
+
+#### 8.9.4 读GOOSE控制块值服务(GetGoCBValues)
+
+```bash
+get-gocb-vals --refs "CTRL/LLN0.gocb0"
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
+  Fetching GoCB values for 1 reference(s)
+    [CTRL/LLN0.gocb0] goEna=false goID=C_B5041XCTRL/LLN0.gocb0 datSet=dsGOOSE confRev=1 ndsCom=false
+```
+
+#### 8.9.5 设置GOOSE控制块值服务(SetGoCBValues)
+
+```bash
+set-gocb-vals --ref CTRL/LLN0.gocb0 --go-ena true --go-id "MyGoCB"
+```
+
+```bash
+cms> connect --ap C_B5041X/S1;
+  Connecting to 127.0.0.1:8102 ...
+  Connected, negotiating parameters ...
+  Negotiated, associating with C_B5041X/S1 ...
+  OK  Associated: C_B5041X/S1
+cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
+  Fetching GoCB values for 1 reference(s)
+    [CTRL/LLN0.gocb0] goEna=false goID=C_B5041XCTRL/LLN0.gocb0 datSet=dsGOOSE confRev=1 ndsCom=false
+cms> set-gocb-vals --ref CTRL/LLN0.gocb0 --go-ena true --go-id "MyGoCB"
+  Setting GoCB values: ref=CTRL/LLN0.gocb0
+  OK  GoCB values set for CTRL/LLN0.gocb0
+cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
+  Fetching GoCB values for 1 reference(s)
+    [CTRL/LLN0.gocb0] goEna=true goID=MyGoCB datSet=dsGOOSE confRev=1 ndsCom=false
+```
+
 ### 8.15 协商
 
 ```bash

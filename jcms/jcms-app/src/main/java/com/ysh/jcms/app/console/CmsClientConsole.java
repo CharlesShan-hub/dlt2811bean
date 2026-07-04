@@ -50,6 +50,14 @@ import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterClient;
 import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterConsole;
 import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesClient;
 import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesConsole;
+import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesClient;
+import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesConsole;
+import com.ysh.jcms.app.handler.goose.setGoCbValues.SetGoCbValuesClient;
+import com.ysh.jcms.app.handler.goose.setGoCbValues.SetGoCbValuesConsole;
+import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceClient;
+import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceConsole;
+import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberClient;
+import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberConsole;
 import com.ysh.jcms.app.console.api.CliApiServer;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.app.handler.data.setDataValues.SetDataValuesClient;
@@ -151,6 +159,10 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new QueryLogByTimeClient(this));
         registerClient(new QueryLogAfterClient(this));
         registerClient(new GetLogStatusValuesClient(this));
+        registerClient(new GetGoCbValuesClient(this));
+        registerClient(new SetGoCbValuesClient(this));
+        registerClient(new GetGoReferenceClient(this));
+        registerClient(new GetGooseElementNumberClient(this));
 
         // Set up push handler for incoming REPORT frames from server
         getClient().setReportHandler(frame -> {
@@ -196,6 +208,10 @@ public class CmsClientConsole extends CmsConsole {
         register(new QueryLogByTimeConsole());
         register(new QueryLogAfterConsole());
         register(new GetLogStatusValuesConsole());
+        register(new GetGoCbValuesConsole());
+        register(new SetGoCbValuesConsole());
+        register(new GetGoReferenceConsole());
+        register(new GetGooseElementNumberConsole());
         register(new TracePduHandler());
         register(new ClearHandler());
         register(new ReleaseConsole());

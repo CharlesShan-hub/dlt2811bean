@@ -1,0 +1,131 @@
+package com.ysh.jcms.app.handler.goose.getGoCbValues;
+
+import com.ysh.jcms.app.handler.goose.GoCbCache;
+import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.block.CmsGoCb;
+import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.svc.goose.CmsGetGoCbValuesError;
+import com.ysh.jcms.svc.goose.CmsGetGoCbValuesRequest;
+import com.ysh.jcms.svc.goose.CmsGetGoCbValuesResponse;
+import com.ysh.jcms.svc.goose.CmsGocbValueChoice;
+import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.transport.ServiceName;
+import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.transport.session.Session;
+
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class GetGoCbValuesServer extends BaseServerHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GetGoCbValuesServer.class);
+
+    public GetGoCbValuesServer() {
+        super(ServiceName.GET_GOCB_VALUES, CmsGetGoCbValuesRequest.class, CmsGetGoCbValuesError.class);
+    }
+
+    @Override
+    protected void prepareDecode(CmsType decoded) {
+        CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) decoded;
+    }
+
+    @Override
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+        CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) rawReq;
+        int reqId = req.reqId.value();
+        log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
+
+        SclServer server = getSclServer(session);
+        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+
+        CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse().reqId(reqId);
+
+        for (int i = 0; i < req.reference.count; i++) {
+            String ref = str(req.reference.items.get(i));
+            CmsGocbValueChoice choice = new CmsGocbValueChoice();
+            CmsGoCb gocb = resolveGocb(server, ref);
+            if (gocb != null) {
+                choice.choice(CmsGocbValueChoice.VALUE);
+                choice.altValue = gocb;
+            } else {
+                choice.choice(CmsGocbValueChoice.ERROR);
+                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            resp.gocb.add(choice);
+        }
+        resp.moreFollows(false);
+        log.info("GetGoCBValues: returning {} entries", resp.gocb.items.size());
+        return ok(resp, reqId);
+    }
+
+    public static CmsGoCb resolveGocb(SclServer server, String ref) {
+        // Check in-memory cache first (written by SetGoCBValues)
+        CmsGoCb cached = GoCbCache.get(ref);
+        if (cached != null) {
+            log.debug("resolveGocb: cache hit for '{}'", ref);
+            return cached;
+        }
+
+        int slashIdx = ref.indexOf('/');
+        int dotIdx = ref.indexOf('.');
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
+            log.warn("resolveGocb: invalid ref format '{}'", ref);
+            return null;
+        }
+
+        String ldName = ref.substring(0, slashIdx);
+        String lnPart = ref.substring(slashIdx + 1, dotIdx);
+        String cbName = ref.substring(dotIdx + 1);
+        log.debug("resolveGocb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
+
+        // First, try exact name match via findLnByRef (e.g. "LD0/CTRL1")
+        SclLDevice device = server.findLDeviceByInst(ldName);
+        if (device == null) {
+            log.warn("resolveGocb: LD '{}' not found", ldName);
+            return null;
+        }
+
+        // Try findLnByRef first (exact match on getFullName())
+        SclLN ln = device.findLnByFullName(lnPart);
+        if (ln != null) {
+            SclGSEControl gc = ln.findGseControlByName(cbName);
+            if (gc != null) return buildGocb(gc);
+            log.warn("resolveGocb: GSEControl '{}' not in LN '{}' (exact match)", cbName, ln.getFullName());
+        }
+
+        // Fallback: search all LNs in this LD where getFullName() starts with lnPart
+        // (handles cases where lnPart="CTRL" but fullName="CTRL1")
+        List<String> candidates = new java.util.ArrayList<>();
+        for (SclLN candidate : device.getLns()) {
+            String fullName = candidate.getFullName();
+            if (fullName.startsWith(lnPart)) {
+                candidates.add(fullName);
+                SclGSEControl gc = candidate.findGseControlByName(cbName);
+                if (gc != null) {
+                    log.debug("resolveGocb: found GSEControl in LN '{}' (prefix match)", fullName);
+                    return buildGocb(gc);
+                }
+            }
+        }
+        log.warn("resolveGocb: GSEControl '{}' not found in any LN matching '{}' under LD '{}'. " +
+            "Checked LNs: {}, candidate prefix matches: {}",
+            cbName, lnPart, ldName,
+            device.getLnNames(), candidates);
+        return null;
+    }
+
+    private static CmsGoCb buildGocb(SclGSEControl gc) {
+        CmsGoCb gocb = new CmsGoCb();
+        if (gc.getAppID() != null) gocb.goID(gc.getAppID());
+        if (gc.getDatSet() != null) gocb.datSet(gc.getDatSet());
+        if (gc.getConfRev() != null) {
+            try { gocb.confRev(Long.parseLong(gc.getConfRev())); } catch (NumberFormatException ignored) {}
+        }
+        return gocb;
+    }
+}
