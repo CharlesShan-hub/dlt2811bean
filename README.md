@@ -1298,6 +1298,8 @@ cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
     [CTRL/LLN0.gocb0] goEna=true goID=MyGoCB datSet=dsGOOSE confRev=1 ndsCom=false
 ```
 
+### 8.
+
 ### 8.15 协商
 
 ```bash

@@ -50,6 +50,16 @@ import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterClient;
 import com.ysh.jcms.app.handler.log.queryLogAfter.QueryLogAfterConsole;
 import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesClient;
 import com.ysh.jcms.app.handler.log.getLogStatusValues.GetLogStatusValuesConsole;
+import com.ysh.jcms.app.handler.file.deleteFile.DeleteFileClient;
+import com.ysh.jcms.app.handler.file.deleteFile.DeleteFileConsole;
+import com.ysh.jcms.app.handler.file.getFile.GetFileClient;
+import com.ysh.jcms.app.handler.file.getFile.GetFileConsole;
+import com.ysh.jcms.app.handler.file.getFileAttributeValues.GetFileAttributeValuesClient;
+import com.ysh.jcms.app.handler.file.getFileAttributeValues.GetFileAttributeValuesConsole;
+import com.ysh.jcms.app.handler.file.getFileDirectory.GetFileDirectoryClient;
+import com.ysh.jcms.app.handler.file.getFileDirectory.GetFileDirectoryConsole;
+import com.ysh.jcms.app.handler.file.setFile.SetFileClient;
+import com.ysh.jcms.app.handler.file.setFile.SetFileConsole;
 import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesClient;
 import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesConsole;
 import com.ysh.jcms.app.handler.goose.setGoCbValues.SetGoCbValuesClient;
@@ -163,6 +173,11 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SetGoCbValuesClient(this));
         registerClient(new GetGoReferenceClient(this));
         registerClient(new GetGooseElementNumberClient(this));
+        registerClient(new GetFileDirectoryClient(this));
+        registerClient(new GetFileAttributeValuesClient(this));
+        registerClient(new GetFileClient(this));
+        registerClient(new SetFileClient(this));
+        registerClient(new DeleteFileClient(this));
 
         // Set up push handler for incoming REPORT frames from server
         getClient().setReportHandler(frame -> {
@@ -212,6 +227,11 @@ public class CmsClientConsole extends CmsConsole {
         register(new SetGoCbValuesConsole());
         register(new GetGoReferenceConsole());
         register(new GetGooseElementNumberConsole());
+        register(new GetFileDirectoryConsole());
+        register(new GetFileAttributeValuesConsole());
+        register(new GetFileConsole());
+        register(new SetFileConsole());
+        register(new DeleteFileConsole());
         register(new TracePduHandler());
         register(new ClearHandler());
         register(new ReleaseConsole());
