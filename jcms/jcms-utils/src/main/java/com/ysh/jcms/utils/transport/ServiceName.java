@@ -49,7 +49,6 @@ public enum ServiceName {
     GET_GOCB_VALUES(0x66),
     SET_GOCB_VALUES(0x67),
 
-    SEND_MSV_MESSAGE(0x00),
     GET_MSVCB_VALUES(0x68),
     SET_MSVCB_VALUES(0x69),
 

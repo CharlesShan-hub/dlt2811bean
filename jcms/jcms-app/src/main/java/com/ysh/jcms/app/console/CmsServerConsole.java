@@ -36,7 +36,6 @@ import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceServer;
 import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberServer;
 import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesServer;
 import com.ysh.jcms.app.handler.msv.setMsvcbValues.SetMsvcbValuesServer;
-import com.ysh.jcms.app.handler.msv.sendMsv.SendMsvServer;
 import com.ysh.jcms.app.handler.connection.abort.AbortServer;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.handler.connection.release.ReleaseServer;
@@ -108,7 +107,6 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new GetGooseElementNumberServer());
         registerServer(new GetMsvcbValuesServer());
         registerServer(new SetMsvcbValuesServer());
-        registerServer(new SendMsvServer());
         registerServer(new GetFileDirectoryServer());
         registerServer(new GetFileAttributeValuesServer());
         registerServer(new GetFileServer());
