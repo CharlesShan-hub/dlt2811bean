@@ -5,6 +5,7 @@ import com.ysh.jcms.utils.scl.model.lnBuilder.SclLNControlBlockCollector;
 import com.ysh.jcms.utils.scl.model.lnBuilder.SclLNDataCollector;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 import com.ysh.jcms.utils.scl.model.data.SclCBEntry;
 import com.ysh.jcms.utils.scl.model.data.SclDataDefinitionEntry;
 import com.ysh.jcms.utils.scl.model.data.SclDataDirectoryEntry;
@@ -52,6 +53,13 @@ public class SclLN extends SclLNBase {
     public SclGSEControl findGseControlByName(String name) {
         for (SclGSEControl gc : gseControls) {
             if (gc.getName().equals(name)) return gc;
+        }
+        return null;
+    }
+
+    public SclSampledValueControl findSmvControlByName(String name) {
+        for (SclSampledValueControl svc : svControls) {
+            if (svc.getName().equals(name)) return svc;
         }
         return null;
     }
