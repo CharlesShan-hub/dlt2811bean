@@ -1,6 +1,4 @@
 #include "per/cms_stream.h"
-#include <string.h>
-#include <stdlib.h>
 
 /* ---- Stream lifecycle ---- */
 

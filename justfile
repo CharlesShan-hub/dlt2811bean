@@ -69,7 +69,7 @@ c-quick: single-c-clean single-c-build single-c-load
 
 [windows]
 single-j-all-clean:
-    powershell -NoProfile -File scripts\single-j-all-clean-win.ps1
+    powershell  -File scripts\single-j-all-clean-win.ps1
 
 [unix]
 single-j-all-clean:
@@ -79,7 +79,7 @@ single-j-all-clean:
 
 [windows]
 single-j-core-compile:
-    powershell -NoProfile -File scripts\single-j-core-compile-win.ps1
+    powershell  -File scripts\single-j-core-compile-win.ps1
 
 [unix]
 single-j-core-compile:
@@ -87,7 +87,7 @@ single-j-core-compile:
 
 [windows]
 single-j-core-test:
-    powershell -NoProfile -File scripts\single-j-core-test-win.ps1
+    powershell  -File scripts\single-j-core-test-win.ps1
 
 [unix]
 single-j-core-test:
@@ -95,7 +95,7 @@ single-j-core-test:
 
 [windows]
 single-j-core-package:
-    powershell -NoProfile -File scripts\single-j-core-package-win.ps1
+    powershell  -File scripts\single-j-core-package-win.ps1
 
 [unix]
 single-j-core-package:
@@ -105,7 +105,7 @@ single-j-core-package:
 
 [windows]
 single-j-utils-compile:
-    powershell -NoProfile -File scripts\single-j-utils-compile-win.ps1
+    powershell  -File scripts\single-j-utils-compile-win.ps1
 
 [unix]
 single-j-utils-compile:
@@ -113,7 +113,7 @@ single-j-utils-compile:
 
 [windows]
 single-j-utils-test:
-    powershell -NoProfile -File scripts\single-j-utils-test-win.ps1
+    powershell  -File scripts\single-j-utils-test-win.ps1
 
 [unix]
 single-j-utils-test:
@@ -121,7 +121,7 @@ single-j-utils-test:
 
 [windows]
 single-j-utils-package:
-    powershell -NoProfile -File scripts\single-j-utils-package-win.ps1
+    powershell  -File scripts\single-j-utils-package-win.ps1
 
 [unix]
 single-j-utils-package:
@@ -131,7 +131,7 @@ single-j-utils-package:
 
 [windows]
 single-j-app-compile:
-    powershell -NoProfile -File scripts\single-j-app-compile-win.ps1
+    powershell  -File scripts\single-j-app-compile-win.ps1
 
 [unix]
 single-j-app-compile:
@@ -139,7 +139,7 @@ single-j-app-compile:
 
 [windows]
 single-j-app-test:
-    powershell -NoProfile -File scripts\single-j-app-test-win.ps1
+    powershell  -File scripts\single-j-app-test-win.ps1
 
 [unix]
 single-j-app-test:
@@ -147,7 +147,7 @@ single-j-app-test:
 
 [windows]
 single-j-app-package:
-    powershell -NoProfile -File scripts\single-j-app-package-win.ps1
+    powershell  -File scripts\single-j-app-package-win.ps1
 
 [unix]
 single-j-app-package:
@@ -171,7 +171,7 @@ j-all-test-c: c-quick j-all-compile single-j-core-test single-j-utils-test singl
 
 [windows]
 single-lock:
-    powershell -NoProfile -File scripts\single-lock-win.ps1
+    powershell  -File scripts\single-lock-win.ps1
 
 [unix]
 single-lock:
@@ -179,7 +179,7 @@ single-lock:
 
 [windows]
 single-unlock:
-    powershell -NoProfile -File scripts\single-unlock-win.ps1
+    powershell  -File scripts\single-unlock-win.ps1
 
 [unix]
 single-unlock:
@@ -187,7 +187,7 @@ single-unlock:
 
 [windows]
 single-check-lock:
-    powershell -NoProfile -File scripts\single-check-lock-win.ps1
+    powershell  -File scripts\single-check-lock-win.ps1
 
 [unix]
 single-check-lock:
@@ -197,7 +197,7 @@ single-check-lock:
 
 [windows]
 single-server:
-    powershell -NoProfile -File scripts\single-server-win.ps1
+    powershell  -File scripts\single-server-win.ps1
 
 [unix]
 single-server:
@@ -205,7 +205,7 @@ single-server:
 
 [windows]
 single-client:
-    powershell -NoProfile -File scripts\single-client-win.ps1
+    powershell  -File scripts\single-client-win.ps1
 
 [unix]
 single-client:
@@ -217,7 +217,7 @@ single-client:
 
 [windows]
 java-quick:
-    powershell -NoProfile -File scripts\quick-java-win.ps1
+    powershell  -File scripts\quick-java-win.ps1
 
 [unix]
 java-quick:

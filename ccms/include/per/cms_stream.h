@@ -2,9 +2,8 @@
 #define CMSPER_STREAM_H
 
 #include "per/cms_types.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include <stddef.h>
+#include <string.h>
+#include <stdlib.h>
 
 #ifdef __cplusplus
 extern "C" {

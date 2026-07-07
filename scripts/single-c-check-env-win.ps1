@@ -1,14 +1,16 @@
+$env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+
 # 来源 win_ccms.ps1 L8
 $cmake = Get-Command cmake -ErrorAction SilentlyContinue
 if (-not $cmake) {
-    Write-Host "[FAIL] cmake not found. Install it: winget install Kitware.CMake" -ForegroundColor Red
+    Write-Host "[FAIL] cmake not found. Install it: scoop install cmake" -ForegroundColor Red
     exit 1
 }
 
 # 来源 win_ccms.ps1 L31, L70
-$clang = Get-Command clang -ErrorAction SilentlyContinue
-if (-not $clang) {
-    Write-Host "[FAIL] clang not found. Install LLVM MinGW." -ForegroundColor Red
+$cc = Get-Command gcc -ErrorAction SilentlyContinue
+if (-not $cc) {
+    Write-Host "[FAIL] gcc not found. Install mingw: scoop install mingw" -ForegroundColor Red
     exit 1
 }
 

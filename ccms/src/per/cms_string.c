@@ -1,6 +1,4 @@
 #include "per/cms_string.h"
-#include "per/cms_integer.h"
-#include <string.h>
 
 /* ---- OctetString fixed ---- */
 per_error_t per_encode_octet_string_fixed(per_stream_t *s, const uint8_t *data, size_t fixed_len) {

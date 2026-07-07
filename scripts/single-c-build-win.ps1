@@ -1,3 +1,5 @@
+$env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+
 # 来源 win_ccms.ps1 L86-88: 创建 build 目录
 if (-not (Test-Path ccms\build)) { New-Item -ItemType Directory -Path ccms\build | Out-Null }
 

@@ -1,5 +1,4 @@
 #include "per/cms_integer.h"
-#include <string.h>
 
 /* ---- Internal helpers ---- */
 

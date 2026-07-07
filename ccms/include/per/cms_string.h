@@ -2,7 +2,7 @@
 #define CMSPER_STRING_H
 
 #include "per/cms_stream.h"
-#include <stdint.h>
+#include "per/cms_integer.h"
 
 #ifdef __cplusplus
 extern "C" {
