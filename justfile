@@ -193,7 +193,7 @@ single-check-lock:
 single-check-lock:
     chmod +x scripts/single-check-lock-unix.sh && ./scripts/single-check-lock-unix.sh
 
-# ── 运行（不编译，需先 quick-java） ──
+# ── 运行（不编译，需先 java-quick） ──
 
 [windows]
 single-server:
@@ -216,18 +216,16 @@ single-client:
 # ╚═══════════════════════════════════════════╝
 
 [windows]
-quick-java:
+java-quick:
     powershell -NoProfile -File scripts\quick-java-win.ps1
 
 [unix]
-quick-java:
+java-quick:
     chmod +x scripts/quick-java-unix.sh && ./scripts/quick-java-unix.sh
-
-
-build-all: c-quick quick-java
-build-locked: single-lock build-all single-unlock
 
 run-server: single-check-lock single-server
 run-client: single-check-lock single-client
-compile-run-server: single-lock quick-java single-unlock run-server
-compile-run-client: single-lock quick-java single-unlock run-client
+build-java-run-server:single-lock java-quick single-unlock run-server
+build-java-run-client:single-lock java-quick single-unlock run-client
+build-c-java-run-server:single-lock c-quick java-quick single-unlock run-server
+build-c-java-run-client:single-lock c-quick java-quick single-unlock run-client
