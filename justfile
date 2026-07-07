@@ -56,7 +56,7 @@ single-c-load:
 single-c-load:
     chmod +x scripts/single-c-load-unix.sh && ./scripts/single-c-load-unix.sh
 
-# ── 批量级 ──
+# ── C 批量级 ──
 
 c-rebuild: single-c-clean single-c-check-env single-c-build single-c-test single-c-load
 c-quick: single-c-clean single-c-build single-c-load
@@ -65,7 +65,7 @@ c-quick: single-c-clean single-c-build single-c-load
 # ║  JCMS — Java 应用                         ║
 # ╚═══════════════════════════════════════════╝
 
-# 通用的 clean
+# ── 通用 ──
 
 [windows]
 single-j-all-clean:
@@ -75,7 +75,7 @@ single-j-all-clean:
 single-j-all-clean:
     chmod +x scripts/single-j-all-clean-unix.sh && ./scripts/single-j-all-clean-unix.sh
 
-# jcms-core
+# ── jcms-core ──
 
 [windows]
 single-j-core-compile:
@@ -127,6 +127,34 @@ single-j-utils-package:
 single-j-utils-package:
     chmod +x scripts/single-j-utils-package-unix.sh && ./scripts/single-j-utils-package-unix.sh
 
+# ── jcms-app ──
+
+[windows]
+single-j-app-compile:
+    powershell -NoProfile -File scripts\single-j-app-compile-win.ps1
+
+[unix]
+single-j-app-compile:
+    chmod +x scripts/single-j-app-compile-unix.sh && ./scripts/single-j-app-compile-unix.sh
+
+[windows]
+single-j-app-test:
+    powershell -NoProfile -File scripts\single-j-app-test-win.ps1
+
+[unix]
+single-j-app-test:
+    chmod +x scripts/single-j-app-test-unix.sh && ./scripts/single-j-app-test-unix.sh
+
+[windows]
+single-j-app-package:
+    powershell -NoProfile -File scripts\single-j-app-package-win.ps1
+
+[unix]
+single-j-app-package:
+    chmod +x scripts/single-j-app-package-unix.sh && ./scripts/single-j-app-package-unix.sh
+
+# 批量级
+
 j-core-compile: single-j-all-clean single-j-core-compile
 j-core-test: j-core-compile single-j-core-test
 j-core-test-c: c-quick j-core-test
@@ -135,19 +163,71 @@ j-utils-compile: single-j-all-clean single-j-utils-compile
 j-utils-test: j-utils-compile single-j-utils-test
 j-utils-test-c: c-quick j-utils-compile single-j-core-test single-j-utils-test
 
+j-all-compile: single-j-all-clean single-j-app-compile
+j-all-test: j-all-compile single-j-app-test
+j-all-test-c: c-quick j-all-compile single-j-core-test single-j-utils-test single-j-app-test
 
+# ── 锁机制（进程间同步） ──
 
-# jcms-app
+[windows]
+single-lock:
+    powershell -NoProfile -File scripts\single-lock-win.ps1
 
+[unix]
+single-lock:
+    chmod +x scripts/single-lock-unix.sh && ./scripts/single-lock-unix.sh
+
+[windows]
+single-unlock:
+    powershell -NoProfile -File scripts\single-unlock-win.ps1
+
+[unix]
+single-unlock:
+    chmod +x scripts/single-unlock-unix.sh && ./scripts/single-unlock-unix.sh
+
+[windows]
+single-check-lock:
+    powershell -NoProfile -File scripts\single-check-lock-win.ps1
+
+[unix]
+single-check-lock:
+    chmod +x scripts/single-check-lock-unix.sh && ./scripts/single-check-lock-unix.sh
+
+# ── 运行（不编译，需先 quick-java） ──
+
+[windows]
+single-server:
+    powershell -NoProfile -File scripts\single-server-win.ps1
+
+[unix]
+single-server:
+    chmod +x scripts/single-server-unix.sh && ./scripts/single-server-unix.sh
+
+[windows]
+single-client:
+    powershell -NoProfile -File scripts\single-client-win.ps1
+
+[unix]
+single-client:
+    chmod +x scripts/single-client-unix.sh && ./scripts/single-client-unix.sh
 
 # ╔═══════════════════════════════════════════╗
-# ║  顶层                                     ║
+# ║  顶层工作流                                ║
 # ╚═══════════════════════════════════════════╝
 
-build-all: single-c-build single-c-load single-j-core-compile
+[windows]
+quick-java:
+    powershell -NoProfile -File scripts\quick-java-win.ps1
 
-server scl="config/sample-scd-full.scd":
-    cd jcms && mvn exec:java -pl jcms-app -am -Dexec.mainClass="com.ysh.jcms.app.console.CmsServerConsole" -Dcms.server.sclFiles="{{scl}}"
+[unix]
+quick-java:
+    chmod +x scripts/quick-java-unix.sh && ./scripts/quick-java-unix.sh
 
-client host="localhost" port="20482" api_port="22000":
-    cd jcms && mvn exec:java -pl jcms-app -am -Dexec.mainClass="com.ysh.jcms.app.console.CmsClientConsole" -Dcms.client.connection.host="{{host}}" -Dcms.client.connection.port={{port}} -Dcms.client.console.apiPort={{api_port}}
+
+build-all: c-quick quick-java
+build-locked: single-lock build-all single-unlock
+
+run-server: single-check-lock single-server
+run-client: single-check-lock single-client
+compile-run-server: single-lock quick-java single-unlock run-server
+compile-run-client: single-lock quick-java single-unlock run-client
