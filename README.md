@@ -1298,7 +1298,72 @@ cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
     [CTRL/LLN0.gocb0] goEna=true goID=MyGoCB datSet=dsGOOSE confRev=1 ndsCom=false
 ```
 
-### 8.
+### 8.12.1 下载文件
+
+```bash
+cms> get-file --file /test.txt --output D:/downloaded.txt
+```
+
+```bash
+cms> get-file --file /test.txt --output D:/downloaded.txt
+  Downloading /test.txt ...
+  OK  Saved /test.txt to D:/downloaded.txt (size: 26 bytes)
+```
+
+### 8.12.2 上传文件
+
+```bash
+cms> set-file --local D:/test.txt --remote /test.txt
+```
+
+```bash
+cms> set-file --local D:/test.txt --remote /test.txt
+  Uploading D:/test.txt -> /test.txt ...        
+  OK  Uploaded D:/test.txt to /test.txt successfully
+```
+
+### 8.12.3 删除文件
+
+```bash
+cms> delete-file --file /test.txt
+```
+
+```bash
+cms> delete-file --file /test.txt
+  Deleting file /test.txt
+  OK  Deleted file /test.txt successfully 
+```
+
+### 8.12.4 读文件属性值服务
+
+```bash
+get-file-attrs --file /test.txt
+```
+
+```bash
+cms> set-file --local D:/test.txt --remote /test.txt
+  Uploading D:/test.txt -> /test.txt ...        
+  OK  Uploaded D:/test.txt to /test.txt successfully
+cms> get-file-attrs --file /test.txt
+  Fetching file attributes for /test.txt
+    fileName=/test.txt
+    fileSize=9
+    lastModified=1783412991932
+    checkSum=871209221
+cms>
+```
+
+### 8.12.5 列文件目录服务(GetFileDirectory)
+
+```bash
+cms> get-file-dir --path /
+```
+
+```bash
+cms> get-file-dir --path /
+  Fetching file directory...
+    /test.txt  size=9  modified=1783412991932  crc32=871209221
+```
 
 ### 8.15 协商
 

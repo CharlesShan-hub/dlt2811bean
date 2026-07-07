@@ -1,3 +1,6 @@
+$env:JAVA_HOME = "$env:USERPROFILE\scoop\apps\corretto8-jdk\current"
+$env:Path = "$env:USERPROFILE\scoop\shims;$env:Path"
+
 # 全量编译+install（不测试），后续 server/client 不需要再编译
 Push-Location jcms
 mvn install -DskipTests -q
