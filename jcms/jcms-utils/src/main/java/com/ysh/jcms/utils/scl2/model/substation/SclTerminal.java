@@ -12,4 +12,7 @@ public class SclTerminal {
     private String voltageLevelName;
     private String bayName;
     private String cNodeName;
+    private String name;
+    private String processName;
+    private String lineName;
 }

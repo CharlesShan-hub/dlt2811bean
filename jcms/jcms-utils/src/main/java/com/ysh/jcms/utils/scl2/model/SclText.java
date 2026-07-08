@@ -1,4 +1,4 @@
-package com.ysh.jcms.utils.scl2.model.header;
+package com.ysh.jcms.utils.scl2.model;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 /**
- * Text - 61850.6.9.1
+ * 可复用的文本元素 (tText)，用于需要文本描述的所有元素。
  * <p>
- * Schema
+ * Schema:
  * <pre>{@code
  * <xs:complexType name="tText" mixed="true">
  *     <xs:complexContent mixed="true">
@@ -21,8 +21,8 @@ import lombok.experimental.Accessors;
  */
 @Getter @Setter @Accessors(chain = true) @NoArgsConstructor
 public class SclText {
-    /** The text content */
+    /** 文本内容 (mixed content) */
     private String value;
-    /** The source URI */
+    /** 引用外部文件的URI (source) */
     private String source;
 }

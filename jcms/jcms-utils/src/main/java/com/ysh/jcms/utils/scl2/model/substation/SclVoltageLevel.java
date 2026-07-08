@@ -12,9 +12,15 @@ public class SclVoltageLevel {
     private String name;
     private String desc;
     private SclVoltage voltage;
+    private String nomFreq;
+    private Integer numPhases;
     private final List<SclBay> bays = new ArrayList<>();
     private final List<SclPowerTransformer> transformers = new ArrayList<>();  // TODO: PowerTransformer
+    private final List<SclLNode> lNodes = new ArrayList<>();
+    private final List<SclFunction> functions = new ArrayList<>();
 
     public SclVoltageLevel addBay(SclBay bay) { bays.add(bay); return this; }
     public SclVoltageLevel addTransformer(SclPowerTransformer transformer) { transformers.add(transformer); return this; }
+    public SclVoltageLevel addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclVoltageLevel addFunction(SclFunction function) { functions.add(function); return this; }
 }

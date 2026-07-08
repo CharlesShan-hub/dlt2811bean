@@ -13,6 +13,11 @@ public class SclPowerTransformer {
     private String desc;
     private String type;
     private final List<SclTransformerWinding> windings = new ArrayList<>();
+    private final List<SclLNode> lNodes = new ArrayList<>();
+
+    private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
     public SclPowerTransformer addWinding(SclTransformerWinding winding) { windings.add(winding); return this; }
+    public SclPowerTransformer addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclPowerTransformer addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
 }
