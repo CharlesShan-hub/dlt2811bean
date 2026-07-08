@@ -71,6 +71,7 @@ public class SclLNBase {
     }
 
     public String getFullName() {
-        return prefix + lnClass + inst;
+        String p = prefix != null ? prefix : "";
+        return p + lnClass + (inst != null ? inst : "");
     }
 }

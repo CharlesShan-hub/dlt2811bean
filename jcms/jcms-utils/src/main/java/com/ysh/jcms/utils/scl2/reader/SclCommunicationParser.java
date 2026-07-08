@@ -44,8 +44,8 @@ public class SclCommunicationParser {
                         sn.text(parseTextChild(reader));
                         break;
                     case "BitRate":
-                        sn.bitRate(parseSimpleElementText(reader));
                         sn.bitRateUnit(getAttr(reader, "unit"));
+                        sn.bitRate(parseSimpleElementText(reader));
                         break;
                     case "ConnectedAP":
                         sn.addConnectedAP(parseConnectedAP(reader));
