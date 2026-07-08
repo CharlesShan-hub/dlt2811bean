@@ -16,6 +16,7 @@ import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDO;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl.model.template.SclSDO;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -87,10 +88,8 @@ public class SclLN extends SclLNBase {
             if (doType != null) cache.put(doTypeId, doType);
         }
         if (doType == null) return;
-        for (SclDA da : doType.getDas()) {
-            if ("ST".equals(da.getFc())) {
-                names.add(prefix + "." + da.getName());
-            }
+        for (SclSDO sdo : doType.getSdos()) {
+            names.add(prefix + "." + sdo.getName());
         }
     }
 

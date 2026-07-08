@@ -5,9 +5,15 @@
 
     <div class="terminal-box">
       <div ref="outputRef" class="terminal-output">
-        <div v-for="(line, i) in output" :key="i" class="line" :class="line.type">
+        <div v-for="(line, i) in output" :key="i" class="line">
           <span class="line-num">{{ i + 1 }}</span>
-          <span class="line-text">{{ line.text }}</span>
+          <span class="line-text">
+            <span
+              v-for="(seg, j) in parseAnsi(line)"
+              :key="j"
+              :style="seg.style"
+            >{{ seg.text }}</span>
+          </span>
         </div>
       </div>
 
@@ -31,24 +37,75 @@ import { ref, nextTick } from 'vue'
 import { executeCommand } from '../api/cms.js'
 
 const input = ref('')
-const output = ref([{ type: 'info', text: '// CMS Console — 输入命令开始' }])
+const output = ref(['// CMS Console — 输入命令开始'])
 const outputRef = ref(null)
 const inputRef = ref(null)
+
+const ansiStyles = {
+  '0': {},                                          // reset
+  '1': { fontWeight: 'bold' },
+  '30': { color: '#333' },
+  '31': { color: '#e5555a' },                        // red
+  '32': { color: '#4caf7d' },                        // green
+  '33': { color: '#e5b955' },                        // yellow
+  '34': { color: '#5b8def' },
+  '35': { color: '#c975dd' },
+  '36': { color: '#5bc0de' },                        // cyan
+  '37': { color: '#e1e3ec' },
+  '90': { color: '#5c6078' },                        // gray
+  '91': { color: '#e5555a' },
+  '92': { color: '#4caf7d' },
+  '93': { color: '#e5b955' },
+  '94': { color: '#7aa3ff' },
+  '95': { color: '#c975dd' },
+  '96': { color: '#5bc0de' },
+}
+
+function parseAnsi(text) {
+  const parts = []
+  const regex = /\x1b\[(\d+)m/g
+  let lastIdx = 0
+  let currentStyle = {}
+
+  while (true) {
+    const match = regex.exec(text)
+    if (!match) break
+
+    // text before this code
+    if (match.index > lastIdx) {
+      parts.push({ text: text.slice(lastIdx, match.index), style: { ...currentStyle } })
+    }
+
+    const code = match[1]
+    if (code === '0') {
+      currentStyle = {}
+    } else if (ansiStyles[code]) {
+      currentStyle = { ...currentStyle, ...ansiStyles[code] }
+    }
+
+    lastIdx = regex.lastIndex
+  }
+
+  // remaining text
+  if (lastIdx < text.length) {
+    parts.push({ text: text.slice(lastIdx), style: { ...currentStyle } })
+  }
+
+  return parts.length ? parts : [{ text, style: {} }]
+}
 
 async function send() {
   const cmd = input.value.trim()
   if (!cmd) return
 
-  output.value.push({ type: 'cmd', text: `$ ${cmd}` })
+  output.value.push(`$ ${cmd}`)
   input.value = ''
 
   const result = await executeCommand(cmd)
-  for (const line of result.split('\n')) {
-    if (line.trim()) {
-      const type = line.startsWith('ERR') ? 'err' : 'info'
-      output.value.push({ type, text: line })
-    }
-  }
+  const lines = result.split('\n').filter(l => l.trim())
+
+  // trim terminal control sequences (can interfere with ANSI parsing)
+  output.value.push(...lines)
 
   await nextTick()
   outputRef.value.scrollTop = outputRef.value.scrollHeight
@@ -108,16 +165,9 @@ async function send() {
   font-size: 12px;
 }
 
-.line.cmd .line-text {
-  color: var(--accent);
-}
-
-.line.info .line-text {
-  color: var(--text-secondary);
-}
-
-.line.err .line-text {
-  color: var(--red);
+.line-text {
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .terminal-input-row {

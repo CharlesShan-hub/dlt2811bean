@@ -1,0 +1,446 @@
+<template>
+  <div class="tree-page">
+    <div class="tree-panel">
+      <h2 class="panel-title">目录树</h2>
+      <p v-if="!connected" class="panel-hint">请先连接服务器</p>
+      <div v-else class="tree">
+        <TreeNode
+          v-for="ld in lds"
+          :key="ld.name"
+          :node="ld"
+          @toggle="onToggle"
+        />
+      </div>
+    </div>
+    <div class="detail-panel">
+      <div v-if="!selected" class="detail-empty">
+        <span class="detail-icon">⊞</span>
+        <p>选择一个节点查看详情</p>
+      </div>
+      <div v-else-if="detailLoading" class="detail-empty">
+        <span class="detail-icon">○</span>
+        <p>加载中...</p>
+      </div>
+      <div v-else class="detail-content">
+        <h3 class="detail-ref">{{ selected.ref }}</h3>
+
+        <!-- Data directory entries -->
+        <div v-if="dirEntries.length" class="data-section">
+          <h4 class="section-title">属性</h4>
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>FC</th>
+                <th>属性名</th>
+                <th>值</th>
+                <th>类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="entry in dirEntries" :key="entry.attr">
+                <td><span class="fc-badge">{{ entry.fc }}</span></td>
+                <td class="cell-attr">{{ entry.attr }}</td>
+                <td class="cell-value" @click="startEdit(entry)">
+                  <input
+                    v-if="editingRef === entry.fullRef"
+                    v-model="editValue"
+                    class="edit-input"
+                    :placeholder="entry.value ?? ''"
+                    @keydown.enter="saveEdit(entry)"
+                    @keydown.escape="cancelEdit"
+                    @blur="saveEdit(entry)"
+                    ref="editInputRef"
+                  />
+                  <span v-else class="val-text">{{ entry.value ?? '—' }}</span>
+                  <span v-if="editingRef === entry.fullRef && saving" class="saving">保存中...</span>
+                  <span v-else-if="editError && editingRef === entry.fullRef" class="edit-err">{{ editError }}</span>
+                </td>
+                <td class="cell-type">{{ entry.type ?? '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Raw JSON for debugging -->
+        <details class="raw-toggle">
+          <summary>原始响应</summary>
+          <pre class="detail-raw">{{ detailRaw }}</pre>
+        </details>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, watch } from 'vue'
+import { executeJson } from '../api/cms.js'
+import TreeNode from '../components/TreeNode.vue'
+
+const props = defineProps({
+  connected: Boolean,
+})
+
+const lds = ref([])
+const selected = ref(null)
+const detailLoading = ref(false)
+const dirEntries = ref([])
+const detailRaw = ref('')
+
+// Editing state
+const editingRef = ref(null)
+const editValue = ref('')
+const saving = ref(false)
+const editError = ref('')
+const editInputRef = ref(null)
+
+// load LDs when connected
+watch(() => props.connected, async (val) => {
+  if (val) {
+    const res = await executeJson('server-dir --json')
+    if (res.success) {
+      lds.value = res.data.map(name => ({
+        name,
+        type: 'ld',
+        label: name,
+        children: null,
+        loading: false,
+        expanded: false,
+      }))
+    }
+  } else {
+    lds.value = []
+  }
+}, { immediate: true })
+
+async function onToggle(node) {
+  // DO nodes: show data directory + values
+  if (node.type === 'do') {
+    selected.value = node
+    detailLoading.value = true
+    dirEntries.value = []
+    detailRaw.value = ''
+
+    try {
+      const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
+      detailRaw.value = JSON.stringify(dirRes, null, 2)
+
+      if (dirRes.success && dirRes.data.length) {
+        const attrs = dirRes.data.map(s => {
+          const m = s.match(/^\[(\w+)\]\s+(.+)$/)
+          return m ? { fc: m[1], attr: m[2] } : { fc: '?', attr: s }
+        })
+
+        const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
+        const valRes = await executeJson(`get-data-values --refs "${refs}" --json`)
+
+        if (valRes.success && valRes.data) {
+          const valMap = {}
+          for (const item of valRes.data) {
+            valMap[item.ref] = item
+          }
+
+          dirEntries.value = attrs.map(a => {
+            const fullRef = `${node.ref}.${a.attr}`
+            const v = valMap[fullRef]
+            return { ...a, value: v?.value, type: v?.type, fullRef }
+          })
+        } else {
+          dirEntries.value = attrs
+        }
+      }
+    } finally {
+      detailLoading.value = false
+    }
+    return
+  }
+
+  // Other types: show raw info
+  if (node.isLeaf) {
+    selected.value = node
+    detailLoading.value = true
+    dirEntries.value = []
+    detailRaw.value = ''
+
+    try {
+      const cmd = node.type === 'data-set'
+        ? `get-dataset-dir --ds ${node.ref} --json`
+        : `get-${node.type}-vals --refs "${node.ref}" --json`
+      const res = await executeJson(cmd)
+      detailRaw.value = JSON.stringify(res, null, 2)
+    } finally {
+      detailLoading.value = false
+    }
+    return
+  }
+
+  // Non-leaf nodes: toggle expand/collapse
+  node.expanded = !node.expanded
+  if (!node.expanded) return
+  if (node.children !== null) return
+
+  node.loading = true
+
+  try {
+    if (node.type === 'ld') {
+      const res = await executeJson(`ld-dir --ld ${node.name} --json`)
+      if (res.success) {
+        node.children = res.data.map(name => ({
+          name: `${node.name}/${name}`,
+          type: 'ln',
+          label: name,
+          parentLd: node.name,
+          children: null,
+          loading: false,
+          expanded: false,
+        }))
+      }
+    } else if (node.type === 'ln') {
+      const lnRef = node.name  // e.g. "LD0/LLN0"
+      node.children = [
+        { name: `${lnRef}/data-object`, type: 'acsi-cat', label: 'Data Objects', acsi: 'data-object', lnRef, children: null, loading: false, expanded: false },
+        { name: `${lnRef}/data-set`, type: 'acsi-cat', label: 'Data Sets', acsi: 'data-set', lnRef, children: null, loading: false, expanded: false },
+        { name: `${lnRef}/brcb`, type: 'acsi-cat', label: 'BRCB', acsi: 'brcb', lnRef, children: null, loading: false, expanded: false },
+        { name: `${lnRef}/urcb`, type: 'acsi-cat', label: 'URCB', acsi: 'urcb', lnRef, children: null, loading: false, expanded: false },
+      ]
+    } else if (node.type === 'acsi-cat') {
+      const res = await executeJson(`ln-dir --ln ${node.lnRef} --acsi ${node.acsi} --json`)
+      if (res.success) {
+        const childType = node.acsi === 'data-object' ? 'do' : node.acsi
+        node.children = res.data.map(name => ({
+          name: `${node.name}/${name}`,
+          type: childType,
+          label: name,
+          ref: node.acsi === 'data-object' ? buildDoRef(`${node.name}/${name}`) : `${node.lnRef}.${name}`,
+          children: null,
+          loading: false,
+          expanded: false,
+          isLeaf: true,
+        }))
+      } else {
+        node.children = []
+      }
+    }
+  } finally {
+    node.loading = false
+  }
+}
+
+function buildDoRef(name) {
+  // Convert "LD0/LLN0/data-object/Mod" to "LD0/LLN0.Mod"
+  const parts = name.split('/')
+  // parts: [LD, LN, acsi-cat, DO-name]
+  if (parts.length >= 4) {
+    return parts.slice(0, -2).join('/') + '.' + parts[parts.length - 1]
+  }
+  // parts: [LD, LN, DO-name] (fallback)
+  if (parts.length === 3) {
+    return parts[0] + '/' + parts[1] + '.' + parts[2]
+  }
+  return name
+}
+
+async function onSelect(node) {
+  if (node.type !== 'do') return
+
+  selected.value = node
+  detailLoading.value = true
+  dirEntries.value = []
+  detailRaw.value = ''
+
+  try {
+    // Get data directory (list of attributes with FC)
+    const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
+    detailRaw.value = JSON.stringify(dirRes, null, 2)
+
+    if (dirRes.success && dirRes.data.length) {
+      // Parse entries: ["[FC]  name", ...]
+      const attrs = dirRes.data.map(s => {
+        const m = s.match(/^\[(\w+)\]\s+(.+)$/)
+        return m ? { fc: m[1], attr: m[2] } : { fc: '?', attr: s }
+      })
+
+      // Get values for each attribute
+      const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
+      const valRes = await executeJson(`get-data-values --refs "${refs}" --json`)
+
+      if (valRes.success && valRes.data) {
+        // Build value map: ref → { type, value }
+        const valMap = {}
+        for (const item of valRes.data) {
+          valMap[item.ref] = item
+        }
+
+        dirEntries.value = attrs.map(a => {
+          const fullRef = `${node.ref}.${a.attr}`
+          const v = valMap[fullRef]
+          return {
+            ...a,
+            value: v?.value,
+            type: v?.type,
+            fullRef,
+          }
+        })
+      } else {
+        dirEntries.value = attrs
+      }
+    }
+  } finally {
+    detailLoading.value = false
+  }
+}
+</script>
+
+<style scoped>
+.tree-page {
+  display: flex;
+  height: 100%;
+}
+
+.tree-panel {
+  width: 320px;
+  min-width: 240px;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 20px 0;
+  flex-shrink: 0;
+}
+
+.panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 20px 12px;
+  color: var(--text-primary);
+}
+
+.panel-hint {
+  color: var(--text-muted);
+  font-size: 13px;
+  padding: 0 20px;
+}
+
+.detail-panel {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.detail-icon {
+  font-size: 40px;
+  display: block;
+  margin-bottom: 12px;
+  opacity: 0.3;
+}
+
+.detail-content {
+  padding: 24px 32px;
+}
+
+.detail-ref {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.data-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+}
+
+.data-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: 0.5px;
+}
+
+.data-table td {
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.data-table tbody tr:hover {
+  background: var(--bg-hover);
+}
+
+.fc-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.cell-attr {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.cell-value {
+  color: var(--text-primary);
+}
+
+.cell-type {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.raw-toggle {
+  margin-top: 16px;
+}
+
+.raw-toggle summary {
+  font-size: 12px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.detail-raw {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  background: var(--bg-tertiary);
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin-top: 8px;
+  max-height: 300px;
+  overflow: auto;
+}
+</style>

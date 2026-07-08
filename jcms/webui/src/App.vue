@@ -10,6 +10,7 @@
       <main class="main-content">
         <Dashboard v-if="activeView === 'dashboard'" :connected="connected" />
         <Terminal v-else-if="activeView === 'terminal'" />
+        <ServerDir v-else-if="activeView === 'server-dir'" :connected="connected" />
       </main>
     </div>
   </div>
@@ -21,6 +22,7 @@ import TopBar from './components/TopBar.vue'
 import Sidebar from './components/Sidebar.vue'
 import Dashboard from './views/Dashboard.vue'
 import Terminal from './views/Terminal.vue'
+import ServerDir from './views/ServerDir.vue'
 import { getStatus } from './api/cms.js'
 
 const activeView = ref('dashboard')

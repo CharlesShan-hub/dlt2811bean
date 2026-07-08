@@ -11,6 +11,14 @@ export async function executeCommand(cmd) {
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: `cmd=${encodeURIComponent(cmd)}`,
   })
-  const text = await res.text()
-  return text
+  return res.text()
+}
+
+export async function executeJson(cmd) {
+  const text = await executeCommand(cmd)
+  try {
+    return JSON.parse(text)
+  } catch {
+    return { success: false, data: [], error: text }
+  }
 }

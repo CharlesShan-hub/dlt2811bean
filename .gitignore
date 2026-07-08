@@ -72,3 +72,5 @@ replay_pid*
 *~
 *.bak
 .svn
+**/node_modules
+**/dist
