@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ public class SetLcbValuesConsole implements CommandHandler {
     public String name() { return "set-lcb-vals"; }
 
     @Override
-    public String description() { return "设置日志控制块值 (SetLCBValues)。\n" +
+    public String description() { return "设置日志控制块值 (SetLCBValues) [--json]。\n" +
         "  案例:\n" +
         "    set-lcb-vals --ref LD0/LLN0.lcb1                               # 仅引用（无字段修改）\n" +
         "    set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena true                 # 启用日志\n" +
@@ -33,20 +34,30 @@ public class SetLcbValuesConsole implements CommandHandler {
             new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null),
             new Param("log-ref", "日志引用 (ObjectReference)", null),
             new Param("opt-flds", "选项字段 (LCBOptFlds bitmask)", null),
-            new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null)
+            new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: set-lcb-vals --ref <lcbRef> [options]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ref. Usage: set-lcb-vals --ref <lcbRef> [options]");
+            }
             return;
         }
 
@@ -61,8 +72,14 @@ public class SetLcbValuesConsole implements CommandHandler {
         v = args.get("opt-flds"); if (v != null && !v.isEmpty()) dao.optFlds(Integer.parseInt(v));
         v = args.get("buf-tm"); if (v != null && !v.isEmpty()) dao.bufTm(Integer.parseInt(v));
 
-        ConsolePrinter.info("Setting LCB values: ref=" + ref);
+        if (!jsonMode) {
+            ConsolePrinter.info("Setting LCB values: ref=" + ref);
+        }
         console.getClient(SetLcbValuesClient.class).execute(dao);
-        ConsolePrinter.success("LCB values set for " + ref);
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"LCB values set for " + CmsFormatUtil.escapeJson(ref) + "\"}");
+        } else {
+            ConsolePrinter.success("LCB values set for " + ref);
+        }
     }
 }

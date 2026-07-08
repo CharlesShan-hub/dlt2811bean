@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,25 +16,36 @@ public class DeleteFileConsole implements CommandHandler {
     public String name() { return "delete-file"; }
 
     @Override
-    public String description() { return "删除文件 (DeleteFile, 8.12.3)。\n  用法: delete-file --file /path/to/file"; }
+    public String description() { return "删除文件 (DeleteFile, 8.12.3)。\n" +
+        "  用法: delete-file --file /path/to/file [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("file", "文件路径，如 \"/config/myfile.txt\"", null)
+            new Param("file", "文件路径，如 \"/config/myfile.txt\"", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String file = args.get("file");
         if (file == null || file.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --file. Usage: delete-file --file <path>");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --file.\"}");
+            } else {
+                ConsolePrinter.error("Missing --file. Usage: delete-file --file <path>");
+            }
             return;
         }
 
@@ -43,6 +55,11 @@ public class DeleteFileConsole implements CommandHandler {
 
         console.getClient(DeleteFileClient.class).execute(dao);
 
-        ConsolePrinter.success("Deleted file " + file + " successfully");
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"Deleted file " +
+                CmsFormatUtil.escapeJson(file.trim()) + " successfully\"}");
+        } else {
+            ConsolePrinter.success("Deleted file " + file + " successfully");
+        }
     }
 }

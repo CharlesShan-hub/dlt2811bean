@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,7 @@ public class SetBrcbValuesConsole implements CommandHandler {
         "    set-brcb-vals --ref LD0/LLN0.brcb1 --buf-tm 2000 --intg-pd 5000   # 改缓存时间和完整性周期\n" +
         "    set-brcb-vals --ref LD0/LLN0.brcb1 --gi true                       # 总召唤\n" +
         "    set-brcb-vals --ref LD0/LLN0.brcb1 --purge-buf true                # 清空缓存\n" +
-        "    set-brcb-vals --ref LD0/LLN0.brcb1 --rpt-ena false --resv-tms 10   # 关闭报告+保留时间"; }
+        "    set-brcb-vals --ref LD0/LLN0.brcb1 --rpt-ena false --resv-tms 10   # 关闭报告+保留时间 [--json]"; }
 
     @Override
     public List<Param> params() {
@@ -36,20 +37,32 @@ public class SetBrcbValuesConsole implements CommandHandler {
             new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null),
             new Param("gi", "总召唤命令 (BOOLEAN: true=触发一次)", null),
             new Param("purge-buf", "清空缓存命令 (BOOLEAN: true=触发一次)", null),
-            new Param("resv-tms", "保留时间 (INT16)", null)
+            new Param("resv-tms", "保留时间 (INT16)", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            String msg = "Not connected. Type 'connect' first.";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: set-brcb-vals --ref <brcbRef> [options]");
+            String msg = "Missing --ref. Usage: set-brcb-vals --ref <brcbRef> [options]";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
@@ -67,6 +80,11 @@ public class SetBrcbValuesConsole implements CommandHandler {
 
         ConsolePrinter.info("Setting BRCB values: ref=" + ref);
         console.getClient(SetBrcbValuesClient.class).execute(dao);
-        ConsolePrinter.success("BRCB values set for " + ref);
+        String msg = "BRCB values set for " + ref;
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }

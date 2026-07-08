@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,33 +16,47 @@ public class GetGoReferenceConsole implements CommandHandler {
     public String name() { return "get-go-ref"; }
 
     @Override
-    public String description() { return "读 GOOSE 引用 (GetGoReference, 8.9.2)。\n" +
+    public String description() { return "读 GOOSE 引用 (GetGoReference, 8.9.2) [--json]。\n" +
         "  用法: get-go-ref --ref LD0/LLN0.gocb1 --offsets \"0 1 2\""; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null),
-            new Param("offsets", "成员偏移列表（空格分隔），如 \"0 1 2\"", null)
+            new Param("offsets", "成员偏移列表（空格分隔），如 \"0 1 2\"", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ref. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
+            }
             return;
         }
 
         String offsetsStr = args.get("offsets");
         if (offsetsStr == null || offsetsStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --offsets. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --offsets.\"}");
+            } else {
+                ConsolePrinter.error("Missing --offsets. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
+            }
             return;
         }
 
@@ -50,7 +65,9 @@ public class GetGoReferenceConsole implements CommandHandler {
             if (!s.isEmpty()) dao.addMemberOffset(Integer.parseInt(s));
         }
 
-        ConsolePrinter.info("Fetching Go reference for " + ref + " with " + dao.memberOffsets().size() + " offset(s)");
+        if (!jsonMode) {
+            ConsolePrinter.info("Fetching Go reference for " + ref + " with " + dao.memberOffsets().size() + " offset(s)");
+        }
 
         console.getClient(GetGoReferenceClient.class).execute(dao);
 
@@ -58,16 +75,36 @@ public class GetGoReferenceConsole implements CommandHandler {
             console.getClient(GetGoReferenceClient.class).getLastResult();
 
         if (result == null) {
-            ConsolePrinter.info("No Go reference returned");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":true,\"data\":null}");
+            } else {
+                ConsolePrinter.info("No Go reference returned");
+            }
             return;
         }
 
-        ConsolePrinter.info("  gocbRef=" + result.gocbReference);
-        ConsolePrinter.info("  confRev=" + result.confRev);
-        ConsolePrinter.info("  datSet=" + result.datSet);
-        for (int i = 0; i < result.members.size(); i++) {
-            GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
-            ConsolePrinter.info("  member[" + i + "]: ref=" + m.reference + " fc=" + m.fc);
+        if (jsonMode) {
+            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":{");
+            sb.append("\"gocbRef\":\"").append(CmsFormatUtil.escapeJson(result.gocbReference)).append("\",");
+            sb.append("\"confRev\":").append(result.confRev).append(",");
+            sb.append("\"datSet\":\"").append(CmsFormatUtil.escapeJson(result.datSet)).append("\",");
+            sb.append("\"members\":[");
+            for (int i = 0; i < result.members.size(); i++) {
+                if (i > 0) sb.append(',');
+                GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
+                sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(m.reference))
+                  .append("\",\"fc\":").append(m.fc).append("}");
+            }
+            sb.append("]}");
+            ConsolePrinter.raw(sb.toString());
+        } else {
+            ConsolePrinter.info("  gocbRef=" + result.gocbReference);
+            ConsolePrinter.info("  confRev=" + result.confRev);
+            ConsolePrinter.info("  datSet=" + result.datSet);
+            for (int i = 0; i < result.members.size(); i++) {
+                GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
+                ConsolePrinter.info("  member[" + i + "]: ref=" + m.reference + " fc=" + m.fc);
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ public class SetGoCbValuesConsole implements CommandHandler {
     public String name() { return "set-gocb-vals"; }
 
     @Override
-    public String description() { return "设置 GOOSE 控制块值 (SetGoCBValues)。\n" +
+    public String description() { return "设置 GOOSE 控制块值 (SetGoCBValues) [--json]。\n" +
         "  案例:\n" +
         "    set-gocb-vals --ref LD0/LLN0.gocb1                               # 仅引用（无字段修改）\n" +
         "    set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena true                 # 启用GOOSE\n" +
@@ -29,20 +30,30 @@ public class SetGoCbValuesConsole implements CommandHandler {
             new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null),
             new Param("go-ena", "GOOSE 使能 (true/false)", null),
             new Param("go-id", "GOOSE ID (VisibleString129)", null),
-            new Param("dat-set", "数据集引用 (ObjectReference)", null)
+            new Param("dat-set", "数据集引用 (ObjectReference)", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: set-gocb-vals --ref <gocbRef> [options]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ref. Usage: set-gocb-vals --ref <gocbRef> [options]");
+            }
             return;
         }
 
@@ -53,8 +64,14 @@ public class SetGoCbValuesConsole implements CommandHandler {
         v = args.get("go-id"); if (v != null && !v.isEmpty()) dao.goID(v);
         v = args.get("dat-set"); if (v != null && !v.isEmpty()) dao.datSet(v);
 
-        ConsolePrinter.info("Setting GoCB values: ref=" + ref);
+        if (!jsonMode) {
+            ConsolePrinter.info("Setting GoCB values: ref=" + ref);
+        }
         console.getClient(SetGoCbValuesClient.class).execute(dao);
-        ConsolePrinter.success("GoCB values set for " + ref);
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"GoCB values set for " + CmsFormatUtil.escapeJson(ref) + "\"}");
+        } else {
+            ConsolePrinter.success("GoCB values set for " + ref);
+        }
     }
 }

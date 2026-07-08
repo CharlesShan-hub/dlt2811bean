@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
@@ -16,7 +17,7 @@ public class NegotiateConsole implements CommandHandler {
     public String name() { return "negotiate"; }
 
     @Override
-    public String description() { return "协商参数 (Negotiate) — 用法: negotiate [--apduSize N] [--asduSize N] [--protocolVersion N]"; }
+    public String description() { return "协商参数 (Negotiate) — 用法: negotiate [--apduSize N] [--asduSize N] [--protocolVersion N] [--json]"; }
 
     @Override
     public List<Param> params() {
@@ -24,13 +25,23 @@ public class NegotiateConsole implements CommandHandler {
         return Arrays.asList(
             new Param("apduSize", "APDU 大小", String.valueOf(cfg.getApduSize())),
             new Param("asduSize", "ASDU 大小", String.valueOf(cfg.getAsduSize())),
-            new Param("protocolVersion", "协议版本", String.valueOf(cfg.getProtocolVersion()))
+            new Param("protocolVersion", "协议版本", String.valueOf(cfg.getProtocolVersion())),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.isConnected()) { ConsolePrinter.error("Not connected."); return; }
+        boolean jsonMode = "true".equals(args.get("json"));
+        if (!console.isConnected()) {
+            String msg = "Not connected.";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
+            return;
+        }
 
         NegotiateClientDao dao = new NegotiateClientDao();
         String apduStr = args.get("apduSize");
@@ -41,6 +52,11 @@ public class NegotiateConsole implements CommandHandler {
         if (protoStr != null && !protoStr.isEmpty()) dao.protocolVersion(Long.parseLong(protoStr));
 
         console.getClient(NegotiateClient.class).execute(dao);
-        ConsolePrinter.success("Negotiate completed.");
+        String msg = "Negotiate completed.";
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }

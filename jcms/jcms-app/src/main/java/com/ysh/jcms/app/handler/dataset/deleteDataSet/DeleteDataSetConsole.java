@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,25 +16,35 @@ public class DeleteDataSetConsole implements CommandHandler {
     public String name() { return "delete-dataset"; }
 
     @Override
-    public String description() { return "删除数据集 (DeleteDataSet)。用法: delete-dataset --ds <ref>"; }
+    public String description() { return "删除数据集 (DeleteDataSet)。用法: delete-dataset --ds <ref> [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null)
+            new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String dsRef = args.get("ds");
         if (dsRef == null || dsRef.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ds. Usage: delete-dataset --ds <ref>");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ds.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ds. Usage: delete-dataset --ds <ref>");
+            }
             return;
         }
 
@@ -44,6 +55,11 @@ public class DeleteDataSetConsole implements CommandHandler {
 
         console.getClient(DeleteDataSetClient.class).execute(dao);
 
-        ConsolePrinter.success("Deleted dataset " + dsRef + " successfully");
+        String msg = "Deleted dataset " + dsRef + " successfully";
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }

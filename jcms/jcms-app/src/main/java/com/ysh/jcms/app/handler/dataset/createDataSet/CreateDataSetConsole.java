@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,33 +16,47 @@ public class CreateDataSetConsole implements CommandHandler {
     public String name() { return "create-dataset"; }
 
     @Override
-    public String description() { return "创建数据集 (CreateDataSet)。用法: create-dataset --ds <ref> --members \"<ref1>,<fc1> <ref2>,<fc2>...\""; }
+    public String description() { return "创建数据集 (CreateDataSet)。用法: create-dataset --ds <ref> --members \"<ref1>,<fc1> <ref2>,<fc2>...\" [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
             new Param("members", "成员列表（空格分隔，每个成员的格式 ref,fc），如 \"LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST\"", null),
-            new Param("after", "追加到现有数据集后的最后一个成员引用", "")
+            new Param("after", "追加到现有数据集后的最后一个成员引用", ""),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String dsRef = args.get("ds");
         if (dsRef == null || dsRef.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ds. Usage: create-dataset --ds <ref> --members \"...\"");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ds.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ds. Usage: create-dataset --ds <ref> --members \"...\"");
+            }
             return;
         }
 
         String membersStr = args.get("members");
         if (membersStr == null || membersStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --members");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --members.\"}");
+            } else {
+                ConsolePrinter.error("Missing --members");
+            }
             return;
         }
 
@@ -53,7 +68,11 @@ public class CreateDataSetConsole implements CommandHandler {
             if (token.isEmpty()) continue;
             int commaIdx = token.indexOf(',');
             if (commaIdx <= 0) {
-                ConsolePrinter.error("Invalid member: " + token + " (expected ref,fc)");
+                if (jsonMode) {
+                    ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid member: " + CmsFormatUtil.escapeJson(token) + " (expected ref,fc)\"}");
+                } else {
+                    ConsolePrinter.error("Invalid member: " + token + " (expected ref,fc)");
+                }
                 return;
             }
             String ref = token.substring(0, commaIdx);
@@ -71,6 +90,11 @@ public class CreateDataSetConsole implements CommandHandler {
 
         console.getClient(CreateDataSetClient.class).execute(dao);
 
-        ConsolePrinter.success("Created dataset " + dsRef + " successfully");
+        String msg = "Created dataset " + dsRef + " successfully";
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }

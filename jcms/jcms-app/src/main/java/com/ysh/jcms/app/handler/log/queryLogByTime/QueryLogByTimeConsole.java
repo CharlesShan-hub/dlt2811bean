@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ public class QueryLogByTimeConsole implements CommandHandler {
     public String name() { return "query-log-by-time"; }
 
     @Override
-    public String description() { return "按时间查询日志 (QueryLogByTime)。\n" +
+    public String description() { return "按时间查询日志 (QueryLogByTime) [--json]。\n" +
         "  用法: query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]\n" +
         "  案例:\n" +
         "    query-log-by-time --ref LD0/LLN0.lcb1\n" +
@@ -26,20 +27,30 @@ public class QueryLogByTimeConsole implements CommandHandler {
         return Arrays.asList(
             new Param("ref", "日志控制块引用 (ObjectReference)", null),
             new Param("start", "起始时间 (毫秒时间戳)", null),
-            new Param("stop", "截止时间 (毫秒时间戳)", null)
+            new Param("stop", "截止时间 (毫秒时间戳)", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ref. Usage: query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]");
+            }
             return;
         }
 
@@ -50,8 +61,14 @@ public class QueryLogByTimeConsole implements CommandHandler {
         if (startStr != null && !startStr.isEmpty()) dao.startTime(Long.parseLong(startStr));
         if (stopStr != null && !stopStr.isEmpty()) dao.stopTime(Long.parseLong(stopStr));
 
-        ConsolePrinter.info("Querying log by time: ref=" + ref);
+        if (!jsonMode) {
+            ConsolePrinter.info("Querying log by time: ref=" + ref);
+        }
         console.getClient(QueryLogByTimeClient.class).execute(dao);
-        ConsolePrinter.success("QueryLogByTime completed");
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"QueryLogByTime completed\"}");
+        } else {
+            ConsolePrinter.success("QueryLogByTime completed");
+        }
     }
 }

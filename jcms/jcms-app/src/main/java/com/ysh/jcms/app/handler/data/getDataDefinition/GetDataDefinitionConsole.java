@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,26 +23,36 @@ public class GetDataDefinitionConsole implements CommandHandler {
     public String name() { return "get-data-def"; }
 
     @Override
-    public String description() { return "获取数据定义 (GetDataDefinition)。用法: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC]"; }
+    public String description() { return "获取数据定义 (GetDataDefinition)。用法: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC] [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("refs", "数据引用列表（空格分隔），如 \"LD0/LLN0.Mod LD0/LLN0.Beh.stVal\"", null),
-            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX")
+            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String refsStr = args.get("refs");
         if (refsStr == null || refsStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --refs. Usage: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --refs.\"}");
+            } else {
+                ConsolePrinter.error("Missing --refs. Usage: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC]");
+            }
             return;
         }
 
@@ -60,7 +71,9 @@ public class GetDataDefinitionConsole implements CommandHandler {
             }
         }
 
-        ConsolePrinter.info("Fetching data definitions for " + dao.dataRefs().size() + " reference(s)");
+        if (!jsonMode) {
+            ConsolePrinter.info("Fetching data definitions for " + dao.dataRefs().size() + " reference(s)");
+        }
 
         console.getClient(GetDataDefinitionClient.class).execute(dao);
 
@@ -81,9 +94,21 @@ public class GetDataDefinitionConsole implements CommandHandler {
             String cdcPart = e.cdcType.isEmpty() ? "" : "  cdc=" + e.cdcType;
             displayPairs.add(new RefDefPair(ref, typeName, cdcPart));
         }
-        ConsolePrinter.list("Data definitions (" + entries.size() + " items)",
-            displayPairs,
-            p -> p.ref + "  [" + p.typeName + "]" + p.cdcPart);
+        if (jsonMode) {
+            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+            for (int i = 0; i < displayPairs.size(); i++) {
+                if (i > 0) sb.append(',');
+                RefDefPair p = displayPairs.get(i);
+                String val = p.ref + "  [" + p.typeName + "]" + p.cdcPart;
+                sb.append('"').append(CmsFormatUtil.escapeJson(val)).append('"');
+            }
+            sb.append("]}");
+            ConsolePrinter.raw(sb.toString());
+        } else {
+            ConsolePrinter.list("Data definitions (" + entries.size() + " items)",
+                displayPairs,
+                p -> p.ref + "  [" + p.typeName + "]" + p.cdcPart);
+        }
     }
 
     private static final class RefDefPair {

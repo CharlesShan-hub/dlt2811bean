@@ -102,7 +102,11 @@ public class CliApiServer {
 
     private void sendResponse(HttpExchange exchange, int code, String body) throws IOException {
         byte[] bytes = body.getBytes("UTF-8");
-        exchange.getResponseHeaders().set("Content-Type", "text/plain; charset=UTF-8");
+        String trimmed = body.trim();
+        String contentType = (trimmed.startsWith("{") || trimmed.startsWith("["))
+            ? "application/json; charset=UTF-8"
+            : "text/plain; charset=UTF-8";
+        exchange.getResponseHeaders().set("Content-Type", contentType);
         exchange.sendResponseHeaders(code, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(bytes);

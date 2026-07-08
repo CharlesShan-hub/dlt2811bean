@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -37,38 +38,56 @@ public class AllCbValuesConsole implements CommandHandler {
     public String name() { return "all-cb"; }
 
     @Override
-    public String description() { return "获取所有控制块值 (GetAllCBValues)。用法: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]"; }
+    public String description() { return "获取所有控制块值 (GetAllCBValues)。用法: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF] [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
             new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgecb/gocb/msvcb 或数字", null),
-            new Param("after", "起始引用（分页截取）", "")
+            new Param("after", "起始引用（分页截取）", ""),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
+            } else {
+                ConsolePrinter.error("Not connected. Type 'connect' first.");
+            }
             return;
         }
 
         String target = args.get("ln");
         if (target == null || target.isEmpty()) {
-            ConsolePrinter.error("Missing --ln. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ln.\"}");
+            } else {
+                ConsolePrinter.error("Missing --ln. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
+            }
             return;
         }
 
         String acsiStr = args.get("acsi");
         if (acsiStr == null || acsiStr.isEmpty()) {
-            ConsolePrinter.error("Missing --acsi. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --acsi.\"}");
+            } else {
+                ConsolePrinter.error("Missing --acsi. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
+            }
             return;
         }
         Integer acsiClass = ACSI_MAP.get(acsiStr.toLowerCase());
         if (acsiClass == null) {
-            ConsolePrinter.error("Invalid acsiClass: " + acsiStr + ". Valid values: brcb, urcb, lcb, sgecb, gocb, msvcb");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid acsiClass: " + CmsFormatUtil.escapeJson(acsiStr) + ".\"}");
+            } else {
+                ConsolePrinter.error("Invalid acsiClass: " + acsiStr + ". Valid values: brcb, urcb, lcb, sgecb, gocb, msvcb");
+            }
             return;
         }
 
@@ -87,21 +106,41 @@ public class AllCbValuesConsole implements CommandHandler {
 
         String cbTypeName = acsiClass >= 3 && acsiClass <= 10
             ? CB_TYPE_NAMES[acsiClass == 10 ? 5 : acsiClass - 3] : String.valueOf(acsiClass);
-        ConsolePrinter.info("Fetching CB values: target=" + target + " type=" + cbTypeName);
+        if (!jsonMode) {
+            ConsolePrinter.info("Fetching CB values: target=" + target + " type=" + cbTypeName);
+        }
 
         console.getClient(AllCbValuesClient.class).execute(dao);
 
         List<AllCbValuesClient.CbEntry> entries = console.getClient(AllCbValuesClient.class).getLastEntries();
         if (entries.isEmpty()) {
-            ConsolePrinter.info("No CB values found");
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
+            } else {
+                ConsolePrinter.info("No CB values found");
+            }
             return;
         }
-        ConsolePrinter.list("CB values (" + entries.size() + " items)",
-            new java.util.ArrayList<>(entries),
-            e -> {
-                int idx = e.cbType;  /* CmsCbValueChoice: 0=BRCB, 1=URCB, 2=LCB, 3=SGECB, 4=GOCB, 5=MSVCB */
+        if (jsonMode) {
+            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+            for (int i = 0; i < entries.size(); i++) {
+                if (i > 0) sb.append(',');
+                AllCbValuesClient.CbEntry e = entries.get(i);
+                int idx = e.cbType;
                 String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
-                return e.reference + "  [" + typeName + "]";
-            });
+                sb.append("{\"reference\":\"").append(CmsFormatUtil.escapeJson(e.reference))
+                  .append("\",\"type\":\"").append(CmsFormatUtil.escapeJson(typeName)).append("\"}");
+            }
+            sb.append("]}");
+            ConsolePrinter.raw(sb.toString());
+        } else {
+            ConsolePrinter.list("CB values (" + entries.size() + " items)",
+                new java.util.ArrayList<>(entries),
+                e -> {
+                    int idx = e.cbType;  /* CmsCbValueChoice: 0=BRCB, 1=URCB, 2=LCB, 3=SGECB, 4=GOCB, 5=MSVCB */
+                    String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
+                    return e.reference + "  [" + typeName + "]";
+                });
+        }
     }
 }

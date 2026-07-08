@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -15,32 +16,49 @@ public class SelectActiveSgConsole implements CommandHandler {
     public String name() { return "select-active-sg"; }
 
     @Override
-    public String description() { return "选择激活定值组 (SelectActiveSG)。用法: select-active-sg --ref <sgcbRef> --num <groupNumber>"; }
+    public String description() { return "选择激活定值组 (SelectActiveSG)。用法: select-active-sg --ref <sgcbRef> --num <groupNumber> [--json]"; }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
             new Param("ref", "SGCB 引用，如 LD0/LLN0.SG1", null),
-            new Param("num", "定值组号（1~numOfSG）", null)
+            new Param("num", "定值组号（1~numOfSG）", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            String msg = "Not connected. Type 'connect' first.";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: select-active-sg --ref <sgcbRef> --num <groupNumber>");
+            String msg = "Missing --ref. Usage: select-active-sg --ref <sgcbRef> --num <groupNumber>";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
         String numStr = args.get("num");
         if (numStr == null || numStr.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --num. Usage: select-active-sg --ref <sgcbRef> --num <groupNumber>");
+            String msg = "Missing --num. Usage: select-active-sg --ref <sgcbRef> --num <groupNumber>";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
@@ -48,7 +66,12 @@ public class SelectActiveSgConsole implements CommandHandler {
         try {
             sgNum = Integer.parseInt(numStr.trim());
         } catch (NumberFormatException e) {
-            ConsolePrinter.error("Invalid group number: " + numStr);
+            String msg = "Invalid group number: " + numStr;
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
@@ -60,6 +83,11 @@ public class SelectActiveSgConsole implements CommandHandler {
 
         console.getClient(SelectActiveSgClient.class).execute(dao);
 
-        ConsolePrinter.success("Active SG set to " + sgNum + " for " + ref);
+        String msg = "Active SG set to " + sgNum + " for " + ref;
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }

@@ -66,6 +66,9 @@ public final class ConsolePrinter {
     public static void error(String msg)   { println(RED  + "  ERR " + msg + RST); }
     public static void gray(String msg)    { println(GRY  + "  " + msg + RST); }
 
+    /** Output raw text (no ANSI codes, no prefix). Passes through capture stream in API mode. */
+    public static void raw(String msg)     { println(msg); }
+
     public static <T> void list(String title, List<T> items, Function<T, String> formatter) {
         if (items.isEmpty()) { gray(title + ": (empty)"); return; }
         info(title + ":");

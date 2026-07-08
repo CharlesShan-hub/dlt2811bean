@@ -75,9 +75,9 @@ $cmdLine = $cmdParts -join ' '
 
 try {
     $body = @{ cmd = $cmdLine }
-    $response = Invoke-RestMethod -Uri "http://127.0.0.1:$port/api/execute" -Method POST `
+    $response = Invoke-WebRequest -Uri "http://127.0.0.1:$port/api/execute" -Method POST `
         -Body $body -TimeoutSec 30
-    Write-Host $response
+    Write-Host $response.Content
 }
 catch {
     Write-Error "无法连接 CMS CLI API 服务器 (127.0.0.1:$port)"

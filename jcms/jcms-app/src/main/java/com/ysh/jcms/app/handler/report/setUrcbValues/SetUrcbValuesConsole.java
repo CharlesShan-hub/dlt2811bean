@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,7 +21,7 @@ public class SetUrcbValuesConsole implements CommandHandler {
         "    set-urcb-vals --ref LD0/LLN0.urcb1                                # 仅引用（无字段修改）\n" +
         "    set-urcb-vals --ref LD0/LLN0.urcb1 --rpt-ena true                  # 启用报告\n" +
         "    set-urcb-vals --ref LD0/LLN0.urcb1 --rpt-id \"MyRptID\" --gi true   # 改标识+触发总召唤\n" +
-        "    set-urcb-vals --ref LD0/LLN0.urcb1 --buf-tm 1000 --intg-pd 10000  # 缓存时间和完整性"; }
+        "    set-urcb-vals --ref LD0/LLN0.urcb1 --buf-tm 1000 --intg-pd 10000  # 缓存时间和完整性 [--json]"; }
 
     @Override
     public List<Param> params() {
@@ -32,20 +33,32 @@ public class SetUrcbValuesConsole implements CommandHandler {
             new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null),
             new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null),
             new Param("gi", "总召唤命令 (BOOLEAN: true=触发一次)", null),
-            new Param("resv", "保留 (BOOLEAN)", null)
+            new Param("resv", "保留 (BOOLEAN)", null),
+            new Param("json", "JSON 格式输出", "")
         );
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isConnected()) {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
+            String msg = "Not connected. Type 'connect' first.";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
         String ref = args.get("ref");
         if (ref == null || ref.trim().isEmpty()) {
-            ConsolePrinter.error("Missing --ref. Usage: set-urcb-vals --ref <urcbRef> [options]");
+            String msg = "Missing --ref. Usage: set-urcb-vals --ref <urcbRef> [options]";
+            if (jsonMode) {
+                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            } else {
+                ConsolePrinter.error(msg);
+            }
             return;
         }
 
@@ -62,6 +75,11 @@ public class SetUrcbValuesConsole implements CommandHandler {
 
         ConsolePrinter.info("Setting URCB values: ref=" + ref);
         console.getClient(SetUrcbValuesClient.class).execute(dao);
-        ConsolePrinter.success("URCB values set for " + ref);
+        String msg = "URCB values set for " + ref;
+        if (jsonMode) {
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 }
