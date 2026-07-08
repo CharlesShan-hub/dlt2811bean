@@ -10,6 +10,41 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 
+DataDefinition ::= CHOICE {
+    error              [0] IMPLICIT ServiceError,
+    array              [1] IMPLICIT SEQUENCE {
+        numberOfElement  [1] IMPLICIT Int32,
+        elementType      [2] DataDefinition
+    },
+    structure          [2] IMPLICIT SEQUENCE OF SEQUENCE {
+        name             [0] IMPLICIT ObjectName,
+        fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
+        type             [2] DataDefinition
+    },
+    boolean            [3] IMPLICIT NULL,
+    int8               [4] IMPLICIT NULL,
+    int16              [5] IMPLICIT NULL,
+    int32              [6] IMPLICIT NULL,
+    int64              [7] IMPLICIT NULL,
+    int8u              [8] IMPLICIT NULL,
+    int16u             [9] IMPLICIT NULL,
+    int32u             [10] IMPLICIT NULL,
+    int64u             [11] IMPLICIT NULL,
+    float32            [12] IMPLICIT NULL,
+    float64            [13] IMPLICIT NULL,
+    bit-string         [14] IMPLICIT INTEGER,
+    octet-string       [15] IMPLICIT INTEGER,
+    visible-string     [16] IMPLICIT INTEGER,
+    unicode-string     [17] IMPLICIT INTEGER,
+    utc-time           [18] IMPLICIT NULL,
+    binary-time        [19] IMPLICIT NULL,
+    quality            [20] IMPLICIT NULL,
+    dbpos              [21] IMPLICIT NULL,
+    tcmd               [22] IMPLICIT NULL,
+    check              [23] IMPLICIT NULL
+}
+
  * DataDefinition ::= CHOICE { 24 alternatives }  —  7.7
  * Only alternatives with payload are stored as pointers:
  *   [0]  error              → CmsServiceError*

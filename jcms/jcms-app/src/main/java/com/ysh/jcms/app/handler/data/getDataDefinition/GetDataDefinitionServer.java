@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.data.SclDataDefinitionEntry;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
@@ -43,6 +42,7 @@ public class GetDataDefinitionServer extends BaseServerHandler {
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
 
         int ps = pageSize();
+        log.info(">>>> ps={} resp.data.count={} req.data.count={}", ps, resp.data.count, req.data.count);
         for (int i = 0; i < req.data.count && resp.data.count < ps; i++) {
             CmsDataRefEntry refEntry = req.data.items.get(i);
             String ref = str(refEntry.reference);

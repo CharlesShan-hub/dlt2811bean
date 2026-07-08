@@ -46,10 +46,10 @@
                     v-model="editValue"
                     class="edit-input"
                     :placeholder="entry.value ?? ''"
+                    autofocus
                     @keydown.enter="saveEdit(entry)"
                     @keydown.escape="cancelEdit"
                     @blur="saveEdit(entry)"
-                    ref="editInputRef"
                   />
                   <span v-else class="val-text">{{ entry.value ?? '—' }}</span>
                   <span v-if="editingRef === entry.fullRef && saving" class="saving">保存中...</span>
@@ -131,22 +131,40 @@ async function onToggle(node) {
         })
 
         const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
-        const valRes = await executeJson(`get-data-values --refs "${refs}" --json`)
 
+        // Get values and definitions in parallel
+        const [valRes, defRes] = await Promise.all([
+          executeJson(`get-data-values --refs "${refs}" --json`),
+          executeJson(`get-data-def --refs "${refs}" --json`),
+        ])
+
+        // Build type map from data-def: "ref  [type]" → { ref, type }
+        const defMap = {}
+        if (defRes.success && defRes.data) {
+          for (const entry of defRes.data) {
+            const m = entry.match(/^(\S+)\s+\[(\w+)\]/)
+            if (m) defMap[m[1]] = m[2]
+          }
+        }
+
+        // Build value map
+        const valMap = {}
         if (valRes.success && valRes.data) {
-          const valMap = {}
           for (const item of valRes.data) {
             valMap[item.ref] = item
           }
-
-          dirEntries.value = attrs.map(a => {
-            const fullRef = `${node.ref}.${a.attr}`
-            const v = valMap[fullRef]
-            return { ...a, value: v?.value, type: v?.type, fullRef }
-          })
-        } else {
-          dirEntries.value = attrs
         }
+
+        dirEntries.value = attrs.map(a => {
+          const fullRef = `${node.ref}.${a.attr}`
+          const v = valMap[fullRef]
+          const valType = v?.type
+          // Use definition type if value type is the generic fallback "visible-string"
+          const actualType = defMap[fullRef] && (valType === 'visible-string' || !valType)
+            ? defMap[fullRef]
+            : valType
+          return { ...a, value: v?.value, type: actualType || valType, fullRef }
+        })
       }
     } finally {
       detailLoading.value = false
@@ -239,54 +257,39 @@ function buildDoRef(name) {
   return name
 }
 
-async function onSelect(node) {
-  if (node.type !== 'do') return
+function startEdit(entry) {
+  editingRef.value = entry.fullRef
+  editValue.value = entry.value && entry.value !== '(unavailable)' ? entry.value : ''
+  editError.value = ''
+}
 
-  selected.value = node
-  detailLoading.value = true
-  dirEntries.value = []
-  detailRaw.value = ''
-
-  try {
-    // Get data directory (list of attributes with FC)
-    const dirRes = await executeJson(`data-dir --ref ${node.ref} --json`)
-    detailRaw.value = JSON.stringify(dirRes, null, 2)
-
-    if (dirRes.success && dirRes.data.length) {
-      // Parse entries: ["[FC]  name", ...]
-      const attrs = dirRes.data.map(s => {
-        const m = s.match(/^\[(\w+)\]\s+(.+)$/)
-        return m ? { fc: m[1], attr: m[2] } : { fc: '?', attr: s }
-      })
-
-      // Get values for each attribute
-      const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
-      const valRes = await executeJson(`get-data-values --refs "${refs}" --json`)
-
-      if (valRes.success && valRes.data) {
-        // Build value map: ref → { type, value }
-        const valMap = {}
-        for (const item of valRes.data) {
-          valMap[item.ref] = item
-        }
-
-        dirEntries.value = attrs.map(a => {
-          const fullRef = `${node.ref}.${a.attr}`
-          const v = valMap[fullRef]
-          return {
-            ...a,
-            value: v?.value,
-            type: v?.type,
-            fullRef,
-          }
-        })
-      } else {
-        dirEntries.value = attrs
-      }
-    }
-  } finally {
-    detailLoading.value = false
+async function saveEdit(entry) {
+  if (editingRef.value !== entry.fullRef) return
+  if (editValue.value === entry.value) {
+    cancelEdit()
+    return
   }
+  saving.value = true
+  editError.value = ''
+  try {
+    const cmd = `set-data-values --pairs "${entry.fullRef}=${editValue.value}" --json`
+    const res = await executeJson(cmd)
+    if (res.success) {
+      entry.value = editValue.value
+      editingRef.value = null
+    } else {
+      editError.value = res.error || '保存失败'
+    }
+  } catch {
+    editError.value = '请求失败'
+  } finally {
+    saving.value = false
+  }
+}
+
+function cancelEdit() {
+  editingRef.value = null
+  editError.value = ''
 }
 </script>
 
@@ -412,6 +415,40 @@ async function onSelect(node) {
 
 .cell-value {
   color: var(--text-primary);
+  cursor: pointer;
+}
+
+.val-text {
+  min-height: 20px;
+  display: inline-block;
+}
+
+.edit-input {
+  background: var(--bg-primary);
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 2px 6px;
+  width: 100%;
+  outline: none;
+}
+
+.edit-input:focus {
+  box-shadow: 0 0 0 2px var(--accent-muted);
+}
+
+.saving {
+  font-size: 11px;
+  color: var(--accent);
+  margin-left: 6px;
+}
+
+.edit-err {
+  font-size: 11px;
+  color: var(--red);
+  margin-left: 6px;
 }
 
 .cell-type {

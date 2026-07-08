@@ -111,6 +111,7 @@ public class SclDataDefinitionResolver {
             String daName = parts[parts.length - 1];
             if (parts.length == 3) {
                 String bType = SclDataValueResolver.resolveDaBType(templates, ln, doName, daName);
+                System.out.println(">>> resolveDataDefinition ref=" + ref + " bType=" + bType + " lnType=" + ln.getLnType());
                 if (bType == null) return null;
                 return new SclDataDefinitionEntry(ref, "", bTypeToDataDefinition(bType));
             }

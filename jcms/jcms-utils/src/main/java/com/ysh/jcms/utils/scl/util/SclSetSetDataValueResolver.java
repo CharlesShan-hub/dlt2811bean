@@ -12,7 +12,12 @@ import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.instance.SclSDI;
 import com.ysh.jcms.utils.scl.model.ied.SclServer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class SclSetSetDataValueResolver {
+
+    private static final Logger log = LoggerFactory.getLogger(SclSetSetDataValueResolver.class);
 
     // -------------------------------------------------------------------------
     // Data value setting (for SetDataValues service)
@@ -100,6 +105,9 @@ public class SclSetSetDataValueResolver {
             dai.setVal(value);
         } else {
             String bType = resolveDaBType(templates, ln, doName, dai.getName(), parts);
+            log.info(">>> setDataValue ref={} value={} parts.length={} bType={} templates={} lnType={}",
+                ref, value, parts.length, bType, templates != null ? "ok" : "null",
+                ln != null ? ln.getLnType() : "null");
             if (bType != null) {
                 String validated = validateAndConvert(value, bType);
                 if (validated == null) {
