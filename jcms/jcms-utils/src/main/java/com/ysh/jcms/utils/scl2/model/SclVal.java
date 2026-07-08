@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclVal {
     /** 数值字符串 (normalizedString) */
     private String value;

@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.scl2.query;
 
 import com.ysh.jcms.utils.scl2.SclDocument;
-import com.ysh.jcms.utils.scl2.model.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
 
 import java.util.Collections;
 import java.util.List;
@@ -15,7 +15,7 @@ public class SclQuery {
     }
 
     public List<SclIED> ieds() {
-        return document != null ? document.getIeds() : Collections.emptyList();
+        return document != null ? document.ieds() : Collections.emptyList();
     }
 
     public SclIED ied(String name) {

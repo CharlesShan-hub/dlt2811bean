@@ -8,9 +8,12 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.ArrayList;
 
+import com.ysh.jcms.utils.scl2.model.SclVal;
+import com.ysh.jcms.utils.scl2.model.template.SclProtNs;
+
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclDA {
 
@@ -22,11 +25,21 @@ public class SclDA {
     private String valKind;
     private String sAddr;
     private Integer count;
+    private Boolean dchg;
+    private Boolean qchg;
+    private Boolean dupd;
+    private Boolean valImport;
 
-    private List<SclDA> subDas = new ArrayList<>();
+    private final List<SclVal> vals = new ArrayList<>();
+    private final List<SclProtNs> protNs = new ArrayList<>();
 
-    public SclDA addSubDa(SclDA subDa) {
-        subDas.add(subDa);
+    public SclDA addVal(SclVal val) {
+        vals.add(val);
+        return this;
+    }
+
+    public SclDA addProtNs(SclProtNs p) {
+        protNs.add(p);
         return this;
     }
 }

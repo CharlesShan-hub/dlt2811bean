@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclExtRef {
 
@@ -28,4 +28,11 @@ public class SclExtRef {
     private String srcLnClass;
     private String srcLnInst;
     private String srcCBName;
+
+    // ExtRef attributes per XSD
+    private String intAddr;
+    private String pServT;
+    private String pLN;
+    private String pDO;
+    private String pDA;
 }

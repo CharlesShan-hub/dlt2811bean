@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclDataSet {
 
@@ -27,7 +27,7 @@ public class SclDataSet {
 
     public SclFCDA findFcdaByFc(String fc) {
         for (SclFCDA fcda : fcDas) {
-            if (fcda.getFc().equals(fc)) {
+            if (fcda.fc().equals(fc)) {
                 return fcda;
             }
         }

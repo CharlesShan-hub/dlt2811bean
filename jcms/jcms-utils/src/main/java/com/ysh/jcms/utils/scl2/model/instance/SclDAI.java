@@ -1,5 +1,6 @@
 package com.ysh.jcms.utils.scl2.model.instance;
 
+import com.ysh.jcms.utils.scl2.model.SclVal;
 import lombok.experimental.Accessors;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,20 +11,20 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclDAI {
 
     private String name;
-    private String fc;
     private String sAddr;
-    private String val;
     private String valKind;
+    private Integer ix;
+    private Boolean valImport;
 
-    private final List<SclDAI> subDais = new ArrayList<>();
+    private final List<SclVal> vals = new ArrayList<>();
 
-    public SclDAI addSubDai(SclDAI subDai) {
-        this.subDais.add(subDai);
+    public SclDAI addVal(SclVal val) {
+        this.vals.add(val);
         return this;
     }
 }

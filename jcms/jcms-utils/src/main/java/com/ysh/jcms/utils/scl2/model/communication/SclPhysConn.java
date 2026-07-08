@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclPhysConn {
 

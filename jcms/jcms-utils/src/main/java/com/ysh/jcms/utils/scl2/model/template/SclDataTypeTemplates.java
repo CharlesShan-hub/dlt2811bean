@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclDataTypeTemplates {
 
@@ -50,7 +50,7 @@ public class SclDataTypeTemplates {
         if (lNodeTypeIndex == null) {
             lNodeTypeIndex = new HashMap<>();
             for (SclLNodeType t : lNodeTypes) {
-                lNodeTypeIndex.put(t.getId(), t);
+                lNodeTypeIndex.put(t.id(), t);
             }
         }
         return lNodeTypeIndex.get(id);
@@ -60,7 +60,7 @@ public class SclDataTypeTemplates {
         if (doTypeIndex == null) {
             doTypeIndex = new HashMap<>();
             for (SclDOType t : doTypes) {
-                doTypeIndex.put(t.getId(), t);
+                doTypeIndex.put(t.id(), t);
             }
         }
         return doTypeIndex.get(id);
@@ -70,7 +70,7 @@ public class SclDataTypeTemplates {
         if (daTypeIndex == null) {
             daTypeIndex = new HashMap<>();
             for (SclDAType t : daTypes) {
-                daTypeIndex.put(t.getId(), t);
+                daTypeIndex.put(t.id(), t);
             }
         }
         return daTypeIndex.get(id);
@@ -80,7 +80,7 @@ public class SclDataTypeTemplates {
         if (enumTypeIndex == null) {
             enumTypeIndex = new HashMap<>();
             for (SclEnumType t : enumTypes) {
-                enumTypeIndex.put(t.getId(), t);
+                enumTypeIndex.put(t.id(), t);
             }
         }
         return enumTypeIndex.get(id);

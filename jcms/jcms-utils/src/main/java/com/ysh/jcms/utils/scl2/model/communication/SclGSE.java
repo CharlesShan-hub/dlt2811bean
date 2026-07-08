@@ -10,12 +10,16 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclGSE {
 
     private String ldInst;
     private String cbName;
+    /** 最小时间 (MinTime), 毫秒 */
+    private String minTime;
+    /** 最大时间 (MaxTime), 毫秒 */
+    private String maxTime;
 
     private final List<SclAddress> addresses = new ArrayList<>();
 
@@ -26,7 +30,7 @@ public class SclGSE {
 
     public SclAddress findAddressByType(String type) {
         for (SclAddress addr : addresses) {
-            if (addr.getType().equals(type)) {
+            if (addr.type().equals(type)) {
                 return addr;
             }
         }

@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclSDO {
 
     private String name;
     private String type;
+    private String desc;
+    private Integer count;
 }

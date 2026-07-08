@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclTransformerWinding {
     private String name;
     private String desc;
@@ -15,8 +15,12 @@ public class SclTransformerWinding {
     private SclTapChanger tapChanger;
     private SclTerminal neutralPoint;
     private final List<SclTerminal> terminals = new ArrayList<>();
+    private final List<SclLNode> lNodes = new ArrayList<>();
+    private final List<SclSubEquipment> subEquipments = new ArrayList<>();
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
     public SclTransformerWinding addTerminal(SclTerminal terminal) { terminals.add(terminal); return this; }
+    public SclTransformerWinding addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclTransformerWinding addSubEquipment(SclSubEquipment subEquipment) { subEquipments.add(subEquipment); return this; }
     public SclTransformerWinding addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
 }

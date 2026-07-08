@@ -32,7 +32,7 @@ import java.util.List;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclProcess {
     /** 过程名称 (name) */
     private String name;

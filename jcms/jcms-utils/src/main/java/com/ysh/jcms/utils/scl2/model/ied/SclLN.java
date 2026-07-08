@@ -12,13 +12,13 @@ import lombok.experimental.Accessors;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclLN extends SclLNBase {
 
     public SclDOI findDoiByName(String name) {
-        for (SclDOI doi : getDois()) {
-            if (doi.getName().equals(name)) {
+        for (SclDOI doi : dois()) {
+            if (doi.name().equals(name)) {
                 return doi;
             }
         }
@@ -26,8 +26,8 @@ public class SclLN extends SclLNBase {
     }
 
     public SclDataSet findDataSetByName(String name) {
-        for (SclDataSet ds : getDataSets()) {
-            if (ds.getName().equals(name)) {
+        for (SclDataSet ds : dataSets()) {
+            if (ds.name().equals(name)) {
                 return ds;
             }
         }
@@ -35,8 +35,8 @@ public class SclLN extends SclLNBase {
     }
 
     public SclReportControl findReportControlByName(String name) {
-        for (SclReportControl rc : getReportControls()) {
-            if (rc.getName().equals(name)) {
+        for (SclReportControl rc : reportControls()) {
+            if (rc.name().equals(name)) {
                 return rc;
             }
         }
@@ -44,8 +44,8 @@ public class SclLN extends SclLNBase {
     }
 
     public SclGSEControl findGseControlByName(String name) {
-        for (SclGSEControl gc : getGseControls()) {
-            if (gc.getName().equals(name)) {
+        for (SclGSEControl gc : gseControls()) {
+            if (gc.name().equals(name)) {
                 return gc;
             }
         }
@@ -53,8 +53,8 @@ public class SclLN extends SclLNBase {
     }
 
     public SclSampledValueControl findSmvControlByName(String name) {
-        for (SclSampledValueControl sv : getSvControls()) {
-            if (sv.getName().equals(name)) {
+        for (SclSampledValueControl sv : svControls()) {
+            if (sv.name().equals(name)) {
                 return sv;
             }
         }

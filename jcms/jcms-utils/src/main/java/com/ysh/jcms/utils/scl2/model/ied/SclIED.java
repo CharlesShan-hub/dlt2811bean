@@ -10,12 +10,20 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclIED {
 
     private String name;
     private String desc;
+    private String type;
+    private String manufacturer;
+    private String configVersion;
+    private String originalSclVersion = "2003";
+    private String originalSclRevision = "A";
+    private Integer originalSclRelease = 1;
+    private String engRight = "full";
+    private String owner;
     private SclServices services;
 
     private final List<SclAccessPoint> accessPoints = new ArrayList<>();
@@ -27,7 +35,7 @@ public class SclIED {
 
     public SclAccessPoint findAccessPointByName(String name) {
         for (SclAccessPoint ap : accessPoints) {
-            if (ap.getName().equals(name)) {
+            if (ap.name().equals(name)) {
                 return ap;
             }
         }

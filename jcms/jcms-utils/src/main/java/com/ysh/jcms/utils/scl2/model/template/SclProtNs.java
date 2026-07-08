@@ -9,11 +9,8 @@ import lombok.NoArgsConstructor;
 @Setter
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
-public class SclDO {
+public class SclProtNs {
 
-    private String name;
-    private String desc;
-    private String type;
-    private String accessControl;
-    private Boolean transient_;
+    private String value;
+    private String type = "8-MMS";
 }

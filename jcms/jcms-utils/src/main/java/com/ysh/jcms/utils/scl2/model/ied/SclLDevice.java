@@ -10,12 +10,14 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclLDevice {
 
     private String inst;
     private String desc;
+    private String ldName;
+    private SclAccessControl accessControl;
 
     private final List<SclLN> lns = new ArrayList<>();
     private final List<SclLN> subLns = new ArrayList<>();
@@ -47,12 +49,12 @@ public class SclLDevice {
     public List<SclLN> findLnsByClass(String lnClass) {
         List<SclLN> result = new ArrayList<>();
         for (SclLN ln : lns) {
-            if (ln.getLnClass().equals(lnClass)) {
+            if (ln.lnClass().equals(lnClass)) {
                 result.add(ln);
             }
         }
         for (SclLN ln : subLns) {
-            if (ln.getLnClass().equals(lnClass)) {
+            if (ln.lnClass().equals(lnClass)) {
                 result.add(ln);
             }
         }

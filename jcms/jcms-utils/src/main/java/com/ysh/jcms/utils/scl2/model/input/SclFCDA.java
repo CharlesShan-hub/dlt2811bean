@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclFCDA {
 
@@ -18,6 +18,7 @@ public class SclFCDA {
     private String doName;
     private String daName;
     private String fc;
+    private Integer ix;
 
     public String buildFcdaRef() {
         return ldInst + "/" + prefix + lnClass + lnInst + "." + doName

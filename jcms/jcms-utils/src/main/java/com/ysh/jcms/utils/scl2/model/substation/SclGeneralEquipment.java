@@ -27,7 +27,7 @@ import java.util.List;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclGeneralEquipment {
     /** 设备名称 (name) */
     private String name;

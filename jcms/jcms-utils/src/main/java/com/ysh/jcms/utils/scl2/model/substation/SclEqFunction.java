@@ -27,7 +27,7 @@ import java.util.List;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclEqFunction {
     /** 设备功能名称 (name) */
     private String name;

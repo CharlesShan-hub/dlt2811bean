@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclVoltage {
     /** 电压数值 (decimal) */
     private String value;

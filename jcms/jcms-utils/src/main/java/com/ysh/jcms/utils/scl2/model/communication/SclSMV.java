@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclSMV {
 
@@ -26,7 +26,7 @@ public class SclSMV {
 
     public SclAddress findAddressByType(String type) {
         for (SclAddress addr : addresses) {
-            if (addr.getType().equals(type)) {
+            if (addr.type().equals(type)) {
                 return addr;
             }
         }

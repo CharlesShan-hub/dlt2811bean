@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclEnumType {
 
@@ -26,7 +26,7 @@ public class SclEnumType {
 
     public SclEnumVal findEnumValByOrd(int ord) {
         for (SclEnumVal v : enumVals) {
-            if (v.getOrd() == ord) {
+            if (v.ord() == ord) {
                 return v;
             }
         }

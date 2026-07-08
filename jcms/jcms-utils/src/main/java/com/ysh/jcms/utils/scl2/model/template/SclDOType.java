@@ -10,13 +10,14 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclDOType {
 
     private String id;
     private String desc;
     private String cdc;
+    private String iedType = "";
 
     private List<SclDA> das = new ArrayList<>();
     private List<SclSDO> sdos = new ArrayList<>();
@@ -33,7 +34,7 @@ public class SclDOType {
 
     public SclDA findDaByName(String name) {
         for (SclDA d : das) {
-            if (d.getName().equals(name)) {
+            if (d.name().equals(name)) {
                 return d;
             }
         }
@@ -42,7 +43,7 @@ public class SclDOType {
 
     public SclDA findDaByFc(String fc) {
         for (SclDA d : das) {
-            if (fc.equals(d.getFc())) {
+            if (fc.equals(d.fc())) {
                 return d;
             }
         }

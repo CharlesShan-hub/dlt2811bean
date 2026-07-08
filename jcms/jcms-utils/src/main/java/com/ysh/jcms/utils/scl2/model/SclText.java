@@ -19,7 +19,7 @@ import lombok.experimental.Accessors;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclText {
     /** 文本内容 (mixed content) */
     private String value;

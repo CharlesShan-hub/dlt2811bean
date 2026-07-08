@@ -8,11 +8,11 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ysh.jcms.utils.scl2.model.header.SclText;
+import com.ysh.jcms.utils.scl2.model.SclText;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclSubNetwork {
 
@@ -33,7 +33,7 @@ public class SclSubNetwork {
 
     public SclConnectedAP findConnectedAPByIedName(String iedName) {
         for (SclConnectedAP cap : connectedAPs) {
-            if (cap.getIedName().equals(iedName)) {
+            if (cap.iedName().equals(iedName)) {
                 return cap;
             }
         }

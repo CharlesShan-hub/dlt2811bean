@@ -1,18 +1,18 @@
 package com.ysh.jcms.utils.scl2;
 
-import com.ysh.jcms.utils.scl2.model.document.SclHeader;
+import com.ysh.jcms.utils.scl2.model.header.SclHeader;
 import com.ysh.jcms.utils.scl2.model.substation.SclSubstation;
 import com.ysh.jcms.utils.scl2.model.communication.SclCommunication;
 import com.ysh.jcms.utils.scl2.model.ied.SclIED;
 import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
-import lombok.Accessors;
+import lombok.experimental.Accessors;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclDocument {
     public enum SclFileType { SCD, ICD, CID, UNKNOWN }
 
@@ -31,6 +31,6 @@ public class SclDocument {
     public SclDocument addUnsupportedElement(String element) { unsupportedElements.add(element); return this; }
     public boolean hasUnsupportedElements() { return !unsupportedElements.isEmpty(); }
     public SclIED findIedByName(String name) {
-        return ieds.stream().filter(i -> name.equals(i.getName())).findFirst().orElse(null);
+        return ieds.stream().filter(i -> name.equals(i.name())).findFirst().orElse(null);
     }
 }

@@ -10,12 +10,14 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclSDI {
 
     private String name;
     private String desc;
+    private Integer ix;
+    private String sAddr;
 
     private final List<SclDAI> dais = new ArrayList<>();
     private final List<SclSDI> sdis = new ArrayList<>();
@@ -32,7 +34,7 @@ public class SclSDI {
 
     public SclDAI findDaiByName(String name) {
         for (SclDAI dai : dais) {
-            if (dai.getName().equals(name)) {
+            if (dai.name().equals(name)) {
                 return dai;
             }
         }
@@ -41,7 +43,7 @@ public class SclSDI {
 
     public SclSDI findSdiByName(String name) {
         for (SclSDI sdi : sdis) {
-            if (sdi.getName().equals(name)) {
+            if (sdi.name().equals(name)) {
                 return sdi;
             }
         }

@@ -1,5 +1,6 @@
 package com.ysh.jcms.utils.scl2.model.header;
 
+import com.ysh.jcms.utils.scl2.model.SclText;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ import java.util.List;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclHeader {
     /** A string identifying this SCL file, mandatory (can be empty) */
     private String id;

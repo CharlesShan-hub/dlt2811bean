@@ -10,13 +10,14 @@ import java.util.ArrayList;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclLNodeType {
 
     private String id;
     private String lnClass;
     private String desc;
+    private String iedType = "";
 
     private List<SclDO> dos = new ArrayList<>();
 
@@ -27,7 +28,7 @@ public class SclLNodeType {
 
     public SclDO findDoByName(String name) {
         for (SclDO d : dos) {
-            if (d.getName().equals(name)) {
+            if (d.name().equals(name)) {
                 return d;
             }
         }

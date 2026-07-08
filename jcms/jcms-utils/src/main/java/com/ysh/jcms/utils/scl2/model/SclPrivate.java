@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclPrivate {
     /** 私有类型标识 (type, required) */
     private String type;

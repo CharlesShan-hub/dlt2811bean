@@ -23,7 +23,7 @@ import lombok.experimental.Accessors;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclLNode {
     /** 逻辑设备实例 (ldInst) */
     private String ldInst;

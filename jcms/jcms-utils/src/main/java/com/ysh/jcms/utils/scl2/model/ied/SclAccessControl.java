@@ -9,12 +9,5 @@ import lombok.experimental.Accessors;
 @Setter
 @Accessors(chain = true, fluent = true)
 @NoArgsConstructor
-public class SclReportSettings {
-
-    private String bufTime;
-    private String cbName;
-    private String rptID;
-    private String datSet;
-    private String intgPd;
-    private String optFields;
+public class SclAccessControl {
 }

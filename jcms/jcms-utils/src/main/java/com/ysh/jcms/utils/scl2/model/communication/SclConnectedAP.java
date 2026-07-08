@@ -10,12 +10,14 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclConnectedAP {
 
     private String iedName;
     private String apName;
+    /** 冗余协议 (redProt), 如 "hsr", "prp", "rstp" */
+    private String redProt;
 
     private final List<SclAddress> addresses = new ArrayList<>();
     private final List<SclGSE> gses = new ArrayList<>();
@@ -44,7 +46,7 @@ public class SclConnectedAP {
 
     public SclAddress findAddressByType(String type) {
         for (SclAddress addr : addresses) {
-            if (addr.getType().equals(type)) {
+            if (addr.type().equals(type)) {
                 return addr;
             }
         }

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclCommunication {
 
@@ -23,7 +23,7 @@ public class SclCommunication {
 
     public SclSubNetwork findSubNetworkByName(String name) {
         for (SclSubNetwork sn : subNetworks) {
-            if (sn.getName().equals(name)) {
+            if (sn.name().equals(name)) {
                 return sn;
             }
         }

@@ -31,7 +31,7 @@ import java.util.List;
  * </xs:complexType>
  * }</pre>
  */
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclLine {
     /** 线路名称 (name) */
     private String name;

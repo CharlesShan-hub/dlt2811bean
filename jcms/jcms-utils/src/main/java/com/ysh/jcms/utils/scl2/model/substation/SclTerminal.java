@@ -5,7 +5,7 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-@Getter @Setter @Accessors(chain = true) @NoArgsConstructor
+@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
 public class SclTerminal {
     private String connectivityNode;
     private String substationName;

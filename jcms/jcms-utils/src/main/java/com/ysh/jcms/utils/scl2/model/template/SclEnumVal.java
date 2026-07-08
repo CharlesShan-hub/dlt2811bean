@@ -7,10 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Setter
-@Accessors(chain = true)
+@Accessors(chain = true, fluent = true)
 @NoArgsConstructor
 public class SclEnumVal {
 
     private int ord;
     private String value;
+    private String desc;
 }
