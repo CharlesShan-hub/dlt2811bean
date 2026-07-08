@@ -9,6 +9,9 @@ import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.Executors;
 
 /**
@@ -18,6 +21,7 @@ import java.util.concurrent.Executors;
  * <ul>
  *   <li>{@code POST /api/execute} — execute a CLI command, returns text output</li>
  *   <li>{@code GET /api/status} — query connection status</li>
+ *   <li>{@code GET /ui/*} — serve Vue web UI static files</li>
  * </ul>
  */
 public class CliApiServer {
@@ -36,6 +40,8 @@ public class CliApiServer {
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.createContext("/api/execute", this::handleExecute);
         server.createContext("/api/status", this::handleStatus);
+        server.createContext("/ui", this::handleStatic);
+        server.createContext("/", this::handleStatic);
         server.start();
         ConsolePrinter.gray("CliApiServer started on port " + port);
     }
@@ -88,6 +94,33 @@ public class CliApiServer {
         sendResponse(exchange, 200, status);
     }
 
+    private void handleStatic(HttpExchange exchange) throws IOException {
+        String requestPath = exchange.getRequestURI().getPath();
+        if (requestPath.equals("/")) {
+            requestPath = "/index.html";
+        }
+
+        // Try webui/dist first (production build), fallback to index.html for SPA
+        Path filePath = Paths.get("webui/dist", requestPath);
+        if (!Files.exists(filePath)) {
+            filePath = Paths.get("webui/dist/index.html");
+        }
+        if (!Files.exists(filePath)) {
+            String html = "<!DOCTYPE html><html><head><meta charset='UTF-8'><title>CMS Console</title></head>"
+                    + "<body style='background:#0f1117;color:#e1e3ec;display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;'>"
+                    + "<div style='text-align:center;'><h1>⚡ CMS Console</h1>"
+                    + "<p style='color:#9196ab;'>请先构建前端: <code style='background:#1e2030;padding:4px 8px;border-radius:4px;'>cd webui && yarn build</code></p>"
+                    + "</div></body></html>";
+            sendResponse(exchange, 200, html);
+            return;
+        }
+
+        String contentType = guessContentType(filePath.toString());
+        exchange.getResponseHeaders().set("Content-Type", contentType);
+        byte[] bytes = Files.readAllBytes(filePath);
+        sendResponse(exchange, 200, new String(bytes, StandardCharsets.UTF_8));
+    }
+
     private String readBody(HttpExchange exchange) throws IOException {
         try (InputStream is = exchange.getRequestBody();
              ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -100,7 +133,14 @@ public class CliApiServer {
         }
     }
 
+    private void addCorsHeaders(HttpExchange exchange) {
+        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
+    }
+
     private void sendResponse(HttpExchange exchange, int code, String body) throws IOException {
+        addCorsHeaders(exchange);
         byte[] bytes = body.getBytes("UTF-8");
         String trimmed = body.trim();
         String contentType = (trimmed.startsWith("{") || trimmed.startsWith("["))
@@ -111,5 +151,17 @@ public class CliApiServer {
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(bytes);
         }
+    }
+
+    private static String guessContentType(String path) {
+        if (path.endsWith(".html")) return "text/html; charset=UTF-8";
+        if (path.endsWith(".css"))  return "text/css; charset=UTF-8";
+        if (path.endsWith(".js"))   return "application/javascript; charset=UTF-8";
+        if (path.endsWith(".json")) return "application/json";
+        if (path.endsWith(".svg"))  return "image/svg+xml";
+        if (path.endsWith(".png"))  return "image/png";
+        if (path.endsWith(".ico"))  return "image/x-icon";
+        if (path.endsWith(".woff2")) return "font/woff2";
+        return "application/octet-stream";
     }
 }

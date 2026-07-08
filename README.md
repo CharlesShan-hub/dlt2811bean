@@ -43,6 +43,19 @@
 
 ## 使用方法
 
+### 支持json格式输出
+
+```bash
+PS D:\project\work\standard\dlt2811bean> cms server-dir --json
+{"success":true,"data":["LD0","PROT","RCD"]}
+
+PS D:\project\work\standard\dlt2811bean> cms server-dir       
+  Logical Devices:
+    [0] LD0
+    [1] PROT
+    [2] RCD
+```
+
 ### 自定义功能
 
 ```bash

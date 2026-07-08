@@ -62,6 +62,34 @@ c-rebuild: single-c-clean single-c-check-env single-c-build single-c-test single
 c-quick: single-c-clean single-c-build single-c-load
 
 # ╔═══════════════════════════════════════════╗
+# ║  WebUI — Vue 前端                         ║
+# ╚═══════════════════════════════════════════╝
+
+[windows]
+single-ui-install:
+    yarn --cwd jcms\webui install
+
+[windows]
+single-ui-dev:
+    yarn --cwd jcms\webui dev
+
+[windows]
+single-ui-build:
+    yarn --cwd jcms\webui build
+
+[windows]
+single-ui-clean:
+    if exist jcms\webui\dist rmdir /s /q jcms\webui\dist
+
+[windows]
+single-ui-preview:
+    yarn --cwd jcms\webui preview
+
+# ── UI 批量级 ──
+
+ui-quick: single-ui-clean single-ui-install single-ui-build
+
+# ╔═══════════════════════════════════════════╗
 # ║  JCMS — Java 应用                         ║
 # ╚═══════════════════════════════════════════╝
 
@@ -211,6 +239,7 @@ single-client:
 single-client:
     chmod +x scripts/single-client-unix.sh && ./scripts/single-client-unix.sh
 
+
 # ╔═══════════════════════════════════════════╗
 # ║  顶层工作流                                ║
 # ╚═══════════════════════════════════════════╝
@@ -229,3 +258,20 @@ build-java-run-server:single-lock java-quick single-unlock run-server
 build-java-run-client:single-lock java-quick single-unlock run-client
 build-c-java-run-server:single-lock c-quick java-quick single-unlock run-server
 build-c-java-run-client:single-lock c-quick java-quick single-unlock run-client
+
+# ── UI 组合 ──
+
+[windows]
+run-client-ui: single-check-lock
+    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
+    powershell -File scripts\single-client-win.ps1
+
+[windows]
+build-java-run-client-ui: single-lock java-quick single-unlock
+    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
+    powershell -File scripts\single-client-win.ps1
+
+[windows]
+build-c-java-run-client-ui: single-lock c-quick java-quick single-unlock
+    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
+    powershell -File scripts\single-client-win.ps1
