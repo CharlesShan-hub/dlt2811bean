@@ -17,6 +17,19 @@ import java.util.Arrays;
  */
 public class CmsUint8Array extends CmsType {
 
+    // ==================== 类型标记 ====================
+
+    /** 未知/兜底 */
+    public static final int TYPE_UNKNOWN = 0;
+    /** VisibleString（VisString255 等） */
+    public static final int TYPE_VISIBLE_STRING = 1;
+    /** UnicodeString（Unicode255 等） */
+    public static final int TYPE_UNICODE_STRING = 2;
+    /** OctetString / Octet64 */
+    public static final int TYPE_OCTET_STRING = 3;
+
+    // ==================== 字段 ====================
+
     public static final int SIZEOF = 16;  // value(8) + len(4) + padding(4)
 
     /** 指向数据的 native 指针。 */
@@ -27,6 +40,9 @@ public class CmsUint8Array extends CmsType {
 
     /** 由 write() 分配的 data 内存，用于生命周期管理。 */
     protected Memory ownedData;
+
+    /** 类型标记，用于区分真实字符串和兜底 */
+    protected int type = TYPE_UNKNOWN;
 
     /** 子类可覆盖此方法指定默认缓冲区大小 */
     protected int defaultBufSize() { return 4096; }
@@ -72,6 +88,18 @@ public class CmsUint8Array extends CmsType {
     public CmsUint8Array(String s) {
         value(s);
     }
+
+    /** 用字符串初始化，并指定类型标记。 */
+    public CmsUint8Array(String s, int type) {
+        value(s);
+        this.type = type;
+    }
+
+    /** 获取类型标记。 */
+    public int type() { return type; }
+
+    /** 设置类型标记。 */
+    public CmsUint8Array type(int type) { this.type = type; return this; }
 
     // ==================== 读写数据 ====================
 

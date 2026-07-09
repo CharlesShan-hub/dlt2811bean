@@ -134,22 +134,22 @@ public class SclRefParserTest {
 
     @Test
     public void testSclRefOf() {
-            SclRef ref = SclRef.of("LD1", "LLN0", "Mod", "stVal");
-        assertEquals("LD1/LLN0.Mod.stVal", ref.rawRef());
+        SclRef ref = SclRef.ld("LD1").lnName("LLN0").doName("Mod").daName("stVal").build();
+        assertEquals("LD1/LLN0.Mod.stVal", ref.fullReference());
         assertTrue(ref.isDaLevel());
     }
 
     @Test
     public void testSclRefOfDoLevel() {
-            SclRef ref = SclRef.of("LD1", "LLN0", "Mod", null);
-        assertEquals("LD1/LLN0.Mod", ref.rawRef());
+        SclRef ref = SclRef.ld("LD1").lnName("LLN0").doName("Mod").build();
+        assertEquals("LD1/LLN0.Mod", ref.fullReference());
         assertTrue(ref.isDoLevel());
     }
 
     @Test
     public void testSclRefOfLnLevel() {
-            SclRef ref = SclRef.of("LD1", "LLN0", null, null);
-        assertEquals("LD1/LLN0", ref.rawRef());
+        SclRef ref = SclRef.ld("LD1").lnName("LLN0").build();
+        assertEquals("LD1/LLN0", ref.fullReference());
         assertTrue(ref.isLnLevel());
     }
 

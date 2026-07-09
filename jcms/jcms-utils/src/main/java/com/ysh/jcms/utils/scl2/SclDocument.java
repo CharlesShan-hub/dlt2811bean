@@ -3,7 +3,7 @@ package com.ysh.jcms.utils.scl2;
 import com.ysh.jcms.utils.scl2.model.header.SclHeader;
 import com.ysh.jcms.utils.scl2.model.substation.SclSubstation;
 import com.ysh.jcms.utils.scl2.model.communication.SclCommunication;
-import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.*;
 import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
 import lombok.experimental.Accessors;
 import lombok.Getter;
@@ -32,5 +32,18 @@ public class SclDocument {
     public boolean hasUnsupportedElements() { return !unsupportedElements.isEmpty(); }
     public SclIED findIedByName(String name) {
         return ieds.stream().filter(i -> name.equals(i.name())).findFirst().orElse(null);
+    }
+
+    /** 跨所有 IED 查找包含指定 LDevice inst 的 IED */
+    public SclIED findIedByLdInst(String ldInst) {
+        for (SclIED ied : ieds) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer server = ap.server();
+                if (server != null && server.findLDeviceByInst(ldInst) != null) {
+                    return ied;
+                }
+            }
+        }
+        return null;
     }
 }

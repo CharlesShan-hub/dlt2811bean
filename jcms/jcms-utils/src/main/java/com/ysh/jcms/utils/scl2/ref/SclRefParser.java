@@ -1,5 +1,7 @@
 package com.ysh.jcms.utils.scl2.ref;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -8,67 +10,106 @@ import java.util.regex.Pattern;
  * <p>
  * 支持格式：
  * <ul>
- *   <li>{@code LD/IN} — LN 级别</li>
- *   <li>{@code LD/LN.DO} — DO 级别</li>
- *   <li>{@code LD/LN.DO.DA} — DA 级别</li>
- *   <li>{@code LD/LN.DO.DA[FC]} — 带功能约束</li>
+ *   <li>{@code LD/LN} — LN 级别</li>
+ *   <li>{@code LD/LN.DO[.SDI]...[.DA][FC]} — DO/DA 级别</li>
+ *   <li>{@code IED/LD/LN[.DO[.SDI]...[.DA]][FC]} — 带 IED 前缀</li>
  * </ul>
- * 其中 {@code DO} 和 {@code DA} 可选，{@code [FC]} 只在 DA 级别出现。
  */
 public final class SclRefParser {
 
-    // LD/LN[.DO[.DA]][FC]
+    // 不带 IED: LD/LN[.X[.Y]...][FC] — 捕获 LD/LN，剩余手工解析
     private static final Pattern REF_PATTERN = Pattern.compile(
-            "([^/]+)/([^.]+)(?:\\.([^.]+)(?:\\.([^\\[\\]]+))?)?(?:\\[([^\\]]+)\\])?"
+            "([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?"
     );
 
-    private SclRefParser() {
-    }
+    // 带 IED: IED/LD/LN[.X[.Y]...][FC]
+    private static final Pattern FULL_REF_PATTERN = Pattern.compile(
+            "([^/]+)/([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?"
+    );
 
-    /**
-     * 解析引用字符串。
-     *
-     * @param ref 引用字符串，不可为 null 或空白
-     * @return SclRef 实例
-     * @throws IllegalArgumentException 格式无效时抛出
-     */
+    private SclRefParser() {}
+
     public static SclRef parse(String ref) {
         if (ref == null || ref.trim().isEmpty()) {
             throw new IllegalArgumentException("SCL reference cannot be null or blank");
         }
 
         String trimmed = ref.trim();
-        Matcher matcher = REF_PATTERN.matcher(trimmed);
-        if (matcher.matches()) {
-            String ldName = matcher.group(1);
-            String lnName = matcher.group(2);
-            String doName = matcher.group(3);
-            String daName = matcher.group(4);
-            String fc = matcher.group(5);
-            return new SclRef(ldName, lnName, doName, daName, fc, trimmed);
+
+        String iedName = null;
+        String ldInst;
+        String lnName;
+        String fc = null;
+
+        // 先尝试完整格式
+        Matcher fullMatcher = FULL_REF_PATTERN.matcher(trimmed);
+        if (fullMatcher.matches()) {
+            iedName = fullMatcher.group(1);
+            ldInst = fullMatcher.group(2);
+            lnName = fullMatcher.group(3);
+            fc = fullMatcher.group(4);
+        } else {
+            Matcher matcher = REF_PATTERN.matcher(trimmed);
+            if (matcher.matches()) {
+                ldInst = matcher.group(1);
+                lnName = matcher.group(2);
+                fc = matcher.group(3);
+            } else {
+                throw new IllegalArgumentException("Invalid SCL reference format: " + ref);
+            }
         }
 
-        throw new IllegalArgumentException("Invalid SCL reference format: " + ref);
+        // 手工解析 DO/SDI/DA 部分
+        // 从 trimmed 中去掉 [IED/]LD/LN 部分，剩下 ".DO[.SDI...[.DA]][FC]"
+        int prefixLen = (iedName != null ? iedName.length() + 1 : 0) + ldInst.length() + 1 + lnName.length();
+        String rest = trimmed.substring(prefixLen); // ".DO.SDI.DA[FC]" 或 ""
+
+        String doName = null;
+        List<String> sdiChain = new ArrayList<>();
+        String daName = null;
+
+        if (!rest.isEmpty()) {
+            // 去掉开头的 "."
+            String dotPart = rest.startsWith(".") ? rest.substring(1) : rest;
+            // 去掉尾部的 "[FC]"
+            String fcPart = null;
+            int bracketStart = dotPart.indexOf('[');
+            if (bracketStart >= 0) {
+                fcPart = dotPart.substring(bracketStart + 1, dotPart.length() - 1);
+                dotPart = dotPart.substring(0, bracketStart);
+                if (fc == null) fc = fcPart;
+            }
+            // 按 "." 分割
+            String[] parts = dotPart.split("\\.");
+            if (parts.length >= 1 && !parts[0].isEmpty()) {
+                doName = parts[0];
+            }
+            if (parts.length >= 3) {
+                // DO.SDI...[.DA] — 中间的都是 SDI
+                for (int i = 1; i < parts.length - 1; i++) {
+                    sdiChain.add(parts[i]);
+                }
+                daName = parts[parts.length - 1];
+            } else if (parts.length == 2) {
+                daName = parts[1];
+            }
+        }
+
+        return new SclRef(iedName, ldInst, lnName, doName,
+                sdiChain.isEmpty() ? null : sdiChain, daName, fc);
     }
 
-    /**
-     * 判断引用字符串格式是否有效。
-     */
     public static boolean isValid(String ref) {
         if (ref == null || ref.trim().isEmpty()) return false;
-        return REF_PATTERN.matcher(ref.trim()).matches();
+        String trimmed = ref.trim();
+        return FULL_REF_PATTERN.matcher(trimmed).matches()
+                || REF_PATTERN.matcher(trimmed).matches();
     }
 
-    /**
-     * 提取 LN 级别引用（LD/LN）。
-     */
     public static String extractLnReference(String ref) {
         return parse(ref).lnReference();
     }
 
-    /**
-     * 提取 DO 级别引用（LD/LN.DO）。
-     */
     public static String extractDoReference(String ref) {
         return parse(ref).doReference();
     }

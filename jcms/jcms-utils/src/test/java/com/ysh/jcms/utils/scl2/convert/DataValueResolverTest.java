@@ -27,7 +27,7 @@ public class DataValueResolverTest {
     public void testResolveDaLevel() {
         SclDocument doc = parseFullScd();
         // LPHD1.Proxy.stVal → INT32, value="false"
-        DataValue dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
         assertNotNull("should find value", dv);
         assertEquals("false", dv.val());
         assertEquals("INT32", dv.bType());
@@ -37,7 +37,7 @@ public class DataValueResolverTest {
     public void testResolveSdiBdaLevel() {
         SclDocument doc = parseFullScd();
         // MMXU1.Volts.sVC.offset → FLOAT32, value="10"
-        DataValue dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.offset");
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.offset");
         assertNotNull("should find SDI value", dv);
         assertEquals("10", dv.val());
         assertEquals("FLOAT32", dv.bType());
@@ -46,7 +46,7 @@ public class DataValueResolverTest {
     @Test
     public void testResolveSdiBdaScaleFactor() {
         SclDocument doc = parseFullScd();
-        DataValue dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.scaleFactor");
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.scaleFactor");
         assertNotNull("should find scaleFactor", dv);
         assertEquals("200", dv.val());
         assertEquals("FLOAT32", dv.bType());
@@ -56,7 +56,7 @@ public class DataValueResolverTest {
     public void testResolveDoLevelNoFc() {
         SclDocument doc = parseFullScd();
         // DO level without FC: returns first DAI with a value
-        DataValue dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy");
+        DataValueEntry dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy");
         assertNotNull("should find DO-level value", dv);
         // Proxy has one DAI (stVal), value="false"
         assertEquals("false", dv.val());

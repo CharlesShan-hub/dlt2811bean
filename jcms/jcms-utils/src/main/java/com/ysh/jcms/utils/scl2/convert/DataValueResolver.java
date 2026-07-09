@@ -17,7 +17,7 @@ import com.ysh.jcms.utils.scl2.navigate.TypeChain;
  * <p>
  * 使用方式：
  * <pre>{@code
- * DataValue dv = DataValueResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
+ * DataValueEntry dv = DataValueEntryResolver.resolve(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
  * // dv.val() → "false", dv.bType() → "BOOLEAN"
  * }</pre>
  */
@@ -30,9 +30,9 @@ public final class DataValueResolver {
      *
      * @param doc  SCL 文档
      * @param ref  完整引用（格式：{@code IEDName/LD/LN.DO.DA}）
-     * @return DataValue，未找到返回 null
+     * @return DataValueEntry，未找到返回 null
      */
-    public static DataValue resolve(SclDocument doc, String ref) {
+    public static DataValueEntry resolve(SclDocument doc, String ref) {
         return resolve(doc, ref, null);
     }
 
@@ -42,12 +42,12 @@ public final class DataValueResolver {
      * @param doc SCL 文档
      * @param ref 完整引用（格式：{@code IEDName/LD/LN.DO} 或 {@code IEDName/LD/LN.DO.DA}）
      * @param fc  功能约束过滤（"ST"、"MX" 等），null 或 "XX" 表示不过滤
-     * @return DataValue，未找到返回 null
+     * @return DataValueEntry，未找到返回 null
      */
-    public static DataValue resolve(SclDocument doc, String ref, String fc) {
+    public static DataValueEntry resolve(SclDocument doc, String ref, String fc) {
         if (doc == null || ref == null) return null;
 
-        Navigator nav = Navigator.of(doc, ref);
+        Navigator nav = Navigator.go(doc, ref);
         if (!nav.isValid() || nav.ln() == null) return null;
 
         // LN 级别：无值可查
@@ -59,7 +59,7 @@ public final class DataValueResolver {
             String daiVal = firstVal(nav.dai());
             if (daiVal == null) return null;
             String bType = resolveBType(nav);
-            return new DataValue(ref, daiVal, bType);
+            return new DataValueEntry(ref, daiVal, bType);
         }
 
         // DO 级别：需要 FC 过滤
@@ -67,7 +67,7 @@ public final class DataValueResolver {
     }
 
     /** DO 级别的值查找（需要 FC 过滤来确定取哪个 DA） */
-    private static DataValue resolveDoLevel(Navigator nav, SclDocument doc, String ref, String fc) {
+    private static DataValueEntry resolveDoLevel(Navigator nav, SclDocument doc, String ref, String fc) {
         SclDOI doi = nav.doi();
         if (doi == null) return null;
 
@@ -79,7 +79,7 @@ public final class DataValueResolver {
                 String val = firstVal(dai);
                 if (val != null) {
                     String bType = resolveDaBType(doc, nav, dai.name());
-                    return new DataValue(ref, val, bType);
+                    return new DataValueEntry(ref, val, bType);
                 }
             }
             return null;
@@ -103,7 +103,7 @@ public final class DataValueResolver {
                 String val = firstVal(dai);
                 if (val != null) {
                     String bType = resolveDaBType(doc, nav, da.name());
-                    return new DataValue(ref, val, bType);
+                    return new DataValueEntry(ref, val, bType);
                 }
             }
 
@@ -114,7 +114,7 @@ public final class DataValueResolver {
                     String val = firstVal(sdai);
                     if (val != null) {
                         String bType = resolveSdiBdaBType(doc, nav, da.name(), sdai.name());
-                        return new DataValue(ref, val, bType);
+                        return new DataValueEntry(ref, val, bType);
                     }
                 }
             }
@@ -132,7 +132,7 @@ public final class DataValueResolver {
 
     /** DA 级别的 bType 解析（DO.DA → TypeChain） */
     private static String resolveDaBType(SclDocument doc, Navigator nav, String daName) {
-        if (doc.dataTypeTemplates() == null || nav.ln().lnType() == null) return null;
+        if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null) return null;
         String ref = nav.ref().doName() + "." + daName;
         return TypeChain.of(doc.dataTypeTemplates()).resolveBType(nav.ln().lnType(), ref);
     }
@@ -144,11 +144,14 @@ public final class DataValueResolver {
         return TypeChain.of(doc.dataTypeTemplates()).resolveBType(nav.ln().lnType(), ref);
     }
 
-    /** 从 Navigator 当前状态推断 bType */
+    /** 从 Navigator 当前状态推断 bType，包含 SDI 链 */
     private static String resolveBType(Navigator nav) {
-        if (nav.ref().isDaLevel()) {
-            return resolveDaBType(nav.document(), nav, nav.ref().daName());
-        }
-        return null;
+        if (!nav.ref().isDaLevel()) return null;
+        StringBuilder ref = new StringBuilder(nav.ref().doName());
+        for (String sdi : nav.ref().sdiChain()) ref.append(".").append(sdi);
+        ref.append(".").append(nav.ref().daName());
+        if (nav.document().dataTypeTemplates() == null || nav.ln().lnType() == null) return null;
+        return TypeChain.of(nav.document().dataTypeTemplates())
+                .resolveBType(nav.ln().lnType(), ref.toString());
     }
 }

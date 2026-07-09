@@ -7,14 +7,10 @@ import com.ysh.jcms.utils.scl2.ref.SclRef;
 import com.ysh.jcms.utils.scl2.ref.SclRefParser;
 
 /**
- * 引用 → 实例元素 导航器。
+ * 引用导航器 —— SclRef → 模型元素。
  * <p>
- * 顺着引用路径走，定位到模型中的实例元素（IED → LD → LN → DOI → SDI → DAI）。
- * 引用格式支持：
- * <ul>
- *   <li>{@code IEDName/LD/LN.DO.DA} — 完整路径</li>
- *   <li>{@code LD/LN.DO.DA} — 省略 IED 名（需指定作用域）</li>
- * </ul>
+ * 核心入口：{@link #go(SclDocument, SclRef)}。
+ * 所有查找操作最终都通过 SclRef 定位到模型元素。
  */
 public class Navigator {
 
@@ -39,51 +35,56 @@ public class Navigator {
         this.ref = ref;
     }
 
-    // ==================== 工厂方法 ====================
+    // ==================== 核心入口 ====================
 
-    /** 在文档范围内按完整引用导航（格式：{@code IEDName/LD/LN.DO.DA}） */
-    public static Navigator of(SclDocument document, String fullRef) {
-        if (document == null || fullRef == null) return empty();
-        int firstSlash = fullRef.indexOf('/');
-        if (firstSlash <= 0) return empty();
-        String iedName = fullRef.substring(0, firstSlash);
-        String rest = fullRef.substring(firstSlash + 1);
+    /** 核心方法：按 SclRef 导航到模型元素 */
+    public static Navigator go(SclDocument document, SclRef ref) {
+        if (document == null || ref == null) return empty();
 
-        if (!SclRefParser.isValid(rest)) return empty();
-        SclRef sclRef = SclRefParser.parse(rest);
-
+        // 找 IED
+        String iedName = ref.iedName();
+        if (iedName == null) return empty();  // SclRef 必须含 IED 名
         SclIED ied = document.findIedByName(iedName);
         if (ied == null) return empty();
-        return navigate(ied, sclRef, document);
+
+        return navigate(ied, ref, document);
     }
 
-    /** 在指定 IED 内按引用导航（格式：{@code LD/LN.DO.DA}） */
-    public static Navigator of(SclIED ied, String ref) {
-        if (ied == null || ref == null || !SclRefParser.isValid(ref)) return empty();
-        SclRef sclRef = SclRefParser.parse(ref);
-        return navigate(ied, sclRef, null);
+    /** 按引用字符串导航（便捷方法） */
+    public static Navigator go(SclDocument document, String ref) {
+        if (document == null || ref == null || !SclRefParser.isValid(ref)) return empty();
+        return go(document, SclRefParser.parse(ref));
     }
 
-    /** 在指定 IED 内按已解析的 SclRef 导航 */
-    public static Navigator of(SclIED ied, SclRef ref) {
+    /** 在指定 IED 内按 SclRef 导航 */
+    public static Navigator go(SclIED ied, SclRef ref) {
         if (ied == null || ref == null) return empty();
         return navigate(ied, ref, null);
     }
 
+    /** 在指定 IED 内按字符串导航 */
+    public static Navigator go(SclIED ied, String ref) {
+        if (ied == null || ref == null || !SclRefParser.isValid(ref)) return empty();
+        return navigate(ied, SclRefParser.parse(ref), null);
+    }
+
+    // ==================== 导航逻辑 ====================
+
     private static Navigator navigate(SclIED ied, SclRef sclRef, SclDocument doc) {
         // 找 LDevice
-        SclLDevice ld = findLd(ied, sclRef.ldName());
+        SclLDevice ld = findLd(ied, sclRef.ldInst());
         if (ld == null) return empty();
 
         // 找 LN
         SclLN ln = findLn(ld, sclRef.lnName());
         if (ln == null) return empty();
 
-        // DO 级别以下才需要进 DOI
+        // LN 级别
         if (sclRef.isLnLevel()) {
             return new Navigator(doc, ied, ld, ln, null, null, null, sclRef);
         }
 
+        // DO 级别及以上：找 DOI
         SclDOI doi = ln.findDoiByName(sclRef.doName());
         if (doi == null) return empty();
 
@@ -91,39 +92,21 @@ public class Navigator {
             return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
         }
 
-        // DA 或 SDI.BDA 级别
-        // 逐段解析：从 rawRef 去掉 "LD/LN." 前缀，再去掉 "DO."，剩下的就是 SDI 链 + DA
-        String raw = sclRef.rawRef();
-        int firstDot = raw.indexOf('.');
-        if (firstDot < 0) return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
-        String afterLn = raw.substring(firstDot + 1); // "DO.SDI.DA" 或 "DO.DA"
-        int secondDot = afterLn.indexOf('.');
-        if (secondDot < 0) return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
-        String afterDo = afterLn.substring(secondDot + 1); // "SDI.DA" 或 "DA"
-        String[] parts = afterDo.split("\\.");
-
-        if (parts.length == 1) {
-            // 直接 DA
-            SclDAI dai = doi.findDaiByName(parts[0]);
-            if (dai == null) return empty();
-            return new Navigator(doc, ied, ld, ln, doi, null, dai, sclRef);
-        }
-
-        // 有 SDI 链：逐层往下走
+        // DA 级别：走 SDI 链→DAI
         SclSDI currentSdi = null;
-        SclDAI resultDai = null;
-        for (int i = 0; i < parts.length - 1; i++) {
-            SclSDI next = (currentSdi == null)
-                    ? doi.findSdiByName(parts[i])
-                    : currentSdi.findSdiByName(parts[i]);
-            if (next == null) return empty();
-            currentSdi = next;
+        for (String sdiName : sclRef.sdiChain()) {
+            currentSdi = (currentSdi == null)
+                    ? doi.findSdiByName(sdiName)
+                    : currentSdi.findSdiByName(sdiName);
+            if (currentSdi == null) return empty();
         }
-        // 最后一段是 DA
-        if (currentSdi != null) {
-            resultDai = currentSdi.findDaiByName(parts[parts.length - 1]);
-        }
-        return new Navigator(doc, ied, ld, ln, doi, currentSdi, resultDai, sclRef);
+
+        SclDAI dai = (currentSdi != null)
+                ? currentSdi.findDaiByName(sclRef.daName())
+                : doi.findDaiByName(sclRef.daName());
+        if (dai == null) return empty();
+
+        return new Navigator(doc, ied, ld, ln, doi, currentSdi, dai, sclRef);
     }
 
     private static SclLDevice findLd(SclIED ied, String ldInst) {
@@ -139,9 +122,7 @@ public class Navigator {
 
     private static SclLN findLn(SclLDevice ld, String lnName) {
         for (SclLN ln : ld.lns()) {
-            if (ln.getFullName().equals(lnName)) {
-                return ln;
-            }
+            if (ln.getFullName().equals(lnName)) return ln;
         }
         return null;
     }
@@ -150,7 +131,7 @@ public class Navigator {
         return new Navigator(null, null, null, null, null, null, null, null);
     }
 
-    // ==================== 状态判断 ====================
+    // ==================== 状态 ====================
 
     public boolean isValid() { return ln != null; }
     public boolean hasDoi() { return doi != null; }
@@ -168,7 +149,6 @@ public class Navigator {
     public SclDAI dai() { return dai; }
     public SclRef ref() { return ref; }
 
-    /** 获取 DAI 的第一个 Val 值（快捷方法） */
     public String daiValue() {
         if (dai == null || dai.vals().isEmpty()) return null;
         return dai.vals().get(0).value();

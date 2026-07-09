@@ -28,7 +28,7 @@ public class NavigateTest {
     @Test
     public void testNavigatorLnLevel() {
         SclDocument doc = parseFullScd();
-        Navigator nav = Navigator.of(doc, "E1Q1SB1/C1/LLN0");
+        Navigator nav = Navigator.go(doc, "E1Q1SB1/C1/LLN0");
         assertTrue("ln-level should be valid", nav.isValid());
         assertNotNull(nav.ln());
         assertNull(nav.doi());
@@ -38,7 +38,7 @@ public class NavigateTest {
     @Test
     public void testNavigatorDoLevel() {
         SclDocument doc = parseFullScd();
-        Navigator nav = Navigator.of(doc, "E1Q1SB1/C1/LPHD1.Proxy");
+        Navigator nav = Navigator.go(doc, "E1Q1SB1/C1/LPHD1.Proxy");
         assertTrue("do-level should be valid", nav.isValid());
         assertNotNull("doi", nav.doi());
         assertNull("dai", nav.dai());
@@ -48,7 +48,7 @@ public class NavigateTest {
     @Test
     public void testNavigatorDaLevel() {
         SclDocument doc = parseFullScd();
-        Navigator nav = Navigator.of(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
+        Navigator nav = Navigator.go(doc, "E1Q1SB1/C1/LPHD1.Proxy.stVal");
         assertTrue("da-level should be valid", nav.isValid());
         assertNotNull(nav.doi());
         assertNull(nav.sdi());
@@ -61,7 +61,7 @@ public class NavigateTest {
     @Test
     public void testNavigatorSdiChain() {
         SclDocument doc = parseFullScd();
-        Navigator nav = Navigator.of(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.offset");
+        Navigator nav = Navigator.go(doc, "E1Q1SB1/C1/MMXU1.Volts.sVC.offset");
         assertTrue("sdi nav should be valid", nav.isValid());
         assertNotNull(nav.doi());
         assertNotNull(nav.sdi());
@@ -75,7 +75,7 @@ public class NavigateTest {
     @Test
     public void testNavigatorInvalidRef() {
         SclDocument doc = parseFullScd();
-        assertFalse(Navigator.of(doc, "NONEXIST/LD/LN.DO.DA").isValid());
+        assertFalse(Navigator.go(doc, "NONEXIST/LD/LN.DO.DA").isValid());
     }
 
     // ==================== TypeChain ====================

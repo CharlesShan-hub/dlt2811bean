@@ -23,6 +23,12 @@ public class CmsCheck extends CmsType {
         this.syncheck        = new CmsBoolean();
         this.interlock_check = new CmsBoolean();
     }
+
+    public CmsCheck(int value) {
+        this();
+        this.syncheck((value & 2) != 0);
+        this.interlock_check((value & 1) != 0);
+    }
     
     public CmsCheck syncheck(boolean v) { this.syncheck.value(v); return this; }
     public CmsCheck interlock_check(boolean v) { this.interlock_check.value(v); return this; }
