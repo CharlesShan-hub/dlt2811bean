@@ -9,7 +9,7 @@ import com.ysh.jcms.svc.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.svc.goose.CmsSetGoCbValuesError;
 import com.ysh.jcms.svc.goose.CmsSetGoCbValuesRequest;
 import com.ysh.jcms.svc.goose.CmsSetGoCbValuesResponse;
-import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

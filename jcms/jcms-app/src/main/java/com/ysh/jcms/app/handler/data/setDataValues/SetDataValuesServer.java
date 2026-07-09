@@ -8,9 +8,10 @@ import com.ysh.jcms.svc.data.CmsDataRefValueEntry;
 import com.ysh.jcms.svc.data.CmsSetDataValuesError;
 import com.ysh.jcms.svc.data.CmsSetDataValuesRequest;
 import com.ysh.jcms.svc.data.CmsSetDataValuesResponse;
-import com.ysh.jcms.utils.scl2.SclDocument;
-import com.ysh.jcms.utils.scl2.convert.DataWriterResolver;
-import com.ysh.jcms.utils.scl2.navigate.Navigator;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.convert.DataWriterResolver;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -35,6 +36,8 @@ public class SetDataValuesServer extends BaseServerHandler {
 
         SclDocument doc = getScl2Document(session);
         if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclIED ied = getSclIed(session);
+        if (ied == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         int successCount = 0;
         for (int i = 0; i < req.data.count; i++) {
@@ -45,7 +48,7 @@ public class SetDataValuesServer extends BaseServerHandler {
             String valueStr = extractValue(entry.value);
             if (valueStr == null) continue;
 
-            Navigator nav = Navigator.go(doc, ref);
+            Navigator nav = Navigator.go(doc, ied, ref);
             if (!nav.isValid()) continue;
 
             if (DataWriterResolver.setValue(nav, valueStr) == CmsServiceError.NO_ERROR) {

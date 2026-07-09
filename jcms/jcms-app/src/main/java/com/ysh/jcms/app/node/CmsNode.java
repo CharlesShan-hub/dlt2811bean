@@ -8,7 +8,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl.SclDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

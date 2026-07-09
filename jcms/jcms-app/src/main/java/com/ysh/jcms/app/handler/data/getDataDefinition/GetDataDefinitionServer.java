@@ -8,10 +8,11 @@ import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionResponse;
-import com.ysh.jcms.utils.scl2.SclDocument;
-import com.ysh.jcms.utils.scl2.convert.DataDefinitionEntry;
-import com.ysh.jcms.utils.scl2.convert.DataDefinitionResolver;
-import com.ysh.jcms.utils.scl2.navigate.Navigator;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.convert.DataDefinitionEntry;
+import com.ysh.jcms.utils.scl.convert.DataDefinitionResolver;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -38,6 +39,8 @@ public class GetDataDefinitionServer extends BaseServerHandler {
 
         SclDocument doc = getScl2Document(session);
         if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclIED ied = getSclIed(session);
+        if (ied == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
 
@@ -57,20 +60,29 @@ public class GetDataDefinitionServer extends BaseServerHandler {
                 }
             }
 
-            Navigator nav = Navigator.go(doc, ref);
-            if (!nav.isValid()) continue;
+            Navigator nav = Navigator.go(doc, ied, ref);
+            if (!nav.isValid()) {
+                log.warn("skip ref='{}': nav invalid (isDo={} isDa={})", ref,
+                    nav.ref() != null ? nav.ref().isDoLevel() : "null",
+                    nav.ref() != null ? nav.ref().isDaLevel() : "null");
+                continue;
+            }
 
             DataDefinitionEntry sclEntry = DataDefinitionResolver.resolve(nav, fcCode);
             if (sclEntry != null) {
+                log.warn("ADD def for ref='{}' cdc={} def={}", ref, sclEntry.cdcType(), sclEntry.definition());
                 CmsDataDefResultEntry result = new CmsDataDefResultEntry()
                     .definition(sclEntry.definition());
                 if (sclEntry.cdcType() != null && !sclEntry.cdcType().isEmpty())
                     result.cdcType(sclEntry.cdcType());
                 resp.data.add(result);
+                log.warn("ADD done: count={}", resp.data.count);
+            } else {
+                log.warn("SKIP def for ref='{}': resolve returned null", ref);
             }
         }
         resp.moreFollows(false);
-        log.info("GetDataDefinition: returning {} definitions", resp.data.count);
+        log.info("GetDataDefinition: returning {} definitions", resp.data.items.size());
         return ok(resp, reqId);
     }
 }

@@ -9,7 +9,7 @@ import com.ysh.jcms.svc.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesRequest;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesResponse;
-import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

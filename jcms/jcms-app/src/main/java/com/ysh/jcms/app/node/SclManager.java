@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.node;
 
-import com.ysh.jcms.utils.scl2.SclDocument;
-import com.ysh.jcms.utils.scl2.reader.SclReader;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.reader.SclReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,7 +65,7 @@ public class SclManager {
     public SclDocument getDocument() { return document; }
     public SclDocument getScl2Document() { return document; }
 
-    public java.util.List<com.ysh.jcms.utils.scl2.model.ied.SclIED> getIeds() {
+    public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> getIeds() {
         return document != null ? document.ieds() : java.util.Collections.emptyList();
     }
 

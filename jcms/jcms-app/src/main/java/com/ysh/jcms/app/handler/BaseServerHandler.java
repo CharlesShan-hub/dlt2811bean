@@ -200,9 +200,17 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     //  SCL model access
     // ──────────────────────────────────────────────
 
-    protected com.ysh.jcms.utils.scl2.SclDocument getScl2Document(Session session) {
+    protected com.ysh.jcms.utils.scl.SclDocument getScl2Document(Session session) {
         try {
             return ((InnerServer.ServerSession) session).getSclDocument();
+        } catch (ClassCastException e) {
+            return null;
+        }
+    }
+
+    protected com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed(Session session) {
+        try {
+            return ((InnerServer.ServerSession) session).getSclIed();
         } catch (ClassCastException e) {
             return null;
         }

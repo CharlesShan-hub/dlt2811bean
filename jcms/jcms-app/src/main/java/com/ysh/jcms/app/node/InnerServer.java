@@ -3,10 +3,9 @@ package com.ysh.jcms.app.node;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl2.SclDocument;
-import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl2.model.ied.SclServer;
-import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.service.Dispatcher;
@@ -218,6 +217,16 @@ public class InnerServer implements ConnectionListener {
         public void setScl2Document(SclDocument doc) { this.scl2Document = doc; }
         public SclAccessPoint getSclAccessPoint() { return sclAccessPoint; }
         public void setSclAccessPoint(SclAccessPoint sclAccessPoint) { this.sclAccessPoint = sclAccessPoint; }
+
+        public com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed() {
+            if (scl2Document == null || sclAccessPoint == null) return null;
+            for (com.ysh.jcms.utils.scl.model.ied.SclIED ied : scl2Document.ieds()) {
+                for (SclAccessPoint ap : ied.accessPoints()) {
+                    if (ap.name().equals(sclAccessPoint.name())) return ied;
+                }
+            }
+            return null;
+        }
         public SclDataTypeTemplates getSclDataTypeTemplates() { return sclDataTypeTemplates; }
         public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) { this.sclDataTypeTemplates = sclDataTypeTemplates; }
 

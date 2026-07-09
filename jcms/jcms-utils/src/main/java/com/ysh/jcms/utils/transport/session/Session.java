@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.transport.session;
 
-import com.ysh.jcms.utils.scl2.state.RcbStateManager;
+import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.wire.Connection;
 import lombok.Getter;
 import lombok.Setter;
