@@ -9,15 +9,19 @@ import com.ysh.jcms.svc.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesRequest;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.svc.goose.CmsGocbValueChoice;
-import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,15 +44,15 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsGocbValueChoice choice = new CmsGocbValueChoice();
-            CmsGoCb gocb = resolveGocb(server, ref);
+            CmsGoCb gocb = resolveGocb(doc, ref);
             if (gocb != null) {
                 choice.choice(CmsGocbValueChoice.VALUE);
                 choice.altValue = gocb;
@@ -63,7 +67,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    public static CmsGoCb resolveGocb(SclServer server, String ref) {
+    public static CmsGoCb resolveGocb(SclDocument doc, String ref) {
         // Check in-memory cache first (written by SetGoCBValues)
         CmsGoCb cached = GoCbCache.get(ref);
         if (cached != null) {
@@ -83,14 +87,13 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
         log.debug("resolveGocb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
 
-        // First, try exact name match via findLnByRef (e.g. "LD0/CTRL1")
-        SclLDevice device = server.findLDeviceByInst(ldName);
+        SclLDevice device = findLd(doc, ldName);
         if (device == null) {
             log.warn("resolveGocb: LD '{}' not found", ldName);
             return null;
         }
 
-        // Try findLnByRef first (exact match on getFullName())
+        // Try findLnByFullName first (exact match on getFullName())
         SclLN ln = device.findLnByFullName(lnPart);
         if (ln != null) {
             SclGSEControl gc = ln.findGseControlByName(cbName);
@@ -101,7 +104,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         // Fallback: search all LNs in this LD where getFullName() starts with lnPart
         // (handles cases where lnPart="CTRL" but fullName="CTRL1")
         List<String> candidates = new java.util.ArrayList<>();
-        for (SclLN candidate : device.getLns()) {
+        for (SclLN candidate : device.lns()) {
             String fullName = candidate.getFullName();
             if (fullName.startsWith(lnPart)) {
                 candidates.add(fullName);
@@ -115,17 +118,31 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         log.warn("resolveGocb: GSEControl '{}' not found in any LN matching '{}' under LD '{}'. " +
             "Checked LNs: {}, candidate prefix matches: {}",
             cbName, lnPart, ldName,
-            device.getLnNames(), candidates);
+            device.lns().stream().map(SclLN::getFullName).collect(Collectors.toList()), candidates);
         return null;
     }
 
     private static CmsGoCb buildGocb(SclGSEControl gc) {
         CmsGoCb gocb = new CmsGoCb();
-        if (gc.getAppID() != null) gocb.goID(gc.getAppID());
-        if (gc.getDatSet() != null) gocb.datSet(gc.getDatSet());
-        if (gc.getConfRev() != null) {
-            try { gocb.confRev(Long.parseLong(gc.getConfRev())); } catch (NumberFormatException ignored) {}
+        if (gc.appID() != null) gocb.goID(gc.appID());
+        if (gc.datSet() != null) gocb.datSet(gc.datSet());
+        if (gc.confRev() != null) {
+            try { gocb.confRev(Long.parseLong(gc.confRev())); } catch (NumberFormatException ignored) {}
         }
         return gocb;
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
+    private static SclLDevice findLd(SclDocument doc, String ldName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) return ld;
+            }
+        }
+        return null;
     }
 }

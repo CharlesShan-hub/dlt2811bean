@@ -8,11 +8,14 @@ import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.input.SclDataSet;
-import com.ysh.jcms.utils.scl.model.input.SclFCDA;
-import com.ysh.jcms.utils.scl.util.RefUtil;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.input.SclDataSet;
+import com.ysh.jcms.utils.scl2.model.input.SclFCDA;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -33,33 +36,59 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.datasetReference);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        RefUtil.DataSetResolveResult r = RefUtil.resolveDataSet(server, ref);
-        if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataSet dataSet = r.dataSet;
+        // Parse "LD0/LLN0.dsName"
+        int slashIdx = ref.indexOf('/');
+        int dotIdx = ref.indexOf('.');
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        String ldName = ref.substring(0, slashIdx);
+        String lnName = ref.substring(slashIdx + 1, dotIdx);
+        String dsName = ref.substring(dotIdx + 1);
+
+        SclLDevice device = findLd(doc, ldName);
+        if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclLN ln = device.findLnByFullName(lnName);
+        if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDataSet dataSet = ln.findDataSetByName(dsName);
+        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse().reqId(reqId);
         int ps = pageSize(), count = 0;
 
-        for (SclFCDA fcda : dataSet.getFcDas()) {
+        for (SclFCDA fcda : dataSet.fcDas()) {
             if (refAfter != null) {
                 if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
                 continue;
             }
             resp.memberData.add(new CmsDataRefFcEntry()
                 .reference(fcda.buildFcdaRef())
-                .fc(fcda.getFc() != null ? CmsFC.fromCode(fcda.getFc()) : 0));
+                .fc(fcda.fc() != null ? CmsFC.fromCode(fcda.fc()) : 0));
             if (++count >= ps) break;
         }
         resp.moreFollows(count >= ps);
         log.info("GetDataSetDirectory: '{}' -> {} members", ref, count);
         return ok(resp, reqId);
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
+    private static SclLDevice findLd(SclDocument doc, String ldName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) return ld;
+            }
+        }
+        return null;
     }
 }

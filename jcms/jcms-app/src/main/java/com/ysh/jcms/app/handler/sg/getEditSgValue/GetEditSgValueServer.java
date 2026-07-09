@@ -12,11 +12,10 @@ import com.ysh.jcms.svc.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueResponse;
 import com.ysh.jcms.svc.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.data.SclDataValue;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
-import com.ysh.jcms.utils.scl.util.SclDataConverter;
-import com.ysh.jcms.utils.scl.util.SclDataValueResolver;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataConverter;
+import com.ysh.jcms.utils.scl2.convert.DataValueResolver;
+import com.ysh.jcms.utils.scl2.convert.DataValueEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -42,8 +41,7 @@ public class GetEditSgValueServer extends BaseServerHandler {
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
         SgcState state = SgSessionState.getState(session.getSessionId());
-        SclServer server = getSclServer(session);
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDocument doc = getScl2Document(session);
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse().reqId(reqId);
 
@@ -68,10 +66,10 @@ public class GetEditSgValueServer extends BaseServerHandler {
                 }
             }
 
-            if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            SclDataValue sv = SclDataValueResolver.resolveDataValue(server, ref, templates, null);
-            if (sv != null && sv.val != null && !sv.val.isEmpty()) {
-                resp.value.add(SclDataConverter.toCmsData(sv));
+            if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            DataValueEntry dv = DataValueResolver.resolve(doc, ref);
+            if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
+                resp.value.add(DataConverter.toCmsData(dv));
             } else {
                 CmsData err = new CmsData();
                 err.choice(CmsData.CHOICE_VISIBLE_STRING);

@@ -13,14 +13,19 @@ import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDA;
-import com.ysh.jcms.utils.scl.model.template.SclDOType;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
-import com.ysh.jcms.utils.scl.model.template.SclDO;
-import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
-import com.ysh.jcms.utils.scl.model.template.SclSDO;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.template.SclDA;
+import com.ysh.jcms.utils.scl2.model.template.SclDOType;
+import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.model.template.SclDO;
+import com.ysh.jcms.utils.scl2.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl2.model.template.SclSDO;
+import com.ysh.jcms.utils.scl2.navigate.CmsDataTypeMap;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -65,11 +70,11 @@ public class AllDataDefServer extends BaseServerHandler {
 
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
 
         String ldName = null;
         String lnReference = null;
@@ -79,7 +84,7 @@ public class AllDataDefServer extends BaseServerHandler {
             lnReference = str(req.reference.altLnReference);
         }
 
-        List<SclLN> lns = server.resolveLns(ldName, lnReference);
+        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -99,12 +104,12 @@ public class AllDataDefServer extends BaseServerHandler {
         int pageSize = pageSize();
         outer:
         for (SclLN ln : lns) {
-            if (templates == null || ln.getLnType() == null) continue;
-            SclLNodeType lnt = templates.findLNodeTypeById(ln.getLnType());
+            if (templates == null || ln.lnType() == null) continue;
+            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
             if (lnt == null) continue;
 
-            for (SclDO doDef : lnt.getDos()) {
-                String doName = doDef.getName();
+            for (SclDO doDef : lnt.dos()) {
+                String doName = doDef.name();
 
                 // referenceAfter pagination
                 if (refAfter != null) {
@@ -116,11 +121,11 @@ public class AllDataDefServer extends BaseServerHandler {
 
                 // fc filter: skip DO if no DA in its DOType matches the requested fc
                 if (fcFilter != null) {
-                    SclDOType doType = doDef.getType() != null ? templates.findDoTypeById(doDef.getType()) : null;
+                    SclDOType doType = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
                     if (doType == null) continue;
                     boolean hasFc = false;
-                    for (SclDA da : doType.getDas()) {
-                        if (fcFilter.equalsIgnoreCase(da.getFc())) {
+                    for (SclDA da : doType.das()) {
+                        if (fcFilter.equalsIgnoreCase(da.fc())) {
                             hasFc = true;
                             break;
                         }
@@ -128,12 +133,12 @@ public class AllDataDefServer extends BaseServerHandler {
                     if (!hasFc) continue;
                 }
 
-                CmsDataDefinition def = buildDoDefinition(templates, doDef, ln);
+                CmsDataDefinition def = buildDoDefinition(templates, doDef);
                 if (def == null) continue;
 
                 // Resolve CDC from DOType
-                SclDOType doType2 = doDef.getType() != null ? templates.findDoTypeById(doDef.getType()) : null;
-                String cdc = doType2 != null ? doType2.getCdc() : null;
+                SclDOType doType2 = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
+                String cdc = doType2 != null ? doType2.cdc() : null;
 
                 CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry()
                     .reference(doName);
@@ -156,24 +161,64 @@ public class AllDataDefServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    private CmsDataDefinition buildDoDefinition(SclDataTypeTemplates templates, SclDO doDef, SclLN ln) {
-        if (doDef.getType() == null) return null;
-        SclDOType doType = templates.findDoTypeById(doDef.getType());
+    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+        List<SclLN> result = new ArrayList<>();
+        if (ldName != null && !ldName.isEmpty()) {
+            for (SclIED ied : doc.ieds()) {
+                for (SclAccessPoint ap : ied.accessPoints()) {
+                    SclServer srv = ap.server();
+                    if (srv != null) {
+                        SclLDevice device = srv.findLDeviceByInst(ldName);
+                        if (device != null) {
+                            result.addAll(device.lns());
+                            return result;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        if (lnReference == null || lnReference.isEmpty()) return null;
+        int slashIdx = lnReference.indexOf('/');
+        if (slashIdx < 0) return null;
+        String refLd = lnReference.substring(0, slashIdx);
+        String refLn = lnReference.substring(slashIdx + 1);
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(refLd);
+                    if (device != null) {
+                        SclLN ln = device.findLnByFullName(refLn);
+                        if (ln != null) {
+                            result.add(ln);
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    private CmsDataDefinition buildDoDefinition(SclDataTypeTemplates templates, SclDO doDef) {
+        if (doDef.type() == null) return null;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
         if (doType == null) return null;
 
         CmsArray<CmsDataDefinitionStructElem> arr = new CmsArray<>();
-        for (SclDA da : doType.getDas()) {
-            String bType = da.getBType();
+        for (SclDA da : doType.das()) {
+            String bType = da.bType();
             if (bType == null) bType = "BOOLEAN";
             CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem()
-                .name(da.getName())
-                .fc(da.getFc() != null ? CmsFC.fromCode(da.getFc()) : 0)
+                .name(da.name())
+                .fc(da.fc() != null ? CmsFC.fromCode(da.fc()) : 0)
                 .type(bTypeToDataDefinition(bType));
             arr.add(elem);
         }
-        for (SclSDO sdo : doType.getSdos()) {
+        for (SclSDO sdo : doType.sdos()) {
             CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem()
-                .name(sdo.getName());
+                .name(sdo.name());
             elem.type(nullDataDefinition());
             arr.add(elem);
         }

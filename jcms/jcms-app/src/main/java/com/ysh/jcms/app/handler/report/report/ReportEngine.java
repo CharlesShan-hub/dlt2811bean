@@ -4,14 +4,20 @@ import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.report.CmsReport;
 import com.ysh.jcms.svc.report.CmsReportDataEntry;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.input.SclDataSet;
-import com.ysh.jcms.utils.scl.model.input.SclFCDA;
-import com.ysh.jcms.utils.scl.model.instance.SclDAI;
-import com.ysh.jcms.utils.scl.model.instance.SclDOI;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataConverter;
+import com.ysh.jcms.utils.scl2.convert.DataValueResolver;
+import com.ysh.jcms.utils.scl2.convert.DataValueEntry;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.input.SclDataSet;
+import com.ysh.jcms.utils.scl2.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl2.model.instance.SclDAI;
+import com.ysh.jcms.utils.scl2.model.instance.SclDOI;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -35,8 +41,7 @@ public class ReportEngine {
 
     private static final Logger log = LoggerFactory.getLogger(ReportEngine.class);
 
-    private final SclServer sclServer;
-    private final SclDataTypeTemplates templates;
+    private final SclDocument doc;
     private final Map<String, ReportControlBlock> rcbs = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2, r -> {
         Thread t = new Thread(r, "report-engine");
@@ -48,10 +53,9 @@ public class ReportEngine {
 
     public static ReportEngine getInstance() { return instance; }
 
-    /** Initialize with the server's SCL data. Call once at startup. */
-    public ReportEngine(SclServer sclServer, SclDataTypeTemplates templates) {
-        this.sclServer = sclServer;
-        this.templates = templates;
+    /** Initialize with the SCL document. Call once at startup. */
+    public ReportEngine(SclDocument doc) {
+        this.doc = doc;
         instance = this;
         log.info("ReportEngine initialized");
     }
@@ -157,17 +161,17 @@ public class ReportEngine {
     /** Build a CmsReport PDU from DataSet member values. */
     CmsReport buildReport(ReportControlBlock rcb, boolean isGi) throws Exception {
         SclReportControl rc = rcb.getSclReportControl();
-        if (rc == null || rc.getDatSet() == null) return null;
+        if (rc == null || rc.datSet() == null) return null;
 
         SclDataSet dataSet = resolveDataSet(rc, rcb.getRef());
         if (dataSet == null) {
-            log.warn("DataSet {} not found for ref={}", rc.getDatSet(), rcb.getRef());
+            log.warn("DataSet {} not found for ref={}", rc.datSet(), rcb.getRef());
             return null;
         }
 
         CmsReport report = new CmsReport();
         // rptID
-        String rptId = rc.getRptID() != null ? rc.getRptID() : rcb.getRef();
+        String rptId = rc.rptID() != null ? rc.rptID() : rcb.getRef();
         report.rptID(rptId);
 
         // optFlds (all false defaults)
@@ -175,7 +179,7 @@ public class ReportEngine {
 
         // DatSet
         report.dataSetPresent(true);
-        report.dataSet(rc.getDatSet());
+        report.dataSet(rc.datSet());
 
         // sqNum
         report.sqNumPresent(true);
@@ -192,11 +196,11 @@ public class ReportEngine {
         report.entry.timeOfEntry.msOfDay(msOfDay).daysSince1984(daysSince1984);
 
         // Pre-allocate entryData array
-        int totalFcdas = dataSet.getFcDas().size();
+        int totalFcdas = dataSet.fcDas().size();
 
         // entryData — for each FCDA in DataSet
         int entryId = 1;
-        for (SclFCDA fcda : dataSet.getFcDas()) {
+        for (SclFCDA fcda : dataSet.fcDas()) {
             CmsReportDataEntry entryData = new CmsReportDataEntry();
 
             // reference
@@ -214,7 +218,6 @@ public class ReportEngine {
             }
 
             // reason
-            int reasonCode = isGi ? 4 : 3; // general_interrogation=4, integrity=3 (bit positions in ReasonCode)
             CmsReasonCode reason = new CmsReasonCode();
             if (isGi) {
                 reason.general_interrogation(true);
@@ -230,69 +233,43 @@ public class ReportEngine {
         return report;
     }
 
-    /** Read a data value from the SCL model for a given FCDA. */
+    /** Read a data value from the SCL2 model for a given FCDA. */
     private CmsData readFcdaValue(SclFCDA fcda) {
         try {
             // Build the LN reference
-            String lnRef = fcda.getLdInst() + "/" + fcda.buildLnName();
-            SclLN ln = sclServer.findLnByRef(lnRef);
+            String lnRef = fcda.ldInst() + "/" + fcda.buildLnName();
+            SclLN ln = findLnByLdRef(fcda.ldInst(), fcda.buildLnName());
             if (ln == null) return null;
 
             // Find DOI for this DO
-            SclDOI doi = ln.findDoiByName(fcda.getDoName());
+            SclDOI doi = ln.findDoiByName(fcda.doName());
             if (doi == null) return null;
 
             // Find DAI for this DA
-            if (fcda.getDaName() != null && !fcda.getDaName().isEmpty()) {
-                SclDAI dai = doi.findDaiByName(fcda.getDaName());
-                if (dai != null && dai.getVal() != null) {
-                    return stringToData(dai.getVal());
+            if (fcda.daName() != null && !fcda.daName().isEmpty()) {
+                SclDAI dai = doi.findDaiByName(fcda.daName());
+                if (dai != null && !dai.vals().isEmpty()) {
+                    String v = dai.vals().get(0).value();
+                    if (v != null && !v.isEmpty()) {
+                        return DataConverter.autoDetect(v);
+                    }
                 }
             }
 
             // Try first DAI from the DOI
-            if (!doi.getDais().isEmpty()) {
-                SclDAI firstDai = doi.getDais().get(0);
-                if (firstDai.getVal() != null) {
-                    return stringToData(firstDai.getVal());
+            if (!doi.dais().isEmpty()) {
+                SclDAI firstDai = doi.dais().get(0);
+                if (!firstDai.vals().isEmpty()) {
+                    String v = firstDai.vals().get(0).value();
+                    if (v != null && !v.isEmpty()) {
+                        return DataConverter.autoDetect(v);
+                    }
                 }
             }
         } catch (Exception e) {
             log.trace("Failed to read data value for FCDA: {}", fcda.buildFcdaRef(), e);
         }
         return null;
-    }
-
-    /** Convert a string value to CmsData. */
-    private CmsData stringToData(String val) {
-        CmsData data = new CmsData();
-        // Boolean
-        if ("true".equalsIgnoreCase(val) || "false".equalsIgnoreCase(val)
-                || "0".equals(val) || "1".equals(val)) {
-            data.choice(CmsData.CHOICE_BOOLEAN);
-            data.alt_boolean.value("true".equalsIgnoreCase(val) || "1".equals(val));
-            return data;
-        }
-        try {
-            long intVal = Long.parseLong(val);
-            if (intVal >= Byte.MIN_VALUE && intVal <= Byte.MAX_VALUE) {
-                data.choice(CmsData.CHOICE_INT8);
-                data.alt_int8.value((int) intVal);
-            } else if (intVal >= 0 && intVal <= 0xFFFFFFFFL) {
-                data.choice(CmsData.CHOICE_INT32U);
-                data.alt_int32u.value(intVal);
-            } else if (intVal >= Integer.MIN_VALUE && intVal <= Integer.MAX_VALUE) {
-                data.choice(CmsData.CHOICE_INT32);
-                data.alt_int32.value((int) intVal);
-            } else {
-                data.choice(CmsData.CHOICE_VISIBLE_STRING);
-                data.alt_visible_string.value(val);
-            }
-        } catch (NumberFormatException e) {
-            data.choice(CmsData.CHOICE_VISIBLE_STRING);
-            data.alt_visible_string.value(val);
-        }
-        return data;
     }
 
     /** Resolve the SCL ReportControl by reference. */
@@ -303,25 +280,43 @@ public class ReportEngine {
         String ldName = ref.substring(0, slashIdx);
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
-        SclLN ln = sclServer.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLnByLdRef(ldName, lnName);
         if (ln == null) return null;
-        for (SclReportControl rc : ln.getReportControls()) {
-            if (rc.getName().equals(cbName)) return rc;
+        for (SclReportControl rc : ln.reportControls()) {
+            if (rc.name().equals(cbName)) return rc;
         }
         return null;
     }
 
     /** Resolve DataSet by name from the report control, scoped to the correct LN. */
     private SclDataSet resolveDataSet(SclReportControl rc, String rcbRef) {
-        if (rc == null || rc.getDatSet() == null) return null;
+        if (rc == null || rc.datSet() == null) return null;
         // Parse the RCB ref to find the owning LN: e.g. "LD0/LLN0.brcbAlarm"
         int slashIdx = rcbRef.indexOf('/');
         int dotIdx = rcbRef.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
-        String lnRef = rcbRef.substring(0, dotIdx);  // "LD0/LLN0"
-        SclLN ln = sclServer.findLnByRef(lnRef);
+        String ldName = rcbRef.substring(0, slashIdx);
+        String lnRef = rcbRef.substring(slashIdx + 1, dotIdx);  // "LLN0"
+        SclLN ln = findLnByLdRef(ldName, lnRef);
         if (ln == null) return null;
-        return ln.findDataSetByName(rc.getDatSet());
+        return ln.findDataSetByName(rc.datSet());
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD/LN 下的 LN。 */
+    private SclLN findLnByLdRef(String ldName, String lnName) {
+        if (doc == null) return null;
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 
     // ── ReportControlBlock inner class ──

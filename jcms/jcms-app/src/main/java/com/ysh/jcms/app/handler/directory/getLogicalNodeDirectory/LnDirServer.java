@@ -9,15 +9,21 @@ import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
-import com.ysh.jcms.utils.scl.model.control.SclLogControl;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.input.SclDataSet;
-import com.ysh.jcms.utils.scl.model.instance.SclDOI;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl2.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.control.SclSampledValueControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.input.SclDataSet;
+import com.ysh.jcms.utils.scl2.model.instance.SclDOI;
+import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl2.model.template.SclDO;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -43,11 +49,11 @@ public class LnDirServer extends BaseServerHandler {
         log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}",
             session.getSessionId(), reqId, acsiClass);
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
         log.info("TIMING: server+templates resolved in {}ms", System.currentTimeMillis() - t0);
 
         String ldName = null;
@@ -58,7 +64,7 @@ public class LnDirServer extends BaseServerHandler {
             lnReference = str(req.reference.altLnReference);
         }
 
-        List<SclLN> lns = server.resolveLns(ldName, lnReference);
+        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -86,6 +92,43 @@ public class LnDirServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
+    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+        if (ldName != null && !ldName.isEmpty()) {
+            for (SclIED ied : doc.ieds()) {
+                for (SclAccessPoint ap : ied.accessPoints()) {
+                    SclServer srv = ap.server();
+                    if (srv != null) {
+                        SclLDevice device = srv.findLDeviceByInst(ldName);
+                        if (device != null) return device.lns();
+                    }
+                }
+            }
+            return null;
+        }
+        if (lnReference == null || lnReference.isEmpty()) return null;
+        int slashIdx = lnReference.indexOf('/');
+        if (slashIdx < 0) return null;
+        String refLd = lnReference.substring(0, slashIdx);
+        String refLn = lnReference.substring(slashIdx + 1);
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(refLd);
+                    if (device != null) {
+                        SclLN ln = device.findLnByFullName(refLn);
+                        if (ln != null) {
+                            List<SclLN> result = new ArrayList<>();
+                            result.add(ln);
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass,
                                                   SclDataTypeTemplates templates,
                                                   String after, long t0) {
@@ -96,49 +139,49 @@ public class LnDirServer extends BaseServerHandler {
             switch (acsiClass) {
                 case CmsAcsiClass.DATA_OBJECT:
                     if (templates != null) {
-                        all.addAll(ln.getDataObjectNames(templates));
+                        all.addAll(getDataObjectNames(ln, templates));
                     } else {
-                        for (SclDOI doi : ln.getDois()) {
-                            all.add(doi.getName());
+                        for (SclDOI doi : ln.dois()) {
+                            all.add(doi.name());
                         }
                     }
                     break;
                 case CmsAcsiClass.DATA_SET:
-                    for (SclDataSet ds : ln.getDataSets()) {
-                        all.add(ds.getName());
+                    for (SclDataSet ds : ln.dataSets()) {
+                        all.add(ds.name());
                     }
                     break;
                 case CmsAcsiClass.BRCB:
-                    for (SclReportControl rc : ln.getReportControls()) {
-                        if (rc.isBuffered()) all.add(rc.getName());
+                    for (SclReportControl rc : ln.reportControls()) {
+                        if ("true".equals(rc.buffered())) all.add(rc.name());
                     }
                     break;
                 case CmsAcsiClass.URCB:
-                    for (SclReportControl rc : ln.getReportControls()) {
-                        if (!rc.isBuffered()) all.add(rc.getName());
+                    for (SclReportControl rc : ln.reportControls()) {
+                        if (!"true".equals(rc.buffered())) all.add(rc.name());
                     }
                     break;
                 case CmsAcsiClass.LCB:
-                    for (SclLogControl lc : ln.getLogControls()) {
-                        all.add(lc.getName());
+                    for (SclLogControl lc : ln.logControls()) {
+                        all.add(lc.name());
                     }
                     break;
                 case CmsAcsiClass.LOG:
-                    for (SclLogControl lc : ln.getLogControls()) {
-                        String logName = lc.getLogName();
+                    for (SclLogControl lc : ln.logControls()) {
+                        String logName = lc.logName();
                         if (logName != null && !logName.isEmpty()) {
                             all.add(logName);
                         }
                     }
                     break;
                 case CmsAcsiClass.GOCB:
-                    for (SclGSEControl gc : ln.getGseControls()) {
-                        all.add(gc.getName());
+                    for (SclGSEControl gc : ln.gseControls()) {
+                        all.add(gc.name());
                     }
                     break;
                 case CmsAcsiClass.MSVCB:
-                    for (SclSampledValueControl sv : ln.getSvControls()) {
-                        all.add(sv.getName());
+                    for (SclSampledValueControl sv : ln.svControls()) {
+                        all.add(sv.name());
                     }
                     break;
                 default:
@@ -158,5 +201,16 @@ public class LnDirServer extends BaseServerHandler {
             return all.subList(idx + 1, all.size());
         }
         return all;
+    }
+
+    private static List<String> getDataObjectNames(SclLN ln, SclDataTypeTemplates templates) {
+        List<String> names = new ArrayList<>();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty()) return names;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null) return names;
+        for (SclDO doDef : lnt.dos()) {
+            names.add(doDef.name());
+        }
+        return names;
     }
 }

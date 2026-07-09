@@ -8,10 +8,14 @@ import com.ysh.jcms.svc.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
-import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -37,15 +41,15 @@ public class GetBrcbValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetBRCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsRcbValueChoice choice = new CmsRcbValueChoice();
-            CmsBrcb brcb = resolveBrcb(server, ref);
+            CmsBrcb brcb = resolveBrcb(doc, ref);
             if (brcb != null) {
                 choice.choice(CmsRcbValueChoice.VALUE);
                 choice.altValue = brcb;
@@ -60,7 +64,8 @@ public class GetBrcbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    static CmsBrcb resolveBrcb(SclServer server, String ref) {
+    /** 在指定文档中按 ref 查找 LD/LN 下的 buffered ReportControl。 */
+    static CmsBrcb resolveBrcb(SclDocument doc, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
@@ -69,13 +74,13 @@ public class GetBrcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) return null;
 
         // Find the SCL report control
         SclReportControl rc = null;
-        for (SclReportControl c : ln.getReportControls()) {
-            if (c.isBuffered() && c.getName().equals(cbName)) {
+        for (SclReportControl c : ln.reportControls()) {
+            if ("true".equals(c.buffered()) && c.name().equals(cbName)) {
                 rc = c;
                 break;
             }
@@ -87,7 +92,7 @@ public class GetBrcbValuesServer extends BaseServerHandler {
         applySclDefaults(brcb, rc);
 
         // Overlay runtime state if present
-        CmsBrcb runtime = SclRcbStateManager.get(ref);
+        CmsBrcb runtime = RcbStateManager.get(ref);
         if (runtime != null) {
             applyRuntimeState(brcb, runtime);
         }
@@ -97,16 +102,16 @@ public class GetBrcbValuesServer extends BaseServerHandler {
 
     /** Apply SCL template defaults to a fresh CmsBrcb. */
     private static void applySclDefaults(CmsBrcb brcb, SclReportControl rc) {
-        if (rc.getRptID() != null) brcb.rptID(rc.getRptID());
-        if (rc.getDatSet() != null) brcb.datSet(rc.getDatSet());
-        if (rc.getConfRev() != null) {
-            try { brcb.confRev(Long.parseLong(rc.getConfRev())); } catch (NumberFormatException ignored) {}
+        if (rc.rptID() != null) brcb.rptID(rc.rptID());
+        if (rc.datSet() != null) brcb.datSet(rc.datSet());
+        if (rc.confRev() != null) {
+            try { brcb.confRev(Long.parseLong(rc.confRev())); } catch (NumberFormatException ignored) {}
         }
-        if (rc.getBufTime() != null) {
-            try { brcb.bufTm(Long.parseLong(rc.getBufTime())); } catch (NumberFormatException ignored) {}
+        if (rc.bufTime() != null) {
+            try { brcb.bufTm(Long.parseLong(rc.bufTime())); } catch (NumberFormatException ignored) {}
         }
-        if (rc.getIntgPd() != null) {
-            try { brcb.intgPd(Long.parseLong(rc.getIntgPd())); } catch (NumberFormatException ignored) {}
+        if (rc.intgPd() != null) {
+            try { brcb.intgPd(Long.parseLong(rc.intgPd())); } catch (NumberFormatException ignored) {}
         }
         brcb.rptEna(false);
         brcb.sqNum(0);
@@ -149,5 +154,21 @@ public class GetBrcbValuesServer extends BaseServerHandler {
             if (runtime.owner != null && runtime.owner.len > 0)
                 brcb.owner(runtime.owner.value());
         }
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }

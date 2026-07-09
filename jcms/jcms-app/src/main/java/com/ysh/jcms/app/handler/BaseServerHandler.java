@@ -4,11 +4,6 @@ import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.document.SclDocument;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
-import com.ysh.jcms.utils.scl.util.RefUtil;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -16,6 +11,7 @@ import com.ysh.jcms.utils.transport.service.ServiceHandler;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.lang.reflect.Method;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Base class for server-side service handlers with auto-decode and auto-error support.
@@ -179,54 +175,37 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     // ──────────────────────────────────────────────
-    //  String extraction helpers (delegate to RefUtil)
+    //  String extraction helpers
     // ──────────────────────────────────────────────
 
     /** Extract a non-empty String from a PER-decoded byte array. */
     protected static String str(byte[] arr) {
-        return RefUtil.str(arr);
+        if (arr == null || arr.length == 0) return null;
+        return new String(arr, StandardCharsets.UTF_8);
     }
 
     /** Extract a String from a PER-decoded CmsUint8Array. */
     protected static String str(com.ysh.jcms.data.string.CmsUint8Array arr) {
-        return RefUtil.str(arr);
+        if (arr == null || arr.len == 0) return null;
+        return new String(arr.value(), StandardCharsets.UTF_8);
     }
 
     /** Extract an optional String field controlled by a Present marker. */
     protected static String opt(com.ysh.jcms.data.scalar.CmsBoolean present, com.ysh.jcms.data.string.CmsUint8Array arr) {
-        return RefUtil.opt(present, arr);
+        if (!present.value() || arr == null || arr.len == 0) return null;
+        return new String(arr.value(), StandardCharsets.UTF_8);
     }
 
     // ──────────────────────────────────────────────
     //  SCL model access
     // ──────────────────────────────────────────────
 
-    protected SclServer getSclServer(Session session) {
-        if (session instanceof InnerServer.ServerSession) {
-            return ((InnerServer.ServerSession) session).getSclServer();
-        }
-        return null;
-    }
-
-    protected SclDocument getSclDocument(Session session) {
-        if (session instanceof InnerServer.ServerSession) {
+    protected com.ysh.jcms.utils.scl2.SclDocument getScl2Document(Session session) {
+        try {
             return ((InnerServer.ServerSession) session).getSclDocument();
+        } catch (ClassCastException e) {
+            return null;
         }
-        return null;
-    }
-
-    protected SclAccessPoint getSclAccessPoint(Session session) {
-        if (session instanceof InnerServer.ServerSession) {
-            return ((InnerServer.ServerSession) session).getSclAccessPoint();
-        }
-        return null;
-    }
-
-    protected SclDataTypeTemplates getSclDataTypeTemplates(Session session) {
-        if (session instanceof InnerServer.ServerSession) {
-            return ((InnerServer.ServerSession) session).getSclDataTypeTemplates();
-        }
-        return null;
     }
 
     // ──────────────────────────────────────────────

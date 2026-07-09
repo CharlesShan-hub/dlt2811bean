@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.report.CmsSetBrcbValuesError;
@@ -10,10 +10,14 @@ import com.ysh.jcms.svc.report.CmsSetBrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsSetBrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsSetBrcbEntry;
 import com.ysh.jcms.svc.report.CmsSetBrcbResult;
-import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -54,8 +58,8 @@ public class SetBrcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -66,7 +70,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
             CmsSetBrcbEntry entry = req.brcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetBrcbResult result = processEntry(server, entry, ref, session);
+            CmsSetBrcbResult result = processEntry(doc, entry, ref, session);
             results.add(result);
 
             // 8.7.3.2.e) Per-entry: result is empty when all fields succeed,
@@ -116,7 +120,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetBrcbResult processEntry(SclServer server, CmsSetBrcbEntry entry, String ref, Session session) {
+    private CmsSetBrcbResult processEntry(SclDocument doc, CmsSetBrcbEntry entry, String ref, Session session) {
         CmsSetBrcbResult result = new CmsSetBrcbResult();
 
         // Validate ref format
@@ -133,7 +137,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
 
         // Validate LN exists
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) {
             log.warn("SetBRCBValues: cannot find LN {} in LD {}", lnName, ldName);
             result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -142,8 +146,8 @@ public class SetBrcbValuesServer extends BaseServerHandler {
 
         // Validate buffered RC exists
         SclReportControl rc = null;
-        for (SclReportControl c : ln.getReportControls()) {
-            if (c.isBuffered() && c.getName().equals(cbName)) {
+        for (SclReportControl c : ln.reportControls()) {
+            if ("true".equals(c.buffered()) && c.name().equals(cbName)) {
                 rc = c;
                 break;
             }
@@ -155,7 +159,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         }
 
         // Get or create runtime state
-        CmsBrcb rtState = SclRcbStateManager.getOrCreate(ref);
+        CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
 
         // 8.7.3.2.b) rptEna ordering:
         //   - rptEna=false: set rptEna FIRST, then others
@@ -275,5 +279,21 @@ public class SetBrcbValuesServer extends BaseServerHandler {
             rtState.resvTms(entry.resvTms.value());
             result.resvTmsErrPresent(false);
         }
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }

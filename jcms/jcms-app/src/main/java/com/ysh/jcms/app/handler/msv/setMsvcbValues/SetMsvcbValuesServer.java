@@ -9,7 +9,7 @@ import com.ysh.jcms.svc.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesRequest;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesResponse;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -42,7 +42,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
         log.info("SetMSVCBValues from {}: reqId={}, {} entries",
             session.getSessionId(), reqId, req.msvcb.count);
 
-        SclServer server = getSclServer(session);
+        SclDocument doc = getScl2Document(session);
 
         for (int i = 0; i < req.msvcb.count; i++) {
             CmsSetMsvcbEntry entry = req.msvcb.items.get(i);
@@ -51,8 +51,8 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
 
             // Get baseline from cache or SCL
             CmsMsvcb baseline = MsvcbCache.get(ref);
-            if (baseline == null && server != null) {
-                baseline = GetMsvcbValuesServer.resolveMsvcb(server, ref);
+            if (baseline == null && doc != null) {
+                baseline = GetMsvcbValuesServer.resolveMsvcb(doc, ref);
             }
 
             if (baseline == null) {

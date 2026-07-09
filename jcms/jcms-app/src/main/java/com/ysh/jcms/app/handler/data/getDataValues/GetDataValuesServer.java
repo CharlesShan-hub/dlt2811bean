@@ -9,11 +9,10 @@ import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataValuesError;
 import com.ysh.jcms.svc.data.CmsGetDataValuesRequest;
 import com.ysh.jcms.svc.data.CmsGetDataValuesResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.data.SclDataValue;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
-import com.ysh.jcms.utils.scl.util.SclDataConverter;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataConverter;
+import com.ysh.jcms.utils.scl2.convert.DataValueResolver;
+import com.ysh.jcms.utils.scl2.convert.DataValueEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -34,9 +33,8 @@ public class GetDataValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse().reqId(reqId);
 
@@ -54,9 +52,9 @@ public class GetDataValuesServer extends BaseServerHandler {
                 }
             }
 
-            SclDataValue sv = server.resolveDataValue(ref, templates, fcCode);
-            if (sv != null && sv.val != null && !sv.val.isEmpty()) {
-                resp.value.add(SclDataConverter.toCmsData(sv));
+            DataValueEntry dv = DataValueResolver.resolve(doc, ref, fcCode);
+            if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
+                resp.value.add(DataConverter.toCmsData(dv));
             } else {
                 CmsData err = new CmsData();
                 err.choice(CmsData.CHOICE_VISIBLE_STRING);

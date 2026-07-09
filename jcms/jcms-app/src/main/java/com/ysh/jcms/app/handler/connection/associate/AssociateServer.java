@@ -8,9 +8,9 @@ import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAssociateError;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
-import com.ysh.jcms.utils.scl.model.document.SclDocument;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
 import com.ysh.jcms.utils.security.GmAuthenticator;
 import com.ysh.jcms.utils.security.GmSignature;
 import com.ysh.jcms.utils.security.GmTrustManager;
@@ -95,12 +95,12 @@ public class AssociateServer extends BaseServerHandler {
         String iedName = slashIdx >= 0 ? sapRef.substring(0, slashIdx) : sapRef;
         String apName = slashIdx >= 0 ? sapRef.substring(slashIdx + 1) : "S1";
 
-        for (SclIED ied : scl.getIeds()) {
-            if (ied.getName().equals(iedName)) {
+        for (SclIED ied : scl.ieds()) {
+            if (ied.name().equals(iedName)) {
                 SclAccessPoint ap = ied.findAccessPointByName(apName);
                 if (ap != null) {
                     ss.setSclAccessPoint(ap);
-                    ss.setSclDataTypeTemplates(scl.getDataTypeTemplates());
+                    ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
                     log.info("Resolved SCL access point: IED={}, AP={}", iedName, apName);
                     return true;
                 }

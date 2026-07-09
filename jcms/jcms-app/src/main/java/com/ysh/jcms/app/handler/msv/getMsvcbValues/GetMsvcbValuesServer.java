@@ -9,10 +9,13 @@ import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesRequest;
 import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.svc.msv.CmsMsvcbValueChoice;
-import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclSampledValueControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -45,15 +48,15 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         log.info("GetMSVCBValues from {}: reqId={}, {} refs",
             session.getSessionId(), reqId, req.reference.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsMsvcbValueChoice choice = new CmsMsvcbValueChoice();
-            CmsMsvcb msvcb = resolveMsvcb(server, ref);
+            CmsMsvcb msvcb = resolveMsvcb(doc, ref);
             if (msvcb != null) {
                 choice.choice(CmsMsvcbValueChoice.VALUE);
                 choice.altValue = msvcb;
@@ -72,7 +75,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
      * Resolves an MSVCB reference to its current value.
      * Checks in-memory cache first, then falls back to SCL.
      */
-    public static CmsMsvcb resolveMsvcb(SclServer server, String ref) {
+    public static CmsMsvcb resolveMsvcb(SclDocument doc, String ref) {
         // Check in-memory cache first (written by SetMSVCBValues)
         CmsMsvcb cached = MsvcbCache.get(ref);
         if (cached != null) {
@@ -92,7 +95,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
         log.debug("resolveMsvcb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
 
-        SclLDevice device = server.findLDeviceByInst(ldName);
+        SclLDevice device = findLd(doc, ldName);
         if (device == null) {
             log.warn("resolveMsvcb: LD '{}' not found", ldName);
             return null;
@@ -107,7 +110,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         }
 
         // Fallback: prefix match (e.g. lnPart="SV" matches LN "SV1")
-        for (SclLN candidate : device.getLns()) {
+        for (SclLN candidate : device.lns()) {
             String fullName = candidate.getFullName();
             if (fullName.startsWith(lnPart)) {
                 SclSampledValueControl svc = candidate.findSmvControlByName(cbName);
@@ -124,14 +127,28 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
 
     private static CmsMsvcb buildMsvcb(SclSampledValueControl svc) {
         CmsMsvcb msvcb = new CmsMsvcb();
-        if (svc.getSvID() != null) msvcb.msvID(svc.getSvID());
-        if (svc.getDatSet() != null) msvcb.datSet(svc.getDatSet());
-        if (svc.getConfRev() != null) {
-            try { msvcb.confRev(Long.parseLong(svc.getConfRev())); } catch (NumberFormatException ignored) {}
+        if (svc.svID() != null) msvcb.msvID(svc.svID());
+        if (svc.datSet() != null) msvcb.datSet(svc.datSet());
+        if (svc.confRev() != null) {
+            try { msvcb.confRev(Long.parseLong(svc.confRev())); } catch (NumberFormatException ignored) {}
         }
-        if (svc.getSmpRate() != null && !svc.getSmpRate().isEmpty()) {
-            try { msvcb.smpRate(Integer.parseInt(svc.getSmpRate())); } catch (NumberFormatException ignored) {}
+        if (svc.smpRate() != null && !svc.smpRate().isEmpty()) {
+            try { msvcb.smpRate(Integer.parseInt(svc.smpRate())); } catch (NumberFormatException ignored) {}
         }
         return msvcb;
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
+    private static SclLDevice findLd(SclDocument doc, String ldName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) return ld;
+            }
+        }
+        return null;
     }
 }

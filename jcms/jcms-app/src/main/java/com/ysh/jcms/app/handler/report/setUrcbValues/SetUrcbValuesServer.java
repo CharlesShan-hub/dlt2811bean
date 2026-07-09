@@ -10,10 +10,14 @@ import com.ysh.jcms.svc.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsSetUrcbEntry;
 import com.ysh.jcms.svc.report.CmsSetUrcbResult;
-import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -54,8 +58,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -66,7 +70,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             CmsSetUrcbEntry entry = req.urcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetUrcbResult result = processEntry(server, entry, ref, session);
+            CmsSetUrcbResult result = processEntry(doc, entry, ref, session);
             results.add(result);
 
             if (hasEntryError(result)) {
@@ -111,7 +115,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetUrcbResult processEntry(SclServer server, CmsSetUrcbEntry entry, String ref, Session session) {
+    private CmsSetUrcbResult processEntry(SclDocument doc, CmsSetUrcbEntry entry, String ref, Session session) {
         CmsSetUrcbResult result = new CmsSetUrcbResult();
 
         int slashIdx = ref.indexOf('/');
@@ -126,7 +130,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) {
             log.warn("SetURCBValues: cannot find LN {} in LD {}", lnName, ldName);
             result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -134,8 +138,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         }
 
         SclReportControl rc = null;
-        for (SclReportControl c : ln.getReportControls()) {
-            if (!c.isBuffered() && c.getName().equals(cbName)) {
+        for (SclReportControl c : ln.reportControls()) {
+            if (!"true".equals(c.buffered()) && c.name().equals(cbName)) {
                 rc = c;
                 break;
             }
@@ -146,7 +150,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             return result;
         }
 
-        CmsBrcb rtState = SclRcbStateManager.getOrCreate(ref);
+        CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
 
         // 8.7.5.2.b) rptEna ordering
         boolean hasRptEna = entry.rptEnaPresent.value();
@@ -235,5 +239,21 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             rtState.resvTms_present(entry.resv.value());
             result.resvErrPresent(false);
         }
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }

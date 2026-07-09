@@ -95,9 +95,9 @@ public class CmsData extends CmsType {
         this.alt_float32      = new CmsFloat32();
         this.alt_float64      = new CmsFloat64();
         this.alt_bit_string   = new CmsBitString();
-        this.alt_octet_string = new CmsUint8Array();
-        this.alt_visible_string = new CmsUint8Array();
-        this.alt_unicode_string = new CmsUint8Array();
+        this.alt_octet_string = (new CmsUint8Array()).type(CmsData.CHOICE_OCTET_STRING);
+        this.alt_visible_string = (new CmsUint8Array()).type(CmsData.CHOICE_VISIBLE_STRING);
+        this.alt_unicode_string = (new CmsUint8Array()).type(CmsData.CHOICE_UNICODE_STRING);
         this.alt_utc_time     = new CmsUtcTime();
         this.alt_binary_time  = new CmsBinaryTime();
         this.alt_quality      = new CmsQuality();

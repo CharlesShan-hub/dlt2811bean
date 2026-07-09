@@ -8,9 +8,9 @@ import com.ysh.jcms.svc.data.CmsDataRefValueEntry;
 import com.ysh.jcms.svc.data.CmsSetDataValuesError;
 import com.ysh.jcms.svc.data.CmsSetDataValuesRequest;
 import com.ysh.jcms.svc.data.CmsSetDataValuesResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataWriterResolver;
+import com.ysh.jcms.utils.scl2.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -33,9 +33,8 @@ public class SetDataValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         int successCount = 0;
         for (int i = 0; i < req.data.count; i++) {
@@ -46,13 +45,15 @@ public class SetDataValuesServer extends BaseServerHandler {
             String valueStr = extractValue(entry.value);
             if (valueStr == null) continue;
 
-            if (server.setDataValue(ref, valueStr, templates) == CmsServiceError.NO_ERROR) {
+            Navigator nav = Navigator.go(doc, ref);
+            if (!nav.isValid()) continue;
+
+            if (DataWriterResolver.setValue(nav, valueStr) == CmsServiceError.NO_ERROR) {
                 successCount++;
             }
         }
         log.info("SetDataValues: {}/{} entries set successfully", successCount, req.data.count);
         if (successCount < req.data.count) {
-            // Build proper error PDU: CmsSetDataValuesError has result[] not serviceError
             CmsSetDataValuesError err = new CmsSetDataValuesError().reqId(reqId);
             for (int i = 0; i < req.data.count; i++) {
                 int code = i < successCount ? CmsServiceError.NO_ERROR : CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;

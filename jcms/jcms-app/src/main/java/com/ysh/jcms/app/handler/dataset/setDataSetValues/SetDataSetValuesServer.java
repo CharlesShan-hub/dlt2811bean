@@ -7,12 +7,16 @@ import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesResponse;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.input.SclDataSet;
-import com.ysh.jcms.utils.scl.model.input.SclFCDA;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataWriterResolver;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.input.SclDataSet;
+import com.ysh.jcms.utils.scl2.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl2.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -33,9 +37,8 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.datasetReference);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -49,7 +52,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String dsName = ref.substring(dotIdx + 1);
 
-        SclLDevice device = server.findLDeviceByInst(ldName);
+        SclLDevice device = findLd(doc, ldName);
         if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclLN ln = device.findLnByFullName(lnName);
         if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -59,7 +62,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         int successCount = 0, valueIdx = 0;
-        for (SclFCDA fcda : dataSet.getFcDas()) {
+        for (SclFCDA fcda : dataSet.fcDas()) {
             if (refAfter != null) {
                 if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
                 continue;
@@ -67,8 +70,13 @@ public class SetDataSetValuesServer extends BaseServerHandler {
             if (valueIdx >= req.value.count) break;
 
             String valueStr = extractValue(req.value.items.get(valueIdx++));
-            if (valueStr != null && server.setDataValue(fcda.buildFcdaRef(), valueStr, templates) == CmsServiceError.NO_ERROR)
+            if (valueStr == null) continue;
+
+            String fcdaRef = fcda.buildFcdaRef();
+            Navigator nav = Navigator.go(doc, fcdaRef);
+            if (nav.isValid() && DataWriterResolver.setValue(nav, valueStr) == CmsServiceError.NO_ERROR) {
                 successCount++;
+            }
         }
 
         if (successCount == req.value.count) {
@@ -96,5 +104,19 @@ public class SetDataSetValuesServer extends BaseServerHandler {
             case CmsData.CHOICE_UNICODE_STRING: return str(d.alt_unicode_string.value());
             default:                            return null;
         }
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
+    private static SclLDevice findLd(SclDocument doc, String ldName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) return ld;
+            }
+        }
+        return null;
     }
 }

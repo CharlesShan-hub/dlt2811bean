@@ -8,21 +8,44 @@ import com.ysh.jcms.svc.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.svc.data.CmsGetDataDirectoryRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDirectoryResponse;
 import com.ysh.jcms.svc.data.CmsSubRefEntry;
-import com.ysh.jcms.utils.scl.model.data.SclDataDirectoryEntry;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.util.RefUtil;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.instance.SclDOI;
+import com.ysh.jcms.utils.scl2.model.instance.SclDAI;
+import com.ysh.jcms.utils.scl2.model.instance.SclSDI;
+import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl2.model.template.SclDO;
+import com.ysh.jcms.utils.scl2.model.template.SclDOType;
+import com.ysh.jcms.utils.scl2.model.template.SclDA;
+import com.ysh.jcms.utils.scl2.model.template.SclSDO;
+import com.ysh.jcms.utils.scl2.ref.SclRef;
+import com.ysh.jcms.utils.scl2.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class GetDataDirectoryServer extends BaseServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GetDataDirectoryServer.class);
+
+    /** Simple directory entry with ref name and optional fc. */
+    private static final class DirEntry {
+        final String ref;
+        final String fc;
+        DirEntry(String ref, String fc) { this.ref = ref; this.fc = fc; }
+    }
 
     public GetDataDirectoryServer() {
         super(ServiceName.GET_DATA_DIRECTORY, CmsGetDataDirectoryRequest.class, CmsGetDataDirectoryError.class);
@@ -34,35 +57,37 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.dataReference);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
-        // Parse and resolve
-        RefUtil.RefParts parts = RefUtil.parse(ref);
-        if (parts == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        boolean isDoLevel = parts.doName != null;
+        // Parse reference
+        SclRef parsed = SclRefParser.parse(ref);
+        boolean isDoLevel = parsed.doName() != null;
 
         SclLN ln;
-        List<SclDataDirectoryEntry> allEntries;
+        List<DirEntry> allEntries;
+
         if (isDoLevel) {
-            RefUtil.DataResolveResult r = RefUtil.resolveData(server, ref);
-            if (r == null || r.doi == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            ln = r.ln;
-            allEntries = r.doi.collectDataDirectory(getSclDataTypeTemplates(session), ln);
+            // DO level: resolve DOI and collect DA/SDI directory
+            SclDOI doi = resolveDoi(doc, parsed);
+            if (doi == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            ln = resolveLn(doc, parsed);
+            if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            allEntries = collectDoDirectory(doc, doi, ln);
         } else {
-            RefUtil.DataResolveResult r = RefUtil.resolveData(server, parts.ldName + "/" + parts.lnName);
-            if (r == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            ln = r.ln;
-            allEntries = ln.collectDataDirectory(getSclDataTypeTemplates(session));
+            // LN level: collect DO directory
+            ln = resolveLn(doc, parsed);
+            if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            allEntries = collectLnDirectory(doc, ln);
         }
 
         // referenceAfter pagination
-        int startIdx = RefUtil.afterIndex(allEntries, refAfter, e -> e.ref);
+        int startIdx = afterIndex(allEntries, refAfter);
         if (startIdx < 0) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Build paged response
@@ -70,7 +95,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         int ps = pageSize();
         int count = 0;
         for (int i = startIdx; i < allEntries.size() && count < ps; i++) {
-            SclDataDirectoryEntry e = allEntries.get(i);
+            DirEntry e = allEntries.get(i);
             CmsSubRefEntry entry = new CmsSubRefEntry().reference(e.ref);
             if (e.fc != null && !e.fc.isEmpty()) entry.fc(CmsFC.fromCode(e.fc));
             resp.dataAttribute.add(entry);
@@ -79,5 +104,142 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         resp.moreFollows(allEntries.size() > startIdx + ps);
         log.info("GetDataDirectory: '{}' -> {} entries (pageSize={})", ref, count, ps);
         return ok(resp, reqId);
+    }
+
+    /** Resolve LN from SclRef across all IEDs. */
+    private static SclLN resolveLn(SclDocument doc, SclRef parsed) {
+        String ldInst = parsed.ldInst();
+        String lnName = parsed.lnName();
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice ld = srv.findLDeviceByInst(ldInst);
+                    if (ld != null) return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Resolve DOI from SclRef across all IEDs. */
+    private static SclDOI resolveDoi(SclDocument doc, SclRef parsed) {
+        String ldInst = parsed.ldInst();
+        String lnName = parsed.lnName();
+        String doName = parsed.doName();
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice ld = srv.findLDeviceByInst(ldInst);
+                    if (ld != null) {
+                        SclLN ln = ld.findLnByFullName(lnName);
+                        if (ln != null) return ln.findDoiByName(doName);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Collect DO names at LN level: merge instance DOIs with type template DOs. */
+    private static List<DirEntry> collectLnDirectory(SclDocument doc, SclLN ln) {
+        Set<String> seen = new HashSet<>();
+        List<DirEntry> entries = new ArrayList<>();
+
+        for (SclDOI doi : ln.dois()) {
+            String name = doi.name();
+            seen.add(name);
+            entries.add(new DirEntry(name, null));
+        }
+
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates != null && ln.lnType() != null && !ln.lnType().isEmpty()) {
+            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+            if (lnt != null) {
+                for (SclDO doDef : lnt.dos()) {
+                    if (!seen.contains(doDef.name())) {
+                        entries.add(new DirEntry(doDef.name(), null));
+                        seen.add(doDef.name());
+                    }
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    /** Collect DA/SDI names at DO level: merge instance DAIs/SDIs with type template DAs/SDOs. */
+    private static List<DirEntry> collectDoDirectory(SclDocument doc, SclDOI doi, SclLN ln) {
+        Set<String> seen = new HashSet<>();
+        List<DirEntry> entries = new ArrayList<>();
+
+        String doName = doi.name();
+
+        // Instance DAIs
+        for (SclDAI dai : doi.dais()) {
+            String daName = dai.name();
+            seen.add(daName);
+            String fc = resolveDaFc(doc, ln, doName, daName);
+            entries.add(new DirEntry(daName, fc));
+        }
+
+        // Instance SDIs
+        for (SclSDI sdi : doi.sdis()) {
+            String sdiName = sdi.name();
+            seen.add(sdiName);
+            entries.add(new DirEntry(sdiName, null));
+        }
+
+        // Type template DAs/SDOs not present in instance
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates != null && ln.lnType() != null && !ln.lnType().isEmpty()) {
+            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+            if (lnt != null) {
+                SclDO doDef = lnt.findDoByName(doName);
+                if (doDef != null && doDef.type() != null) {
+                    SclDOType doType = templates.findDoTypeById(doDef.type());
+                    if (doType != null) {
+                        for (SclDA da : doType.das()) {
+                            if (!seen.contains(da.name())) {
+                                seen.add(da.name());
+                                entries.add(new DirEntry(da.name(), da.fc()));
+                            }
+                        }
+                        for (SclSDO sdo : doType.sdos()) {
+                            if (!seen.contains(sdo.name())) {
+                                seen.add(sdo.name());
+                                entries.add(new DirEntry(sdo.name(), null));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    /** Resolve FC for a DA name from the DOType. */
+    private static String resolveDaFc(SclDocument doc, SclLN ln, String doName, String daName) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates == null || ln.lnType() == null) return null;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null) return null;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef == null || doDef.type() == null) return null;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
+        if (doType == null) return null;
+        SclDA da = doType.findDaByName(daName);
+        return da != null ? da.fc() : null;
+    }
+
+    /** Compute starting index for referenceAfter pagination. */
+    private static int afterIndex(List<DirEntry> entries, String after) {
+        if (after == null || after.isEmpty()) return 0;
+        for (int i = 0; i < entries.size(); i++) {
+            if (entries.get(i).ref.equals(after)) return i + 1;
+        }
+        return -1;
     }
 }

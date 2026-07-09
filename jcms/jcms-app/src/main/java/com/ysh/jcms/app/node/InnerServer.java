@@ -3,11 +3,10 @@ package com.ysh.jcms.app.node;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.document.SclDocument;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.service.Dispatcher;
@@ -43,7 +42,7 @@ public class InnerServer implements ConnectionListener {
     private ServerAcceptor sslAcceptor;
     private final Dispatcher dispatcher = new Dispatcher();
     private final CopyOnWriteArrayList<ServerSession> sessions = new CopyOnWriteArrayList<>();
-    private SclDocument sclDocument;
+    private SclDocument scl2Document;
     private KeepAliveManager keepalive;
 
     public InnerServer() {
@@ -54,7 +53,6 @@ public class InnerServer implements ConnectionListener {
         configureTls();
     }
 
-    /** Constructor for testing with explicit ports (no TLS setup). */
     public InnerServer(int port, int sslPort) {
         this.port = port;
         this.sslPort = sslPort;
@@ -67,20 +65,14 @@ public class InnerServer implements ConnectionListener {
             KeyPair kp = generateRsaKeyPair();
             X509Certificate cert = generateSelfSignedCert(kp);
             SSLContext ctx = SSLContext.getInstance("TLSv1.2");
-            ctx.init(
-                createKeyManagers(kp, cert),
-                new X509TrustManager[]{
-                    new X509TrustManager() {
-                        public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-                        public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-                        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
-                    }
-                },
-                new SecureRandom()
-            );
-            this.sslAcceptor = new ServerAcceptor(sslPort, this)
-                .sslContext(ctx)
-                .needClientAuth(false);
+            ctx.init(createKeyManagers(kp, cert), new X509TrustManager[]{
+                new X509TrustManager() {
+                    public void checkClientTrusted(X509Certificate[] chain, String authType) {}
+                    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
+                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                }
+            }, new SecureRandom());
+            this.sslAcceptor = new ServerAcceptor(sslPort, this).sslContext(ctx).needClientAuth(false);
         } catch (Exception e) {
             log.warn("Failed to configure TLS on port {}: {}", sslPort, e.getMessage());
         }
@@ -94,24 +86,17 @@ public class InnerServer implements ConnectionListener {
 
     private static X509Certificate generateSelfSignedCert(KeyPair kp) throws Exception {
         long now = System.currentTimeMillis();
-        // Need BC provider for X509v3 certificate building
         if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
         X500Name name = new X500Name("CN=CMS Dev Server");
         JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(
-            name,
-            BigInteger.valueOf(now),
-            new Date(now),
-            new Date(now + 365L * 24 * 60 * 60 * 1000),
-            name,
-            kp.getPublic()
-        );
-        return new JcaX509CertificateConverter()
-            .setProvider(BouncyCastleProvider.PROVIDER_NAME)
+            name, BigInteger.valueOf(now),
+            new Date(now), new Date(now + 365L * 24 * 60 * 60 * 1000),
+            name, kp.getPublic());
+        return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME)
             .getCertificate(builder.build(new JcaContentSignerBuilder("SHA256WithRSA")
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME)
-                .build(kp.getPrivate())));
+                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(kp.getPrivate())));
     }
 
     private static KeyManager[] createKeyManagers(KeyPair kp, X509Certificate cert) throws Exception {
@@ -123,8 +108,8 @@ public class InnerServer implements ConnectionListener {
         return kmf.getKeyManagers();
     }
 
-    public SclDocument getSclDocument() { return sclDocument; }
-    public void setSclDocument(SclDocument sclDocument) { this.sclDocument = sclDocument; }
+    public SclDocument getSclDocument() { return scl2Document; }
+    public void setScl2Document(SclDocument doc) { this.scl2Document = doc; }
 
     public void register(ServiceHandler handler) {
         dispatcher.register(handler);
@@ -157,7 +142,7 @@ public class InnerServer implements ConnectionListener {
     @Override
     public void onConnected(Connection connection) {
         ServerSession ss = new ServerSession(connection);
-        ss.setSclDocument(sclDocument);
+        ss.setScl2Document(scl2Document);
         ss.touchActivity();
         sessions.add(ss);
     }
@@ -167,7 +152,6 @@ public class InnerServer implements ConnectionListener {
         ServerSession ss = findSession(connection);
         if (ss == null) return;
         ss.touchActivity();
-
         Dispatcher.DispatchOutcome outcome = dispatcher.dispatch(ss, frame);
         switch (outcome.getResult()) {
             case HANDLED:
@@ -178,14 +162,10 @@ public class InnerServer implements ConnectionListener {
                 break;
             case NOT_REGISTERED:
                 log.warn("No handler for service: {}", frame.header().serviceCode());
-                // Send a minimal error response so client doesn't time out
                 try {
                     connection.send(new Frame(
-                        new FrameHeader()
-                            .serviceCode(frame.header().serviceCode())
-                            .resp(true).err(true),
-                        new byte[]{0, 0}, frame.reqId()
-                    ));
+                        new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
+                        new byte[]{0, 0}, frame.reqId()));
                 } catch (IOException e) {
                     log.error("Failed to send NOT_REGISTERED error", e);
                 }
@@ -218,8 +198,7 @@ public class InnerServer implements ConnectionListener {
     }
 
     public static class ServerSession extends Session {
-
-        private SclDocument sclDocument;
+        private SclDocument scl2Document;
         private SclAccessPoint sclAccessPoint;
         private SclDataTypeTemplates sclDataTypeTemplates;
         private volatile long lastActivityTime = System.currentTimeMillis();
@@ -229,29 +208,14 @@ public class InnerServer implements ConnectionListener {
             super("srv-" + connection.getSocket().getPort(), connection);
         }
 
-        /** Update the last-activity timestamp (called on every received frame). */
         public void touchActivity() { this.lastActivityTime = System.currentTimeMillis(); this.keepaliveRetries = 0; }
-
         public long getLastActivityTime() { return lastActivityTime; }
         public int getKeepaliveRetries() { return keepaliveRetries; }
         public int incrementKeepaliveRetries() { return ++keepaliveRetries; }
-
         public void close() { getConnection().close(); }
 
-        public SclServer getSclServer() {
-            return sclAccessPoint != null ? sclAccessPoint.getServer() : null;
-        }
-
-        public SclIED getSclIed() {
-            if (sclDocument == null || sclAccessPoint == null) return null;
-            for (SclIED ied : sclDocument.getIeds()) {
-                if (ied.findAccessPointByName(sclAccessPoint.getName()) != null) return ied;
-            }
-            return null;
-        }
-
-        public SclDocument getSclDocument() { return sclDocument; }
-        public void setSclDocument(SclDocument sclDocument) { this.sclDocument = sclDocument; }
+        public SclDocument getSclDocument() { return scl2Document; }
+        public void setScl2Document(SclDocument doc) { this.scl2Document = doc; }
         public SclAccessPoint getSclAccessPoint() { return sclAccessPoint; }
         public void setSclAccessPoint(SclAccessPoint sclAccessPoint) { this.sclAccessPoint = sclAccessPoint; }
         public SclDataTypeTemplates getSclDataTypeTemplates() { return sclDataTypeTemplates; }

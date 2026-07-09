@@ -8,9 +8,13 @@ import com.ysh.jcms.svc.log.CmsGetLcbValuesError;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesResponse;
 import com.ysh.jcms.svc.log.CmsLcbValueChoice;
-import com.ysh.jcms.utils.scl.model.control.SclLogControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -36,15 +40,15 @@ public class GetLcbValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsLcbValueChoice choice = new CmsLcbValueChoice();
-            CmsLcb lcb = resolveLcb(server, ref);
+            CmsLcb lcb = resolveLcb(doc, ref);
             if (lcb != null) {
                 choice.choice(CmsLcbValueChoice.VALUE);
                 choice.altValue = lcb;
@@ -59,7 +63,7 @@ public class GetLcbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    static CmsLcb resolveLcb(SclServer server, String ref) {
+    static CmsLcb resolveLcb(SclDocument doc, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
@@ -68,12 +72,12 @@ public class GetLcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) return null;
 
         SclLogControl lc = null;
-        for (SclLogControl c : ln.getLogControls()) {
-            if (c.getName().equals(cbName)) {
+        for (SclLogControl c : ln.logControls()) {
+            if (c.name().equals(cbName)) {
                 lc = c;
                 break;
             }
@@ -81,25 +85,41 @@ public class GetLcbValuesServer extends BaseServerHandler {
         if (lc == null) return null;
 
         CmsLcb lcb = new CmsLcb();
-        if (lc.getLogEna() != null) lcb.logEna("true".equalsIgnoreCase(lc.getLogEna()) || "1".equals(lc.getLogEna()));
-        if (lc.getDatSet() != null) lcb.datSet(lc.getDatSet());
-        if (lc.getIntgPd() != null) {
-            try { lcb.intgPd(Long.parseLong(lc.getIntgPd())); } catch (NumberFormatException ignored) {}
+        if (lc.logEna() != null) lcb.logEna("true".equalsIgnoreCase(lc.logEna()) || "1".equals(lc.logEna()));
+        if (lc.datSet() != null) lcb.datSet(lc.datSet());
+        if (lc.intgPd() != null) {
+            try { lcb.intgPd(Long.parseLong(lc.intgPd())); } catch (NumberFormatException ignored) {}
         }
-        if (lc.getLogName() != null) lcb.logRef(lc.getLogName());
-        if (lc.getOptFields() != null) {
+        if (lc.logName() != null) lcb.logRef(lc.logName());
+        if (lc.optFields() != null) {
             try {
-                long v = Long.parseLong(lc.getOptFields());
+                long v = Long.parseLong(lc.optFields());
                 com.ysh.jcms.data.block.CmsLcbOptFlds f = new com.ysh.jcms.data.block.CmsLcbOptFlds().value(v != 0);
                 lcb.optFlds_present(true).optFlds(f);
             } catch (NumberFormatException ignored) {}
         }
-        if (lc.getTrgOps() != null) {
+        if (lc.trgOps() != null) {
             // TriggerConditions requires explicit field-by-field setup from SCL
             // For now, set integrity only if trgOps is present in SCL
             lcb.trgOps(new com.ysh.jcms.data.block.CmsTriggerConditions()
                 .integrity(true));
         }
         return lcb;
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }

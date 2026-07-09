@@ -8,9 +8,10 @@ import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionResponse;
-import com.ysh.jcms.utils.scl.model.data.SclDataDefinitionEntry;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.DataDefinitionEntry;
+import com.ysh.jcms.utils.scl2.convert.DataDefinitionResolver;
+import com.ysh.jcms.utils.scl2.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -35,9 +36,8 @@ public class GetDataDefinitionServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataTypeTemplates templates = getSclDataTypeTemplates(session);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
 
@@ -57,12 +57,15 @@ public class GetDataDefinitionServer extends BaseServerHandler {
                 }
             }
 
-            SclDataDefinitionEntry sclEntry = server.resolveDataDefinition(ref, fcCode, templates);
+            Navigator nav = Navigator.go(doc, ref);
+            if (!nav.isValid()) continue;
+
+            DataDefinitionEntry sclEntry = DataDefinitionResolver.resolve(nav, fcCode);
             if (sclEntry != null) {
                 CmsDataDefResultEntry result = new CmsDataDefResultEntry()
-                    .definition(sclEntry.definition);
-                if (sclEntry.cdcType != null && !sclEntry.cdcType.isEmpty())
-                    result.cdcType(sclEntry.cdcType);
+                    .definition(sclEntry.definition());
+                if (sclEntry.cdcType() != null && !sclEntry.cdcType().isEmpty())
+                    result.cdcType(sclEntry.cdcType());
                 resp.data.add(result);
             }
         }

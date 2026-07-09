@@ -10,10 +10,17 @@ import com.ysh.jcms.svc.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.svc.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.scl.model.data.SclCBEntry;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.lnBuilder.SclLNControlBlockCollector;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.convert.CbConverter;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl2.model.control.SclSampledValueControl;
+import com.ysh.jcms.utils.scl2.model.control.SclLogControl;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -38,8 +45,8 @@ public class AllCbValuesServer extends BaseServerHandler {
 
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -53,7 +60,7 @@ public class AllCbValuesServer extends BaseServerHandler {
                 ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8) : null;
         }
 
-        List<SclLN> lns = server.resolveLns(ldName, lnReference);
+        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -69,15 +76,9 @@ public class AllCbValuesServer extends BaseServerHandler {
         int pageSize = pageSize();
         outer:
         for (SclLN ln : lns) {
-            List<SclCBEntry> cbEntries;
-            try {
-                cbEntries = SclLNControlBlockCollector.collectCBValues(ln, acsiClass);
-            } catch (IllegalArgumentException e) {
-                log.warn("GetAllCBValues: unsupported acsiClass={} for LN {}", acsiClass, ln.getFullName());
-                continue;
-            }
+            List<CbPair> cbPairs = collectCbValues(ln, acsiClass);
 
-            for (SclCBEntry cb : cbEntries) {
+            for (CbPair cb : cbPairs) {
                 String fullRef = ln.getFullName() + "." + cb.ref;
 
                 // referenceAfter pagination
@@ -88,10 +89,9 @@ public class AllCbValuesServer extends BaseServerHandler {
                     continue;
                 }
 
-                CmsCbValueEntry entry = new CmsCbValueEntry()
+                entries.add(new CmsCbValueEntry()
                     .reference(fullRef)
-                    .value((CmsCbValueChoice) cb.value);
-                entries.add(entry);
+                    .value(cb.value));
 
                 if (entries.size() >= pageSize) break outer;
             }
@@ -112,6 +112,93 @@ public class AllCbValuesServer extends BaseServerHandler {
             log.error("Failed to encode GetAllCBValuesResponse", e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
+    }
+
+    /** Resolve LNs across all IEDs. */
+    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+        List<SclLN> result = new ArrayList<>();
+        if (ldName != null && !ldName.isEmpty()) {
+            for (SclIED ied : doc.ieds()) {
+                for (SclAccessPoint ap : ied.accessPoints()) {
+                    SclServer srv = ap.server();
+                    if (srv != null) {
+                        SclLDevice device = srv.findLDeviceByInst(ldName);
+                        if (device != null) {
+                            result.addAll(device.lns());
+                            return result;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        if (lnReference == null || lnReference.isEmpty()) return null;
+        int slashIdx = lnReference.indexOf('/');
+        if (slashIdx < 0) return null;
+        String refLd = lnReference.substring(0, slashIdx);
+        String refLn = lnReference.substring(slashIdx + 1);
+        for (SclIED ied : doc.ieds()) {
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(refLd);
+                    if (device != null) {
+                        SclLN ln = device.findLnByFullName(refLn);
+                        if (ln != null) {
+                            result.add(ln);
+                            return result;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Simple pair of CB ref string and CmsCbValueChoice. */
+    private static final class CbPair {
+        final String ref;
+        final CmsCbValueChoice value;
+        CbPair(String ref, CmsCbValueChoice value) { this.ref = ref; this.value = value; }
+    }
+
+    /** Collect CB value entries for a given LN and ACSI class. */
+    private static List<CbPair> collectCbValues(SclLN ln, int acsiClass) {
+        List<CbPair> result = new ArrayList<>();
+        switch (acsiClass) {
+            case CmsAcsiClass.BRCB:
+                for (SclReportControl rc : ln.reportControls()) {
+                    if ("true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), CbConverter.brcbFrom(rc)));
+                    }
+                }
+                break;
+            case CmsAcsiClass.URCB:
+                for (SclReportControl rc : ln.reportControls()) {
+                    if (!"true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), CbConverter.urcbFrom(rc)));
+                    }
+                }
+                break;
+            case CmsAcsiClass.LCB:
+                for (SclLogControl lc : ln.logControls()) {
+                    result.add(new CbPair(lc.name(), CbConverter.lcbFrom(lc)));
+                }
+                break;
+            case CmsAcsiClass.GOCB:
+                for (SclGSEControl gc : ln.gseControls()) {
+                    result.add(new CbPair(gc.name(), CbConverter.gocbFrom(gc)));
+                }
+                break;
+            case CmsAcsiClass.MSVCB:
+                for (SclSampledValueControl sv : ln.svControls()) {
+                    result.add(new CbPair(sv.name(), CbConverter.msvcbFrom(sv)));
+                }
+                break;
+            default:
+                break;
+        }
+        return result;
     }
 
     private static boolean isValidAcsiClass(int acsiClass) {

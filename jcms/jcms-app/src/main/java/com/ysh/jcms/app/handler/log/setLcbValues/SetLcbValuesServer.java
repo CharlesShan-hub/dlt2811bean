@@ -8,9 +8,13 @@ import com.ysh.jcms.svc.log.CmsSetLcbValuesRequest;
 import com.ysh.jcms.svc.log.CmsSetLcbValuesResponse;
 import com.ysh.jcms.svc.log.CmsSetLcbEntry;
 import com.ysh.jcms.svc.log.CmsSetLcbResult;
-import com.ysh.jcms.utils.scl.model.control.SclLogControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -51,8 +55,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclServer server = getSclServer(session);
-        if (server == null) {
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
@@ -63,7 +67,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
             CmsSetLcbEntry entry = req.lcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetLcbResult result = processEntry(server, entry, ref);
+            CmsSetLcbResult result = processEntry(doc, entry, ref);
             results.add(result);
 
             if (hasEntryError(result)) {
@@ -105,7 +109,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetLcbResult processEntry(SclServer server, CmsSetLcbEntry entry, String ref) {
+    private CmsSetLcbResult processEntry(SclDocument doc, CmsSetLcbEntry entry, String ref) {
         CmsSetLcbResult result = new CmsSetLcbResult();
 
         // Validate ref format
@@ -122,7 +126,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
 
         // Validate LN exists
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) {
             log.warn("SetLCBValues: cannot find LN {} in LD {}", lnName, ldName);
             result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -131,8 +135,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
 
         // Validate LC exists
         SclLogControl lc = null;
-        for (SclLogControl c : ln.getLogControls()) {
-            if (c.getName().equals(cbName)) {
+        for (SclLogControl c : ln.logControls()) {
+            if (c.name().equals(cbName)) {
                 lc = c;
                 break;
             }
@@ -151,14 +155,14 @@ public class SetLcbValuesServer extends BaseServerHandler {
 
         if (hasLogEna && !logEnaVal) {
             // logEna=false → set logEna first
-            lc.setLogEna("false");
+            lc.logEna("false");
             result.logEnaErrPresent(false);
             setOtherLcbFields(result, entry, lc);
         } else if (hasLogEna && logEnaVal) {
             // logEna=true → set others first, then logEna
             setOtherLcbFields(result, entry, lc);
             if (!hasEntryError(result)) {
-                lc.setLogEna("true");
+                lc.logEna("true");
                 result.logEnaErrPresent(false);
             }
         } else {
@@ -175,7 +179,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         if (entry.datSetPresent.value()) {
             byte[] val = entry.datSet.value();
             if (val != null && val.length > 0) {
-                lc.setDatSet(new String(val, StandardCharsets.UTF_8));
+                lc.datSet(new String(val, StandardCharsets.UTF_8));
                 result.datSetErrPresent(false);
             } else {
                 result.datSetErrPresent(true).datSetErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -183,20 +187,20 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
         // trgOps
         if (entry.trgOpsPresent.value()) {
-            lc.setTrgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," +
+            lc.trgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," +
                 entry.trgOps.data_update.value() + "," + entry.trgOps.integrity.value());
             result.trgOpsErrPresent(false);
         }
         // intgPd
         if (entry.intgPdPresent.value()) {
-            lc.setIntgPd(String.valueOf(entry.intgPd.value()));
+            lc.intgPd(String.valueOf(entry.intgPd.value()));
             result.intgPdErrPresent(false);
         }
         // logRef
         if (entry.logRefPresent.value()) {
             byte[] val = entry.logRef.value();
             if (val != null && val.length > 0) {
-                lc.setLogName(new String(val, StandardCharsets.UTF_8));
+                lc.logName(new String(val, StandardCharsets.UTF_8));
                 result.logRefErrPresent(false);
             } else {
                 result.logRefErrPresent(true).logRefErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -210,5 +214,21 @@ public class SetLcbValuesServer extends BaseServerHandler {
         if (entry.bufTmPresent.value()) {
             result.bufTmErrPresent(false);
         }
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }

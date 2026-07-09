@@ -8,10 +8,14 @@ import com.ysh.jcms.svc.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
-import com.ysh.jcms.utils.scl.model.control.SclRcbStateManager;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.SclDocument;
+import com.ysh.jcms.utils.scl2.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl2.model.ied.SclLN;
+import com.ysh.jcms.utils.scl2.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl2.model.ied.SclServer;
+import com.ysh.jcms.utils.scl2.model.ied.SclIED;
+import com.ysh.jcms.utils.scl2.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl2.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -37,15 +41,15 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclServer server = getSclServer(session);
-        if (server == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = getScl2Document(session);
+        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsRcbValueChoice choice = new CmsRcbValueChoice();
-            CmsBrcb urcb = resolveUrcb(server, ref);
+            CmsBrcb urcb = resolveUrcb(doc, ref);
             if (urcb != null) {
                 choice.choice(CmsRcbValueChoice.VALUE);
                 choice.altValue = urcb;
@@ -60,7 +64,7 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    static CmsBrcb resolveUrcb(SclServer server, String ref) {
+    static CmsBrcb resolveUrcb(SclDocument doc, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
@@ -69,12 +73,12 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = server.findLnByRef(ldName + "/" + lnName);
+        SclLN ln = findLn(doc, ldName, lnName);
         if (ln == null) return null;
 
         SclReportControl rc = null;
-        for (SclReportControl c : ln.getReportControls()) {
-            if (!c.isBuffered() && c.getName().equals(cbName)) {
+        for (SclReportControl c : ln.reportControls()) {
+            if (!"true".equals(c.buffered()) && c.name().equals(cbName)) {
                 rc = c;
                 break;
             }
@@ -84,16 +88,16 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         // Build from SCL defaults
         CmsBrcb urcb = new CmsBrcb();
 
-        if (rc.getRptID() != null) urcb.rptID(rc.getRptID());
-        if (rc.getDatSet() != null) urcb.datSet(rc.getDatSet());
-        if (rc.getConfRev() != null) {
-            try { urcb.confRev(Long.parseLong(rc.getConfRev())); } catch (NumberFormatException ignored) {}
+        if (rc.rptID() != null) urcb.rptID(rc.rptID());
+        if (rc.datSet() != null) urcb.datSet(rc.datSet());
+        if (rc.confRev() != null) {
+            try { urcb.confRev(Long.parseLong(rc.confRev())); } catch (NumberFormatException ignored) {}
         }
-        if (rc.getBufTime() != null) {
-            try { urcb.bufTm(Long.parseLong(rc.getBufTime())); } catch (NumberFormatException ignored) {}
+        if (rc.bufTime() != null) {
+            try { urcb.bufTm(Long.parseLong(rc.bufTime())); } catch (NumberFormatException ignored) {}
         }
-        if (rc.getIntgPd() != null) {
-            try { urcb.intgPd(Long.parseLong(rc.getIntgPd())); } catch (NumberFormatException ignored) {}
+        if (rc.intgPd() != null) {
+            try { urcb.intgPd(Long.parseLong(rc.intgPd())); } catch (NumberFormatException ignored) {}
         }
         urcb.rptEna(false);
         urcb.sqNum(0);
@@ -103,7 +107,7 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         urcb.owner_present(false);
 
         // Overlay runtime state if present
-        CmsBrcb runtime = SclRcbStateManager.get(ref);
+        CmsBrcb runtime = RcbStateManager.get(ref);
         if (runtime != null) {
             if (runtime.rptID != null && runtime.rptID.len > 0) {
                 urcb.rptID(runtime.rptID.value());
@@ -147,5 +151,21 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         }
 
         return urcb;
+    }
+
+    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
+    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
+        SclIED ied = doc.findIedByLdInst(ldName);
+        if (ied == null) return null;
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldName);
+                if (ld != null) {
+                    return ld.findLnByFullName(lnName);
+                }
+            }
+        }
+        return null;
     }
 }
