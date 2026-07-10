@@ -14,6 +14,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 /**
  * Base class for server-side service handlers with auto-decode and auto-error
@@ -286,6 +287,23 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      */
     protected static int pageSize() {
         return CmsConfigLoader.load().getProtocol().getMaxArraySize();
+    }
+
+    /**
+     * Apply {@code refAfter} pagination to a sorted list of reference strings.
+     * Returns the sublist starting <em>after</em> the matched entry.
+     *
+     * @throws ServiceException
+     *             with {@code INSTANCE_NOT_AVAILABLE} if {@code refAfter} is not
+     *             found in the list
+     */
+    protected static List<String> after(List<String> items, String refAfter, int reqId) {
+        if (refAfter == null || refAfter.isEmpty())
+            return items;
+        int idx = items.indexOf(refAfter);
+        if (idx < 0)
+            throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return items.subList(idx + 1, items.size());
     }
 
     private static boolean traceEnabled() {

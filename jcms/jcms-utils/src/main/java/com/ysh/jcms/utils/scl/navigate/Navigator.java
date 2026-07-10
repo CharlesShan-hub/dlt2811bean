@@ -44,7 +44,7 @@ public class Navigator {
         String iedName = ref.iedName();
         if (iedName == null)
             return empty(); // SclRef 必须含 IED 名
-        SclIED ied = document.findIedByName(iedName);
+        SclIED ied = document.ied(iedName);
         if (ied == null)
             return empty();
 

@@ -11,9 +11,7 @@ import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataWriterResolver;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
@@ -37,6 +35,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
 
         SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
@@ -51,7 +50,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String dsName = ref.substring(dotIdx + 1);
 
-        SclLDevice device = findLd(doc, ldName);
+        SclLDevice device = findLd(ied, ldName);
         if (device == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclLN ln = device.findLnByFullName(lnName);
@@ -125,19 +124,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         }
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
-    private static SclLDevice findLd(SclDocument doc, String ldName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null)
-                    return ld;
-            }
-        }
-        return null;
+    private static SclLDevice findLd(SclIED ied, String ldName) {
+        return ied.lDevice(ldName);
     }
 }

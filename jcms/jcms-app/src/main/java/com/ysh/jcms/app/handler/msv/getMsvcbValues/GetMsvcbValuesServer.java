@@ -9,13 +9,10 @@ import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesRequest;
 import com.ysh.jcms.svc.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.svc.msv.CmsMsvcbValueChoice;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -42,14 +39,14 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) rawReq;
         log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsMsvcbValueChoice choice = new CmsMsvcbValueChoice();
-            CmsMsvcb msvcb = resolveMsvcb(doc, ref);
+            CmsMsvcb msvcb = resolveMsvcb(ied, ref);
             if (msvcb != null) {
                 choice.choice(CmsMsvcbValueChoice.VALUE);
                 choice.altValue = msvcb;
@@ -68,7 +65,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
      * Resolves an MSVCB reference to its current value. Checks in-memory cache
      * first, then falls back to SCL.
      */
-    public static CmsMsvcb resolveMsvcb(SclDocument doc, String ref) {
+    public static CmsMsvcb resolveMsvcb(SclIED ied, String ref) {
         // Check in-memory cache first (written by SetMSVCBValues)
         CmsMsvcb cached = MsvcbCache.get(ref);
         if (cached != null) {
@@ -88,7 +85,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
         log.debug("resolveMsvcb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
 
-        SclLDevice device = findLd(doc, ldName);
+        SclLDevice device = findLd(ied, ldName);
         if (device == null) {
             log.warn("resolveMsvcb: LD '{}' not found", ldName);
             return null;
@@ -139,19 +136,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         return msvcb;
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
-    private static SclLDevice findLd(SclDocument doc, String ldName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null)
-                    return ld;
-            }
-        }
-        return null;
+    private static SclLDevice findLd(SclIED ied, String ldName) {
+        return ied.lDevice(ldName);
     }
 }

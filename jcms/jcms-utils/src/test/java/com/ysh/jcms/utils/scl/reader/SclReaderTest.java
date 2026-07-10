@@ -163,7 +163,7 @@ public class SclReaderTest {
     @Test
     public void testParseIedE1Q1SB1() {
         SclDocument doc = parseFullScd();
-        SclIED ied = doc.findIedByName("E1Q1SB1");
+        SclIED ied = doc.ied("E1Q1SB1");
         assertNotNull("IED E1Q1SB1 not found", ied);
 
         // Has Services
@@ -218,7 +218,7 @@ public class SclReaderTest {
     @Test
     public void testParseIedE1Q1SB1DOI() {
         SclDocument doc = parseFullScd();
-        SclIED ied = doc.findIedByName("E1Q1SB1");
+        SclIED ied = doc.ied("E1Q1SB1");
         SclLDevice ld = ied.accessPoints().get(0).server().lDevices().get(0);
 
         // LN LPHD (index 1 in lns list, after LN0)
@@ -240,7 +240,7 @@ public class SclReaderTest {
     @Test
     public void testParseIedE1Q1SB1SDI() {
         SclDocument doc = parseFullScd();
-        SclIED ied = doc.findIedByName("E1Q1SB1");
+        SclIED ied = doc.ied("E1Q1SB1");
         SclLDevice ld = ied.accessPoints().get(0).server().lDevices().get(0);
 
         // MMXU LN
@@ -265,7 +265,7 @@ public class SclReaderTest {
     @Test
     public void testParseIedD1Q1SB4() {
         SclDocument doc = parseFullScd();
-        SclIED ied = doc.findIedByName("D1Q1SB4");
+        SclIED ied = doc.ied("D1Q1SB4");
         assertNotNull(ied);
 
         // Has Services
@@ -353,7 +353,7 @@ public class SclReaderTest {
     @Test
     public void testIedE1Q1SB1HasDataSetsOnLN0() {
         SclDocument doc = parseFullScd();
-        SclIED ied = doc.findIedByName("E1Q1SB1");
+        SclIED ied = doc.ied("E1Q1SB1");
         SclLN ln0 = findLn0(ied.accessPoints().get(0).server().lDevices().get(0));
         assertNotNull("LN0 not found", ln0);
 
@@ -403,7 +403,7 @@ public class SclReaderTest {
         String[] expectedNames = {"E1Q1SB1", "E1Q1BP2", "E1Q1BP3", "E1Q2SB1", "E1Q3SB1", "E1Q3KA1", "E1Q3KA2", "E1Q3KA3", "D1Q1SB1",
                 "D1Q1BP2", "D1Q1BP3", "D1Q1SB4"};
         for (String name : expectedNames) {
-            assertNotNull("IED " + name + " should exist", doc.findIedByName(name));
+            assertNotNull("IED " + name + " should exist", doc.ied(name));
         }
     }
 }

@@ -8,9 +8,7 @@ import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
@@ -315,20 +313,14 @@ public class ReportEngine {
         return ln.findDataSetByName(rc.datSet());
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD/LN 下的 LN。 */
+    /** 在所有 IED 中查找指定 LD/LN 下的 LN。 */
     private SclLN findLnByLdRef(String ldName, String lnName) {
         if (doc == null)
             return null;
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) {
-                    return ld.findLnByFullName(lnName);
-                }
+        for (SclIED ied : doc.ieds()) {
+            SclLDevice ld = ied.lDevice(ldName);
+            if (ld != null) {
+                return ld.findLnByFullName(lnName);
             }
         }
         return null;

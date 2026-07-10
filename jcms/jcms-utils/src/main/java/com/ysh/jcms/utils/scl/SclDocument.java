@@ -43,20 +43,12 @@ public class SclDocument {
     public boolean hasUnsupportedElements() {
         return !unsupportedElements.isEmpty();
     }
-    public SclIED findIedByName(String name) {
+    public SclIED ied(String name) {
         return ieds.stream().filter(i -> name.equals(i.name())).findFirst().orElse(null);
     }
 
-    /** 跨所有 IED 查找包含指定 LDevice inst 的 IED */
-    public SclIED findIedByLdInst(String ldInst) {
-        for (SclIED ied : ieds) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer server = ap.server();
-                if (server != null && server.findLDeviceByInst(ldInst) != null) {
-                    return ied;
-                }
-            }
-        }
-        return null;
+    /** Collect all logical device instance names across all IEDs. */
+    public List<String> ldNames() {
+        return ieds.stream().flatMap(ied -> ied.lDevices().stream()).map(SclLDevice::inst).collect(java.util.stream.Collectors.toList());
     }
 }

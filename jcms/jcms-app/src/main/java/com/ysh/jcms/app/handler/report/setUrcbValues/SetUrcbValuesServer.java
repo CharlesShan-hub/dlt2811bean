@@ -10,13 +10,10 @@ import com.ysh.jcms.svc.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsSetUrcbEntry;
 import com.ysh.jcms.svc.report.CmsSetUrcbResult;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -52,7 +49,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         List<CmsSetUrcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;
@@ -61,7 +58,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             CmsSetUrcbEntry entry = req.urcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetUrcbResult result = processEntry(doc, entry, ref, session);
+            CmsSetUrcbResult result = processEntry(ied, entry, ref, session);
             results.add(result);
 
             if (hasEntryError(result)) {
@@ -116,7 +113,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetUrcbResult processEntry(SclDocument doc, CmsSetUrcbEntry entry, String ref, Session session) {
+    private CmsSetUrcbResult processEntry(SclIED ied, CmsSetUrcbEntry entry, String ref, Session session) {
         CmsSetUrcbResult result = new CmsSetUrcbResult();
 
         int slashIdx = ref.indexOf('/');
@@ -131,7 +128,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = findLn(doc, ldName, lnName);
+        SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null) {
             log.warn("SetURCBValues: cannot find LN {} in LD {}", lnName, ldName);
             result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -242,20 +239,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         }
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
-    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) {
-                    return ld.findLnByFullName(lnName);
-                }
-            }
-        }
-        return null;
+    private static SclLN findLn(SclIED ied, String ldName, String lnName) {
+        SclLDevice ld = ied.lDevice(ldName);
+        return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 }

@@ -8,12 +8,9 @@ import com.ysh.jcms.svc.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetResponse;
 import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -35,7 +32,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.count);
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
@@ -51,7 +48,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         String dsName = ref.substring(dotIdx + 1);
 
         // Resolve LN first (DataSet may not exist yet since we're creating it)
-        SclLDevice device = findLd(doc, ldName);
+        SclLDevice device = findLd(ied, ldName);
         if (device == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclLN ln = device.findLnByFullName(lnNamePart);
@@ -82,7 +79,7 @@ public class CreateDataSetServer extends BaseServerHandler {
                 continue;
             }
 
-            SclFCDA fcda = parseRefToFcda(doc, memberRef);
+            SclFCDA fcda = parseRefToFcda(ied, memberRef);
             if (fcda == null) {
                 log.warn("CreateDataSet: cannot resolve {}", memberRef);
                 failed++;
@@ -102,10 +99,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         return ok(new CmsCreateDataSetResponse().reqId(reqId), reqId);
     }
 
-    /**
-     * 将引用字符串（如 {@code LD0/MMXU1.Volts.mag}）解析为 SclFCDA， 通过匹配 LN 部分与设备中的实际 LN。
-     */
-    private static SclFCDA parseRefToFcda(SclDocument doc, String ref) {
+    private static SclFCDA parseRefToFcda(SclIED ied, String ref) {
         if (ref == null || ref.isEmpty())
             return null;
 
@@ -120,7 +114,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         String lnPart = rest.substring(0, dotIdx);
         String doDaPart = rest.substring(dotIdx + 1);
 
-        SclLDevice device = findLd(doc, ldName);
+        SclLDevice device = findLd(ied, ldName);
         if (device == null)
             return null;
 
@@ -145,19 +139,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         return fcda;
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
-    private static SclLDevice findLd(SclDocument doc, String ldName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null)
-                    return ld;
-            }
-        }
-        return null;
+    private static SclLDevice findLd(SclIED ied, String ldName) {
+        return ied.lDevice(ldName);
     }
 }

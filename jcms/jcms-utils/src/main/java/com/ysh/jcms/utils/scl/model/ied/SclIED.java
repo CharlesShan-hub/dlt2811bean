@@ -41,4 +41,29 @@ public class SclIED {
         }
         return null;
     }
+
+    /** All logical devices across all access points under this IED. */
+    public List<SclLDevice> lDevices() {
+        List<SclLDevice> result = new ArrayList<>();
+        for (SclAccessPoint ap : accessPoints) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                result.addAll(srv.lDevices());
+            }
+        }
+        return result;
+    }
+
+    /** Find a logical device by instance name across all access points. */
+    public SclLDevice lDevice(String inst) {
+        for (SclAccessPoint ap : accessPoints) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(inst);
+                if (ld != null)
+                    return ld;
+            }
+        }
+        return null;
+    }
 }

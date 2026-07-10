@@ -8,13 +8,10 @@ import com.ysh.jcms.svc.log.CmsSetLcbValuesRequest;
 import com.ysh.jcms.svc.log.CmsSetLcbValuesResponse;
 import com.ysh.jcms.svc.log.CmsSetLcbEntry;
 import com.ysh.jcms.svc.log.CmsSetLcbResult;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -49,7 +46,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         List<CmsSetLcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;
@@ -58,7 +55,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
             CmsSetLcbEntry entry = req.lcb.items.get(i);
             String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
 
-            CmsSetLcbResult result = processEntry(doc, entry, ref);
+            CmsSetLcbResult result = processEntry(ied, entry, ref);
             results.add(result);
 
             if (hasEntryError(result)) {
@@ -108,7 +105,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         return false;
     }
 
-    private CmsSetLcbResult processEntry(SclDocument doc, CmsSetLcbEntry entry, String ref) {
+    private CmsSetLcbResult processEntry(SclIED ied, CmsSetLcbEntry entry, String ref) {
         CmsSetLcbResult result = new CmsSetLcbResult();
 
         // Validate ref format
@@ -125,7 +122,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
 
         // Validate LN exists
-        SclLN ln = findLn(doc, ldName, lnName);
+        SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null) {
             log.warn("SetLCBValues: cannot find LN {} in LD {}", lnName, ldName);
             result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -215,20 +212,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
-    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) {
-                    return ld.findLnByFullName(lnName);
-                }
-            }
-        }
-        return null;
+    private static SclLN findLn(SclIED ied, String ldName, String lnName) {
+        SclLDevice ld = ied.lDevice(ldName);
+        return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 }

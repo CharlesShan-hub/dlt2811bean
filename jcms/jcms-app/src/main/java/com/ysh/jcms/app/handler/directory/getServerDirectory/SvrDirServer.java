@@ -9,15 +9,10 @@ import com.ysh.jcms.svc.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.svc.directory.CmsObjectClass;
 import com.ysh.jcms.utils.scl.SclDocument;
-import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class SvrDirServer extends BaseServerHandler {
@@ -36,26 +31,7 @@ public class SvrDirServer extends BaseServerHandler {
 
         SclDocument doc = requireScl(session, reqId);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
-
-        List<String> ldNames = new ArrayList<>();
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    for (SclLDevice ld : srv.lDevices()) {
-                        ldNames.add(ld.inst());
-                    }
-                }
-            }
-        }
-
-        if (refAfter != null && !refAfter.isEmpty()) {
-            int idx = ldNames.indexOf(refAfter);
-            if (idx < 0)
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            ldNames = ldNames.subList(idx + 1, ldNames.size());
-        }
+        List<String> ldNames = after(doc.ldNames(), opt(req.refAfterPresent, req.refAfter), reqId);
 
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse().reqId(reqId);
         for (String name : ldNames)

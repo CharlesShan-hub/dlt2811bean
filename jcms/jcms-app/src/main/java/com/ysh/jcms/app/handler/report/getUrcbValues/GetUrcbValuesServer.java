@@ -8,13 +8,10 @@ import com.ysh.jcms.svc.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -35,14 +32,14 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) rawReq;
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsRcbValueChoice choice = new CmsRcbValueChoice();
-            CmsBrcb urcb = resolveUrcb(doc, ref);
+            CmsBrcb urcb = resolveUrcb(ied, ref);
             if (urcb != null) {
                 choice.choice(CmsRcbValueChoice.VALUE);
                 choice.altValue = urcb;
@@ -57,7 +54,7 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    static CmsBrcb resolveUrcb(SclDocument doc, String ref) {
+    static CmsBrcb resolveUrcb(SclIED ied, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
@@ -67,7 +64,7 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
-        SclLN ln = findLn(doc, ldName, lnName);
+        SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null)
             return null;
 
@@ -160,20 +157,8 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         return urcb;
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
-    private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) {
-                    return ld.findLnByFullName(lnName);
-                }
-            }
-        }
-        return null;
+    private static SclLN findLn(SclIED ied, String ldName, String lnName) {
+        SclLDevice ld = ied.lDevice(ldName);
+        return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 }

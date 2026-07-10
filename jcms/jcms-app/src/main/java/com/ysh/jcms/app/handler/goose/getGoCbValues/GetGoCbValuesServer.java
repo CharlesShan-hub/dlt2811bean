@@ -9,13 +9,10 @@ import com.ysh.jcms.svc.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesRequest;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.svc.goose.CmsGocbValueChoice;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -38,14 +35,14 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) rawReq;
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse().reqId(reqId);
 
         for (int i = 0; i < req.reference.count; i++) {
             String ref = str(req.reference.items.get(i));
             CmsGocbValueChoice choice = new CmsGocbValueChoice();
-            CmsGoCb gocb = resolveGocb(doc, ref);
+            CmsGoCb gocb = resolveGocb(ied, ref);
             if (gocb != null) {
                 choice.choice(CmsGocbValueChoice.VALUE);
                 choice.altValue = gocb;
@@ -60,7 +57,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    public static CmsGoCb resolveGocb(SclDocument doc, String ref) {
+    public static CmsGoCb resolveGocb(SclIED ied, String ref) {
         // Check in-memory cache first (written by SetGoCBValues)
         CmsGoCb cached = GoCbCache.get(ref);
         if (cached != null) {
@@ -80,7 +77,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         String cbName = ref.substring(dotIdx + 1);
         log.debug("resolveGocb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
 
-        SclLDevice device = findLd(doc, ldName);
+        SclLDevice device = findLd(ied, ldName);
         if (device == null) {
             log.warn("resolveGocb: LD '{}' not found", ldName);
             return null;
@@ -131,19 +128,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         return gocb;
     }
 
-    /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
-    private static SclLDevice findLd(SclDocument doc, String ldName) {
-        SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null)
-            return null;
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null)
-                    return ld;
-            }
-        }
-        return null;
+    private static SclLDevice findLd(SclIED ied, String ldName) {
+        return ied.lDevice(ldName);
     }
 }
