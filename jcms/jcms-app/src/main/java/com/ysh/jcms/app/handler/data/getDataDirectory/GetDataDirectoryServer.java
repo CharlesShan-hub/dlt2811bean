@@ -61,6 +61,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.dataReference);
+        log.info("GetDataDirectory ref='{}'", ref);
         if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
@@ -75,10 +76,17 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         if (isDoLevel) {
             // DO level: resolve DOI and collect DA/SDI directory
             SclDOI doi = resolveDoi(doc, parsed);
-            if (doi == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             ln = resolveLn(doc, parsed);
-            if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            allEntries = collectDoDirectory(doc, doi, ln);
+            if (ln == null) {
+                log.warn("GetDataDirectory: ln not found for ref='{}'", ref);
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+            if (doi != null) {
+                allEntries = collectDoDirectory(doc, doi, ln);
+            } else {
+                log.warn("GetDataDirectory: doi not found for ref='{}', fallback to template only", ref);
+                allEntries = collectDoDirectoryFromTemplate(doc, ln, parsed.doName());
+            }
         } else {
             // LN level: collect DO directory
             ln = resolveLn(doc, parsed);
@@ -176,7 +184,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
 
         String doName = doi.name();
 
-        // Instance DAIs
+        // Instance DAIs (如有实例值，优先列出）
         for (SclDAI dai : doi.dais()) {
             String daName = dai.name();
             seen.add(daName);
@@ -192,32 +200,40 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         }
 
         // Type template DAs/SDOs not present in instance
-        SclDataTypeTemplates templates = doc.dataTypeTemplates();
-        if (templates != null && ln.lnType() != null && !ln.lnType().isEmpty()) {
-            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-            if (lnt != null) {
-                SclDO doDef = lnt.findDoByName(doName);
-                if (doDef != null && doDef.type() != null) {
-                    SclDOType doType = templates.findDoTypeById(doDef.type());
-                    if (doType != null) {
-                        for (SclDA da : doType.das()) {
-                            if (!seen.contains(da.name())) {
-                                seen.add(da.name());
-                                entries.add(new DirEntry(da.name(), da.fc()));
-                            }
-                        }
-                        for (SclSDO sdo : doType.sdos()) {
-                            if (!seen.contains(sdo.name())) {
-                                seen.add(sdo.name());
-                                entries.add(new DirEntry(sdo.name(), null));
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        addTemplateDirs(doc, ln, doName, seen, entries);
 
         return entries;
+    }
+
+    /** DO 级别目录：仅从模板收集（当 DOI 为 null 时兜底）。 */
+    private static List<DirEntry> collectDoDirectoryFromTemplate(SclDocument doc, SclLN ln, String doName) {
+        List<DirEntry> entries = new ArrayList<>();
+        addTemplateDirs(doc, ln, doName, new HashSet<>(), entries);
+        return entries;
+    }
+
+    /** 从 DOType 模板追加 DA/SDO 目录条目（跳过已存在的）。 */
+    private static void addTemplateDirs(SclDocument doc, SclLN ln, String doName, Set<String> seen, List<DirEntry> entries) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty()) return;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null) return;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef == null || doDef.type() == null) return;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
+        if (doType == null) return;
+        for (SclDA da : doType.das()) {
+            if (!seen.contains(da.name())) {
+                seen.add(da.name());
+                entries.add(new DirEntry(da.name(), da.fc()));
+            }
+        }
+        for (SclSDO sdo : doType.sdos()) {
+            if (!seen.contains(sdo.name())) {
+                seen.add(sdo.name());
+                entries.add(new DirEntry(sdo.name(), null));
+            }
+        }
     }
 
     /** Resolve FC for a DA name from the DOType. */

@@ -99,6 +99,20 @@ public final class DataDefinitionResolver {
             return null;
         }
 
+        String daName = nav.ref().daName();
+        // 从模板中查找 DA 定义（走 TypeChain）
+        String lnTypeId = nav.ln().lnType();
+        TypeChain ta = TypeChain.of(nav.document().dataTypeTemplates());
+        String fullRef = nav.ref().doName() + "." + daName;
+        TypeChain.DaStep daStep = ta.from(lnTypeId).doDef(nav.ref().doName()).daDef(daName);
+        SclDA da = daStep != null ? daStep.da() : null;
+        if (da != null) {
+            log.warn("resolveDaLevel DA: name={} bType={} fc={} sAddr={} dchg={} dupd={} type={}",
+                da.name(), da.bType(), da.fc(), da.sAddr(), da.dchg(), da.dupd(), da.type());
+        } else {
+            log.warn("resolveDaLevel: DA '{}' not found in DOType for lnType={}", daName, lnTypeId);
+        }
+
         StringBuilder ref = new StringBuilder(nav.ref().doName());
         for (String sdi : nav.ref().sdiChain()) ref.append(".").append(sdi);
         ref.append(".").append(nav.ref().daName());
@@ -161,55 +175,53 @@ public final class DataDefinitionResolver {
     /** bType 转 CmsDataDefinition（含长度约束） */
     public static CmsDataDefinition toDataDefinition(String bType) {
         if (bType == null) return nullDataDefinition();
-        switch (bType.toUpperCase()) {
-            case "BOOLEAN":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BOOLEAN);
-            case "INT8":         return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT8);
-            case "INT16":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT16);
-            case "INT32":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT32);
-            case "INT64":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT64);
-            case "INT8U":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT8U);
-            case "INT16U":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT16U);
-            case "INT32U":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT32U);
-            case "INT64U":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT64U);
-            case "FLOAT32":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_FLOAT32);
-            case "FLOAT64":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_FLOAT64);
-            case "BIT_STRING":
-            case "BITSTRING": {
+        // 统一转小写、去下划线、去前后空格，避免大小写/格式变体
+        String key = bType.trim().replace("_", "").replace("-", "").toLowerCase();
+        switch (key) {
+            case "boolean":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BOOLEAN);
+            case "int8":         return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT8);
+            case "int16":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT16);
+            case "int32":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT32);
+            case "int64":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT64);
+            case "int8u":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT8U);
+            case "int16u":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT16U);
+            case "int32u":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT32U);
+            case "int64u":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT64U);
+            case "enum":         return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_INT32);
+            case "float32":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_FLOAT32);
+            case "float64":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_FLOAT64);
+            case "bitstring": {
                 CmsDataDefinition def = new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BIT_STRING);
                 def.alt_bit_string_len.value(0);
                 return def;
             }
-            case "OCTET_STRING":
-            case "OCTETSTRING":
-            case "VISSTRING255":
-            case "VISIBLE_STRING": {
+            case "octetstring":
+            case "visstring255":
+            case "visiblestring": {
                 CmsDataDefinition def = new CmsDataDefinition().choice(CmsDataTypeMap.SEL_VISIBLE_STRING);
                 def.alt_visible_string_len.value(-255);
                 return def;
             }
-            case "UNICODE_STRING":
-            case "UNICODESTRING":
-            case "UNICODE255": {
+            case "unicodestring":
+            case "unicode255": {
                 CmsDataDefinition def = new CmsDataDefinition().choice(CmsDataTypeMap.SEL_UNICODE_STRING);
                 def.alt_unicode_string_len.value(-255);
                 return def;
             }
-            case "VISSTRING64": {
+            case "visstring64": {
                 CmsDataDefinition def = new CmsDataDefinition().choice(CmsDataTypeMap.SEL_VISIBLE_STRING);
                 def.alt_visible_string_len.value(-64);
                 return def;
             }
-            case "UTC_TIME":
-            case "UTCTIME":
-            case "TIMESTAMP":    return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_UTC_TIME);
-            case "BINARY_TIME":
-            case "BINARYTIME":
-            case "ENTRYTIME":    return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BINARY_TIME);
-            case "QUALITY":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_QUALITY);
-            case "DBPOS":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_DBPOS);
-            case "TCMD":         return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_TCMD);
-            case "CHECK":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_CHECK);
-            case "STRUCT":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BOOLEAN);
+            case "utctime":
+            case "timestamp":    return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_UTC_TIME);
+            case "binarytime":
+            case "entrytime":    return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BINARY_TIME);
+            case "quality":      return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_QUALITY);
+            case "dbpos":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_DBPOS);
+            case "tcmd":         return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_TCMD);
+            case "check":        return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_CHECK);
+            case "struct":       return new CmsDataDefinition().choice(CmsDataTypeMap.SEL_BOOLEAN);
             default:             return nullDataDefinition();
         }
     }

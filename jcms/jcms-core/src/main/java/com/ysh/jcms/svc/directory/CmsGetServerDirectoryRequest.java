@@ -22,18 +22,29 @@ public class CmsGetServerDirectoryRequest extends CmsType {
     public CmsBoolean          refAfterPresent;
     public CmsObjectReference  refAfter;       /* OPTIONAL */
 
-    public CmsGetServerDirectoryRequest() { super(Codec.GET_SERVER_DIRECTORY_REQUEST);
+    public CmsGetServerDirectoryRequest() { 
+        super(Codec.GET_SERVER_DIRECTORY_REQUEST);
         this.reqId           = new CmsReqId();
         this.objectClass     = new CmsObjectClass();
         this.refAfterPresent = new CmsBoolean();
         this.refAfter        = new CmsObjectReference();
     }
     
-    public CmsGetServerDirectoryRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetServerDirectoryRequest objectClass(int v) { this.objectClass.value(v); return this; }
-    public CmsGetServerDirectoryRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
-    public CmsGetServerDirectoryRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
-    public CmsGetServerDirectoryRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
+    public CmsGetServerDirectoryRequest reqId(int v) { 
+        this.reqId.value(v); return this; 
+    }
+    public CmsGetServerDirectoryRequest objectClass(int v) { 
+        this.objectClass.value(v); return this; 
+    }
+    public CmsGetServerDirectoryRequest refAfterPresent(boolean v) { 
+        this.refAfterPresent.value(v); return this; 
+    }
+    public CmsGetServerDirectoryRequest refAfter(byte[] v) { 
+        this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; 
+    }
+    public CmsGetServerDirectoryRequest refAfter(String v) { 
+        this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; 
+    }
 
     @Override
     public List<? extends CmsType> children() {
