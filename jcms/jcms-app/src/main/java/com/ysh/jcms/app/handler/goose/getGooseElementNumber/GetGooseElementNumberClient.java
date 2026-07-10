@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberResponse;
@@ -39,10 +38,6 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
     }
 
     private ElementNumberResult lastResult;
-
-    public GetGooseElementNumberClient(CmsNode node) {
-        super(node);
-    }
     public ElementNumberResult getLastResult() {
         return lastResult;
     }
@@ -58,16 +53,13 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGooseElementNumberError err = new CmsGetGooseElementNumberError();
-        err.decode(frame.asduBytes());
+        CmsGetGooseElementNumberError err = decodeErr(frame, new CmsGetGooseElementNumberError());
         throw new IOException("GetGOOSEElementNumber rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetGooseElementNumberResponse resp = new CmsGetGooseElementNumberResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetGooseElementNumberResponse resp = decodeResp(frame, new CmsGetGooseElementNumberResponse());
 
         List<Integer> offsets = new ArrayList<>();
         for (int i = 0; i < resp.memberOffset.count; i++) {

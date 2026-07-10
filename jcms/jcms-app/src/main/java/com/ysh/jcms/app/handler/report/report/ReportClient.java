@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.report.report;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.report.CmsReport;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import org.slf4j.Logger;
@@ -15,10 +14,6 @@ import java.nio.charset.StandardCharsets;
 public class ReportClient extends BaseClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ReportClient.class);
-
-    public ReportClient(CmsNode node) {
-        super(node);
-    }
 
     public void handleReport(Frame frame) {
         try {

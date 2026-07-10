@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryResponse;
@@ -10,16 +9,11 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LnDirClient extends BaseClientHandler {
 
     private int acsiClass;
-
-    public LnDirClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(LnDirDao dao) throws Exception {
         this.acsiClass = dao.acsiClass();
@@ -42,20 +36,14 @@ public class LnDirClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogicalNodeDirectoryError err = new CmsGetLogicalNodeDirectoryError();
-        err.decode(frame.asduBytes());
+        CmsGetLogicalNodeDirectoryError err = decodeErr(frame, new CmsGetLogicalNodeDirectoryError());
         throw new IOException("GetLogicalNodeDirectory rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < resp.reference.count; i++) {
-            names.add(new String(resp.reference.items.get(i).value()));
-        }
+        CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
+        List<String> names = resp.refs();
         node.getContentManager().initNodeDir(acsiClass, names);
         log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", names.size(), acsiClass);
     }

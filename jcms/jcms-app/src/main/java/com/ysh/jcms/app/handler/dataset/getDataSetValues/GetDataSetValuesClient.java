@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesRequest;
@@ -32,10 +31,6 @@ public class GetDataSetValuesClient extends BaseClientHandler {
 
     private List<DataSetValue> lastValues = new ArrayList<>();
 
-    public GetDataSetValuesClient(CmsNode node) {
-        super(node);
-    }
-
     public List<DataSetValue> getLastValues() {
         return lastValues;
     }
@@ -52,16 +47,13 @@ public class GetDataSetValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataSetValuesError err = new CmsGetDataSetValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetDataSetValuesError err = decodeErr(frame, new CmsGetDataSetValuesError());
         throw new IOException("GetDataSetValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetDataSetValuesResponse resp = new CmsGetDataSetValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetDataSetValuesResponse resp = decodeResp(frame, new CmsGetDataSetValuesResponse());
 
         List<DataSetValue> entries = new ArrayList<>();
         for (int i = 0; i < resp.value.count; i++) {

@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsSetDataSetValuesRequest;
@@ -12,10 +11,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
 public class SetDataSetValuesClient extends BaseClientHandler {
-
-    public SetDataSetValuesClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(SetDataSetValuesDao dao) throws Exception {
         CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
@@ -36,8 +31,7 @@ public class SetDataSetValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetDataSetValuesError err = new CmsSetDataSetValuesError();
-        err.decode(frame.asduBytes());
+        CmsSetDataSetValuesError err = decodeErr(frame, new CmsSetDataSetValuesError());
         StringBuilder sb = new StringBuilder("SetDataSetValues partially failed: ");
         for (int i = 0; i < err.result.count; i++) {
             if (i > 0)

@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.file.CmsGetFileError;
 import com.ysh.jcms.svc.file.CmsGetFileRequest;
 import com.ysh.jcms.svc.file.CmsGetFileResponse;
@@ -21,10 +20,6 @@ import java.util.List;
 public class GetFileClient extends BaseClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GetFileClient.class);
-
-    public GetFileClient(CmsNode node) {
-        super(node);
-    }
 
     /**
      * Download a file from the server. The client loops, sending GetFile requests

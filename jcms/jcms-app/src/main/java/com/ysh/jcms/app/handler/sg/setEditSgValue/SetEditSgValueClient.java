@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.setEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.svc.sg.CmsSetEditSgValueRequest;
@@ -14,10 +13,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class SetEditSgValueClient extends BaseClientHandler {
-
-    public SetEditSgValueClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(SetEditSgValueDao dao) throws Exception {
         CmsSetEditSgValueRequest req = new CmsSetEditSgValueRequest().reqId(nextReqId());
@@ -78,8 +73,7 @@ public class SetEditSgValueClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetEditSgValueError err = new CmsSetEditSgValueError();
-        err.decode(frame.asduBytes());
+        CmsSetEditSgValueError err = decodeErr(frame, new CmsSetEditSgValueError());
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < err.result.count; i++) {
             if (sb.length() > 0)
@@ -91,9 +85,7 @@ public class SetEditSgValueClient extends BaseClientHandler {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetEditSgValueResponse resp = new CmsSetEditSgValueResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsSetEditSgValueResponse resp = decodeResp(frame, new CmsSetEditSgValueResponse());
         log.info("SetEditSGValue succeeded");
     }
 }

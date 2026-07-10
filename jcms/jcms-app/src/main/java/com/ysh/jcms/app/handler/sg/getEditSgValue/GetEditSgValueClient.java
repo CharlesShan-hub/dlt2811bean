@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueRequest;
@@ -27,10 +26,6 @@ public class GetEditSgValueClient extends BaseClientHandler {
     }
 
     private List<ValueEntry> lastValues = new ArrayList<>();
-
-    public GetEditSgValueClient(CmsNode node) {
-        super(node);
-    }
     public List<ValueEntry> getLastValues() {
         return lastValues;
     }
@@ -45,16 +40,13 @@ public class GetEditSgValueClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetEditSgValueError err = new CmsGetEditSgValueError();
-        err.decode(frame.asduBytes());
+        CmsGetEditSgValueError err = decodeErr(frame, new CmsGetEditSgValueError());
         throw new IOException("GetEditSGValue rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetEditSgValueResponse resp = decodeResp(frame, new CmsGetEditSgValueResponse());
 
         List<ValueEntry> values = new ArrayList<>();
         for (int i = 0; i < resp.value.count; i++) {

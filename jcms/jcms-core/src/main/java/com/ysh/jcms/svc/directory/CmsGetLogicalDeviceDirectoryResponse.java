@@ -6,6 +6,7 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +39,15 @@ public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
     public CmsGetLogicalDeviceDirectoryResponse moreFollows(boolean v) {
         this.moreFollows.value(v);
         return this;
+    }
+
+    /** Convenience: extract LN reference strings as List. */
+    public List<String> lnNames() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < lnReference.count; i++) {
+            names.add(new String(lnReference.items.get(i).value()));
+        }
+        return names;
     }
 
     @Override

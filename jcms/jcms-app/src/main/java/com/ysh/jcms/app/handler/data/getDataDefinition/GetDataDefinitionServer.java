@@ -66,21 +66,18 @@ public class GetDataDefinitionServer extends BaseServerHandler {
 
             Navigator nav = Navigator.go(doc, ied, ref);
             if (!nav.isValid()) {
-                log.warn("skip ref='{}': nav invalid (isDo={} isDa={})", ref, nav.ref() != null ? nav.ref().isDoLevel() : "null",
-                        nav.ref() != null ? nav.ref().isDaLevel() : "null");
+                log.debug("skip ref='{}': nav invalid", ref);
                 continue;
             }
 
             DataDefinitionEntry sclEntry = DataDefinitionResolver.resolve(nav, fcCode);
             if (sclEntry != null) {
-                log.warn("ADD def for ref='{}' cdc={} def={}", ref, sclEntry.cdcType(), sclEntry.definition());
                 CmsDataDefResultEntry result = new CmsDataDefResultEntry().definition(sclEntry.definition());
                 if (sclEntry.cdcType() != null && !sclEntry.cdcType().isEmpty())
                     result.cdcType(sclEntry.cdcType());
                 resp.data.add(result);
-                log.warn("ADD done: count={}", resp.data.count);
             } else {
-                log.warn("SKIP def for ref='{}': resolve returned null", ref);
+                log.debug("SKIP def for ref='{}': resolve returned null", ref);
             }
         }
         resp.moreFollows(false);

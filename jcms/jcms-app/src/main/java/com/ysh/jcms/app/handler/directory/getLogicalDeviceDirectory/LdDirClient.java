@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryResponse;
@@ -9,14 +8,9 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LdDirClient extends BaseClientHandler {
-
-    public LdDirClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(LdDirDao dao) throws Exception {
         CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest().reqId(nextReqId());
@@ -31,20 +25,14 @@ public class LdDirClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogicalDeviceDirectoryError err = new CmsGetLogicalDeviceDirectoryError();
-        err.decode(frame.asduBytes());
+        CmsGetLogicalDeviceDirectoryError err = decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
         throw new IOException("GetLogicalDeviceDirectory rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
-        List<String> names = new ArrayList<>();
-        for (int i = 0; i < resp.lnReference.count; i++) {
-            names.add(new String(resp.lnReference.items.get(i).value()));
-        }
+        CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
+        List<String> names = resp.lnNames();
         node.getContentManager().initLdDir(names);
         log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", names.size());
     }

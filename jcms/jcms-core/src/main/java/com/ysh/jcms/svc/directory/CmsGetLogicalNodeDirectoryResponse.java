@@ -6,6 +6,7 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +39,15 @@ public class CmsGetLogicalNodeDirectoryResponse extends CmsType {
     public CmsGetLogicalNodeDirectoryResponse moreFollows(boolean v) {
         this.moreFollows.value(v);
         return this;
+    }
+
+    /** Convenience: extract reference strings as List. */
+    public List<String> refs() {
+        List<String> refs = new ArrayList<>();
+        for (int i = 0; i < reference.count; i++) {
+            refs.add(new String(reference.items.get(i).value()));
+        }
+        return refs;
     }
 
     @Override

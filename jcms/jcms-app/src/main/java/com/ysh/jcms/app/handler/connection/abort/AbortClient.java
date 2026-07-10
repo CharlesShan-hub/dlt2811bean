@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,10 +13,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
  * expected.
  */
 public class AbortClient extends BaseClientHandler {
-
-    public AbortClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(AbortClientDao dao) throws Exception {
         CmsAbort req = new CmsAbort().reqId(0).reason(dao.reason());

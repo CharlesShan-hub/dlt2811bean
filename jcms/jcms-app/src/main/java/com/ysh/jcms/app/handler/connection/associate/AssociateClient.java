@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.svc.connection.CmsAssociateError;
@@ -19,19 +18,12 @@ import java.nio.charset.StandardCharsets;
 
 public class AssociateClient extends BaseClientHandler {
 
-    private final GmCredentialManager credentialManager;
-
-    public AssociateClient(CmsNode node) {
-        super(node);
-        this.credentialManager = node.getCredentialManager();
-    }
-
     public void execute(AssociateClientDao dao) throws Exception {
         CmsAssociateRequest req = new CmsAssociateRequest().reqId(nextReqId()).sapRef(dao.sapRef())
                 .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
         if (dao.secure()) {
-            req.authParam(buildAuthParam(credentialManager, dao.sapRef()));
+            req.authParam(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
             req.authParamPresent(true);
         }
 
@@ -40,17 +32,14 @@ public class AssociateClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsAssociateError err = new CmsAssociateError();
-        err.decode(frame.asduBytes());
+        CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
         node.getClient().getSession().setState(SessionState.DISCONNECTED);
         throw new IOException("Association rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsAssociateResponse resp = new CmsAssociateResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsAssociateResponse resp = decodeResp(frame, new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {

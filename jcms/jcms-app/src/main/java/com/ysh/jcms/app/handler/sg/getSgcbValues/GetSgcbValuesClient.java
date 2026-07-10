@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.block.CmsSgcb;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.sg.CmsGetSgcbValuesError;
@@ -33,10 +32,6 @@ public class GetSgcbValuesClient extends BaseClientHandler {
 
     private List<SgcbResult> lastResults = new ArrayList<>();
 
-    public GetSgcbValuesClient(CmsNode node) {
-        super(node);
-    }
-
     public List<SgcbResult> getLastResults() {
         return lastResults;
     }
@@ -54,16 +49,13 @@ public class GetSgcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetSgcbValuesError err = new CmsGetSgcbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetSgcbValuesError err = decodeErr(frame, new CmsGetSgcbValuesError());
         throw new IOException("GetSGCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetSgcbValuesResponse resp = decodeResp(frame, new CmsGetSgcbValuesResponse());
 
         List<SgcbResult> results = new ArrayList<>();
         for (int i = 0; i < resp.sgscb.count; i++) {

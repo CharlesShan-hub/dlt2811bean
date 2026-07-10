@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesRequest;
@@ -23,10 +22,6 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
     }
 
     private List<LogStatusEntry> lastEntries = new ArrayList<>();
-
-    public GetLogStatusValuesClient(CmsNode node) {
-        super(node);
-    }
     public List<LogStatusEntry> getLastEntries() {
         return lastEntries;
     }
@@ -41,16 +36,13 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLogStatusValuesError err = new CmsGetLogStatusValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetLogStatusValuesError err = decodeErr(frame, new CmsGetLogStatusValuesError());
         throw new IOException("GetLogStatusValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.log.count; i++) {

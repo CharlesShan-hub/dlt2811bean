@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceRequest;
@@ -38,10 +37,6 @@ public class GetGoReferenceClient extends BaseClientHandler {
     }
 
     private GoRefResult lastResult;
-
-    public GetGoReferenceClient(CmsNode node) {
-        super(node);
-    }
     public GoRefResult getLastResult() {
         return lastResult;
     }
@@ -56,16 +51,13 @@ public class GetGoReferenceClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGoReferenceError err = new CmsGetGoReferenceError();
-        err.decode(frame.asduBytes());
+        CmsGetGoReferenceError err = decodeErr(frame, new CmsGetGoReferenceError());
         throw new IOException("GetGoReference rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetGoReferenceResponse resp = new CmsGetGoReferenceResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetGoReferenceResponse resp = decodeResp(frame, new CmsGetGoReferenceResponse());
 
         List<MemberDataEntry> members = new ArrayList<>();
         for (int i = 0; i < resp.memberData.count; i++) {

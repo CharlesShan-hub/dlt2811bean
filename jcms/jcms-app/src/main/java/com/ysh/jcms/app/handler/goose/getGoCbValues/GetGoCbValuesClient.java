@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.block.CmsGoCb;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesError;
@@ -26,10 +25,6 @@ public class GetGoCbValuesClient extends BaseClientHandler {
     }
 
     private List<GoCbEntry> lastEntries = new ArrayList<>();
-
-    public GetGoCbValuesClient(CmsNode node) {
-        super(node);
-    }
     public List<GoCbEntry> getLastEntries() {
         return lastEntries;
     }
@@ -44,16 +39,13 @@ public class GetGoCbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetGoCbValuesError err = new CmsGetGoCbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetGoCbValuesError err = decodeErr(frame, new CmsGetGoCbValuesError());
         throw new IOException("GetGoCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetGoCbValuesResponse resp = decodeResp(frame, new CmsGetGoCbValuesResponse());
 
         List<GoCbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.gocb.count; i++) {

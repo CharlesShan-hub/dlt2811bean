@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.negotiate.CmsNegotiateError;
 import com.ysh.jcms.svc.negotiate.CmsNegotiateRequest;
 import com.ysh.jcms.svc.negotiate.CmsNegotiateResponse;
@@ -13,10 +12,6 @@ import java.io.IOException;
 
 public class NegotiateClient extends BaseClientHandler {
 
-    public NegotiateClient(CmsNode node) {
-        super(node);
-    }
-
     public void execute(NegotiateClientDao dao) throws Exception {
         CmsNegotiateRequest req = new CmsNegotiateRequest().reqId(nextReqId()).apduSize(dao.apduSize()).asduSize(dao.asduSize())
                 .protocolVersion(dao.protocolVersion());
@@ -26,16 +21,13 @@ public class NegotiateClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsNegotiateError err = new CmsNegotiateError();
-        err.decode(frame.asduBytes());
+        CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
         throw new IOException("Negotiate rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsNegotiateResponse resp = new CmsNegotiateResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsNegotiateResponse resp = decodeResp(frame, new CmsNegotiateResponse());
 
         ClientSession session = node.getClient().getSession();
         session.setNegotiatedApduSize(resp.apduSize.value());

@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesError;
@@ -25,10 +24,6 @@ public class GetBrcbValuesClient extends BaseClientHandler {
     }
 
     private List<BrcbEntry> lastEntries = new ArrayList<>();
-
-    public GetBrcbValuesClient(CmsNode node) {
-        super(node);
-    }
     public List<BrcbEntry> getLastEntries() {
         return lastEntries;
     }
@@ -43,16 +38,13 @@ public class GetBrcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetBrcbValuesError err = new CmsGetBrcbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetBrcbValuesError err = decodeErr(frame, new CmsGetBrcbValuesError());
         throw new IOException("GetBRCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetBrcbValuesResponse resp = decodeResp(frame, new CmsGetBrcbValuesResponse());
 
         List<BrcbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.brcb.count; i++) {

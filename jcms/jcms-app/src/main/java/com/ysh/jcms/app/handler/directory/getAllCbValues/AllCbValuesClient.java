@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.svc.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllCbValuesResponse;
@@ -29,10 +28,6 @@ public class AllCbValuesClient extends BaseClientHandler {
 
     private List<CbEntry> lastEntries = new ArrayList<>();
 
-    public AllCbValuesClient(CmsNode node) {
-        super(node);
-    }
-
     public List<CbEntry> getLastEntries() {
         return lastEntries;
     }
@@ -59,16 +54,13 @@ public class AllCbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllCbValuesError err = new CmsGetAllCbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetAllCbValuesError err = decodeErr(frame, new CmsGetAllCbValuesError());
         throw new IOException("GetAllCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetAllCbValuesResponse resp = decodeResp(frame, new CmsGetAllCbValuesResponse());
 
         List<CbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.cbValue.count; i++) {

@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.svc.file.CmsGetFileDirectoryError;
 import com.ysh.jcms.svc.file.CmsGetFileDirectoryRequest;
@@ -39,10 +38,6 @@ public class GetFileDirectoryClient extends BaseClientHandler {
     }
 
     private FileDirectoryResult lastResult;
-
-    public GetFileDirectoryClient(CmsNode node) {
-        super(node);
-    }
     public FileDirectoryResult getLastResult() {
         return lastResult;
     }
@@ -63,16 +58,13 @@ public class GetFileDirectoryClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetFileDirectoryError err = new CmsGetFileDirectoryError();
-        err.decode(frame.asduBytes());
+        CmsGetFileDirectoryError err = decodeErr(frame, new CmsGetFileDirectoryError());
         throw new IOException("GetFileDirectory rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetFileDirectoryResponse resp = new CmsGetFileDirectoryResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetFileDirectoryResponse resp = decodeResp(frame, new CmsGetFileDirectoryResponse());
 
         List<FileEntryResult> entries = new ArrayList<>();
         for (int i = 0; i < resp.fileEntry.count; i++) {

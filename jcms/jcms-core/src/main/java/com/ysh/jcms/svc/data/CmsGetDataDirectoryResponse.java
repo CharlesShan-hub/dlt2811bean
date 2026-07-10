@@ -5,6 +5,7 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +38,15 @@ public class CmsGetDataDirectoryResponse extends CmsType {
     public CmsGetDataDirectoryResponse moreFollows(boolean v) {
         this.moreFollows.value(v);
         return this;
+    }
+
+    /** Convenience: extract data attribute reference strings as List. */
+    public List<String> dataAttributes() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < dataAttribute.count; i++) {
+            names.add(new String(dataAttribute.items.get(i).reference.value()));
+        }
+        return names;
     }
 
     @Override

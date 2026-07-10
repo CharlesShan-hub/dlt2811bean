@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.log.CmsLogDataEntry;
 import com.ysh.jcms.svc.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.svc.log.CmsQueryLogByTimeRequest;
@@ -17,10 +16,6 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 
 public class QueryLogByTimeClient extends BaseClientHandler {
-
-    public QueryLogByTimeClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(QueryLogByTimeDao dao) throws Exception {
         CmsQueryLogByTimeRequest req = new CmsQueryLogByTimeRequest().reqId(nextReqId()).logReference(dao.logRef());
@@ -37,8 +32,7 @@ public class QueryLogByTimeClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsQueryLogByTimeError err = new CmsQueryLogByTimeError();
-        err.decode(frame.asduBytes());
+        CmsQueryLogByTimeError err = decodeErr(frame, new CmsQueryLogByTimeError());
         throw new IOException("QueryLogByTime rejected: error=" + err.serviceError.value());
     }
 
@@ -53,9 +47,7 @@ public class QueryLogByTimeClient extends BaseClientHandler {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsQueryLogByTimeResponse resp = decodeResp(frame, new CmsQueryLogByTimeResponse());
         ConsolePrinter.list("Log entries (" + resp.logEntry.items.size() + " entries)", resp.logEntry.items, entry -> {
             long epochMs = (long) entry.timeOfEntry.daysSince1984.value() * 86400000L + entry.timeOfEntry.msOfDay.value();
             LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(epochMs), ZoneId.systemDefault());

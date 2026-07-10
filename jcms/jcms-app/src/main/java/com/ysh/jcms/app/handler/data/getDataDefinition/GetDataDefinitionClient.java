@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.data.CmsDataDefResultEntry;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
@@ -29,10 +28,6 @@ public class GetDataDefinitionClient extends BaseClientHandler {
 
     private List<DefEntry> lastEntries = new ArrayList<>();
 
-    public GetDataDefinitionClient(CmsNode node) {
-        super(node);
-    }
-
     public List<DefEntry> getLastEntries() {
         return lastEntries;
     }
@@ -54,16 +49,13 @@ public class GetDataDefinitionClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataDefinitionError err = new CmsGetDataDefinitionError();
-        err.decode(frame.asduBytes());
+        CmsGetDataDefinitionError err = decodeErr(frame, new CmsGetDataDefinitionError());
         throw new IOException("GetDataDefinition rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetDataDefinitionResponse resp = decodeResp(frame, new CmsGetDataDefinitionResponse());
 
         List<DefEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {

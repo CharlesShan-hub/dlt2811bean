@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.sg.selectEditSg;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.sg.CmsSelectEditSgError;
 import com.ysh.jcms.svc.sg.CmsSelectEditSgRequest;
 import com.ysh.jcms.svc.sg.CmsSelectEditSgResponse;
@@ -12,10 +11,6 @@ import java.io.IOException;
 
 public class SelectEditSgClient extends BaseClientHandler {
 
-    public SelectEditSgClient(CmsNode node) {
-        super(node);
-    }
-
     public void execute(SelectEditSgDao dao) throws Exception {
         CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference())
                 .settingGroupNumber(dao.settingGroupNumber());
@@ -25,16 +20,13 @@ public class SelectEditSgClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSelectEditSgError err = new CmsSelectEditSgError();
-        err.decode(frame.asduBytes());
+        CmsSelectEditSgError err = decodeErr(frame, new CmsSelectEditSgError());
         throw new IOException("SelectEditSG rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSelectEditSgResponse resp = new CmsSelectEditSgResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsSelectEditSgResponse resp = decodeResp(frame, new CmsSelectEditSgResponse());
         log.info("SelectEditSG succeeded");
     }
 }

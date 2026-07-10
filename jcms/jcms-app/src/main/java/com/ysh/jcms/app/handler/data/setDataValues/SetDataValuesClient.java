@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.data.CmsDataRefValueEntry;
 import com.ysh.jcms.svc.data.CmsSetDataValuesError;
@@ -13,10 +12,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
 public class SetDataValuesClient extends BaseClientHandler {
-
-    public SetDataValuesClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(SetDataValuesDao dao) throws Exception {
         CmsSetDataValuesRequest req = new CmsSetDataValuesRequest().reqId(nextReqId());
@@ -40,8 +35,7 @@ public class SetDataValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetDataValuesError err = new CmsSetDataValuesError();
-        err.decode(frame.asduBytes());
+        CmsSetDataValuesError err = decodeErr(frame, new CmsSetDataValuesError());
         int errorCount = err.result.count;
         StringBuilder sb = new StringBuilder("SetDataValues rejected:");
         for (int i = 0; i < errorCount; i++) {
@@ -52,9 +46,7 @@ public class SetDataValuesClient extends BaseClientHandler {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetDataValuesResponse resp = new CmsSetDataValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsSetDataValuesResponse resp = decodeResp(frame, new CmsSetDataValuesResponse());
         log.info("SetDataValues succeeded");
     }
 

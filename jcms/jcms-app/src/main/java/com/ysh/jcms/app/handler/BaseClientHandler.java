@@ -12,10 +12,18 @@ import java.io.IOException;
 
 public abstract class BaseClientHandler extends BaseHandler {
 
-    protected final CmsNode node;
+    protected CmsNode node;
+
+    protected BaseClientHandler() {}
 
     protected BaseClientHandler(CmsNode node) {
         this.node = node;
+    }
+
+    /** Set node after no-arg construction (fluent). */
+    public BaseClientHandler node(CmsNode node) {
+        this.node = node;
+        return this;
     }
 
     protected int nextReqId() {
@@ -27,6 +35,7 @@ public abstract class BaseClientHandler extends BaseHandler {
      * {@link #send(ServiceName, CmsType)} for automatic PDU tracing.
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
+        if (node == null) throw new IOException("BaseClientHandler node not set");
         Frame frame = node.sendRequest(sc, pduBytes);
         if (frame == null)
             throw new IOException("Request timed out for " + sc);
@@ -51,6 +60,7 @@ public abstract class BaseClientHandler extends BaseHandler {
      * when enabled.
      */
     protected void sendOneWay(ServiceName sc, byte[] pduBytes) throws IOException {
+        if (node == null) throw new IOException("BaseClientHandler node not set");
         trace(">>> " + sc + " (one-way)");
         node.getClient().getConnection()
                 .send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, reqIdFromBytes(pduBytes)));
@@ -84,6 +94,21 @@ public abstract class BaseClientHandler extends BaseHandler {
             throw new IOException("Failed to decode " + pdu.getClass().getSimpleName(), e);
         }
         return pdu;
+    }
+
+    /** Decode response PDU from frame and trace it. */
+    protected static <T extends CmsType> T decodeResp(Frame frame, T resp) throws IOException {
+        if (frame == null)
+            throw new IOException("Request timed out (no response)");
+        resp.decode(frame.asduBytes());
+        traceResp(resp);
+        return resp;
+    }
+
+    /** Decode error PDU from frame. */
+    protected static <T extends CmsType> T decodeErr(Frame frame, T err) throws IOException {
+        err.decode(frame.asduBytes());
+        return err;
     }
 
     private static boolean isTraceEnabled() {

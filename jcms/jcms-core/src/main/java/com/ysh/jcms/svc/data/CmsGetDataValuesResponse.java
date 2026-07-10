@@ -6,6 +6,7 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -37,6 +38,15 @@ public class CmsGetDataValuesResponse extends CmsType {
     public CmsGetDataValuesResponse moreFollows(boolean v) {
         this.moreFollows.value(v);
         return this;
+    }
+
+    /** Convenience: get data values as List. */
+    public List<CmsData> values() {
+        List<CmsData> items = new ArrayList<>();
+        for (int i = 0; i < value.count; i++) {
+            items.add(value.items.get(i));
+        }
+        return items;
     }
 
     @Override

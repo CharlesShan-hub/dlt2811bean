@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesResponse;
@@ -12,10 +11,6 @@ import java.io.IOException;
 
 public class SetUrcbValuesClient extends BaseClientHandler {
 
-    public SetUrcbValuesClient(CmsNode node) {
-        super(node);
-    }
-
     public void execute(SetUrcbValuesDao dao) throws Exception {
         CmsSetUrcbValuesRequest req = dao.toRequest(nextReqId());
         send(ServiceName.SET_URCB_VALUES, req);
@@ -23,8 +18,7 @@ public class SetUrcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsSetUrcbValuesError err = new CmsSetUrcbValuesError();
-        err.decode(frame.asduBytes());
+        CmsSetUrcbValuesError err = decodeErr(frame, new CmsSetUrcbValuesError());
         StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {
             if (err.result.items.get(i).errorPresent.value()) {
@@ -36,9 +30,7 @@ public class SetUrcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetUrcbValuesResponse resp = new CmsSetUrcbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsSetUrcbValuesResponse resp = decodeResp(frame, new CmsSetUrcbValuesResponse());
         log.info("SetURCBValues succeeded");
     }
 }

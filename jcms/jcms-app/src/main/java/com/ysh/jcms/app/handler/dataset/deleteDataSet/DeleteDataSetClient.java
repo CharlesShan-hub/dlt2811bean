@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.deleteDataSet;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.dataset.CmsDeleteDataSetError;
 import com.ysh.jcms.svc.dataset.CmsDeleteDataSetRequest;
 import com.ysh.jcms.svc.dataset.CmsDeleteDataSetResponse;
@@ -12,10 +11,6 @@ import java.io.IOException;
 
 public class DeleteDataSetClient extends BaseClientHandler {
 
-    public DeleteDataSetClient(CmsNode node) {
-        super(node);
-    }
-
     public void execute(DeleteDataSetDao dao) throws Exception {
         CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
 
@@ -24,8 +19,7 @@ public class DeleteDataSetClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsDeleteDataSetError err = new CmsDeleteDataSetError();
-        err.decode(frame.asduBytes());
+        CmsDeleteDataSetError err = decodeErr(frame, new CmsDeleteDataSetError());
         throw new IOException("DeleteDataSet rejected: error=" + err.serviceError.value());
     }
 

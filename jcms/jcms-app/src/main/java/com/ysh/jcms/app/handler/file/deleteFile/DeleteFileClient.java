@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.file.CmsDeleteFileError;
 import com.ysh.jcms.svc.file.CmsDeleteFileRequest;
 import com.ysh.jcms.svc.file.CmsDeleteFileResponse;
@@ -12,10 +11,6 @@ import java.io.IOException;
 
 public class DeleteFileClient extends BaseClientHandler {
 
-    public DeleteFileClient(CmsNode node) {
-        super(node);
-    }
-
     public void execute(DeleteFileDao dao) throws Exception {
         CmsDeleteFileRequest req = new CmsDeleteFileRequest().reqId(nextReqId()).filename(dao.fileName());
 
@@ -24,8 +19,7 @@ public class DeleteFileClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsDeleteFileError err = new CmsDeleteFileError();
-        err.decode(frame.asduBytes());
+        CmsDeleteFileError err = decodeErr(frame, new CmsDeleteFileError());
         throw new IOException("DeleteFile rejected: error=" + err.serviceError.value());
     }
 

@@ -83,13 +83,13 @@ public class GetDataDirectoryServer extends BaseServerHandler {
             SclDOI doi = resolveDoi(doc, parsed);
             ln = resolveLn(doc, parsed);
             if (ln == null) {
-                log.warn("GetDataDirectory: ln not found for ref='{}'", ref);
+                log.debug("GetDataDirectory: ln not found for ref='{}'", ref);
                 return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             if (doi != null) {
                 allEntries = collectDoDirectory(doc, doi, ln);
             } else {
-                log.warn("GetDataDirectory: doi not found for ref='{}', fallback to template only", ref);
+                log.debug("GetDataDirectory: doi not found for ref='{}', fallback to template only", ref);
                 allEntries = collectDoDirectoryFromTemplate(doc, ln, parsed.doName());
             }
         } else {

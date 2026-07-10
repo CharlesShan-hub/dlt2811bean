@@ -39,19 +39,17 @@ public final class DataDefinitionResolver {
      * 按完整引用解析数据定义，支持 FC 过滤。
      */
     public static DataDefinitionEntry resolve(Navigator nav, String fc) {
-        log.warn("resolve ENTER: navValid={} ln={} ref='{}'", nav.isValid(), nav.ln() != null ? nav.ln().getFullName() : "null",
-                nav.ref() != null ? nav.ref().fullReference() : "null");
         if (!nav.isValid() || nav.ln() == null) {
-            log.warn("resolve: nav invalid or ln=null");
+            log.debug("resolve: nav invalid or ln=null");
             return null;
         }
         if (nav.ref().isLnLevel()) {
-            log.warn("resolve: ln level, no definition");
+            log.debug("resolve: ln level, no definition");
             return null;
         }
 
         if (!applyFcFilter(nav, fc)) {
-            log.warn("resolve: fc filter failed fc={}", fc);
+            log.debug("resolve: fc filter failed fc={}", fc);
             return null;
         }
 
@@ -60,7 +58,7 @@ public final class DataDefinitionResolver {
         if (nav.ref().isDaLevel())
             return resolveDaLevel(nav);
 
-        log.warn("resolve: neither DO nor DA level (do={} da={})", nav.ref().isDoLevel(), nav.ref().isDaLevel());
+        log.debug("resolve: neither DO nor DA level (do={} da={})", nav.ref().isDoLevel(), nav.ref().isDaLevel());
         return null;
     }
 
@@ -91,10 +89,8 @@ public final class DataDefinitionResolver {
 
     /** DA / SDI.BDA 级别 */
     private static DataDefinitionEntry resolveDaLevel(Navigator nav) {
-        log.warn("resolveDaLevel ENTER: ref='{}' doName={} daName={} templates={} lnType={}", nav.ref().fullReference(), nav.ref().doName(),
-                nav.ref().daName(), nav.document().dataTypeTemplates() != null ? "ok" : "null", nav.ln().lnType());
         if (nav.document().dataTypeTemplates() == null) {
-            log.warn("resolveDaLevel: dataTypeTemplates=null");
+            log.debug("resolveDaLevel: dataTypeTemplates=null");
             return null;
         }
 
@@ -106,7 +102,7 @@ public final class DataDefinitionResolver {
         TypeChain.DaStep daStep = ta.from(lnTypeId).doDef(nav.ref().doName()).daDef(daName);
         SclDA da = daStep != null ? daStep.da() : null;
         if (da != null) {
-            log.warn("resolveDaLevel DA: name={} bType={} fc={} sAddr={} dchg={} dupd={} type={}", da.name(), da.bType(), da.fc(),
+            log.debug("resolveDaLevel DA: name={} bType={} fc={} sAddr={} dchg={} dupd={} type={}", da.name(), da.bType(), da.fc(),
                     da.sAddr(), da.dchg(), da.dupd(), da.type());
         } else {
             log.warn("resolveDaLevel: DA '{}' not found in DOType for lnType={}", daName, lnTypeId);
@@ -119,7 +115,7 @@ public final class DataDefinitionResolver {
 
         String bType = TypeChain.of(nav.document().dataTypeTemplates()).resolveBType(nav.ln().lnType(), ref.toString());
         if (bType == null) {
-            log.warn("resolveDaLevel: bType null for ref={}, lnType={}", ref, nav.ln().lnType());
+            log.debug("resolveDaLevel: bType null for ref={}, lnType={}", ref, nav.ln().lnType());
             return null;
         }
         return new DataDefinitionEntry(nav.ref().fullReference(), "", toDataDefinition(bType));
@@ -127,8 +123,6 @@ public final class DataDefinitionResolver {
 
     /** DO 级别：CDC 类型 + 结构定义 */
     private static DataDefinitionEntry resolveDoLevel(Navigator nav) {
-        log.warn("resolveDoLevel ENTER: ref='{}' doName={} templates={} lnType={}", nav.ref().fullReference(), nav.ref().doName(),
-                nav.document().dataTypeTemplates() != null ? "ok" : "null", nav.ln().lnType());
         if (nav.document().dataTypeTemplates() == null)
             return null;
         TypeChain chain = TypeChain.of(nav.document().dataTypeTemplates());

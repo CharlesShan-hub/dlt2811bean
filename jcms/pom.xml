@@ -98,10 +98,10 @@
                             <removeUnusedImports/>
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
+                            <excludes>
+                                <exclude>**/NativeBridge.java</exclude>
+                            </excludes>
                         </java>
-                        <excludes>
-                            <exclude>**/NativeBridge.java</exclude>
-                        </excludes>
                     </configuration>
                 </plugin>
             </plugins>

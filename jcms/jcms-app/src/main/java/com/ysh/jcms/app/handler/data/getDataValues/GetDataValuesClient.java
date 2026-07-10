@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataValuesError;
@@ -29,10 +28,6 @@ public class GetDataValuesClient extends BaseClientHandler {
 
     private List<DataValue> lastValues = new ArrayList<>();
 
-    public GetDataValuesClient(CmsNode node) {
-        super(node);
-    }
-
     public List<DataValue> getLastValues() {
         return lastValues;
     }
@@ -54,16 +49,13 @@ public class GetDataValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetDataValuesError err = new CmsGetDataValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetDataValuesError err = decodeErr(frame, new CmsGetDataValuesError());
         throw new IOException("GetDataValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
 
         List<DataValue> values = new ArrayList<>();
         for (int i = 0; i < resp.value.count; i++) {

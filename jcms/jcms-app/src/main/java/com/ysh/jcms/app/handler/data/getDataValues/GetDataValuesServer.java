@@ -59,8 +59,6 @@ public class GetDataValuesServer extends BaseServerHandler {
 
                 Navigator nav = Navigator.go(getScl2Document(session), ied, ref);
                 DataValueEntry dv = DataValueResolver.resolve(nav, fcCode);
-                log.warn(">> ref='{}' fc={} nav={} dv={}", ref, fcCode, nav.isValid() ? "ok" : "invalid",
-                        dv != null ? (dv.val() != null ? "'" + dv.val() + "'" : "val=null") : "null");
                 if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                     resp.value.add(DataConverter.toCmsData(dv));
                 } else {

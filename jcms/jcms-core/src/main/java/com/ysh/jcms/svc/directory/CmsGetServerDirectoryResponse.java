@@ -6,6 +6,7 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,6 +39,15 @@ public class CmsGetServerDirectoryResponse extends CmsType {
     public CmsGetServerDirectoryResponse moreFollows(boolean v) {
         this.moreFollows.value(v);
         return this;
+    }
+
+    /** Convenience: extract LD names as String list. */
+    public List<String> ldNames() {
+        List<String> names = new ArrayList<>();
+        for (int i = 0; i < reference.count; i++) {
+            names.add(new String(reference.items.get(i).value()));
+        }
+        return names;
     }
 
     @Override

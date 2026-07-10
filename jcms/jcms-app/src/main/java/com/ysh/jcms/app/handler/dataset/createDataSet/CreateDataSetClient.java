@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetResponse;
@@ -12,10 +11,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
 public class CreateDataSetClient extends BaseClientHandler {
-
-    public CreateDataSetClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(CreateDataSetDao dao) throws Exception {
         CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
@@ -33,8 +28,7 @@ public class CreateDataSetClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsCreateDataSetError err = new CmsCreateDataSetError();
-        err.decode(frame.asduBytes());
+        CmsCreateDataSetError err = decodeErr(frame, new CmsCreateDataSetError());
         throw new IOException("CreateDataSet rejected: error=" + err.serviceError.value());
     }
 

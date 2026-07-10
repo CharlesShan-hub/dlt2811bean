@@ -4,7 +4,6 @@ import java.util.*;
 
 public class ContentManager {
 
-    private String sapRef;
     private final Set<String> ldNames = new LinkedHashSet<>();
     private final Set<String> lnNames = new LinkedHashSet<>();
     private final Set<String> dataRefs = new LinkedHashSet<>();
@@ -57,8 +56,7 @@ public class ContentManager {
         return Collections.unmodifiableList(dataDefEntries);
     }
 
-    public void initServerDir(String sapRef, List<String> ldNames) {
-        this.sapRef = sapRef;
+    public void initServerDir(List<String> ldNames) {
         this.ldNames.clear();
         this.ldNames.addAll(ldNames);
     }
@@ -84,9 +82,6 @@ public class ContentManager {
         set.addAll(refs);
     }
 
-    public String getSapRef() {
-        return sapRef;
-    }
     public Set<String> getLdNames() {
         return Collections.unmodifiableSet(ldNames);
     }

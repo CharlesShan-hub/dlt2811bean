@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
@@ -16,10 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllDataValuesClient extends BaseClientHandler {
-
-    public AllDataValuesClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(AllDataValuesDao dao) throws Exception {
         CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().reqId(nextReqId());
@@ -45,16 +40,13 @@ public class AllDataValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllDataValuesError err = new CmsGetAllDataValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetAllDataValuesError err = decodeErr(frame, new CmsGetAllDataValuesError());
         throw new IOException("GetAllDataValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetAllDataValuesResponse resp = new CmsGetAllDataValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetAllDataValuesResponse resp = decodeResp(frame, new CmsGetAllDataValuesResponse());
 
         List<ContentManager.AllDataEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {

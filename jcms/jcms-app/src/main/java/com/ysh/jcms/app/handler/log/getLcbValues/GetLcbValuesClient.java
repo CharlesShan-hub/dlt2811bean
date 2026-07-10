@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.block.CmsLcb;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesError;
@@ -25,10 +24,6 @@ public class GetLcbValuesClient extends BaseClientHandler {
     }
 
     private List<LcbEntry> lastEntries = new ArrayList<>();
-
-    public GetLcbValuesClient(CmsNode node) {
-        super(node);
-    }
     public List<LcbEntry> getLastEntries() {
         return lastEntries;
     }
@@ -43,16 +38,13 @@ public class GetLcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetLcbValuesError err = new CmsGetLcbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetLcbValuesError err = decodeErr(frame, new CmsGetLcbValuesError());
         throw new IOException("GetLCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.lcb.count; i++) {

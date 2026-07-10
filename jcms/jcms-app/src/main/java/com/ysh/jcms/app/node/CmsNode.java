@@ -7,6 +7,7 @@ import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
+import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
 import com.ysh.jcms.utils.scl.SclDocument;
 import org.slf4j.Logger;
@@ -53,7 +54,8 @@ public class CmsNode {
             server.register(handler);
     }
 
-    public void registerClient(Object handler) {
+    public void registerClient(BaseClientHandler handler) {
+        handler.node(this);
         clientHandlers.put(handler.getClass(), handler);
     }
 

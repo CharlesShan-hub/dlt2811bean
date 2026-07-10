@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesError;
@@ -25,10 +24,6 @@ public class GetUrcbValuesClient extends BaseClientHandler {
     }
 
     private List<UrcbEntry> lastEntries = new ArrayList<>();
-
-    public GetUrcbValuesClient(CmsNode node) {
-        super(node);
-    }
     public List<UrcbEntry> getLastEntries() {
         return lastEntries;
     }
@@ -43,16 +38,13 @@ public class GetUrcbValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetUrcbValuesError err = new CmsGetUrcbValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetUrcbValuesError err = decodeErr(frame, new CmsGetUrcbValuesError());
         throw new IOException("GetURCBValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetUrcbValuesResponse resp = decodeResp(frame, new CmsGetUrcbValuesResponse());
 
         List<UrcbEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.urcb.count; i++) {

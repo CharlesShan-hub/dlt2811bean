@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.file.CmsGetFileAttributeValuesError;
 import com.ysh.jcms.svc.file.CmsGetFileAttributeValuesRequest;
 import com.ysh.jcms.svc.file.CmsGetFileAttributeValuesResponse;
@@ -27,10 +26,6 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
     }
 
     private FileAttrResult lastResult;
-
-    public GetFileAttributeValuesClient(CmsNode node) {
-        super(node);
-    }
     public FileAttrResult getLastResult() {
         return lastResult;
     }
@@ -43,16 +38,13 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetFileAttributeValuesError err = new CmsGetFileAttributeValuesError();
-        err.decode(frame.asduBytes());
+        CmsGetFileAttributeValuesError err = decodeErr(frame, new CmsGetFileAttributeValuesError());
         throw new IOException("GetFileAttributeValues rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetFileAttributeValuesResponse resp = new CmsGetFileAttributeValuesResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetFileAttributeValuesResponse resp = decodeResp(frame, new CmsGetFileAttributeValuesResponse());
 
         long epochSeconds = resp.fileEntry.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.fileEntry.lastModified.fractionOfSecond.value();

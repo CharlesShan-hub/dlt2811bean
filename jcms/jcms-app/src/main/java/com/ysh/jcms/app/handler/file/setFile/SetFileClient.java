@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.setFile;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.file.CmsSetFileError;
 import com.ysh.jcms.svc.file.CmsSetFileRequest;
 import com.ysh.jcms.svc.file.CmsSetFileResponse;
@@ -21,10 +20,6 @@ public class SetFileClient extends BaseClientHandler {
 
     // Leave room for PER overhead
     private static final int CHUNK_SIZE = 64000;
-
-    public SetFileClient(CmsNode node) {
-        super(node);
-    }
 
     /**
      * Upload a local file to the server. Splits the file into chunks and sends

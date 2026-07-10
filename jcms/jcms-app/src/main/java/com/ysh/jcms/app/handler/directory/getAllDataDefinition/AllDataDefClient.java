@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.svc.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
@@ -17,10 +16,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AllDataDefClient extends BaseClientHandler {
-
-    public AllDataDefClient(CmsNode node) {
-        super(node);
-    }
 
     public void execute(AllDataDefDao dao) throws Exception {
         CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().reqId(nextReqId());
@@ -46,16 +41,13 @@ public class AllDataDefClient extends BaseClientHandler {
 
     @Override
     protected void onError(Frame frame) throws IOException {
-        CmsGetAllDataDefinitionError err = new CmsGetAllDataDefinitionError();
-        err.decode(frame.asduBytes());
+        CmsGetAllDataDefinitionError err = decodeErr(frame, new CmsGetAllDataDefinitionError());
         throw new IOException("GetAllDataDefinition rejected: error=" + err.serviceError.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse();
-        resp.decode(frame.asduBytes());
-        traceResp(resp);
+        CmsGetAllDataDefinitionResponse resp = decodeResp(frame, new CmsGetAllDataDefinitionResponse());
 
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {
