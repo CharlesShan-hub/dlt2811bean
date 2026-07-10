@@ -32,9 +32,8 @@ public class QueryLogAfterServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsQueryLogAfterRequest req = (CmsQueryLogAfterRequest) rawReq;
-        int reqId = req.reqId.value();
         String logRef = str(req.logReference);
 
         log.info("QueryLogAfter from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);

@@ -27,14 +27,8 @@ public class GetSgcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetSgcbValuesRequest req = (CmsGetSgcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetSgcbValuesRequest req = (CmsGetSgcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.count);
 
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse().reqId(reqId);

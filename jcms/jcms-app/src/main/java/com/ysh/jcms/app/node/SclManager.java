@@ -65,10 +65,6 @@ public class SclManager {
     public SclDocument getDocument() {
         return document;
     }
-    public SclDocument getScl2Document() {
-        return document;
-    }
-
     public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> getIeds() {
         return document != null ? document.ieds() : java.util.Collections.emptyList();
     }

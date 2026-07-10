@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.directory.getAllDataValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.directory.CmsDataValueEntry;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesRequest;
@@ -35,15 +34,12 @@ public class AllDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllDataValuesRequest req = (CmsGetAllDataValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         String refAfter = opt(req.refAfterPresent, req.refAfter);
         log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ldName = null, lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME)
@@ -55,15 +51,7 @@ public class AllDataValuesServer extends BaseServerHandler {
         if (lns == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String fcFilter = null;
-        if (req.fcPresent.value()) {
-            int fcVal = req.fc.value();
-            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
-                fcFilter = FunctionalConstraint.values()[fcVal].name();
-                if ("XX".equals(fcFilter))
-                    fcFilter = null;
-            }
-        }
+        String fcFilter = fcCode(req.fcPresent.value() ? req.fc.value() : -1);
 
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
 

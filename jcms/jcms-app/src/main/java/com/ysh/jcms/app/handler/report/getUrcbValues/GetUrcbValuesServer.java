@@ -31,19 +31,11 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
 

@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataValuesError;
 import com.ysh.jcms.svc.data.CmsGetDataValuesRequest;
@@ -25,18 +24,11 @@ public class GetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataValuesRequest req = (CmsGetDataValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        SclIED ied = getSclIed(session);
-        if (ied == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclIED ied = requireIed(session, reqId);
 
         CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse().reqId(reqId);
 
@@ -47,17 +39,9 @@ public class GetDataValuesServer extends BaseServerHandler {
                 if (ref == null)
                     continue;
 
-                String fcCode = null;
-                if (refEntry.fcPresent.value()) {
-                    int fcVal = refEntry.fc.value();
-                    if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
-                        fcCode = FunctionalConstraint.values()[fcVal].name();
-                        if ("XX".equals(fcCode))
-                            fcCode = null;
-                    }
-                }
+                String fcCode = fcCode(refEntry.fcPresent.value() ? refEntry.fc.value() : -1);
 
-                Navigator nav = Navigator.go(getScl2Document(session), ied, ref);
+                Navigator nav = Navigator.go(getSclDocument(session), ied, ref);
                 DataValueEntry dv = DataValueResolver.resolve(nav, fcCode);
                 if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                     resp.value.add(DataConverter.toCmsData(dv));

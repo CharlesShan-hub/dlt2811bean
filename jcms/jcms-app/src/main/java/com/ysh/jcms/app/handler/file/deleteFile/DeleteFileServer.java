@@ -26,9 +26,8 @@ public class DeleteFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsDeleteFileRequest req = (CmsDeleteFileRequest) rawReq;
-        int reqId = req.reqId.value();
         String fileName = str(req.filename);
         log.info("DeleteFile from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
 

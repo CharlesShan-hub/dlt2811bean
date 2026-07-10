@@ -34,14 +34,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsSetLcbValuesRequest req = (CmsSetLcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetLcbValuesRequest req = (CmsSetLcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
 
         log.info("SetLCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.lcb.count);
 
@@ -55,10 +49,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
 
         List<CmsSetLcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;

@@ -31,9 +31,8 @@ public class QueryLogByTimeServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsQueryLogByTimeRequest req = (CmsQueryLogByTimeRequest) rawReq;
-        int reqId = req.reqId.value();
         String logRef = str(req.logReference);
 
         log.info("QueryLogByTime from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);

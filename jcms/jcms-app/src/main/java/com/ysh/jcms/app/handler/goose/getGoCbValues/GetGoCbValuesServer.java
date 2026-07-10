@@ -34,19 +34,11 @@ public class GetGoCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse().reqId(reqId);
 

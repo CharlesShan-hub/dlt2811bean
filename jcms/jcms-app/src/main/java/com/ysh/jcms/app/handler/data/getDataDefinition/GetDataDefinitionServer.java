@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.data.CmsDataDefResultEntry;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
@@ -28,21 +27,12 @@ public class GetDataDefinitionServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataDefinitionRequest req = (CmsGetDataDefinitionRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclIED ied = getSclIed(session);
-        if (ied == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
 
@@ -54,15 +44,7 @@ public class GetDataDefinitionServer extends BaseServerHandler {
             if (ref == null)
                 continue;
 
-            String fcCode = null;
-            if (refEntry.fcPresent.value()) {
-                int fcVal = refEntry.fc.value();
-                if (fcVal >= 0 && fcVal < com.ysh.jcms.info.FunctionalConstraint.values().length) {
-                    fcCode = com.ysh.jcms.info.FunctionalConstraint.values()[fcVal].name();
-                    if ("XX".equals(fcCode))
-                        fcCode = null;
-                }
-            }
+            String fcCode = fcCode(refEntry.fcPresent.value() ? refEntry.fc.value() : -1);
 
             Navigator nav = Navigator.go(doc, ied, ref);
             if (!nav.isValid()) {

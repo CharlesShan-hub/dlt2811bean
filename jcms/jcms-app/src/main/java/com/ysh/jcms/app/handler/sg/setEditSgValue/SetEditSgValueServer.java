@@ -32,9 +32,8 @@ public class SetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetEditSgValueRequest req = (CmsSetEditSgValueRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("SetEditSGValue from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
 
         if (req.data == null || req.data.count == 0)

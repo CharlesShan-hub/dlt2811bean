@@ -32,17 +32,11 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.count);
 
-        SclDocument doc = getScl2Document(session);
+        SclDocument doc = getSclDocument(session);
 
         for (int i = 0; i < req.msvcb.count; i++) {
             CmsSetMsvcbEntry entry = req.msvcb.items.get(i);

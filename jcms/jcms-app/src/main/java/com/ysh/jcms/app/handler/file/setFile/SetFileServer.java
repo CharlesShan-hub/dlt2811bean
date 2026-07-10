@@ -27,9 +27,8 @@ public class SetFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetFileRequest req = (CmsSetFileRequest) rawReq;
-        int reqId = req.reqId.value();
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
         byte[] fileData = req.fileData.value();

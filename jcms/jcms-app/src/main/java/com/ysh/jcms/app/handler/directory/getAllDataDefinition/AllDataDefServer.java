@@ -7,7 +7,6 @@ import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.choice.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.fc.CmsFC;
-import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionRequest;
@@ -61,17 +60,13 @@ public class AllDataDefServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllDataDefinitionRequest req = (CmsGetAllDataDefinitionRequest) rawReq;
-        int reqId = req.reqId.value();
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
 
         String ldName = null;
@@ -88,15 +83,7 @@ public class AllDataDefServer extends BaseServerHandler {
         }
 
         // Resolve fc filter from request
-        String fcFilter = null;
-        if (req.fcPresent.value()) {
-            int fcVal = req.fc.value();
-            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
-                fcFilter = FunctionalConstraint.values()[fcVal].name();
-                if ("XX".equals(fcFilter))
-                    fcFilter = null;
-            }
-        }
+        String fcFilter = fcCode(req.fcPresent.value() ? req.fc.value() : -1);
 
         // Collect DO definitions
         List<CmsDataDefinitionEntry> entries = new ArrayList<>();

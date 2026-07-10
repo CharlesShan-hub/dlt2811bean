@@ -27,14 +27,8 @@ public class GetGoReferenceServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetGoReferenceRequest req = (CmsGetGoReferenceRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetGoReferenceRequest req = (CmsGetGoReferenceRequest) rawReq;
-        int reqId = req.reqId.value();
         String gocbRef = str(req.gocbReference);
         log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.count);
 

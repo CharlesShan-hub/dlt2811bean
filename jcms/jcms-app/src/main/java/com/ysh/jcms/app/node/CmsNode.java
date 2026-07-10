@@ -109,9 +109,9 @@ public class CmsNode {
             if (sclFile != null) {
                 sclManager.load(sclFile);
                 if (sclManager.isLoaded()) {
-                    server.setScl2Document(sclManager.getScl2Document());
+                    server.setScl2Document(sclManager.getDocument());
                     // Initialize ReportEngine with the scl2 document
-                    SclDocument scl2Doc = sclManager.getScl2Document();
+                    SclDocument scl2Doc = sclManager.getDocument();
                     if (scl2Doc != null) {
                         new ReportEngine(scl2Doc);
                         log.info("ReportEngine initialized with scl2 document");

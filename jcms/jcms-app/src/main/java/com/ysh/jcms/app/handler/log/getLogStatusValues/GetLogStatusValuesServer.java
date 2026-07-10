@@ -31,14 +31,8 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) rawReq;
-        int reqId = req.reqId.value();
 
         log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.count);
 

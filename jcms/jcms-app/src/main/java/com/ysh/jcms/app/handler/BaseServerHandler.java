@@ -3,7 +3,9 @@ package com.ysh.jcms.app.handler;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -19,12 +21,17 @@ import java.nio.charset.StandardCharsets;
  *
  * <p>
  * {@link #handleRequest(Session, Frame)} is {@code final} — it auto-decodes the
- * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsType)}.
+ * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsType, int)}.
  *
  * <p>
  * If an error PDU type is provided via constructor, the default
  * {@link #onDecodeError(int)} builds the error response automatically.
  * Subclasses may override for custom error logic.
+ *
+ * <p>
+ * Subclasses may throw {@link ServiceException} from {@link #onDecodeSuccess} —
+ * it will be caught and converted to an error frame by {@code handleRequest},
+ * eliminating repetitive null-check boilerplate.
  */
 public abstract class BaseServerHandler extends BaseHandler implements ServiceHandler {
 
@@ -56,29 +63,34 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
 
     @Override
     public final Frame handleRequest(Session session, Frame request) {
+        int reqId = request.reqId();
         CmsType decoded;
         if (requestType != null) {
             try {
                 decoded = requestType.getDeclaredConstructor().newInstance();
             } catch (Exception e) {
                 log.error("Failed to instantiate {}", requestType.getSimpleName(), e);
-                return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
             prepareDecode(decoded);
             if (!tryDecode(session, request, decoded)) {
-                return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
             if (traceEnabled())
-                log.info("[TRACE] <<< {} reqId={}:\n{}", serviceName, request.reqId(), decoded);
+                log.info("[TRACE] <<< {} reqId={}:\n{}", serviceName, reqId, decoded);
         } else {
             decoded = null;
         }
-        Frame response = onDecodeSuccess(session, decoded);
-        if (response != null && traceEnabled()) {
-            log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)", serviceName, response.reqId(), response.header().err(),
-                    response.asduBytes() != null ? response.asduBytes().length : 0);
+        try {
+            Frame response = onDecodeSuccess(session, decoded, reqId);
+            if (response != null && traceEnabled()) {
+                log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)", serviceName, response.reqId(), response.header().err(),
+                        response.asduBytes() != null ? response.asduBytes().length : 0);
+            }
+            return response;
+        } catch (ServiceException e) {
+            return onDecodeError(e.reqId(), e.serviceError());
         }
-        return response;
     }
 
     /**
@@ -100,9 +112,13 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * @param req
      *            the decoded request PDU, or {@code null} for PDU-less services;
      *            cast to the concrete type known by the subclass
+     * @param reqId
+     *            request ID extracted from the frame header
      * @return response frame, or {@code null} for one-way messages
+     * @throws ServiceException
+     *             to abort processing and return an error frame
      */
-    protected abstract Frame onDecodeSuccess(Session session, CmsType req);
+    protected abstract Frame onDecodeSuccess(Session session, CmsType req, int reqId);
 
     /**
      * Build an error response frame.
@@ -202,7 +218,23 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     // SCL model access
     // ──────────────────────────────────────────────
 
-    protected com.ysh.jcms.utils.scl.SclDocument getScl2Document(Session session) {
+    /** Resolve SCL document from session, or throw if unavailable. */
+    protected SclDocument requireScl(Session session, int reqId) {
+        SclDocument doc = getSclDocument(session);
+        if (doc == null)
+            throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return doc;
+    }
+
+    /** Resolve SCL IED from session, or throw if unavailable. */
+    protected com.ysh.jcms.utils.scl.model.ied.SclIED requireIed(Session session, int reqId) {
+        com.ysh.jcms.utils.scl.model.ied.SclIED ied = getSclIed(session);
+        if (ied == null)
+            throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return ied;
+    }
+
+    protected SclDocument getSclDocument(Session session) {
         try {
             return ((InnerServer.ServerSession) session).getSclDocument();
         } catch (ClassCastException e) {
@@ -216,6 +248,18 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
         } catch (ClassCastException e) {
             return null;
         }
+    }
+
+    // ──────────────────────────────────────────────
+    // FC code helper
+    // ──────────────────────────────────────────────
+
+    /** Map FC integer value to its string code (e.g. 0 → "ST", 1 → "MX"). */
+    protected static String fcCode(int fcVal) {
+        if (fcVal < 0 || fcVal >= FunctionalConstraint.values().length)
+            return null;
+        String code = FunctionalConstraint.values()[fcVal].name();
+        return "XX".equals(code) ? null : code;
     }
 
     // ──────────────────────────────────────────────

@@ -30,9 +30,8 @@ public class GetFileAttributeValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetFileAttributeValuesRequest req = (CmsGetFileAttributeValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         String fileName = str(req.filename);
         log.info("GetFileAttributeValues from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
 

@@ -37,14 +37,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
 
         log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.count);
 
@@ -58,10 +52,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
 
         List<CmsSetUrcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;

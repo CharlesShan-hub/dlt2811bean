@@ -23,9 +23,8 @@ public class ConfirmEditSgValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsConfirmEditSgValuesRequest req = (CmsConfirmEditSgValuesRequest) rawReq;
-        int reqId = req.reqId.value();
 
         String ref = str(req.sgcbReference);
         log.info("ConfirmEditSGValues from {}: reqId={}, sgcbRef={}", session.getSessionId(), reqId, ref);

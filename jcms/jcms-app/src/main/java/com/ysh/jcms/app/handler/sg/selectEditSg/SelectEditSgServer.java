@@ -23,9 +23,8 @@ public class SelectEditSgServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSelectEditSgRequest req = (CmsSelectEditSgRequest) rawReq;
-        int reqId = req.reqId.value();
         String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
 

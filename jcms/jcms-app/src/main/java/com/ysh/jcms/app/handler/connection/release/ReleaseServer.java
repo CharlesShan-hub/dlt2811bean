@@ -21,9 +21,8 @@ public class ReleaseServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsReleaseRequest req = (CmsReleaseRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("Release request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (!session.isAssociated()) {

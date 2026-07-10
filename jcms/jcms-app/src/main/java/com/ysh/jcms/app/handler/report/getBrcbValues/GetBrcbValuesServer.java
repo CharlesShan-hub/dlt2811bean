@@ -31,19 +31,11 @@ public class GetBrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetBrcbValuesRequest req = (CmsGetBrcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetBrcbValuesRequest req = (CmsGetBrcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetBRCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse().reqId(reqId);
 

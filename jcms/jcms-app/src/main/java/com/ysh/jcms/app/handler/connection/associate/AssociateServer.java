@@ -51,9 +51,8 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsAssociateRequest req = (CmsAssociateRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (session.isAssociated())

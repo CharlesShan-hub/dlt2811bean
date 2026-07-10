@@ -36,9 +36,8 @@ public class AllCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllCbValuesRequest req = (CmsGetAllCbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
         String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
                 ? new String(req.refAfter.value(), StandardCharsets.UTF_8)
@@ -46,10 +45,7 @@ public class AllCbValuesServer extends BaseServerHandler {
 
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
 
         String ldName = null;
         String lnReference = null;

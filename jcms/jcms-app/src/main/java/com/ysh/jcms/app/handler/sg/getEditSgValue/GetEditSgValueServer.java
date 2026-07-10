@@ -5,7 +5,6 @@ import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueRequest;
@@ -30,17 +29,12 @@ public class GetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetEditSgValueRequest req = (CmsGetEditSgValueRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
         SgcState state = SgSessionState.getState(session.getSessionId());
-        SclDocument doc = getScl2Document(session);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse().reqId(reqId);
 
@@ -66,8 +60,6 @@ public class GetEditSgValueServer extends BaseServerHandler {
                 }
             }
 
-            if (doc == null)
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             DataValueEntry dv = DataValueResolver.resolve(doc, ref);
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                 resp.value.add(DataConverter.toCmsData(dv));

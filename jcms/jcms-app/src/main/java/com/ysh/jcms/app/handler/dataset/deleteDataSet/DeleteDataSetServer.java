@@ -28,14 +28,11 @@ public class DeleteDataSetServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsDeleteDataSetRequest req = (CmsDeleteDataSetRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("DeleteDataSet from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)

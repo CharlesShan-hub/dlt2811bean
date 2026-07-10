@@ -31,14 +31,11 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataSetDirectoryRequest req = (CmsGetDataSetDirectoryRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)

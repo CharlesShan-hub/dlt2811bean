@@ -27,14 +27,8 @@ public class GetGooseElementNumberServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetGooseElementNumberRequest req = (CmsGetGooseElementNumberRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetGooseElementNumberRequest req = (CmsGetGooseElementNumberRequest) rawReq;
-        int reqId = req.reqId.value();
         String gocbRef = str(req.gocbReference);
         log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.getSessionId(), reqId, gocbRef,
                 req.memberData.count);

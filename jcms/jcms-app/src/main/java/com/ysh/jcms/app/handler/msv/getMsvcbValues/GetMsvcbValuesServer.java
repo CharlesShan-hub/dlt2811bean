@@ -38,19 +38,11 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse().reqId(reqId);
 

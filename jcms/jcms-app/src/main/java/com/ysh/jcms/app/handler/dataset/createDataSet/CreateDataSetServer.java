@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.dataset.createDataSet;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetResponse;
@@ -32,14 +31,11 @@ public class CreateDataSetServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
@@ -93,12 +89,9 @@ public class CreateDataSetServer extends BaseServerHandler {
                 continue;
             }
 
-            int fcVal = src.fc.value();
-            if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
-                String fcCode = FunctionalConstraint.values()[fcVal].name();
-                if (!"XX".equals(fcCode))
-                    fcda.fc(fcCode);
-            }
+            String fcCode = fcCode(src.fc.value());
+            if (fcCode != null)
+                fcda.fc(fcCode);
             dataSet.addFcda(fcda);
             added++;
         }

@@ -38,19 +38,15 @@ public class LnDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         long t0 = System.currentTimeMillis();
         CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
-        int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         log.info("TIMING: server+templates resolved in {}ms", System.currentTimeMillis() - t0);
 

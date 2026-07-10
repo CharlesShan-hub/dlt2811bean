@@ -32,14 +32,11 @@ public class SetDataSetValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetDataSetValuesRequest req = (CmsSetDataSetValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)

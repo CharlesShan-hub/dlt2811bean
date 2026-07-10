@@ -37,14 +37,8 @@ public class SetBrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsSetBrcbValuesRequest req = (CmsSetBrcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetBrcbValuesRequest req = (CmsSetBrcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
 
         log.info("SetBRCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.brcb.count);
 
@@ -58,10 +52,7 @@ public class SetBrcbValuesServer extends BaseServerHandler {
             }
         }
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null) {
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        }
+        SclDocument doc = requireScl(session, reqId);
 
         List<CmsSetBrcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;

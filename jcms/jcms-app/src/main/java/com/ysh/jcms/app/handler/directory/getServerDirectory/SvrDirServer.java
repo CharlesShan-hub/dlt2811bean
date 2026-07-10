@@ -27,17 +27,14 @@ public class SvrDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetServerDirectory from {}: reqId={}, objectClass={}", session.getSessionId(), reqId, req.objectClass.value());
 
         if (req.objectClass.value() != CmsObjectClass.LOGICAL_DEVICE)
-            return ok(new CmsGetServerDirectoryError().reqId(reqId).serviceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE), reqId);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 

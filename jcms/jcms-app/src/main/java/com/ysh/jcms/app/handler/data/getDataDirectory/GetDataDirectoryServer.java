@@ -55,14 +55,11 @@ public class GetDataDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataDirectoryRequest req = (CmsGetDataDirectoryRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         String ref = str(req.dataReference);
         log.info("GetDataDirectory ref='{}'", ref);

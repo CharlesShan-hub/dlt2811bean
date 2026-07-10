@@ -23,9 +23,8 @@ public class SelectActiveSgServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSelectActiveSgRequest req = (CmsSelectActiveSgRequest) rawReq;
-        int reqId = req.reqId.value();
         String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
 

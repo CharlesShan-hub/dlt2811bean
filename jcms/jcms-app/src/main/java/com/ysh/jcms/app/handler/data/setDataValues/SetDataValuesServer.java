@@ -29,17 +29,12 @@ public class SetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclIED ied = getSclIed(session);
-        if (ied == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         int successCount = 0;
         for (int i = 0; i < req.data.count; i++) {

@@ -32,17 +32,11 @@ public class SetGoCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsSetGoCbValuesRequest req = (CmsSetGoCbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetGoCbValuesRequest req = (CmsSetGoCbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.count);
 
-        SclDocument doc = getScl2Document(session);
+        SclDocument doc = getSclDocument(session);
 
         for (int i = 0; i < req.gocb.count; i++) {
             CmsSetGoCbEntry entry = req.gocb.items.get(i);

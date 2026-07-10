@@ -30,19 +30,11 @@ public class GetLcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
-        CmsGetLcbValuesRequest req = (CmsGetLcbValuesRequest) decoded;
-    }
-
-    @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLcbValuesRequest req = (CmsGetLcbValuesRequest) rawReq;
-        int reqId = req.reqId.value();
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse().reqId(reqId);
 

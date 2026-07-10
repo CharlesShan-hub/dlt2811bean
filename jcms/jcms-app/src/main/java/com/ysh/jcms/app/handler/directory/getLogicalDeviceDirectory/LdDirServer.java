@@ -27,16 +27,13 @@ public class LdDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLogicalDeviceDirectoryRequest req = (CmsGetLogicalDeviceDirectoryRequest) rawReq;
-        int reqId = req.reqId.value();
         String ldName = opt(req.ldNamePresent, req.ldName);
         String refAfter = opt(req.refAfterPresent, req.refAfter);
         log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}", session.getSessionId(), reqId, ldName);
 
-        SclDocument doc = getScl2Document(session);
-        if (doc == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDocument doc = requireScl(session, reqId);
 
         List<String> lnNames;
         if (ldName != null) {
