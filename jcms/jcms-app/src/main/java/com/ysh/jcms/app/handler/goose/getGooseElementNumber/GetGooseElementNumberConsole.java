@@ -31,35 +31,17 @@ public class GetGooseElementNumberConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: get-goose-elem-num --ref <gocbRef> --members \"...\""))
+            return;
+        if (!CmsConsole.requireParam(args, "members", "Usage: get-goose-elem-num --ref <gocbRef> --members \"...\""))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ref. Usage: get-goose-elem-num --ref <gocbRef> --members \"...\"");
-            }
-            return;
-        }
-
         String membersStr = args.get("members");
-        if (membersStr == null || membersStr.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --members.\"}");
-            } else {
-                ConsolePrinter.error("Missing --members. Usage: get-goose-elem-num --ref <gocbRef> --members \"...\"");
-            }
-            return;
-        }
 
         GetGooseElementNumberDao dao = new GetGooseElementNumberDao().gocbReference(ref.trim());
         for (String s : membersStr.trim().split("\\s+")) {

@@ -21,8 +21,8 @@ public class SvrDirLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        regClient(node, new AssociateClient(node));
-        regClient(node, new SvrDirClient(node));
+        regClient(node, new AssociateClient());
+        regClient(node, new SvrDirClient());
     }
 
     @Test

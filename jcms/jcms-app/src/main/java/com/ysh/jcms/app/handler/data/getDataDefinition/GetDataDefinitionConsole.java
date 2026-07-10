@@ -34,25 +34,14 @@ public class GetDataDefinitionConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "refs", "Usage: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC]"))
+            return;
 
         String refsStr = args.get("refs");
-        if (refsStr == null || refsStr.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --refs.\"}");
-            } else {
-                ConsolePrinter.error("Missing --refs. Usage: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC]");
-            }
-            return;
-        }
 
         String fcStr = args.get("fc");
 

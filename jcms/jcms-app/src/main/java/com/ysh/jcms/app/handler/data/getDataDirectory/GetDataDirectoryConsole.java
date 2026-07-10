@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,26 +29,13 @@ public class GetDataDirectoryConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: data-dir --ref <ref> [--after REF]"))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ref. Usage: data-dir --ref <ref> [--after REF]");
-            }
-            return;
-        }
-
         GetDataDirectoryDao dao = new GetDataDirectoryDao().dataReference(ref.trim());
 
         String after = args.get("after");
@@ -57,7 +43,7 @@ public class GetDataDirectoryConsole implements CommandHandler {
             dao.referenceAfter(after);
         }
 
-        if (!jsonMode) {
+        if (!CmsConsole.isJsonMode(args)) {
             ConsolePrinter.info("Fetching data directory for " + ref);
         }
 
@@ -66,27 +52,18 @@ public class GetDataDirectoryConsole implements CommandHandler {
         List<GetDataDirectoryClient.DirEntry> entries = console.getClient(GetDataDirectoryClient.class).getLastEntries();
 
         if (entries.isEmpty()) {
-            ConsolePrinter.info("No data directory entries");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonArray("");
+            } else {
+                ConsolePrinter.info("No data directory entries");
+            }
             return;
         }
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < entries.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                GetDataDirectoryClient.DirEntry e = entries.get(i);
-                String val = (e.fc != null ? "[" + e.fc + "]  " : "") + e.reference;
-                sb.append('"').append(CmsFormatUtil.escapeJson(val)).append('"');
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("Data directory (" + entries.size() + " items)", new java.util.ArrayList<>(entries), e -> {
-                if (e.fc != null)
-                    return "[" + e.fc + "]  " + e.reference;
-                return e.reference;
-            });
-        }
+        CmsConsole.outputList("Data directory (" + entries.size() + " items)", new java.util.ArrayList<>(entries), e -> {
+            if (e.fc != null)
+                return "[" + e.fc + "]  " + e.reference;
+            return e.reference;
+        }, args);
     }
 }

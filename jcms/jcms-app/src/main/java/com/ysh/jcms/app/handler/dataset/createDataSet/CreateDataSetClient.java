@@ -13,11 +13,8 @@ import java.io.IOException;
 public class CreateDataSetClient extends BaseClientHandler {
 
     public void execute(CreateDataSetDao dao) throws Exception {
-        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
-
-        if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
-            req.refAfter(dao.referenceAfter());
-        }
+        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
+                .refAfter(dao.referenceAfter());
 
         for (CreateDataSetDao.MemberRef m : dao.members()) {
             req.memberData.add(new CmsDataRefFcEntry().reference(m.reference()).fc(m.fc()));
@@ -34,8 +31,7 @@ public class CreateDataSetClient extends BaseClientHandler {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsCreateDataSetResponse resp = new CmsCreateDataSetResponse();
-        resp.decode(frame.asduBytes());
+        decodeResp(frame, new CmsCreateDataSetResponse());
         log.info("CreateDataSet succeeded");
     }
 }

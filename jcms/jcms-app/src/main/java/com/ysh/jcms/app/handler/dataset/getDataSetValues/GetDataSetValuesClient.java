@@ -36,11 +36,8 @@ public class GetDataSetValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
-
-        if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
-            req.refAfter(dao.referenceAfter());
-        }
+        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
+                .refAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_SET_VALUES, req);
     }

@@ -16,7 +16,7 @@ public class TestLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        regClient(node, new TestClient(node));
+        regClient(node, new TestClient());
     }
 
     @Test

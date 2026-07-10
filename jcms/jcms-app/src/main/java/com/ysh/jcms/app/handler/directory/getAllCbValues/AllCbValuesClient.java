@@ -33,7 +33,7 @@ public class AllCbValuesClient extends BaseClientHandler {
     }
 
     public void execute(AllCbValuesDao dao) throws Exception {
-        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().reqId(nextReqId());
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().reqId(nextReqId()).refAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -44,10 +44,6 @@ public class AllCbValuesClient extends BaseClientHandler {
         }
 
         req.acsiClass(dao.acsiClass());
-
-        if (dao.referenceAfter() != null) {
-            req.refAfter(dao.referenceAfter());
-        }
 
         send(ServiceName.GET_ALL_CB_VALUES, req);
     }

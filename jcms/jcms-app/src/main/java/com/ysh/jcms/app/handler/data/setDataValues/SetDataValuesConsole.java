@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,20 +29,13 @@ public class SetDataValuesConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
 
         String pairsStr = args.get("pairs");
         if (pairsStr == null || pairsStr.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --pairs.\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Missing --pairs.");
             } else {
                 ConsolePrinter.error("Missing --pairs. Usage: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]");
             }
@@ -58,9 +50,8 @@ public class SetDataValuesConsole implements CommandHandler {
                 continue;
             int eqIdx = token.indexOf('=');
             if (eqIdx <= 0) {
-                if (jsonMode) {
-                    ConsolePrinter.raw(
-                            "{\"success\":false,\"error\":\"Invalid pair: " + CmsFormatUtil.escapeJson(token) + " (expected ref=value)\"}");
+                if (CmsConsole.isJsonMode(args)) {
+                    CmsConsole.jsonError("Invalid pair: " + token + " (expected ref=value)");
                 } else {
                     ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
                 }
@@ -75,11 +66,6 @@ public class SetDataValuesConsole implements CommandHandler {
 
         console.getClient(SetDataValuesClient.class).execute(dao);
 
-        String msg = "Set " + dao.entries().size() + " data value(s) successfully";
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Set " + dao.entries().size() + " data value(s) successfully", args);
     }
 }

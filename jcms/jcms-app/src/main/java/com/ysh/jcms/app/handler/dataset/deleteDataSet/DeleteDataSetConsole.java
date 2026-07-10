@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,37 +28,19 @@ public class DeleteDataSetConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ds", "Usage: delete-dataset --ds <ref>"))
+            return;
 
         String dsRef = args.get("ds");
-        if (dsRef == null || dsRef.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ds.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ds. Usage: delete-dataset --ds <ref>");
-            }
-            return;
-        }
-
         DeleteDataSetDao dao = new DeleteDataSetDao().datasetReference(dsRef.trim());
 
         ConsolePrinter.info("Deleting dataset " + dsRef);
 
         console.getClient(DeleteDataSetClient.class).execute(dao);
 
-        String msg = "Deleted dataset " + dsRef + " successfully";
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Deleted dataset " + dsRef + " successfully", args);
     }
 }

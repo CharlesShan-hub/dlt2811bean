@@ -95,7 +95,8 @@ public abstract class BaseLoopbackTest {
     /**
      * Convenience: register a client handler.
      */
-    protected static void regClient(CmsNode node, Object handler) {
+    protected static void regClient(CmsNode node, BaseClientHandler handler) {
+        handler.node(node);
         node.registerClient(handler);
     }
 

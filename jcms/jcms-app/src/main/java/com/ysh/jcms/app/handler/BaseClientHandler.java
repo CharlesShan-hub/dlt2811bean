@@ -14,7 +14,8 @@ public abstract class BaseClientHandler extends BaseHandler {
 
     protected CmsNode node;
 
-    protected BaseClientHandler() {}
+    protected BaseClientHandler() {
+    }
 
     protected BaseClientHandler(CmsNode node) {
         this.node = node;
@@ -35,7 +36,8 @@ public abstract class BaseClientHandler extends BaseHandler {
      * {@link #send(ServiceName, CmsType)} for automatic PDU tracing.
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
-        if (node == null) throw new IOException("BaseClientHandler node not set");
+        if (node == null)
+            throw new IOException("BaseClientHandler node not set");
         Frame frame = node.sendRequest(sc, pduBytes);
         if (frame == null)
             throw new IOException("Request timed out for " + sc);
@@ -60,7 +62,8 @@ public abstract class BaseClientHandler extends BaseHandler {
      * when enabled.
      */
     protected void sendOneWay(ServiceName sc, byte[] pduBytes) throws IOException {
-        if (node == null) throw new IOException("BaseClientHandler node not set");
+        if (node == null)
+            throw new IOException("BaseClientHandler node not set");
         trace(">>> " + sc + " (one-way)");
         node.getClient().getConnection()
                 .send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, reqIdFromBytes(pduBytes)));

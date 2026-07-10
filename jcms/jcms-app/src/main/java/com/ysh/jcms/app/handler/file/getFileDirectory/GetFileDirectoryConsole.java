@@ -30,15 +30,9 @@ public class GetFileDirectoryConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
 
         GetFileDirectoryDao dao = new GetFileDirectoryDao();
         String path = args.get("path");

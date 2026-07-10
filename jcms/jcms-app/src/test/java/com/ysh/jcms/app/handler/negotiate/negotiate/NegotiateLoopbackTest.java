@@ -19,7 +19,7 @@ public class NegotiateLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        regClient(node, new NegotiateClient(node));
+        regClient(node, new NegotiateClient());
     }
 
     @Test

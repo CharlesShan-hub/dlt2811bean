@@ -34,25 +34,14 @@ public class GetDataSetValuesConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ds", "Usage: get-dataset-values --ds <ref> [--after REF]"))
+            return;
 
         String dsRef = args.get("ds");
-        if (dsRef == null || dsRef.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ds.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ds. Usage: get-dataset-values --ds <ref> [--after REF]");
-            }
-            return;
-        }
 
         GetDataSetValuesDao dao = new GetDataSetValuesDao().datasetReference(dsRef.trim());
 

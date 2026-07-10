@@ -30,35 +30,17 @@ public class GetGoReferenceConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\""))
+            return;
+        if (!CmsConsole.requireParam(args, "offsets", "Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\""))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ref. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
-            }
-            return;
-        }
-
         String offsetsStr = args.get("offsets");
-        if (offsetsStr == null || offsetsStr.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --offsets.\"}");
-            } else {
-                ConsolePrinter.error("Missing --offsets. Usage: get-go-ref --ref <gocbRef> --offsets \"0 1 ...\"");
-            }
-            return;
-        }
 
         GetGoReferenceDao dao = new GetGoReferenceDao().gocbReference(ref.trim());
         for (String s : offsetsStr.trim().split("\\s+")) {

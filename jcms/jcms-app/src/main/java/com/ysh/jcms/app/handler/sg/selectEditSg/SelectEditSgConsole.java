@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,48 +29,24 @@ public class SelectEditSgConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            String msg = "Not connected. Type 'connect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: select-edit-sg --ref <sgcbRef> --num <groupNumber>"))
+            return;
+        if (!CmsConsole.requireParam(args, "num", "Usage: select-edit-sg --ref <sgcbRef> --num <groupNumber>"))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            String msg = "Missing --ref. Usage: select-edit-sg --ref <sgcbRef> --num <groupNumber>";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
-            return;
-        }
-
         String numStr = args.get("num");
-        if (numStr == null || numStr.trim().isEmpty()) {
-            String msg = "Missing --num. Usage: select-edit-sg --ref <sgcbRef> --num <groupNumber>";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
-            return;
-        }
-
         int sgNum;
         try {
             sgNum = Integer.parseInt(numStr.trim());
         } catch (NumberFormatException e) {
-            String msg = "Invalid group number: " + numStr;
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Invalid group number: " + numStr);
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Invalid group number: " + numStr);
             }
             return;
         }
@@ -82,11 +57,6 @@ public class SelectEditSgConsole implements CommandHandler {
 
         console.getClient(SelectEditSgClient.class).execute(dao);
 
-        String msg = "Edit SG set to " + sgNum + " for " + ref;
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Edit SG set to " + sgNum + " for " + ref, args);
     }
 }

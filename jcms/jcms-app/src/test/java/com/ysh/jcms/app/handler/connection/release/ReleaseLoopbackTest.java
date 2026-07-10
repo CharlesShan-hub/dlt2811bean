@@ -23,8 +23,8 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        regClient(node, new AssociateClient(node));
-        regClient(node, new ReleaseClient(node));
+        regClient(node, new AssociateClient());
+        regClient(node, new ReleaseClient());
     }
 
     @Test

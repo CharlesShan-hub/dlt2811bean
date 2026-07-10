@@ -13,11 +13,8 @@ import java.io.IOException;
 public class SetDataSetValuesClient extends BaseClientHandler {
 
     public void execute(SetDataSetValuesDao dao) throws Exception {
-        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
-
-        if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
-            req.refAfter(dao.referenceAfter());
-        }
+        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
+                .refAfter(dao.referenceAfter());
 
         for (String val : dao.values()) {
             CmsData data = new CmsData();

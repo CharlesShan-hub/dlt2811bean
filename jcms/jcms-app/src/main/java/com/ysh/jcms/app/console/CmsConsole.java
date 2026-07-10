@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.console;
 
 import com.ysh.jcms.app.node.CmsNode;
+import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.session.SessionState;
 import org.jline.reader.EndOfFileException;
@@ -49,6 +50,78 @@ public abstract class CmsConsole extends CmsNode {
 
     public boolean isConnected() {
         return isClientConnected() && getClient().getSession() != null && getClient().getSession().getState() == SessionState.ASSOCIATED;
+    }
+
+    // ── helpers for console command handlers ──
+
+    /** Get json flag from args. */
+    public static boolean isJsonMode(Map<String, String> args) {
+        return "true".equals(args.get("json"));
+    }
+
+    /** Check connected, output error and return false if not. */
+    public boolean requireConnected(Map<String, String> args) {
+        if (isConnected())
+            return true;
+        if (isJsonMode(args)) {
+            ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected.\"}");
+        } else {
+            ConsolePrinter.error("Not connected. Type 'connect' first.");
+        }
+        return false;
+    }
+
+    /** Check required param exists, output error and return false if missing. */
+    public static boolean requireParam(Map<String, String> args, String key, String usage) {
+        String v = args.get(key);
+        if (v != null && !v.isEmpty())
+            return true;
+        boolean json = isJsonMode(args);
+        if (json) {
+            ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --" + key + ".\"}");
+        } else {
+            ConsolePrinter.error("Missing --" + key + ". " + usage);
+        }
+        return false;
+    }
+
+    /** Output a JSON success response with data array. */
+    public static void jsonArray(String jsonItems) {
+        ConsolePrinter.raw("{\"success\":true,\"data\":[" + jsonItems + "]}");
+    }
+
+    /** Output a JSON error response. */
+    public static void jsonError(String msg) {
+        ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+    }
+
+    /** Output a JSON success message. */
+    public static void jsonMessage(String msg) {
+        ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+    }
+
+    /** Output items as list (text) or JSON array (json mode). */
+    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args) {
+        if (isJsonMode(args)) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < items.size(); i++) {
+                if (i > 0)
+                    sb.append(',');
+                sb.append('"').append(CmsFormatUtil.escapeJson(fmt.apply(items.get(i)))).append('"');
+            }
+            jsonArray(sb.toString());
+        } else {
+            ConsolePrinter.list(title, items, fmt);
+        }
+    }
+
+    /** Output a message as text (success) or JSON. */
+    public static void outputMessage(String msg, Map<String, String> args) {
+        if (isJsonMode(args)) {
+            jsonMessage(msg);
+        } else {
+            ConsolePrinter.success(msg);
+        }
     }
 
     // ── main loop ──

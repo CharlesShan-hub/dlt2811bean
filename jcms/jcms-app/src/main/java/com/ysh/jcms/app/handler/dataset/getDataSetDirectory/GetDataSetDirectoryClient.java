@@ -30,11 +30,8 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
     }
 
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
-
-        if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
-            req.refAfter(dao.referenceAfter());
-        }
+        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
+                .refAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_SET_DIRECTORY, req);
     }

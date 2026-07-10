@@ -17,7 +17,7 @@ import java.util.List;
 public class AllDataValuesClient extends BaseClientHandler {
 
     public void execute(AllDataValuesDao dao) throws Exception {
-        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().reqId(nextReqId());
+        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().reqId(nextReqId()).refAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -29,10 +29,6 @@ public class AllDataValuesClient extends BaseClientHandler {
 
         if (dao.fc() != null) {
             req.fc(dao.fc());
-        }
-
-        if (dao.referenceAfter() != null) {
-            req.refAfter(dao.referenceAfter());
         }
 
         send(ServiceName.GET_ALL_DATA_VALUES, req);

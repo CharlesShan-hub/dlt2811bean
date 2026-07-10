@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +28,13 @@ public class SvrDirConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        String msg = check(console);
-        if (msg != null) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+        if (!console.requireConnected(args))
+            return;
+        if (console.getClient(SvrDirClient.class) == null) {
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("SvrDirClient not registered.");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("SvrDirClient not registered.");
             }
             return;
         }
@@ -46,25 +45,6 @@ public class SvrDirConsole implements CommandHandler {
         }
         console.getClient(SvrDirClient.class).execute(dao);
         List<String> ldNames = new ArrayList<>(console.getContentManager().getLdNames());
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < ldNames.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                sb.append('"').append(CmsFormatUtil.escapeJson(ldNames.get(i))).append('"');
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("Logical Devices", ldNames, s -> s);
-        }
-    }
-
-    static String check(CmsConsole console) {
-        if (!console.isConnected())
-            return "Not connected. Type 'connect' first.";
-        if (console.getClient(SvrDirClient.class) == null)
-            return "SvrDirClient not registered.";
-        return null;
+        CmsConsole.outputList("Logical Devices", ldNames, s -> s, args);
     }
 }

@@ -35,27 +35,14 @@ public class GetEditSgValueConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            String msg = "Not connected. Type 'connect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "refs", "Missing --refs"))
+            return;
 
         String refsStr = args.get("refs");
-        if (refsStr == null || refsStr.trim().isEmpty()) {
-            String msg = "Missing --refs";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
-            return;
-        }
         String fcStr = args.get("fc");
         if (fcStr == null)
             fcStr = "SG";

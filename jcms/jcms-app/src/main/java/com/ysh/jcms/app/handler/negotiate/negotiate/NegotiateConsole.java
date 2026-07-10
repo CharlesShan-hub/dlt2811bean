@@ -1,10 +1,8 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
@@ -33,16 +31,8 @@ public class NegotiateConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            String msg = "Not connected.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+        if (!console.requireConnected(args))
             return;
-        }
 
         NegotiateClientDao dao = new NegotiateClientDao();
         String apduStr = args.get("apduSize");
@@ -56,11 +46,6 @@ public class NegotiateConsole implements CommandHandler {
             dao.protocolVersion(Long.parseLong(protoStr));
 
         console.getClient(NegotiateClient.class).execute(dao);
-        String msg = "Negotiate completed.";
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Negotiate completed.", args);
     }
 }

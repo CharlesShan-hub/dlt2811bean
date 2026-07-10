@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,21 +29,14 @@ public class SetFileConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
 
         String local = args.get("local");
         String remote = args.get("remote");
         if (local == null || local.trim().isEmpty() || remote == null || remote.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --local or --remote.\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Missing --local or --remote.");
             } else {
                 ConsolePrinter.error("Usage: set-file --local <localPath> --remote <remotePath>");
             }
@@ -56,11 +48,6 @@ public class SetFileConsole implements CommandHandler {
         ConsolePrinter.info("Uploading " + local + " -> " + remote + " ...");
         console.getClient(SetFileClient.class).execute(dao);
 
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"Uploaded " + CmsFormatUtil.escapeJson(local.trim()) + " to "
-                    + CmsFormatUtil.escapeJson(remote.trim()) + " successfully\"}");
-        } else {
-            ConsolePrinter.success("Uploaded " + local + " to " + remote + " successfully");
-        }
+        CmsConsole.outputMessage("Uploaded " + local + " to " + remote + " successfully", args);
     }
 }

@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,33 +29,29 @@ public class AssociateConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
         if (!console.isClientConnected()) {
-            String msg = "Not connected. Use 'connect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Not connected. Use 'connect' first.");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Not connected. Use 'connect' first.");
             }
             return;
         }
         if (console.isConnected()) {
-            String msg = "Already associated. Use 'release' or 'disconnect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Already associated. Use 'release' or 'disconnect' first.");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Already associated. Use 'release' or 'disconnect' first.");
             }
             return;
         }
 
         String sapRef = args.get("ap");
         if (sapRef == null || sapRef.isEmpty()) {
-            String msg = "--ap is required";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("--ap is required");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("--ap is required");
             }
             return;
         }
@@ -65,11 +60,6 @@ public class AssociateConsole implements CommandHandler {
 
         console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
 
-        String msg = "Associated: " + sapRef + (secure ? " (secure)" : "");
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Associated: " + sapRef + (secure ? " (secure)" : ""), args);
     }
 }

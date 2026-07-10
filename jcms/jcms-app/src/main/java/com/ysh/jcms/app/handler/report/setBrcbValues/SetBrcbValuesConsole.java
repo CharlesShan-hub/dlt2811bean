@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -40,28 +39,13 @@ public class SetBrcbValuesConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            String msg = "Not connected. Type 'connect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: set-brcb-vals --ref <brcbRef> [options]"))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            String msg = "Missing --ref. Usage: set-brcb-vals --ref <brcbRef> [options]";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
-            return;
-        }
-
         SetBrcbValuesDao dao = new SetBrcbValuesDao().ref(ref.trim());
         String v;
 
@@ -92,11 +76,6 @@ public class SetBrcbValuesConsole implements CommandHandler {
 
         ConsolePrinter.info("Setting BRCB values: ref=" + ref);
         console.getClient(SetBrcbValuesClient.class).execute(dao);
-        String msg = "BRCB values set for " + ref;
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("BRCB values set for " + ref, args);
     }
 }

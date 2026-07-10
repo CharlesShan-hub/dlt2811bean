@@ -30,11 +30,8 @@ public class GetDataDirectoryClient extends BaseClientHandler {
     }
 
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().reqId(nextReqId()).dataReference(dao.dataReference());
-
-        if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
-            req.refAfter(dao.referenceAfter());
-        }
+        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().reqId(nextReqId()).dataReference(dao.dataReference())
+                .refAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_DIRECTORY, req);
     }

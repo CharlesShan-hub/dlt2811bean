@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.svc.directory.CmsAcsiClass;
 
 import java.util.*;
@@ -54,31 +53,17 @@ public class LnDirConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
-        String target = args.get("ln");
-        if (target == null || target.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ln.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ln. Usage: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF]");
-            }
+        if (!CmsConsole.requireParam(args, "ln", "Usage: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF]"))
             return;
-        }
 
+        String target = args.get("ln");
         String acsiStr = args.get("acsi").toLowerCase();
         Integer acsi = ACSI_MAP.get(acsiStr);
         if (acsi == null) {
-            if (jsonMode) {
-                ConsolePrinter
-                        .raw("{\"success\":false,\"error\":\"Unknown ACSI class: " + CmsFormatUtil.escapeJson(args.get("acsi")) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Unknown ACSI class: " + args.get("acsi"));
             } else {
                 ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi")
                         + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)");
@@ -100,17 +85,6 @@ public class LnDirConsole implements CommandHandler {
 
         console.getClient(LnDirClient.class).execute(dao);
         List<String> items = new ArrayList<>(console.getContentManager().getNodeRefs(acsi));
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < items.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                sb.append('"').append(CmsFormatUtil.escapeJson(items.get(i))).append('"');
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("References (" + acsiStr + ")", items, s -> s);
-        }
+        CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args);
     }
 }

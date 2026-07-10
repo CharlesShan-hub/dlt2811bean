@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,37 +28,19 @@ public class DeleteFileConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "file", "Usage: delete-file --file <path>"))
+            return;
 
         String file = args.get("file");
-        if (file == null || file.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --file.\"}");
-            } else {
-                ConsolePrinter.error("Missing --file. Usage: delete-file --file <path>");
-            }
-            return;
-        }
-
         DeleteFileDao dao = new DeleteFileDao().fileName(file.trim());
 
         ConsolePrinter.info("Deleting file " + file);
 
         console.getClient(DeleteFileClient.class).execute(dao);
 
-        if (jsonMode) {
-            ConsolePrinter
-                    .raw("{\"success\":true,\"message\":\"Deleted file " + CmsFormatUtil.escapeJson(file.trim()) + " successfully\"}");
-        } else {
-            ConsolePrinter.success("Deleted file " + file + " successfully");
-        }
+        CmsConsole.outputMessage("Deleted file " + file + " successfully", args);
     }
 }

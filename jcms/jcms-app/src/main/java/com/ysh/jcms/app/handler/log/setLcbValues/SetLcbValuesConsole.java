@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,26 +37,13 @@ public class SetLcbValuesConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ref", "Usage: set-lcb-vals --ref <lcbRef> [options]"))
+            return;
 
         String ref = args.get("ref");
-        if (ref == null || ref.trim().isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ref.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ref. Usage: set-lcb-vals --ref <lcbRef> [options]");
-            }
-            return;
-        }
-
         SetLcbValuesDao dao = new SetLcbValuesDao().ref(ref.trim());
         String v;
 
@@ -83,14 +69,10 @@ public class SetLcbValuesConsole implements CommandHandler {
         if (v != null && !v.isEmpty())
             dao.bufTm(Integer.parseInt(v));
 
-        if (!jsonMode) {
+        if (!CmsConsole.isJsonMode(args)) {
             ConsolePrinter.info("Setting LCB values: ref=" + ref);
         }
         console.getClient(SetLcbValuesClient.class).execute(dao);
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"LCB values set for " + CmsFormatUtil.escapeJson(ref) + "\"}");
-        } else {
-            ConsolePrinter.success("LCB values set for " + ref);
-        }
+        CmsConsole.outputMessage("LCB values set for " + ref, args);
     }
 }

@@ -51,35 +51,17 @@ public class AllCbValuesConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Type 'connect' first.\"}");
-            } else {
-                ConsolePrinter.error("Not connected. Type 'connect' first.");
-            }
+        boolean jsonMode = CmsConsole.isJsonMode(args);
+        if (!console.requireConnected(args))
             return;
-        }
+
+        if (!CmsConsole.requireParam(args, "ln", "Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]"))
+            return;
+        if (!CmsConsole.requireParam(args, "acsi", "Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]"))
+            return;
 
         String target = args.get("ln");
-        if (target == null || target.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --ln.\"}");
-            } else {
-                ConsolePrinter.error("Missing --ln. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
-            }
-            return;
-        }
-
         String acsiStr = args.get("acsi");
-        if (acsiStr == null || acsiStr.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --acsi.\"}");
-            } else {
-                ConsolePrinter.error("Missing --acsi. Usage: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF]");
-            }
-            return;
-        }
         Integer acsiClass = ACSI_MAP.get(acsiStr.toLowerCase());
         if (acsiClass == null) {
             if (jsonMode) {

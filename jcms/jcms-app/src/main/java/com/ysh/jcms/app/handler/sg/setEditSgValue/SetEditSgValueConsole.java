@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.data.choice.CmsData;
 
 import java.nio.charset.StandardCharsets;
@@ -59,16 +58,8 @@ public class SetEditSgValueConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            String msg = "Not connected. Type 'connect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+        if (!console.requireConnected(args))
             return;
-        }
 
         String refsStr = args.get("refs");
         String valuesStr = args.get("values");
@@ -77,20 +68,18 @@ public class SetEditSgValueConsole implements CommandHandler {
             typeStr = "visible-string";
 
         if (refsStr == null || refsStr.trim().isEmpty()) {
-            String msg = "Missing --refs";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Missing --refs");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Missing --refs");
             }
             return;
         }
         if (valuesStr == null || valuesStr.trim().isEmpty()) {
-            String msg = "Missing --values (must match --refs count)";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Missing --values (must match --refs count)");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Missing --values (must match --refs count)");
             }
             return;
         }
@@ -98,23 +87,22 @@ public class SetEditSgValueConsole implements CommandHandler {
         String[] refs = refsStr.trim().split("\\s+");
         String[] vals = valuesStr.trim().split("\\s+");
         if (refs.length != vals.length) {
-            String msg = "--refs count (" + refs.length + ") != --values count (" + vals.length + ")";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
             }
             return;
         }
 
         Integer choiceType = TYPE_MAP.get(typeStr);
         if (choiceType == null) {
-            String msg = "Unknown type: " + typeStr
-                    + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
+            if (CmsConsole.isJsonMode(args)) {
+                CmsConsole.jsonError("Unknown type: " + typeStr
+                        + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
             } else {
-                ConsolePrinter.error(msg);
+                ConsolePrinter.error("Unknown type: " + typeStr
+                        + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
             }
             return;
         }
@@ -129,11 +117,6 @@ public class SetEditSgValueConsole implements CommandHandler {
 
         console.getClient(SetEditSgValueClient.class).execute(dao);
 
-        String msg = "Edit SG values set successfully";
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        CmsConsole.outputMessage("Edit SG values set successfully", args);
     }
 }

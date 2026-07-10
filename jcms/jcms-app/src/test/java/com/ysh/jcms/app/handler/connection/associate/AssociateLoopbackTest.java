@@ -29,7 +29,7 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Override
     protected void registerClients(CmsNode node) throws Exception {
-        regClient(node, new AssociateClient(node));
+        regClient(node, new AssociateClient());
     }
 
     // ── without security ──

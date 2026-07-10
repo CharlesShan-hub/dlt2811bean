@@ -18,7 +18,7 @@ import java.util.List;
 public class AllDataDefClient extends BaseClientHandler {
 
     public void execute(AllDataDefDao dao) throws Exception {
-        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().reqId(nextReqId());
+        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().reqId(nextReqId()).refAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -30,10 +30,6 @@ public class AllDataDefClient extends BaseClientHandler {
 
         if (dao.fc() != null) {
             req.fc(dao.fc());
-        }
-
-        if (dao.referenceAfter() != null) {
-            req.refAfter(dao.referenceAfter());
         }
 
         send(ServiceName.GET_ALL_DATA_DEFINITION, req);
