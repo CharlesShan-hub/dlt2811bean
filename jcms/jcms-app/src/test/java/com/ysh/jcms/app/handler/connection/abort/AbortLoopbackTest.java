@@ -31,17 +31,14 @@ public class AbortLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_then_abort() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
 
         Session session = clientNode().getClient().getSession();
 
         assertEquals(SessionState.ASSOCIATED, session.getState());
         assertNotNull(session.getAssociationId());
 
-        clientNode().getClient(AbortClient.class)
-            .execute(new AbortClientDao().reason(CmsAbortReason.INVALID_ARGUMENT));
+        clientNode().getClient(AbortClient.class).execute(new AbortClientDao().reason(CmsAbortReason.INVALID_ARGUMENT));
 
         assertEquals(SessionState.DISCONNECTED, session.getState());
         assertNull(session.getAssociationId());

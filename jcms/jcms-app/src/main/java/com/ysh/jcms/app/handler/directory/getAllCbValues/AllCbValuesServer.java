@@ -41,7 +41,8 @@ public class AllCbValuesServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         int acsiClass = req.acsiClass.value();
         String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-            ? new String(req.refAfter.value(), StandardCharsets.UTF_8) : null;
+                ? new String(req.refAfter.value(), StandardCharsets.UTF_8)
+                : null;
 
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
@@ -53,11 +54,11 @@ public class AllCbValuesServer extends BaseServerHandler {
         String ldName = null;
         String lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = req.reference.altLdName.len > 0
-                ? new String(req.reference.altLdName.value(), StandardCharsets.UTF_8) : null;
+            ldName = req.reference.altLdName.len > 0 ? new String(req.reference.altLdName.value(), StandardCharsets.UTF_8) : null;
         } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
             lnReference = req.reference.altLnReference.len > 0
-                ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8) : null;
+                    ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8)
+                    : null;
         }
 
         List<SclLN> lns = resolveLns(doc, ldName, lnReference);
@@ -74,8 +75,7 @@ public class AllCbValuesServer extends BaseServerHandler {
         // Collect CB entries
         List<CmsCbValueEntry> entries = new ArrayList<>();
         int pageSize = pageSize();
-        outer:
-        for (SclLN ln : lns) {
+        outer : for (SclLN ln : lns) {
             List<CbPair> cbPairs = collectCbValues(ln, acsiClass);
 
             for (CbPair cb : cbPairs) {
@@ -89,16 +89,14 @@ public class AllCbValuesServer extends BaseServerHandler {
                     continue;
                 }
 
-                entries.add(new CmsCbValueEntry()
-                    .reference(fullRef)
-                    .value(cb.value));
+                entries.add(new CmsCbValueEntry().reference(fullRef).value(cb.value));
 
-                if (entries.size() >= pageSize) break outer;
+                if (entries.size() >= pageSize)
+                    break outer;
             }
         }
 
-        CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse()
-            .reqId(reqId);
+        CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse().reqId(reqId);
         for (CmsCbValueEntry e : entries) {
             resp.cbValue.add(e);
         }
@@ -132,9 +130,11 @@ public class AllCbValuesServer extends BaseServerHandler {
             }
             return null;
         }
-        if (lnReference == null || lnReference.isEmpty()) return null;
+        if (lnReference == null || lnReference.isEmpty())
+            return null;
         int slashIdx = lnReference.indexOf('/');
-        if (slashIdx < 0) return null;
+        if (slashIdx < 0)
+            return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
         for (SclIED ied : doc.ieds()) {
@@ -159,54 +159,53 @@ public class AllCbValuesServer extends BaseServerHandler {
     private static final class CbPair {
         final String ref;
         final CmsCbValueChoice value;
-        CbPair(String ref, CmsCbValueChoice value) { this.ref = ref; this.value = value; }
+        CbPair(String ref, CmsCbValueChoice value) {
+            this.ref = ref;
+            this.value = value;
+        }
     }
 
     /** Collect CB value entries for a given LN and ACSI class. */
     private static List<CbPair> collectCbValues(SclLN ln, int acsiClass) {
         List<CbPair> result = new ArrayList<>();
         switch (acsiClass) {
-            case CmsAcsiClass.BRCB:
+            case CmsAcsiClass.BRCB :
                 for (SclReportControl rc : ln.reportControls()) {
                     if ("true".equals(rc.buffered())) {
                         result.add(new CbPair(rc.name(), CbConverter.brcbFrom(rc)));
                     }
                 }
                 break;
-            case CmsAcsiClass.URCB:
+            case CmsAcsiClass.URCB :
                 for (SclReportControl rc : ln.reportControls()) {
                     if (!"true".equals(rc.buffered())) {
                         result.add(new CbPair(rc.name(), CbConverter.urcbFrom(rc)));
                     }
                 }
                 break;
-            case CmsAcsiClass.LCB:
+            case CmsAcsiClass.LCB :
                 for (SclLogControl lc : ln.logControls()) {
                     result.add(new CbPair(lc.name(), CbConverter.lcbFrom(lc)));
                 }
                 break;
-            case CmsAcsiClass.GOCB:
+            case CmsAcsiClass.GOCB :
                 for (SclGSEControl gc : ln.gseControls()) {
                     result.add(new CbPair(gc.name(), CbConverter.gocbFrom(gc)));
                 }
                 break;
-            case CmsAcsiClass.MSVCB:
+            case CmsAcsiClass.MSVCB :
                 for (SclSampledValueControl sv : ln.svControls()) {
                     result.add(new CbPair(sv.name(), CbConverter.msvcbFrom(sv)));
                 }
                 break;
-            default:
+            default :
                 break;
         }
         return result;
     }
 
     private static boolean isValidAcsiClass(int acsiClass) {
-        return acsiClass == CmsAcsiClass.BRCB
-            || acsiClass == CmsAcsiClass.URCB
-            || acsiClass == CmsAcsiClass.LCB
-            || acsiClass == CmsAcsiClass.SGECB
-            || acsiClass == CmsAcsiClass.GOCB
-            || acsiClass == CmsAcsiClass.MSVCB;
+        return acsiClass == CmsAcsiClass.BRCB || acsiClass == CmsAcsiClass.URCB || acsiClass == CmsAcsiClass.LCB
+                || acsiClass == CmsAcsiClass.SGECB || acsiClass == CmsAcsiClass.GOCB || acsiClass == CmsAcsiClass.MSVCB;
     }
 }

@@ -21,8 +21,7 @@ public class SclFCDA {
     private Integer ix;
 
     public String buildFcdaRef() {
-        return ldInst + "/" + prefix + lnClass + lnInst + "." + doName
-                + (daName != null ? "." + daName : "");
+        return ldInst + "/" + prefix + lnClass + lnInst + "." + doName + (daName != null ? "." + daName : "");
     }
 
     public String buildLnName() {

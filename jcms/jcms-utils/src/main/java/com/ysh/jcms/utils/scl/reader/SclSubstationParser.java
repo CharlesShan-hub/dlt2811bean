@@ -20,22 +20,22 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         substation.addLNode(parseLNode(reader));
                         break;
-                    case "PowerTransformer":
+                    case "PowerTransformer" :
                         substation.addTransformer(parsePowerTransformer(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         substation.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "VoltageLevel":
+                    case "VoltageLevel" :
                         substation.addVoltageLevel(parseVoltageLevel(reader));
                         break;
-                    case "Function":
+                    case "Function" :
                         substation.addFunction(parseFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -74,25 +74,25 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         vl.addLNode(parseLNode(reader));
                         break;
-                    case "Voltage":
+                    case "Voltage" :
                         vl.voltage(parseVoltage(reader));
                         break;
-                    case "PowerTransformer":
+                    case "PowerTransformer" :
                         vl.addTransformer(parsePowerTransformer(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         vl.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "Bay":
+                    case "Bay" :
                         vl.addBay(parseBay(reader));
                         break;
-                    case "Function":
+                    case "Function" :
                         vl.addFunction(parseFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -124,25 +124,25 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         bay.addLNode(parseLNode(reader));
                         break;
-                    case "PowerTransformer":
+                    case "PowerTransformer" :
                         bay.addTransformer(parsePowerTransformer(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         bay.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "ConductingEquipment":
+                    case "ConductingEquipment" :
                         bay.addEquipment(parseConductingEquipment(reader));
                         break;
-                    case "ConnectivityNode":
+                    case "ConnectivityNode" :
                         bay.addConnectivityNode(parseConnectivityNode(reader));
                         break;
-                    case "Function":
+                    case "Function" :
                         bay.addFunction(parseFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -165,19 +165,19 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         ce.addLNode(parseLNode(reader));
                         break;
-                    case "Terminal":
+                    case "Terminal" :
                         ce.addTerminal(parseTerminal(reader));
                         break;
-                    case "SubEquipment":
+                    case "SubEquipment" :
                         ce.addSubEquipment(parseSubEquipment(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         ce.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -201,13 +201,13 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         se.addLNode(parseLNode(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         se.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -230,19 +230,19 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         ptr.addLNode(parseLNode(reader));
                         break;
-                    case "TransformerWinding":
+                    case "TransformerWinding" :
                         ptr.addWinding(parseTransformerWinding(reader));
                         break;
-                    case "SubEquipment":
+                    case "SubEquipment" :
                         ptr.addSubEquipment(parseSubEquipment(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         ptr.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -265,25 +265,25 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         ptw.addLNode(parseLNode(reader));
                         break;
-                    case "Terminal":
+                    case "Terminal" :
                         ptw.addTerminal(parseTerminal(reader));
                         break;
-                    case "SubEquipment":
+                    case "SubEquipment" :
                         ptw.addSubEquipment(parseSubEquipment(reader));
                         break;
-                    case "TapChanger":
+                    case "TapChanger" :
                         ptw.tapChanger(parseTapChanger(reader));
                         break;
-                    case "NeutralPoint":
+                    case "NeutralPoint" :
                         ptw.neutralPoint(parseTerminal(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         ptw.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -307,16 +307,16 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         tap.addLNode(parseLNode(reader));
                         break;
-                    case "SubEquipment":
+                    case "SubEquipment" :
                         tap.addSubEquipment(parseSubEquipment(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         tap.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -340,13 +340,13 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         ge.addLNode(parseLNode(reader));
                         break;
-                    case "EqFunction":
+                    case "EqFunction" :
                         ge.addEqFunction(parseEqFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -369,19 +369,19 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         func.addLNode(parseLNode(reader));
                         break;
-                    case "SubFunction":
+                    case "SubFunction" :
                         func.addSubFunction(parseSubFunction(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         func.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "ConductingEquipment":
+                    case "ConductingEquipment" :
                         func.addConductingEquipment(parseConductingEquipment(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -402,19 +402,19 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         subFunc.addLNode(parseLNode(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         subFunc.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "ConductingEquipment":
+                    case "ConductingEquipment" :
                         subFunc.addConductingEquipment(parseConductingEquipment(reader));
                         break;
-                    case "SubFunction":
+                    case "SubFunction" :
                         subFunc.addSubFunction(parseSubFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -437,16 +437,16 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         eqFunc.addLNode(parseLNode(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         eqFunc.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "EqSubFunction":
+                    case "EqSubFunction" :
                         eqFunc.addEqSubFunction(parseEqSubFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -467,16 +467,16 @@ public class SclSubstationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNode":
+                    case "LNode" :
                         eqSub.addLNode(parseLNode(reader));
                         break;
-                    case "GeneralEquipment":
+                    case "GeneralEquipment" :
                         eqSub.addGeneralEquipment(parseGeneralEquipment(reader));
                         break;
-                    case "EqSubFunction":
+                    case "EqSubFunction" :
                         eqSub.addEqSubFunction(parseEqSubFunction(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }

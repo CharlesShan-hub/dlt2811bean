@@ -6,14 +6,14 @@ import com.ysh.jcms.core.CmsType;
 import java.util.Arrays;
 
 /**
- * typedef struct { uint8_t *value; int32_t len; } cms_uint8_array_t;
- * sizeof = 16 (Pointer 8 + int32 4 + padding 4)
+ * typedef struct { uint8_t *value; int32_t len; } cms_uint8_array_t; sizeof =
+ * 16 (Pointer 8 + int32 4 + padding 4)
  *
- * 通用字节数组容器。ObjectName、ObjectReference、SubReference、EntryID
- * 等类型都是它的别名，各自有 encode/decode。
+ * 通用字节数组容器。ObjectName、ObjectReference、SubReference、EntryID 等类型都是它的别名，各自有
+ * encode/decode。
  *
- * CmsUint8Array 只管理 { Pointer, len } 的 struct 布局，
- * encode/decode 由具体的别名类（如 CmsObjectName）提供。
+ * CmsUint8Array 只管理 { Pointer, len } 的 struct 布局， encode/decode 由具体的别名类（如
+ * CmsObjectName）提供。
  */
 public class CmsUint8Array extends CmsType {
 
@@ -30,7 +30,7 @@ public class CmsUint8Array extends CmsType {
 
     // ==================== 字段 ====================
 
-    public static final int SIZEOF = 16;  // value(8) + len(4) + padding(4)
+    public static final int SIZEOF = 16; // value(8) + len(4) + padding(4)
 
     /** 指向数据的 native 指针。 */
     public Pointer value;
@@ -45,14 +45,17 @@ public class CmsUint8Array extends CmsType {
     protected int type = TYPE_UNKNOWN;
 
     /** 子类可覆盖此方法指定默认缓冲区大小 */
-    protected int defaultBufSize() { return 4096; }
+    protected int defaultBufSize() {
+        return 4096;
+    }
 
     public CmsUint8Array() {
         int sz = defaultBufSize();
         this.ownedData = new Memory(sz);
         this.value = ownedData;
         this.len = 0;
-        if (sz > 0) ownedData.setByte(0, (byte)0);  /* 初始化为空字符串 */
+        if (sz > 0)
+            ownedData.setByte(0, (byte) 0); /* 初始化为空字符串 */
         write();
     }
 
@@ -96,19 +99,27 @@ public class CmsUint8Array extends CmsType {
     }
 
     /** 获取类型标记。 */
-    public int type() { return type; }
+    public int type() {
+        return type;
+    }
 
     /** 设置类型标记。 */
-    public CmsUint8Array type(int type) { this.type = type; return this; }
+    public CmsUint8Array type(int type) {
+        this.type = type;
+        return this;
+    }
 
     // ==================== 读写数据 ====================
 
     /** 子类可覆盖此方法以改变 len 到实际字节数的映射（如 BitString 存比特数）。 */
-    protected int valueByteLen() { return len; }
+    protected int valueByteLen() {
+        return len;
+    }
 
     /** 获取字节数组（从 native 拷贝到 Java）。 */
     public byte[] value() {
-        if (value == null || len == 0) return new byte[0];
+        if (value == null || len == 0)
+            return new byte[0];
         return value.getByteArray(0, valueByteLen());
     }
 
@@ -122,7 +133,7 @@ public class CmsUint8Array extends CmsType {
             int size = data.length;
             this.ownedData = new Memory(size + 1);
             this.ownedData.write(0, data, 0, size);
-            this.ownedData.setByte(size, (byte) 0);  // null terminate
+            this.ownedData.setByte(size, (byte) 0); // null terminate
             this.value = ownedData;
             this.len = size;
         }
@@ -138,7 +149,9 @@ public class CmsUint8Array extends CmsType {
     // ==================== 布局 ====================
 
     @Override
-    protected int calcNativeSize() { return SIZEOF; }
+    protected int calcNativeSize() {
+        return SIZEOF;
+    }
 
     @Override
     public void write() {
@@ -149,14 +162,16 @@ public class CmsUint8Array extends CmsType {
             len = 0;
         }
         int ofs = 0;
-        nativePtr.setPointer(ofs, value); ofs += 8;
+        nativePtr.setPointer(ofs, value);
+        ofs += 8;
         nativePtr.setInt(ofs, len);
     }
 
     @Override
     public void read() {
         int ofs = 0;
-        Pointer v = nativePtr.getPointer(ofs); ofs += 8;
+        Pointer v = nativePtr.getPointer(ofs);
+        ofs += 8;
         int n = nativePtr.getInt(ofs);
         // if C decoder left garbage for absent fields, treat as empty
         if (v == null || n <= 0) {
@@ -172,8 +187,10 @@ public class CmsUint8Array extends CmsType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CmsUint8Array)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof CmsUint8Array))
+            return false;
         // compare by logical data content; value() handles empty case
         return Arrays.equals(value(), ((CmsUint8Array) o).value());
     }
@@ -183,4 +200,3 @@ public class CmsUint8Array extends CmsType {
         return Arrays.hashCode(value());
     }
 }
-

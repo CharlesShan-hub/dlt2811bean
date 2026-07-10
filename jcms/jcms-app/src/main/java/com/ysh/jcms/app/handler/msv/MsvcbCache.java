@@ -7,8 +7,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * In-memory cache for MSVCB values.
  *
- * <p>SetMSVCBValues writes to this cache; GetMSVCBValues reads from it
- * (falling back to SCL if not present).  Changes are lost on restart.
+ * <p>
+ * SetMSVCBValues writes to this cache; GetMSVCBValues reads from it (falling
+ * back to SCL if not present). Changes are lost on restart.
  */
 public class MsvcbCache {
 

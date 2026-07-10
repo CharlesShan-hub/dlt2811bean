@@ -14,14 +14,17 @@ import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
  */
 public final class CbConverter {
 
-    private CbConverter() {}
+    private CbConverter() {
+    }
 
     // ==================== BRCB ====================
 
     public static CmsCbValueChoice brcbFrom(SclReportControl rc) {
         CmsBrcb brcb = new CmsBrcb();
-        if (rc.rptID() != null) brcb.rptID(rc.rptID());
-        if (rc.datSet() != null) brcb.datSet(rc.datSet());
+        if (rc.rptID() != null)
+            brcb.rptID(rc.rptID());
+        if (rc.datSet() != null)
+            brcb.datSet(rc.datSet());
         brcb.confRev(rc.confRev() != null ? Long.parseLong(rc.confRev()) : 0);
 
         CmsCbValueChoice result = new CmsCbValueChoice();
@@ -34,8 +37,10 @@ public final class CbConverter {
 
     public static CmsCbValueChoice urcbFrom(SclReportControl rc) {
         CmsUrcb urcb = new CmsUrcb();
-        if (rc.rptID() != null) urcb.rptID(rc.rptID());
-        if (rc.datSet() != null) urcb.datSet(rc.datSet());
+        if (rc.rptID() != null)
+            urcb.rptID(rc.rptID());
+        if (rc.datSet() != null)
+            urcb.datSet(rc.datSet());
         urcb.confRev(rc.confRev() != null ? Long.parseLong(rc.confRev()) : 0);
 
         CmsCbValueChoice result = new CmsCbValueChoice();
@@ -48,8 +53,10 @@ public final class CbConverter {
 
     public static CmsCbValueChoice gocbFrom(SclGSEControl gse) {
         CmsGoCb gocb = new CmsGoCb();
-        if (gse.appID() != null) gocb.goID(gse.appID());
-        if (gse.datSet() != null) gocb.datSet(gse.datSet());
+        if (gse.appID() != null)
+            gocb.goID(gse.appID());
+        if (gse.datSet() != null)
+            gocb.datSet(gse.datSet());
         gocb.confRev(gse.confRev() != null ? Long.parseLong(gse.confRev()) : 0);
 
         CmsCbValueChoice result = new CmsCbValueChoice();
@@ -62,8 +69,10 @@ public final class CbConverter {
 
     public static CmsCbValueChoice msvcbFrom(SclSampledValueControl sv) {
         CmsMsvcb msvcb = new CmsMsvcb();
-        if (sv.svID() != null) msvcb.msvID(sv.svID());
-        if (sv.datSet() != null) msvcb.datSet(sv.datSet());
+        if (sv.svID() != null)
+            msvcb.msvID(sv.svID());
+        if (sv.datSet() != null)
+            msvcb.datSet(sv.datSet());
         msvcb.confRev(sv.confRev() != null ? Long.parseLong(sv.confRev()) : 0);
         if (sv.smpRate() != null && !sv.smpRate().isEmpty()) {
             msvcb.smpRate(Integer.parseInt(sv.smpRate()));
@@ -79,8 +88,10 @@ public final class CbConverter {
 
     public static CmsCbValueChoice lcbFrom(SclLogControl lc) {
         CmsLcb lcb = new CmsLcb();
-        if (lc.datSet() != null) lcb.datSet(lc.datSet());
-        if (lc.logName() != null) lcb.logRef(lc.logName());
+        if (lc.datSet() != null)
+            lcb.datSet(lc.datSet());
+        if (lc.logName() != null)
+            lcb.logRef(lc.logName());
 
         CmsCbValueChoice result = new CmsCbValueChoice();
         result.choice(CmsCbValueChoice.LCB);

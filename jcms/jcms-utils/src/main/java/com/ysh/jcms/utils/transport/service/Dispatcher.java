@@ -23,8 +23,10 @@ public class Dispatcher {
     /**
      * Dispatch an incoming request frame to the appropriate handler.
      *
-     * @param session the session
-     * @param request the incoming request frame
+     * @param session
+     *            the session
+     * @param request
+     *            the incoming request frame
      * @return a DispatchResult containing the outcome and optional response
      */
     public DispatchOutcome dispatch(Session session, Frame request) {
@@ -47,7 +49,8 @@ public class Dispatcher {
     }
 
     /** Outcome of a dispatch operation. */
-    @Getter @AllArgsConstructor
+    @Getter
+    @AllArgsConstructor
     public static class DispatchOutcome {
         private final DispatchResult result;
         private final Frame response;

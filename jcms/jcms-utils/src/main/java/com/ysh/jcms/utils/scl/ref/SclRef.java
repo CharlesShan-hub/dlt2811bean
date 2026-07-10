@@ -10,8 +10,7 @@ import java.util.Objects;
 /**
  * SCL 引用 —— 模型中的通用索引键。
  * <p>
- * 引用格式：{@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]}
- * <br>
+ * 引用格式：{@code [IEDName/]LDInst/LNName[.DO][[.SDI]...][.DA][FC]} <br>
  * 例如：{@code E1Q1SB1/C1/MMXU1.Volts.sVC.offset}
  */
 @Getter
@@ -26,8 +25,7 @@ public class SclRef {
     private final String daName;
     private final String fc;
 
-    public SclRef(String iedName, String ldInst, String lnName,
-                  String doName, List<String> sdiChain, String daName, String fc) {
+    public SclRef(String iedName, String ldInst, String lnName, String doName, List<String> sdiChain, String daName, String fc) {
         this.iedName = iedName;
         this.ldInst = ldInst;
         this.lnName = lnName;
@@ -59,23 +57,46 @@ public class SclRef {
         private String daName;
         private String fc;
 
-        SclRefBuilder(String ldInst) { this.ldInst = ldInst; }
+        SclRefBuilder(String ldInst) {
+            this.ldInst = ldInst;
+        }
 
-        public SclRefBuilder ied(String iedName) { this.iedName = iedName; return this; }
-        public SclRefBuilder prefix(String prefix) { this.prefix = prefix; return this; }
-        public SclRefBuilder lnClass(String lnClass) { this.lnClass = lnClass; return this; }
-        public SclRefBuilder lnInst(String lnInst) { this.lnInst = lnInst; return this; }
-        public SclRefBuilder doName(String doName) { this.doName = doName; return this; }
-        public SclRefBuilder addSdi(String sdiName) { this.sdiChain.add(sdiName); return this; }
-        public SclRefBuilder daName(String daName) { this.daName = daName; return this; }
-        public SclRefBuilder fc(String fc) { this.fc = fc; return this; }
+        public SclRefBuilder ied(String iedName) {
+            this.iedName = iedName;
+            return this;
+        }
+        public SclRefBuilder prefix(String prefix) {
+            this.prefix = prefix;
+            return this;
+        }
+        public SclRefBuilder lnClass(String lnClass) {
+            this.lnClass = lnClass;
+            return this;
+        }
+        public SclRefBuilder lnInst(String lnInst) {
+            this.lnInst = lnInst;
+            return this;
+        }
+        public SclRefBuilder doName(String doName) {
+            this.doName = doName;
+            return this;
+        }
+        public SclRefBuilder addSdi(String sdiName) {
+            this.sdiChain.add(sdiName);
+            return this;
+        }
+        public SclRefBuilder daName(String daName) {
+            this.daName = daName;
+            return this;
+        }
+        public SclRefBuilder fc(String fc) {
+            this.fc = fc;
+            return this;
+        }
 
         public SclRef build() {
-            String ln = (prefix != null ? prefix : "")
-                      + (lnClass != null ? lnClass : "")
-                      + (lnInst != null ? lnInst : "");
-            return new SclRef(iedName, ldInst, ln, doName,
-                    sdiChain.isEmpty() ? null : sdiChain, daName, fc);
+            String ln = (prefix != null ? prefix : "") + (lnClass != null ? lnClass : "") + (lnInst != null ? lnInst : "");
+            return new SclRef(iedName, ldInst, ln, doName, sdiChain.isEmpty() ? null : sdiChain, daName, fc);
         }
 
         public SclRefBuilder lnName(String lnName) {
@@ -88,54 +109,76 @@ public class SclRef {
 
     // ==================== 层级判断 ====================
 
-    public boolean isLnLevel() { return doName == null; }
-    public boolean isDoLevel() { return doName != null && daName == null; }
-    public boolean isDaLevel() { return doName != null && daName != null; }
-    public boolean hasSdi() { return !sdiChain.isEmpty(); }
-    public boolean hasFc() { return fc != null && !fc.isEmpty(); }
+    public boolean isLnLevel() {
+        return doName == null;
+    }
+    public boolean isDoLevel() {
+        return doName != null && daName == null;
+    }
+    public boolean isDaLevel() {
+        return doName != null && daName != null;
+    }
+    public boolean hasSdi() {
+        return !sdiChain.isEmpty();
+    }
+    public boolean hasFc() {
+        return fc != null && !fc.isEmpty();
+    }
 
     /** @deprecated 使用 {@link #ldInst()} */
     @Deprecated
-    public String ldName() { return ldInst; }
+    public String ldName() {
+        return ldInst;
+    }
 
     // ==================== 引用组合 ====================
 
-    public String lnReference() { return ldInst + "/" + lnName; }
-    public String doReference() { return ldInst + "/" + lnName + "." + doName; }
+    public String lnReference() {
+        return ldInst + "/" + lnName;
+    }
+    public String doReference() {
+        return ldInst + "/" + lnName + "." + doName;
+    }
     public String daReference() {
         StringBuilder sb = new StringBuilder(ldInst).append("/").append(lnName).append(".").append(doName);
-        for (String sdi : sdiChain) sb.append(".").append(sdi);
-        if (daName != null) sb.append(".").append(daName);
+        for (String sdi : sdiChain)
+            sb.append(".").append(sdi);
+        if (daName != null)
+            sb.append(".").append(daName);
         return sb.toString();
     }
 
     public String fullReference() {
         StringBuilder sb = new StringBuilder();
-        if (iedName != null) sb.append(iedName).append("/");
+        if (iedName != null)
+            sb.append(iedName).append("/");
         sb.append(ldInst).append("/").append(lnName);
         if (doName != null) {
             sb.append(".").append(doName);
-            for (String sdi : sdiChain) sb.append(".").append(sdi);
-            if (daName != null) sb.append(".").append(daName);
+            for (String sdi : sdiChain)
+                sb.append(".").append(sdi);
+            if (daName != null)
+                sb.append(".").append(daName);
         }
-        if (fc != null) sb.append("[").append(fc).append("]");
+        if (fc != null)
+            sb.append("[").append(fc).append("]");
         return sb.toString();
     }
 
     @Override
-    public String toString() { return fullReference(); }
+    public String toString() {
+        return fullReference();
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof SclRef)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof SclRef))
+            return false;
         SclRef other = (SclRef) o;
-        return Objects.equals(iedName, other.iedName)
-                && Objects.equals(ldInst, other.ldInst)
-                && Objects.equals(lnName, other.lnName)
-                && Objects.equals(doName, other.doName)
-                && Objects.equals(sdiChain, other.sdiChain)
-                && Objects.equals(daName, other.daName);
+        return Objects.equals(iedName, other.iedName) && Objects.equals(ldInst, other.ldInst) && Objects.equals(lnName, other.lnName)
+                && Objects.equals(doName, other.doName) && Objects.equals(sdiChain, other.sdiChain) && Objects.equals(daName, other.daName);
     }
 
     @Override

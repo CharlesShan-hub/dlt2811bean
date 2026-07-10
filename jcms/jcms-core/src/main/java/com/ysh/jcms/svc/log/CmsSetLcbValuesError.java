@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetLCBValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     result          [0] IMPLICIT SEQUENCE OF SetLCBResult
- * }  —  8.8.3
+ * SetLCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, result [0] IMPLICIT
+ * SEQUENCE OF SetLCBResult } — 8.8.3
  */
 public class CmsSetLcbValuesError extends CmsType {
 
-    public CmsReqId                   reqId;
-    public CmsArray<CmsSetLcbResult>  result;   /* SEQUENCE OF SetLCBResult */
+    public CmsReqId reqId;
+    public CmsArray<CmsSetLcbResult> result; /* SEQUENCE OF SetLCBResult */
 
-    public CmsSetLcbValuesError() { super(Codec.SET_LCB_VALUES_ERROR);
-        this.reqId  = new CmsReqId();
+    public CmsSetLcbValuesError() {
+        super(Codec.SET_LCB_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.result = new CmsArray<>(CmsSetLcbResult.class);
     }
-    
-    public CmsSetLcbValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSetLcbValuesError result(CmsArray<CmsSetLcbResult> v) { this.result = v; return this; }
+
+    public CmsSetLcbValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSetLcbValuesError result(CmsArray<CmsSetLcbResult> v) {
+        this.result = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

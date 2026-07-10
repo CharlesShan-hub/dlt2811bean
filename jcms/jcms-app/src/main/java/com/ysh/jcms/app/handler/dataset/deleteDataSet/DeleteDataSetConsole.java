@@ -13,17 +13,18 @@ import java.util.Map;
 public class DeleteDataSetConsole implements CommandHandler {
 
     @Override
-    public String name() { return "delete-dataset"; }
+    public String name() {
+        return "delete-dataset";
+    }
 
     @Override
-    public String description() { return "删除数据集 (DeleteDataSet)。用法: delete-dataset --ds <ref> [--json]"; }
+    public String description() {
+        return "删除数据集 (DeleteDataSet)。用法: delete-dataset --ds <ref> [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -48,8 +49,7 @@ public class DeleteDataSetConsole implements CommandHandler {
             return;
         }
 
-        DeleteDataSetDao dao = new DeleteDataSetDao()
-            .datasetReference(dsRef.trim());
+        DeleteDataSetDao dao = new DeleteDataSetDao().datasetReference(dsRef.trim());
 
         ConsolePrinter.info("Deleting dataset " + dsRef);
 

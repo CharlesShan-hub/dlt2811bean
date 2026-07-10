@@ -5,7 +5,8 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 /**
  * Listener for connection lifecycle events.
  *
- * <p>All callbacks are invoked from I/O threads. Keep implementations fast.
+ * <p>
+ * All callbacks are invoked from I/O threads. Keep implementations fast.
  */
 public interface ConnectionListener {
 

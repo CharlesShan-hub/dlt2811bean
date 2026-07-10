@@ -13,20 +13,25 @@ import java.util.Map;
 public class DisconnectHandler implements CommandHandler {
 
     @Override
-    public String name() { return "disconnect"; }
+    public String name() {
+        return "disconnect";
+    }
     @Override
-    public String description() { return "断开当前连接 [--json]"; }
+    public String description() {
+        return "断开当前连接 [--json]";
+    }
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) {
         boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) { ConsolePrinter.info("Not connected."); return; }
+        if (!console.isConnected()) {
+            ConsolePrinter.info("Not connected.");
+            return;
+        }
         console.close();
         String msg = "Disconnected.";
         if (jsonMode) {

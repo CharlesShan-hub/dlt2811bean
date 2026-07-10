@@ -7,18 +7,15 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * DataDefinitionArray ::= SEQUENCE {
- *     numberOfElement  Int32,
- *     elementType      DataDefinition
- * }  —  7.7
+ * DataDefinitionArray ::= SEQUENCE { numberOfElement Int32, elementType
+ * DataDefinition } — 7.7
  *
- * All-pointer container:
- *   [0] numberOfElement → CmsInt32*
- *   [8] elementType     → CmsDataDefinition*
+ * All-pointer container: [0] numberOfElement → CmsInt32* [8] elementType →
+ * CmsDataDefinition*
  */
 public class CmsDataDefinitionArray extends CmsType {
 
-    public CmsInt32          numberOfElement;
+    public CmsInt32 numberOfElement;
     public CmsDataDefinition elementType;
 
     public CmsDataDefinitionArray() {
@@ -29,12 +26,20 @@ public class CmsDataDefinitionArray extends CmsType {
         // when not set (no circular reference risk since CmsDataDefinitionArray
         // no longer creates CmsDataDefinition in its constructor).
     }
-    
+
     @Override
-    protected int calcNativeSize() { return 16; } // 2 pointers × 8 bytes
-    
-    public CmsDataDefinitionArray numberOfElement(int v) { this.numberOfElement.value(v); return this; }
-    public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType = v; return this; }
+    protected int calcNativeSize() {
+        return 16;
+    } // 2 pointers × 8 bytes
+
+    public CmsDataDefinitionArray numberOfElement(int v) {
+        this.numberOfElement.value(v);
+        return this;
+    }
+    public CmsDataDefinitionArray elementType(CmsDataDefinition v) {
+        this.elementType = v;
+        return this;
+    }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(numberOfElement, elementType);

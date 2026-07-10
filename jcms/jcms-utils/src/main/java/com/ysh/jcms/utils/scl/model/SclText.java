@@ -9,7 +9,9 @@ import lombok.experimental.Accessors;
  * 可复用的文本元素 (tText)，用于需要文本描述的所有元素。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tText" mixed="true">
  *     <xs:complexContent mixed="true">
  *         <xs:extension base="tAnyContentFromOtherNamespace">
@@ -17,9 +19,13 @@ import lombok.experimental.Accessors;
  *         </xs:extension>
  *     </xs:complexContent>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclText {
     /** 文本内容 (mixed content) */
     private String value;

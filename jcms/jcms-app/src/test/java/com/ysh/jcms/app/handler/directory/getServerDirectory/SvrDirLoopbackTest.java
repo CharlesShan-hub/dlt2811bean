@@ -29,8 +29,7 @@ public class SvrDirLoopbackTest extends BaseLoopbackTest {
     public void get_server_directory() throws Exception {
         associate();
 
-        clientNode().getClient(SvrDirClient.class)
-            .execute(new SvrDirDao());
+        clientNode().getClient(SvrDirClient.class).execute(new SvrDirDao());
 
         assertEquals(1, clientNode().getContentManager().getLdNames().size());
         assertTrue(clientNode().getContentManager().getLdNames().contains("C1"));

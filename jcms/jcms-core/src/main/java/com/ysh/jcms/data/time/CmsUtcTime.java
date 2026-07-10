@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * UtcTime ::= OCTET STRING (SIZE(8))  —  7.2.1
+ * UtcTime ::= OCTET STRING (SIZE(8)) — 7.2.1
  */
 public class CmsUtcTime extends CmsType {
 
@@ -16,27 +16,33 @@ public class CmsUtcTime extends CmsType {
     public CmsInt24U fractionOfSecond;
     public CmsTimeQuality timeQuality;
 
-    public CmsUtcTime() { super(Codec.UTC_TIME);
+    public CmsUtcTime() {
+        super(Codec.UTC_TIME);
         this.secondsSinceEpoch = new CmsInt32U();
         this.fractionOfSecond = new CmsInt24U();
         this.timeQuality = new CmsTimeQuality();
     }
-    
-    public CmsUtcTime secondsSinceEpoch(long v) { this.secondsSinceEpoch.value(v); return this; }
-    public CmsUtcTime fractionOfSecond(int v) { this.fractionOfSecond.value(v); return this; }
-    public CmsUtcTime timeQuality(CmsTimeQuality v) { this.timeQuality = v; return this; }
+
+    public CmsUtcTime secondsSinceEpoch(long v) {
+        this.secondsSinceEpoch.value(v);
+        return this;
+    }
+    public CmsUtcTime fractionOfSecond(int v) {
+        this.fractionOfSecond.value(v);
+        return this;
+    }
+    public CmsUtcTime timeQuality(CmsTimeQuality v) {
+        this.timeQuality = v;
+        return this;
+    }
     public CmsUtcTime now() {
         long millis = System.currentTimeMillis();
         this.secondsSinceEpoch.value(millis / 1000);
-        this.fractionOfSecond.value((int)((millis % 1000) * 1000));  // ms → μs
-        this.timeQuality
-            .leap_seconds_known(false)
-            .clock_failure(false)
-            .clock_not_synchronized(false)
-            .precision(24);
+        this.fractionOfSecond.value((int) ((millis % 1000) * 1000)); // ms → μs
+        this.timeQuality.leap_seconds_known(false).clock_failure(false).clock_not_synchronized(false).precision(24);
         return this;
     }
-    
+
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(secondsSinceEpoch, fractionOfSecond, timeQuality);

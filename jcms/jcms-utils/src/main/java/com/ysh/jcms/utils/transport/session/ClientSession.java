@@ -9,7 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * ClientSession — client-side session with pending request tracking.
  *
- * <p>Generates ReqID values and matches incoming responses to pending requests.
+ * <p>
+ * Generates ReqID values and matches incoming responses to pending requests.
  */
 public class ClientSession extends Session {
 
@@ -51,8 +52,8 @@ public class ClientSession extends Session {
     }
 
     /**
-     * Try to dispatch an incoming frame to a matching pending request.
-     * Sets the result on the PendingRequest so that waitForPendingRequest can unblock.
+     * Try to dispatch an incoming frame to a matching pending request. Sets the
+     * result on the PendingRequest so that waitForPendingRequest can unblock.
      *
      * @return true if matched, false if no pending request found
      */
@@ -67,14 +68,15 @@ public class ClientSession extends Session {
     }
 
     /**
-     * Block until the pending request for the given reqId has a result,
-     * then remove it and return the result.
+     * Block until the pending request for the given reqId has a result, then remove
+     * it and return the result.
      *
      * @return the result (set by tryDispatchResponse), or null on timeout
      */
     public Object waitForPendingRequest(int reqId, long timeoutMs) throws InterruptedException {
         PendingRequest pr = pendingRequests.get(reqId);
-        if (pr == null) return null;
+        if (pr == null)
+            return null;
         Object result = pr.waitForResult();
         pendingRequests.remove(reqId);
         return result;

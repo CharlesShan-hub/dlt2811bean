@@ -18,11 +18,8 @@ public class NegotiateClient extends BaseClientHandler {
     }
 
     public void execute(NegotiateClientDao dao) throws Exception {
-        CmsNegotiateRequest req = new CmsNegotiateRequest()
-            .reqId(nextReqId())
-            .apduSize(dao.apduSize())
-            .asduSize(dao.asduSize())
-            .protocolVersion(dao.protocolVersion());
+        CmsNegotiateRequest req = new CmsNegotiateRequest().reqId(nextReqId()).apduSize(dao.apduSize()).asduSize(dao.asduSize())
+                .protocolVersion(dao.protocolVersion());
 
         send(ServiceName.ASSOCIATE_NEGOTIATE, req);
     }
@@ -47,8 +44,7 @@ public class NegotiateClient extends BaseClientHandler {
         session.setNegotiated(true);
         session.getConnection().setMaxFrameSize(resp.apduSize.value());
 
-        log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}",
-            resp.apduSize.value(), resp.asduSize.value(), resp.protocolVersion.value(),
-            new String(resp.modelVersion.value()));
+        log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
+                resp.asduSize.value(), resp.protocolVersion.value(), new String(resp.modelVersion.value()));
     }
 }

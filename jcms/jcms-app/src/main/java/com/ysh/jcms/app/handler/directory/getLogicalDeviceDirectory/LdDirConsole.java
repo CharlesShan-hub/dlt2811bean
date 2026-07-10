@@ -14,18 +14,19 @@ import java.util.Map;
 public class LdDirConsole implements CommandHandler {
 
     @Override
-    public String name() { return "ld-dir"; }
+    public String name() {
+        return "ld-dir";
+    }
 
     @Override
-    public String description() { return "获取逻辑节点目录 (GetLogicalDeviceDirectory)。用法: ld-dir [--ld LD] [--after REF] [--json]"; }
+    public String description() {
+        return "获取逻辑节点目录 (GetLogicalDeviceDirectory)。用法: ld-dir [--ld LD] [--after REF] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ld", "逻辑设备名（默认 C1）", "C1"),
-            new Param("after", "起始引用（分页截取）", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ld", "逻辑设备名（默认 C1）", "C1"), new Param("after", "起始引用（分页截取）", ""),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -39,8 +40,7 @@ public class LdDirConsole implements CommandHandler {
             }
             return;
         }
-        LdDirDao dao = new LdDirDao()
-            .ldName(args.get("ld"));
+        LdDirDao dao = new LdDirDao().ldName(args.get("ld"));
         String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
@@ -50,7 +50,8 @@ public class LdDirConsole implements CommandHandler {
         if (jsonMode) {
             StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
             for (int i = 0; i < items.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 sb.append('"').append(CmsFormatUtil.escapeJson(items.get(i))).append('"');
             }
             sb.append("]}");

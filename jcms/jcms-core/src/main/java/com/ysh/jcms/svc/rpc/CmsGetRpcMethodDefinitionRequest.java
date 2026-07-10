@@ -9,23 +9,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetRpcMethodDefinition-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT SEQUENCE OF VisibleString
- * }  —  8.13.5
+ * GetRpcMethodDefinition-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0]
+ * IMPLICIT SEQUENCE OF VisibleString } — 8.13.5
  */
 public class CmsGetRpcMethodDefinitionRequest extends CmsType {
 
-    public CmsReqId                       reqId;
-    public CmsArray<CmsUint8Array>        reference;  /* SEQUENCE OF VisibleString */
+    public CmsReqId reqId;
+    public CmsArray<CmsUint8Array> reference; /* SEQUENCE OF VisibleString */
 
-    public CmsGetRpcMethodDefinitionRequest() { super(Codec.GET_RPC_METHOD_DEFINITION_REQUEST);
-        this.reqId     = new CmsReqId();
+    public CmsGetRpcMethodDefinitionRequest() {
+        super(Codec.GET_RPC_METHOD_DEFINITION_REQUEST);
+        this.reqId = new CmsReqId();
         this.reference = new CmsArray<>(CmsUint8Array.class);
     }
-    
-    public CmsGetRpcMethodDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetRpcMethodDefinitionRequest reference(CmsArray<CmsUint8Array> v) { this.reference = v; return this; }
+
+    public CmsGetRpcMethodDefinitionRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetRpcMethodDefinitionRequest reference(CmsArray<CmsUint8Array> v) {
+        this.reference = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

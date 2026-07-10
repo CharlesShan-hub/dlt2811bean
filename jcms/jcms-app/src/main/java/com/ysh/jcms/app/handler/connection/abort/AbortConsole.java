@@ -13,17 +13,18 @@ import java.util.Map;
 public class AbortConsole implements CommandHandler {
 
     @Override
-    public String name() { return "abort"; }
+    public String name() {
+        return "abort";
+    }
 
     @Override
-    public String description() { return "异常中止关联 (Abort) [--json]"; }
+    public String description() {
+        return "异常中止关联 (Abort) [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("reason", "中止原因码", "0"),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("reason", "中止原因码", "0"), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -39,8 +40,7 @@ public class AbortConsole implements CommandHandler {
             return;
         }
         int reason = Integer.parseInt(args.get("reason"));
-        console.getClient(AbortClient.class)
-            .execute(new AbortClientDao().reason(reason));
+        console.getClient(AbortClient.class).execute(new AbortClientDao().reason(reason));
         String msg = "Abort sent (reason=" + reason + ")";
         if (jsonMode) {
             ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");

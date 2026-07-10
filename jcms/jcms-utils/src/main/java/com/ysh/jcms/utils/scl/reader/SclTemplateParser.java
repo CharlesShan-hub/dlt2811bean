@@ -18,19 +18,19 @@ public class SclTemplateParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LNodeType":
+                    case "LNodeType" :
                         templates.addLNodeType(parseLNodeType(reader));
                         break;
-                    case "DOType":
+                    case "DOType" :
                         templates.addDoType(parseDOType(reader));
                         break;
-                    case "DAType":
+                    case "DAType" :
                         templates.addDaType(parseDAType(reader));
                         break;
-                    case "EnumType":
+                    case "EnumType" :
                         templates.addEnumType(parseEnumType(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -85,13 +85,13 @@ public class SclTemplateParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "SDO":
+                    case "SDO" :
                         doType.addSdo(parseSDO(reader));
                         break;
-                    case "DA":
+                    case "DA" :
                         doType.addDa(parseDA(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -131,13 +131,13 @@ public class SclTemplateParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Val":
+                    case "Val" :
                         da.addVal(parseValChild(reader));
                         break;
-                    case "ProtNs":
+                    case "ProtNs" :
                         da.addProtNs(parseProtNs(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -158,13 +158,13 @@ public class SclTemplateParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "BDA":
+                    case "BDA" :
                         daType.addBda(parseBDA(reader));
                         break;
-                    case "ProtNs":
+                    case "ProtNs" :
                         daType.addProtNs(parseProtNs(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }

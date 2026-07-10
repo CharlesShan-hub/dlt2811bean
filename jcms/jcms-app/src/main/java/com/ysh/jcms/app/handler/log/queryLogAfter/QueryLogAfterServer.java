@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.log.CmsLogEntry;
 import com.ysh.jcms.svc.log.CmsQueryLogAfterError;
 import com.ysh.jcms.svc.log.CmsQueryLogAfterRequest;

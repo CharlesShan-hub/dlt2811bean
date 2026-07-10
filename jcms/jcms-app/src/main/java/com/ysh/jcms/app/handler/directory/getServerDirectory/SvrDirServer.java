@@ -36,7 +36,8 @@ public class SvrDirServer extends BaseServerHandler {
             return ok(new CmsGetServerDirectoryError().reqId(reqId).serviceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE), reqId);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
@@ -54,12 +55,14 @@ public class SvrDirServer extends BaseServerHandler {
 
         if (refAfter != null && !refAfter.isEmpty()) {
             int idx = ldNames.indexOf(refAfter);
-            if (idx < 0) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            if (idx < 0)
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             ldNames = ldNames.subList(idx + 1, ldNames.size());
         }
 
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse().reqId(reqId);
-        for (String name : ldNames) resp.reference.add(new CmsObjectReference(name));
+        for (String name : ldNames)
+            resp.reference.add(new CmsObjectReference(name));
         resp.moreFollows(false);
         return ok(resp, reqId);
     }

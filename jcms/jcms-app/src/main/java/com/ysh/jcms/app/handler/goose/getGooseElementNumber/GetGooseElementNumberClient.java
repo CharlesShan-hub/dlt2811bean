@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberResponse;
@@ -20,7 +19,10 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
     public static final class MemberSpec {
         public final String reference;
         public final int fc;
-        public MemberSpec(String reference, int fc) { this.reference = reference; this.fc = fc; }
+        public MemberSpec(String reference, int fc) {
+            this.reference = reference;
+            this.fc = fc;
+        }
     }
 
     public static final class ElementNumberResult {
@@ -38,17 +40,17 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
 
     private ElementNumberResult lastResult;
 
-    public GetGooseElementNumberClient(CmsNode node) { super(node); }
-    public ElementNumberResult getLastResult() { return lastResult; }
+    public GetGooseElementNumberClient(CmsNode node) {
+        super(node);
+    }
+    public ElementNumberResult getLastResult() {
+        return lastResult;
+    }
 
     public void execute(GetGooseElementNumberDao dao) throws Exception {
-        CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest()
-            .reqId(nextReqId())
-            .gocbReference(dao.gocbReference());
+        CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().reqId(nextReqId()).gocbReference(dao.gocbReference());
         for (MemberSpec spec : dao.members()) {
-            CmsGoRefFcEntry entry = new CmsGoRefFcEntry()
-                .reference(spec.reference)
-                .fc(spec.fc);
+            CmsGoRefFcEntry entry = new CmsGoRefFcEntry().reference(spec.reference).fc(spec.fc);
             req.memberData.add(entry);
         }
         send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, req);
@@ -72,11 +74,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
             offsets.add(resp.memberOffset.items.get(i).value());
         }
 
-        lastResult = new ElementNumberResult(
-            new String(resp.gocbReference.value(), StandardCharsets.UTF_8),
-            resp.confRev.value(),
-            new String(resp.datSet.value(), StandardCharsets.UTF_8),
-            offsets
-        );
+        lastResult = new ElementNumberResult(new String(resp.gocbReference.value(), StandardCharsets.UTF_8), resp.confRev.value(),
+                new String(resp.datSet.value(), StandardCharsets.UTF_8), offsets);
     }
 }

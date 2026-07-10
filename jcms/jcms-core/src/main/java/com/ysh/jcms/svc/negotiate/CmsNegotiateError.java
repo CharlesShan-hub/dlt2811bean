@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * AssociateNegotiate-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.13
+ * AssociateNegotiate-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.13
  */
 public class CmsNegotiateError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsNegotiateError() { super(Codec.NEGOTIATE_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsNegotiateError() {
+        super(Codec.NEGOTIATE_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsNegotiateError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsNegotiateError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsNegotiateError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsNegotiateError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

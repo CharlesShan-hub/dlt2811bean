@@ -9,17 +9,13 @@ import java.util.List;
  * Generic array container — elements is a Pointer array, each pointing to an
  * independently allocated CmsType.
  *
- * C-side view:
- *   typedef struct {
- *       void **elements;   // points to Memory(ptr0, ptr1, ...), 8 bytes each
- *       int32_t count;
- *   } cms_array_t;         // sizeof = 16 (ptr8 + int32 4 + padding 4)
+ * C-side view: typedef struct { void **elements; // points to Memory(ptr0,
+ * ptr1, ...), 8 bytes each int32_t count; } cms_array_t; // sizeof = 16 (ptr8 +
+ * int32 4 + padding 4)
  *
- * Java:
- *   CmsArray<CmsBoolean> arr = new CmsArray<>(CmsBoolean.class);
- *   arr.add(new CmsBoolean(true));
- *   arr.add(new CmsBoolean(false));
- *   arr.write();  // writes count + elements pointer to nativePtr
+ * Java: CmsArray<CmsBoolean> arr = new CmsArray<>(CmsBoolean.class);
+ * arr.add(new CmsBoolean(true)); arr.add(new CmsBoolean(false)); arr.write();
+ * // writes count + elements pointer to nativePtr
  */
 public class CmsArray<T extends CmsType> extends CmsType {
 
@@ -34,15 +30,21 @@ public class CmsArray<T extends CmsType> extends CmsType {
     /** Number of elements. */
     public int count;
 
-    /** Element type for auto-creation during decode. null means manual pre-allocation. */
+    /**
+     * Element type for auto-creation during decode. null means manual
+     * pre-allocation.
+     */
     private Class<T> itemClass;
 
     /** Number of elements to pre-allocate during decode (adjustable externally). */
     public int allocSize = 1;
 
-    public Class<T> getItemClass() { return itemClass; }
+    public Class<T> getItemClass() {
+        return itemClass;
+    }
 
-    public CmsArray() {}
+    public CmsArray() {
+    }
 
     /** Specify element type for auto-creation during decode. */
     public CmsArray(Class<T> itemClass) {
@@ -53,7 +55,8 @@ public class CmsArray<T extends CmsType> extends CmsType {
 
     public CmsArray<T> add(T item) {
         items.add(item);
-        if (allocSize < items.size()) allocSize = items.size();
+        if (allocSize < items.size())
+            allocSize = items.size();
         return this;
     }
 
@@ -62,17 +65,24 @@ public class CmsArray<T extends CmsType> extends CmsType {
         for (T item : items) {
             this.items.add(item);
         }
-        if (allocSize < this.items.size()) allocSize = this.items.size();
+        if (allocSize < this.items.size())
+            allocSize = this.items.size();
         return this;
     }
 
-    public T get(int index) { return items.get(index); }
-    public int size() { return items.size(); }
+    public T get(int index) {
+        return items.get(index);
+    }
+    public int size() {
+        return items.size();
+    }
 
     // ==================== Native sync ====================
 
     @Override
-    protected int calcNativeSize() { return SIZEOF; }
+    protected int calcNativeSize() {
+        return SIZEOF;
+    }
 
     @Override
     public void write() {
@@ -141,8 +151,9 @@ public class CmsArray<T extends CmsType> extends CmsType {
     protected void resize() {
         int c = 0;
         if (nativePtr != null) {
-            c = nativePtr.getInt(8);  // cms_array_t.count at offset 8
-            if (c > 0) allocSize = c;
+            c = nativePtr.getInt(8); // cms_array_t.count at offset 8
+            if (c > 0)
+                allocSize = c;
         }
         while (items.size() < allocSize && itemClass != null) {
             try {
@@ -157,7 +168,8 @@ public class CmsArray<T extends CmsType> extends CmsType {
         // 递归 resize items。即使 nativePtr 当前为 null（刚创建），
         // 下一轮 write() 会分配内存，C decoder 就可以用。
         for (T item : items) {
-            if (item != null) item.resize();
+            if (item != null)
+                item.resize();
         }
     }
     // ==================== equals / hashCode ====================
@@ -169,16 +181,22 @@ public class CmsArray<T extends CmsType> extends CmsType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CmsArray)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof CmsArray))
+            return false;
         CmsArray<?> other = (CmsArray<?>) o;
-        if (items.size() != other.items.size()) return false;
+        if (items.size() != other.items.size())
+            return false;
         for (int i = 0; i < items.size(); i++) {
             T thisItem = items.get(i);
             Object otherItem = other.items.get(i);
-            if (thisItem == null && otherItem == null) continue;
-            if (thisItem == null || otherItem == null) return false;
-            if (!thisItem.equals(otherItem)) return false;
+            if (thisItem == null && otherItem == null)
+                continue;
+            if (thisItem == null || otherItem == null)
+                return false;
+            if (!thisItem.equals(otherItem))
+                return false;
         }
         return true;
     }
@@ -186,7 +204,8 @@ public class CmsArray<T extends CmsType> extends CmsType {
     @Override
     public int hashCode() {
         int h = 1;
-        for (T item : items) h = 31 * h + (item != null ? item.hashCode() : 0);
+        for (T item : items)
+            h = 31 * h + (item != null ? item.hashCode() : 0);
         return h;
     }
 }

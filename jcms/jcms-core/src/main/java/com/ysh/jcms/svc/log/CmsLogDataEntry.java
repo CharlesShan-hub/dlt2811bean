@@ -9,35 +9,47 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * LogDataEntry ::= SEQUENCE {
- *     reference   [0] IMPLICIT ObjectReference,
- *     fc          [1] IMPLICIT FunctionalConstraint,
- *     value       [2] IMPLICIT Data,
- *     reason      [3] IMPLICIT ReasonCode
- * }  —  8.8.1
+ * LogDataEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1]
+ * IMPLICIT FunctionalConstraint, value [2] IMPLICIT Data, reason [3] IMPLICIT
+ * ReasonCode } — 8.8.1
  *
  * Used by LogEntry entryData.
  */
 public class CmsLogDataEntry extends CmsType {
 
-    public CmsObjectReference     reference;
+    public CmsObjectReference reference;
     public CmsFC fc;
-    public CmsData                value;
-    public CmsReasonCode          reason;
+    public CmsData value;
+    public CmsReasonCode reason;
 
     public CmsLogDataEntry() {
         this.reference = new CmsObjectReference();
-        this.fc        = new CmsFC();
-        this.value     = new CmsData();
-        this.reason    = new CmsReasonCode();
+        this.fc = new CmsFC();
+        this.value = new CmsData();
+        this.reason = new CmsReasonCode();
     }
 
-    public CmsLogDataEntry reference(byte[] v) { this.reference.value(v); return this; }
-    public CmsLogDataEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsLogDataEntry fc(int v) { this.fc.value(v); return this; }
+    public CmsLogDataEntry reference(byte[] v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsLogDataEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsLogDataEntry fc(int v) {
+        this.fc.value(v);
+        return this;
+    }
 
-    public CmsLogDataEntry value(CmsData v) { this.value = v; return this; }
-    public CmsLogDataEntry reason(CmsReasonCode v) { this.reason = v; return this; }
+    public CmsLogDataEntry value(CmsData v) {
+        this.value = v;
+        return this;
+    }
+    public CmsLogDataEntry reason(CmsReasonCode v) {
+        this.reason = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

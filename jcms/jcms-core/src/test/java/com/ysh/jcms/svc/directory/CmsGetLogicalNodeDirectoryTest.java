@@ -44,8 +44,7 @@ public class CmsGetLogicalNodeDirectoryTest {
         CmsGetLogicalNodeDirectoryResponse a = new CmsGetLogicalNodeDirectoryResponse();
         a.reqId.value(30);
         /* SEQUENCE OF SubReference — 2 个元素 */
-        a.reference.add(new CmsSubReference("fc".getBytes()))
-                    .add(new CmsSubReference("mx".getBytes()));
+        a.reference.add(new CmsSubReference("fc".getBytes())).add(new CmsSubReference("mx".getBytes()));
         a.moreFollows.value(false);
         byte[] encoded = a.encode();
 

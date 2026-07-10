@@ -7,7 +7,6 @@ import com.ysh.jcms.svc.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueResponse;
 import com.ysh.jcms.svc.sg.CmsSgRefFcEntry;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -21,21 +20,25 @@ public class GetEditSgValueClient extends BaseClientHandler {
     public static final class ValueEntry {
         public final int choice;
         public final String text;
-        public ValueEntry(int choice, String text) { this.choice = choice; this.text = text; }
+        public ValueEntry(int choice, String text) {
+            this.choice = choice;
+            this.text = text;
+        }
     }
 
     private List<ValueEntry> lastValues = new ArrayList<>();
 
-    public GetEditSgValueClient(CmsNode node) { super(node); }
-    public List<ValueEntry> getLastValues() { return lastValues; }
+    public GetEditSgValueClient(CmsNode node) {
+        super(node);
+    }
+    public List<ValueEntry> getLastValues() {
+        return lastValues;
+    }
 
     public void execute(GetEditSgValueDao dao) throws Exception {
-        CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest()
-            .reqId(nextReqId());
+        CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest().reqId(nextReqId());
         for (GetEditSgValueDao.RefFcPair pair : dao.refs()) {
-            req.data.add(new CmsSgRefFcEntry()
-                .reference(pair.reference())
-                .fc(pair.fc()));
+            req.data.add(new CmsSgRefFcEntry().reference(pair.reference()).fc(pair.fc()));
         }
         send(ServiceName.GET_EDIT_SG_VALUE, req);
     }
@@ -66,15 +69,15 @@ public class GetEditSgValueClient extends BaseClientHandler {
         int choice = data.choice.value();
         try {
             switch (choice) {
-                case CmsData.CHOICE_BOOLEAN:
+                case CmsData.CHOICE_BOOLEAN :
                     return String.valueOf(data.alt_boolean.value());
-                case CmsData.CHOICE_INT32:
+                case CmsData.CHOICE_INT32 :
                     return String.valueOf(data.alt_int32.value());
-                case CmsData.CHOICE_FLOAT32:
+                case CmsData.CHOICE_FLOAT32 :
                     return String.valueOf(data.alt_float32.value());
-                case CmsData.CHOICE_VISIBLE_STRING:
+                case CmsData.CHOICE_VISIBLE_STRING :
                     return new String(data.alt_visible_string.value(), StandardCharsets.UTF_8);
-                default:
+                default :
                     return "choice=" + choice;
             }
         } catch (Exception e) {

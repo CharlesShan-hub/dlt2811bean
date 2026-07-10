@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetURCBValues-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.7.5
+ * SetURCBValues-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.7.5
  */
 public class CmsSetUrcbValuesResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetUrcbValuesResponse() { super(Codec.SET_URCB_VALUES_RESPONSE);
+    public CmsSetUrcbValuesResponse() {
+        super(Codec.SET_URCB_VALUES_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsSetUrcbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsSetUrcbValuesResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

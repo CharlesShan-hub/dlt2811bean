@@ -15,13 +15,16 @@ import com.ysh.jcms.data.string.CmsUint8Array;
  */
 public final class TypeMapper {
 
-    private TypeMapper() {}
+    private TypeMapper() {
+    }
 
     /**
      * 将 bType + 字符串值转换为对应的 CmsType 实例。
      *
-     * @param bType SCL bType，如 "INT32"、"FLOAT32"、"BOOLEAN"
-     * @param value 字符串值
+     * @param bType
+     *            SCL bType，如 "INT32"、"FLOAT32"、"BOOLEAN"
+     * @param value
+     *            字符串值
      * @return CmsType 实例，解析失败返回 CmsUint8Array 兜底
      */
     public static CmsType createTypedValue(String bType, String value) {
@@ -31,47 +34,47 @@ public final class TypeMapper {
         try {
             String v = value.trim();
             switch (bType) {
-                case "BOOLEAN":
-                case "BOOL":
+                case "BOOLEAN" :
+                case "BOOL" :
                     return new CmsBoolean(Boolean.parseBoolean(v));
-                case "INT8":
+                case "INT8" :
                     return new CmsInt8(Integer.parseInt(v));
-                case "INT16":
+                case "INT16" :
                     return new CmsInt16(Integer.parseInt(v));
-                case "INT32":
+                case "INT32" :
                     return new CmsInt32(Integer.parseInt(v));
-                case "INT64":
+                case "INT64" :
                     return new CmsInt64(Long.parseLong(v));
-                case "INT8U":
+                case "INT8U" :
                     return new CmsInt8U(Integer.parseInt(v));
-                case "INT16U":
+                case "INT16U" :
                     return new CmsInt16U(Integer.parseInt(v));
-                case "INT32U":
+                case "INT32U" :
                     return new CmsInt32U(Long.parseLong(v));
-                case "INT64U":
+                case "INT64U" :
                     return new CmsInt64U(new java.math.BigInteger(v));
-                case "FLOAT32":
+                case "FLOAT32" :
                     return new CmsFloat32(Float.parseFloat(v));
-                case "FLOAT64":
+                case "FLOAT64" :
                     return new CmsFloat64(Double.parseDouble(v));
-                case "Enum":
+                case "Enum" :
                     return new CmsInt32(Integer.parseInt(v));
-                case "Dbpos":
+                case "Dbpos" :
                     return new CmsDbpos(Integer.parseInt(v));
-                case "Tcmd":
+                case "Tcmd" :
                     return new CmsTcmd(Integer.parseInt(v));
-                case "VisString255":
-                case "VISIBLE STRING":
+                case "VisString255" :
+                case "VISIBLE STRING" :
                     return new CmsUint8Array(value, CmsUint8Array.TYPE_VISIBLE_STRING);
-                case "Unicode255":
-                case "UNICODE STRING":
+                case "Unicode255" :
+                case "UNICODE STRING" :
                     return new CmsUint8Array(value, CmsUint8Array.TYPE_UNICODE_STRING);
-                case "BIT_STRING":
-                case "BITSTRING":
+                case "BIT_STRING" :
+                case "BITSTRING" :
                     return new CmsBitString(value.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-                case "Check":
+                case "Check" :
                     return new CmsCheck(Integer.parseInt(v));
-                default:
+                default :
                     return new CmsUint8Array(value, CmsUint8Array.TYPE_UNKNOWN);
             }
         } catch (Exception e) {

@@ -14,7 +14,8 @@ import java.net.Socket;
 /**
  * Connection — a single TCP connection for the CMS protocol.
  *
- * <p>Owns the socket and a reader thread that reads frames from the input stream.
+ * <p>
+ * Owns the socket and a reader thread that reads frames from the input stream.
  * Complete frames are reassembled by {@link FrameAssembler} and delivered to
  * the {@link ConnectionListener}.
  */
@@ -32,7 +33,10 @@ public class Connection {
 
     public Connection(Socket socket, ConnectionListener listener) throws IOException {
         this.socket = socket;
-        try { socket.setKeepAlive(true); } catch (Exception ignored) {}
+        try {
+            socket.setKeepAlive(true);
+        } catch (Exception ignored) {
+        }
         this.dis = new DataInputStream(socket.getInputStream());
         this.dos = new DataOutputStream(socket.getOutputStream());
         this.listener = listener;
@@ -57,7 +61,8 @@ public class Connection {
         } catch (EOFException e) {
             // normal close by peer
         } catch (Exception e) {
-            if (running) listener.onError(this, e);
+            if (running)
+                listener.onError(this, e);
         } finally {
             running = false;
             listener.onDisconnected(this);
@@ -65,8 +70,7 @@ public class Connection {
     }
 
     /**
-     * Read a single frame from the wire.
-     * Format: [FL:2][FrameHeader:4][ASDU:FL-4]
+     * Read a single frame from the wire. Format: [FL:2][FrameHeader:4][ASDU:FL-4]
      */
     private Frame readFrame() throws IOException {
         int fl = dis.readUnsignedShort();
@@ -110,14 +114,25 @@ public class Connection {
         }
     }
 
-    public void setMaxFrameSize(int maxFrameSize) { this.maxFrameSize = maxFrameSize; }
-    public boolean isConnected() { return running && !socket.isClosed(); }
-    public Socket getSocket() { return socket; }
-    public ConnectionListener getListener() { return listener; }
+    public void setMaxFrameSize(int maxFrameSize) {
+        this.maxFrameSize = maxFrameSize;
+    }
+    public boolean isConnected() {
+        return running && !socket.isClosed();
+    }
+    public Socket getSocket() {
+        return socket;
+    }
+    public ConnectionListener getListener() {
+        return listener;
+    }
 
     /** Close the connection. */
     public void close() {
         running = false;
-        try { socket.close(); } catch (Exception ignored) {}
+        try {
+            socket.close();
+        } catch (Exception ignored) {
+        }
     }
 }

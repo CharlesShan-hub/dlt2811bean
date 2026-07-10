@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.report.report;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.report.CmsReport;
-import com.ysh.jcms.svc.report.CmsReportDataEntry;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,9 @@ public class ReportClient extends BaseClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(ReportClient.class);
 
-    public ReportClient(CmsNode node) { super(node); }
+    public ReportClient(CmsNode node) {
+        super(node);
+    }
 
     public void handleReport(Frame frame) {
         try {
@@ -25,16 +26,13 @@ public class ReportClient extends BaseClientHandler {
             report.decode(frame.asduBytes());
 
             StringBuilder sb = new StringBuilder();
-            String rptID = report.rptID != null
-                ? new String(report.rptID.value(), StandardCharsets.UTF_8)
-                : "(null)";
+            String rptID = report.rptID != null ? new String(report.rptID.value(), StandardCharsets.UTF_8) : "(null)";
             sb.append("\n  Report Received: rptID=").append(rptID);
             if (report.sqNumPresent.value()) {
                 sb.append(" sqNum=").append(report.sqNum.value());
             }
             if (report.dataSetPresent.value()) {
-                sb.append(" dataSet=")
-                  .append(new String(report.dataSet.value(), StandardCharsets.UTF_8));
+                sb.append(" dataSet=").append(new String(report.dataSet.value(), StandardCharsets.UTF_8));
             }
             sb.append(" entries=").append(report.entry.entryData.count);
 

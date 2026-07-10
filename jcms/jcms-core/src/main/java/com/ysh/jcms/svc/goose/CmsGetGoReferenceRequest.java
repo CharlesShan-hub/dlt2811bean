@@ -10,28 +10,38 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetGoReference-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     gocbReference   [0] IMPLICIT ObjectReference,
- *     memberOfs       [1] IMPLICIT SEQUENCE OF INT16U
- * }  —  8.9.2
+ * GetGoReference-RequestPDU ::= SEQUENCE { reqId Int16U, gocbReference [0]
+ * IMPLICIT ObjectReference, memberOfs [1] IMPLICIT SEQUENCE OF INT16U } — 8.9.2
  */
 public class CmsGetGoReferenceRequest extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  gocbReference;
-    public CmsArray<CmsInt16U> memberOfs;   /* SEQUENCE OF INT16U */
+    public CmsReqId reqId;
+    public CmsObjectReference gocbReference;
+    public CmsArray<CmsInt16U> memberOfs; /* SEQUENCE OF INT16U */
 
-    public CmsGetGoReferenceRequest() { super(Codec.GET_GO_REFERENCE_REQUEST);
-        this.reqId         = new CmsReqId();
+    public CmsGetGoReferenceRequest() {
+        super(Codec.GET_GO_REFERENCE_REQUEST);
+        this.reqId = new CmsReqId();
         this.gocbReference = new CmsObjectReference();
-        this.memberOfs     = new CmsArray<>(CmsInt16U.class);
+        this.memberOfs = new CmsArray<>(CmsInt16U.class);
     }
-    
-    public CmsGetGoReferenceRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetGoReferenceRequest gocbReference(byte[] v) { this.gocbReference.value(v); return this; }
-    public CmsGetGoReferenceRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGoReferenceRequest memberOfs(CmsArray<CmsInt16U> v) { this.memberOfs = v; return this; }
+
+    public CmsGetGoReferenceRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceRequest gocbReference(byte[] v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceRequest gocbReference(String v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceRequest memberOfs(CmsArray<CmsInt16U> v) {
+        this.memberOfs = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

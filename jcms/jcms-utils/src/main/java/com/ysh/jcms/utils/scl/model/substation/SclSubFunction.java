@@ -10,25 +10,35 @@ import java.util.List;
 /**
  * 子功能 (SubFunction)，Function 的嵌套子级。
  * <p>
- * SubFunction 可以递归嵌套，包含 LNode、GeneralEquipment、ConductingEquipment
- * 以及更细粒度的 SubFunction。
+ * SubFunction 可以递归嵌套，包含 LNode、GeneralEquipment、ConductingEquipment 以及更细粒度的
+ * SubFunction。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tSubFunction">
  *     <xs:sequence>
- *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="GeneralEquipment" type="tGeneralEquipment" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="ConductingEquipment" type="tConductingEquipment" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="SubFunction" type="tSubFunction" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs=
+"unbounded"/>
+ *         <xs:element name="GeneralEquipment" type=
+"tGeneralEquipment" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="ConductingEquipment" type=
+"tConductingEquipment" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="SubFunction" type="tSubFunction" minOccurs=
+"0" maxOccurs="unbounded"/>
  *     </xs:sequence>
  *     <xs:attribute name="name" type="xs:normalizedString"/>
  *     <xs:attribute name="desc" type="xs:normalizedString"/>
  *     <xs:attribute name="type" type="xs:normalizedString"/>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclSubFunction {
     /** 子功能名称 (name) */
     private String name;
@@ -45,11 +55,23 @@ public class SclSubFunction {
     /** 子功能列表 (SubFunction)，支持递归嵌套 */
     private final List<SclSubFunction> subFunctions = new ArrayList<>();
 
-    public SclSubFunction addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclSubFunction addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
 
-    public SclSubFunction addGeneralEquipment(SclGeneralEquipment generalEquipment) { generalEquipments.add(generalEquipment); return this; }
+    public SclSubFunction addGeneralEquipment(SclGeneralEquipment generalEquipment) {
+        generalEquipments.add(generalEquipment);
+        return this;
+    }
 
-    public SclSubFunction addConductingEquipment(SclConductingEquipment conductingEquipment) { conductingEquipments.add(conductingEquipment); return this; }
+    public SclSubFunction addConductingEquipment(SclConductingEquipment conductingEquipment) {
+        conductingEquipments.add(conductingEquipment);
+        return this;
+    }
 
-    public SclSubFunction addSubFunction(SclSubFunction subFunction) { subFunctions.add(subFunction); return this; }
+    public SclSubFunction addSubFunction(SclSubFunction subFunction) {
+        subFunctions.add(subFunction);
+        return this;
+    }
 }

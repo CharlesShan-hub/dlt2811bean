@@ -340,8 +340,7 @@ public class SclReaderTest {
     @Test
     public void testNoUnsupportedElements() {
         SclDocument doc = parseFullScd();
-        assertFalse("Unexpected unsupported elements: " + doc.unsupportedElements(),
-                doc.hasUnsupportedElements());
+        assertFalse("Unexpected unsupported elements: " + doc.unsupportedElements(), doc.hasUnsupportedElements());
     }
 
     @Test
@@ -401,11 +400,8 @@ public class SclReaderTest {
     @Test
     public void testParseIedCountAndNames() {
         SclDocument doc = parseFullScd();
-        String[] expectedNames = {
-            "E1Q1SB1", "E1Q1BP2", "E1Q1BP3", "E1Q2SB1",
-            "E1Q3SB1", "E1Q3KA1", "E1Q3KA2", "E1Q3KA3",
-            "D1Q1SB1", "D1Q1BP2", "D1Q1BP3", "D1Q1SB4"
-        };
+        String[] expectedNames = {"E1Q1SB1", "E1Q1BP2", "E1Q1BP3", "E1Q2SB1", "E1Q3SB1", "E1Q3KA1", "E1Q3KA2", "E1Q3KA3", "D1Q1SB1",
+                "D1Q1BP2", "D1Q1BP3", "D1Q1SB4"};
         for (String name : expectedNames) {
             assertNotNull("IED " + name + " should exist", doc.findIedByName(name));
         }

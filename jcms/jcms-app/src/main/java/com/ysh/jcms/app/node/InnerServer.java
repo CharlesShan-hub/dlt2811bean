@@ -59,18 +59,21 @@ public class InnerServer implements ConnectionListener {
     }
 
     private void configureTls() {
-        if (sslPort <= 0) return;
+        if (sslPort <= 0)
+            return;
         try {
             KeyPair kp = generateRsaKeyPair();
             X509Certificate cert = generateSelfSignedCert(kp);
             SSLContext ctx = SSLContext.getInstance("TLSv1.2");
-            ctx.init(createKeyManagers(kp, cert), new X509TrustManager[]{
-                new X509TrustManager() {
-                    public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-                    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+            ctx.init(createKeyManagers(kp, cert), new X509TrustManager[]{new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
-            }, new SecureRandom());
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                }
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
             this.sslAcceptor = new ServerAcceptor(sslPort, this).sslContext(ctx).needClientAuth(false);
         } catch (Exception e) {
             log.warn("Failed to configure TLS on port {}: {}", sslPort, e.getMessage());
@@ -89,13 +92,10 @@ public class InnerServer implements ConnectionListener {
             Security.addProvider(new BouncyCastleProvider());
         }
         X500Name name = new X500Name("CN=CMS Dev Server");
-        JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(
-            name, BigInteger.valueOf(now),
-            new Date(now), new Date(now + 365L * 24 * 60 * 60 * 1000),
-            name, kp.getPublic());
-        return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME)
-            .getCertificate(builder.build(new JcaContentSignerBuilder("SHA256WithRSA")
-                .setProvider(BouncyCastleProvider.PROVIDER_NAME).build(kp.getPrivate())));
+        JcaX509v3CertificateBuilder builder = new JcaX509v3CertificateBuilder(name, BigInteger.valueOf(now), new Date(now),
+                new Date(now + 365L * 24 * 60 * 60 * 1000), name, kp.getPublic());
+        return new JcaX509CertificateConverter().setProvider(BouncyCastleProvider.PROVIDER_NAME).getCertificate(builder.build(
+                new JcaContentSignerBuilder("SHA256WithRSA").setProvider(BouncyCastleProvider.PROVIDER_NAME).build(kp.getPrivate())));
     }
 
     private static KeyManager[] createKeyManagers(KeyPair kp, X509Certificate cert) throws Exception {
@@ -107,8 +107,12 @@ public class InnerServer implements ConnectionListener {
         return kmf.getKeyManagers();
     }
 
-    public SclDocument getSclDocument() { return scl2Document; }
-    public void setScl2Document(SclDocument doc) { this.scl2Document = doc; }
+    public SclDocument getSclDocument() {
+        return scl2Document;
+    }
+    public void setScl2Document(SclDocument doc) {
+        this.scl2Document = doc;
+    }
 
     public void register(ServiceHandler handler) {
         dispatcher.register(handler);
@@ -116,27 +120,44 @@ public class InnerServer implements ConnectionListener {
 
     public void start() throws IOException {
         acceptor.start();
-        if (sslAcceptor != null) sslAcceptor.start();
+        if (sslAcceptor != null)
+            sslAcceptor.start();
         this.keepalive = new KeepAliveManager(sessions);
         keepalive.start();
-        log.info("InnerServer started on port {} ({}{})",
-            port, sslAcceptor != null ? "TLS: " : "",
-            sslAcceptor != null ? String.valueOf(sslPort) : "");
+        log.info("InnerServer started on port {} ({}{})", port, sslAcceptor != null ? "TLS: " : "",
+                sslAcceptor != null ? String.valueOf(sslPort) : "");
     }
 
     public void stop() {
-        if (keepalive != null) { keepalive.stop(); keepalive = null; }
+        if (keepalive != null) {
+            keepalive.stop();
+            keepalive = null;
+        }
         acceptor.stop();
-        if (sslAcceptor != null) { sslAcceptor.stop(); sslAcceptor = null; }
-        for (ServerSession ss : sessions) ss.close();
+        if (sslAcceptor != null) {
+            sslAcceptor.stop();
+            sslAcceptor = null;
+        }
+        for (ServerSession ss : sessions)
+            ss.close();
         sessions.clear();
     }
 
-    public int getPort() { return port; }
-    public int getSslPort() { return sslPort; }
-    public boolean hasTls() { return sslAcceptor != null; }
-    public boolean isRunning() { return acceptor.isRunning(); }
-    public java.util.List<ServerSession> getSessions() { return new java.util.ArrayList<>(sessions); }
+    public int getPort() {
+        return port;
+    }
+    public int getSslPort() {
+        return sslPort;
+    }
+    public boolean hasTls() {
+        return sslAcceptor != null;
+    }
+    public boolean isRunning() {
+        return acceptor.isRunning();
+    }
+    public java.util.List<ServerSession> getSessions() {
+        return new java.util.ArrayList<>(sessions);
+    }
 
     @Override
     public void onConnected(Connection connection) {
@@ -149,27 +170,30 @@ public class InnerServer implements ConnectionListener {
     @Override
     public void onFrameReceived(Connection connection, Frame frame) {
         ServerSession ss = findSession(connection);
-        if (ss == null) return;
+        if (ss == null)
+            return;
         ss.touchActivity();
         Dispatcher.DispatchOutcome outcome = dispatcher.dispatch(ss, frame);
         switch (outcome.getResult()) {
-            case HANDLED:
+            case HANDLED :
                 if (outcome.getResponse() != null) {
-                    try { connection.send(outcome.getResponse()); }
-                    catch (IOException e) { log.error("Send response failed", e); }
+                    try {
+                        connection.send(outcome.getResponse());
+                    } catch (IOException e) {
+                        log.error("Send response failed", e);
+                    }
                 }
                 break;
-            case NOT_REGISTERED:
+            case NOT_REGISTERED :
                 log.warn("No handler for service: {}", frame.header().serviceCode());
                 try {
-                    connection.send(new Frame(
-                        new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
-                        new byte[]{0, 0}, frame.reqId()));
+                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
+                            new byte[]{0, 0}, frame.reqId()));
                 } catch (IOException e) {
                     log.error("Failed to send NOT_REGISTERED error", e);
                 }
                 break;
-            case ERROR_OCCURRED:
+            case ERROR_OCCURRED :
                 log.error("Handler error for service: {}", frame.header().serviceCode());
                 break;
         }
@@ -191,7 +215,8 @@ public class InnerServer implements ConnectionListener {
 
     private ServerSession findSession(Connection connection) {
         for (ServerSession ss : sessions) {
-            if (ss.getConnection() == connection) return ss;
+            if (ss.getConnection() == connection)
+                return ss;
         }
         return null;
     }
@@ -207,28 +232,53 @@ public class InnerServer implements ConnectionListener {
             super("srv-" + connection.getSocket().getPort(), connection);
         }
 
-        public void touchActivity() { this.lastActivityTime = System.currentTimeMillis(); this.keepaliveRetries = 0; }
-        public long getLastActivityTime() { return lastActivityTime; }
-        public int getKeepaliveRetries() { return keepaliveRetries; }
-        public int incrementKeepaliveRetries() { return ++keepaliveRetries; }
-        public void close() { getConnection().close(); }
+        public void touchActivity() {
+            this.lastActivityTime = System.currentTimeMillis();
+            this.keepaliveRetries = 0;
+        }
+        public long getLastActivityTime() {
+            return lastActivityTime;
+        }
+        public int getKeepaliveRetries() {
+            return keepaliveRetries;
+        }
+        public int incrementKeepaliveRetries() {
+            return ++keepaliveRetries;
+        }
+        public void close() {
+            getConnection().close();
+        }
 
-        public SclDocument getSclDocument() { return scl2Document; }
-        public void setScl2Document(SclDocument doc) { this.scl2Document = doc; }
-        public SclAccessPoint getSclAccessPoint() { return sclAccessPoint; }
-        public void setSclAccessPoint(SclAccessPoint sclAccessPoint) { this.sclAccessPoint = sclAccessPoint; }
+        public SclDocument getSclDocument() {
+            return scl2Document;
+        }
+        public void setScl2Document(SclDocument doc) {
+            this.scl2Document = doc;
+        }
+        public SclAccessPoint getSclAccessPoint() {
+            return sclAccessPoint;
+        }
+        public void setSclAccessPoint(SclAccessPoint sclAccessPoint) {
+            this.sclAccessPoint = sclAccessPoint;
+        }
 
         public com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed() {
-            if (scl2Document == null || sclAccessPoint == null) return null;
+            if (scl2Document == null || sclAccessPoint == null)
+                return null;
             for (com.ysh.jcms.utils.scl.model.ied.SclIED ied : scl2Document.ieds()) {
                 for (SclAccessPoint ap : ied.accessPoints()) {
-                    if (ap.name().equals(sclAccessPoint.name())) return ied;
+                    if (ap.name().equals(sclAccessPoint.name()))
+                        return ied;
                 }
             }
             return null;
         }
-        public SclDataTypeTemplates getSclDataTypeTemplates() { return sclDataTypeTemplates; }
-        public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) { this.sclDataTypeTemplates = sclDataTypeTemplates; }
+        public SclDataTypeTemplates getSclDataTypeTemplates() {
+            return sclDataTypeTemplates;
+        }
+        public void setSclDataTypeTemplates(SclDataTypeTemplates sclDataTypeTemplates) {
+            this.sclDataTypeTemplates = sclDataTypeTemplates;
+        }
 
         @Override
         public void clear() {

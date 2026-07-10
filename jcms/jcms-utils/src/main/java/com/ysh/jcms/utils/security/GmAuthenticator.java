@@ -12,15 +12,18 @@ import java.util.Optional;
 /**
  * GM Authentication Validator.
  *
- * <p>Validates authentication parameters in Associate service according to DL/T 2811-2024.
- * Verification process:
+ * <p>
+ * Validates authentication parameters in Associate service according to DL/T
+ * 2811-2024. Verification process:
  * <ol>
- *   <li>Verify signature certificate format and validity</li>
- *   <li>Verify signature timestamp (anti-replay)</li>
- *   <li>Verify signature value</li>
+ * <li>Verify signature certificate format and validity</li>
+ * <li>Verify signature timestamp (anti-replay)</li>
+ * <li>Verify signature value</li>
  * </ol>
  *
- * <p>Signature data source (GB/T 32918.4-2016):
+ * <p>
+ * Signature data source (GB/T 32918.4-2016):
+ *
  * <pre>
  * Ent = IDA || Z || M
  * where:
@@ -29,8 +32,9 @@ import java.util.Optional;
  *   M   - Message to be signed
  * </pre>
  *
- * <p>According to the standard, returns null on successful verification,
- * otherwise returns the corresponding error code.
+ * <p>
+ * According to the standard, returns null on successful verification, otherwise
+ * returns the corresponding error code.
  */
 @Slf4j
 public class GmAuthenticator {
@@ -67,8 +71,10 @@ public class GmAuthenticator {
     /**
      * Validates authentication parameters.
      *
-     * @param authParam   authentication parameter
-     * @param signedData  signed data (usually serverAccessPointReference)
+     * @param authParam
+     *            authentication parameter
+     * @param signedData
+     *            signed data (usually serverAccessPointReference)
      * @return error code on failure, Optional.empty() on success
      */
     public Optional<CmsServiceError> validate(CmsAuthenticationParameter authParam, byte[] signedData) {
@@ -117,8 +123,7 @@ public class GmAuthenticator {
             long timeDiff = Math.abs(currentTime - signedTime);
 
             if (timeDiff > timeToleranceSeconds) {
-                log.warn("Signature timestamp out of range: diff={}s, tolerance={}s",
-                         timeDiff, timeToleranceSeconds);
+                log.warn("Signature timestamp out of range: diff={}s, tolerance={}s", timeDiff, timeToleranceSeconds);
                 return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
             }
         }
@@ -139,14 +144,15 @@ public class GmAuthenticator {
     /**
      * Simplified validation: verifies signature only.
      *
-     * @param authParam  authentication parameter
-     * @param publicKey  client public key
-     * @param signedData signed data
+     * @param authParam
+     *            authentication parameter
+     * @param publicKey
+     *            client public key
+     * @param signedData
+     *            signed data
      * @return error code on failure
      */
-    public Optional<CmsServiceError> validateSimple(CmsAuthenticationParameter authParam,
-                                                     PublicKey publicKey,
-                                                     byte[] signedData) {
+    public Optional<CmsServiceError> validateSimple(CmsAuthenticationParameter authParam, PublicKey publicKey, byte[] signedData) {
         if (authParam == null) {
             return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
         }

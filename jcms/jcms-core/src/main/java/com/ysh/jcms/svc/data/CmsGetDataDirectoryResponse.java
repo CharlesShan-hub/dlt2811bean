@@ -9,27 +9,35 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetDataDirectory-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     dataAttribute   [0] IMPLICIT SEQUENCE OF SubRefEntry,
- *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
- * }  —  8.4.3
+ * GetDataDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, dataAttribute [0]
+ * IMPLICIT SEQUENCE OF SubRefEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT
+ * TRUE } — 8.4.3
  */
 public class CmsGetDataDirectoryResponse extends CmsType {
 
-    public CmsReqId                    reqId;
-    public CmsArray<CmsSubRefEntry>    dataAttribute;  /* SEQUENCE OF SubRefEntry */
-    public CmsBoolean                  moreFollows;    /* DEFAULT TRUE */
+    public CmsReqId reqId;
+    public CmsArray<CmsSubRefEntry> dataAttribute; /* SEQUENCE OF SubRefEntry */
+    public CmsBoolean moreFollows; /* DEFAULT TRUE */
 
-    public CmsGetDataDirectoryResponse() { super(Codec.GET_DATA_DIRECTORY_RESPONSE);
-        this.reqId         = new CmsReqId();
+    public CmsGetDataDirectoryResponse() {
+        super(Codec.GET_DATA_DIRECTORY_RESPONSE);
+        this.reqId = new CmsReqId();
         this.dataAttribute = new CmsArray<>(CmsSubRefEntry.class);
-        this.moreFollows   = new CmsBoolean();
+        this.moreFollows = new CmsBoolean();
     }
-    
-    public CmsGetDataDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetDataDirectoryResponse dataAttribute(CmsArray<CmsSubRefEntry> v) { this.dataAttribute = v; return this; }
-    public CmsGetDataDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
+    public CmsGetDataDirectoryResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetDataDirectoryResponse dataAttribute(CmsArray<CmsSubRefEntry> v) {
+        this.dataAttribute = v;
+        return this;
+    }
+    public CmsGetDataDirectoryResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

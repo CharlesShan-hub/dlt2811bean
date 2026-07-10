@@ -31,13 +31,13 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Services":
+                    case "Services" :
                         ied.services(parseServices(reader));
                         break;
-                    case "AccessPoint":
+                    case "AccessPoint" :
                         ied.addAccessPoint(parseAccessPoint(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -57,84 +57,84 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "DynAssociation":
+                    case "DynAssociation" :
                         services.dynAssociation(true);
                         skipElement(reader);
                         break;
-                    case "GetDirectory":
+                    case "GetDirectory" :
                         services.getDirectory(true);
                         skipElement(reader);
                         break;
-                    case "GetDataObjectDefinition":
+                    case "GetDataObjectDefinition" :
                         services.getDataObjectDefinition(true);
                         skipElement(reader);
                         break;
-                    case "GetDataSetValue":
+                    case "GetDataSetValue" :
                         services.getDataSetValue(true);
                         skipElement(reader);
                         break;
-                    case "DataSetDirectory":
+                    case "DataSetDirectory" :
                         services.dataSetDirectory(true);
                         skipElement(reader);
                         break;
-                    case "ReadWrite":
+                    case "ReadWrite" :
                         services.readWrite(true);
                         skipElement(reader);
                         break;
-                    case "FileHandling":
+                    case "FileHandling" :
                         services.fileHandling(true);
                         skipElement(reader);
                         break;
-                    case "GetCBValues":
+                    case "GetCBValues" :
                         services.getCBValues(true);
                         skipElement(reader);
                         break;
-                    case "GSEDir":
+                    case "GSEDir" :
                         services.gSEDir(true);
                         skipElement(reader);
                         break;
-                    case "TimerActivatedControl":
+                    case "TimerActivatedControl" :
                         services.timerActivatedControl(true);
                         skipElement(reader);
                         break;
-                    case "ConfDataSet":
+                    case "ConfDataSet" :
                         services.confDataSetMax(intAttr(reader, "max"));
                         services.confDataSetMaxAttributes(intAttr(reader, "maxAttributes"));
                         skipElement(reader);
                         break;
-                    case "ConfReportControl":
+                    case "ConfReportControl" :
                         services.confReportControlMax(intAttr(reader, "max"));
                         skipElement(reader);
                         break;
-                    case "ConfLogControl":
+                    case "ConfLogControl" :
                         services.confLogControlMax(intAttr(reader, "max"));
                         skipElement(reader);
                         break;
-                    case "GOOSE":
+                    case "GOOSE" :
                         services.gooseMax(intAttr(reader, "max"));
                         skipElement(reader);
                         break;
-                    case "GSSE":
+                    case "GSSE" :
                         services.gsseMax(intAttr(reader, "max"));
                         skipElement(reader);
                         break;
-                    case "ConfLNs":
+                    case "ConfLNs" :
                         services.confLNsFixPrefix(boolAttr(reader, "fixPrefix"));
                         services.confLNsFixLnInst(boolAttr(reader, "fixLnInst"));
                         skipElement(reader);
                         break;
-                    case "ReportSettings":
+                    case "ReportSettings" :
                         services.reportSettings(parseReportSettings(reader));
                         break;
-                    case "GSESettings":
+                    case "GSESettings" :
                         services.gseSettings(parseGseSettings(reader));
                         break;
-                    case "LogSettings":
-                    case "SMVSettings":
-                    case "SettingGroups":
+                    case "LogSettings" :
+                    case "SMVSettings" :
+                    case "SettingGroups" :
                         skipElement(reader);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -179,17 +179,17 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Server":
+                    case "Server" :
                         ap.server(parseServer(reader));
                         break;
-                    case "ServerAt":
+                    case "ServerAt" :
                         ap.serverAt(parseServerAt(reader));
                         break;
-                    case "Services":
+                    case "Services" :
                         // AccessPoint-level services (overrides IED-level)
                         skipElement(reader);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -217,16 +217,16 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Authentication":
+                    case "Authentication" :
                         skipElement(reader);
                         break;
-                    case "LDevice":
+                    case "LDevice" :
                         server.addLDevice(parseLDevice(reader));
                         break;
-                    case "Association":
+                    case "Association" :
                         server.addAssociation(parseAssociation(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -262,17 +262,17 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "LN0":
+                    case "LN0" :
                         ld.addLn(parseLN0(reader));
                         break;
-                    case "LN":
+                    case "LN" :
                         ld.addLn(parseLN(reader));
                         break;
-                    case "AccessControl":
+                    case "AccessControl" :
                         ld.accessControl(new SclAccessControl());
                         skipElement(reader);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -311,31 +311,31 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "DataSet":
+                    case "DataSet" :
                         ln.addDataSet(parseDataSet(reader));
                         break;
-                    case "ReportControl":
+                    case "ReportControl" :
                         ln.addReportControl(parseReportControl(reader));
                         break;
-                    case "LogControl":
+                    case "LogControl" :
                         ln.addLogControl(parseLogControl(reader));
                         break;
-                    case "DOI":
+                    case "DOI" :
                         ln.addDoi(parseDOI(reader));
                         break;
-                    case "Inputs":
+                    case "Inputs" :
                         ln.addInput(parseInputs(reader));
                         break;
-                    case "GSEControl":
+                    case "GSEControl" :
                         ln.addGseControl(parseGSEControl(reader));
                         break;
-                    case "SampledValueControl":
+                    case "SampledValueControl" :
                         ln.addSvControl(parseSampledValueControl(reader));
                         break;
-                    case "Log":
+                    case "Log" :
                         skipElement(reader);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -399,12 +399,12 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "TrgOps":
-                    case "OptFields":
-                    case "RptEnabled":
+                    case "TrgOps" :
+                    case "OptFields" :
+                    case "RptEnabled" :
                         skipElement(reader);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -522,13 +522,13 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "SDI":
+                    case "SDI" :
                         doi.addSdi(parseSDI(reader));
                         break;
-                    case "DAI":
+                    case "DAI" :
                         doi.addDai(parseDAI(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -550,13 +550,13 @@ public class SclIedParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "SDI":
+                    case "SDI" :
                         sdi.addSdi(parseSDI(reader));
                         break;
-                    case "DAI":
+                    case "DAI" :
                         sdi.addDai(parseDAI(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }

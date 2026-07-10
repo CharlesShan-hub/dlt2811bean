@@ -8,28 +8,38 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * RpcCall-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     method          [0] IMPLICIT VisibleString,
- *     req             [1] IMPLICIT RpcCallReqChoice
- * }  —  8.13.6
+ * RpcCall-RequestPDU ::= SEQUENCE { reqId Int16U, method [0] IMPLICIT
+ * VisibleString, req [1] IMPLICIT RpcCallReqChoice } — 8.13.6
  */
 public class CmsRpcCallRequest extends CmsType {
 
-    public CmsReqId             reqId;
-    public CmsUint8Array        method;       /* VisibleString */
-    public CmsRpcCallReqChoice  req;
+    public CmsReqId reqId;
+    public CmsUint8Array method; /* VisibleString */
+    public CmsRpcCallReqChoice req;
 
-    public CmsRpcCallRequest() { super(Codec.RPC_CALL_REQUEST);
-        this.reqId  = new CmsReqId();
+    public CmsRpcCallRequest() {
+        super(Codec.RPC_CALL_REQUEST);
+        this.reqId = new CmsReqId();
         this.method = new CmsUint8Array();
-        this.req    = new CmsRpcCallReqChoice();
+        this.req = new CmsRpcCallReqChoice();
     }
-    
-    public CmsRpcCallRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsRpcCallRequest method(byte[] v) { this.method.value(v); return this; }
-    public CmsRpcCallRequest method(String v) { this.method.value(v); return this; }
-    public CmsRpcCallRequest req(CmsRpcCallReqChoice v) { this.req = v; return this; }
+
+    public CmsRpcCallRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest method(byte[] v) {
+        this.method.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest method(String v) {
+        this.method.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest req(CmsRpcCallReqChoice v) {
+        this.req = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

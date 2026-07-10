@@ -11,7 +11,8 @@ import java.security.cert.CertificateFactory;
 /**
  * GM Certificate Parser.
  *
- * <p>Provides SM2/X.509 certificate parsing and encoding conversion.
+ * <p>
+ * Provides SM2/X.509 certificate parsing and encoding conversion.
  */
 public class GmCertificateParser {
 
@@ -28,16 +29,16 @@ public class GmCertificateParser {
     /**
      * Parses X509 certificate from byte array.
      *
-     * @param certBytes DER-encoded certificate bytes
+     * @param certBytes
+     *            DER-encoded certificate bytes
      * @return X509Certificate
-     * @throws CertificateException if parsing fails
+     * @throws CertificateException
+     *             if parsing fails
      */
     public static X509Certificate parseX509(byte[] certBytes) throws CertificateException {
         try {
             CertificateFactory cf = CertificateFactory.getInstance(FACTORY_TYPE, PROVIDER);
-            return (X509Certificate) cf.generateCertificate(
-                new java.io.ByteArrayInputStream(certBytes)
-            );
+            return (X509Certificate) cf.generateCertificate(new java.io.ByteArrayInputStream(certBytes));
         } catch (CertificateException e) {
             throw e;
         } catch (Exception e) {
@@ -55,13 +56,12 @@ public class GmCertificateParser {
     /**
      * Parses certificate from PEM format.
      *
-     * @param pem PEM format certificate string (containing -----BEGIN CERTIFICATE----- markers)
+     * @param pem
+     *            PEM format certificate string (containing -----BEGIN
+     *            CERTIFICATE----- markers)
      */
     public static X509Certificate parseFromPem(String pem) throws CertificateException {
-        String content = pem
-            .replace("-----BEGIN CERTIFICATE-----", "")
-            .replace("-----END CERTIFICATE-----", "")
-            .replaceAll("\\s", "");
+        String content = pem.replace("-----BEGIN CERTIFICATE-----", "").replace("-----END CERTIFICATE-----", "").replaceAll("\\s", "");
         return parseFromBase64(content);
     }
 
@@ -92,9 +92,7 @@ public class GmCertificateParser {
      */
     public static String toPem(X509Certificate certificate) {
         try {
-            return "-----BEGIN CERTIFICATE-----\n" +
-                   Base64.toBase64String(certificate.getEncoded()) +
-                   "\n-----END CERTIFICATE-----";
+            return "-----BEGIN CERTIFICATE-----\n" + Base64.toBase64String(certificate.getEncoded()) + "\n-----END CERTIFICATE-----";
         } catch (java.security.cert.CertificateEncodingException e) {
             throw new SecurityException("Failed to encode certificate", e);
         }

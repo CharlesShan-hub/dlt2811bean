@@ -16,12 +16,14 @@ public class CmsConfigInjector {
 
         for (Field field : clazz.getDeclaredFields()) {
             CmsValue annotation = field.getAnnotation(CmsValue.class);
-            if (annotation == null) continue;
+            if (annotation == null)
+                continue;
 
             String path = annotation.value();
             Object value = resolvePath(config, path);
 
-            if (value == null) continue;
+            if (value == null)
+                continue;
 
             try {
                 field.setAccessible(true);
@@ -30,8 +32,7 @@ public class CmsConfigInjector {
                     field.set(target, converted);
                 }
             } catch (Exception e) {
-                log.warn("Failed to inject @CmsValue({}) into {}.{}: {}",
-                    path, clazz.getSimpleName(), field.getName(), e.getMessage());
+                log.warn("Failed to inject @CmsValue({}) into {}.{}: {}", path, clazz.getSimpleName(), field.getName(), e.getMessage());
             }
         }
     }
@@ -41,7 +42,8 @@ public class CmsConfigInjector {
         Object current = root;
 
         for (String part : parts) {
-            if (current == null) return null;
+            if (current == null)
+                return null;
             current = getProperty(current, part);
         }
 
@@ -65,18 +67,22 @@ public class CmsConfigInjector {
     }
 
     private static Object convertValue(Object value, Class<?> targetType) {
-        if (targetType.isInstance(value)) return value;
+        if (targetType.isInstance(value))
+            return value;
 
         if (targetType == int.class || targetType == Integer.class) {
-            if (value instanceof Number) return ((Number) value).intValue();
+            if (value instanceof Number)
+                return ((Number) value).intValue();
             return Integer.parseInt(value.toString());
         }
         if (targetType == long.class || targetType == Long.class) {
-            if (value instanceof Number) return ((Number) value).longValue();
+            if (value instanceof Number)
+                return ((Number) value).longValue();
             return Long.parseLong(value.toString());
         }
         if (targetType == boolean.class || targetType == Boolean.class) {
-            if (value instanceof Boolean) return value;
+            if (value instanceof Boolean)
+                return value;
             return Boolean.parseBoolean(value.toString());
         }
         if (targetType == String.class) {

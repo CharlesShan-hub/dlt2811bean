@@ -8,24 +8,32 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetFileAttributeValues-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     filename        [0] IMPLICIT VisibleString255
- * }  —  8.12.5
+ * GetFileAttributeValues-RequestPDU ::= SEQUENCE { reqId Int16U, filename [0]
+ * IMPLICIT VisibleString255 } — 8.12.5
  */
 public class CmsGetFileAttributeValuesRequest extends CmsType {
 
-    public CmsReqId       reqId;
-    public CmsUint8Array  filename;
+    public CmsReqId reqId;
+    public CmsUint8Array filename;
 
-    public CmsGetFileAttributeValuesRequest() { super(Codec.GET_FILE_ATTRIBUTE_VALUES_REQUEST);
-        this.reqId    = new CmsReqId();
+    public CmsGetFileAttributeValuesRequest() {
+        super(Codec.GET_FILE_ATTRIBUTE_VALUES_REQUEST);
+        this.reqId = new CmsReqId();
         this.filename = new CmsUint8Array();
     }
-    
-    public CmsGetFileAttributeValuesRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetFileAttributeValuesRequest filename(byte[] v) { this.filename.value(v); return this; }
-    public CmsGetFileAttributeValuesRequest filename(String v) { this.filename.value(v); return this; }
+
+    public CmsGetFileAttributeValuesRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetFileAttributeValuesRequest filename(byte[] v) {
+        this.filename.value(v);
+        return this;
+    }
+    public CmsGetFileAttributeValuesRequest filename(String v) {
+        this.filename.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

@@ -17,10 +17,8 @@ public class SelectActiveSgClient extends BaseClientHandler {
     }
 
     public void execute(SelectActiveSgDao dao) throws Exception {
-        CmsSelectActiveSgRequest req = new CmsSelectActiveSgRequest()
-            .reqId(nextReqId())
-            .sgcbReference(dao.sgcbReference())
-            .settingGroupNumber(dao.settingGroupNumber());
+        CmsSelectActiveSgRequest req = new CmsSelectActiveSgRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference())
+                .settingGroupNumber(dao.settingGroupNumber());
 
         send(ServiceName.SELECT_ACTIVE_SG, req);
     }

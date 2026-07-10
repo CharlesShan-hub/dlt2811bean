@@ -9,27 +9,35 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetBRCBValues-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     brcb            [0] IMPLICIT SEQUENCE OF RCBValueChoice,
- *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
- * }  —  8.7.2
+ * GetBRCBValues-ResponsePDU ::= SEQUENCE { reqId Int16U, brcb [0] IMPLICIT
+ * SEQUENCE OF RCBValueChoice, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE } —
+ * 8.7.2
  */
 public class CmsGetBrcbValuesResponse extends CmsType {
 
-    public CmsReqId                        reqId;
-    public CmsArray<CmsRcbValueChoice>     brcb;         /* SEQUENCE OF RCBValueChoice */
-    public CmsBoolean                      moreFollows;  /* DEFAULT TRUE */
+    public CmsReqId reqId;
+    public CmsArray<CmsRcbValueChoice> brcb; /* SEQUENCE OF RCBValueChoice */
+    public CmsBoolean moreFollows; /* DEFAULT TRUE */
 
-    public CmsGetBrcbValuesResponse() { super(Codec.GET_BRCB_VALUES_RESPONSE);
-        this.reqId       = new CmsReqId();
-        this.brcb        = new CmsArray<>(CmsRcbValueChoice.class);
+    public CmsGetBrcbValuesResponse() {
+        super(Codec.GET_BRCB_VALUES_RESPONSE);
+        this.reqId = new CmsReqId();
+        this.brcb = new CmsArray<>(CmsRcbValueChoice.class);
         this.moreFollows = new CmsBoolean();
     }
-    
-    public CmsGetBrcbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetBrcbValuesResponse brcb(CmsArray<CmsRcbValueChoice> v) { this.brcb = v; return this; }
-    public CmsGetBrcbValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
+    public CmsGetBrcbValuesResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetBrcbValuesResponse brcb(CmsArray<CmsRcbValueChoice> v) {
+        this.brcb = v;
+        return this;
+    }
+    public CmsGetBrcbValuesResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

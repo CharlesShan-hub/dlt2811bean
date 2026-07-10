@@ -33,11 +33,12 @@ public class AllCbValuesClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<CbEntry> getLastEntries() { return lastEntries; }
+    public List<CbEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(AllCbValuesDao dao) throws Exception {
-        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest()
-            .reqId(nextReqId());
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().reqId(nextReqId());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -73,7 +74,8 @@ public class AllCbValuesClient extends BaseClientHandler {
         for (int i = 0; i < resp.cbValue.count; i++) {
             CmsCbValueEntry src = resp.cbValue.items.get(i);
             String ref = new String(src.reference.value(), java.nio.charset.StandardCharsets.UTF_8);
-            if (ref.isEmpty()) continue; // skip empty entries
+            if (ref.isEmpty())
+                continue; // skip empty entries
             entries.add(new CbEntry(ref, src.value.choice.value()));
         }
         this.lastEntries = entries;

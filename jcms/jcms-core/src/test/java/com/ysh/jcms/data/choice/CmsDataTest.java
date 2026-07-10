@@ -169,9 +169,9 @@ public class CmsDataTest {
     public void roundup_bit_string() {
         CmsData a = new CmsData();
         a.choice.value(CmsData.CHOICE_BIT_STRING);
-        byte[] raw = {(byte)0xAA, (byte)0xBB};
+        byte[] raw = {(byte) 0xAA, (byte) 0xBB};
         a.alt_bit_string.value(raw);
-        a.alt_bit_string.len = 16;  /* 2 bytes × 8 = 16 bits */
+        a.alt_bit_string.len = 16; /* 2 bytes × 8 = 16 bits */
         a.alt_bit_string.write();
 
         byte[] encoded = a.encode();

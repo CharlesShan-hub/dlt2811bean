@@ -30,7 +30,8 @@ public class ConfirmEditSgValuesServer extends BaseServerHandler {
         String ref = str(req.sgcbReference);
         log.info("ConfirmEditSGValues from {}: reqId={}, sgcbRef={}", session.getSessionId(), reqId, ref);
 
-        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        if (ref == null)
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         SgcState state = SgSessionState.getState(session.getSessionId());
         int count = state.getEditValues().size();

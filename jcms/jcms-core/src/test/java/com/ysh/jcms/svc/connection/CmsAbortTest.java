@@ -6,10 +6,7 @@ import static org.junit.Assert.*;
 public class CmsAbortTest {
     @Test
     public void roundup() {
-        CmsAbort a = new CmsAbort()
-            .reqId(100)
-            .assocId(new byte[]{0x01, 0x02, 0x03, 0x04})
-            .reason(CmsAbortReason.INVALID_ARGUMENT);
+        CmsAbort a = new CmsAbort().reqId(100).assocId(new byte[]{0x01, 0x02, 0x03, 0x04}).reason(CmsAbortReason.INVALID_ARGUMENT);
         byte[] encoded = a.encode();
 
         CmsAbort b = new CmsAbort();

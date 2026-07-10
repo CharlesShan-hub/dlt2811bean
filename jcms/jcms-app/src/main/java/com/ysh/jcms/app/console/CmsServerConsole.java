@@ -54,8 +54,9 @@ import com.ysh.jcms.app.handler.console.ClearHandler;
 /**
  * Server-side CMS console.
  *
- * <p>Starts the CMS server, registers all server handlers,
- * and waits for keyboard input to shut down.
+ * <p>
+ * Starts the CMS server, registers all server handlers, and waits for keyboard
+ * input to shut down.
  */
 public class CmsServerConsole extends CmsConsole {
 

@@ -42,7 +42,8 @@ public class AllDataValuesServer extends BaseServerHandler {
         log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ldName = null, lnReference = null;
         if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME)
@@ -51,14 +52,16 @@ public class AllDataValuesServer extends BaseServerHandler {
             lnReference = str(req.reference.altLnReference);
 
         List<SclLN> lns = resolveLns(doc, ldName, lnReference);
-        if (lns == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (lns == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String fcFilter = null;
         if (req.fcPresent.value()) {
             int fcVal = req.fc.value();
             if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
                 fcFilter = FunctionalConstraint.values()[fcVal].name();
-                if ("XX".equals(fcFilter)) fcFilter = null;
+                if ("XX".equals(fcFilter))
+                    fcFilter = null;
             }
         }
 
@@ -66,17 +69,18 @@ public class AllDataValuesServer extends BaseServerHandler {
 
         List<CmsDataValueEntry> entries = new ArrayList<>();
         int ps = pageSize();
-        outer:
-        for (SclLN ln : lns) {
+        outer : for (SclLN ln : lns) {
             // Find the IED and LD that contain this LN to build IED-prefixed refs
             String iedName = findIedNameForLn(doc, ln);
             String ldInst = findLdInstForLn(doc, ln);
-            if (iedName == null || ldInst == null) continue;
+            if (iedName == null || ldInst == null)
+                continue;
 
             List<String> doNames = getDoNames(ln, templates);
             for (String doName : doNames) {
                 if (refAfter != null) {
-                    if (doName.equals(refAfter)) refAfter = null;
+                    if (doName.equals(refAfter))
+                        refAfter = null;
                     continue;
                 }
                 String fullRef = iedName + "/" + ldInst + "/" + ln.getFullName() + "." + doName;
@@ -84,12 +88,14 @@ public class AllDataValuesServer extends BaseServerHandler {
                 if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
                     entries.add(new CmsDataValueEntry().reference(doName).value(DataConverter.toCmsData(dv)));
                 }
-                if (entries.size() >= ps) break outer;
+                if (entries.size() >= ps)
+                    break outer;
             }
         }
 
         CmsGetAllDataValuesResponse resp = new CmsGetAllDataValuesResponse().reqId(reqId);
-        for (CmsDataValueEntry e : entries) resp.data.add(e);
+        for (CmsDataValueEntry e : entries)
+            resp.data.add(e);
         resp.moreFollows(entries.size() >= ps);
         log.info("GetAllDataValues: returning {} entries", entries.size());
         return ok(resp, reqId);
@@ -112,9 +118,11 @@ public class AllDataValuesServer extends BaseServerHandler {
             }
             return null;
         }
-        if (lnReference == null || lnReference.isEmpty()) return null;
+        if (lnReference == null || lnReference.isEmpty())
+            return null;
         int slashIdx = lnReference.indexOf('/');
-        if (slashIdx < 0) return null;
+        if (slashIdx < 0)
+            return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
         for (SclIED ied : doc.ieds()) {
@@ -169,9 +177,11 @@ public class AllDataValuesServer extends BaseServerHandler {
 
     private static List<String> getDoNames(SclLN ln, SclDataTypeTemplates templates) {
         List<String> names = new ArrayList<>();
-        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty()) return names;
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return names;
         SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-        if (lnt == null) return names;
+        if (lnt == null)
+            return names;
         for (SclDO doDef : lnt.dos()) {
             names.add(doDef.name());
         }

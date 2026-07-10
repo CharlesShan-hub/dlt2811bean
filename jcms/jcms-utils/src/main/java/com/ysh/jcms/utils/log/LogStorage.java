@@ -1,19 +1,12 @@
 package com.ysh.jcms.utils.log;
 
-import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.data.block.CmsReasonCode;
-import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.common.CmsEntryId;
-import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.fc.CmsFC;
-import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.svc.log.CmsLogDataEntry;
 import com.ysh.jcms.svc.log.CmsLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -22,14 +15,18 @@ import java.util.List;
 /**
  * 日志持久化存储 — 基于文件的简单实现。
  *
- * <p>每个 LCB ref 一个目录，目录下文件：
+ * <p>
+ * 每个 LCB ref 一个目录，目录下文件：
+ *
  * <pre>
  *   {rootPath}/{sanitizedRef}/
  *       log.dat     — 日志条目（追加写入）
  *       meta.dat    — 元数据（oldest/newest entry 信息）
  * </pre>
  *
- * <p>log.dat 格式（每条 entry 连续写入）：
+ * <p>
+ * log.dat 格式（每条 entry 连续写入）：
+ *
  * <pre>
  *   [8 bytes] timeMsOfDay      (int64, big-endian)
  *   [4 bytes] timeDaysSince1984 (int32, big-endian)
@@ -45,6 +42,7 @@ import java.util.List;
  * </pre>
  *
  * meta.dat 格式：
+ *
  * <pre>
  *   [8 bytes] oldestTimeMsOfDay
  *   [4 bytes] oldestTimeDaysSince1984
@@ -70,33 +68,37 @@ public class LogStorage {
     }
 
     // ──────────────────────────────────────────────
-    //  公共查询 API
+    // 公共查询 API
     // ──────────────────────────────────────────────
 
     /**
      * 按时间查询日志条目。
      *
-     * @param logRef       LCB 引用（如 "LD0/LLN0.lcblog"）
-     * @param startTime    起始时间戳（毫秒），null 表示不限
-     * @param stopTime     结束时间戳（毫秒），null 表示不限
-     * @param afterEntryId 起始条目 ID（返回该条目之后的），null 表示从头
-     * @param maxCount     最多返回条数
+     * @param logRef
+     *            LCB 引用（如 "LD0/LLN0.lcblog"）
+     * @param startTime
+     *            起始时间戳（毫秒），null 表示不限
+     * @param stopTime
+     *            结束时间戳（毫秒），null 表示不限
+     * @param afterEntryId
+     *            起始条目 ID（返回该条目之后的），null 表示从头
+     * @param maxCount
+     *            最多返回条数
      * @return 匹配的日志条目列表
      */
-    public List<CmsLogEntry> queryByTime(String logRef, Long startTime, Long stopTime,
-                                          String afterEntryId, int maxCount) {
+    public List<CmsLogEntry> queryByTime(String logRef, Long startTime, Long stopTime, String afterEntryId, int maxCount) {
         List<CmsLogEntry> result = new ArrayList<>();
         Path dir = refDir(logRef);
         Path dataFile = dir.resolve("log.dat");
-        if (!Files.exists(dataFile)) return result;
+        if (!Files.exists(dataFile))
+            return result;
 
         boolean skipUntilAfter = (afterEntryId != null && !afterEntryId.isEmpty());
 
-        try (DataInputStream in = new DataInputStream(new BufferedInputStream(
-                new FileInputStream(dataFile.toFile()), 65536))) {
+        try (DataInputStream in = new DataInputStream(new BufferedInputStream(new FileInputStream(dataFile.toFile()), 65536))) {
             while (in.available() > 0 && result.size() < maxCount) {
-                long timeMsOfDay    = in.readLong();
-                int  timeDaysSince  = in.readInt();
+                long timeMsOfDay = in.readLong();
+                int timeDaysSince = in.readInt();
                 byte[] entryIdBytes = new byte[8];
                 in.readFully(entryIdBytes);
                 String entryIdStr = new String(entryIdBytes, StandardCharsets.UTF_8).trim();
@@ -157,19 +159,16 @@ public class LogStorage {
         }
         try (DataInputStream in = new DataInputStream(new FileInputStream(metaFile.toFile()))) {
             long oldestTimeMsOfDay = in.readLong();
-            int  oldestTimeDays    = in.readInt();
-            byte[] oldestEntryId   = new byte[8];
+            int oldestTimeDays = in.readInt();
+            byte[] oldestEntryId = new byte[8];
             in.readFully(oldestEntryId);
 
             long newestTimeMsOfDay = in.readLong();
-            int  newestTimeDays    = in.readInt();
-            byte[] newestEntryId   = new byte[8];
+            int newestTimeDays = in.readInt();
+            byte[] newestEntryId = new byte[8];
             in.readFully(newestEntryId);
 
-            return new LogStatus(
-                oldestTimeMsOfDay, oldestTimeDays, oldestEntryId,
-                newestTimeMsOfDay, newestTimeDays, newestEntryId
-            );
+            return new LogStatus(oldestTimeMsOfDay, oldestTimeDays, oldestEntryId, newestTimeMsOfDay, newestTimeDays, newestEntryId);
         } catch (IOException e) {
             log.warn("Failed to read meta for ref={}: {}", logRef, e.getMessage());
             return LogStatus.EMPTY;
@@ -190,13 +189,14 @@ public class LogStorage {
 
         // timeOfEntry
         long msOfDay = entry.timeOfEntry.msOfDay.value() & 0xFFFFFFFFL;
-        int  days    = entry.timeOfEntry.daysSince1984.value() & 0xFFFF;
+        int days = entry.timeOfEntry.daysSince1984.value() & 0xFFFF;
         dos.writeLong(msOfDay);
         dos.writeInt(days);
 
         // entryId (固定 8 字节)
         byte[] eid = entry.entryId.value();
-        if (eid == null) eid = new byte[8];
+        if (eid == null)
+            eid = new byte[8];
         byte[] eidPadded = new byte[8];
         System.arraycopy(eid, 0, eidPadded, 0, Math.min(eid.length, 8));
         dos.write(eidPadded);
@@ -223,13 +223,14 @@ public class LogStorage {
     }
 
     // ──────────────────────────────────────────────
-    //  内部方法
+    // 内部方法
     // ──────────────────────────────────────────────
 
     private void writeDataEntry(DataOutputStream dos, CmsLogDataEntry de) throws IOException {
         // reference
         byte[] refBytes = de.reference.value();
-        if (refBytes == null) refBytes = new byte[0];
+        if (refBytes == null)
+            refBytes = new byte[0];
         dos.writeShort(refBytes.length);
         dos.write(refBytes);
 
@@ -259,8 +260,8 @@ public class LogStorage {
         dos.writeBoolean(rc.application_trigger.value());
     }
 
-    private CmsLogEntry readEntry(DataInputStream in, long timeMsOfDay, int timeDaysSince,
-                                    byte[] entryIdBytes, int numDataEntries) throws IOException {
+    private CmsLogEntry readEntry(DataInputStream in, long timeMsOfDay, int timeDaysSince, byte[] entryIdBytes, int numDataEntries)
+            throws IOException {
         CmsLogEntry entry = new CmsLogEntry();
 
         entry.timeOfEntry.msOfDay.value(timeMsOfDay);
@@ -332,8 +333,7 @@ public class LogStorage {
                 existing = getStatus(metaFile.getParent().getFileName().toString());
             }
 
-            if (existing == LogStatus.EMPTY ||
-                (existing.newestTimeMsOfDay == 0 && existing.newestTimeDays == 0)) {
+            if (existing == LogStatus.EMPTY || (existing.newestTimeMsOfDay == 0 && existing.newestTimeDays == 0)) {
                 // 第一条：oldest = newest = 当前
                 ByteArrayOutputStream bos = new ByteArrayOutputStream(36);
                 DataOutputStream dos = new DataOutputStream(bos);
@@ -379,27 +379,27 @@ public class LogStorage {
     }
 
     // ──────────────────────────────────────────────
-    //  日志状态值
+    // 日志状态值
     // ──────────────────────────────────────────────
 
     public static class LogStatus {
         public static final LogStatus EMPTY = new LogStatus(0, 0, new byte[8], 0, 0, new byte[8]);
 
-        public final long   oldestTimeMsOfDay;
-        public final int    oldestTimeDays;
+        public final long oldestTimeMsOfDay;
+        public final int oldestTimeDays;
         public final byte[] oldestEntryId;
-        public final long   newestTimeMsOfDay;
-        public final int    newestTimeDays;
+        public final long newestTimeMsOfDay;
+        public final int newestTimeDays;
         public final byte[] newestEntryId;
 
-        public LogStatus(long oldestTimeMsOfDay, int oldestTimeDays, byte[] oldestEntryId,
-                         long newestTimeMsOfDay, int newestTimeDays, byte[] newestEntryId) {
+        public LogStatus(long oldestTimeMsOfDay, int oldestTimeDays, byte[] oldestEntryId, long newestTimeMsOfDay, int newestTimeDays,
+                byte[] newestEntryId) {
             this.oldestTimeMsOfDay = oldestTimeMsOfDay;
-            this.oldestTimeDays    = oldestTimeDays;
-            this.oldestEntryId     = oldestEntryId;
+            this.oldestTimeDays = oldestTimeDays;
+            this.oldestEntryId = oldestEntryId;
             this.newestTimeMsOfDay = newestTimeMsOfDay;
-            this.newestTimeDays    = newestTimeDays;
-            this.newestEntryId     = newestEntryId;
+            this.newestTimeDays = newestTimeDays;
+            this.newestEntryId = newestEntryId;
         }
     }
 }

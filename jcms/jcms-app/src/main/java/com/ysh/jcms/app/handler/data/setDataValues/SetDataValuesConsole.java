@@ -13,18 +13,19 @@ import java.util.Map;
 public class SetDataValuesConsole implements CommandHandler {
 
     @Override
-    public String name() { return "set-data-values"; }
+    public String name() {
+        return "set-data-values";
+    }
 
     @Override
-    public String description() { return "设置数据值 (SetDataValues) —— 用法: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC] [--json]"; }
+    public String description() {
+        return "设置数据值 (SetDataValues) —— 用法: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("pairs", "数据引用=值 对（空格分隔），如 \"LD0/LLN0.Mod.stVal=true LD0/LLN0.Beh.stVal=1\"", null),
-            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("pairs", "数据引用=值 对（空格分隔），如 \"LD0/LLN0.Mod.stVal=true LD0/LLN0.Beh.stVal=1\"", null),
+                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -53,11 +54,13 @@ public class SetDataValuesConsole implements CommandHandler {
         SetDataValuesDao dao = new SetDataValuesDao();
 
         for (String token : tokens) {
-            if (token.isEmpty()) continue;
+            if (token.isEmpty())
+                continue;
             int eqIdx = token.indexOf('=');
             if (eqIdx <= 0) {
                 if (jsonMode) {
-                    ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid pair: " + CmsFormatUtil.escapeJson(token) + " (expected ref=value)\"}");
+                    ConsolePrinter.raw(
+                            "{\"success\":false,\"error\":\"Invalid pair: " + CmsFormatUtil.escapeJson(token) + " (expected ref=value)\"}");
                 } else {
                     ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
                 }

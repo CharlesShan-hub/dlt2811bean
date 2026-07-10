@@ -28,8 +28,10 @@ public abstract class BaseClientHandler extends BaseHandler {
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
         Frame frame = node.sendRequest(sc, pduBytes);
-        if (frame == null) throw new IOException("Request timed out for " + sc);
-        if (frame.header().err()) onError(frame);
+        if (frame == null)
+            throw new IOException("Request timed out for " + sc);
+        if (frame.header().err())
+            onError(frame);
         onSuccess(frame);
         return frame;
     }
@@ -45,15 +47,13 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     /**
-     * Send a one-way (fire-and-forget) frame. No response expected.
-     * PDU is traced when enabled.
+     * Send a one-way (fire-and-forget) frame. No response expected. PDU is traced
+     * when enabled.
      */
     protected void sendOneWay(ServiceName sc, byte[] pduBytes) throws IOException {
         trace(">>> " + sc + " (one-way)");
-        node.getClient().getConnection().send(new Frame(
-            new FrameHeader().serviceCode(sc).resp(false).err(false),
-            pduBytes, reqIdFromBytes(pduBytes)
-        ));
+        node.getClient().getConnection()
+                .send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, reqIdFromBytes(pduBytes)));
         onSuccess(null);
     }
 
@@ -76,7 +76,8 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     protected static <T extends CmsType> T decodeFrame(Frame frame, T pdu) throws IOException {
-        if (frame == null) throw new IOException("Request timed out (no response)");
+        if (frame == null)
+            throw new IOException("Request timed out (no response)");
         try {
             pdu.decode(frame.asduBytes());
         } catch (Exception e) {

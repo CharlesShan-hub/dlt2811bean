@@ -25,8 +25,9 @@ import org.slf4j.LoggerFactory;
 /**
  * GetMSVCBValues server handler.
  *
- * <p>Reads MSVCB control block values from SCL (or in-memory cache if
- * previously modified via SetMSVCBValues).
+ * <p>
+ * Reads MSVCB control block values from SCL (or in-memory cache if previously
+ * modified via SetMSVCBValues).
  */
 public class GetMsvcbValuesServer extends BaseServerHandler {
 
@@ -45,11 +46,11 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) rawReq;
         int reqId = req.reqId.value();
-        log.info("GetMSVCBValues from {}: reqId={}, {} refs",
-            session.getSessionId(), reqId, req.reference.count);
+        log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse().reqId(reqId);
 
@@ -72,8 +73,8 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
     }
 
     /**
-     * Resolves an MSVCB reference to its current value.
-     * Checks in-memory cache first, then falls back to SCL.
+     * Resolves an MSVCB reference to its current value. Checks in-memory cache
+     * first, then falls back to SCL.
      */
     public static CmsMsvcb resolveMsvcb(SclDocument doc, String ref) {
         // Check in-memory cache first (written by SetMSVCBValues)
@@ -105,7 +106,8 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
         SclLN ln = device.findLnByFullName(lnPart);
         if (ln != null) {
             SclSampledValueControl svc = ln.findSmvControlByName(cbName);
-            if (svc != null) return buildMsvcb(svc);
+            if (svc != null)
+                return buildMsvcb(svc);
             log.warn("resolveMsvcb: SampledValueControl '{}' not in LN '{}' (exact match)", cbName, ln.getFullName());
         }
 
@@ -120,20 +122,27 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
                 }
             }
         }
-        log.warn("resolveMsvcb: SampledValueControl '{}' not found in any LN matching '{}' under LD '{}'",
-            cbName, lnPart, ldName);
+        log.warn("resolveMsvcb: SampledValueControl '{}' not found in any LN matching '{}' under LD '{}'", cbName, lnPart, ldName);
         return null;
     }
 
     private static CmsMsvcb buildMsvcb(SclSampledValueControl svc) {
         CmsMsvcb msvcb = new CmsMsvcb();
-        if (svc.svID() != null) msvcb.msvID(svc.svID());
-        if (svc.datSet() != null) msvcb.datSet(svc.datSet());
+        if (svc.svID() != null)
+            msvcb.msvID(svc.svID());
+        if (svc.datSet() != null)
+            msvcb.datSet(svc.datSet());
         if (svc.confRev() != null) {
-            try { msvcb.confRev(Long.parseLong(svc.confRev())); } catch (NumberFormatException ignored) {}
+            try {
+                msvcb.confRev(Long.parseLong(svc.confRev()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         if (svc.smpRate() != null && !svc.smpRate().isEmpty()) {
-            try { msvcb.smpRate(Integer.parseInt(svc.smpRate())); } catch (NumberFormatException ignored) {}
+            try {
+                msvcb.smpRate(Integer.parseInt(svc.smpRate()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         return msvcb;
     }
@@ -141,12 +150,14 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
     private static SclLDevice findLd(SclDocument doc, String ldName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
                 SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) return ld;
+                if (ld != null)
+                    return ld;
             }
         }
         return null;

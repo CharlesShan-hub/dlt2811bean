@@ -12,14 +12,17 @@ import java.util.List;
  * Header - 61850.6.9.1
  * <p>
  * Schema
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tHeader">
  *     <xs:sequence>
  *         <xs:element name="Text" type="tText" minOccurs="0"/>
  *         <xs:element name="History" minOccurs="0">
  *             <xs:complexType>
  *                 <xs:sequence>
- *                     <xs:element name="Hitem" type="tHItem" maxOccurs="unbounded"/>
+ *                     <xs:element name="Hitem" type="tHItem" maxOccurs=
+"unbounded"/>
  *                 </xs:sequence>
  *             </xs:complexType>
  *         </xs:element>
@@ -36,30 +39,43 @@ import java.util.List;
  *         </xs:simpleType>
  *     </xs:attribute>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclHeader {
     /** A string identifying this SCL file, mandatory (can be empty) */
     private String id;
-    /** The project specific version of this SCL configuration file
-     *  (can be empty, if only one version exists) */
+    /**
+     * The project specific version of this SCL configuration file (can be empty, if
+     * only one version exists)
+     */
     private String version;
-    /** The project specific revision of this SCL configuration file,
-     * by default the empty string meaning the original before any
-     * revision / change. */
+    /**
+     * The project specific revision of this SCL configuration file, by default the
+     * empty string meaning the original before any revision / change.
+     */
     private String revision;
-    /** The manufacturer specific identification of the tool that was
-     * used to create the SCL file */
+    /**
+     * The manufacturer specific identification of the tool that was used to create
+     * the SCL file
+     */
     private String toolId;
-    /** Element provided optional only for backward compatibility with
-     * previous SCL schema version. If given at all, only the IEDName
-     * value is allowed */
+    /**
+     * Element provided optional only for backward compatibility with previous SCL
+     * schema version. If given at all, only the IEDName value is allowed
+     */
     private String nameStructure;
     /** The Text element is optional */
     private SclText text;
     /** The revision history is optional */
     private final List<SclHitem> history = new ArrayList<>();
 
-    public SclHeader addHitem(SclHitem hitem) { history.add(hitem); return this; }
+    public SclHeader addHitem(SclHitem hitem) {
+        history.add(hitem);
+        return this;
+    }
 }

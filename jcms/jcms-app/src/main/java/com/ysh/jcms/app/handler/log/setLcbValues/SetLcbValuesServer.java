@@ -98,14 +98,22 @@ public class SetLcbValuesServer extends BaseServerHandler {
     }
 
     private boolean hasEntryError(CmsSetLcbResult r) {
-        if (r.errorPresent.value()) return true;
-        if (r.logEnaErrPresent.value()) return true;
-        if (r.datSetErrPresent.value()) return true;
-        if (r.trgOpsErrPresent.value()) return true;
-        if (r.intgPdErrPresent.value()) return true;
-        if (r.logRefErrPresent.value()) return true;
-        if (r.optFldsErrPresent.value()) return true;
-        if (r.bufTmErrPresent.value()) return true;
+        if (r.errorPresent.value())
+            return true;
+        if (r.logEnaErrPresent.value())
+            return true;
+        if (r.datSetErrPresent.value())
+            return true;
+        if (r.trgOpsErrPresent.value())
+            return true;
+        if (r.intgPdErrPresent.value())
+            return true;
+        if (r.logRefErrPresent.value())
+            return true;
+        if (r.optFldsErrPresent.value())
+            return true;
+        if (r.bufTmErrPresent.value())
+            return true;
         return false;
     }
 
@@ -148,8 +156,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
 
         // 8.8.3.2.b) logEna ordering:
-        //   - logEna=false: set logEna FIRST, then others
-        //   - logEna=true: set others FIRST, then logEna
+        // - logEna=false: set logEna FIRST, then others
+        // - logEna=true: set others FIRST, then logEna
         boolean hasLogEna = entry.logEnaPresent.value();
         boolean logEnaVal = hasLogEna && entry.logEna.value();
 
@@ -187,8 +195,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
         // trgOps
         if (entry.trgOpsPresent.value()) {
-            lc.trgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," +
-                entry.trgOps.data_update.value() + "," + entry.trgOps.integrity.value());
+            lc.trgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," + entry.trgOps.data_update.value()
+                    + "," + entry.trgOps.integrity.value());
             result.trgOpsErrPresent(false);
         }
         // intgPd
@@ -219,7 +227,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
     private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {

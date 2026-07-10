@@ -13,16 +13,18 @@ import java.util.Map;
 public class ReleaseConsole implements CommandHandler {
 
     @Override
-    public String name() { return "release"; }
+    public String name() {
+        return "release";
+    }
 
     @Override
-    public String description() { return "释放关联 (Release) [--json]"; }
+    public String description() {
+        return "释放关联 (Release) [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("json", "JSON 格式输出", ""));
     }
 
     @Override

@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * RpcCall-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.13.6
+ * RpcCall-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError } —
+ * 8.13.6
  */
 public class CmsRpcCallError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsRpcCallError() { super(Codec.RPC_CALL_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsRpcCallError() {
+        super(Codec.RPC_CALL_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsRpcCallError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsRpcCallError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsRpcCallError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsRpcCallError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

@@ -6,7 +6,9 @@ import java.util.UUID;
 /**
  * Utility for generating 64-byte association IDs.
  *
- * <p>Format:
+ * <p>
+ * Format:
+ *
  * <pre>
  * Bytes 0..7   : Unix timestamp (ms)
  * Bytes 8..39  : UUID (most significant + least significant bits)
@@ -18,12 +20,14 @@ public final class AssociationIdGenerator {
     private static final int SIZE = 64;
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    private AssociationIdGenerator() {}
+    private AssociationIdGenerator() {
+    }
 
     public static byte[] generate() {
         byte[] id = new byte[SIZE];
         long ts = System.currentTimeMillis();
-        for (int i = 0; i < 8; i++) id[i] = (byte) (ts >> (56 - i * 8));
+        for (int i = 0; i < 8; i++)
+            id[i] = (byte) (ts >> (56 - i * 8));
 
         UUID uuid = UUID.randomUUID();
         long msb = uuid.getMostSignificantBits();

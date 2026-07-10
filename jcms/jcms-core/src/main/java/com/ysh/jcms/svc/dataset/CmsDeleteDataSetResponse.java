@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * DeleteDataSet-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.5.4
+ * DeleteDataSet-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.5.4
  *
  * Response has no payload besides reqId.
  */
@@ -17,11 +15,15 @@ public class CmsDeleteDataSetResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsDeleteDataSetResponse() { super(Codec.DELETE_DATA_SET_RESPONSE);
+    public CmsDeleteDataSetResponse() {
+        super(Codec.DELETE_DATA_SET_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsDeleteDataSetResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsDeleteDataSetResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

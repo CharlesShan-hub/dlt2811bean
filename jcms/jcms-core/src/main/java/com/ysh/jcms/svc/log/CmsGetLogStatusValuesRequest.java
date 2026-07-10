@@ -9,23 +9,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetLogStatusValues-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     logReference    [0] IMPLICIT SEQUENCE OF ObjectReference
- * }  —  8.8.6
+ * GetLogStatusValues-RequestPDU ::= SEQUENCE { reqId Int16U, logReference [0]
+ * IMPLICIT SEQUENCE OF ObjectReference } — 8.8.6
  */
 public class CmsGetLogStatusValuesRequest extends CmsType {
 
-    public CmsReqId                           reqId;
-    public CmsArray<CmsObjectReference>       logReference;  /* SEQUENCE OF ObjectReference */
+    public CmsReqId reqId;
+    public CmsArray<CmsObjectReference> logReference; /* SEQUENCE OF ObjectReference */
 
-    public CmsGetLogStatusValuesRequest() { super(Codec.GET_LOG_STATUS_VALUES_REQUEST);
-        this.reqId        = new CmsReqId();
+    public CmsGetLogStatusValuesRequest() {
+        super(Codec.GET_LOG_STATUS_VALUES_REQUEST);
+        this.reqId = new CmsReqId();
         this.logReference = new CmsArray<>(CmsObjectReference.class);
     }
-    
-    public CmsGetLogStatusValuesRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetLogStatusValuesRequest logReference(CmsArray<CmsObjectReference> v) { this.logReference = v; return this; }
+
+    public CmsGetLogStatusValuesRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetLogStatusValuesRequest logReference(CmsArray<CmsObjectReference> v) {
+        this.logReference = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

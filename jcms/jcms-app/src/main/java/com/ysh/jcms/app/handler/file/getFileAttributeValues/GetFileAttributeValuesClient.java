@@ -28,13 +28,15 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
 
     private FileAttrResult lastResult;
 
-    public GetFileAttributeValuesClient(CmsNode node) { super(node); }
-    public FileAttrResult getLastResult() { return lastResult; }
+    public GetFileAttributeValuesClient(CmsNode node) {
+        super(node);
+    }
+    public FileAttrResult getLastResult() {
+        return lastResult;
+    }
 
     public void execute(GetFileAttributeValuesDao dao) throws Exception {
-        CmsGetFileAttributeValuesRequest req = new CmsGetFileAttributeValuesRequest()
-            .reqId(nextReqId())
-            .filename(dao.fileName());
+        CmsGetFileAttributeValuesRequest req = new CmsGetFileAttributeValuesRequest().reqId(nextReqId()).filename(dao.fileName());
 
         send(ServiceName.GET_FILE_ATTRIBUTE_VALUES, req);
     }
@@ -54,11 +56,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
 
         long epochSeconds = resp.fileEntry.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.fileEntry.lastModified.fractionOfSecond.value();
-        lastResult = new FileAttrResult(
-            new String(resp.fileEntry.fileName.value(), StandardCharsets.UTF_8),
-            resp.fileEntry.fileSize.value(),
-            epochSeconds * 1000 + fractionMicros / 1000,
-            resp.fileEntry.checkSum.value()
-        );
+        lastResult = new FileAttrResult(new String(resp.fileEntry.fileName.value(), StandardCharsets.UTF_8),
+                resp.fileEntry.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000, resp.fileEntry.checkSum.value());
     }
 }

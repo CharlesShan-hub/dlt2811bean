@@ -35,9 +35,8 @@ public class SetFileServer extends BaseServerHandler {
         byte[] fileData = req.fileData.value();
         boolean endOfFile = req.endOfFile.value();
 
-        log.info("SetFile from {}: reqId={}, file={}, startPosition={}, dataLen={}, eof={}",
-            session.getSessionId(), reqId, fileName, startPosition,
-            fileData != null ? fileData.length : 0, endOfFile);
+        log.info("SetFile from {}: reqId={}, file={}, startPosition={}, dataLen={}, eof={}", session.getSessionId(), reqId, fileName,
+                startPosition, fileData != null ? fileData.length : 0, endOfFile);
 
         if (fileName == null || fileName.isEmpty()) {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
@@ -60,16 +59,16 @@ public class SetFileServer extends BaseServerHandler {
 
         try {
             Path parent = filePath.getParent();
-            if (parent != null) Files.createDirectories(parent);
+            if (parent != null)
+                Files.createDirectories(parent);
 
             if (startPosition == 1) {
                 // First chunk — create/truncate
-                Files.write(filePath, fileData != null ? fileData : new byte[0], 
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.write(filePath, fileData != null ? fileData : new byte[0], StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING);
             } else {
                 // Subsequent chunks — append
-                Files.write(filePath, fileData != null ? fileData : new byte[0],
-                    StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                Files.write(filePath, fileData != null ? fileData : new byte[0], StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             }
 
             if (endOfFile) {

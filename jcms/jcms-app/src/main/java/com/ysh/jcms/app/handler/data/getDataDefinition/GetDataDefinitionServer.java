@@ -38,9 +38,11 @@ public class GetDataDefinitionServer extends BaseServerHandler {
         log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclIED ied = getSclIed(session);
-        if (ied == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (ied == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
 
@@ -49,30 +51,30 @@ public class GetDataDefinitionServer extends BaseServerHandler {
         for (int i = 0; i < req.data.count && resp.data.count < ps; i++) {
             CmsDataRefEntry refEntry = req.data.items.get(i);
             String ref = str(refEntry.reference);
-            if (ref == null) continue;
+            if (ref == null)
+                continue;
 
             String fcCode = null;
             if (refEntry.fcPresent.value()) {
                 int fcVal = refEntry.fc.value();
                 if (fcVal >= 0 && fcVal < com.ysh.jcms.info.FunctionalConstraint.values().length) {
                     fcCode = com.ysh.jcms.info.FunctionalConstraint.values()[fcVal].name();
-                    if ("XX".equals(fcCode)) fcCode = null;
+                    if ("XX".equals(fcCode))
+                        fcCode = null;
                 }
             }
 
             Navigator nav = Navigator.go(doc, ied, ref);
             if (!nav.isValid()) {
-                log.warn("skip ref='{}': nav invalid (isDo={} isDa={})", ref,
-                    nav.ref() != null ? nav.ref().isDoLevel() : "null",
-                    nav.ref() != null ? nav.ref().isDaLevel() : "null");
+                log.warn("skip ref='{}': nav invalid (isDo={} isDa={})", ref, nav.ref() != null ? nav.ref().isDoLevel() : "null",
+                        nav.ref() != null ? nav.ref().isDaLevel() : "null");
                 continue;
             }
 
             DataDefinitionEntry sclEntry = DataDefinitionResolver.resolve(nav, fcCode);
             if (sclEntry != null) {
                 log.warn("ADD def for ref='{}' cdc={} def={}", ref, sclEntry.cdcType(), sclEntry.definition());
-                CmsDataDefResultEntry result = new CmsDataDefResultEntry()
-                    .definition(sclEntry.definition());
+                CmsDataDefResultEntry result = new CmsDataDefResultEntry().definition(sclEntry.definition());
                 if (sclEntry.cdcType() != null && !sclEntry.cdcType().isEmpty())
                     result.cdcType(sclEntry.cdcType());
                 resp.data.add(result);

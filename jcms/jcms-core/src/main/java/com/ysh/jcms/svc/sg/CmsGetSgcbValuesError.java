@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetSGCBValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.6.6
+ * GetSGCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError
+ * } — 8.6.6
  */
 public class CmsGetSgcbValuesError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetSgcbValuesError() { super(Codec.GET_SGCB_VALUES_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetSgcbValuesError() {
+        super(Codec.GET_SGCB_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetSgcbValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetSgcbValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetSgcbValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetSgcbValuesError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

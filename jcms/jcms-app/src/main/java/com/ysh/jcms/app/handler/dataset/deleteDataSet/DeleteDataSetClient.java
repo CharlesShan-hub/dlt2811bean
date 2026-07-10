@@ -17,9 +17,7 @@ public class DeleteDataSetClient extends BaseClientHandler {
     }
 
     public void execute(DeleteDataSetDao dao) throws Exception {
-        CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest()
-            .reqId(nextReqId())
-            .datasetReference(dao.datasetReference());
+        CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
 
         send(ServiceName.DELETE_DATA_SET, req);
     }

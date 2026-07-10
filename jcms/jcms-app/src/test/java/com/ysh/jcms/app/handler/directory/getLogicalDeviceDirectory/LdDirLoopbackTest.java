@@ -29,9 +29,7 @@ public class LdDirLoopbackTest extends BaseLoopbackTest {
     public void get_logical_device_directory() throws Exception {
         associate();
 
-        clientNode().getClient(LdDirClient.class)
-            .execute(new LdDirDao()
-                .ldName("C1"));
+        clientNode().getClient(LdDirClient.class).execute(new LdDirDao().ldName("C1"));
 
         assertEquals(6, clientNode().getContentManager().getLnNames().size());
         assertTrue(clientNode().getContentManager().getLnNames().contains("LLN0"));

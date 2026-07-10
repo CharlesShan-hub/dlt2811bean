@@ -5,23 +5,37 @@ import com.ysh.jcms.core.NativeBridge.Codec;
 import java.math.BigInteger;
 
 /**
- * typedef struct { uint64_t value; } cms_int64u_t;
- * sizeof = 8
- * Java long 不足以覆盖 0..2^64-1，用 BigInteger。
+ * typedef struct { uint64_t value; } cms_int64u_t; sizeof = 8 Java long 不足以覆盖
+ * 0..2^64-1，用 BigInteger。
  */
 public class CmsInt64U extends CmsType {
 
     private BigInteger value = BigInteger.ZERO;
 
-    public CmsInt64U() { super(Codec.INT64U);}
-    public CmsInt64U(BigInteger value) { super(Codec.INT64U); this.value = value.and(MAX); write(); }
+    public CmsInt64U() {
+        super(Codec.INT64U);
+    }
+    public CmsInt64U(BigInteger value) {
+        super(Codec.INT64U);
+        this.value = value.and(MAX);
+        write();
+    }
 
     public static final BigInteger MAX = new BigInteger("18446744073709551615");
 
-    public BigInteger value() { return value; }
-    public CmsInt64U value(BigInteger v) { this.value = v.and(MAX); write(); return this; }
+    public BigInteger value() {
+        return value;
+    }
+    public CmsInt64U value(BigInteger v) {
+        this.value = v.and(MAX);
+        write();
+        return this;
+    }
 
-    @Override protected int calcNativeSize() { return 8; }
+    @Override
+    protected int calcNativeSize() {
+        return 8;
+    }
 
     @Override
     public void write() {
@@ -36,7 +50,8 @@ public class CmsInt64U extends CmsType {
     @Override
     public void read() {
         byte[] b = new byte[8];
-        for (int i = 0; i < 8; i++) b[i] = nativePtr.getByte(i);
+        for (int i = 0; i < 8; i++)
+            b[i] = nativePtr.getByte(i);
         this.value = new BigInteger(1, b);
     }
 }

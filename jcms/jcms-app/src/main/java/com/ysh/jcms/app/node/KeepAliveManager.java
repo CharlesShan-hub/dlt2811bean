@@ -17,11 +17,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Server-side keepalive/heartbeat manager.
  *
- * <p>Monitors connected sessions for inactivity. If a session has been idle
- * beyond the configured timeout, sends a TEST probe. Disconnects the session
- * if the client fails to respond within the retry limit.
+ * <p>
+ * Monitors connected sessions for inactivity. If a session has been idle beyond
+ * the configured timeout, sends a TEST probe. Disconnects the session if the
+ * client fails to respond within the retry limit.
  *
- * <p>Configuration lives under {@code server.keepalive} in application.yaml.
+ * <p>
+ * Configuration lives under {@code server.keepalive} in application.yaml.
  */
 public class KeepAliveManager {
 
@@ -37,9 +39,11 @@ public class KeepAliveManager {
 
     /** Start the keepalive checker. Does nothing if idleTimeoutMs ≤ 0. */
     public void start() {
-        if (running) return;
+        if (running)
+            return;
         com.ysh.jcms.utils.config.CmsConfig.Server.KeepAlive cfg = CmsConfigLoader.load().getServer().getKeepalive();
-        if (cfg.getIdleTimeoutMs() <= 0) return;
+        if (cfg.getIdleTimeoutMs() <= 0)
+            return;
 
         executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread t = new Thread(r, "keepalive");
@@ -49,8 +53,8 @@ public class KeepAliveManager {
 
         running = true;
         executor.scheduleWithFixedDelay(this::check, 1, 1, TimeUnit.SECONDS);
-        log.info("Keepalive started: idleTimeout={}ms, retryInterval={}ms, maxRetries={}",
-            cfg.getIdleTimeoutMs(), cfg.getRetryIntervalMs(), cfg.getMaxRetries());
+        log.info("Keepalive started: idleTimeout={}ms, retryInterval={}ms, maxRetries={}", cfg.getIdleTimeoutMs(), cfg.getRetryIntervalMs(),
+                cfg.getMaxRetries());
     }
 
     /** Stop the keepalive checker. */
@@ -62,7 +66,9 @@ public class KeepAliveManager {
         }
     }
 
-    public boolean isRunning() { return running; }
+    public boolean isRunning() {
+        return running;
+    }
 
     // ── internal ──
 
@@ -71,7 +77,8 @@ public class KeepAliveManager {
         long now = System.currentTimeMillis();
 
         for (InnerServer.ServerSession ss : sessions) {
-            if (ss.getState() != SessionState.ASSOCIATED) continue;
+            if (ss.getState() != SessionState.ASSOCIATED)
+                continue;
 
             long idle = now - ss.getLastActivityTime();
             int retries = ss.getKeepaliveRetries();
@@ -83,12 +90,9 @@ public class KeepAliveManager {
                 } else {
                     ss.incrementKeepaliveRetries();
                     try {
-                        ss.getConnection().send(new Frame(
-                            new FrameHeader().serviceCode(ServiceName.TEST).resp(false).err(false),
-                            new byte[0], 0
-                        ));
-                        log.debug("Keepalive: sent TEST probe to session {} (retry={})",
-                            ss.getSessionId(), retries + 1);
+                        ss.getConnection()
+                                .send(new Frame(new FrameHeader().serviceCode(ServiceName.TEST).resp(false).err(false), new byte[0], 0));
+                        log.debug("Keepalive: sent TEST probe to session {} (retry={})", ss.getSessionId(), retries + 1);
                     } catch (IOException e) {
                         log.warn("Keepalive: TEST probe failed for session {}", ss.getSessionId());
                         ss.close();

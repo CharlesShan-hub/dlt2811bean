@@ -16,11 +16,7 @@ public class CmsConfigLoader {
 
     private static final Logger log = LoggerFactory.getLogger(CmsConfigLoader.class);
     private static final String PROP_PREFIX = "cms.";
-    private static final String[] SEARCH_PATHS = {
-        "application.yaml",
-        "config/application.yaml",
-        "conf/application.yaml",
-    };
+    private static final String[] SEARCH_PATHS = {"application.yaml", "config/application.yaml", "conf/application.yaml",};
 
     private static CmsConfig loadedConfig;
 

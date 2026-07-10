@@ -10,8 +10,5 @@ package com.ysh.jcms.utils.transport.session;
  * </pre>
  */
 public enum SessionState {
-    DISCONNECTED,
-    CONNECTED,
-    ASSOCIATED,
-    RELEASING
+    DISCONNECTED, CONNECTED, ASSOCIATED, RELEASING
 }

@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -24,8 +23,7 @@ public class AllDataDefClient extends BaseClientHandler {
     }
 
     public void execute(AllDataDefDao dao) throws Exception {
-        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest()
-            .reqId(nextReqId());
+        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().reqId(nextReqId());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -63,10 +61,10 @@ public class AllDataDefClient extends BaseClientHandler {
         for (int i = 0; i < resp.data.count; i++) {
             CmsDataDefinitionEntry src = resp.data.items.get(i);
             int choice = src.definition.choice.value();
-            if (choice == 0) continue; // skip error/empty entries
+            if (choice == 0)
+                continue; // skip error/empty entries
             String ref = new String(src.reference.value(), StandardCharsets.UTF_8);
-            String cdc = src.cdcTypePresent.value()
-                ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
+            String cdc = src.cdcTypePresent.value() ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
         node.getContentManager().initDataDef(entries);

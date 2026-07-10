@@ -38,10 +38,12 @@ public class GetDataSetValuesServer extends BaseServerHandler {
         log.info("GetDataSetValues from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.datasetReference);
-        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        if (ref == null)
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Parse "LD0/LLN0.dsName"
         int slashIdx = ref.indexOf('/');
@@ -53,11 +55,14 @@ public class GetDataSetValuesServer extends BaseServerHandler {
         String dsName = ref.substring(dotIdx + 1);
 
         SclLDevice device = findLd(doc, ldName);
-        if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (device == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (ln == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclDataSet dataSet = ln.findDataSetByName(dsName);
-        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (dataSet == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
@@ -66,13 +71,16 @@ public class GetDataSetValuesServer extends BaseServerHandler {
 
         for (SclFCDA fcda : dataSet.fcDas()) {
             if (refAfter != null) {
-                if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
+                if (fcda.buildFcdaRef().equals(refAfter)) {
+                    refAfter = null;
+                }
                 continue;
             }
             DataValueEntry dv = DataValueResolver.resolve(doc, fcda.buildFcdaRef(), fcda.fc());
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                 resp.value.add(DataConverter.toCmsData(dv));
-                if (++count >= ps) break;
+                if (++count >= ps)
+                    break;
             }
         }
         resp.moreFollows(count >= ps);
@@ -83,12 +91,14 @@ public class GetDataSetValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
     private static SclLDevice findLd(SclDocument doc, String ldName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
                 SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) return ld;
+                if (ld != null)
+                    return ld;
             }
         }
         return null;

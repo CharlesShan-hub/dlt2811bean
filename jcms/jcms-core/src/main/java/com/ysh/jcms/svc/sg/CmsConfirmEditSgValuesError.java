@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * ConfirmEditSGValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.6.4
+ * ConfirmEditSGValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.6.4
  */
 public class CmsConfirmEditSgValuesError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsConfirmEditSgValuesError() { super(Codec.CONFIRM_EDIT_SG_VALUES_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsConfirmEditSgValuesError() {
+        super(Codec.CONFIRM_EDIT_SG_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsConfirmEditSgValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsConfirmEditSgValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsConfirmEditSgValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsConfirmEditSgValuesError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

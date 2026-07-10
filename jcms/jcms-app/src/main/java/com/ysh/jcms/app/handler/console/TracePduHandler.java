@@ -4,7 +4,6 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.core.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
@@ -20,17 +19,18 @@ import java.util.Map;
 public class TracePduHandler implements CommandHandler {
 
     @Override
-    public String name() { return "trace-pdu"; }
+    public String name() {
+        return "trace-pdu";
+    }
 
     @Override
-    public String description() { return "开启/关闭 PDU 跟踪。用法: trace-pdu [--value true/false] [--json]"; }
+    public String description() {
+        return "开启/关闭 PDU 跟踪。用法: trace-pdu [--value true/false] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("value", "true 或 false", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("value", "true 或 false", ""), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override

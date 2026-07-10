@@ -7,7 +7,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclSubEquipment {
     private String name;
     private String desc;
@@ -16,6 +19,12 @@ public class SclSubEquipment {
     private final List<SclLNode> lNodes = new ArrayList<>();
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
-    public SclSubEquipment addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
-    public SclSubEquipment addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
+    public SclSubEquipment addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
+    public SclSubEquipment addEqFunction(SclEqFunction eqFunction) {
+        eqFunctions.add(eqFunction);
+        return this;
+    }
 }

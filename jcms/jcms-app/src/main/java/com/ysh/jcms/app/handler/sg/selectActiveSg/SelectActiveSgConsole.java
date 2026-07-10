@@ -13,18 +13,19 @@ import java.util.Map;
 public class SelectActiveSgConsole implements CommandHandler {
 
     @Override
-    public String name() { return "select-active-sg"; }
+    public String name() {
+        return "select-active-sg";
+    }
 
     @Override
-    public String description() { return "选择激活定值组 (SelectActiveSG)。用法: select-active-sg --ref <sgcbRef> --num <groupNumber> [--json]"; }
+    public String description() {
+        return "选择激活定值组 (SelectActiveSG)。用法: select-active-sg --ref <sgcbRef> --num <groupNumber> [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ref", "SGCB 引用，如 LD0/LLN0.SG1", null),
-            new Param("num", "定值组号（1~numOfSG）", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ref", "SGCB 引用，如 LD0/LLN0.SG1", null), new Param("num", "定值组号（1~numOfSG）", null),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -75,9 +76,7 @@ public class SelectActiveSgConsole implements CommandHandler {
             return;
         }
 
-        SelectActiveSgDao dao = new SelectActiveSgDao()
-            .sgcbReference(ref.trim())
-            .settingGroupNumber(sgNum);
+        SelectActiveSgDao dao = new SelectActiveSgDao().sgcbReference(ref.trim()).settingGroupNumber(sgNum);
 
         ConsolePrinter.info("Selecting active SG: ref=" + ref + " num=" + sgNum);
 

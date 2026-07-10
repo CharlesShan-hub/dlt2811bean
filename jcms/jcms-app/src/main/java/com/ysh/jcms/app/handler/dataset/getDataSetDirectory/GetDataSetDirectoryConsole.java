@@ -13,18 +13,19 @@ import java.util.Map;
 public class GetDataSetDirectoryConsole implements CommandHandler {
 
     @Override
-    public String name() { return "get-dataset-dir"; }
+    public String name() {
+        return "get-dataset-dir";
+    }
 
     @Override
-    public String description() { return "获取数据集目录 (GetDataSetDirectory)。用法: get-dataset-dir --ds <ref> [--after REF] [--json]"; }
+    public String description() {
+        return "获取数据集目录 (GetDataSetDirectory)。用法: get-dataset-dir --ds <ref> [--after REF] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null),
-            new Param("after", "起始引用（分页截取）", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("after", "起始引用（分页截取）", ""),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -49,8 +50,7 @@ public class GetDataSetDirectoryConsole implements CommandHandler {
             return;
         }
 
-        GetDataSetDirectoryDao dao = new GetDataSetDirectoryDao()
-            .datasetReference(dsRef.trim());
+        GetDataSetDirectoryDao dao = new GetDataSetDirectoryDao().datasetReference(dsRef.trim());
 
         String after = args.get("after");
         if (after != null && !after.isEmpty()) {
@@ -63,8 +63,7 @@ public class GetDataSetDirectoryConsole implements CommandHandler {
 
         console.getClient(GetDataSetDirectoryClient.class).execute(dao);
 
-        List<GetDataSetDirectoryClient.DirEntry> entries =
-            console.getClient(GetDataSetDirectoryClient.class).getLastEntries();
+        List<GetDataSetDirectoryClient.DirEntry> entries = console.getClient(GetDataSetDirectoryClient.class).getLastEntries();
 
         if (entries.isEmpty()) {
             ConsolePrinter.info("No dataset directory entries");
@@ -74,7 +73,8 @@ public class GetDataSetDirectoryConsole implements CommandHandler {
         if (jsonMode) {
             StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
             for (int i = 0; i < entries.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 GetDataSetDirectoryClient.DirEntry e = entries.get(i);
                 String val = "[" + e.fc + "]  " + e.reference;
                 sb.append('"').append(CmsFormatUtil.escapeJson(val)).append('"');
@@ -82,9 +82,8 @@ public class GetDataSetDirectoryConsole implements CommandHandler {
             sb.append("]}");
             ConsolePrinter.raw(sb.toString());
         } else {
-            ConsolePrinter.list("DataSet directory (" + entries.size() + " items)",
-                new java.util.ArrayList<>(entries),
-                e -> "[" + e.fc + "]  " + e.reference);
+            ConsolePrinter.list("DataSet directory (" + entries.size() + " items)", new java.util.ArrayList<>(entries),
+                    e -> "[" + e.fc + "]  " + e.reference);
         }
     }
 }

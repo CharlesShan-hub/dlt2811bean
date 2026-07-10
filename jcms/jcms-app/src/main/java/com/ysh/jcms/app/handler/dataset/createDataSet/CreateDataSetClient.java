@@ -18,18 +18,14 @@ public class CreateDataSetClient extends BaseClientHandler {
     }
 
     public void execute(CreateDataSetDao dao) throws Exception {
-        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest()
-            .reqId(nextReqId())
-            .datasetReference(dao.datasetReference());
+        CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
 
         if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
             req.refAfter(dao.referenceAfter());
         }
 
         for (CreateDataSetDao.MemberRef m : dao.members()) {
-            req.memberData.add(new CmsDataRefFcEntry()
-                .reference(m.reference())
-                .fc(m.fc()));
+            req.memberData.add(new CmsDataRefFcEntry().reference(m.reference()).fc(m.fc()));
         }
 
         send(ServiceName.CREATE_DATA_SET, req);

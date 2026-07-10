@@ -27,10 +27,8 @@ public class AssociateClient extends BaseClientHandler {
     }
 
     public void execute(AssociateClientDao dao) throws Exception {
-        CmsAssociateRequest req = new CmsAssociateRequest()
-            .reqId(nextReqId())
-            .sapRef(dao.sapRef())
-            .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
+        CmsAssociateRequest req = new CmsAssociateRequest().reqId(nextReqId()).sapRef(dao.sapRef())
+                .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
 
         if (dao.secure()) {
             req.authParam(buildAuthParam(credentialManager, dao.sapRef()));
@@ -77,9 +75,6 @@ public class AssociateClient extends BaseClientHandler {
 
         byte[] signatureValue = GmSignature.sign(cm.getPrivateKey(), signedData);
 
-        return new CmsAuthenticationParameter()
-            .cert(certBytes)
-            .signedTime(new CmsUtcTime().now())
-            .sigVal(signatureValue);
+        return new CmsAuthenticationParameter().cert(certBytes).signedTime(new CmsUtcTime().now()).sigVal(signatureValue);
     }
 }

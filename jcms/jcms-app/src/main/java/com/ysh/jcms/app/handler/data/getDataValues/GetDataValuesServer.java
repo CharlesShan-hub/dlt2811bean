@@ -9,7 +9,6 @@ import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataValuesError;
 import com.ysh.jcms.svc.data.CmsGetDataValuesRequest;
 import com.ysh.jcms.svc.data.CmsGetDataValuesResponse;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
 import com.ysh.jcms.utils.scl.convert.DataValueResolver;
 import com.ysh.jcms.utils.scl.convert.DataValueEntry;
@@ -36,7 +35,8 @@ public class GetDataValuesServer extends BaseServerHandler {
         log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 
         SclIED ied = getSclIed(session);
-        if (ied == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (ied == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse().reqId(reqId);
 
@@ -44,22 +44,23 @@ public class GetDataValuesServer extends BaseServerHandler {
             for (int i = 0; i < req.data.count; i++) {
                 CmsDataRefEntry refEntry = req.data.items.get(i);
                 String ref = str(refEntry.reference);
-                if (ref == null) continue;
+                if (ref == null)
+                    continue;
 
                 String fcCode = null;
                 if (refEntry.fcPresent.value()) {
                     int fcVal = refEntry.fc.value();
                     if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
                         fcCode = FunctionalConstraint.values()[fcVal].name();
-                        if ("XX".equals(fcCode)) fcCode = null;
+                        if ("XX".equals(fcCode))
+                            fcCode = null;
                     }
                 }
 
                 Navigator nav = Navigator.go(getScl2Document(session), ied, ref);
                 DataValueEntry dv = DataValueResolver.resolve(nav, fcCode);
-                log.warn(">> ref='{}' fc={} nav={} dv={}", ref, fcCode,
-                    nav.isValid() ? "ok" : "invalid",
-                    dv != null ? (dv.val() != null ? "'" + dv.val() + "'" : "val=null") : "null");
+                log.warn(">> ref='{}' fc={} nav={} dv={}", ref, fcCode, nav.isValid() ? "ok" : "invalid",
+                        dv != null ? (dv.val() != null ? "'" + dv.val() + "'" : "val=null") : "null");
                 if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                     resp.value.add(DataConverter.toCmsData(dv));
                 } else {

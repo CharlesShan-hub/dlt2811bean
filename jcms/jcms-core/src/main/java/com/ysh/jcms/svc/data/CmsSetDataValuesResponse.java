@@ -7,9 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetDataValues-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.4.2
+ * SetDataValues-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.4.2
  *
  * Response has no payload besides reqId.
  */
@@ -17,11 +15,15 @@ public class CmsSetDataValuesResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetDataValuesResponse() { super(Codec.SET_DATA_VALUES_RESPONSE);
+    public CmsSetDataValuesResponse() {
+        super(Codec.SET_DATA_VALUES_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsSetDataValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsSetDataValuesResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

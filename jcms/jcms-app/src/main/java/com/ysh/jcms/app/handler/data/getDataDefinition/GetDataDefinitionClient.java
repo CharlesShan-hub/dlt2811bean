@@ -2,13 +2,11 @@ package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.svc.data.CmsDataDefResultEntry;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDefinitionResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -35,15 +33,15 @@ public class GetDataDefinitionClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<DefEntry> getLastEntries() { return lastEntries; }
+    public List<DefEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetDataDefinitionDao dao) throws Exception {
-        CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest()
-            .reqId(nextReqId());
+        CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest().reqId(nextReqId());
 
         for (GetDataDefinitionDao.DataRef ref : dao.dataRefs()) {
-            CmsDataRefEntry entry = new CmsDataRefEntry()
-                .reference(ref.reference());
+            CmsDataRefEntry entry = new CmsDataRefEntry().reference(ref.reference());
             if (ref.fc() != null) {
                 entry.fcPresent(true);
                 entry.fc(ref.fc());
@@ -71,9 +69,9 @@ public class GetDataDefinitionClient extends BaseClientHandler {
         for (int i = 0; i < resp.data.count; i++) {
             CmsDataDefResultEntry src = resp.data.items.get(i);
             int choice = src.definition.choice.value();
-            if (choice == 0) continue;
-            String cdc = src.cdcTypePresent.value()
-                ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
+            if (choice == 0)
+                continue;
+            String cdc = src.cdcTypePresent.value() ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
             entries.add(new DefEntry(cdc, choice));
         }
         this.lastEntries = entries;

@@ -20,13 +20,19 @@ public class GetGoCbValuesClient extends BaseClientHandler {
 
     public static final class GoCbEntry {
         public final String desc;
-        public GoCbEntry(String desc) { this.desc = desc; }
+        public GoCbEntry(String desc) {
+            this.desc = desc;
+        }
     }
 
     private List<GoCbEntry> lastEntries = new ArrayList<>();
 
-    public GetGoCbValuesClient(CmsNode node) { super(node); }
-    public List<GoCbEntry> getLastEntries() { return lastEntries; }
+    public GetGoCbValuesClient(CmsNode node) {
+        super(node);
+    }
+    public List<GoCbEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetGoCbValuesDao dao) throws Exception {
         CmsGetGoCbValuesRequest req = new CmsGetGoCbValuesRequest().reqId(nextReqId());

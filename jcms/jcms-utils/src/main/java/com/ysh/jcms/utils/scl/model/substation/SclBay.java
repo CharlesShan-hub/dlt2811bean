@@ -7,7 +7,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclBay {
     private String name;
     private String desc;
@@ -18,10 +21,28 @@ public class SclBay {
     private final List<SclGeneralEquipment> generalEquipments = new ArrayList<>();
     private final List<SclFunction> functions = new ArrayList<>();
 
-    public SclBay addEquipment(SclConductingEquipment equipment) { equipments.add(equipment); return this; }
-    public SclBay addConnectivityNode(SclConnectivityNode connectivityNode) { connectivityNodes.add(connectivityNode); return this; }
-    public SclBay addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
-    public SclBay addTransformer(SclPowerTransformer transformer) { transformers.add(transformer); return this; }
-    public SclBay addGeneralEquipment(SclGeneralEquipment ge) { generalEquipments.add(ge); return this; }
-    public SclBay addFunction(SclFunction function) { functions.add(function); return this; }
+    public SclBay addEquipment(SclConductingEquipment equipment) {
+        equipments.add(equipment);
+        return this;
+    }
+    public SclBay addConnectivityNode(SclConnectivityNode connectivityNode) {
+        connectivityNodes.add(connectivityNode);
+        return this;
+    }
+    public SclBay addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
+    public SclBay addTransformer(SclPowerTransformer transformer) {
+        transformers.add(transformer);
+        return this;
+    }
+    public SclBay addGeneralEquipment(SclGeneralEquipment ge) {
+        generalEquipments.add(ge);
+        return this;
+    }
+    public SclBay addFunction(SclFunction function) {
+        functions.add(function);
+        return this;
+    }
 }

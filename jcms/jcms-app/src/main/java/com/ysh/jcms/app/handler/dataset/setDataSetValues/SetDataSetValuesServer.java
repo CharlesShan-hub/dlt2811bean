@@ -38,10 +38,12 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String ref = str(req.datasetReference);
-        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        if (ref == null)
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Parse "LD0/LLN0.dsName"
         int slashIdx = ref.indexOf('/');
@@ -53,24 +55,31 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         String dsName = ref.substring(dotIdx + 1);
 
         SclLDevice device = findLd(doc, ldName);
-        if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (device == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (ln == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         SclDataSet dataSet = ln.findDataSetByName(dsName);
-        if (dataSet == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (dataSet == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
         int successCount = 0, valueIdx = 0;
         for (SclFCDA fcda : dataSet.fcDas()) {
             if (refAfter != null) {
-                if (fcda.buildFcdaRef().equals(refAfter)) { refAfter = null; }
+                if (fcda.buildFcdaRef().equals(refAfter)) {
+                    refAfter = null;
+                }
                 continue;
             }
-            if (valueIdx >= req.value.count) break;
+            if (valueIdx >= req.value.count)
+                break;
 
             String valueStr = extractValue(req.value.items.get(valueIdx++));
-            if (valueStr == null) continue;
+            if (valueStr == null)
+                continue;
 
             String fcdaRef = fcda.buildFcdaRef();
             Navigator nav = Navigator.go(doc, fcdaRef);
@@ -90,31 +99,46 @@ public class SetDataSetValuesServer extends BaseServerHandler {
     private static String extractValue(CmsData d) {
         int ct = d.choice.value();
         switch (ct) {
-            case CmsData.CHOICE_BOOLEAN:       return Boolean.toString(d.alt_boolean.value());
-            case CmsData.CHOICE_INT8:           return Integer.toString(d.alt_int8.value());
-            case CmsData.CHOICE_INT16:          return Integer.toString(d.alt_int16.value());
-            case CmsData.CHOICE_INT32:          return Integer.toString(d.alt_int32.value());
-            case CmsData.CHOICE_INT64:          return Long.toString(d.alt_int64.value());
-            case CmsData.CHOICE_INT8U:          return Integer.toString(d.alt_int8u.value());
-            case CmsData.CHOICE_INT16U:         return Integer.toString(d.alt_int16u.value());
-            case CmsData.CHOICE_INT32U:         return Long.toString(d.alt_int32u.value());
-            case CmsData.CHOICE_FLOAT32:        return Float.toString(d.alt_float32.value());
-            case CmsData.CHOICE_FLOAT64:        return Double.toString(d.alt_float64.value());
-            case CmsData.CHOICE_VISIBLE_STRING: return str(d.alt_visible_string.value());
-            case CmsData.CHOICE_UNICODE_STRING: return str(d.alt_unicode_string.value());
-            default:                            return null;
+            case CmsData.CHOICE_BOOLEAN :
+                return Boolean.toString(d.alt_boolean.value());
+            case CmsData.CHOICE_INT8 :
+                return Integer.toString(d.alt_int8.value());
+            case CmsData.CHOICE_INT16 :
+                return Integer.toString(d.alt_int16.value());
+            case CmsData.CHOICE_INT32 :
+                return Integer.toString(d.alt_int32.value());
+            case CmsData.CHOICE_INT64 :
+                return Long.toString(d.alt_int64.value());
+            case CmsData.CHOICE_INT8U :
+                return Integer.toString(d.alt_int8u.value());
+            case CmsData.CHOICE_INT16U :
+                return Integer.toString(d.alt_int16u.value());
+            case CmsData.CHOICE_INT32U :
+                return Long.toString(d.alt_int32u.value());
+            case CmsData.CHOICE_FLOAT32 :
+                return Float.toString(d.alt_float32.value());
+            case CmsData.CHOICE_FLOAT64 :
+                return Double.toString(d.alt_float64.value());
+            case CmsData.CHOICE_VISIBLE_STRING :
+                return str(d.alt_visible_string.value());
+            case CmsData.CHOICE_UNICODE_STRING :
+                return str(d.alt_unicode_string.value());
+            default :
+                return null;
         }
     }
 
     /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
     private static SclLDevice findLd(SclDocument doc, String ldName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
                 SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) return ld;
+                if (ld != null)
+                    return ld;
             }
         }
         return null;

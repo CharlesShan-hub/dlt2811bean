@@ -19,13 +19,19 @@ public class GetLcbValuesClient extends BaseClientHandler {
 
     public static final class LcbEntry {
         public final String desc;
-        public LcbEntry(String desc) { this.desc = desc; }
+        public LcbEntry(String desc) {
+            this.desc = desc;
+        }
     }
 
     private List<LcbEntry> lastEntries = new ArrayList<>();
 
-    public GetLcbValuesClient(CmsNode node) { super(node); }
-    public List<LcbEntry> getLastEntries() { return lastEntries; }
+    public GetLcbValuesClient(CmsNode node) {
+        super(node);
+    }
+    public List<LcbEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetLcbValuesDao dao) throws Exception {
         CmsGetLcbValuesRequest req = new CmsGetLcbValuesRequest().reqId(nextReqId());
@@ -58,11 +64,9 @@ public class GetLcbValuesClient extends BaseClientHandler {
                 sb.append(" datSet=").append(new String(b.datSet.value(), java.nio.charset.StandardCharsets.UTF_8));
                 sb.append(" intgPd=").append(b.intgPd.value());
                 sb.append(" logRef=").append(new String(b.logRef.value(), java.nio.charset.StandardCharsets.UTF_8));
-                sb.append(" trgOps=dc:").append(b.trgOps.data_change.value())
-                  .append(",qc:").append(b.trgOps.quality_change.value())
-                  .append(",du:").append(b.trgOps.data_update.value())
-                  .append(",integrity:").append(b.trgOps.integrity.value())
-                  .append(",gi:").append(b.trgOps.general_interrogation.value());
+                sb.append(" trgOps=dc:").append(b.trgOps.data_change.value()).append(",qc:").append(b.trgOps.quality_change.value())
+                        .append(",du:").append(b.trgOps.data_update.value()).append(",integrity:").append(b.trgOps.integrity.value())
+                        .append(",gi:").append(b.trgOps.general_interrogation.value());
                 entries.add(new LcbEntry(sb.toString()));
             } else {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));

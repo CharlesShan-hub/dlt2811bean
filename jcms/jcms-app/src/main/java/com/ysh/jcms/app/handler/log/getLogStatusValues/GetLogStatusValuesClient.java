@@ -6,7 +6,6 @@ import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -18,13 +17,19 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
 
     public static final class LogStatusEntry {
         public final String desc;
-        public LogStatusEntry(String desc) { this.desc = desc; }
+        public LogStatusEntry(String desc) {
+            this.desc = desc;
+        }
     }
 
     private List<LogStatusEntry> lastEntries = new ArrayList<>();
 
-    public GetLogStatusValuesClient(CmsNode node) { super(node); }
-    public List<LogStatusEntry> getLastEntries() { return lastEntries; }
+    public GetLogStatusValuesClient(CmsNode node) {
+        super(node);
+    }
+    public List<LogStatusEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetLogStatusValuesDao dao) throws Exception {
         CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest().reqId(nextReqId());
@@ -52,9 +57,8 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
             com.ysh.jcms.svc.log.CmsLogStatusValueChoice ch = resp.log.items.get(i);
             if (ch.choice.value() == 1) {
                 com.ysh.jcms.svc.log.CmsLogStatusValue val = ch.altValue;
-                entries.add(new LogStatusEntry(
-                    "oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value() +
-                    " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()));
+                entries.add(new LogStatusEntry("oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value()
+                        + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()));
             } else {
                 entries.add(new LogStatusEntry("error=" + ch.altError.value()));
             }

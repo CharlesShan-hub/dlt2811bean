@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.file.getFileDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.common.CmsFileEntry;
-import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.svc.file.CmsGetFileDirectoryError;
 import com.ysh.jcms.svc.file.CmsGetFileDirectoryRequest;
 import com.ysh.jcms.svc.file.CmsGetFileDirectoryResponse;
@@ -41,12 +40,15 @@ public class GetFileDirectoryClient extends BaseClientHandler {
 
     private FileDirectoryResult lastResult;
 
-    public GetFileDirectoryClient(CmsNode node) { super(node); }
-    public FileDirectoryResult getLastResult() { return lastResult; }
+    public GetFileDirectoryClient(CmsNode node) {
+        super(node);
+    }
+    public FileDirectoryResult getLastResult() {
+        return lastResult;
+    }
 
     public void execute(GetFileDirectoryDao dao) throws Exception {
-        CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest()
-            .reqId(nextReqId());
+        CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest().reqId(nextReqId());
 
         if (dao.pathName() != null && !dao.pathName().isEmpty()) {
             req.pathName(dao.pathName());
@@ -77,12 +79,8 @@ public class GetFileDirectoryClient extends BaseClientHandler {
             CmsFileEntry fe = resp.fileEntry.items.get(i);
             long epochSeconds = fe.lastModified.secondsSinceEpoch.value();
             int fractionMicros = fe.lastModified.fractionOfSecond.value();
-            entries.add(new FileEntryResult(
-                new String(fe.fileName.value(), StandardCharsets.UTF_8),
-                fe.fileSize.value(),
-                epochSeconds * 1000 + fractionMicros / 1000,
-                fe.checkSum.value()
-            ));
+            entries.add(new FileEntryResult(new String(fe.fileName.value(), StandardCharsets.UTF_8), fe.fileSize.value(),
+                    epochSeconds * 1000 + fractionMicros / 1000, fe.checkSum.value()));
         }
 
         lastResult = new FileDirectoryResult(entries, resp.moreFollows.value());

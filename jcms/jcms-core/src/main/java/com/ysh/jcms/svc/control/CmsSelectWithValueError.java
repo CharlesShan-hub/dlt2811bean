@@ -15,63 +15,92 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SelectWithValue-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT ObjectReference,
- *     ctlVal          [1] IMPLICIT Data,
- *     operTm          [2] IMPLICIT TimeStamp OPTIONAL,
- *     origin          [3] IMPLICIT Originator,
- *     ctlNum          [4] IMPLICIT INT8U,
- *     t               [5] IMPLICIT TimeStamp,
- *     test            [6] IMPLICIT BOOLEAN,
- *     check           [7] IMPLICIT Check,
- *     addCause        [8] IMPLICIT AddCause
- * }  —  8.11.2
+ * SelectWithValue-ErrorPDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
+ * ObjectReference, ctlVal [1] IMPLICIT Data, operTm [2] IMPLICIT TimeStamp
+ * OPTIONAL, origin [3] IMPLICIT Originator, ctlNum [4] IMPLICIT INT8U, t [5]
+ * IMPLICIT TimeStamp, test [6] IMPLICIT BOOLEAN, check [7] IMPLICIT Check,
+ * addCause [8] IMPLICIT AddCause } — 8.11.2
  */
 public class CmsSelectWithValueError extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  reference;
-    public CmsData             ctlVal;
-    public CmsBoolean          operTmPresent;
-    public CmsUtcTime        operTm;         /* OPTIONAL */
-    public CmsOriginator       origin;
-    public CmsInt8U            ctlNum;
-    public CmsUtcTime        t;
-    public CmsBoolean          test;
-    public CmsCheck            check;
-    public CmsAddCause         addCause;
+    public CmsReqId reqId;
+    public CmsObjectReference reference;
+    public CmsData ctlVal;
+    public CmsBoolean operTmPresent;
+    public CmsUtcTime operTm; /* OPTIONAL */
+    public CmsOriginator origin;
+    public CmsInt8U ctlNum;
+    public CmsUtcTime t;
+    public CmsBoolean test;
+    public CmsCheck check;
+    public CmsAddCause addCause;
 
-    public CmsSelectWithValueError() { super(Codec.SELECT_WITH_VALUE_ERROR);
-        this.reqId          = new CmsReqId();
-        this.reference      = new CmsObjectReference();
-        this.ctlVal         = new CmsData();
-        this.operTmPresent  = new CmsBoolean();
-        this.operTm         = new CmsUtcTime();
-        this.origin         = new CmsOriginator();
-        this.ctlNum         = new CmsInt8U();
-        this.t              = new CmsUtcTime();
-        this.test           = new CmsBoolean();
-        this.check          = new CmsCheck();
-        this.addCause       = new CmsAddCause();
+    public CmsSelectWithValueError() {
+        super(Codec.SELECT_WITH_VALUE_ERROR);
+        this.reqId = new CmsReqId();
+        this.reference = new CmsObjectReference();
+        this.ctlVal = new CmsData();
+        this.operTmPresent = new CmsBoolean();
+        this.operTm = new CmsUtcTime();
+        this.origin = new CmsOriginator();
+        this.ctlNum = new CmsInt8U();
+        this.t = new CmsUtcTime();
+        this.test = new CmsBoolean();
+        this.check = new CmsCheck();
+        this.addCause = new CmsAddCause();
     }
-    
-    public CmsSelectWithValueError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSelectWithValueError reference(byte[] v) { this.reference.value(v); return this; }
-    public CmsSelectWithValueError reference(String v) { this.reference.value(v); return this; }
-    public CmsSelectWithValueError ctlVal(CmsData v) { this.ctlVal = v; return this; }
-    public CmsSelectWithValueError operTmPresent(boolean v) { this.operTmPresent.value(v); return this; }
-    public CmsSelectWithValueError operTm(CmsUtcTime v) { this.operTm = v; return this; }
-    public CmsSelectWithValueError origin(CmsOriginator v) { this.origin = v; return this; }
-    public CmsSelectWithValueError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsSelectWithValueError t(CmsUtcTime v) { this.t = v; return this; }
-    public CmsSelectWithValueError test(boolean v) { this.test.value(v); return this; }
-    public CmsSelectWithValueError check(CmsCheck v) { this.check = v; return this; }
-    public CmsSelectWithValueError addCause(int v) { this.addCause.value(v); return this; }
+
+    public CmsSelectWithValueError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError reference(byte[] v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError ctlVal(CmsData v) {
+        this.ctlVal = v;
+        return this;
+    }
+    public CmsSelectWithValueError operTmPresent(boolean v) {
+        this.operTmPresent.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError operTm(CmsUtcTime v) {
+        this.operTm = v;
+        return this;
+    }
+    public CmsSelectWithValueError origin(CmsOriginator v) {
+        this.origin = v;
+        return this;
+    }
+    public CmsSelectWithValueError ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError t(CmsUtcTime v) {
+        this.t = v;
+        return this;
+    }
+    public CmsSelectWithValueError test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError check(CmsCheck v) {
+        this.check = v;
+        return this;
+    }
+    public CmsSelectWithValueError addCause(int v) {
+        this.addCause.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {
-        return Arrays.asList(reqId, reference, ctlVal,
-            operTmPresent, operTm, origin, ctlNum, t, test, check, addCause);
+        return Arrays.asList(reqId, reference, ctlVal, operTmPresent, operTm, origin, ctlNum, t, test, check, addCause);
     }
 }

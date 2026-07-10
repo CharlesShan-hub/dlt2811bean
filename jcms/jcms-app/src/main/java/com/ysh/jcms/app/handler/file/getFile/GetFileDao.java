@@ -9,5 +9,5 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class GetFileDao {
     private String fileName;
-    private String outputFile;  // local path to save, null to print info only
+    private String outputFile; // local path to save, null to print info only
 }

@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetLCBValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.8.2
+ * GetLCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError
+ * } — 8.8.2
  */
 public class CmsGetLcbValuesError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetLcbValuesError() { super(Codec.GET_LCB_VALUES_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetLcbValuesError() {
+        super(Codec.GET_LCB_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetLcbValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetLcbValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetLcbValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetLcbValuesError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

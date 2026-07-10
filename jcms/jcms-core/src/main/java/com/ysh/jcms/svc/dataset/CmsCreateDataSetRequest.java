@@ -10,36 +10,59 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * CreateDataSet-RequestPDU ::= SEQUENCE {
- *     reqId               Int16U,
- *     datasetReference    [0] IMPLICIT ObjectReference,
- *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL,
- *     memberData          [2] IMPLICIT SEQUENCE OF DataRefFcEntry
- * }  —  8.5.3
+ * CreateDataSet-RequestPDU ::= SEQUENCE { reqId Int16U, datasetReference [0]
+ * IMPLICIT ObjectReference, referenceAfter [1] IMPLICIT ObjectReference
+ * OPTIONAL, memberData [2] IMPLICIT SEQUENCE OF DataRefFcEntry } — 8.5.3
  */
 public class CmsCreateDataSetRequest extends CmsType {
 
-    public CmsReqId                       reqId;
-    public CmsObjectReference             datasetReference;
-    public CmsBoolean                     refAfterPresent;
-    public CmsObjectReference             refAfter;       /* OPTIONAL */
-    public CmsArray<CmsDataRefFcEntry>    memberData;     /* SEQUENCE OF DataRefFcEntry */
+    public CmsReqId reqId;
+    public CmsObjectReference datasetReference;
+    public CmsBoolean refAfterPresent;
+    public CmsObjectReference refAfter; /* OPTIONAL */
+    public CmsArray<CmsDataRefFcEntry> memberData; /* SEQUENCE OF DataRefFcEntry */
 
-    public CmsCreateDataSetRequest() { super(Codec.CREATE_DATA_SET_REQUEST);
-        this.reqId            = new CmsReqId();
+    public CmsCreateDataSetRequest() {
+        super(Codec.CREATE_DATA_SET_REQUEST);
+        this.reqId = new CmsReqId();
         this.datasetReference = new CmsObjectReference();
-        this.refAfterPresent  = new CmsBoolean();
-        this.refAfter         = new CmsObjectReference();
-        this.memberData       = new CmsArray<>(CmsDataRefFcEntry.class);
+        this.refAfterPresent = new CmsBoolean();
+        this.refAfter = new CmsObjectReference();
+        this.memberData = new CmsArray<>(CmsDataRefFcEntry.class);
     }
-    
-    public CmsCreateDataSetRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsCreateDataSetRequest datasetReference(byte[] v) { this.datasetReference.value(v); return this; }
-    public CmsCreateDataSetRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsCreateDataSetRequest refAfterPresent(boolean v) { this.refAfterPresent.value(v); return this; }
-    public CmsCreateDataSetRequest refAfter(byte[] v) { this.refAfterPresent.value(v != null && v.length > 0); if (v != null) this.refAfter.value(v); return this; }
-    public CmsCreateDataSetRequest refAfter(String v) { this.refAfterPresent.value(v != null); if (v != null) this.refAfter.value(v); return this; }
-    public CmsCreateDataSetRequest memberData(CmsArray<CmsDataRefFcEntry> v) { this.memberData = v; return this; }
+
+    public CmsCreateDataSetRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest datasetReference(byte[] v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest datasetReference(String v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest refAfterPresent(boolean v) {
+        this.refAfterPresent.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest refAfter(byte[] v) {
+        this.refAfterPresent.value(v != null && v.length > 0);
+        if (v != null)
+            this.refAfter.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest refAfter(String v) {
+        this.refAfterPresent.value(v != null);
+        if (v != null)
+            this.refAfter.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest memberData(CmsArray<CmsDataRefFcEntry> v) {
+        this.memberData = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

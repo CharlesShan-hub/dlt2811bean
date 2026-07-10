@@ -7,7 +7,6 @@ import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetDirectoryResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -34,12 +33,12 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<DirEntry> getLastEntries() { return lastEntries; }
+    public List<DirEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest()
-            .reqId(nextReqId())
-            .datasetReference(dao.datasetReference());
+        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
 
         if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
             req.refAfter(dao.referenceAfter());
@@ -69,7 +68,8 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
             int fcVal = src.fc.value();
             if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
                 fc = FunctionalConstraint.values()[fcVal].name();
-                if ("XX".equals(fc)) fc = null;
+                if ("XX".equals(fc))
+                    fc = null;
             }
             entries.add(new DirEntry(ref, fc));
         }

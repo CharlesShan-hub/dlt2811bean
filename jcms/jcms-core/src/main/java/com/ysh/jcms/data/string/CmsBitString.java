@@ -11,11 +11,18 @@ package com.ysh.jcms.data.string;
 public class CmsBitString extends CmsUint8Array {
 
     @Override
-    protected int defaultBufSize() { return 2; }
+    protected int defaultBufSize() {
+        return 2;
+    }
 
-    public CmsBitString() {}
-    public CmsBitString(byte[] data) { super(data); }
+    public CmsBitString() {
+    }
+    public CmsBitString(byte[] data) {
+        super(data);
+    }
 
     @Override
-    protected int valueByteLen() { return (len + 7) / 8; }
+    protected int valueByteLen() {
+        return (len + 7) / 8;
+    }
 }

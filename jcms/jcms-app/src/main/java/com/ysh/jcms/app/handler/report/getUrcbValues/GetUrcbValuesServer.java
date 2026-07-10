@@ -42,7 +42,8 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
 
@@ -67,14 +68,16 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     static CmsBrcb resolveUrcb(SclDocument doc, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return null;
 
         String ldName = ref.substring(0, slashIdx);
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
         SclLN ln = findLn(doc, ldName, lnName);
-        if (ln == null) return null;
+        if (ln == null)
+            return null;
 
         SclReportControl rc = null;
         for (SclReportControl c : ln.reportControls()) {
@@ -83,21 +86,33 @@ public class GetUrcbValuesServer extends BaseServerHandler {
                 break;
             }
         }
-        if (rc == null) return null;
+        if (rc == null)
+            return null;
 
         // Build from SCL defaults
         CmsBrcb urcb = new CmsBrcb();
 
-        if (rc.rptID() != null) urcb.rptID(rc.rptID());
-        if (rc.datSet() != null) urcb.datSet(rc.datSet());
+        if (rc.rptID() != null)
+            urcb.rptID(rc.rptID());
+        if (rc.datSet() != null)
+            urcb.datSet(rc.datSet());
         if (rc.confRev() != null) {
-            try { urcb.confRev(Long.parseLong(rc.confRev())); } catch (NumberFormatException ignored) {}
+            try {
+                urcb.confRev(Long.parseLong(rc.confRev()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         if (rc.bufTime() != null) {
-            try { urcb.bufTm(Long.parseLong(rc.bufTime())); } catch (NumberFormatException ignored) {}
+            try {
+                urcb.bufTm(Long.parseLong(rc.bufTime()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         if (rc.intgPd() != null) {
-            try { urcb.intgPd(Long.parseLong(rc.intgPd())); } catch (NumberFormatException ignored) {}
+            try {
+                urcb.intgPd(Long.parseLong(rc.intgPd()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         urcb.rptEna(false);
         urcb.sqNum(0);
@@ -156,7 +171,8 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
     private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {

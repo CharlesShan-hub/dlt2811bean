@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceRequest;
@@ -19,7 +18,10 @@ public class GetGoReferenceClient extends BaseClientHandler {
     public static final class MemberDataEntry {
         public final String reference;
         public final int fc;
-        public MemberDataEntry(String reference, int fc) { this.reference = reference; this.fc = fc; }
+        public MemberDataEntry(String reference, int fc) {
+            this.reference = reference;
+            this.fc = fc;
+        }
     }
 
     public static final class GoRefResult {
@@ -37,13 +39,15 @@ public class GetGoReferenceClient extends BaseClientHandler {
 
     private GoRefResult lastResult;
 
-    public GetGoReferenceClient(CmsNode node) { super(node); }
-    public GoRefResult getLastResult() { return lastResult; }
+    public GetGoReferenceClient(CmsNode node) {
+        super(node);
+    }
+    public GoRefResult getLastResult() {
+        return lastResult;
+    }
 
     public void execute(GetGoReferenceDao dao) throws Exception {
-        CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest()
-            .reqId(nextReqId())
-            .gocbReference(dao.gocbReference());
+        CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().reqId(nextReqId()).gocbReference(dao.gocbReference());
         for (int offset : dao.memberOffsets()) {
             req.memberOfs.add(new CmsInt16U(offset));
         }
@@ -65,17 +69,12 @@ public class GetGoReferenceClient extends BaseClientHandler {
 
         List<MemberDataEntry> members = new ArrayList<>();
         for (int i = 0; i < resp.memberData.count; i++) {
-            String ref = new String(resp.memberData.items.get(i).reference.value(),
-                java.nio.charset.StandardCharsets.UTF_8);
+            String ref = new String(resp.memberData.items.get(i).reference.value(), java.nio.charset.StandardCharsets.UTF_8);
             int fc = resp.memberData.items.get(i).fc.value();
             members.add(new MemberDataEntry(ref, fc));
         }
 
-        lastResult = new GoRefResult(
-            new String(resp.gocbReference.value(), java.nio.charset.StandardCharsets.UTF_8),
-            resp.confRev.value(),
-            new String(resp.datSet.value(), java.nio.charset.StandardCharsets.UTF_8),
-            members
-        );
+        lastResult = new GoRefResult(new String(resp.gocbReference.value(), java.nio.charset.StandardCharsets.UTF_8), resp.confRev.value(),
+                new String(resp.datSet.value(), java.nio.charset.StandardCharsets.UTF_8), members);
     }
 }

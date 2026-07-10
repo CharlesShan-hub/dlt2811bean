@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetGoCBValues-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     gocb            [0] IMPLICIT SEQUENCE OF SetGoCBEntry
- * }  —  8.9.5
+ * SetGoCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, gocb [0] IMPLICIT
+ * SEQUENCE OF SetGoCBEntry } — 8.9.5
  */
 public class CmsSetGoCbValuesRequest extends CmsType {
 
-    public CmsReqId                       reqId;
-    public CmsArray<CmsSetGoCbEntry>      gocb;   /* SEQUENCE OF SetGoCBEntry */
+    public CmsReqId reqId;
+    public CmsArray<CmsSetGoCbEntry> gocb; /* SEQUENCE OF SetGoCBEntry */
 
-    public CmsSetGoCbValuesRequest() { super(Codec.SET_GO_CB_VALUES_REQUEST);
+    public CmsSetGoCbValuesRequest() {
+        super(Codec.SET_GO_CB_VALUES_REQUEST);
         this.reqId = new CmsReqId();
-        this.gocb  = new CmsArray<>(CmsSetGoCbEntry.class);
+        this.gocb = new CmsArray<>(CmsSetGoCbEntry.class);
     }
-    
-    public CmsSetGoCbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSetGoCbValuesRequest gocb(CmsArray<CmsSetGoCbEntry> v) { this.gocb = v; return this; }
+
+    public CmsSetGoCbValuesRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSetGoCbValuesRequest gocb(CmsArray<CmsSetGoCbEntry> v) {
+        this.gocb = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

@@ -7,7 +7,6 @@ import com.ysh.jcms.svc.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.svc.data.CmsGetDataDirectoryRequest;
 import com.ysh.jcms.svc.data.CmsGetDataDirectoryResponse;
 import com.ysh.jcms.svc.data.CmsSubRefEntry;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -34,12 +33,12 @@ public class GetDataDirectoryClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<DirEntry> getLastEntries() { return lastEntries; }
+    public List<DirEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest()
-            .reqId(nextReqId())
-            .dataReference(dao.dataReference());
+        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().reqId(nextReqId()).dataReference(dao.dataReference());
 
         if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
             req.refAfter(dao.referenceAfter());
@@ -70,7 +69,8 @@ public class GetDataDirectoryClient extends BaseClientHandler {
                 int fcVal = src.fc.value();
                 if (fcVal >= 0 && fcVal < FunctionalConstraint.values().length) {
                     fc = FunctionalConstraint.values()[fcVal].name();
-                    if ("XX".equals(fc)) fc = null;
+                    if ("XX".equals(fc))
+                        fc = null;
                 }
             }
             entries.add(new DirEntry(ref, fc));

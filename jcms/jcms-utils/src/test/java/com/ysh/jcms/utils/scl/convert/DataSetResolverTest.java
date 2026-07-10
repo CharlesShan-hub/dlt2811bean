@@ -23,24 +23,19 @@ public class DataSetResolverTest {
 
     @Test
     public void testFcdaRef() {
-        SclFCDA fcda = new SclFCDA()
-                .ldInst("C1").lnClass("MMXU").lnInst("1")
-                .doName("Volts").daName("mag");
+        SclFCDA fcda = new SclFCDA().ldInst("C1").lnClass("MMXU").lnInst("1").doName("Volts").daName("mag");
         assertEquals("C1/MMXU1.Volts.mag", DataSetResolver.fcdaRef(fcda));
     }
 
     @Test
     public void testFcdaRefDoLevel() {
-        SclFCDA fcda = new SclFCDA()
-                .ldInst("C1").lnClass("CSWI").lnInst("1")
-                .doName("Pos");
+        SclFCDA fcda = new SclFCDA().ldInst("C1").lnClass("CSWI").lnInst("1").doName("Pos");
         assertEquals("C1/CSWI1.Pos", DataSetResolver.fcdaRef(fcda));
     }
 
     @Test
     public void testFcdaLnName() {
-        SclFCDA fcda = new SclFCDA()
-                .lnClass("MMXU").lnInst("1");
+        SclFCDA fcda = new SclFCDA().lnClass("MMXU").lnInst("1");
         assertEquals("MMXU1", DataSetResolver.fcdaLnName(fcda));
     }
 

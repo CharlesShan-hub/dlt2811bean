@@ -21,20 +21,20 @@ import java.util.Map;
 public class ConnectTlsHandler implements CommandHandler {
 
     @Override
-    public String name() { return "connect-tls"; }
+    public String name() {
+        return "connect-tls";
+    }
 
     @Override
-    public String description() { return "TLS 连接 CMS 服务器（默认端口 9102）。用法: connect-tls [--host ip] [--sap-ref IED/AP] [--apduSize N] [--asduSize N]"; }
+    public String description() {
+        return "TLS 连接 CMS 服务器（默认端口 9102）。用法: connect-tls [--host ip] [--sap-ref IED/AP] [--apduSize N] [--asduSize N]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
-            new Param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""),
-            new Param("apduSize", "APDU 大小", ""),
-            new Param("asduSize", "ASDU 大小", ""),
-            new Param("protocolVersion", "协议版本", "")
-        );
+        return Arrays.asList(new Param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
+                new Param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("apduSize", "APDU 大小", ""),
+                new Param("asduSize", "ASDU 大小", ""), new Param("protocolVersion", "协议版本", ""));
     }
 
     @Override
@@ -51,13 +51,15 @@ public class ConnectTlsHandler implements CommandHandler {
         ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
 
         SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-        sslContext.init(null, new X509TrustManager[]{
-            new X509TrustManager() {
-                public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-                public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-                public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+        sslContext.init(null, new X509TrustManager[]{new X509TrustManager() {
+            public void checkClientTrusted(X509Certificate[] chain, String authType) {
             }
-        }, new SecureRandom());
+            public void checkServerTrusted(X509Certificate[] chain, String authType) {
+            }
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }}, new SecureRandom());
 
         console.connectTls(host, port, sslContext);
 
@@ -73,16 +75,18 @@ public class ConnectTlsHandler implements CommandHandler {
         String apduStr = args.get("apduSize");
         String asduStr = args.get("asduSize");
         String protoStr = args.get("protocolVersion");
-        if (apduStr != null && !apduStr.isEmpty()) negotiateDao.apduSize(Integer.parseInt(apduStr));
-        if (asduStr != null && !asduStr.isEmpty()) negotiateDao.asduSize(Long.parseLong(asduStr));
-        if (protoStr != null && !protoStr.isEmpty()) negotiateDao.protocolVersion(Long.parseLong(protoStr));
+        if (apduStr != null && !apduStr.isEmpty())
+            negotiateDao.apduSize(Integer.parseInt(apduStr));
+        if (asduStr != null && !asduStr.isEmpty())
+            negotiateDao.asduSize(Long.parseLong(asduStr));
+        if (protoStr != null && !protoStr.isEmpty())
+            negotiateDao.protocolVersion(Long.parseLong(protoStr));
 
         console.getClient(NegotiateClient.class).execute(negotiateDao);
 
         ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
 
-        console.getClient(AssociateClient.class)
-            .execute(new AssociateClientDao().sapRef(sapRef).secure(true));
+        console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(true));
 
         ConsolePrinter.success("TLS associated: " + sapRef);
     }

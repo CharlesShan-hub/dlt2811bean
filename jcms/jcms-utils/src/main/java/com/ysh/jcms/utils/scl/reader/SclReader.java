@@ -6,7 +6,6 @@ import com.ysh.jcms.utils.scl.model.SclText;
 import com.ysh.jcms.utils.scl.model.SclVal;
 
 import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.FileInputStream;
@@ -20,8 +19,8 @@ import static javax.xml.stream.XMLStreamConstants.*;
 /**
  * SCL XML 文件解析器。
  * <p>
- * 使用 StAX (XMLStreamReader) 流式解析 SCL/ICD/CID/SSD 文件，
- * 将 XML 转换为纯 SclDocument POJO 模型。
+ * 使用 StAX (XMLStreamReader) 流式解析 SCL/ICD/CID/SSD 文件， 将 XML 转换为纯 SclDocument
+ * POJO 模型。
  * <p>
  * 职责单一：只做 XML → POJO 映射，不含任何业务逻辑。
  */
@@ -88,22 +87,22 @@ public class SclReader {
             int event = reader.nextTag();
             if (event == START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Header":
+                    case "Header" :
                         document.header(SclHeaderParser.parse(reader));
                         break;
-                    case "Substation":
+                    case "Substation" :
                         document.substation(SclSubstationParser.parse(reader));
                         break;
-                    case "Communication":
+                    case "Communication" :
                         document.communication(SclCommunicationParser.parse(reader));
                         break;
-                    case "IED":
+                    case "IED" :
                         document.addIed(SclIedParser.parse(reader));
                         break;
-                    case "DataTypeTemplates":
+                    case "DataTypeTemplates" :
                         document.dataTypeTemplates(SclTemplateParser.parse(reader));
                         break;
-                    default:
+                    default :
                         document.addUnsupportedElement(reader.getLocalName());
                         skipElement(reader);
                         break;
@@ -124,14 +123,16 @@ public class SclReader {
     /** 获取布尔属性，不存在返回 null */
     public static Boolean boolAttr(XMLStreamReader reader, String name) {
         String val = reader.getAttributeValue(null, name);
-        if (val == null) return null;
+        if (val == null)
+            return null;
         return "true".equals(val) || "1".equals(val);
     }
 
     /** 获取整型属性，不存在返回 null */
     public static Integer intAttr(XMLStreamReader reader, String name) {
         String val = reader.getAttributeValue(null, name);
-        if (val == null) return null;
+        if (val == null)
+            return null;
         try {
             return Integer.parseInt(val);
         } catch (NumberFormatException e) {
@@ -155,8 +156,10 @@ public class SclReader {
         int depth = 1;
         while (depth > 0 && reader.hasNext()) {
             int event = reader.next();
-            if (event == START_ELEMENT) depth++;
-            else if (event == END_ELEMENT) depth--;
+            if (event == START_ELEMENT)
+                depth++;
+            else if (event == END_ELEMENT)
+                depth--;
         }
     }
 

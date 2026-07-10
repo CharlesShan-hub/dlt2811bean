@@ -19,8 +19,9 @@ import org.slf4j.LoggerFactory;
 /**
  * SetMSVCBValues server handler.
  *
- * <p>Updates the MSV control block configuration in memory.
- * Persistence to SCL is not supported — changes are lost on restart.
+ * <p>
+ * Updates the MSV control block configuration in memory. Persistence to SCL is
+ * not supported — changes are lost on restart.
  */
 public class SetMsvcbValuesServer extends BaseServerHandler {
 
@@ -39,8 +40,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) rawReq;
         int reqId = req.reqId.value();
-        log.info("SetMSVCBValues from {}: reqId={}, {} entries",
-            session.getSessionId(), reqId, req.msvcb.count);
+        log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.count);
 
         SclDocument doc = getScl2Document(session);
 

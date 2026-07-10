@@ -62,8 +62,7 @@ public class GetSgcbValuesServer extends BaseServerHandler {
 
     private static CmsSgcb buildSgcb(String ref, Session session, int numOfSG) {
         SgcState state = SgSessionState.getState(session.getSessionId());
-        CmsSgcb sgcb = new CmsSgcb()
-            .numOfSG(numOfSG).actSG(state.getActSG()).editSG(state.getEditSG());
+        CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(state.getActSG()).editSG(state.getEditSG());
         sgcb.tActEdt.now();
         sgcb.resvTms_present(false);
         return sgcb;

@@ -19,8 +19,9 @@ import org.slf4j.LoggerFactory;
 /**
  * SetGoCBValues server handler.
  *
- * <p>Updates the GOOSE control block configuration in memory.
- * Persistence to SCL is not supported — changes are lost on restart.
+ * <p>
+ * Updates the GOOSE control block configuration in memory. Persistence to SCL
+ * is not supported — changes are lost on restart.
  */
 public class SetGoCbValuesServer extends BaseServerHandler {
 

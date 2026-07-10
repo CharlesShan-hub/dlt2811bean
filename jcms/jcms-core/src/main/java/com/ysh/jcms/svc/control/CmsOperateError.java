@@ -15,52 +15,76 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Operate-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT ObjectReference,
- *     ctlVal          [1] IMPLICIT Data,
- *     origin          [3] IMPLICIT Originator,
- *     ctlNum          [4] IMPLICIT INT8U,
- *     t               [5] IMPLICIT TimeStamp,
- *     test            [6] IMPLICIT BOOLEAN,
- *     check           [7] IMPLICIT Check,
- *     addCause        [8] IMPLICIT AddCause
- * }  —  8.11.3
+ * Operate-ErrorPDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
+ * ObjectReference, ctlVal [1] IMPLICIT Data, origin [3] IMPLICIT Originator,
+ * ctlNum [4] IMPLICIT INT8U, t [5] IMPLICIT TimeStamp, test [6] IMPLICIT
+ * BOOLEAN, check [7] IMPLICIT Check, addCause [8] IMPLICIT AddCause } — 8.11.3
  */
 public class CmsOperateError extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  reference;
-    public CmsData             ctlVal;
-    public CmsOriginator       origin;
-    public CmsInt8U            ctlNum;
-    public CmsUtcTime        t;
-    public CmsBoolean          test;
-    public CmsCheck            check;
-    public CmsAddCause         addCause;
+    public CmsReqId reqId;
+    public CmsObjectReference reference;
+    public CmsData ctlVal;
+    public CmsOriginator origin;
+    public CmsInt8U ctlNum;
+    public CmsUtcTime t;
+    public CmsBoolean test;
+    public CmsCheck check;
+    public CmsAddCause addCause;
 
-    public CmsOperateError() { super(Codec.OPERATE_ERROR);
-        this.reqId     = new CmsReqId();
+    public CmsOperateError() {
+        super(Codec.OPERATE_ERROR);
+        this.reqId = new CmsReqId();
         this.reference = new CmsObjectReference();
-        this.ctlVal    = new CmsData();
-        this.origin    = new CmsOriginator();
-        this.ctlNum    = new CmsInt8U();
-        this.t         = new CmsUtcTime();
-        this.test      = new CmsBoolean();
-        this.check     = new CmsCheck();
-        this.addCause  = new CmsAddCause();
+        this.ctlVal = new CmsData();
+        this.origin = new CmsOriginator();
+        this.ctlNum = new CmsInt8U();
+        this.t = new CmsUtcTime();
+        this.test = new CmsBoolean();
+        this.check = new CmsCheck();
+        this.addCause = new CmsAddCause();
     }
-    
-    public CmsOperateError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsOperateError reference(byte[] v) { this.reference.value(v); return this; }
-    public CmsOperateError reference(String v) { this.reference.value(v); return this; }
-    public CmsOperateError ctlVal(CmsData v) { this.ctlVal = v; return this; }
-    public CmsOperateError origin(CmsOriginator v) { this.origin = v; return this; }
-    public CmsOperateError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsOperateError t(CmsUtcTime v) { this.t = v; return this; }
-    public CmsOperateError test(boolean v) { this.test.value(v); return this; }
-    public CmsOperateError check(CmsCheck v) { this.check = v; return this; }
-    public CmsOperateError addCause(int v) { this.addCause.value(v); return this; }
+
+    public CmsOperateError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsOperateError reference(byte[] v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsOperateError reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsOperateError ctlVal(CmsData v) {
+        this.ctlVal = v;
+        return this;
+    }
+    public CmsOperateError origin(CmsOriginator v) {
+        this.origin = v;
+        return this;
+    }
+    public CmsOperateError ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsOperateError t(CmsUtcTime v) {
+        this.t = v;
+        return this;
+    }
+    public CmsOperateError test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsOperateError check(CmsCheck v) {
+        this.check = v;
+        return this;
+    }
+    public CmsOperateError addCause(int v) {
+        this.addCause.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

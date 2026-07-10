@@ -13,17 +13,18 @@ import java.util.Map;
 public class GetSgcbValuesConsole implements CommandHandler {
 
     @Override
-    public String name() { return "sgcb-vals"; }
+    public String name() {
+        return "sgcb-vals";
+    }
 
     @Override
-    public String description() { return "获取定值组控制块值 (GetSGCBValues)。用法: sgcb-vals --refs \"<ref1> <ref2>...\" [--json]"; }
+    public String description() {
+        return "获取定值组控制块值 (GetSGCBValues)。用法: sgcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("refs", "SGCB 引用列表（空格分隔），如 \"LD0/LLN0.SG1\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("refs", "SGCB 引用列表（空格分隔），如 \"LD0/LLN0.SG1\"", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -53,7 +54,8 @@ public class GetSgcbValuesConsole implements CommandHandler {
         String[] refs = refsStr.trim().split("\\s+");
         GetSgcbValuesDao dao = new GetSgcbValuesDao();
         for (String ref : refs) {
-            if (!ref.isEmpty()) dao.addRef(ref.trim());
+            if (!ref.isEmpty())
+                dao.addRef(ref.trim());
         }
 
         if (!jsonMode) {
@@ -62,8 +64,7 @@ public class GetSgcbValuesConsole implements CommandHandler {
 
         console.getClient(GetSgcbValuesClient.class).execute(dao);
 
-        List<GetSgcbValuesClient.SgcbResult> results =
-            console.getClient(GetSgcbValuesClient.class).getLastResults();
+        List<GetSgcbValuesClient.SgcbResult> results = console.getClient(GetSgcbValuesClient.class).getLastResults();
 
         if (results.isEmpty()) {
             if (jsonMode) {
@@ -79,7 +80,8 @@ public class GetSgcbValuesConsole implements CommandHandler {
             for (int i = 0; i < results.size(); i++) {
                 GetSgcbValuesClient.SgcbResult r = results.get(i);
                 String ref = i < refs.length ? refs[i] : "#" + i;
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(ref)).append("\"");
                 sb.append(",\"success\":").append(r.success);
                 sb.append(",\"numOfSG\":").append(r.numOfSG);
@@ -102,9 +104,7 @@ public class GetSgcbValuesConsole implements CommandHandler {
                 }
                 display.add(new RefResultPair(ref, detail));
             }
-            ConsolePrinter.list("SGCB values (" + results.size() + " items)",
-                display,
-                p -> p.ref + "  " + p.detail);
+            ConsolePrinter.list("SGCB values (" + results.size() + " items)", display, p -> p.ref + "  " + p.detail);
         }
     }
 
@@ -112,7 +112,8 @@ public class GetSgcbValuesConsole implements CommandHandler {
         final String ref;
         final String detail;
         RefResultPair(String ref, String detail) {
-            this.ref = ref; this.detail = detail;
+            this.ref = ref;
+            this.detail = detail;
         }
     }
 }

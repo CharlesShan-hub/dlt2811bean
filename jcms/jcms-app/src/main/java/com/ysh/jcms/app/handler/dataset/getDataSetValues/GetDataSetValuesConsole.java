@@ -12,26 +12,24 @@ import java.util.Map;
 
 public class GetDataSetValuesConsole implements CommandHandler {
 
-    private static final String[] CHOICE_NAMES = {
-        "error", "array", "structure", "boolean", "int8", "int16", "int32", "int64",
-        "int8u", "int16u", "int32u", "int64u", "float32", "float64",
-        "bit-string", "octet-string", "visible-string", "unicode-string",
-        "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"
-    };
+    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
+            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
+            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
 
     @Override
-    public String name() { return "get-dataset-values"; }
+    public String name() {
+        return "get-dataset-values";
+    }
 
     @Override
-    public String description() { return "获取数据集值 (GetDataSetValues)。用法: get-dataset-values --ds <ref> [--after REF] [--json]"; }
+    public String description() {
+        return "获取数据集值 (GetDataSetValues)。用法: get-dataset-values --ds <ref> [--after REF] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null),
-            new Param("after", "起始引用（分页截取）", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("after", "起始引用（分页截取）", ""),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -56,8 +54,7 @@ public class GetDataSetValuesConsole implements CommandHandler {
             return;
         }
 
-        GetDataSetValuesDao dao = new GetDataSetValuesDao()
-            .datasetReference(dsRef.trim());
+        GetDataSetValuesDao dao = new GetDataSetValuesDao().datasetReference(dsRef.trim());
 
         String after = args.get("after");
         if (after != null && !after.isEmpty()) {
@@ -70,8 +67,7 @@ public class GetDataSetValuesConsole implements CommandHandler {
 
         console.getClient(GetDataSetValuesClient.class).execute(dao);
 
-        List<GetDataSetValuesClient.DataSetValue> values =
-            console.getClient(GetDataSetValuesClient.class).getLastValues();
+        List<GetDataSetValuesClient.DataSetValue> values = console.getClient(GetDataSetValuesClient.class).getLastValues();
 
         if (values.isEmpty()) {
             if (jsonMode) {
@@ -85,23 +81,20 @@ public class GetDataSetValuesConsole implements CommandHandler {
         if (jsonMode) {
             StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
             for (int i = 0; i < values.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 GetDataSetValuesClient.DataSetValue v = values.get(i);
-                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length
-                    ? CHOICE_NAMES[v.choiceType] : "?";
-                sb.append("{\"type\":\"").append(CmsFormatUtil.escapeJson(typeName))
-                  .append("\",\"value\":\"").append(CmsFormatUtil.escapeJson(v.valueString)).append("\"}");
+                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                sb.append("{\"type\":\"").append(CmsFormatUtil.escapeJson(typeName)).append("\",\"value\":\"")
+                        .append(CmsFormatUtil.escapeJson(v.valueString)).append("\"}");
             }
             sb.append("]}");
             ConsolePrinter.raw(sb.toString());
         } else {
-            ConsolePrinter.list("DataSet values (" + values.size() + " items)",
-                new java.util.ArrayList<>(values),
-                v -> {
-                    String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length
-                        ? CHOICE_NAMES[v.choiceType] : "?";
-                    return "[" + typeName + "] " + v.valueString;
-                });
+            ConsolePrinter.list("DataSet values (" + values.size() + " items)", new java.util.ArrayList<>(values), v -> {
+                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                return "[" + typeName + "] " + v.valueString;
+            });
         }
     }
 }

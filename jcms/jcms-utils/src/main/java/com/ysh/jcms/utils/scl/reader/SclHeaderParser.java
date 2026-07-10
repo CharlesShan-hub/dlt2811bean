@@ -24,13 +24,13 @@ public class SclHeaderParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Text":
+                    case "Text" :
                         header.text(parseTextChild(reader));
                         break;
-                    case "History":
+                    case "History" :
                         parseHistory(reader, header);
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }

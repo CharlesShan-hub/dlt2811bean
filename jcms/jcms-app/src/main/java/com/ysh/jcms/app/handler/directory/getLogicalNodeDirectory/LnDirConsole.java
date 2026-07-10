@@ -35,19 +35,21 @@ public class LnDirConsole implements CommandHandler {
     }
 
     @Override
-    public String name() { return "ln-dir"; }
+    public String name() {
+        return "ln-dir";
+    }
 
     @Override
-    public String description() { return "获取逻辑节点子目录 (GetLogicalNodeDirectory)。用法: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF] [--json]"; }
+    public String description() {
+        return "获取逻辑节点子目录 (GetLogicalNodeDirectory)。用法: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF] [--json]";
+    }
 
     @Override
     public List<Param> params() {
         return Arrays.asList(
-            new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null),
-            new Param("acsi", "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)", "data-object"),
-            new Param("after", "起始引用（分页截取）", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+                new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null), new Param("acsi",
+                        "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)", "data-object"),
+                new Param("after", "起始引用（分页截取）", ""), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -75,16 +77,16 @@ public class LnDirConsole implements CommandHandler {
         Integer acsi = ACSI_MAP.get(acsiStr);
         if (acsi == null) {
             if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Unknown ACSI class: " + CmsFormatUtil.escapeJson(args.get("acsi")) + "\"}");
+                ConsolePrinter
+                        .raw("{\"success\":false,\"error\":\"Unknown ACSI class: " + CmsFormatUtil.escapeJson(args.get("acsi")) + "\"}");
             } else {
                 ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi")
-                    + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)");
+                        + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)");
             }
             return;
         }
 
-        LnDirDao dao = new LnDirDao()
-            .acsiClass(acsi);
+        LnDirDao dao = new LnDirDao().acsiClass(acsi);
         if (target.contains("/")) {
             dao.lnReference(target);
         } else {
@@ -101,7 +103,8 @@ public class LnDirConsole implements CommandHandler {
         if (jsonMode) {
             StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
             for (int i = 0; i < items.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 sb.append('"').append(CmsFormatUtil.escapeJson(items.get(i))).append('"');
             }
             sb.append("]}");

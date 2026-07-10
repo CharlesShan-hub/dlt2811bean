@@ -12,7 +12,9 @@ import java.io.IOException;
 
 public class SetUrcbValuesClient extends BaseClientHandler {
 
-    public SetUrcbValuesClient(CmsNode node) { super(node); }
+    public SetUrcbValuesClient(CmsNode node) {
+        super(node);
+    }
 
     public void execute(SetUrcbValuesDao dao) throws Exception {
         CmsSetUrcbValuesRequest req = dao.toRequest(nextReqId());
@@ -26,8 +28,7 @@ public class SetUrcbValuesClient extends BaseClientHandler {
         StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
         for (int i = 0; i < err.result.count; i++) {
             if (err.result.items.get(i).errorPresent.value()) {
-                sb.append(" entry[").append(i).append("] error=")
-                  .append(err.result.items.get(i).error.value());
+                sb.append(" entry[").append(i).append("] error=").append(err.result.items.get(i).error.value());
             }
         }
         throw new IOException(sb.toString());

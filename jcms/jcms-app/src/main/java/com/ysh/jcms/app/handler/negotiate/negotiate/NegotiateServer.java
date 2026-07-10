@@ -34,15 +34,11 @@ public class NegotiateServer extends BaseServerHandler {
         session.setNegotiated(true);
         session.getConnection().setMaxFrameSize(negotiatedApduSize);
 
-        log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}",
-            negotiatedApduSize, config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
+        log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", negotiatedApduSize,
+                config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
 
-        return buildSuccess(new CmsNegotiateResponse()
-            .reqId(reqId)
-            .apduSize(negotiatedApduSize)
-            .asduSize(config.getAsduSize())
-            .protocolVersion(config.getProtocolVersion())
-            .modelVersion(config.getModelVersion().getBytes(java.nio.charset.StandardCharsets.UTF_8))
-            .encode(), reqId);
+        return buildSuccess(new CmsNegotiateResponse().reqId(reqId).apduSize(negotiatedApduSize).asduSize(config.getAsduSize())
+                .protocolVersion(config.getProtocolVersion())
+                .modelVersion(config.getModelVersion().getBytes(java.nio.charset.StandardCharsets.UTF_8)).encode(), reqId);
     }
 }

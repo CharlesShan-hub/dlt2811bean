@@ -13,19 +13,19 @@ import java.util.Map;
 public class GetFileConsole implements CommandHandler {
 
     @Override
-    public String name() { return "get-file"; }
+    public String name() {
+        return "get-file";
+    }
 
     @Override
-    public String description() { return "读文件 (GetFile, 8.12.1)。\n" +
-        "  用法: get-file --file /remote/path [--output ./local.txt] [--json]"; }
+    public String description() {
+        return "读文件 (GetFile, 8.12.1)。\n" + "  用法: get-file --file /remote/path [--output ./local.txt] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("file", "远程文件路径，如 \"/config/myfile.txt\"", null),
-            new Param("output", "本地保存路径（可选），不指定则只打印信息", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("file", "远程文件路径，如 \"/config/myfile.txt\"", null), new Param("output", "本地保存路径（可选），不指定则只打印信息", ""),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override

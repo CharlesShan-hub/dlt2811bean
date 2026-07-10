@@ -10,27 +10,35 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetServerDirectory-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT SEQUENCE OF ObjectReference,
- *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
- * }  —  8.3.1
+ * GetServerDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, reference [0]
+ * IMPLICIT SEQUENCE OF ObjectReference, moreFollows [1] IMPLICIT BOOLEAN
+ * DEFAULT TRUE } — 8.3.1
  */
 public class CmsGetServerDirectoryResponse extends CmsType {
 
-    public CmsReqId                    reqId;
-    public CmsArray<CmsObjectReference> reference;   /* SEQUENCE OF ObjectReference */
-    public CmsBoolean                   moreFollows; /* DEFAULT TRUE */
+    public CmsReqId reqId;
+    public CmsArray<CmsObjectReference> reference; /* SEQUENCE OF ObjectReference */
+    public CmsBoolean moreFollows; /* DEFAULT TRUE */
 
-    public CmsGetServerDirectoryResponse() { super(Codec.GET_SERVER_DIRECTORY_RESPONSE);
-        this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>(CmsObjectReference.class);
+    public CmsGetServerDirectoryResponse() {
+        super(Codec.GET_SERVER_DIRECTORY_RESPONSE);
+        this.reqId = new CmsReqId();
+        this.reference = new CmsArray<>(CmsObjectReference.class);
         this.moreFollows = new CmsBoolean();
     }
-    
-    public CmsGetServerDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetServerDirectoryResponse reference(CmsArray<CmsObjectReference> v) { this.reference = v; return this; }
-    public CmsGetServerDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
+    public CmsGetServerDirectoryResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetServerDirectoryResponse reference(CmsArray<CmsObjectReference> v) {
+        this.reference = v;
+        return this;
+    }
+    public CmsGetServerDirectoryResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

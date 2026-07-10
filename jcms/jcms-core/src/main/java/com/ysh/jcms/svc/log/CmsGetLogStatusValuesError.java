@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetLogStatusValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.8.6
+ * GetLogStatusValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.8.6
  */
 public class CmsGetLogStatusValuesError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetLogStatusValuesError() { super(Codec.GET_LOG_STATUS_VALUES_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetLogStatusValuesError() {
+        super(Codec.GET_LOG_STATUS_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetLogStatusValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetLogStatusValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetLogStatusValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetLogStatusValuesError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

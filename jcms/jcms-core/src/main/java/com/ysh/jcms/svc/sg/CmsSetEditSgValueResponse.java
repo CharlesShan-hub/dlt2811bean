@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetEditSGValue-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.6.3
+ * SetEditSGValue-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.6.3
  */
 public class CmsSetEditSgValueResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetEditSgValueResponse() { super(Codec.SET_EDIT_SG_VALUE_RESPONSE);
+    public CmsSetEditSgValueResponse() {
+        super(Codec.SET_EDIT_SG_VALUE_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsSetEditSgValueResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsSetEditSgValueResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

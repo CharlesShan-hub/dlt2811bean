@@ -98,7 +98,8 @@ import com.ysh.jcms.app.handler.test.test.TestConsole;
 /**
  * Client-side CMS console.
  *
- * <p>Connects to a remote CMS server and issues commands interactively.
+ * <p>
+ * Connects to a remote CMS server and issues commands interactively.
  */
 public class CmsClientConsole extends CmsConsole {
 
@@ -114,8 +115,8 @@ public class CmsClientConsole extends CmsConsole {
         // Start embedded API server (for remote execution via cms.ps1)
         String apiEnabled = System.getProperty("cms.api.enabled", "true");
         if (!"false".equalsIgnoreCase(apiEnabled)) {
-            int apiPort = Integer.parseInt(System.getProperty("cms.api.port",
-                String.valueOf(CmsConfigLoader.load().getClient().getConsole().getApiPort())));
+            int apiPort = Integer.parseInt(
+                    System.getProperty("cms.api.port", String.valueOf(CmsConfigLoader.load().getClient().getConsole().getApiPort())));
             try {
                 apiServer = new CliApiServer(apiPort, this);
                 apiServer.start();

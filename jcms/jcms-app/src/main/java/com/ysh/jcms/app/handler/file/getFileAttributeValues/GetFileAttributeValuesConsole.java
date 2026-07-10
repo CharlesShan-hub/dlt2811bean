@@ -13,18 +13,18 @@ import java.util.Map;
 public class GetFileAttributeValuesConsole implements CommandHandler {
 
     @Override
-    public String name() { return "get-file-attrs"; }
+    public String name() {
+        return "get-file-attrs";
+    }
 
     @Override
-    public String description() { return "读文件属性值 (GetFileAttributeValues, 8.12.4)。\n" +
-        "  用法: get-file-attrs --file /path/to/file [--json]"; }
+    public String description() {
+        return "读文件属性值 (GetFileAttributeValues, 8.12.4)。\n" + "  用法: get-file-attrs --file /path/to/file [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("file", "文件路径，如 \"/config/myfile.txt\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -57,8 +57,7 @@ public class GetFileAttributeValuesConsole implements CommandHandler {
 
         console.getClient(GetFileAttributeValuesClient.class).execute(dao);
 
-        GetFileAttributeValuesClient.FileAttrResult result =
-            console.getClient(GetFileAttributeValuesClient.class).getLastResult();
+        GetFileAttributeValuesClient.FileAttrResult result = console.getClient(GetFileAttributeValuesClient.class).getLastResult();
 
         if (result == null) {
             if (jsonMode) {
@@ -70,11 +69,9 @@ public class GetFileAttributeValuesConsole implements CommandHandler {
         }
 
         if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"data\":{" +
-                "\"fileName\":\"" + CmsFormatUtil.escapeJson(result.fileName) + "\"," +
-                "\"fileSize\":" + result.fileSize + "," +
-                "\"lastModified\":" + result.lastModified + "," +
-                "\"checkSum\":" + result.checkSum + "}}");
+            ConsolePrinter.raw("{\"success\":true,\"data\":{" + "\"fileName\":\"" + CmsFormatUtil.escapeJson(result.fileName) + "\","
+                    + "\"fileSize\":" + result.fileSize + "," + "\"lastModified\":" + result.lastModified + "," + "\"checkSum\":"
+                    + result.checkSum + "}}");
         } else {
             ConsolePrinter.info("  fileName=" + result.fileName);
             ConsolePrinter.info("  fileSize=" + result.fileSize);

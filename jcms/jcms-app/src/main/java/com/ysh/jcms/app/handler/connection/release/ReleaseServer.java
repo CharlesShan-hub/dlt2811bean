@@ -30,10 +30,7 @@ public class ReleaseServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
         }
 
-        byte[] respBytes = new CmsReleaseResponse()
-            .reqId(reqId)
-            .serviceError(CmsServiceError.NO_ERROR)
-            .encode();
+        byte[] respBytes = new CmsReleaseResponse().reqId(reqId).serviceError(CmsServiceError.NO_ERROR).encode();
 
         session.clear();
         session.setState(SessionState.CONNECTED);

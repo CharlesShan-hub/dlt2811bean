@@ -9,14 +9,17 @@ import java.util.List;
 /**
  * FrameCodec — stateless frame encoding, decoding, and splitting.
  *
- * <p>Wire format:
+ * <p>
+ * Wire format:
+ *
  * <pre>
  * [FL:2][FrameHeader:4][ASDU:FL-4]
  * </pre>
  */
 public class FrameCodec {
 
-    private FrameCodec() {}
+    private FrameCodec() {
+    }
 
     public static byte[] encode(Frame frame) throws IOException {
         int fl = FrameHeader.HEADER_SIZE + frame.asduBytes().length;
@@ -32,7 +35,8 @@ public class FrameCodec {
     }
 
     public static Frame decode(byte[] data, int offset) {
-        if (data.length - offset < 6) throw new IllegalArgumentException("Frame too short");
+        if (data.length - offset < 6)
+            throw new IllegalArgumentException("Frame too short");
 
         int fl = ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
         FrameHeader header = FrameHeader.decode(data, offset + 2);
@@ -50,7 +54,8 @@ public class FrameCodec {
         if (maxPayloadSize <= 0) {
             throw new IllegalArgumentException("maxPayloadSize must be > 0");
         }
-        if (asdu.length <= maxPayloadSize) return Collections.singletonList(frame);
+        if (asdu.length <= maxPayloadSize)
+            return Collections.singletonList(frame);
 
         int offset = 0;
         int segCount = (asdu.length + maxPayloadSize - 1) / maxPayloadSize;
@@ -61,11 +66,8 @@ public class FrameCodec {
             byte[] chunk = new byte[chunkLen];
             System.arraycopy(asdu, offset, chunk, 0, chunkLen);
 
-            FrameHeader segHdr = new FrameHeader()
-                .resp(frame.header().resp())
-                .err(frame.header().err())
-                .serviceCode(frame.header().serviceCode())
-                .next(!isLast);
+            FrameHeader segHdr = new FrameHeader().resp(frame.header().resp()).err(frame.header().err())
+                    .serviceCode(frame.header().serviceCode()).next(!isLast);
 
             segments[i] = new Frame(segHdr, chunk, frame.reqId());
             offset += chunkLen;
@@ -74,12 +76,15 @@ public class FrameCodec {
     }
 
     public static Frame merge(List<Frame> segments) {
-        if (segments.isEmpty()) throw new IllegalArgumentException("No segments to merge");
-        if (segments.size() == 1) return segments.get(0);
+        if (segments.isEmpty())
+            throw new IllegalArgumentException("No segments to merge");
+        if (segments.size() == 1)
+            return segments.get(0);
 
         Frame last = segments.get(segments.size() - 1);
         int total = 0;
-        for (Frame seg : segments) total += seg.asduBytes().length;
+        for (Frame seg : segments)
+            total += seg.asduBytes().length;
 
         byte[] merged = new byte[total];
         int pos = 0;

@@ -13,19 +13,20 @@ import java.util.Map;
 public class GetGooseElementNumberConsole implements CommandHandler {
 
     @Override
-    public String name() { return "get-goose-elem-num"; }
+    public String name() {
+        return "get-goose-elem-num";
+    }
 
     @Override
-    public String description() { return "读 GOOSE 元素序号 (GetGOOSEElementNumber, 8.9.3) [--json]。\n" +
-        "  用法: get-goose-elem-num --ref LD0/LLN0.gocb1 --members \"ref1:fc1 ref2:fc2\""; }
+    public String description() {
+        return "读 GOOSE 元素序号 (GetGOOSEElementNumber, 8.9.3) [--json]。\n"
+                + "  用法: get-goose-elem-num --ref LD0/LLN0.gocb1 --members \"ref1:fc1 ref2:fc2\"";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null),
-            new Param("members", "成员列表（空格分隔），格式 ref:fc，如 \"LD0/LLN0.DO1:1 LD0/LLN0.DO2:6\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null),
+                new Param("members", "成员列表（空格分隔），格式 ref:fc，如 \"LD0/LLN0.DO1:1 LD0/LLN0.DO2:6\"", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -62,11 +63,13 @@ public class GetGooseElementNumberConsole implements CommandHandler {
 
         GetGooseElementNumberDao dao = new GetGooseElementNumberDao().gocbReference(ref.trim());
         for (String s : membersStr.trim().split("\\s+")) {
-            if (s.isEmpty()) continue;
+            if (s.isEmpty())
+                continue;
             String[] parts = s.split(":");
             if (parts.length < 2) {
                 if (jsonMode) {
-                    ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid member spec: " + CmsFormatUtil.escapeJson(s) + " (expected ref:fc)\"}");
+                    ConsolePrinter.raw(
+                            "{\"success\":false,\"error\":\"Invalid member spec: " + CmsFormatUtil.escapeJson(s) + " (expected ref:fc)\"}");
                 } else {
                     ConsolePrinter.error("Invalid member spec: " + s + " (expected ref:fc)");
                 }
@@ -81,8 +84,7 @@ public class GetGooseElementNumberConsole implements CommandHandler {
 
         console.getClient(GetGooseElementNumberClient.class).execute(dao);
 
-        GetGooseElementNumberClient.ElementNumberResult result =
-            console.getClient(GetGooseElementNumberClient.class).getLastResult();
+        GetGooseElementNumberClient.ElementNumberResult result = console.getClient(GetGooseElementNumberClient.class).getLastResult();
 
         if (result == null) {
             if (jsonMode) {
@@ -100,7 +102,8 @@ public class GetGooseElementNumberConsole implements CommandHandler {
             sb.append("\"datSet\":\"").append(CmsFormatUtil.escapeJson(result.datSet)).append("\",");
             sb.append("\"memberOffsets\":[");
             for (int i = 0; i < result.memberOffsets.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 sb.append(result.memberOffsets.get(i));
             }
             sb.append("]}");

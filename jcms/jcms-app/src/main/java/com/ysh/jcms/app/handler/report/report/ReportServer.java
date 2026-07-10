@@ -20,8 +20,8 @@ public class ReportServer extends BaseServerHandler {
     @Override
     protected Frame onDecodeSuccess(Session session, CmsType rawReq) {
         CmsReport report = (CmsReport) rawReq;
-        log.info("REPORT received from {}: rptID={}, entryData={}",
-            session.getSessionId(), str(report.rptID.value()), report.entry.entryData.count);
+        log.info("REPORT received from {}: rptID={}, entryData={}", session.getSessionId(), str(report.rptID.value()),
+                report.entry.entryData.count);
         return null;
     }
 }

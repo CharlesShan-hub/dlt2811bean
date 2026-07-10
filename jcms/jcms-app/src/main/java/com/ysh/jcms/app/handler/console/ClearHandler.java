@@ -11,13 +11,19 @@ import java.util.Map;
 public class ClearHandler implements CommandHandler {
 
     @Override
-    public String name() { return "clear"; }
+    public String name() {
+        return "clear";
+    }
 
     @Override
-    public String description() { return "清空屏幕"; }
+    public String description() {
+        return "清空屏幕";
+    }
 
     @Override
-    public List<Param> params() { return Collections.emptyList(); }
+    public List<Param> params() {
+        return Collections.emptyList();
+    }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {

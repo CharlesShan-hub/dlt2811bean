@@ -12,26 +12,24 @@ import java.util.Map;
 
 public class GetDataDefinitionConsole implements CommandHandler {
 
-    private static final String[] CHOICE_NAMES = {
-        "error", "array", "structure", "boolean", "int8", "int16", "int32", "int64",
-        "int8u", "int16u", "int32u", "int64u", "float32", "float64",
-        "bit-string", "octet-string", "visible-string", "unicode-string",
-        "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"
-    };
+    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
+            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
+            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
 
     @Override
-    public String name() { return "get-data-def"; }
+    public String name() {
+        return "get-data-def";
+    }
 
     @Override
-    public String description() { return "获取数据定义 (GetDataDefinition)。用法: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC] [--json]"; }
+    public String description() {
+        return "获取数据定义 (GetDataDefinition)。用法: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC] [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("refs", "数据引用列表（空格分隔），如 \"LD0/LLN0.Mod LD0/LLN0.Beh.stVal\"", null),
-            new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("refs", "数据引用列表（空格分隔），如 \"LD0/LLN0.Mod LD0/LLN0.Beh.stVal\"", null),
+                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -63,11 +61,13 @@ public class GetDataDefinitionConsole implements CommandHandler {
         if (fcStr != null && !fcStr.isEmpty() && !"XX".equalsIgnoreCase(fcStr)) {
             int fcCode = com.ysh.jcms.data.fc.CmsFC.fromString(fcStr);
             for (String ref : refs) {
-                if (!ref.isEmpty()) dao.addRef(ref, fcCode);
+                if (!ref.isEmpty())
+                    dao.addRef(ref, fcCode);
             }
         } else {
             for (String ref : refs) {
-                if (!ref.isEmpty()) dao.addRef(ref);
+                if (!ref.isEmpty())
+                    dao.addRef(ref);
             }
         }
 
@@ -77,8 +77,7 @@ public class GetDataDefinitionConsole implements CommandHandler {
 
         console.getClient(GetDataDefinitionClient.class).execute(dao);
 
-        List<GetDataDefinitionClient.DefEntry> entries =
-            console.getClient(GetDataDefinitionClient.class).getLastEntries();
+        List<GetDataDefinitionClient.DefEntry> entries = console.getClient(GetDataDefinitionClient.class).getLastEntries();
 
         if (entries.isEmpty()) {
             ConsolePrinter.info("No data definitions returned");
@@ -88,8 +87,7 @@ public class GetDataDefinitionConsole implements CommandHandler {
         List<RefDefPair> displayPairs = new java.util.ArrayList<>();
         for (int i = 0; i < entries.size(); i++) {
             GetDataDefinitionClient.DefEntry e = entries.get(i);
-            String typeName = e.choiceType >= 0 && e.choiceType < CHOICE_NAMES.length
-                ? CHOICE_NAMES[e.choiceType] : "?";
+            String typeName = e.choiceType >= 0 && e.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[e.choiceType] : "?";
             String ref = i < refs.length ? refs[i] : "#" + i;
             String cdcPart = e.cdcType.isEmpty() ? "" : "  cdc=" + e.cdcType;
             displayPairs.add(new RefDefPair(ref, typeName, cdcPart));
@@ -97,7 +95,8 @@ public class GetDataDefinitionConsole implements CommandHandler {
         if (jsonMode) {
             StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
             for (int i = 0; i < displayPairs.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 RefDefPair p = displayPairs.get(i);
                 String val = p.ref + "  [" + p.typeName + "]" + p.cdcPart;
                 sb.append('"').append(CmsFormatUtil.escapeJson(val)).append('"');
@@ -105,9 +104,8 @@ public class GetDataDefinitionConsole implements CommandHandler {
             sb.append("]}");
             ConsolePrinter.raw(sb.toString());
         } else {
-            ConsolePrinter.list("Data definitions (" + entries.size() + " items)",
-                displayPairs,
-                p -> p.ref + "  [" + p.typeName + "]" + p.cdcPart);
+            ConsolePrinter.list("Data definitions (" + entries.size() + " items)", displayPairs,
+                    p -> p.ref + "  [" + p.typeName + "]" + p.cdcPart);
         }
     }
 
@@ -116,7 +114,9 @@ public class GetDataDefinitionConsole implements CommandHandler {
         final String typeName;
         final String cdcPart;
         RefDefPair(String ref, String typeName, String cdcPart) {
-            this.ref = ref; this.typeName = typeName; this.cdcPart = cdcPart;
+            this.ref = ref;
+            this.typeName = typeName;
+            this.cdcPart = cdcPart;
         }
     }
 }

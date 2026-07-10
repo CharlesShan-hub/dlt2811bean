@@ -10,24 +10,21 @@ import java.util.regex.Pattern;
  * <p>
  * 支持格式：
  * <ul>
- *   <li>{@code LD/LN} — LN 级别</li>
- *   <li>{@code LD/LN.DO[.SDI]...[.DA][FC]} — DO/DA 级别</li>
- *   <li>{@code IED/LD/LN[.DO[.SDI]...[.DA]][FC]} — 带 IED 前缀</li>
+ * <li>{@code LD/LN} — LN 级别</li>
+ * <li>{@code LD/LN.DO[.SDI]...[.DA][FC]} — DO/DA 级别</li>
+ * <li>{@code IED/LD/LN[.DO[.SDI]...[.DA]][FC]} — 带 IED 前缀</li>
  * </ul>
  */
 public final class SclRefParser {
 
     // 不带 IED: LD/LN[.X[.Y]...][FC] — 捕获 LD/LN，剩余手工解析
-    private static final Pattern REF_PATTERN = Pattern.compile(
-            "([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?"
-    );
+    private static final Pattern REF_PATTERN = Pattern.compile("([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?");
 
     // 带 IED: IED/LD/LN[.X[.Y]...][FC]
-    private static final Pattern FULL_REF_PATTERN = Pattern.compile(
-            "([^/]+)/([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?"
-    );
+    private static final Pattern FULL_REF_PATTERN = Pattern.compile("([^/]+)/([^/]+)/([^.]+)(?:\\..+)?(?:\\[([^\\]]+)\\])?");
 
-    private SclRefParser() {}
+    private SclRefParser() {
+    }
 
     public static SclRef parse(String ref) {
         if (ref == null || ref.trim().isEmpty()) {
@@ -77,7 +74,8 @@ public final class SclRefParser {
             if (bracketStart >= 0) {
                 fcPart = dotPart.substring(bracketStart + 1, dotPart.length() - 1);
                 dotPart = dotPart.substring(0, bracketStart);
-                if (fc == null) fc = fcPart;
+                if (fc == null)
+                    fc = fcPart;
             }
             // 按 "." 分割
             String[] parts = dotPart.split("\\.");
@@ -95,15 +93,14 @@ public final class SclRefParser {
             }
         }
 
-        return new SclRef(iedName, ldInst, lnName, doName,
-                sdiChain.isEmpty() ? null : sdiChain, daName, fc);
+        return new SclRef(iedName, ldInst, lnName, doName, sdiChain.isEmpty() ? null : sdiChain, daName, fc);
     }
 
     public static boolean isValid(String ref) {
-        if (ref == null || ref.trim().isEmpty()) return false;
+        if (ref == null || ref.trim().isEmpty())
+            return false;
         String trimmed = ref.trim();
-        return FULL_REF_PATTERN.matcher(trimmed).matches()
-                || REF_PATTERN.matcher(trimmed).matches();
+        return FULL_REF_PATTERN.matcher(trimmed).matches() || REF_PATTERN.matcher(trimmed).matches();
     }
 
     public static String extractLnReference(String ref) {

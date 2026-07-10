@@ -9,8 +9,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 /**
  * Client-side handler for Abort service (one-way, no response).
  *
- * <p>Sends an Abort-RequestPDU and immediately closes the session.
- * No response is expected.
+ * <p>
+ * Sends an Abort-RequestPDU and immediately closes the session. No response is
+ * expected.
  */
 public class AbortClient extends BaseClientHandler {
 
@@ -19,9 +20,7 @@ public class AbortClient extends BaseClientHandler {
     }
 
     public void execute(AbortClientDao dao) throws Exception {
-        CmsAbort req = new CmsAbort()
-            .reqId(0)
-            .reason(dao.reason());
+        CmsAbort req = new CmsAbort().reqId(0).reason(dao.reason());
 
         sendOneWay(ServiceName.ABORT, req);
     }

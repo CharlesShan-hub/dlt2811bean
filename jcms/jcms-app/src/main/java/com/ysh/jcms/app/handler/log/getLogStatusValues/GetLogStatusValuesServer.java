@@ -40,8 +40,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
         CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) rawReq;
         int reqId = req.reqId.value();
 
-        log.info("GetLogStatusValues from {}: reqId={}, {} refs",
-            session.getSessionId(), reqId, req.logReference.count);
+        log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.count);
 
         CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse().reqId(reqId);
 
@@ -50,8 +49,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
             LogStorage.LogStatus status = logStorage.getStatus(logRef);
 
             CmsLogStatusValueChoice choice = new CmsLogStatusValueChoice();
-            if (status == LogStorage.LogStatus.EMPTY ||
-                (status.newestTimeMsOfDay == 0 && status.newestTimeDays == 0)) {
+            if (status == LogStorage.LogStatus.EMPTY || (status.newestTimeMsOfDay == 0 && status.newestTimeDays == 0)) {
                 // 无日志，返回 ServiceError=0（表示无状态）
                 choice.choice(CmsLogStatusValueChoice.ERROR);
                 choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);

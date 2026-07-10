@@ -35,20 +35,24 @@ public class LdDirServer extends BaseServerHandler {
         log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}", session.getSessionId(), reqId, ldName);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         List<String> lnNames;
         if (ldName != null) {
             SclLDevice device = findLdByInst(doc, ldName);
-            if (device == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            if (device == null)
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             lnNames = getLnNames(device, refAfter);
         } else {
             lnNames = getAllLnNames(doc, refAfter);
         }
-        if (lnNames == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (lnNames == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse().reqId(reqId);
-        for (String name : lnNames) resp.lnReference.add(new CmsSubReference(name));
+        for (String name : lnNames)
+            resp.lnReference.add(new CmsSubReference(name));
         resp.moreFollows(false);
         return ok(resp, reqId);
     }
@@ -59,7 +63,8 @@ public class LdDirServer extends BaseServerHandler {
                 SclServer srv = ap.server();
                 if (srv != null) {
                     SclLDevice ld = srv.findLDeviceByInst(ldInst);
-                    if (ld != null) return ld;
+                    if (ld != null)
+                        return ld;
                 }
             }
         }
@@ -76,7 +81,8 @@ public class LdDirServer extends BaseServerHandler {
                 names.add(ln.getFullName());
             }
         }
-        if (ln0 != null) names.add(0, ln0.getFullName());
+        if (ln0 != null)
+            names.add(0, ln0.getFullName());
 
         return filterAfter(names, after);
     }
@@ -97,9 +103,11 @@ public class LdDirServer extends BaseServerHandler {
     }
 
     private static List<String> filterAfter(List<String> names, String after) {
-        if (after == null || after.isEmpty()) return names;
+        if (after == null || after.isEmpty())
+            return names;
         int idx = names.indexOf(after);
-        if (idx < 0) return null;
+        if (idx < 0)
+            return null;
         return names.subList(idx + 1, names.size());
     }
 }

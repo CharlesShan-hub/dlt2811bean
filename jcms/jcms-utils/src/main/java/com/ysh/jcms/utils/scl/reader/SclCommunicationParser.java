@@ -39,17 +39,17 @@ public class SclCommunicationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Text":
+                    case "Text" :
                         sn.text(parseTextChild(reader));
                         break;
-                    case "BitRate":
+                    case "BitRate" :
                         sn.bitRateUnit(getAttr(reader, "unit"));
                         sn.bitRate(parseSimpleElementText(reader));
                         break;
-                    case "ConnectedAP":
+                    case "ConnectedAP" :
                         sn.addConnectedAP(parseConnectedAP(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -70,19 +70,19 @@ public class SclCommunicationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Address":
+                    case "Address" :
                         parseAddressChildren(reader, cap);
                         break;
-                    case "GSE":
+                    case "GSE" :
                         cap.addGse(parseGSE(reader));
                         break;
-                    case "SMV":
+                    case "SMV" :
                         cap.addSmv(parseSMV(reader));
                         break;
-                    case "PhysConn":
+                    case "PhysConn" :
                         cap.addPhysConn(parsePhysConn(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }
@@ -124,16 +124,16 @@ public class SclCommunicationParser {
             int event = reader.nextTag();
             if (event == XMLStreamConstants.START_ELEMENT) {
                 switch (reader.getLocalName()) {
-                    case "Address":
+                    case "Address" :
                         parseGseAddresses(reader, gse);
                         break;
-                    case "MinTime":
+                    case "MinTime" :
                         gse.minTime(parseSimpleElementText(reader));
                         break;
-                    case "MaxTime":
+                    case "MaxTime" :
                         gse.maxTime(parseSimpleElementText(reader));
                         break;
-                    default:
+                    default :
                         skipElement(reader);
                         break;
                 }

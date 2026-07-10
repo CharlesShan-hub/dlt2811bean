@@ -27,7 +27,8 @@ public class Frame {
     }
 
     private static int extractReqId(byte[] asdu) {
-        if (asdu == null || asdu.length < 2) return 0;
+        if (asdu == null || asdu.length < 2)
+            return 0;
         return ((asdu[0] & 0xFF) << 8) | (asdu[1] & 0xFF);
     }
 }

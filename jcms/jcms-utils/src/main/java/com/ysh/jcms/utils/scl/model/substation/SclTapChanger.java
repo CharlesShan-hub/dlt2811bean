@@ -10,25 +10,33 @@ import java.util.List;
 /**
  * 分接头 (TapChanger)，变压器绕组上的分接头调节设备。
  * <p>
- * TapChanger 包含 LNode、SubEquipment 和 EqFunction，
- * 用于描述变压器调压功能及相关的一次/二次设备。
+ * TapChanger 包含 LNode、SubEquipment 和 EqFunction， 用于描述变压器调压功能及相关的一次/二次设备。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tTapChanger">
  *     <xs:sequence>
- *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="SubEquipment" type="tSubEquipment" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="EqFunction" type="tEqFunction" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs=
+"unbounded"/>
+ *         <xs:element name="SubEquipment" type="tSubEquipment" minOccurs=
+"0" maxOccurs="unbounded"/>
+ *         <xs:element name="EqFunction" type="tEqFunction" minOccurs=
+"0" maxOccurs="unbounded"/>
  *     </xs:sequence>
  *     <xs:attribute name="name" type="xs:normalizedString"/>
  *     <xs:attribute name="desc" type="xs:normalizedString"/>
  *     <xs:attribute name="type" type="xs:normalizedString"/>
  *     <xs:attribute name="virtual" type="xs:boolean"/>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclTapChanger {
     /** 分接头名称 (name) */
     private String name;
@@ -45,9 +53,18 @@ public class SclTapChanger {
     /** 设备功能列表 (EqFunction) */
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
-    public SclTapChanger addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclTapChanger addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
 
-    public SclTapChanger addSubEquipment(SclSubEquipment subEquipment) { subEquipments.add(subEquipment); return this; }
+    public SclTapChanger addSubEquipment(SclSubEquipment subEquipment) {
+        subEquipments.add(subEquipment);
+        return this;
+    }
 
-    public SclTapChanger addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
+    public SclTapChanger addEqFunction(SclEqFunction eqFunction) {
+        eqFunctions.add(eqFunction);
+        return this;
+    }
 }

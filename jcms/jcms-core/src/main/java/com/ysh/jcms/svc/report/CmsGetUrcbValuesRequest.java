@@ -9,23 +9,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetURCBValues-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT SEQUENCE OF ObjectReference
- * }  —  8.7.4
+ * GetURCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
+ * SEQUENCE OF ObjectReference } — 8.7.4
  */
 public class CmsGetUrcbValuesRequest extends CmsType {
 
-    public CmsReqId                        reqId;
-    public CmsArray<CmsObjectReference>    reference;   /* SEQUENCE OF ObjectReference */
+    public CmsReqId reqId;
+    public CmsArray<CmsObjectReference> reference; /* SEQUENCE OF ObjectReference */
 
-    public CmsGetUrcbValuesRequest() { super(Codec.GET_URCB_VALUES_REQUEST);
-        this.reqId     = new CmsReqId();
+    public CmsGetUrcbValuesRequest() {
+        super(Codec.GET_URCB_VALUES_REQUEST);
+        this.reqId = new CmsReqId();
         this.reference = new CmsArray<>(CmsObjectReference.class);
     }
-    
-    public CmsGetUrcbValuesRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetUrcbValuesRequest reference(CmsArray<CmsObjectReference> v) { this.reference = v; return this; }
+
+    public CmsGetUrcbValuesRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetUrcbValuesRequest reference(CmsArray<CmsObjectReference> v) {
+        this.reference = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

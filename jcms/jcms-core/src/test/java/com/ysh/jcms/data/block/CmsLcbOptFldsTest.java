@@ -6,8 +6,7 @@ import static org.junit.Assert.*;
 public class CmsLcbOptFldsTest {
     @Test
     public void roundup() {
-        CmsLcbOptFlds a = new CmsLcbOptFlds()
-            .value(true);
+        CmsLcbOptFlds a = new CmsLcbOptFlds().value(true);
         byte[] encoded = a.encode();
         CmsLcbOptFlds b = new CmsLcbOptFlds();
         b.decode(encoded);

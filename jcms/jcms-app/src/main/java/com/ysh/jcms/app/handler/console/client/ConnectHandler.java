@@ -22,7 +22,9 @@ import java.util.Map;
 public class ConnectHandler implements CommandHandler {
 
     @Override
-    public String name() { return "connect"; }
+    public String name() {
+        return "connect";
+    }
 
     @Override
     public String description() {
@@ -31,15 +33,10 @@ public class ConnectHandler implements CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
-            new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""),
-            new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
-            new Param("apdu", "APDU 大小", ""),
-            new Param("asdu", "ASDU 大小", ""),
-            new Param("version", "协议版本", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
+                new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
+                new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""), new Param("version", "协议版本", ""),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -57,20 +54,21 @@ public class ConnectHandler implements CommandHandler {
 
         String host = args.get("ip");
         boolean secure = "true".equals(args.get("secure"));
-        int port = secure ? CmsConfigLoader.load().getServer().getSslPort()
-                          : CmsConfigLoader.load().getServer().getPort();
+        int port = secure ? CmsConfigLoader.load().getServer().getSslPort() : CmsConfigLoader.load().getServer().getPort();
         String sapRef = args.get("ap");
 
         if (secure) {
             ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");
             SSLContext sslContext = SSLContext.getInstance("TLSv1.2");
-            sslContext.init(null, new X509TrustManager[]{
-                new X509TrustManager() {
-                    public void checkClientTrusted(X509Certificate[] chain, String authType) {}
-                    public void checkServerTrusted(X509Certificate[] chain, String authType) {}
-                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+            sslContext.init(null, new X509TrustManager[]{new X509TrustManager() {
+                public void checkClientTrusted(X509Certificate[] chain, String authType) {
                 }
-            }, new SecureRandom());
+                public void checkServerTrusted(X509Certificate[] chain, String authType) {
+                }
+                public X509Certificate[] getAcceptedIssuers() {
+                    return new X509Certificate[0];
+                }
+            }}, new SecureRandom());
             console.connectTls(host, port, sslContext);
         } else {
             ConsolePrinter.info("Connecting to " + host + ":" + port + " ...");
@@ -94,16 +92,18 @@ public class ConnectHandler implements CommandHandler {
         String apduStr = args.get("apdu");
         String asduStr = args.get("asdu");
         String protoStr = args.get("version");
-        if (apduStr != null && !apduStr.isEmpty()) negotiateDao.apduSize(Integer.parseInt(apduStr));
-        if (asduStr != null && !asduStr.isEmpty()) negotiateDao.asduSize(Long.parseLong(asduStr));
-        if (protoStr != null && !protoStr.isEmpty()) negotiateDao.protocolVersion(Long.parseLong(protoStr));
+        if (apduStr != null && !apduStr.isEmpty())
+            negotiateDao.apduSize(Integer.parseInt(apduStr));
+        if (asduStr != null && !asduStr.isEmpty())
+            negotiateDao.asduSize(Long.parseLong(asduStr));
+        if (protoStr != null && !protoStr.isEmpty())
+            negotiateDao.protocolVersion(Long.parseLong(protoStr));
 
         console.getClient(NegotiateClient.class).execute(negotiateDao);
 
         ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
 
-        console.getClient(AssociateClient.class)
-            .execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
+        console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
 
         String msg = (secure ? "TLS " : "") + "Associated: " + sapRef;
         if (jsonMode) {

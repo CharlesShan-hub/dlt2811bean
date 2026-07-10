@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetGoCBValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     result          [0] IMPLICIT SEQUENCE OF SetGoCBResult
- * }  —  8.9.5
+ * SetGoCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, result [0] IMPLICIT
+ * SEQUENCE OF SetGoCBResult } — 8.9.5
  */
 public class CmsSetGoCbValuesError extends CmsType {
 
-    public CmsReqId                        reqId;
-    public CmsArray<CmsSetGoCbResult>      result;   /* SEQUENCE OF SetGoCBResult */
+    public CmsReqId reqId;
+    public CmsArray<CmsSetGoCbResult> result; /* SEQUENCE OF SetGoCBResult */
 
-    public CmsSetGoCbValuesError() { super(Codec.SET_GO_CB_VALUES_ERROR);
-        this.reqId  = new CmsReqId();
+    public CmsSetGoCbValuesError() {
+        super(Codec.SET_GO_CB_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.result = new CmsArray<>(CmsSetGoCbResult.class);
     }
-    
-    public CmsSetGoCbValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSetGoCbValuesError result(CmsArray<CmsSetGoCbResult> v) { this.result = v; return this; }
+
+    public CmsSetGoCbValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSetGoCbValuesError result(CmsArray<CmsSetGoCbResult> v) {
+        this.result = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

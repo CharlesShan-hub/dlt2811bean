@@ -8,14 +8,22 @@ public class HelpHandler implements CommandHandler {
 
     private final CmsConsole console;
 
-    public HelpHandler(CmsConsole console) { this.console = console; }
+    public HelpHandler(CmsConsole console) {
+        this.console = console;
+    }
 
     @Override
-    public String name() { return "help"; }
+    public String name() {
+        return "help";
+    }
     @Override
-    public String description() { return "显示帮助信息"; }
+    public String description() {
+        return "显示帮助信息";
+    }
     @Override
-    public List<Param> params() { return Collections.emptyList(); }
+    public List<Param> params() {
+        return Collections.emptyList();
+    }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) {
@@ -23,7 +31,8 @@ public class HelpHandler implements CommandHandler {
         ConsolePrinter.gray(String.format("  %-16s  %s", "命令", "说明"));
         ConsolePrinter.gray(String.format("  %-16s  %s", "---------", "----"));
         for (CommandHandler h : console.handlers().values()) {
-            if (h.name().equals("help")) continue;
+            if (h.name().equals("help"))
+                continue;
             StringBuilder line = new StringBuilder();
             line.append(String.format("  %-16s  ", h.name()));
             line.append(h.description());
@@ -31,10 +40,12 @@ public class HelpHandler implements CommandHandler {
             if (!ps.isEmpty()) {
                 line.append("  [");
                 for (int i = 0; i < ps.size(); i++) {
-                    if (i > 0) line.append(" ");
+                    if (i > 0)
+                        line.append(" ");
                     line.append(ps.get(i).name());
                     String def = ps.get(i).defaultValue();
-                    if (def != null) line.append("=").append(def);
+                    if (def != null)
+                        line.append("=").append(def);
                 }
                 line.append("]");
             }

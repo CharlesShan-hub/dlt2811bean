@@ -9,8 +9,7 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void request_roundup_with_ref_after() {
-        CmsGetAllCbValuesRequest a = new CmsGetAllCbValuesRequest()
-            .reqId(11);
+        CmsGetAllCbValuesRequest a = new CmsGetAllCbValuesRequest().reqId(11);
         a.reference.choice.value(CmsReferenceChoice.LD_NAME);
         a.reference.altLdName.value("ld1".getBytes());
         a.acsiClass.value(CmsAcsiClass.BRCB);
@@ -25,8 +24,7 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void response_roundup_with_brcb_entry() {
-        CmsGetAllCbValuesResponse a = new CmsGetAllCbValuesResponse()
-            .reqId(60);
+        CmsGetAllCbValuesResponse a = new CmsGetAllCbValuesResponse().reqId(60);
         /* SEQUENCE OF CBValueEntry — 2 个元素 */
         CmsCbValueEntry entry1 = new CmsCbValueEntry();
         entry1.reference.value("cbRef1".getBytes());
@@ -40,7 +38,7 @@ public class CmsGetAllCbValuesTest {
         entry1.value.altBrcb.intgPd.value(5000L);
         entry1.value.altBrcb.gi.value(false);
         entry1.value.altBrcb.purgeBuf.value(true);
-        entry1.value.altBrcb.entryID.value(new byte[]{1,2,3,4,5,6,7,8});
+        entry1.value.altBrcb.entryID.value(new byte[]{1, 2, 3, 4, 5, 6, 7, 8});
 
         CmsCbValueEntry entry2 = new CmsCbValueEntry();
         entry2.reference.value("cbRef2".getBytes());
@@ -79,9 +77,7 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void error_roundup() {
-        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError()
-            .reqId(44)
-            .serviceError(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
+        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError().reqId(44).serviceError(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
         byte[] encoded = a.encode();
 
         CmsGetAllCbValuesError b = new CmsGetAllCbValuesError();

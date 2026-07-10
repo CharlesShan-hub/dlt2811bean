@@ -4,21 +4,41 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
 
 /**
- * typedef struct { uint8_t value[8]; } cms_float64_t;
- * sizeof = 8
- * PER: 8 bytes aligned
+ * typedef struct { uint8_t value[8]; } cms_float64_t; sizeof = 8 PER: 8 bytes
+ * aligned
  */
 public class CmsFloat64 extends CmsType {
 
     private double value = 0;
 
-    public CmsFloat64() { super(Codec.FLOAT64);}
-    public CmsFloat64(double value) { super(Codec.FLOAT64); this.value = value; write(); }
+    public CmsFloat64() {
+        super(Codec.FLOAT64);
+    }
+    public CmsFloat64(double value) {
+        super(Codec.FLOAT64);
+        this.value = value;
+        write();
+    }
 
-    public double value() { return value; }
-    public CmsFloat64 value(double v) { this.value = v; write(); return this; }
+    public double value() {
+        return value;
+    }
+    public CmsFloat64 value(double v) {
+        this.value = v;
+        write();
+        return this;
+    }
 
-    @Override protected int calcNativeSize() { return 8; }
-    @Override public void write() { nativePtr.setDouble(0, value); }
-    @Override public void read() { this.value = nativePtr.getDouble(0); }
+    @Override
+    protected int calcNativeSize() {
+        return 8;
+    }
+    @Override
+    public void write() {
+        nativePtr.setDouble(0, value);
+    }
+    @Override
+    public void read() {
+        this.value = nativePtr.getDouble(0);
+    }
 }

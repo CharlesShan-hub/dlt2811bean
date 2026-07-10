@@ -13,27 +13,24 @@ import java.time.ZoneId;
 /**
  * 模拟日志生成器 — 生成测试用的日志文件。
  *
- * <p>直接运行 main 方法：
+ * <p>
+ * 直接运行 main 方法：
+ *
  * <pre>
  *   mvn -q exec:java -pl jcms-app "-Dexec.mainClass=com.ysh.jcms.app.tool.MockLogGenerator"
  * </pre>
  *
- * <p>参数：
- *   参数1: 日志存储根路径（默认 config/logs）
- *   参数2: 生成条数（默认 10）
+ * <p>
+ * 参数： 参数1: 日志存储根路径（默认 config/logs） 参数2: 生成条数（默认 10）
  */
 public class MockLogGenerator {
 
     private static final String LOG_REF = "LD0/LLN0.lcblog";
-    private static final String[] DATASET_REFS = {
-        "LD0/LLN0.Mod.stVal",
-        "LD0/LLN0.Beh.stVal",
-        "LD0/LLN0.Health.stVal",
-    };
+    private static final String[] DATASET_REFS = {"LD0/LLN0.Mod.stVal", "LD0/LLN0.Beh.stVal", "LD0/LLN0.Health.stVal",};
 
     public static void main(String[] args) throws Exception {
         String rootPath = args.length > 0 ? args[0] : "config/logs";
-        int numRecords  = args.length > 1 ? Integer.parseInt(args[1]) : 10;
+        int numRecords = args.length > 1 ? Integer.parseInt(args[1]) : 10;
 
         LogStorage storage = new LogStorage(rootPath);
         String dirName = LOG_REF.replace('/', '_');
@@ -46,7 +43,7 @@ public class MockLogGenerator {
 
         for (int i = 1; i <= numRecords; i++) {
             long entryEpochMs = baseEpochMs + (long) i * 60000L;
-            int  days    = (int) (entryEpochMs / 86400000L);
+            int days = (int) (entryEpochMs / 86400000L);
             long msOfDay = entryEpochMs % 86400000L;
 
             CmsLogEntry entry = new CmsLogEntry();
@@ -91,10 +88,9 @@ public class MockLogGenerator {
 
             storage.append(LOG_REF, entry);
 
-            LocalDateTime dt = LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(entryEpochMs), ZoneId.systemDefault());
-            System.out.printf("  [%s] entryId=%s  %d data entries%n",
-                dt.toString().replace("T", " "), entryId, entry.entryData.items.size());
+            LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(entryEpochMs), ZoneId.systemDefault());
+            System.out.printf("  [%s] entryId=%s  %d data entries%n", dt.toString().replace("T", " "), entryId,
+                    entry.entryData.items.size());
         }
 
         System.out.println();

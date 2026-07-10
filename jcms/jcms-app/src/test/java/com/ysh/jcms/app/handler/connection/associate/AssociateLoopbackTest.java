@@ -36,9 +36,7 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_without_security() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
 
         assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
         assertNotNull(clientNode().getClient().getSession().getAssociationId());
@@ -47,14 +45,10 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_reject_when_already_associated() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
 
         try {
-            clientNode().getClient(AssociateClient.class)
-                .execute(new AssociateClientDao()
-                    .sapRef("E1Q1SB1/S1").secure(false));
+            clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
             fail("Should throw on second associate");
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("error="));
@@ -64,9 +58,7 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
     @Test
     public void associate_reject_when_unknown_sap_ref() throws Exception {
         try {
-            clientNode().getClient(AssociateClient.class)
-                .execute(new AssociateClientDao()
-                    .sapRef("NONEXISTENT_AP_X").secure(false));
+            clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("NONEXISTENT_AP_X").secure(false));
             fail("Should throw for unknown sapRef");
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("error="));
@@ -78,9 +70,7 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_with_security() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(true));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(true));
 
         assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
         assertNotNull(clientNode().getClient().getSession().getAssociationId());
@@ -89,14 +79,10 @@ public class AssociateLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_secure_reject_when_already_associated() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(true));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(true));
 
         try {
-            clientNode().getClient(AssociateClient.class)
-                .execute(new AssociateClientDao()
-                    .sapRef("E1Q1SB1/S1").secure(true));
+            clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(true));
             fail("Should throw on second associate");
         } catch (IOException e) {
             assertTrue(e.getMessage().contains("error="));

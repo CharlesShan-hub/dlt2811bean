@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesRequest;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -23,8 +22,7 @@ public class AllDataValuesClient extends BaseClientHandler {
     }
 
     public void execute(AllDataValuesDao dao) throws Exception {
-        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest()
-            .reqId(nextReqId());
+        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().reqId(nextReqId());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -61,12 +59,9 @@ public class AllDataValuesClient extends BaseClientHandler {
         List<ContentManager.AllDataEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.data.count; i++) {
             CmsDataValueEntryWrap entry = new CmsDataValueEntryWrap(resp.data.items.get(i));
-            if (entry.choiceType == 0) continue; // skip error/empty entries
-            entries.add(new ContentManager.AllDataEntry(
-                entry.reference,
-                entry.choiceType,
-                entry.valueString
-            ));
+            if (entry.choiceType == 0)
+                continue; // skip error/empty entries
+            entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
         }
         node.getContentManager().initAllData(entries);
         log.info("GetAllDataValues succeeded: {} entries", entries.size());
@@ -87,33 +82,45 @@ public class AllDataValuesClient extends BaseClientHandler {
 
         private static String extractValue(CmsData d, int ct) {
             switch (ct) {
-                case CmsData.CHOICE_BOOLEAN:       return Boolean.toString(d.alt_boolean.value());
-                case CmsData.CHOICE_INT8:           return Integer.toString(d.alt_int8.value());
-                case CmsData.CHOICE_INT16:          return Integer.toString(d.alt_int16.value());
-                case CmsData.CHOICE_INT32:          return Integer.toString(d.alt_int32.value());
-                case CmsData.CHOICE_INT64:          return Long.toString(d.alt_int64.value());
-                case CmsData.CHOICE_INT8U:          return Integer.toString(d.alt_int8u.value());
-                case CmsData.CHOICE_INT16U:         return Integer.toString(d.alt_int16u.value());
-                case CmsData.CHOICE_INT32U:         return Long.toString(d.alt_int32u.value());
-                case CmsData.CHOICE_INT64U:         return d.alt_int64u.value().toString();
-                case CmsData.CHOICE_FLOAT32:        return Float.toString(d.alt_float32.value());
-                case CmsData.CHOICE_FLOAT64:        return Double.toString(d.alt_float64.value());
-                case CmsData.CHOICE_VISIBLE_STRING:
+                case CmsData.CHOICE_BOOLEAN :
+                    return Boolean.toString(d.alt_boolean.value());
+                case CmsData.CHOICE_INT8 :
+                    return Integer.toString(d.alt_int8.value());
+                case CmsData.CHOICE_INT16 :
+                    return Integer.toString(d.alt_int16.value());
+                case CmsData.CHOICE_INT32 :
+                    return Integer.toString(d.alt_int32.value());
+                case CmsData.CHOICE_INT64 :
+                    return Long.toString(d.alt_int64.value());
+                case CmsData.CHOICE_INT8U :
+                    return Integer.toString(d.alt_int8u.value());
+                case CmsData.CHOICE_INT16U :
+                    return Integer.toString(d.alt_int16u.value());
+                case CmsData.CHOICE_INT32U :
+                    return Long.toString(d.alt_int32u.value());
+                case CmsData.CHOICE_INT64U :
+                    return d.alt_int64u.value().toString();
+                case CmsData.CHOICE_FLOAT32 :
+                    return Float.toString(d.alt_float32.value());
+                case CmsData.CHOICE_FLOAT64 :
+                    return Double.toString(d.alt_float64.value());
+                case CmsData.CHOICE_VISIBLE_STRING :
                     return new String(d.alt_visible_string.value(), java.nio.charset.StandardCharsets.UTF_8);
-                case CmsData.CHOICE_UNICODE_STRING:
+                case CmsData.CHOICE_UNICODE_STRING :
                     return new String(d.alt_unicode_string.value(), java.nio.charset.StandardCharsets.UTF_8);
-                case CmsData.CHOICE_OCTET_STRING:
+                case CmsData.CHOICE_OCTET_STRING :
                     return new String(d.alt_octet_string.value(), java.nio.charset.StandardCharsets.UTF_8);
-                case CmsData.CHOICE_BIT_STRING:
+                case CmsData.CHOICE_BIT_STRING :
                     return new String(d.alt_bit_string.value(), java.nio.charset.StandardCharsets.UTF_8);
-                default:                            return "(choice=" + ct + ")";
+                default :
+                    return "(choice=" + ct + ")";
             }
         }
 
         // private static String bytesToHex(byte[] bytes) {
-        //     StringBuilder sb = new StringBuilder(bytes.length * 2);
-        //     for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
-        //     return sb.toString();
+        // StringBuilder sb = new StringBuilder(bytes.length * 2);
+        // for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
+        // return sb.toString();
         // }
     }
 }

@@ -22,12 +22,13 @@ public class GetFileClient extends BaseClientHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GetFileClient.class);
 
-    public GetFileClient(CmsNode node) { super(node); }
+    public GetFileClient(CmsNode node) {
+        super(node);
+    }
 
     /**
-     * Download a file from the server.
-     * The client loops, sending GetFile requests with increasing startPosition
-     * until the server returns endOfFile=true.
+     * Download a file from the server. The client loops, sending GetFile requests
+     * with increasing startPosition until the server returns endOfFile=true.
      */
     public void execute(GetFileDao dao) throws Exception {
         String remoteFile = dao.fileName();
@@ -37,10 +38,7 @@ public class GetFileClient extends BaseClientHandler {
         long totalBytes = 0;
 
         while (true) {
-            CmsGetFileRequest req = new CmsGetFileRequest()
-                .reqId(nextReqId())
-                .filename(remoteFile)
-                .startPosition(position);
+            CmsGetFileRequest req = new CmsGetFileRequest().reqId(nextReqId()).filename(remoteFile).startPosition(position);
 
             Frame frame = send(ServiceName.GET_FILE, req);
 
@@ -55,7 +53,8 @@ public class GetFileClient extends BaseClientHandler {
                 position += data.length;
             }
 
-            if (resp.endOfFile.value()) break;
+            if (resp.endOfFile.value())
+                break;
         }
 
         log.info("GetFile: downloaded '{}' ({} bytes, {} chunks)", remoteFile, totalBytes, chunks.size());
@@ -63,7 +62,8 @@ public class GetFileClient extends BaseClientHandler {
         if (outputFile != null && !outputFile.isEmpty()) {
             Path outPath = Paths.get(outputFile);
             Path parent = outPath.getParent();
-            if (parent != null) Files.createDirectories(parent);
+            if (parent != null)
+                Files.createDirectories(parent);
             java.io.OutputStream out = Files.newOutputStream(outPath, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             try {
                 for (byte[] chunk : chunks) {

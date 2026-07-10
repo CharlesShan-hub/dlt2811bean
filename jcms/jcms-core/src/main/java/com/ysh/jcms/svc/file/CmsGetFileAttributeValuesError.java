@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetFileAttributeValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.12.4
+ * GetFileAttributeValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.12.4
  */
 public class CmsGetFileAttributeValuesError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetFileAttributeValuesError() { super(Codec.GET_FILE_ATTRIBUTE_VALUES_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetFileAttributeValuesError() {
+        super(Codec.GET_FILE_ATTRIBUTE_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetFileAttributeValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetFileAttributeValuesError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetFileAttributeValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetFileAttributeValuesError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

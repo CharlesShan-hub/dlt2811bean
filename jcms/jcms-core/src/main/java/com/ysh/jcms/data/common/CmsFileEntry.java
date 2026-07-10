@@ -9,27 +9,44 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum }  —  7.3.10
+ * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum } —
+ * 7.3.10
  */
 public class CmsFileEntry extends CmsType {
 
     public CmsUint8Array fileName;
-    public CmsInt32U     fileSize;
-    public CmsUtcTime    lastModified;
-    public CmsInt32U     checkSum;
+    public CmsInt32U fileSize;
+    public CmsUtcTime lastModified;
+    public CmsInt32U checkSum;
 
-    public CmsFileEntry() { super(Codec.FILE_ENTRY);
-        this.fileName     = new CmsUint8Array();
-        this.fileSize     = new CmsInt32U();
+    public CmsFileEntry() {
+        super(Codec.FILE_ENTRY);
+        this.fileName = new CmsUint8Array();
+        this.fileSize = new CmsInt32U();
         this.lastModified = new CmsUtcTime();
-        this.checkSum     = new CmsInt32U();
+        this.checkSum = new CmsInt32U();
     }
-    
-    public CmsFileEntry fileName(byte[] v) { this.fileName.value(v); return this; }
-    public CmsFileEntry fileName(String v) { this.fileName.value(v); return this; }
-    public CmsFileEntry fileSize(long v) { this.fileSize.value(v); return this; }
-    public CmsFileEntry lastModified(CmsUtcTime v) { this.lastModified = v; return this; }
-    public CmsFileEntry checkSum(long v) { this.checkSum.value(v); return this; }
+
+    public CmsFileEntry fileName(byte[] v) {
+        this.fileName.value(v);
+        return this;
+    }
+    public CmsFileEntry fileName(String v) {
+        this.fileName.value(v);
+        return this;
+    }
+    public CmsFileEntry fileSize(long v) {
+        this.fileSize.value(v);
+        return this;
+    }
+    public CmsFileEntry lastModified(CmsUtcTime v) {
+        this.lastModified = v;
+        return this;
+    }
+    public CmsFileEntry checkSum(long v) {
+        this.checkSum.value(v);
+        return this;
+    }
     @Override
     public List<? extends CmsType> children() {
         return Arrays.asList(fileName, fileSize, lastModified, checkSum);

@@ -6,8 +6,9 @@ import java.security.cert.X509Certificate;
 /**
  * 安全上下文 — 封装客户端和服务端双向认证所需的所有材料。
  *
- * <p>客户端用 {@link #credentialManager()} 获取私钥和证书签名，
- * 服务端认证由 {@code AssociateServer} 从 {@code application.yaml} 的 {@code server.requireAuthentication} 自动启用。
+ * <p>
+ * 客户端用 {@link #credentialManager()} 获取私钥和证书签名， 服务端认证由 {@code AssociateServer} 从
+ * {@code application.yaml} 的 {@code server.requireAuthentication} 自动启用。
  *
  * <pre>
  * // 客户端启用安全
@@ -29,8 +30,7 @@ public class SecurityContext {
     }
 
     /**
-     * 创建一个自签名安全上下文（含密钥对 + 证书 + trust-all 认证器）。
-     * 适用于回路测试和开发环境。
+     * 创建一个自签名安全上下文（含密钥对 + 证书 + trust-all 认证器）。 适用于回路测试和开发环境。
      */
     public static SecurityContext generateSelfSigned() throws Exception {
         KeyPair kp = GmSignature.generateKeyPair();
@@ -41,11 +41,17 @@ public class SecurityContext {
     }
 
     /** 客户端凭证（私钥 + 证书）。 */
-    public GmCredentialManager credentialManager() { return credentialManager; }
+    public GmCredentialManager credentialManager() {
+        return credentialManager;
+    }
 
     /** 服务端认证器。 */
-    public GmAuthenticator authenticator() { return authenticator; }
+    public GmAuthenticator authenticator() {
+        return authenticator;
+    }
 
     /** 服务端证书（响应中带回给客户端）。 */
-    public X509Certificate certificate() { return certificate; }
+    public X509Certificate certificate() {
+        return certificate;
+    }
 }

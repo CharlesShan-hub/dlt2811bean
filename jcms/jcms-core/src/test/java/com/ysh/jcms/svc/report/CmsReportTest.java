@@ -32,7 +32,7 @@ public class CmsReportTest {
         v1.altValue.sqNum.value(5);
         v1.altValue.gi.value(false);
         v1.altValue.purgeBuf.value(true);
-        v1.altValue.entryID.value(new byte[]{1,2,3,4,5,6,7,8});
+        v1.altValue.entryID.value(new byte[]{1, 2, 3, 4, 5, 6, 7, 8});
         a.brcb.add(v1);
         a.moreFollows.value(false);
         byte[] encoded = a.encode();
@@ -75,7 +75,7 @@ public class CmsReportTest {
         v1.altValue.rptID.value("urcbRpt".getBytes());
         v1.altValue.rptEna.value(true);
         v1.altValue.confRev.value(50L);
-        v1.altValue.entryID.value(new byte[]{1,2,3,4,5,6,7,8});
+        v1.altValue.entryID.value(new byte[]{1, 2, 3, 4, 5, 6, 7, 8});
         a.urcb.add(v1);
         a.moreFollows.value(false);
         byte[] encoded = a.encode();

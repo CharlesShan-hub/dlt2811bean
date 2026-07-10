@@ -8,17 +8,8 @@ import static org.junit.Assert.*;
 public class CmsMsvTest {
     @Test
     public void send_msv_message() {
-        CmsSendMsvMessage a = new CmsSendMsvMessage()
-            .reqId(30)
-            .msvId("msvId".getBytes())
-            .datSetPresent(false)
-            .smpCnt(1)
-            .confRev(5L)
-            .refTmPresent(false)
-            .smpSynch(0)
-            .smpRatePresent(false)
-            .simulation(false)
-            .smpModPresent(false);
+        CmsSendMsvMessage a = new CmsSendMsvMessage().reqId(30).msvId("msvId".getBytes()).datSetPresent(false).smpCnt(1).confRev(5L)
+                .refTmPresent(false).smpSynch(0).smpRatePresent(false).simulation(false).smpModPresent(false);
         CmsData d1 = new CmsData();
         d1.choice.value(CmsData.CHOICE_INT32);
         d1.alt_int32.value(100);
@@ -32,9 +23,7 @@ public class CmsMsvTest {
 
     @Test
     public void simple_error() {
-        CmsGetMsvcbValuesError a = new CmsGetMsvcbValuesError()
-            .reqId(99)
-            .serviceError(CmsServiceError.INSTANCE_IN_USE);
+        CmsGetMsvcbValuesError a = new CmsGetMsvcbValuesError().reqId(99).serviceError(CmsServiceError.INSTANCE_IN_USE);
         byte[] encoded = a.encode();
 
         CmsGetMsvcbValuesError b = new CmsGetMsvcbValuesError();

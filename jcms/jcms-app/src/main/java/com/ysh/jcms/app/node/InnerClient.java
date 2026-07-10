@@ -18,9 +18,10 @@ import java.util.function.Consumer;
 /**
  * InnerClient — pure sender.
  *
- * <p>Sends requests and waits for responses synchronously.
- * All business logic (decoding, session updates) belongs to the caller.
- * Push messages (Report, CommandTermination) are handled by separate listeners.
+ * <p>
+ * Sends requests and waits for responses synchronously. All business logic
+ * (decoding, session updates) belongs to the caller. Push messages (Report,
+ * CommandTermination) are handled by separate listeners.
  */
 public class InnerClient implements ConnectionListener {
 
@@ -34,10 +35,13 @@ public class InnerClient implements ConnectionListener {
 
     private volatile Consumer<Frame> reportHandler;
 
-    public InnerClient() {}
+    public InnerClient() {
+    }
 
     /** Register a handler for incoming REPORT (unsolicited push) frames. */
-    public void setReportHandler(Consumer<Frame> handler) { this.reportHandler = handler; }
+    public void setReportHandler(Consumer<Frame> handler) {
+        this.reportHandler = handler;
+    }
 
     public void connect(String host, int port) throws IOException {
         this.host = host;
@@ -61,8 +65,8 @@ public class InnerClient implements ConnectionListener {
     }
 
     /**
-     * Send a request and wait synchronously for the response.
-     * The reqId is extracted from the first 2 bytes of the ASDU.
+     * Send a request and wait synchronously for the response. The reqId is
+     * extracted from the first 2 bytes of the ASDU.
      *
      * @return the raw response Frame, or null on timeout
      */
@@ -72,16 +76,18 @@ public class InnerClient implements ConnectionListener {
         }
         int reqId = extractReqId(asduBytes);
         session.addPendingRequest(reqId, timeoutMs);
-        connection.send(new Frame(
-            new FrameHeader().serviceCode(serviceCode).resp(false).err(false),
-            asduBytes, reqId
-        ));
-        try { return (Frame) session.waitForPendingRequest(reqId, timeoutMs); }
-        catch (InterruptedException e) { Thread.currentThread().interrupt(); return null; }
+        connection.send(new Frame(new FrameHeader().serviceCode(serviceCode).resp(false).err(false), asduBytes, reqId));
+        try {
+            return (Frame) session.waitForPendingRequest(reqId, timeoutMs);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return null;
+        }
     }
 
     private static int extractReqId(byte[] asdu) {
-        if (asdu == null || asdu.length < 2) return 0;
+        if (asdu == null || asdu.length < 2)
+            return 0;
         return ((asdu[0] & 0xFF) << 8) | (asdu[1] & 0xFF);
     }
 
@@ -90,31 +96,40 @@ public class InnerClient implements ConnectionListener {
     }
 
     public void close() {
-        if (connection != null) connection.close();
-        if (session != null) session.setState(SessionState.DISCONNECTED);
+        if (connection != null)
+            connection.close();
+        if (session != null)
+            session.setState(SessionState.DISCONNECTED);
     }
 
-    public boolean isConnected() { return session != null && session.isConnected(); }
-    public ClientSession getSession() { return session; }
-    public Connection getConnection() { return connection; }
+    public boolean isConnected() {
+        return session != null && session.isConnected();
+    }
+    public ClientSession getSession() {
+        return session;
+    }
+    public Connection getConnection() {
+        return connection;
+    }
 
     @Override
-    public void onConnected(Connection connection) {}
+    public void onConnected(Connection connection) {
+    }
 
     @Override
     public void onFrameReceived(Connection connection, Frame frame) {
         try {
-            if (session == null) return;
+            if (session == null)
+                return;
             // Match against pending request (response to a request we sent)
-            if (session.tryDispatchResponse(frame)) return;
+            if (session.tryDispatchResponse(frame))
+                return;
 
             // Handle server-initiated TEST (keepalive probe)
             if (frame.header().serviceCode() == ServiceName.TEST && !frame.header().resp()) {
                 try {
-                    connection.send(new Frame(
-                        new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false),
-                        new byte[0], frame.reqId()
-                    ));
+                    connection.send(
+                            new Frame(new FrameHeader().serviceCode(ServiceName.TEST).resp(true).err(false), new byte[0], frame.reqId()));
                     log.debug("Responded to server TEST probe");
                 } catch (IOException e) {
                     log.warn("Failed to respond to server TEST probe", e);
@@ -138,7 +153,8 @@ public class InnerClient implements ConnectionListener {
 
     @Override
     public void onDisconnected(Connection connection) {
-        if (session != null) session.setState(SessionState.DISCONNECTED);
+        if (session != null)
+            session.setState(SessionState.DISCONNECTED);
         log.info("Disconnected from {}:{}", host, port);
     }
 

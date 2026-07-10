@@ -6,9 +6,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Session — abstract base for a logical CMS conversation over a {@link Connection}.
+ * Session — abstract base for a logical CMS conversation over a
+ * {@link Connection}.
  */
-@Getter @Setter
+@Getter
+@Setter
 public abstract class Session {
 
     private final String sessionId;
@@ -21,7 +23,10 @@ public abstract class Session {
     private volatile int peerAsduSize;
     private volatile int peerProtocolVersion;
 
-    /** Full cleanup: associationId and RCB runtime state. Subclasses may override to add more. */
+    /**
+     * Full cleanup: associationId and RCB runtime state. Subclasses may override to
+     * add more.
+     */
     public void clear() {
         this.associationId = null;
         RcbStateManager.clear();
@@ -32,7 +37,11 @@ public abstract class Session {
         this.connection = connection;
     }
 
-    public boolean isConnected() { return connection != null && connection.isConnected(); }
+    public boolean isConnected() {
+        return connection != null && connection.isConnected();
+    }
 
-    public boolean isAssociated() { return state == SessionState.ASSOCIATED && associationId != null; }
+    public boolean isAssociated() {
+        return state == SessionState.ASSOCIATED && associationId != null;
+    }
 }

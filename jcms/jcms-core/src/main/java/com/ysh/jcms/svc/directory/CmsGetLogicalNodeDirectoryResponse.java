@@ -10,27 +10,35 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT SEQUENCE OF SubReference,
- *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
- * }  —  8.3.3
+ * GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, reference
+ * [0] IMPLICIT SEQUENCE OF SubReference, moreFollows [1] IMPLICIT BOOLEAN
+ * DEFAULT TRUE } — 8.3.3
  */
 public class CmsGetLogicalNodeDirectoryResponse extends CmsType {
 
-    public CmsReqId                     reqId;
-    public CmsArray<CmsSubReference>    reference;    /* SEQUENCE OF SubReference */
-    public CmsBoolean                   moreFollows;  /* DEFAULT TRUE */
+    public CmsReqId reqId;
+    public CmsArray<CmsSubReference> reference; /* SEQUENCE OF SubReference */
+    public CmsBoolean moreFollows; /* DEFAULT TRUE */
 
-    public CmsGetLogicalNodeDirectoryResponse() { super(Codec.GET_LOGICAL_NODE_DIRECTORY_RESPONSE);
-        this.reqId       = new CmsReqId();
-        this.reference   = new CmsArray<>(CmsSubReference.class);
+    public CmsGetLogicalNodeDirectoryResponse() {
+        super(Codec.GET_LOGICAL_NODE_DIRECTORY_RESPONSE);
+        this.reqId = new CmsReqId();
+        this.reference = new CmsArray<>(CmsSubReference.class);
         this.moreFollows = new CmsBoolean();
     }
-    
-    public CmsGetLogicalNodeDirectoryResponse reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetLogicalNodeDirectoryResponse reference(CmsArray<CmsSubReference> v) { this.reference = v; return this; }
-    public CmsGetLogicalNodeDirectoryResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+
+    public CmsGetLogicalNodeDirectoryResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetLogicalNodeDirectoryResponse reference(CmsArray<CmsSubReference> v) {
+        this.reference = v;
+        return this;
+    }
+    public CmsGetLogicalNodeDirectoryResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

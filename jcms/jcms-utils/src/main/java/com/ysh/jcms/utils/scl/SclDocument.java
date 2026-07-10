@@ -12,9 +12,14 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclDocument {
-    public enum SclFileType { SCD, ICD, CID, UNKNOWN }
+    public enum SclFileType {
+        SCD, ICD, CID, UNKNOWN
+    }
 
     private String xmlns = "http://www.iec.ch/61850/2006/SCL";
     private String xsiSchemaLocation = "SCL.xsd";
@@ -27,9 +32,17 @@ public class SclDocument {
     private SclDataTypeTemplates dataTypeTemplates;
     private final List<String> unsupportedElements = new ArrayList<>();
 
-    public SclDocument addIed(SclIED ied) { ieds.add(ied); return this; }
-    public SclDocument addUnsupportedElement(String element) { unsupportedElements.add(element); return this; }
-    public boolean hasUnsupportedElements() { return !unsupportedElements.isEmpty(); }
+    public SclDocument addIed(SclIED ied) {
+        ieds.add(ied);
+        return this;
+    }
+    public SclDocument addUnsupportedElement(String element) {
+        unsupportedElements.add(element);
+        return this;
+    }
+    public boolean hasUnsupportedElements() {
+        return !unsupportedElements.isEmpty();
+    }
     public SclIED findIedByName(String name) {
         return ieds.stream().filter(i -> name.equals(i.name())).findFirst().orElse(null);
     }

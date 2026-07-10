@@ -37,7 +37,8 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     private void ensureSecurityInitialized() {
-        if (authenticator != null) return;
+        if (authenticator != null)
+            return;
         try {
             KeyPair kp = GmSignature.generateKeyPair();
             X509Certificate cert = GmSignature.generateSelfSignedCertificate(kp);
@@ -55,10 +56,12 @@ public class AssociateServer extends BaseServerHandler {
         int reqId = req.reqId.value();
         log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
 
-        if (session.isAssociated()) return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
+        if (session.isAssociated())
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
 
         String sapRef = opt(req.sapRefPresent, req.sapRef);
-        if (sapRef == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        if (sapRef == null)
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         if (!resolveAndSetSclAccessPoint(session, sapRef))
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -71,8 +74,7 @@ public class AssociateServer extends BaseServerHandler {
         }
 
         byte[] assocId = AssociationIdGenerator.generate();
-        CmsAssociateResponse resp = new CmsAssociateResponse()
-            .reqId(reqId).assocId(assocId).serviceError(CmsServiceError.NO_ERROR);
+        CmsAssociateResponse resp = new CmsAssociateResponse().reqId(reqId).assocId(assocId).serviceError(CmsServiceError.NO_ERROR);
         if (serverCertificateBytes != null) {
             resp.authParam(new CmsAuthenticationParameter().cert(serverCertificateBytes));
             resp.authParamPresent(true);
@@ -86,10 +88,12 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     private boolean resolveAndSetSclAccessPoint(Session session, String sapRef) {
-        if (!(session instanceof InnerServer.ServerSession)) return true;
+        if (!(session instanceof InnerServer.ServerSession))
+            return true;
         InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
         SclDocument scl = ss.getSclDocument();
-        if (scl == null) return true;
+        if (scl == null)
+            return true;
 
         int slashIdx = sapRef.indexOf('/');
         String iedName = slashIdx >= 0 ? sapRef.substring(0, slashIdx) : sapRef;
@@ -117,7 +121,8 @@ public class AssociateServer extends BaseServerHandler {
         if (authenticator != null) {
             byte[] signedData = prepareSignedData(sapRef, req);
             Optional<CmsServiceError> authError = authenticator.validate(req.authParam, signedData);
-            if (authError.isPresent()) return authError.get().value();
+            if (authError.isPresent())
+                return authError.get().value();
         }
         return CmsServiceError.NO_ERROR;
     }
@@ -126,7 +131,7 @@ public class AssociateServer extends BaseServerHandler {
         byte[] sapBytes = sapRef.getBytes(java.nio.charset.StandardCharsets.UTF_8);
         if (req.authParamPresent.value() && req.authParam.signedTime != null) {
             byte[] timeBytes = String.valueOf(req.authParam.signedTime.secondsSinceEpoch.value())
-                .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+                    .getBytes(java.nio.charset.StandardCharsets.UTF_8);
             byte[] result = new byte[sapBytes.length + timeBytes.length];
             System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
             System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);

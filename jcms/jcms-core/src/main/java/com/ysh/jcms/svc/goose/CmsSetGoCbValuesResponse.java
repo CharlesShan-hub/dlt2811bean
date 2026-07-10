@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetGoCBValues-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.9.5
+ * SetGoCBValues-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.9.5
  */
 public class CmsSetGoCbValuesResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSetGoCbValuesResponse() { super(Codec.SET_GO_CB_VALUES_RESPONSE);
+    public CmsSetGoCbValuesResponse() {
+        super(Codec.SET_GO_CB_VALUES_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsSetGoCbValuesResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsSetGoCbValuesResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

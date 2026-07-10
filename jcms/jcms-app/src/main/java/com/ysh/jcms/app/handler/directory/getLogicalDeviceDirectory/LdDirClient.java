@@ -5,7 +5,6 @@ import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -20,8 +19,7 @@ public class LdDirClient extends BaseClientHandler {
     }
 
     public void execute(LdDirDao dao) throws Exception {
-        CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest()
-            .reqId(nextReqId());
+        CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest().reqId(nextReqId());
         if (dao.ldName() != null) {
             req.ldName(dao.ldName());
         }

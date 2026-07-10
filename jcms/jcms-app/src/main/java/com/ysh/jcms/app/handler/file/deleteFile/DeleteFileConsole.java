@@ -13,18 +13,18 @@ import java.util.Map;
 public class DeleteFileConsole implements CommandHandler {
 
     @Override
-    public String name() { return "delete-file"; }
+    public String name() {
+        return "delete-file";
+    }
 
     @Override
-    public String description() { return "删除文件 (DeleteFile, 8.12.3)。\n" +
-        "  用法: delete-file --file /path/to/file [--json]"; }
+    public String description() {
+        return "删除文件 (DeleteFile, 8.12.3)。\n" + "  用法: delete-file --file /path/to/file [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("file", "文件路径，如 \"/config/myfile.txt\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -56,8 +56,8 @@ public class DeleteFileConsole implements CommandHandler {
         console.getClient(DeleteFileClient.class).execute(dao);
 
         if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"Deleted file " +
-                CmsFormatUtil.escapeJson(file.trim()) + " successfully\"}");
+            ConsolePrinter
+                    .raw("{\"success\":true,\"message\":\"Deleted file " + CmsFormatUtil.escapeJson(file.trim()) + " successfully\"}");
         } else {
             ConsolePrinter.success("Deleted file " + file + " successfully");
         }

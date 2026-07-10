@@ -11,16 +11,20 @@ import java.util.Map;
  */
 public class CmsFormatUtil {
 
-    private CmsFormatUtil() {}
+    private CmsFormatUtil() {
+    }
 
     // ==================== toString (YAML-like debug output) ====================
 
     /**
      * Render a CmsType subtree to a multi-line debug string.
      *
-     * @param type        the type to render
-     * @param depth       indentation depth (0 = root)
-     * @param fieldNames  optional mapping from CmsType pointer -> field name (can be null)
+     * @param type
+     *            the type to render
+     * @param depth
+     *            indentation depth (0 = root)
+     * @param fieldNames
+     *            optional mapping from CmsType pointer -> field name (can be null)
      */
     public static String toString(CmsType type, int depth, Map<CmsType, String> fieldNames) {
         List<? extends CmsType> kids = type.children();
@@ -37,7 +41,8 @@ public class CmsFormatUtil {
         return scalarToString(type);
     }
 
-    // ==================== toJson (machine-readable JSON output) ====================
+    // ==================== toJson (machine-readable JSON output)
+    // ====================
 
     /**
      * Render a CmsType subtree as a compact JSON string.
@@ -57,7 +62,8 @@ public class CmsFormatUtil {
             CmsArray<?> arr = (CmsArray<?>) type;
             sb.append('[');
             for (int i = 0; i < arr.items.size(); i++) {
-                if (i > 0) sb.append(',');
+                if (i > 0)
+                    sb.append(',');
                 toJson(arr.items.get(i), fieldNames, sb);
             }
             sb.append(']');
@@ -81,11 +87,11 @@ public class CmsFormatUtil {
                 int count = 0;
                 for (int i = 0; i < kids.size(); i++) {
                     CmsType child = kids.get(i);
-                    if (child == null) continue;
-                    String name = fieldNames != null
-                        ? fieldNames.getOrDefault(child, "field" + i)
-                        : "field" + i;
-                    if (count > 0) sb.append(',');
+                    if (child == null)
+                        continue;
+                    String name = fieldNames != null ? fieldNames.getOrDefault(child, "field" + i) : "field" + i;
+                    if (count > 0)
+                        sb.append(',');
                     sb.append('"').append(escapeJson(name)).append("\":");
                     toJson(child, fieldNames, sb);
                     count++;
@@ -123,11 +129,21 @@ public class CmsFormatUtil {
         String name = type.getClass().getSimpleName();
         long val;
         switch (type.nativeSize) {
-            case 1: val = type.nativePtr.getByte(0); break;
-            case 2: val = type.nativePtr.getShort(0); break;
-            case 4: val = type.nativePtr.getInt(0); break;
-            case 8: val = type.nativePtr.getLong(0); break;
-            default: sb.append("null"); return;
+            case 1 :
+                val = type.nativePtr.getByte(0);
+                break;
+            case 2 :
+                val = type.nativePtr.getShort(0);
+                break;
+            case 4 :
+                val = type.nativePtr.getInt(0);
+                break;
+            case 8 :
+                val = type.nativePtr.getLong(0);
+                break;
+            default :
+                sb.append("null");
+                return;
         }
         // CmsBoolean → true/false
         if ("CmsBoolean".equals(name) || "CmsBOOLEAN".equals(name)) {
@@ -140,8 +156,8 @@ public class CmsFormatUtil {
     // ==================== Field name resolution ====================
 
     /**
-     * Build a field name map for a CmsType and its subtree.
-     * Recursively walks children to find all reachable CmsType instances.
+     * Build a field name map for a CmsType and its subtree. Recursively walks
+     * children to find all reachable CmsType instances.
      */
     private static Map<CmsType, String> buildFieldNameMap(CmsType type, List<? extends CmsType> directChildren) {
         Map<CmsType, String> map = new IdentityHashMap<>();
@@ -150,7 +166,8 @@ public class CmsFormatUtil {
     }
 
     private static void collectFieldNames(CmsType type, Map<CmsType, String> map) {
-        if (type == null || type.getClass() == CmsType.class) return;
+        if (type == null || type.getClass() == CmsType.class)
+            return;
         for (java.lang.reflect.Field f : type.getClass().getFields()) {
             if (CmsType.class.isAssignableFrom(f.getType())) {
                 try {
@@ -158,7 +175,8 @@ public class CmsFormatUtil {
                     if (v != null && v instanceof CmsType) {
                         map.put((CmsType) v, f.getName());
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
         }
         // Recurse through children for nested fields
@@ -169,42 +187,33 @@ public class CmsFormatUtil {
         }
     }
 
-    // ==================== Existing toString methods (unchanged) ====================
+    // ==================== Existing toString methods (unchanged)
+    // ====================
 
     private static boolean isChoice(List<? extends CmsType> kids) {
         return !kids.isEmpty() && kids.get(0) instanceof CmsEnumerated;
     }
 
-    private static String choiceToString(
-            CmsType type, List<? extends CmsType> kids,
-            int depth, Map<CmsType, String> fieldNames) {
+    private static String choiceToString(CmsType type, List<? extends CmsType> kids, int depth, Map<CmsType, String> fieldNames) {
         CmsEnumerated choice = (CmsEnumerated) kids.get(0);
         int idx = 1 + choice.value();
         CmsType selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
-        String val = (selected != null)
-            ? toString(selected, depth, fieldNames)
-            : "(null)";
+        String val = (selected != null) ? toString(selected, depth, fieldNames) : "(null)";
         return "(" + type.getClass().getSimpleName() + ") " + val;
     }
 
-    private static String containerToString(
-            CmsType type, List<? extends CmsType> kids,
-            int depth, Map<CmsType, String> fieldNames) {
+    private static String containerToString(CmsType type, List<? extends CmsType> kids, int depth, Map<CmsType, String> fieldNames) {
         String indent = repeat("    ", depth + 1);
-        StringBuilder sb = new StringBuilder()
-            .append("(").append(type.getClass().getSimpleName()).append(")\n");
+        StringBuilder sb = new StringBuilder().append("(").append(type.getClass().getSimpleName()).append(")\n");
         for (int i = 0; i < kids.size(); i++) {
             CmsType child = kids.get(i);
-            String name = (fieldNames != null)
-                ? fieldNames.getOrDefault(child, "[" + i + "]")
-                : "[" + i + "]";
+            String name = (fieldNames != null) ? fieldNames.getOrDefault(child, "[" + i + "]") : "[" + i + "]";
             boolean skipPos = name.startsWith("[");
             sb.append(indent);
-            if (!skipPos) sb.append("[").append(i).append("] ");
+            if (!skipPos)
+                sb.append("[").append(i).append("] ");
             sb.append(name).append(": ");
-            String val = (child != null)
-                ? toString(child, depth + 1, fieldNames)
-                : "(null)";
+            String val = (child != null) ? toString(child, depth + 1, fieldNames) : "(null)";
             sb.append(val).append("\n");
         }
         if (!kids.isEmpty()) {
@@ -229,10 +238,18 @@ public class CmsFormatUtil {
     private static String scalarToString(CmsType type) {
         long val = 0;
         switch (type.nativeSize) {
-            case 1: val = type.nativePtr.getByte(0); break;
-            case 2: val = type.nativePtr.getShort(0); break;
-            case 4: val = type.nativePtr.getInt(0); break;
-            case 8: val = type.nativePtr.getLong(0); break;
+            case 1 :
+                val = type.nativePtr.getByte(0);
+                break;
+            case 2 :
+                val = type.nativePtr.getShort(0);
+                break;
+            case 4 :
+                val = type.nativePtr.getInt(0);
+                break;
+            case 8 :
+                val = type.nativePtr.getLong(0);
+                break;
         }
         return "(" + type.getClass().getSimpleName() + ") " + val;
     }
@@ -242,21 +259,25 @@ public class CmsFormatUtil {
     private static boolean isPrintable(String s) {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (c < 0x20 && c != '\t' && c != '\n' && c != '\r') return false;
-            if (c == 0xFFFD) return false;
+            if (c < 0x20 && c != '\t' && c != '\n' && c != '\r')
+                return false;
+            if (c == 0xFFFD)
+                return false;
         }
         return true;
     }
 
     static String bytesToHex(byte[] bytes) {
         StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes) sb.append(String.format("%02x", b & 0xFF));
+        for (byte b : bytes)
+            sb.append(String.format("%02x", b & 0xFF));
         return sb.toString();
     }
 
     static String repeat(String s, int count) {
         StringBuilder sb = new StringBuilder(s.length() * count);
-        for (int i = 0; i < count; i++) sb.append(s);
+        for (int i = 0; i < count; i++)
+            sb.append(s);
         return sb.toString();
     }
 
@@ -266,14 +287,28 @@ public class CmsFormatUtil {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '"':  sb.append("\\\""); break;
-                case '\\': sb.append("\\\\"); break;
-                case '\b': sb.append("\\b"); break;
-                case '\f': sb.append("\\f"); break;
-                case '\n': sb.append("\\n"); break;
-                case '\r': sb.append("\\r"); break;
-                case '\t': sb.append("\\t"); break;
-                default:
+                case '"' :
+                    sb.append("\\\"");
+                    break;
+                case '\\' :
+                    sb.append("\\\\");
+                    break;
+                case '\b' :
+                    sb.append("\\b");
+                    break;
+                case '\f' :
+                    sb.append("\\f");
+                    break;
+                case '\n' :
+                    sb.append("\\n");
+                    break;
+                case '\r' :
+                    sb.append("\\r");
+                    break;
+                case '\t' :
+                    sb.append("\\t");
+                    break;
+                default :
                     if (c < 0x20) {
                         sb.append(String.format("\\u%04x", (int) c));
                     } else {

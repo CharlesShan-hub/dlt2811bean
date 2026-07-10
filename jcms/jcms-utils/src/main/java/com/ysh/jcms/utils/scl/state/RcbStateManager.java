@@ -8,14 +8,15 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * BRCB/URCB 运行时状态管理器。
  * <p>
- * 线程安全的 BRCB 状态存储。SetBRCBValues/SetURCBValues 写入，
- * GetBRCBValues/GetURCBValues 读取（优先于静态 SCL 默认值）。
+ * 线程安全的 BRCB 状态存储。SetBRCBValues/SetURCBValues 写入， GetBRCBValues/GetURCBValues
+ * 读取（优先于静态 SCL 默认值）。
  */
 public final class RcbStateManager {
 
     private static final ConcurrentMap<String, CmsBrcb> state = new ConcurrentHashMap<>();
 
-    private RcbStateManager() {}
+    private RcbStateManager() {
+    }
 
     /** 获取指定引用的运行时状态，未设置返回 null。 */
     public static CmsBrcb get(String ref) {

@@ -12,8 +12,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * ServerAcceptor — accepts incoming TCP/TLS connections.
  *
- * <p>Each accepted connection is wrapped in a {@link Connection} and
- * its reader thread is started automatically.
+ * <p>
+ * Each accepted connection is wrapped in a {@link Connection} and its reader
+ * thread is started automatically.
  */
 public class ServerAcceptor {
 
@@ -56,10 +57,11 @@ public class ServerAcceptor {
 
     private ServerSocket createServerSocket() throws IOException {
         if (sslContext != null) {
-            SSLServerSocket socket = (SSLServerSocket) sslContext
-                    .getServerSocketFactory().createServerSocket(port);
-            if (needClientAuth) socket.setNeedClientAuth(true);
-            else socket.setWantClientAuth(true);
+            SSLServerSocket socket = (SSLServerSocket) sslContext.getServerSocketFactory().createServerSocket(port);
+            if (needClientAuth)
+                socket.setNeedClientAuth(true);
+            else
+                socket.setWantClientAuth(true);
             return socket;
         }
         return new ServerSocket(port);
@@ -74,7 +76,8 @@ public class ServerAcceptor {
                 conn.startReader();
                 listener.onConnected(conn);
             } catch (IOException e) {
-                if (running) log.error("Accept failed", e);
+                if (running)
+                    log.error("Accept failed", e);
             }
         }
     }
@@ -82,13 +85,21 @@ public class ServerAcceptor {
     /** Stop listening and close all connections. */
     public void stop() {
         running = false;
-        try { serverSocket.close(); } catch (Exception ignored) {}
-        for (Connection conn : connections) conn.close();
+        try {
+            serverSocket.close();
+        } catch (Exception ignored) {
+        }
+        for (Connection conn : connections)
+            conn.close();
         connections.clear();
     }
 
-    public boolean isRunning() { return running; }
-    public int getPort() { return port; }
+    public boolean isRunning() {
+        return running;
+    }
+    public int getPort() {
+        return port;
+    }
     public java.util.List<Connection> getConnections() {
         return new java.util.ArrayList<>(connections);
     }

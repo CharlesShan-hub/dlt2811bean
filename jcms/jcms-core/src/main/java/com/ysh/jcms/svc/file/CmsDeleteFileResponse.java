@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * DeleteFile-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.12.3
+ * DeleteFile-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.12.3
  */
 public class CmsDeleteFileResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsDeleteFileResponse() { super(Codec.DELETE_FILE_RESPONSE);
+    public CmsDeleteFileResponse() {
+        super(Codec.DELETE_FILE_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsDeleteFileResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsDeleteFileResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

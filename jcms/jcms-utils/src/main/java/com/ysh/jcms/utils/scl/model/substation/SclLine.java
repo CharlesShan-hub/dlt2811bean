@@ -10,18 +10,25 @@ import java.util.List;
 /**
  * 线路 (Line)，变电站之间的输电线路或变电站内部的连接线。
  * <p>
- * Line 可以包含 LNode、GeneralEquipment、Function、ConductingEquipment
- * 和 ConnectivityNode，并关联 Voltage 信息。
+ * Line 可以包含 LNode、GeneralEquipment、Function、ConductingEquipment 和
+ * ConnectivityNode，并关联 Voltage 信息。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tLine">
  *     <xs:sequence>
- *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="GeneralEquipment" type="tGeneralEquipment" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="Function" type="tFunction" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="ConductingEquipment" type="tConductingEquipment" minOccurs="0" maxOccurs="unbounded"/>
- *         <xs:element name="ConnectivityNode" type="tConnectivityNode" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="LNode" type="tLNode" minOccurs="0" maxOccurs=
+"unbounded"/>
+ *         <xs:element name="GeneralEquipment" type=
+"tGeneralEquipment" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="Function" type="tFunction" minOccurs="0" maxOccurs=
+"unbounded"/>
+ *         <xs:element name="ConductingEquipment" type=
+"tConductingEquipment" minOccurs="0" maxOccurs="unbounded"/>
+ *         <xs:element name="ConnectivityNode" type=
+"tConnectivityNode" minOccurs="0" maxOccurs="unbounded"/>
  *     </xs:sequence>
  *     <xs:attribute name="name" type="xs:normalizedString"/>
  *     <xs:attribute name="desc" type="xs:normalizedString"/>
@@ -29,9 +36,13 @@ import java.util.List;
  *     <xs:attribute name="nomFreq" type="xs:normalizedString"/>
  *     <xs:attribute name="numPhases" type="xs:normalizedString"/>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclLine {
     /** 线路名称 (name) */
     private String name;
@@ -56,13 +67,28 @@ public class SclLine {
     /** 连接点列表 (ConnectivityNode) */
     private final List<SclConnectivityNode> connectivityNodes = new ArrayList<>();
 
-    public SclLine addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
+    public SclLine addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
 
-    public SclLine addGeneralEquipment(SclGeneralEquipment generalEquipment) { generalEquipments.add(generalEquipment); return this; }
+    public SclLine addGeneralEquipment(SclGeneralEquipment generalEquipment) {
+        generalEquipments.add(generalEquipment);
+        return this;
+    }
 
-    public SclLine addFunction(SclFunction function) { functions.add(function); return this; }
+    public SclLine addFunction(SclFunction function) {
+        functions.add(function);
+        return this;
+    }
 
-    public SclLine addConductingEquipment(SclConductingEquipment conductingEquipment) { conductingEquipments.add(conductingEquipment); return this; }
+    public SclLine addConductingEquipment(SclConductingEquipment conductingEquipment) {
+        conductingEquipments.add(conductingEquipment);
+        return this;
+    }
 
-    public SclLine addConnectivityNode(SclConnectivityNode connectivityNode) { connectivityNodes.add(connectivityNode); return this; }
+    public SclLine addConnectivityNode(SclConnectivityNode connectivityNode) {
+        connectivityNodes.add(connectivityNode);
+        return this;
+    }
 }

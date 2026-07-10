@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetUrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -20,13 +19,19 @@ public class GetUrcbValuesClient extends BaseClientHandler {
 
     public static final class UrcbEntry {
         public final String desc;
-        public UrcbEntry(String desc) { this.desc = desc; }
+        public UrcbEntry(String desc) {
+            this.desc = desc;
+        }
     }
 
     private List<UrcbEntry> lastEntries = new ArrayList<>();
 
-    public GetUrcbValuesClient(CmsNode node) { super(node); }
-    public List<UrcbEntry> getLastEntries() { return lastEntries; }
+    public GetUrcbValuesClient(CmsNode node) {
+        super(node);
+    }
+    public List<UrcbEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetUrcbValuesDao dao) throws Exception {
         CmsGetUrcbValuesRequest req = new CmsGetUrcbValuesRequest().reqId(nextReqId());

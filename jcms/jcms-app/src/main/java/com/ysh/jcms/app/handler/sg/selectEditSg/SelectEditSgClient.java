@@ -17,10 +17,8 @@ public class SelectEditSgClient extends BaseClientHandler {
     }
 
     public void execute(SelectEditSgDao dao) throws Exception {
-        CmsSelectEditSgRequest req = new CmsSelectEditSgRequest()
-            .reqId(nextReqId())
-            .sgcbReference(dao.sgcbReference())
-            .settingGroupNumber(dao.settingGroupNumber());
+        CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference())
+                .settingGroupNumber(dao.settingGroupNumber());
 
         send(ServiceName.SELECT_EDIT_SG, req);
     }

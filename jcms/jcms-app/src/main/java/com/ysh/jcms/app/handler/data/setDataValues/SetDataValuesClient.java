@@ -19,12 +19,10 @@ public class SetDataValuesClient extends BaseClientHandler {
     }
 
     public void execute(SetDataValuesDao dao) throws Exception {
-        CmsSetDataValuesRequest req = new CmsSetDataValuesRequest()
-            .reqId(nextReqId());
+        CmsSetDataValuesRequest req = new CmsSetDataValuesRequest().reqId(nextReqId());
 
         for (SetDataValuesDao.Entry src : dao.entries()) {
-            CmsDataRefValueEntry entry = new CmsDataRefValueEntry()
-                .reference(src.reference());
+            CmsDataRefValueEntry entry = new CmsDataRefValueEntry().reference(src.reference());
 
             // Set value in-place (don't replace the CmsData field, as the
             // JNA native pointer is fixed at construction time)
@@ -61,9 +59,9 @@ public class SetDataValuesClient extends BaseClientHandler {
     }
 
     /**
-     * Set CmsData fields in-place with a string value.
-     * Modifies the existing CmsData rather than creating a new one,
-     * because JNA native pointers are fixed at construction time.
+     * Set CmsData fields in-place with a string value. Modifies the existing
+     * CmsData rather than creating a new one, because JNA native pointers are fixed
+     * at construction time.
      */
     private static void fillCmsData(CmsData data, String value) {
         if (containsNonAscii(value)) {
@@ -76,9 +74,11 @@ public class SetDataValuesClient extends BaseClientHandler {
     }
 
     private static boolean containsNonAscii(String s) {
-        if (s == null) return false;
+        if (s == null)
+            return false;
         for (int i = 0; i < s.length(); i++) {
-            if (s.charAt(i) > 127) return true;
+            if (s.charAt(i) > 127)
+                return true;
         }
         return false;
     }

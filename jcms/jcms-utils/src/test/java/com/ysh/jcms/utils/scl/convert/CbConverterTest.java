@@ -24,9 +24,8 @@ public class CbConverterTest {
     @Test
     public void testBrcb() {
         SclDocument doc = parseFullScd();
-        SclReportControl rc = doc.findIedByName("E1Q1SB1")
-                .accessPoints().get(0).server().lDevices().get(0)
-                .findLnByFullName("LLN0").findReportControlByName("PosReport");
+        SclReportControl rc = doc.findIedByName("E1Q1SB1").accessPoints().get(0).server().lDevices().get(0).findLnByFullName("LLN0")
+                .findReportControlByName("PosReport");
         assertNotNull(rc);
 
         CmsCbValueChoice result = CbConverter.brcbFrom(rc);
@@ -37,9 +36,8 @@ public class CbConverterTest {
     @Test
     public void testUrcb() {
         SclDocument doc = parseFullScd();
-        SclReportControl rc = doc.findIedByName("E1Q1SB1")
-                .accessPoints().get(0).server().lDevices().get(0)
-                .findLnByFullName("LLN0").findReportControlByName("PosReport");
+        SclReportControl rc = doc.findIedByName("E1Q1SB1").accessPoints().get(0).server().lDevices().get(0).findLnByFullName("LLN0")
+                .findReportControlByName("PosReport");
         assertNotNull(rc);
 
         CmsCbValueChoice result = CbConverter.urcbFrom(rc);
@@ -49,9 +47,8 @@ public class CbConverterTest {
     @Test
     public void testGocb() {
         SclDocument doc = parseFullScd();
-        SclGSEControl gse = doc.findIedByName("E1Q1SB1")
-                .accessPoints().get(0).server().lDevices().get(0)
-                .findLnByFullName("LLN0").findGseControlByName("ItlPositions");
+        SclGSEControl gse = doc.findIedByName("E1Q1SB1").accessPoints().get(0).server().lDevices().get(0).findLnByFullName("LLN0")
+                .findGseControlByName("ItlPositions");
         assertNotNull(gse);
 
         CmsCbValueChoice result = CbConverter.gocbFrom(gse);
@@ -61,9 +58,8 @@ public class CbConverterTest {
     @Test
     public void testLcb() {
         SclDocument doc = parseFullScd();
-        SclLogControl lc = doc.findIedByName("E1Q1SB1")
-                .accessPoints().get(0).server().lDevices().get(0)
-                .findLnByFullName("LLN0").logControls().get(0);
+        SclLogControl lc = doc.findIedByName("E1Q1SB1").accessPoints().get(0).server().lDevices().get(0).findLnByFullName("LLN0")
+                .logControls().get(0);
         assertNotNull(lc);
 
         CmsCbValueChoice result = CbConverter.lcbFrom(lc);
@@ -73,9 +69,8 @@ public class CbConverterTest {
     @Test
     public void testMsvcb() {
         SclDocument doc = parseFullScd();
-        SclSampledValueControl sv = doc.findIedByName("E1Q1SB1")
-                .accessPoints().get(0).server().lDevices().get(0)
-                .findLnByFullName("LLN0").findSmvControlByName("Volt");
+        SclSampledValueControl sv = doc.findIedByName("E1Q1SB1").accessPoints().get(0).server().lDevices().get(0).findLnByFullName("LLN0")
+                .findSmvControlByName("Volt");
         assertNotNull(sv);
 
         CmsCbValueChoice result = CbConverter.msvcbFrom(sv);

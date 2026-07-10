@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.svc.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.svc.report.CmsRcbValueChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -20,13 +19,19 @@ public class GetBrcbValuesClient extends BaseClientHandler {
 
     public static final class BrcbEntry {
         public final String desc;
-        public BrcbEntry(String desc) { this.desc = desc; }
+        public BrcbEntry(String desc) {
+            this.desc = desc;
+        }
     }
 
     private List<BrcbEntry> lastEntries = new ArrayList<>();
 
-    public GetBrcbValuesClient(CmsNode node) { super(node); }
-    public List<BrcbEntry> getLastEntries() { return lastEntries; }
+    public GetBrcbValuesClient(CmsNode node) {
+        super(node);
+    }
+    public List<BrcbEntry> getLastEntries() {
+        return lastEntries;
+    }
 
     public void execute(GetBrcbValuesDao dao) throws Exception {
         CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest().reqId(nextReqId());

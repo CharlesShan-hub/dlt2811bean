@@ -9,28 +9,38 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SelectEditSG-RequestPDU ::= SEQUENCE {
- *     reqId               Int16U,
- *     sgcbReference       [0] IMPLICIT ObjectReference,
- *     settingGroupNumber  [1] IMPLICIT INT8U
- * }  —  8.6.2
+ * SelectEditSG-RequestPDU ::= SEQUENCE { reqId Int16U, sgcbReference [0]
+ * IMPLICIT ObjectReference, settingGroupNumber [1] IMPLICIT INT8U } — 8.6.2
  */
 public class CmsSelectEditSgRequest extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  sgcbReference;
-    public CmsInt8U            settingGroupNumber;
+    public CmsReqId reqId;
+    public CmsObjectReference sgcbReference;
+    public CmsInt8U settingGroupNumber;
 
-    public CmsSelectEditSgRequest() { super(Codec.SELECT_EDIT_SG_REQUEST);
-        this.reqId              = new CmsReqId();
-        this.sgcbReference      = new CmsObjectReference();
+    public CmsSelectEditSgRequest() {
+        super(Codec.SELECT_EDIT_SG_REQUEST);
+        this.reqId = new CmsReqId();
+        this.sgcbReference = new CmsObjectReference();
         this.settingGroupNumber = new CmsInt8U();
     }
-    
-    public CmsSelectEditSgRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSelectEditSgRequest sgcbReference(byte[] v) { this.sgcbReference.value(v); return this; }
-    public CmsSelectEditSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
-    public CmsSelectEditSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
+
+    public CmsSelectEditSgRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSelectEditSgRequest sgcbReference(byte[] v) {
+        this.sgcbReference.value(v);
+        return this;
+    }
+    public CmsSelectEditSgRequest sgcbReference(String v) {
+        this.sgcbReference.value(v);
+        return this;
+    }
+    public CmsSelectEditSgRequest settingGroupNumber(int v) {
+        this.settingGroupNumber.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

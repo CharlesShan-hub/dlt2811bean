@@ -28,7 +28,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +45,7 @@ public class LnDirServer extends BaseServerHandler {
         int acsiClass = req.acsiClass.value();
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 
-        log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}",
-            session.getSessionId(), reqId, acsiClass);
+        log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
         SclDocument doc = getScl2Document(session);
         if (doc == null) {
@@ -77,8 +75,7 @@ public class LnDirServer extends BaseServerHandler {
 
         log.info("TIMING: collected {} names in {}ms", names.size(), System.currentTimeMillis() - t0);
 
-        CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse()
-            .reqId(reqId);
+        CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse().reqId(reqId);
 
         int pageSize = pageSize();
         boolean more = names.size() > pageSize;
@@ -99,15 +96,18 @@ public class LnDirServer extends BaseServerHandler {
                     SclServer srv = ap.server();
                     if (srv != null) {
                         SclLDevice device = srv.findLDeviceByInst(ldName);
-                        if (device != null) return device.lns();
+                        if (device != null)
+                            return device.lns();
                     }
                 }
             }
             return null;
         }
-        if (lnReference == null || lnReference.isEmpty()) return null;
+        if (lnReference == null || lnReference.isEmpty())
+            return null;
         int slashIdx = lnReference.indexOf('/');
-        if (slashIdx < 0) return null;
+        if (slashIdx < 0)
+            return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
         for (SclIED ied : doc.ieds()) {
@@ -129,15 +129,13 @@ public class LnDirServer extends BaseServerHandler {
         return null;
     }
 
-    private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass,
-                                                  SclDataTypeTemplates templates,
-                                                  String after, long t0) {
+    private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass, SclDataTypeTemplates templates, String after, long t0) {
         List<String> all = new ArrayList<>();
         int lnIdx = 0;
         for (SclLN ln : lns) {
             long tLn = System.currentTimeMillis();
             switch (acsiClass) {
-                case CmsAcsiClass.DATA_OBJECT:
+                case CmsAcsiClass.DATA_OBJECT :
                     if (templates != null) {
                         all.addAll(getDataObjectNames(ln, templates));
                     } else {
@@ -146,27 +144,29 @@ public class LnDirServer extends BaseServerHandler {
                         }
                     }
                     break;
-                case CmsAcsiClass.DATA_SET:
+                case CmsAcsiClass.DATA_SET :
                     for (SclDataSet ds : ln.dataSets()) {
                         all.add(ds.name());
                     }
                     break;
-                case CmsAcsiClass.BRCB:
+                case CmsAcsiClass.BRCB :
                     for (SclReportControl rc : ln.reportControls()) {
-                        if ("true".equals(rc.buffered())) all.add(rc.name());
+                        if ("true".equals(rc.buffered()))
+                            all.add(rc.name());
                     }
                     break;
-                case CmsAcsiClass.URCB:
+                case CmsAcsiClass.URCB :
                     for (SclReportControl rc : ln.reportControls()) {
-                        if (!"true".equals(rc.buffered())) all.add(rc.name());
+                        if (!"true".equals(rc.buffered()))
+                            all.add(rc.name());
                     }
                     break;
-                case CmsAcsiClass.LCB:
+                case CmsAcsiClass.LCB :
                     for (SclLogControl lc : ln.logControls()) {
                         all.add(lc.name());
                     }
                     break;
-                case CmsAcsiClass.LOG:
+                case CmsAcsiClass.LOG :
                     for (SclLogControl lc : ln.logControls()) {
                         String logName = lc.logName();
                         if (logName != null && !logName.isEmpty()) {
@@ -174,30 +174,31 @@ public class LnDirServer extends BaseServerHandler {
                         }
                     }
                     break;
-                case CmsAcsiClass.GOCB:
+                case CmsAcsiClass.GOCB :
                     for (SclGSEControl gc : ln.gseControls()) {
                         all.add(gc.name());
                     }
                     break;
-                case CmsAcsiClass.MSVCB:
+                case CmsAcsiClass.MSVCB :
                     for (SclSampledValueControl sv : ln.svControls()) {
                         all.add(sv.name());
                     }
                     break;
-                default:
+                default :
                     break;
             }
-            log.info("TIMING: LN[{}] {} done in {}ms (total names so far: {})",
-                lnIdx++, ln.getFullName(), System.currentTimeMillis() - tLn, all.size());
+            log.info("TIMING: LN[{}] {} done in {}ms (total names so far: {})", lnIdx++, ln.getFullName(), System.currentTimeMillis() - tLn,
+                    all.size());
         }
 
-        if (all.isEmpty()) return all;
+        if (all.isEmpty())
+            return all;
 
         if (after != null && !after.isEmpty()) {
             int idx = all.indexOf(after);
-            log.info("TIMING: referenceAfter lookup took {}ms",
-                System.currentTimeMillis() - t0);
-            if (idx < 0) return null;
+            log.info("TIMING: referenceAfter lookup took {}ms", System.currentTimeMillis() - t0);
+            if (idx < 0)
+                return null;
             return all.subList(idx + 1, all.size());
         }
         return all;
@@ -205,9 +206,11 @@ public class LnDirServer extends BaseServerHandler {
 
     private static List<String> getDataObjectNames(SclLN ln, SclDataTypeTemplates templates) {
         List<String> names = new ArrayList<>();
-        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty()) return names;
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return names;
         SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-        if (lnt == null) return names;
+        if (lnt == null)
+            return names;
         for (SclDO doDef : lnt.dos()) {
             names.add(doDef.name());
         }

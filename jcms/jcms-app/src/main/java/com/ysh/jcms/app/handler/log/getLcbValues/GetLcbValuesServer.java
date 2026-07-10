@@ -41,7 +41,8 @@ public class GetLcbValuesServer extends BaseServerHandler {
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse().reqId(reqId);
 
@@ -66,14 +67,16 @@ public class GetLcbValuesServer extends BaseServerHandler {
     static CmsLcb resolveLcb(SclDocument doc, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return null;
 
         String ldName = ref.substring(0, slashIdx);
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
 
         SclLN ln = findLn(doc, ldName, lnName);
-        if (ln == null) return null;
+        if (ln == null)
+            return null;
 
         SclLogControl lc = null;
         for (SclLogControl c : ln.logControls()) {
@@ -82,27 +85,34 @@ public class GetLcbValuesServer extends BaseServerHandler {
                 break;
             }
         }
-        if (lc == null) return null;
+        if (lc == null)
+            return null;
 
         CmsLcb lcb = new CmsLcb();
-        if (lc.logEna() != null) lcb.logEna("true".equalsIgnoreCase(lc.logEna()) || "1".equals(lc.logEna()));
-        if (lc.datSet() != null) lcb.datSet(lc.datSet());
+        if (lc.logEna() != null)
+            lcb.logEna("true".equalsIgnoreCase(lc.logEna()) || "1".equals(lc.logEna()));
+        if (lc.datSet() != null)
+            lcb.datSet(lc.datSet());
         if (lc.intgPd() != null) {
-            try { lcb.intgPd(Long.parseLong(lc.intgPd())); } catch (NumberFormatException ignored) {}
+            try {
+                lcb.intgPd(Long.parseLong(lc.intgPd()));
+            } catch (NumberFormatException ignored) {
+            }
         }
-        if (lc.logName() != null) lcb.logRef(lc.logName());
+        if (lc.logName() != null)
+            lcb.logRef(lc.logName());
         if (lc.optFields() != null) {
             try {
                 long v = Long.parseLong(lc.optFields());
                 com.ysh.jcms.data.block.CmsLcbOptFlds f = new com.ysh.jcms.data.block.CmsLcbOptFlds().value(v != 0);
                 lcb.optFlds_present(true).optFlds(f);
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException ignored) {
+            }
         }
         if (lc.trgOps() != null) {
             // TriggerConditions requires explicit field-by-field setup from SCL
             // For now, set integrity only if trgOps is present in SCL
-            lcb.trgOps(new com.ysh.jcms.data.block.CmsTriggerConditions()
-                .integrity(true));
+            lcb.trgOps(new com.ysh.jcms.data.block.CmsTriggerConditions().integrity(true));
         }
         return lcb;
     }
@@ -110,7 +120,8 @@ public class GetLcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
     private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {

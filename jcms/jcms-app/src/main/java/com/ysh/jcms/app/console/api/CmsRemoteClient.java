@@ -12,8 +12,10 @@ import java.net.URLEncoder;
 /**
  * Remote CMS CLI client.
  *
- * <p>Sends a command to the local CMS CLI API server for execution and prints the response.
- * Usage:
+ * <p>
+ * Sends a command to the local CMS CLI API server for execution and prints the
+ * response. Usage:
+ *
  * <pre>
  * java com.ysh.jcms.app.console.api.CmsRemoteClient [--port N] &lt;command&gt;
  * </pre>
@@ -28,7 +30,7 @@ public class CmsRemoteClient {
         int i = 0;
         while (i < args.length - 1 && args[i].startsWith("--")) {
             switch (args[i]) {
-                case "--port":
+                case "--port" :
                     try {
                         port = Integer.parseInt(args[++i]);
                     } catch (NumberFormatException e) {
@@ -36,7 +38,7 @@ public class CmsRemoteClient {
                         System.exit(1);
                     }
                     break;
-                default:
+                default :
                     System.err.println("Unknown option: " + args[i]);
                     System.exit(1);
             }
@@ -46,7 +48,8 @@ public class CmsRemoteClient {
         // Remaining args form the command line
         StringBuilder cmdBuilder = new StringBuilder();
         while (i < args.length) {
-            if (cmdBuilder.length() > 0) cmdBuilder.append(" ");
+            if (cmdBuilder.length() > 0)
+                cmdBuilder.append(" ");
             String arg = args[i];
             if (arg.contains(" ") || arg.contains("\"")) {
                 cmdBuilder.append("\"").append(arg.replace("\"", "\\\"")).append("\"");
@@ -89,9 +92,8 @@ public class CmsRemoteClient {
         }
 
         int responseCode = conn.getResponseCode();
-        try (InputStream is = (responseCode >= 200 && responseCode < 300)
-                ? conn.getInputStream() : conn.getErrorStream();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+        try (InputStream is = (responseCode >= 200 && responseCode < 300) ? conn.getInputStream() : conn.getErrorStream();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buf = new byte[4096];
             int len;
             while ((len = is.read(buf)) != -1) {

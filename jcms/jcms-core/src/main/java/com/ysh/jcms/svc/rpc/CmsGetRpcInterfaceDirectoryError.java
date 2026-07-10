@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetRpcInterfaceDirectory-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.13.2
+ * GetRpcInterfaceDirectory-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.13.2
  */
 public class CmsGetRpcInterfaceDirectoryError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetRpcInterfaceDirectoryError() { super(Codec.GET_RPC_INTERFACE_DIRECTORY_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetRpcInterfaceDirectoryError() {
+        super(Codec.GET_RPC_INTERFACE_DIRECTORY_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetRpcInterfaceDirectoryError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetRpcInterfaceDirectoryError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetRpcInterfaceDirectoryError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetRpcInterfaceDirectoryError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

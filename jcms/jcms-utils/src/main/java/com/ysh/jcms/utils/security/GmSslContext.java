@@ -13,25 +13,23 @@ import java.security.cert.CertificateFactory;
 /**
  * GM SSL Context Factory.
  *
- * <p>Implements GM TLS based on BouncyCastle, supporting the following cipher suites:
+ * <p>
+ * Implements GM TLS based on BouncyCastle, supporting the following cipher
+ * suites:
  * <ul>
- *   <li>ECDHE_SM4_SM3 - Ephemeral cipher suite, key exchange using SM2 ECDHE</li>
- *   <li>ECC_SM4_SM3 - Static cipher suite, key exchange using SM2 ECC</li>
+ * <li>ECDHE_SM4_SM3 - Ephemeral cipher suite, key exchange using SM2 ECDHE</li>
+ * <li>ECC_SM4_SM3 - Static cipher suite, key exchange using SM2 ECC</li>
  * </ul>
  *
- * <p>Usage:
+ * <p>
+ * Usage:
+ *
  * <pre>
  * // Server
- * GmSslContext ctx = GmSslContext.forServer()
- *     .keyStore("server.pfx", "password")
- *     .trustStore("client.cer")
- *     .build();
+ * GmSslContext ctx = GmSslContext.forServer().keyStore("server.pfx", "password").trustStore("client.cer").build();
  *
  * // Client
- * GmSslContext ctx = GmSslContext.forClient()
- *     .keyStore("client.pfx", "password")
- *     .trustStore("server.cer")
- *     .build();
+ * GmSslContext ctx = GmSslContext.forClient().keyStore("client.pfx", "password").trustStore("server.cer").build();
  * </pre>
  */
 public class GmSslContext {
@@ -39,40 +37,29 @@ public class GmSslContext {
     private static final String PROTOCOL = "TLS";
 
     /**
-     * Protocol versions supported by GM TLS.
-     * Note: GM TLS uses specific protocol identifiers, requires Bouncy Castle JSSE Provider.
+     * Protocol versions supported by GM TLS. Note: GM TLS uses specific protocol
+     * identifiers, requires Bouncy Castle JSSE Provider.
      */
-    private static final String[] ENABLED_PROTOCOLS = {
-            "TLSv1.2"   // GM TLS based on TLS 1.1/1.2
+    private static final String[] ENABLED_PROTOCOLS = {"TLSv1.2" // GM TLS based on TLS 1.1/1.2
     };
 
     /**
-     * GM TLS supported cipher suites.
-     * Cipher suite formats supported by Bouncy Castle JSSE Provider.
-     * Note: Full GM TLS support requires special JSSE Provider (e.g., Aliyun gm-jsse).
+     * GM TLS supported cipher suites. Cipher suite formats supported by Bouncy
+     * Castle JSSE Provider. Note: Full GM TLS support requires special JSSE
+     * Provider (e.g., Aliyun gm-jsse).
      */
     private static final String[] ENABLED_CIPHER_SUITES = {
             // RFC style naming
-            "TLS_ECDHE_ECDSA_WITH_SM4_SM3",
-            "TLS_ECDHE_RSA_WITH_SM4_SM3",
-            "TLS_ECDH_ECDSA_WITH_SM4_SM3",
-            "TLS_ECDH_RSA_WITH_SM4_SM3",
+            "TLS_ECDHE_ECDSA_WITH_SM4_SM3", "TLS_ECDHE_RSA_WITH_SM4_SM3", "TLS_ECDH_ECDSA_WITH_SM4_SM3", "TLS_ECDH_RSA_WITH_SM4_SM3",
             // GmSSL style naming
-            "ECDHE_SM4_SM3",
-            "ECC_SM4_SM3"
-    };
+            "ECDHE_SM4_SM3", "ECC_SM4_SM3"};
 
     /**
      * Standard TLS cipher suites for testing (when GM is not available).
      */
-    private static final String[] STANDARD_CIPHER_SUITES = {
-            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
-            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-            "TLS_RSA_WITH_AES_128_GCM_SHA256",
-            "TLS_RSA_WITH_AES_256_GCM_SHA384"
-    };
+    private static final String[] STANDARD_CIPHER_SUITES = {"TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_RSA_WITH_AES_128_GCM_SHA256", "TLS_RSA_WITH_AES_256_GCM_SHA384"};
 
     private final SSLContext sslContext;
     private final TrustManager[] trustManagers;
@@ -177,10 +164,13 @@ public class GmSslContext {
         /**
          * Sets key manager directly from KeyPair and Certificate.
          *
-         * @param keyPair the key pair
-         * @param cert    the certificate
+         * @param keyPair
+         *            the key pair
+         * @param cert
+         *            the certificate
          * @return this builder
-         * @throws Exception if creation fails
+         * @throws Exception
+         *             if creation fails
          */
         public ServerBuilder keyManager(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
             this.keyManagers = createKeyManagers(keyPair, cert, useStandardTls);
@@ -202,7 +192,8 @@ public class GmSslContext {
         /**
          * Sets trust manager directly.
          *
-         * @param trustManagers the trust managers
+         * @param trustManagers
+         *            the trust managers
          * @return this builder
          */
         public ServerBuilder trustManager(TrustManager[] trustManagers) {
@@ -211,8 +202,8 @@ public class GmSslContext {
         }
 
         /**
-         * Uses standard TLS cipher suites instead of GM suites.
-         * Useful for testing or when GM JSSE provider is not available.
+         * Uses standard TLS cipher suites instead of GM suites. Useful for testing or
+         * when GM JSSE provider is not available.
          *
          * @return this builder
          */
@@ -273,10 +264,13 @@ public class GmSslContext {
         /**
          * Sets key manager directly from KeyPair and Certificate.
          *
-         * @param keyPair the key pair
-         * @param cert    the certificate
+         * @param keyPair
+         *            the key pair
+         * @param cert
+         *            the certificate
          * @return this builder
-         * @throws Exception if creation fails
+         * @throws Exception
+         *             if creation fails
          */
         public ClientBuilder keyManager(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert) throws Exception {
             this.keyManagers = createKeyManagers(keyPair, cert, useStandardTls);
@@ -298,7 +292,8 @@ public class GmSslContext {
         /**
          * Sets trust manager directly.
          *
-         * @param trustManagers the trust managers
+         * @param trustManagers
+         *            the trust managers
          * @return this builder
          */
         public ClientBuilder trustManager(TrustManager[] trustManagers) {
@@ -307,8 +302,8 @@ public class GmSslContext {
         }
 
         /**
-         * Uses standard TLS cipher suites instead of GM suites.
-         * Useful for testing or when GM JSSE provider is not available.
+         * Uses standard TLS cipher suites instead of GM suites. Useful for testing or
+         * when GM JSSE provider is not available.
          *
          * @return this builder
          */
@@ -359,7 +354,8 @@ public class GmSslContext {
     /**
      * Loads KeyManagers.
      */
-    private static KeyManager[] loadKeyManagers(String keyStorePath, String keyStorePassword, String keyPassword, boolean useStandardTls) throws Exception {
+    private static KeyManager[] loadKeyManagers(String keyStorePath, String keyStorePassword, String keyPassword, boolean useStandardTls)
+            throws Exception {
         if (keyStorePath == null) {
             return null;
         }
@@ -382,11 +378,16 @@ public class GmSslContext {
 
     /**
      * Creates KeyManagers from KeyPair and Certificate.
-     * @param keyPair key pair
-     * @param cert certificate
-     * @param useStandardTls whether to use standard TLS
+     *
+     * @param keyPair
+     *            key pair
+     * @param cert
+     *            certificate
+     * @param useStandardTls
+     *            whether to use standard TLS
      */
-    static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert, boolean useStandardTls) throws Exception {
+    static KeyManager[] createKeyManagers(java.security.KeyPair keyPair, java.security.cert.X509Certificate cert, boolean useStandardTls)
+            throws Exception {
         if (!useStandardTls) {
             registerProvider();
         }
@@ -405,7 +406,8 @@ public class GmSslContext {
     /**
      * Loads TrustManagers.
      */
-    private static TrustManager[] loadTrustManagers(String trustStorePath, String trustStorePassword, boolean useStandardTls) throws Exception {
+    private static TrustManager[] loadTrustManagers(String trustStorePath, String trustStorePassword, boolean useStandardTls)
+            throws Exception {
         if (trustStorePath == null) {
             String algorithm = useStandardTls ? TrustManagerFactory.getDefaultAlgorithm() : "PKIX";
             String provider = useStandardTls ? null : "BCJSSE";

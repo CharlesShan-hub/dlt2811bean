@@ -17,9 +17,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler {
     }
 
     public void execute(ConfirmEditSgValuesDao dao) throws Exception {
-        CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest()
-            .reqId(nextReqId())
-            .sgcbReference(dao.sgcbReference());
+        CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference());
 
         send(ServiceName.CONFIRM_EDIT_SG_VALUES, req);
     }

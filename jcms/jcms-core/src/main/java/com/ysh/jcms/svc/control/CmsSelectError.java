@@ -8,24 +8,32 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Select-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT ObjectReference
- * }  —  8.11.1
+ * Select-ErrorPDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
+ * ObjectReference } — 8.11.1
  */
 public class CmsSelectError extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  reference;
+    public CmsReqId reqId;
+    public CmsObjectReference reference;
 
-    public CmsSelectError() { super(Codec.SELECT_ERROR);
-        this.reqId     = new CmsReqId();
+    public CmsSelectError() {
+        super(Codec.SELECT_ERROR);
+        this.reqId = new CmsReqId();
         this.reference = new CmsObjectReference();
     }
-    
-    public CmsSelectError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSelectError reference(byte[] v) { this.reference.value(v); return this; }
-    public CmsSelectError reference(String v) { this.reference.value(v); return this; }
+
+    public CmsSelectError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSelectError reference(byte[] v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSelectError reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

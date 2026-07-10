@@ -105,18 +105,30 @@ public class SetBrcbValuesServer extends BaseServerHandler {
 
     /** Check if an entry result has any error. */
     private boolean hasEntryError(CmsSetBrcbResult r) {
-        if (r.errorPresent.value()) return true;
-        if (r.rptIdErrPresent.value()) return true;
-        if (r.rptEnaErrPresent.value()) return true;
-        if (r.datSetErrPresent.value()) return true;
-        if (r.optFldsErrPresent.value()) return true;
-        if (r.bufTmErrPresent.value()) return true;
-        if (r.trgOpsErrPresent.value()) return true;
-        if (r.intgPdErrPresent.value()) return true;
-        if (r.giErrPresent.value()) return true;
-        if (r.purgeBufErrPresent.value()) return true;
-        if (r.entryIdErrPresent.value()) return true;
-        if (r.resvTmsErrPresent.value()) return true;
+        if (r.errorPresent.value())
+            return true;
+        if (r.rptIdErrPresent.value())
+            return true;
+        if (r.rptEnaErrPresent.value())
+            return true;
+        if (r.datSetErrPresent.value())
+            return true;
+        if (r.optFldsErrPresent.value())
+            return true;
+        if (r.bufTmErrPresent.value())
+            return true;
+        if (r.trgOpsErrPresent.value())
+            return true;
+        if (r.intgPdErrPresent.value())
+            return true;
+        if (r.giErrPresent.value())
+            return true;
+        if (r.purgeBufErrPresent.value())
+            return true;
+        if (r.entryIdErrPresent.value())
+            return true;
+        if (r.resvTmsErrPresent.value())
+            return true;
         return false;
     }
 
@@ -162,8 +174,8 @@ public class SetBrcbValuesServer extends BaseServerHandler {
         CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
 
         // 8.7.3.2.b) rptEna ordering:
-        //   - rptEna=false: set rptEna FIRST, then others
-        //   - rptEna=true: set others FIRST, then rptEna
+        // - rptEna=false: set rptEna FIRST, then others
+        // - rptEna=true: set others FIRST, then rptEna
         boolean hasRptEna = entry.rptEnaPresent.value();
         boolean rptEnaVal = hasRptEna && entry.rptEna.value();
 
@@ -284,7 +296,8 @@ public class SetBrcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
     private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {

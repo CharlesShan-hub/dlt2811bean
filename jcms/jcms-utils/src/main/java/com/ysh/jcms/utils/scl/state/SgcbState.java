@@ -38,23 +38,47 @@ public class SgcbState {
         this.resvTms = 0;
     }
 
-    public int getNumOfSG() { return numOfSG; }
-    public void setNumOfSG(int numOfSG) { this.numOfSG = numOfSG; }
+    public int getNumOfSG() {
+        return numOfSG;
+    }
+    public void setNumOfSG(int numOfSG) {
+        this.numOfSG = numOfSG;
+    }
 
-    public int getActSG() { return actSG; }
-    public void setActSG(int actSG) { this.actSG = actSG; }
+    public int getActSG() {
+        return actSG;
+    }
+    public void setActSG(int actSG) {
+        this.actSG = actSG;
+    }
 
-    public int getEditSG() { return editSG; }
-    public void setEditSG(int editSG) { this.editSG = editSG; }
+    public int getEditSG() {
+        return editSG;
+    }
+    public void setEditSG(int editSG) {
+        this.editSG = editSG;
+    }
 
-    public boolean isCnfEdit() { return cnfEdit; }
-    public void setCnfEdit(boolean cnfEdit) { this.cnfEdit = cnfEdit; }
+    public boolean isCnfEdit() {
+        return cnfEdit;
+    }
+    public void setCnfEdit(boolean cnfEdit) {
+        this.cnfEdit = cnfEdit;
+    }
 
-    public long getActTm() { return actTm; }
-    public void setActTm(long actTm) { this.actTm = actTm; }
+    public long getActTm() {
+        return actTm;
+    }
+    public void setActTm(long actTm) {
+        this.actTm = actTm;
+    }
 
-    public int getResvTms() { return resvTms; }
-    public void setResvTms(int resvTms) { this.resvTms = resvTms; }
+    public int getResvTms() {
+        return resvTms;
+    }
+    public void setResvTms(int resvTms) {
+        this.resvTms = resvTms;
+    }
 
     public Map<String, String> getSgValues(int sgNum) {
         return sgValues.computeIfAbsent(sgNum, k -> new ConcurrentSkipListMap<>());

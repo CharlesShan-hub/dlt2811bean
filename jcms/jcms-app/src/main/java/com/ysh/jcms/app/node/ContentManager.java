@@ -84,15 +84,25 @@ public class ContentManager {
         set.addAll(refs);
     }
 
-    public String getSapRef() { return sapRef; }
-    public Set<String> getLdNames() { return Collections.unmodifiableSet(ldNames); }
-    public Set<String> getLnNames() { return Collections.unmodifiableSet(lnNames); }
-    public Set<String> getDataRefs() { return Collections.unmodifiableSet(dataRefs); }
-    public Set<String> getDataSetRefs() { return Collections.unmodifiableSet(dataSetRefs); }
+    public String getSapRef() {
+        return sapRef;
+    }
+    public Set<String> getLdNames() {
+        return Collections.unmodifiableSet(ldNames);
+    }
+    public Set<String> getLnNames() {
+        return Collections.unmodifiableSet(lnNames);
+    }
+    public Set<String> getDataRefs() {
+        return Collections.unmodifiableSet(dataRefs);
+    }
+    public Set<String> getDataSetRefs() {
+        return Collections.unmodifiableSet(dataSetRefs);
+    }
 
     /**
-     * Get references by ACSIClass (from GetLogicalNodeDirectory results).
-     * Returns empty set if no results for the given class.
+     * Get references by ACSIClass (from GetLogicalNodeDirectory results). Returns
+     * empty set if no results for the given class.
      */
     public Set<String> getNodeRefs(int acsiClass) {
         Set<String> set = lnRefsByAcsiClass.get(acsiClass);

@@ -17,11 +17,13 @@ import java.util.concurrent.Executors;
 /**
  * Embedded HTTP API server for remote CLI execution.
  *
- * <p>Provides endpoints:
+ * <p>
+ * Provides endpoints:
  * <ul>
- *   <li>{@code POST /api/execute} — execute a CLI command, returns text output</li>
- *   <li>{@code GET /api/status} — query connection status</li>
- *   <li>{@code GET /ui/*} — serve Vue web UI static files</li>
+ * <li>{@code POST /api/execute} — execute a CLI command, returns text
+ * output</li>
+ * <li>{@code GET /api/status} — query connection status</li>
+ * <li>{@code GET /ui/*} — serve Vue web UI static files</li>
  * </ul>
  */
 public class CliApiServer {
@@ -88,8 +90,7 @@ public class CliApiServer {
     }
 
     private void handleStatus(HttpExchange exchange) throws IOException {
-        String status = "{\"connected\": " + console.isConnected()
-                + ", \"serverRunning\": true, \"port\": " + port + "}";
+        String status = "{\"connected\": " + console.isConnected() + ", \"serverRunning\": true, \"port\": " + port + "}";
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         sendResponse(exchange, 200, status);
     }
@@ -122,8 +123,7 @@ public class CliApiServer {
     }
 
     private String readBody(HttpExchange exchange) throws IOException {
-        try (InputStream is = exchange.getRequestBody();
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+        try (InputStream is = exchange.getRequestBody(); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
             byte[] buf = new byte[4096];
             int len;
             while ((len = is.read(buf)) != -1) {
@@ -144,8 +144,8 @@ public class CliApiServer {
         byte[] bytes = body.getBytes("UTF-8");
         String trimmed = body.trim();
         String contentType = (trimmed.startsWith("{") || trimmed.startsWith("["))
-            ? "application/json; charset=UTF-8"
-            : "text/plain; charset=UTF-8";
+                ? "application/json; charset=UTF-8"
+                : "text/plain; charset=UTF-8";
         exchange.getResponseHeaders().set("Content-Type", contentType);
         exchange.sendResponseHeaders(code, bytes.length);
         try (OutputStream os = exchange.getResponseBody()) {
@@ -154,14 +154,22 @@ public class CliApiServer {
     }
 
     private static String guessContentType(String path) {
-        if (path.endsWith(".html")) return "text/html; charset=UTF-8";
-        if (path.endsWith(".css"))  return "text/css; charset=UTF-8";
-        if (path.endsWith(".js"))   return "application/javascript; charset=UTF-8";
-        if (path.endsWith(".json")) return "application/json";
-        if (path.endsWith(".svg"))  return "image/svg+xml";
-        if (path.endsWith(".png"))  return "image/png";
-        if (path.endsWith(".ico"))  return "image/x-icon";
-        if (path.endsWith(".woff2")) return "font/woff2";
+        if (path.endsWith(".html"))
+            return "text/html; charset=UTF-8";
+        if (path.endsWith(".css"))
+            return "text/css; charset=UTF-8";
+        if (path.endsWith(".js"))
+            return "application/javascript; charset=UTF-8";
+        if (path.endsWith(".json"))
+            return "application/json";
+        if (path.endsWith(".svg"))
+            return "image/svg+xml";
+        if (path.endsWith(".png"))
+            return "image/png";
+        if (path.endsWith(".ico"))
+            return "image/x-icon";
+        if (path.endsWith(".woff2"))
+            return "font/woff2";
         return "application/octet-stream";
     }
 }

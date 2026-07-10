@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SelectEditSG-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U
- * }  —  8.6.2
+ * SelectEditSG-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.6.2
  */
 public class CmsSelectEditSgResponse extends CmsType {
 
     public CmsReqId reqId;
 
-    public CmsSelectEditSgResponse() { super(Codec.SELECT_EDIT_SG_RESPONSE);
+    public CmsSelectEditSgResponse() {
+        super(Codec.SELECT_EDIT_SG_RESPONSE);
         this.reqId = new CmsReqId();
     }
-    
-    public CmsSelectEditSgResponse reqId(int v) { this.reqId.value(v); return this; }
+
+    public CmsSelectEditSgResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

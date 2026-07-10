@@ -7,11 +7,7 @@ import static org.junit.Assert.*;
 public class CmsNegotiateTest {
     @Test
     public void request_roundup() {
-        CmsNegotiateRequest a = new CmsNegotiateRequest()
-            .reqId(1)
-            .apduSize(1024)
-            .asduSize(65536L)
-            .protocolVersion(1L);
+        CmsNegotiateRequest a = new CmsNegotiateRequest().reqId(1).apduSize(1024).asduSize(65536L).protocolVersion(1L);
         byte[] encoded = a.encode();
 
         CmsNegotiateRequest b = new CmsNegotiateRequest();
@@ -21,12 +17,8 @@ public class CmsNegotiateTest {
 
     @Test
     public void response_roundup() {
-        CmsNegotiateResponse a = new CmsNegotiateResponse()
-            .reqId(2)
-            .apduSize(2048)
-            .asduSize(131072L)
-            .protocolVersion(2L)
-            .modelVersion("1.0".getBytes());
+        CmsNegotiateResponse a = new CmsNegotiateResponse().reqId(2).apduSize(2048).asduSize(131072L).protocolVersion(2L)
+                .modelVersion("1.0".getBytes());
         byte[] encoded = a.encode();
 
         CmsNegotiateResponse b = new CmsNegotiateResponse();
@@ -36,9 +28,7 @@ public class CmsNegotiateTest {
 
     @Test
     public void error_roundup() {
-        CmsNegotiateError a = new CmsNegotiateError()
-            .reqId(99)
-            .serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsNegotiateError a = new CmsNegotiateError().reqId(99).serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         byte[] encoded = a.encode();
 
         CmsNegotiateError b = new CmsNegotiateError();

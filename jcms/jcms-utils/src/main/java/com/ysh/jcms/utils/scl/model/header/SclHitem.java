@@ -9,22 +9,31 @@ import lombok.experimental.Accessors;
  * Hitem - 61850.6.9.1
  * <p>
  * Schema
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tHItem" mixed="true">
  *     <xs:complexContent mixed="true">
  *         <xs:extension base="tAnyContentFromOtherNamespace">
- *             <xs:attribute name="version" type="xs:normalizedString" use="required"/>
- *             <xs:attribute name="revision" type="xs:normalizedString" use="required"/>
- *             <xs:attribute name="when" type="xs:normalizedString" use="required"/>
+ *             <xs:attribute name="version" type="xs:normalizedString" use=
+"required"/>
+ *             <xs:attribute name="revision" type="xs:normalizedString" use=
+"required"/>
+ *             <xs:attribute name="when" type="xs:normalizedString" use=
+"required"/>
  *             <xs:attribute name="who" type="xs:normalizedString"/>
  *             <xs:attribute name="what" type="xs:normalizedString"/>
  *             <xs:attribute name="why" type="xs:normalizedString"/>
  *         </xs:extension>
  *     </xs:complexContent>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclHitem {
     /** The version of this history entry */
     private String version;

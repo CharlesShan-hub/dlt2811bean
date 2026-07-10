@@ -45,7 +45,8 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 
         SclDocument doc = getScl2Document(session);
-        if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        if (doc == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse().reqId(reqId);
 
@@ -97,7 +98,8 @@ public class GetGoCbValuesServer extends BaseServerHandler {
         SclLN ln = device.findLnByFullName(lnPart);
         if (ln != null) {
             SclGSEControl gc = ln.findGseControlByName(cbName);
-            if (gc != null) return buildGocb(gc);
+            if (gc != null)
+                return buildGocb(gc);
             log.warn("resolveGocb: GSEControl '{}' not in LN '{}' (exact match)", cbName, ln.getFullName());
         }
 
@@ -115,19 +117,24 @@ public class GetGoCbValuesServer extends BaseServerHandler {
                 }
             }
         }
-        log.warn("resolveGocb: GSEControl '{}' not found in any LN matching '{}' under LD '{}'. " +
-            "Checked LNs: {}, candidate prefix matches: {}",
-            cbName, lnPart, ldName,
-            device.lns().stream().map(SclLN::getFullName).collect(Collectors.toList()), candidates);
+        log.warn(
+                "resolveGocb: GSEControl '{}' not found in any LN matching '{}' under LD '{}'. "
+                        + "Checked LNs: {}, candidate prefix matches: {}",
+                cbName, lnPart, ldName, device.lns().stream().map(SclLN::getFullName).collect(Collectors.toList()), candidates);
         return null;
     }
 
     private static CmsGoCb buildGocb(SclGSEControl gc) {
         CmsGoCb gocb = new CmsGoCb();
-        if (gc.appID() != null) gocb.goID(gc.appID());
-        if (gc.datSet() != null) gocb.datSet(gc.datSet());
+        if (gc.appID() != null)
+            gocb.goID(gc.appID());
+        if (gc.datSet() != null)
+            gocb.datSet(gc.datSet());
         if (gc.confRev() != null) {
-            try { gocb.confRev(Long.parseLong(gc.confRev())); } catch (NumberFormatException ignored) {}
+            try {
+                gocb.confRev(Long.parseLong(gc.confRev()));
+            } catch (NumberFormatException ignored) {
+            }
         }
         return gocb;
     }
@@ -135,12 +142,14 @@ public class GetGoCbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 的 LDevice。 */
     private static SclLDevice findLd(SclDocument doc, String ldName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
                 SclLDevice ld = srv.findLDeviceByInst(ldName);
-                if (ld != null) return ld;
+                if (ld != null)
+                    return ld;
             }
         }
         return null;

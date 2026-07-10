@@ -7,7 +7,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclConductingEquipment {
     private String name;
     private String desc;
@@ -18,8 +21,20 @@ public class SclConductingEquipment {
 
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
-    public SclConductingEquipment addTerminal(SclTerminal terminal) { terminals.add(terminal); return this; }
-    public SclConductingEquipment addSubEquipment(SclSubEquipment subEquipment) { subEquipments.add(subEquipment); return this; }
-    public SclConductingEquipment addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
-    public SclConductingEquipment addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
+    public SclConductingEquipment addTerminal(SclTerminal terminal) {
+        terminals.add(terminal);
+        return this;
+    }
+    public SclConductingEquipment addSubEquipment(SclSubEquipment subEquipment) {
+        subEquipments.add(subEquipment);
+        return this;
+    }
+    public SclConductingEquipment addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
+    public SclConductingEquipment addEqFunction(SclEqFunction eqFunction) {
+        eqFunctions.add(eqFunction);
+        return this;
+    }
 }

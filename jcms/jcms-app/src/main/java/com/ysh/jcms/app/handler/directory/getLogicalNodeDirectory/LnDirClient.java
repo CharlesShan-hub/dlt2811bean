@@ -6,7 +6,6 @@ import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -24,9 +23,7 @@ public class LnDirClient extends BaseClientHandler {
 
     public void execute(LnDirDao dao) throws Exception {
         this.acsiClass = dao.acsiClass();
-        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest()
-            .reqId(nextReqId())
-            .acsiClass(dao.acsiClass());
+        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().reqId(nextReqId()).acsiClass(dao.acsiClass());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);

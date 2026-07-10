@@ -13,20 +13,18 @@ import java.util.Map;
 public class ConfirmEditSgValuesConsole implements CommandHandler {
 
     @Override
-    public String name() { return "confirm-edit-sg"; }
+    public String name() {
+        return "confirm-edit-sg";
+    }
 
     @Override
     public String description() {
-        return "确认编辑定值组值生效 (ConfirmEditSGValues)。"
-            + "用法: confirm-edit-sg --ref <sgcbRef> [--json]";
+        return "确认编辑定值组值生效 (ConfirmEditSGValues)。" + "用法: confirm-edit-sg --ref <sgcbRef> [--json]";
     }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ref", "SGCB 引用，如 PROT/DeZonePTOC1.SG1", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ref", "SGCB 引用，如 PROT/DeZonePTOC1.SG1", null), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -53,8 +51,7 @@ public class ConfirmEditSgValuesConsole implements CommandHandler {
             return;
         }
 
-        ConfirmEditSgValuesDao dao = new ConfirmEditSgValuesDao()
-            .sgcbReference(ref.trim());
+        ConfirmEditSgValuesDao dao = new ConfirmEditSgValuesDao().sgcbReference(ref.trim());
 
         ConsolePrinter.info("Confirming edit SG values: ref=" + ref);
 

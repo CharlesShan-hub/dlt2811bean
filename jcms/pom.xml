@@ -93,12 +93,15 @@
                     <configuration>
                         <java>
                             <eclipse>
-                                <file>${project.basedir}/eclipse-formatter.xml</file>
+                                <file>${maven.multiModuleProjectDirectory}/eclipse-formatter.xml</file>
                             </eclipse>
                             <removeUnusedImports/>
                             <trimTrailingWhitespace/>
                             <endWithNewline/>
                         </java>
+                        <excludes>
+                            <exclude>**/NativeBridge.java</exclude>
+                        </excludes>
                     </configuration>
                 </plugin>
             </plugins>

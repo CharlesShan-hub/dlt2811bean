@@ -14,17 +14,18 @@ import java.util.Map;
 public class ListHandler implements CommandHandler {
 
     @Override
-    public String name() { return "list-ap"; }
+    public String name() {
+        return "list-ap";
+    }
 
     @Override
-    public String description() { return "列出全部访问点。用法: list-ap [--limit N] [--offset N]"; }
+    public String description() {
+        return "列出全部访问点。用法: list-ap [--limit N] [--offset N]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("limit", "数量（不传则列出全部）", ""),
-            new Param("offset", "起始索引", "0")
-        );
+        return Arrays.asList(new Param("limit", "数量（不传则列出全部）", ""), new Param("offset", "起始索引", "0"));
     }
 
     @Override

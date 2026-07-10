@@ -43,7 +43,10 @@ public class GetFileDirectoryServer extends BaseServerHandler {
         Path rootPath = Paths.get(root).normalize();
 
         if (!Files.exists(rootPath)) {
-            try { Files.createDirectories(rootPath); } catch (Exception e) { /* ignore */ }
+            try {
+                Files.createDirectories(rootPath);
+            } catch (Exception e) {
+                /* ignore */ }
         }
 
         // List all files
@@ -60,9 +63,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
         if (pathName != null && !pathName.isEmpty()) {
             Path filterPath = Paths.get(root, pathName.replaceAll("\\.\\./|\\.\\.\\\\", "")).normalize();
             String filterStr = filterPath.toString().replace("\\", "/");
-            files = files.stream()
-                .filter(f -> f.toString().replace("\\", "/").contains(filterStr))
-                .collect(Collectors.toList());
+            files = files.stream().filter(f -> f.toString().replace("\\", "/").contains(filterStr)).collect(Collectors.toList());
         }
 
         // Sort by filename for consistent ordering
@@ -74,8 +75,10 @@ public class GetFileDirectoryServer extends BaseServerHandler {
             boolean found = false;
             List<Path> after = new ArrayList<>();
             for (Path f : files) {
-                if (found) after.add(f);
-                else if (f.getFileName().toString().equals(fileAfter)) found = true;
+                if (found)
+                    after.add(f);
+                else if (f.getFileName().toString().equals(fileAfter))
+                    found = true;
             }
             files = after;
         }
@@ -87,9 +90,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
             files = files.subList(0, pageSize);
         }
 
-        CmsGetFileDirectoryResponse resp = new CmsGetFileDirectoryResponse()
-            .reqId(reqId)
-            .moreFollows(moreFollows);
+        CmsGetFileDirectoryResponse resp = new CmsGetFileDirectoryResponse().reqId(reqId).moreFollows(moreFollows);
 
         for (Path f : files) {
             try {
@@ -100,12 +101,9 @@ public class GetFileDirectoryServer extends BaseServerHandler {
                 String relPath = "/" + rootPath.relativize(f).toString().replace("\\", "/");
 
                 long seconds = lastMod / 1000;
-                int micros = (int)((lastMod % 1000) * 1000);
-                CmsFileEntry fe = new CmsFileEntry()
-                    .fileName(relPath)
-                    .fileSize(size)
-                    .lastModified(new CmsUtcTime().secondsSinceEpoch(seconds).fractionOfSecond(micros))
-                    .checkSum(checksum);
+                int micros = (int) ((lastMod % 1000) * 1000);
+                CmsFileEntry fe = new CmsFileEntry().fileName(relPath).fileSize(size)
+                        .lastModified(new CmsUtcTime().secondsSinceEpoch(seconds).fractionOfSecond(micros)).checkSum(checksum);
                 resp.fileEntry.add(fe);
             } catch (Exception e) {
                 log.warn("GetFileDirectory: skip file '{}' due to error", f, e);

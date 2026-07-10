@@ -9,14 +9,16 @@ import java.util.Set;
 /**
  * GM Trust Manager.
  *
- * <p>Manages trusted certificate collection, supports certificate fingerprint matching and chain verification.
+ * <p>
+ * Manages trusted certificate collection, supports certificate fingerprint
+ * matching and chain verification.
  */
 @Slf4j
 public class GmTrustManager {
 
     private final Set<String> trustedFingerprints = new HashSet<>();
     private final Set<X509Certificate> trustedCertificates = new HashSet<>();
-    private boolean trustAll = false;  // Dev/test mode: trust all certificates
+    private boolean trustAll = false; // Dev/test mode: trust all certificates
 
     /**
      * Adds a trusted certificate.
@@ -44,8 +46,8 @@ public class GmTrustManager {
     }
 
     /**
-     * Enables "trust all" mode (for dev/testing).
-     * When enabled, all certificates will be treated as trusted.
+     * Enables "trust all" mode (for dev/testing). When enabled, all certificates
+     * will be treated as trusted.
      */
     public GmTrustManager trustAll() {
         this.trustAll = true;

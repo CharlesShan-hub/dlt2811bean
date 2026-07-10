@@ -47,11 +47,12 @@ public class GetEditSgValueServer extends BaseServerHandler {
         for (int i = 0; i < req.data.count; i++) {
             CmsSgRefFcEntry entry = req.data.items.get(i);
             String ref = str(entry.reference);
-            if (ref == null) continue;
+            if (ref == null)
+                continue;
 
             int fcVal = entry.fc.value();
             boolean isSE = fcVal >= 0 && fcVal < FunctionalConstraint.values().length
-                && "SE".equals(FunctionalConstraint.values()[fcVal].name());
+                    && "SE".equals(FunctionalConstraint.values()[fcVal].name());
 
             byte[] val = isSE ? state.getEditValue(ref) : state.getCommittedValue(ref);
             if (val != null) {
@@ -65,7 +66,8 @@ public class GetEditSgValueServer extends BaseServerHandler {
                 }
             }
 
-            if (doc == null) return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            if (doc == null)
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             DataValueEntry dv = DataValueResolver.resolve(doc, ref);
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                 resp.value.add(DataConverter.toCmsData(dv));

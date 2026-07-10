@@ -8,11 +8,12 @@ import lombok.experimental.Accessors;
 /**
  * 逻辑节点引用 (LNode)，挂载在 Substation 结构的任意层级。
  * <p>
- * 用于将 SA 系统功能关联到一次设备上。在 SSD 文件中功能尚未分配到 IED，
- * 在 SCD 文件中则指向具体的 IED 中的 LN。
+ * 用于将 SA 系统功能关联到一次设备上。在 SSD 文件中功能尚未分配到 IED， 在 SCD 文件中则指向具体的 IED 中的 LN。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tLNode">
  *     <xs:attribute name="ldInst" type="xs:normalizedString"/>
  *     <xs:attribute name="lnClass" type="xs:normalizedString" use="required"/>
@@ -21,9 +22,13 @@ import lombok.experimental.Accessors;
  *     <xs:attribute name="prefix" type="xs:normalizedString"/>
  *     <xs:attribute name="desc" type="xs:normalizedString"/>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclLNode {
     /** 逻辑设备实例 (ldInst) */
     private String ldInst;

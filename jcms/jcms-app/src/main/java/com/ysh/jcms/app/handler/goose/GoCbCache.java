@@ -7,8 +7,9 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * In-memory cache for GoCB values.
  *
- * <p>SetGoCBValues writes to this cache; GetGoCBValues reads from it
- * (falling back to SCL if not present).  Changes are lost on restart.
+ * <p>
+ * SetGoCBValues writes to this cache; GetGoCBValues reads from it (falling back
+ * to SCL if not present). Changes are lost on restart.
  */
 public class GoCbCache {
 

@@ -9,27 +9,19 @@ public class CmsLogTest {
 
     @Test
     public void query_log_by_time_response_with_multiple_entries() {
-        /* 模拟真实 log 场景：
-         * CmsQueryLogByTimeResponse
-         *   ├─ reqId
-         *   ├─ logEntry (CmsArray<CmsLogEntry>) — 10 条 entry
-         *   │   └─ 每条 CmsLogEntry 有:
-         *   │       ├─ timeOfEntry
-         *   │       ├─ entryId
-         *   │       └─ entryData (CmsArray<CmsLogDataEntry>) — 3 条 data entry
-         *   │           └─ 每条 CmsLogDataEntry:
-         *   │               ├─ reference
-         *   │               ├─ fc
-         *   │               ├─ value (CmsData) — CHOICE_INT32
-         *   │               └─ reason
-         *   └─ moreFollows
+        /*
+         * 模拟真实 log 场景： CmsQueryLogByTimeResponse ├─ reqId ├─ logEntry
+         * (CmsArray<CmsLogEntry>) — 10 条 entry │ └─ 每条 CmsLogEntry 有: │ ├─ timeOfEntry
+         * │ ├─ entryId │ └─ entryData (CmsArray<CmsLogDataEntry>) — 3 条 data entry │ └─
+         * 每条 CmsLogDataEntry: │ ├─ reference │ ├─ fc │ ├─ value (CmsData) —
+         * CHOICE_INT32 │ └─ reason └─ moreFollows
          */
         CmsQueryLogByTimeResponse a = new CmsQueryLogByTimeResponse();
         a.reqId.value(1);
 
         for (int i = 1; i <= 10; i++) {
             CmsLogEntry entry = new CmsLogEntry();
-            entry.timeOfEntry.msOfDay.value((long)i * 60000);
+            entry.timeOfEntry.msOfDay.value((long) i * 60000);
             entry.timeOfEntry.daysSince1984.value(5000 + i);
             entry.entryId.value(String.format("%06d", i).getBytes());
 
@@ -65,25 +57,19 @@ public class CmsLogTest {
             for (int j = 0; j < 3; j++) {
                 CmsLogDataEntry bde = be.entryData.items.get(j);
                 assertEquals(CmsData.CHOICE_INT32, bde.value.choice.value());
-                assertEquals((i+1) * 10 + j, bde.value.alt_int32.value());
+                assertEquals((i + 1) * 10 + j, bde.value.alt_int32.value());
             }
         }
     }
 
     @Test
     public void mock_generator_identical_data() {
-        /* 完全复制 MockLogGenerator 的数据生成逻辑
-         * - 3 条 dataset ref
-         * - 10 条 entry
-         * - value = CHOICE_INT32, 值 = i*10 + offset
-         * - 基准时间 1709164800000L (2026-03-01 00:00:00 UTC)
-         * - reason: data_change=true, 其他 false
+        /*
+         * 完全复制 MockLogGenerator 的数据生成逻辑 - 3 条 dataset ref - 10 条 entry - value =
+         * CHOICE_INT32, 值 = i*10 + offset - 基准时间 1709164800000L (2026-03-01 00:00:00
+         * UTC) - reason: data_change=true, 其他 false
          */
-        String[] DATASET_REFS = {
-            "LD0/LLN0.Mod.stVal",
-            "LD0/LLN0.Beh.stVal",
-            "LD0/LLN0.Health.stVal",
-        };
+        String[] DATASET_REFS = {"LD0/LLN0.Mod.stVal", "LD0/LLN0.Beh.stVal", "LD0/LLN0.Health.stVal",};
         int numRecords = 10;
         long baseEpochMs = 1709164800000L;
 
@@ -92,7 +78,7 @@ public class CmsLogTest {
 
         for (int i = 1; i <= numRecords; i++) {
             long entryEpochMs = baseEpochMs + (long) i * 60000L;
-            int  days    = (int) (entryEpochMs / 86400000L);
+            int days = (int) (entryEpochMs / 86400000L);
             long msOfDay = entryEpochMs % 86400000L;
 
             CmsLogEntry entry = new CmsLogEntry();
@@ -125,7 +111,8 @@ public class CmsLogTest {
         a.moreFollows.value(false);
 
         byte[] encoded = a.encode();
-        // System.out.println("mock_generator test: encoded " + encoded.length + " bytes");
+        // System.out.println("mock_generator test: encoded " + encoded.length + "
+        // bytes");
 
         CmsQueryLogByTimeResponse b = new CmsQueryLogByTimeResponse();
         b.decode(encoded);
@@ -140,19 +127,19 @@ public class CmsLogTest {
             CmsLogEntry be = b.logEntry.items.get(i);
             assertEquals(3, be.entryData.items.size());
 
-            long expectedEpochMs = baseEpochMs + (long)(i+1) * 60000L;
-            int  expectedDays = (int)(expectedEpochMs / 86400000L);
+            long expectedEpochMs = baseEpochMs + (long) (i + 1) * 60000L;
+            int expectedDays = (int) (expectedEpochMs / 86400000L);
             long expectedMsOfDay = expectedEpochMs % 86400000L;
             assertEquals(expectedMsOfDay, be.timeOfEntry.msOfDay.value());
             assertEquals(expectedDays, be.timeOfEntry.daysSince1984.value());
 
-            byte[] expectedEntryId = String.format("%08d", i+1).getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] expectedEntryId = String.format("%08d", i + 1).getBytes(java.nio.charset.StandardCharsets.UTF_8);
             assertArrayEquals(expectedEntryId, be.entryId.value());
 
             for (int j = 0; j < 3; j++) {
                 CmsLogDataEntry bde = be.entryData.items.get(j);
                 assertEquals(CmsData.CHOICE_INT32, bde.value.choice.value());
-                assertEquals((i+1) * 10 + (j+1), bde.value.alt_int32.value());
+                assertEquals((i + 1) * 10 + (j + 1), bde.value.alt_int32.value());
                 assertEquals(true, bde.reason.data_change.value());
             }
         }

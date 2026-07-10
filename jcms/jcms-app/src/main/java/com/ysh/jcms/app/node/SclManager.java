@@ -28,9 +28,8 @@ public class SclManager {
             try {
                 this.document = new SclReader().read(is);
                 this.source = "classpath:" + classpathResource;
-                log.info("SCL model loaded from classpath: {} (type={}, IEDs={})",
-                    classpathResource, document.fileType(),
-                    document.ieds().size());
+                log.info("SCL model loaded from classpath: {} (type={}, IEDs={})", classpathResource, document.fileType(),
+                        document.ieds().size());
                 return this;
             } catch (Exception e) {
                 log.warn("Failed to load SCL from classpath {}: {}", classpathResource, e.getMessage());
@@ -39,11 +38,13 @@ public class SclManager {
         return loadFromFile(filePath);
     }
 
-    public String getSource() { return source; }
+    public String getSource() {
+        return source;
+    }
 
     private boolean isAbsolutePath(String path) {
         if (path.length() >= 3 && Character.isLetter(path.charAt(0)) && path.charAt(1) == ':'
-            && (path.charAt(2) == '\\' || path.charAt(2) == '/')) {
+                && (path.charAt(2) == '\\' || path.charAt(2) == '/')) {
             return true;
         }
         return path.startsWith("/");
@@ -53,8 +54,7 @@ public class SclManager {
         try {
             this.document = new SclReader().read(filePath);
             this.source = filePath;
-            log.info("SCL model loaded from file: {} (type={}, IEDs={})",
-                filePath, document.fileType(), document.ieds().size());
+            log.info("SCL model loaded from file: {} (type={}, IEDs={})", filePath, document.fileType(), document.ieds().size());
         } catch (Exception e) {
             log.warn("Failed to load SCL from {}: {}", filePath, e.getMessage());
             this.document = null;
@@ -62,12 +62,18 @@ public class SclManager {
         return this;
     }
 
-    public SclDocument getDocument() { return document; }
-    public SclDocument getScl2Document() { return document; }
+    public SclDocument getDocument() {
+        return document;
+    }
+    public SclDocument getScl2Document() {
+        return document;
+    }
 
     public java.util.List<com.ysh.jcms.utils.scl.model.ied.SclIED> getIeds() {
         return document != null ? document.ieds() : java.util.Collections.emptyList();
     }
 
-    public boolean isLoaded() { return document != null; }
+    public boolean isLoaded() {
+        return document != null;
+    }
 }

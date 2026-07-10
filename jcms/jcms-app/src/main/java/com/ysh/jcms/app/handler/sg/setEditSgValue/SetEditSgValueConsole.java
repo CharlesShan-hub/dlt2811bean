@@ -16,12 +16,9 @@ import java.util.Map;
 
 public class SetEditSgValueConsole implements CommandHandler {
 
-    private static final String[] CHOICE_NAMES = {
-        "error","array","structure","boolean","int8","int16","int32","int64",
-        "int8u","int16u","int32u","int64u","float32","float64",
-        "bit-string","octet-string","visible-string","unicode-string",
-        "utc-time","binary-time","quality","dbpos","tcmd","check"
-    };
+    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
+            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
+            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
 
     private static final Map<String, Integer> TYPE_MAP = buildTypeMap();
     private static Map<String, Integer> buildTypeMap() {
@@ -43,22 +40,21 @@ public class SetEditSgValueConsole implements CommandHandler {
     }
 
     @Override
-    public String name() { return "set-edit-sg"; }
+    public String name() {
+        return "set-edit-sg";
+    }
 
     @Override
     public String description() {
         return "设置编辑定值组值 (SetEditSGValue)。"
-            + "用法: set-edit-sg --refs \"<ref1> <ref2>...\" --values \"<val1> <val2>...\" [--type visible-string|int32|float32|...] [--json]";
+                + "用法: set-edit-sg --refs \"<ref1> <ref2>...\" --values \"<val1> <val2>...\" [--type visible-string|int32|float32|...] [--json]";
     }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("refs", "数据引用列表（空格分隔），如 \"PROT/OCPTOC2.StrVal PROT/OCPTOC2.OpDlTmms\"", null),
-            new Param("values", "定值列表（空格分隔），与 refs 一一对应", null),
-            new Param("type", "数据类型，默认 visible-string", "visible-string"),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("refs", "数据引用列表（空格分隔），如 \"PROT/OCPTOC2.StrVal PROT/OCPTOC2.OpDlTmms\"", null),
+                new Param("values", "定值列表（空格分隔），与 refs 一一对应", null), new Param("type", "数据类型，默认 visible-string", "visible-string"),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -77,7 +73,8 @@ public class SetEditSgValueConsole implements CommandHandler {
         String refsStr = args.get("refs");
         String valuesStr = args.get("values");
         String typeStr = args.get("type");
-        if (typeStr == null) typeStr = "visible-string";
+        if (typeStr == null)
+            typeStr = "visible-string";
 
         if (refsStr == null || refsStr.trim().isEmpty()) {
             String msg = "Missing --refs";
@@ -112,7 +109,8 @@ public class SetEditSgValueConsole implements CommandHandler {
 
         Integer choiceType = TYPE_MAP.get(typeStr);
         if (choiceType == null) {
-            String msg = "Unknown type: " + typeStr + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string";
+            String msg = "Unknown type: " + typeStr
+                    + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string";
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
             } else {

@@ -8,24 +8,32 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Operate-ResponsePDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     reference       [0] IMPLICIT ObjectReference
- * }  —  8.11.3
+ * Operate-ResponsePDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
+ * ObjectReference } — 8.11.3
  */
 public class CmsOperateResponse extends CmsType {
 
-    public CmsReqId            reqId;
-    public CmsObjectReference  reference;
+    public CmsReqId reqId;
+    public CmsObjectReference reference;
 
-    public CmsOperateResponse() { super(Codec.OPERATE_RESPONSE);
-        this.reqId     = new CmsReqId();
+    public CmsOperateResponse() {
+        super(Codec.OPERATE_RESPONSE);
+        this.reqId = new CmsReqId();
         this.reference = new CmsObjectReference();
     }
-    
-    public CmsOperateResponse reqId(int v) { this.reqId.value(v); return this; }
-    public CmsOperateResponse reference(byte[] v) { this.reference.value(v); return this; }
-    public CmsOperateResponse reference(String v) { this.reference.value(v); return this; }
+
+    public CmsOperateResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsOperateResponse reference(byte[] v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsOperateResponse reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

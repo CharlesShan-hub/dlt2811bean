@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.sg.selectEditSg;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
-import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.sg.CmsSelectEditSgError;
@@ -32,7 +31,8 @@ public class SelectEditSgServer extends BaseServerHandler {
 
         log.info("SelectEditSG from {}: reqId={}, sgcbRef={}, sgNum={}", session.getSessionId(), reqId, ref, sgNum);
 
-        if (ref == null) return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        if (ref == null)
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         int numOfSG = CmsConfigLoader.load().getProtocol().getSetting().getNumOfSG();
         if (sgNum < 1 || sgNum > numOfSG) {

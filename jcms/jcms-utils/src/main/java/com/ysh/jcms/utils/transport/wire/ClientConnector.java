@@ -27,11 +27,10 @@ public class ClientConnector {
     /**
      * Establish a TLS connection.
      */
-    public Connection connectTls(String host, int port, ConnectionListener listener,
-                                  javax.net.ssl.SSLContext sslContext) throws IOException {
+    public Connection connectTls(String host, int port, ConnectionListener listener, javax.net.ssl.SSLContext sslContext)
+            throws IOException {
         try {
-            javax.net.ssl.SSLSocket socket = (javax.net.ssl.SSLSocket) sslContext
-                    .getSocketFactory().createSocket(host, port);
+            javax.net.ssl.SSLSocket socket = (javax.net.ssl.SSLSocket) sslContext.getSocketFactory().createSocket(host, port);
             socket.setUseClientMode(true);
             socket.startHandshake();
             return new Connection(socket, listener);

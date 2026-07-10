@@ -17,16 +17,22 @@ import java.util.Date;
 /**
  * GM Credential Manager.
  *
- * <p>Provides SM2 certificate and key loading, parsing, signing and verification.
- * Supports loading credentials from PKCS12 keystore or PEM/DER certificate files.
+ * <p>
+ * Provides SM2 certificate and key loading, parsing, signing and verification.
+ * Supports loading credentials from PKCS12 keystore or PEM/DER certificate
+ * files.
  *
- * <p>Supported cipher suites:
+ * <p>
+ * Supported cipher suites:
  * <ul>
- *   <li>SM2 with SM3 - Signature algorithm recommended by National Cryptography Administration</li>
- *   <li>SM2 with SM4 - Encryption algorithm</li>
+ * <li>SM2 with SM3 - Signature algorithm recommended by National Cryptography
+ * Administration</li>
+ * <li>SM2 with SM4 - Encryption algorithm</li>
  * </ul>
  *
- * <p>Signature format follows GB/T 32918.4-2016 "Information Security Technology SM2 Elliptic Curve Public Key Cryptographic Algorithm"
+ * <p>
+ * Signature format follows GB/T 32918.4-2016 "Information Security Technology
+ * SM2 Elliptic Curve Public Key Cryptographic Algorithm"
  */
 @Getter
 public class GmCredentialManager {
@@ -53,9 +59,12 @@ public class GmCredentialManager {
     /**
      * Creates a server credential manager.
      *
-     * @param keyStorePath  keystore path (PKCS12)
-     * @param keyPassword   keystore password
-     * @param keyAlias      key alias (optional, uses first key if null)
+     * @param keyStorePath
+     *            keystore path (PKCS12)
+     * @param keyPassword
+     *            keystore password
+     * @param keyAlias
+     *            key alias (optional, uses first key if null)
      */
     public static GmCredentialManager forServer(String keyStorePath, String keyPassword, String keyAlias) {
         return loadFromKeyStore(keyStorePath, keyPassword, keyAlias);
@@ -69,9 +78,11 @@ public class GmCredentialManager {
     }
 
     /**
-     * Creates a read-only credential manager from certificate file (for verification only).
+     * Creates a read-only credential manager from certificate file (for
+     * verification only).
      *
-     * @param certPath certificate file path (PEM/DER)
+     * @param certPath
+     *            certificate file path (PEM/DER)
      */
     public static GmCredentialManager fromCertificate(String certPath) {
         try {
@@ -118,16 +129,16 @@ public class GmCredentialManager {
                 throw new SecurityException("Key is not a PrivateKey");
             }
 
-            return new GmCredentialManager(ks, keyAlias, keyPassword.toCharArray(),
-                    (X509Certificate) cert, (PrivateKey) key, cert.getPublicKey());
+            return new GmCredentialManager(ks, keyAlias, keyPassword.toCharArray(), (X509Certificate) cert, (PrivateKey) key,
+                    cert.getPublicKey());
 
         } catch (Exception e) {
             throw new SecurityException("Failed to load key store: " + keyStorePath, e);
         }
     }
 
-    private GmCredentialManager(KeyStore keyStore, String keyAlias, char[] keyPassword,
-                                  Certificate certificate, PrivateKey privateKey, PublicKey publicKey) {
+    private GmCredentialManager(KeyStore keyStore, String keyAlias, char[] keyPassword, Certificate certificate, PrivateKey privateKey,
+            PublicKey publicKey) {
         this.keyStore = keyStore;
         this.keyAlias = keyAlias;
         this.keyPassword = keyPassword;
@@ -139,8 +150,10 @@ public class GmCredentialManager {
     /**
      * Validates certificate validity.
      *
-     * @param validationDate validation date
-     * @throws SecurityException if certificate is invalid or expired
+     * @param validationDate
+     *            validation date
+     * @throws SecurityException
+     *             if certificate is invalid or expired
      */
     public void validateCertificate(Date validationDate) {
         if (certificate == null) {

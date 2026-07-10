@@ -8,10 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * LCBValue ::= CHOICE {
- *     error       [0] IMPLICIT ServiceError,
- *     value       [1] IMPLICIT LCB
- * }  —  8.8.2
+ * LCBValue ::= CHOICE { error [0] IMPLICIT ServiceError, value [1] IMPLICIT LCB
+ * } — 8.8.2
  *
  * Used by GetLCBValues response.
  */
@@ -20,17 +18,20 @@ public class CmsLcbValueChoice extends CmsType {
     public static final int ERROR = 0;
     public static final int VALUE = 1;
 
-    public CmsEnumerated  choice;       /* 0=error, 1=value */
+    public CmsEnumerated choice; /* 0=error, 1=value */
     public CmsServiceError altError;
-    public CmsLcb          altValue;
+    public CmsLcb altValue;
 
     public CmsLcbValueChoice() {
-        this.choice   = new CmsEnumerated();
+        this.choice = new CmsEnumerated();
         this.altError = new CmsServiceError();
         this.altValue = new CmsLcb();
     }
-    
-    public CmsLcbValueChoice choice(int v) { this.choice.value(v); return this; }
+
+    public CmsLcbValueChoice choice(int v) {
+        this.choice.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

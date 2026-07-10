@@ -8,9 +8,10 @@ import java.util.Map;
 /**
  * FrameAssembler — stateful reassembly of segmented frames.
  *
- * <p>Segmented frames arrive with Next=true in the header. The assembler
- * accumulates them by ReqID until the final segment (Next=false) arrives,
- * then merges all segments into one complete Frame.
+ * <p>
+ * Segmented frames arrive with Next=true in the header. The assembler
+ * accumulates them by ReqID until the final segment (Next=false) arrives, then
+ * merges all segments into one complete Frame.
  */
 public class FrameAssembler {
 
@@ -19,16 +20,19 @@ public class FrameAssembler {
     /**
      * Add a received frame segment.
      *
-     * @param segment the incoming (possibly incomplete) frame
+     * @param segment
+     *            the incoming (possibly incomplete) frame
      * @return the complete merged Frame, or null if more segments expected
-     * @throws FrameFormatException on protocol violation
+     * @throws FrameFormatException
+     *             on protocol violation
      */
     public synchronized Frame addSegment(Frame segment) throws FrameFormatException {
         int reqId = segment.reqId();
 
         if (!segment.header().next()) {
             List<Frame> previous = pending.remove(reqId);
-            if (previous == null) return segment;
+            if (previous == null)
+                return segment;
             previous.add(segment);
             return FrameCodec.merge(previous);
         }
@@ -49,6 +53,8 @@ public class FrameAssembler {
 
     /** Exception for frame format violations. */
     public static class FrameFormatException extends Exception {
-        public FrameFormatException(String message) { super(message); }
+        public FrameFormatException(String message) {
+            super(message);
+        }
     }
 }

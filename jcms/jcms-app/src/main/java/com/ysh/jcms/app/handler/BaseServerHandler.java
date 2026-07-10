@@ -14,12 +14,15 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Base class for server-side service handlers with auto-decode and auto-error support.
+ * Base class for server-side service handlers with auto-decode and auto-error
+ * support.
  *
- * <p>{@link #handleRequest(Session, Frame)} is {@code final} — it auto-decodes the
+ * <p>
+ * {@link #handleRequest(Session, Frame)} is {@code final} — it auto-decodes the
  * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsType)}.
  *
- * <p>If an error PDU type is provided via constructor, the default
+ * <p>
+ * If an error PDU type is provided via constructor, the default
  * {@link #onDecodeError(int)} builds the error response automatically.
  * Subclasses may override for custom error logic.
  */
@@ -30,17 +33,14 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     private final Class<? extends CmsType> errorType;
 
     /** Full constructor: request PDU + error PDU. */
-    protected BaseServerHandler(ServiceName serviceName,
-                                Class<? extends CmsType> requestType,
-                                Class<? extends CmsType> errorType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType, Class<? extends CmsType> errorType) {
         this.serviceName = serviceName;
         this.requestType = requestType;
         this.errorType = errorType;
     }
 
     /** For services with a request PDU but no distinct error PDU. */
-    protected BaseServerHandler(ServiceName serviceName,
-                                Class<? extends CmsType> requestType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType) {
         this(serviceName, requestType, null);
     }
 
@@ -68,16 +68,15 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
             if (!tryDecode(session, request, decoded)) {
                 return onDecodeError(0, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
-            if (traceEnabled()) log.info("[TRACE] <<< {} reqId={}:\n{}",
-                serviceName, request.reqId(), decoded);
+            if (traceEnabled())
+                log.info("[TRACE] <<< {} reqId={}:\n{}", serviceName, request.reqId(), decoded);
         } else {
             decoded = null;
         }
         Frame response = onDecodeSuccess(session, decoded);
         if (response != null && traceEnabled()) {
-            log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)",
-                serviceName, response.reqId(), response.header().err(),
-                response.asduBytes() != null ? response.asduBytes().length : 0);
+            log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)", serviceName, response.reqId(), response.header().err(),
+                    response.asduBytes() != null ? response.asduBytes().length : 0);
         }
         return response;
     }
@@ -87,7 +86,8 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      *
      * so that the native decoder can read the correct number of items.
      *
-     * <p>Default implementation does nothing.
+     * <p>
+     * Default implementation does nothing.
      */
     protected void prepareDecode(CmsType decoded) {
     }
@@ -95,9 +95,11 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     /**
      * Process a successfully decoded request.
      *
-     * @param session the session context
-     * @param req     the decoded request PDU, or {@code null} for PDU-less services;
-     *                cast to the concrete type known by the subclass
+     * @param session
+     *            the session context
+     * @param req
+     *            the decoded request PDU, or {@code null} for PDU-less services;
+     *            cast to the concrete type known by the subclass
      * @return response frame, or {@code null} for one-way messages
      */
     protected abstract Frame onDecodeSuccess(Session session, CmsType req);
@@ -105,12 +107,15 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     /**
      * Build an error response frame.
      *
-     * <p>Default implementation uses reflection to set {@code reqId} and
-     * {@code serviceError} on the configured error type.
-     * Subclasses may override for custom error PDU construction.
+     * <p>
+     * Default implementation uses reflection to set {@code reqId} and
+     * {@code serviceError} on the configured error type. Subclasses may override
+     * for custom error PDU construction.
      *
-     * @param reqId request ID
-     * @param err   service error code (e.g. {@link CmsServiceError#INSTANCE_IN_USE})
+     * @param reqId
+     *            request ID
+     * @param err
+     *            service error code (e.g. {@link CmsServiceError#INSTANCE_IN_USE})
      */
     protected Frame onDecodeError(int reqId, int err) {
         if (errorType == null) {
@@ -130,7 +135,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     @SuppressWarnings("unchecked")
     private static void trySet(CmsType target, String methodSuffix, int value) throws Exception {
         // Try reqId(int) or serviceError(int) setter pattern
-        String methodName = methodSuffix;  // e.g. "reqId" or "serviceError"
+        String methodName = methodSuffix; // e.g. "reqId" or "serviceError"
         try {
             Method m = target.getClass().getMethod(methodName, int.class);
             m.invoke(target, value);
@@ -140,21 +145,15 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     // ──────────────────────────────────────────────
-    //  Response builders
+    // Response builders
     // ──────────────────────────────────────────────
 
     protected Frame buildSuccess(byte[] respBytes, int reqId) {
-        return new Frame(
-            new FrameHeader().serviceCode(getServiceName()).resp(true).err(false),
-            respBytes, reqId
-        );
+        return new Frame(new FrameHeader().serviceCode(getServiceName()).resp(true).err(false), respBytes, reqId);
     }
 
     protected Frame buildError(byte[] respBytes, int reqId) {
-        return new Frame(
-            new FrameHeader().serviceCode(getServiceName()).resp(true).err(true),
-            respBytes, reqId
-        );
+        return new Frame(new FrameHeader().serviceCode(getServiceName()).resp(true).err(true), respBytes, reqId);
     }
 
     protected static Frame noResponse() {
@@ -162,8 +161,8 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     /**
-     * Convenience: encode a response PDU and wrap in a success frame.
-     * Auto-catches encoding exceptions and returns an error frame instead.
+     * Convenience: encode a response PDU and wrap in a success frame. Auto-catches
+     * encoding exceptions and returns an error frame instead.
      */
     protected Frame ok(CmsType resp, int reqId) {
         try {
@@ -175,29 +174,32 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     // ──────────────────────────────────────────────
-    //  String extraction helpers
+    // String extraction helpers
     // ──────────────────────────────────────────────
 
     /** Extract a non-empty String from a PER-decoded byte array. */
     protected static String str(byte[] arr) {
-        if (arr == null || arr.length == 0) return null;
+        if (arr == null || arr.length == 0)
+            return null;
         return new String(arr, StandardCharsets.UTF_8);
     }
 
     /** Extract a String from a PER-decoded CmsUint8Array. */
     protected static String str(com.ysh.jcms.data.string.CmsUint8Array arr) {
-        if (arr == null || arr.len == 0) return null;
+        if (arr == null || arr.len == 0)
+            return null;
         return new String(arr.value(), StandardCharsets.UTF_8);
     }
 
     /** Extract an optional String field controlled by a Present marker. */
     protected static String opt(com.ysh.jcms.data.scalar.CmsBoolean present, com.ysh.jcms.data.string.CmsUint8Array arr) {
-        if (!present.value() || arr == null || arr.len == 0) return null;
+        if (!present.value() || arr == null || arr.len == 0)
+            return null;
         return new String(arr.value(), StandardCharsets.UTF_8);
     }
 
     // ──────────────────────────────────────────────
-    //  SCL model access
+    // SCL model access
     // ──────────────────────────────────────────────
 
     protected com.ysh.jcms.utils.scl.SclDocument getScl2Document(Session session) {
@@ -217,7 +219,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     // ──────────────────────────────────────────────
-    //  Decode helper
+    // Decode helper
     // ──────────────────────────────────────────────
 
     protected boolean tryDecode(Session session, Frame request, CmsType pdu) {
@@ -225,19 +227,18 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
             pdu.decode(request.asduBytes());
             return true;
         } catch (Exception e) {
-            log.error("Failed to decode {} from {}: {}",
-                pdu.getClass().getSimpleName(), session.getSessionId(), e.getMessage());
+            log.error("Failed to decode {} from {}: {}", pdu.getClass().getSimpleName(), session.getSessionId(), e.getMessage());
             return false;
         }
     }
 
     // ──────────────────────────────────────────────
-    //  Misc helpers
+    // Misc helpers
     // ──────────────────────────────────────────────
 
     /**
-     * Maximum number of elements to return in one response page.
-     * Used by directory services for pagination.
+     * Maximum number of elements to return in one response page. Used by directory
+     * services for pagination.
      */
     protected static int pageSize() {
         return CmsConfigLoader.load().getProtocol().getMaxArraySize();

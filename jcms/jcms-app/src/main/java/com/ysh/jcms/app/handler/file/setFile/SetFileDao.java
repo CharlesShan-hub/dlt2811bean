@@ -8,6 +8,6 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class SetFileDao {
-    private String remoteFile;   // remote path on server
-    private String localFile;    // local file to upload
+    private String remoteFile; // remote path on server
+    private String localFile; // local file to upload
 }

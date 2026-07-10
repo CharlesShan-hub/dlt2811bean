@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetDataDefinition-RequestPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     data            [0] IMPLICIT SEQUENCE OF DataRefEntry
- * }  —  8.4.4
+ * GetDataDefinition-RequestPDU ::= SEQUENCE { reqId Int16U, data [0] IMPLICIT
+ * SEQUENCE OF DataRefEntry } — 8.4.4
  */
 public class CmsGetDataDefinitionRequest extends CmsType {
 
-    public CmsReqId                   reqId;
-    public CmsArray<CmsDataRefEntry>  data;   /* SEQUENCE OF DataRefEntry */
+    public CmsReqId reqId;
+    public CmsArray<CmsDataRefEntry> data; /* SEQUENCE OF DataRefEntry */
 
-    public CmsGetDataDefinitionRequest() { super(Codec.GET_DATA_DEFINITION_REQUEST);
+    public CmsGetDataDefinitionRequest() {
+        super(Codec.GET_DATA_DEFINITION_REQUEST);
         this.reqId = new CmsReqId();
-        this.data  = new CmsArray<>(CmsDataRefEntry.class);
+        this.data = new CmsArray<>(CmsDataRefEntry.class);
     }
-    
-    public CmsGetDataDefinitionRequest reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetDataDefinitionRequest data(CmsArray<CmsDataRefEntry> v) { this.data = v; return this; }
+
+    public CmsGetDataDefinitionRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetDataDefinitionRequest data(CmsArray<CmsDataRefEntry> v) {
+        this.data = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

@@ -14,9 +14,11 @@ import java.util.*;
 /**
  * Base class for CMS consoles.
  *
- * <p>Extends {@link CmsNode} and provides JLine-based interactive command processing.
- * Subclasses register their own handlers (client commands or server handlers)
- * via {@link #register(CommandHandler)} / {@link #registerHandlers()}.
+ * <p>
+ * Extends {@link CmsNode} and provides JLine-based interactive command
+ * processing. Subclasses register their own handlers (client commands or server
+ * handlers) via {@link #register(CommandHandler)} /
+ * {@link #registerHandlers()}.
  */
 public abstract class CmsConsole extends CmsNode {
 
@@ -27,9 +29,7 @@ public abstract class CmsConsole extends CmsNode {
     protected CmsConsole(boolean createServer) {
         super(createServer);
         this.reader = LineReaderBuilder.builder()
-            .variable(LineReader.HISTORY_FILE,
-                Paths.get(System.getProperty("user.home"), ".cms_console_history"))
-            .build();
+                .variable(LineReader.HISTORY_FILE, Paths.get(System.getProperty("user.home"), ".cms_console_history")).build();
     }
 
     /** Subclasses register their command handlers here. */
@@ -41,14 +41,14 @@ public abstract class CmsConsole extends CmsNode {
         handlers.put(handler.name(), handler);
     }
 
-    public Map<String, CommandHandler> handlers() { return handlers; }
+    public Map<String, CommandHandler> handlers() {
+        return handlers;
+    }
 
     // ── console helpers (used by handlers) ──
 
     public boolean isConnected() {
-        return isClientConnected()
-            && getClient().getSession() != null
-            && getClient().getSession().getState() == SessionState.ASSOCIATED;
+        return isClientConnected() && getClient().getSession() != null && getClient().getSession().getState() == SessionState.ASSOCIATED;
     }
 
     // ── main loop ──
@@ -70,7 +70,8 @@ public abstract class CmsConsole extends CmsNode {
             ConsolePrinter.gray("Auto-exec: " + autoExec);
             for (String cmd : autoExec.split(";")) {
                 String trimmed = cmd.trim();
-                if (!trimmed.isEmpty()) executeLine(trimmed);
+                if (!trimmed.isEmpty())
+                    executeLine(trimmed);
             }
         }
         while (running) {
@@ -82,7 +83,8 @@ public abstract class CmsConsole extends CmsNode {
             } catch (Exception e) {
                 continue;
             }
-            if (raw.isEmpty()) continue;
+            if (raw.isEmpty())
+                continue;
             if (raw.equals("exit") || raw.equals("quit")) {
                 running = false;
                 break;
@@ -91,27 +93,33 @@ public abstract class CmsConsole extends CmsNode {
             // Batch commands: split by ';', each line supports inline #/ // comments
             for (String cliLine : raw.split(";")) {
                 String line = cliLine.trim();
-                if (line.isEmpty()) continue;
-                if (line.startsWith("#") || line.startsWith("//")) continue;
+                if (line.isEmpty())
+                    continue;
+                if (line.startsWith("#") || line.startsWith("//"))
+                    continue;
 
                 int commentIdx = findCommentStart(line);
                 if (commentIdx >= 0) {
                     line = line.substring(0, commentIdx).trim();
-                    if (line.isEmpty()) continue;
+                    if (line.isEmpty())
+                        continue;
                 }
 
                 if (!executeLine(line)) {
-                    break;  // stop batch on first failure
+                    break; // stop batch on first failure
                 }
             }
         }
-        if (isConnected()) close();
+        if (isConnected())
+            close();
         onStop();
         closeReader();
         System.exit(0);
     }
 
-    /** Close JLine reader/terminal to restore console mode (important on Windows). */
+    /**
+     * Close JLine reader/terminal to restore console mode (important on Windows).
+     */
     private void closeReader() {
         try {
             reader.getTerminal().close();
@@ -121,19 +129,25 @@ public abstract class CmsConsole extends CmsNode {
     }
 
     /** Override to customise the prompt (default "cms> "). */
-    protected String prompt() { return "cms> "; }
+    protected String prompt() {
+        return "cms> ";
+    }
 
     /** Hook called before the loop starts. */
-    protected void onStart() {}
+    protected void onStart() {
+    }
 
     /** Hook called after the loop ends. */
-    protected void onStop() { System.out.println("Bye."); }
+    protected void onStop() {
+        System.out.println("Bye.");
+    }
 
     // ── command parsing ──
 
     public boolean executeLine(String raw) {
         List<String> tokens = tokenize(raw);
-        if (tokens.isEmpty()) return true;
+        if (tokens.isEmpty())
+            return true;
 
         String cmdName = tokens.get(0).toLowerCase();
         List<String> argTokens = tokens.subList(1, tokens.size());
@@ -157,7 +171,7 @@ public abstract class CmsConsole extends CmsNode {
                     if (i + 1 < argTokens.size() && !argTokens.get(i + 1).startsWith("--")) {
                         args.put(key, argTokens.get(++i));
                     } else {
-                        args.put(key, "true");  // boolean flag: --secure → true
+                        args.put(key, "true"); // boolean flag: --secure → true
                     }
                 }
             }
@@ -165,7 +179,8 @@ public abstract class CmsConsole extends CmsNode {
             handler.execute(this, args);
         } catch (Exception e) {
             String msg = e.getMessage();
-            if (msg == null) msg = e.getClass().getSimpleName();
+            if (msg == null)
+                msg = e.getClass().getSimpleName();
             ConsolePrinter.error(msg);
             return false;
         }
@@ -181,27 +196,37 @@ public abstract class CmsConsole extends CmsNode {
             if (c == '"') {
                 inQuote = !inQuote;
             } else if (Character.isWhitespace(c) && !inQuote) {
-                if (buf.length() > 0) { tokens.add(buf.toString()); buf.setLength(0); }
+                if (buf.length() > 0) {
+                    tokens.add(buf.toString());
+                    buf.setLength(0);
+                }
             } else {
                 buf.append(c);
             }
         }
-        if (buf.length() > 0) tokens.add(buf.toString());
+        if (buf.length() > 0)
+            tokens.add(buf.toString());
         return tokens;
     }
 
     /**
-     * Find the start of an inline comment ({@code #} or {@code //}),
-     * respecting double-quote boundaries.
+     * Find the start of an inline comment ({@code #} or {@code //}), respecting
+     * double-quote boundaries.
      */
     private static int findCommentStart(String s) {
         boolean inQuote = false;
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
-            if (c == '"') { inQuote = !inQuote; continue; }
-            if (inQuote) continue;
-            if (c == '#' && (i == 0 || s.charAt(i - 1) != '\\')) return i;
-            if (c == '/' && i + 1 < s.length() && s.charAt(i + 1) == '/') return i;
+            if (c == '"') {
+                inQuote = !inQuote;
+                continue;
+            }
+            if (inQuote)
+                continue;
+            if (c == '#' && (i == 0 || s.charAt(i - 1) != '\\'))
+                return i;
+            if (c == '/' && i + 1 < s.length() && s.charAt(i + 1) == '/')
+                return i;
         }
         return -1;
     }

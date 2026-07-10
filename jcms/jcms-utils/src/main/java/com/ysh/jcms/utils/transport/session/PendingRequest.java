@@ -22,7 +22,9 @@ public class PendingRequest {
         this.expireTime = createTime + timeoutMs;
     }
 
-    public boolean isExpired() { return System.currentTimeMillis() > expireTime; }
+    public boolean isExpired() {
+        return System.currentTimeMillis() > expireTime;
+    }
 
     public synchronized void setResult(Object result) {
         this.result = result;

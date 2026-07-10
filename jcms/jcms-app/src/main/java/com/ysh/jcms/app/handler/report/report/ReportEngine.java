@@ -32,8 +32,8 @@ import java.util.concurrent.*;
 /**
  * ReportEngine — 报告引擎（8.7.1）。
  *
- * <p>管理报告控制块的订阅，处理 GI（总召唤）、完整性周期定时触发，
- * 构建 CmsReport PDU 并推送给订阅的 Session。
+ * <p>
+ * 管理报告控制块的订阅，处理 GI（总召唤）、完整性周期定时触发， 构建 CmsReport PDU 并推送给订阅的 Session。
  */
 public class ReportEngine {
 
@@ -49,7 +49,9 @@ public class ReportEngine {
 
     private static ReportEngine instance;
 
-    public static ReportEngine getInstance() { return instance; }
+    public static ReportEngine getInstance() {
+        return instance;
+    }
 
     /** Initialize with the SCL document. Call once at startup. */
     public ReportEngine(SclDocument doc) {
@@ -71,15 +73,16 @@ public class ReportEngine {
     /** Unsubscribe a session from an RCB. Called when rptEna=false is set. */
     public void unsubscribe(String rcbRef, Session session) {
         ReportControlBlock rcb = rcbs.get(rcbRef);
-        if (rcb == null) return;
+        if (rcb == null)
+            return;
         rcb.removeSubscriber(session);
         rcb.cancelIntegrityTimer();
         log.info("Report unsubscription: {} removed for ref={}", session.getSessionId(), rcbRef);
     }
 
     /**
-     * Trigger GI (总召唤) for an RCB.
-     * Builds a report from the DataSet members and pushes to all subscribers.
+     * Trigger GI (总召唤) for an RCB. Builds a report from the DataSet members and
+     * pushes to all subscribers.
      */
     public void triggerGi(String rcbRef) {
         ReportControlBlock rcb = rcbs.get(rcbRef);
@@ -94,7 +97,8 @@ public class ReportEngine {
     /** Start the integrity period timer for an RCB. */
     public void startIntegrityTimer(String rcbRef, long intgPdMs) {
         ReportControlBlock rcb = rcbs.get(rcbRef);
-        if (rcb == null) return;
+        if (rcb == null)
+            return;
         rcb.startIntegrityTimer(scheduler, intgPdMs, this);
         log.info("Integrity timer started for ref={}, intgPd={}ms", rcbRef, intgPdMs);
     }
@@ -102,7 +106,8 @@ public class ReportEngine {
     /** Stop the integrity period timer for an RCB. */
     public void stopIntegrityTimer(String rcbRef) {
         ReportControlBlock rcb = rcbs.get(rcbRef);
-        if (rcb == null) return;
+        if (rcb == null)
+            return;
         rcb.cancelIntegrityTimer();
         log.info("Integrity timer stopped for ref={}", rcbRef);
     }
@@ -132,9 +137,8 @@ public class ReportEngine {
                     log.error("Failed to encode report for ref={}", rcb.getRef(), e);
                     return;
                 }
-                Frame frame = new Frame(
-                    new FrameHeader().serviceCode(ServiceName.REPORT).resp(true).err(false),
-                    asduBytes, 0  // reqId=0 for unsolicited
+                Frame frame = new Frame(new FrameHeader().serviceCode(ServiceName.REPORT).resp(true).err(false), asduBytes, 0 // reqId=0 for
+                                                                                                                              // unsolicited
                 );
 
                 int sent = 0;
@@ -159,7 +163,8 @@ public class ReportEngine {
     /** Build a CmsReport PDU from DataSet member values. */
     CmsReport buildReport(ReportControlBlock rcb, boolean isGi) throws Exception {
         SclReportControl rc = rcb.getSclReportControl();
-        if (rc == null || rc.datSet() == null) return null;
+        if (rc == null || rc.datSet() == null)
+            return null;
 
         SclDataSet dataSet = resolveDataSet(rc, rcb.getRef());
         if (dataSet == null) {
@@ -237,11 +242,13 @@ public class ReportEngine {
             // Build the LN reference
             String lnRef = fcda.ldInst() + "/" + fcda.buildLnName();
             SclLN ln = findLnByLdRef(fcda.ldInst(), fcda.buildLnName());
-            if (ln == null) return null;
+            if (ln == null)
+                return null;
 
             // Find DOI for this DO
             SclDOI doi = ln.findDoiByName(fcda.doName());
-            if (doi == null) return null;
+            if (doi == null)
+                return null;
 
             // Find DAI for this DA
             if (fcda.daName() != null && !fcda.daName().isEmpty()) {
@@ -274,37 +281,47 @@ public class ReportEngine {
     private SclReportControl resolveReportControl(String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return null;
         String ldName = ref.substring(0, slashIdx);
         String lnName = ref.substring(slashIdx + 1, dotIdx);
         String cbName = ref.substring(dotIdx + 1);
         SclLN ln = findLnByLdRef(ldName, lnName);
-        if (ln == null) return null;
+        if (ln == null)
+            return null;
         for (SclReportControl rc : ln.reportControls()) {
-            if (rc.name().equals(cbName)) return rc;
+            if (rc.name().equals(cbName))
+                return rc;
         }
         return null;
     }
 
-    /** Resolve DataSet by name from the report control, scoped to the correct LN. */
+    /**
+     * Resolve DataSet by name from the report control, scoped to the correct LN.
+     */
     private SclDataSet resolveDataSet(SclReportControl rc, String rcbRef) {
-        if (rc == null || rc.datSet() == null) return null;
+        if (rc == null || rc.datSet() == null)
+            return null;
         // Parse the RCB ref to find the owning LN: e.g. "LD0/LLN0.brcbAlarm"
         int slashIdx = rcbRef.indexOf('/');
         int dotIdx = rcbRef.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) return null;
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+            return null;
         String ldName = rcbRef.substring(0, slashIdx);
-        String lnRef = rcbRef.substring(slashIdx + 1, dotIdx);  // "LLN0"
+        String lnRef = rcbRef.substring(slashIdx + 1, dotIdx); // "LLN0"
         SclLN ln = findLnByLdRef(ldName, lnRef);
-        if (ln == null) return null;
+        if (ln == null)
+            return null;
         return ln.findDataSetByName(rc.datSet());
     }
 
     /** 跨 IED/AccessPoint 查找指定 LD/LN 下的 LN。 */
     private SclLN findLnByLdRef(String ldName, String lnName) {
-        if (doc == null) return null;
+        if (doc == null)
+            return null;
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
@@ -332,12 +349,19 @@ public class ReportEngine {
             this.sqNum = 0;
         }
 
-        String getRef() { return ref; }
-        SclReportControl getSclReportControl() { return sclReportControl; }
-        List<Session> getSubscribers() { return subscribers; }
+        String getRef() {
+            return ref;
+        }
+        SclReportControl getSclReportControl() {
+            return sclReportControl;
+        }
+        List<Session> getSubscribers() {
+            return subscribers;
+        }
 
         void addSubscriber(Session session) {
-            if (!subscribers.contains(session)) subscribers.add(session);
+            if (!subscribers.contains(session))
+                subscribers.add(session);
         }
 
         void removeSubscriber(Session session) {
@@ -351,10 +375,8 @@ public class ReportEngine {
         synchronized void startIntegrityTimer(ScheduledExecutorService scheduler, long intgPdMs, ReportEngine engine) {
             cancelIntegrityTimer();
             if (intgPdMs > 0) {
-                integrityFuture = scheduler.scheduleAtFixedRate(
-                    () -> engine.pushReport(this, false),
-                    intgPdMs, intgPdMs, TimeUnit.MILLISECONDS
-                );
+                integrityFuture = scheduler.scheduleAtFixedRate(() -> engine.pushReport(this, false), intgPdMs, intgPdMs,
+                        TimeUnit.MILLISECONDS);
             }
         }
 

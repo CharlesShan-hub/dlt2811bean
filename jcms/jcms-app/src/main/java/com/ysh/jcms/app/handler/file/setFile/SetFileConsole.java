@@ -13,19 +13,19 @@ import java.util.Map;
 public class SetFileConsole implements CommandHandler {
 
     @Override
-    public String name() { return "set-file"; }
+    public String name() {
+        return "set-file";
+    }
 
     @Override
-    public String description() { return "写文件 (SetFile, 8.12.2)。\n" +
-        "  用法: set-file --local ./localfile.txt --remote /config/remotefile.txt [--json]"; }
+    public String description() {
+        return "写文件 (SetFile, 8.12.2)。\n" + "  用法: set-file --local ./localfile.txt --remote /config/remotefile.txt [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("local", "本地文件路径", null),
-            new Param("remote", "远程目标路径，如 \"/config/myfile.txt\"", null),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("local", "本地文件路径", null), new Param("remote", "远程目标路径，如 \"/config/myfile.txt\"", null),
+                new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -51,17 +51,14 @@ public class SetFileConsole implements CommandHandler {
             return;
         }
 
-        SetFileDao dao = new SetFileDao()
-            .localFile(local.trim())
-            .remoteFile(remote.trim());
+        SetFileDao dao = new SetFileDao().localFile(local.trim()).remoteFile(remote.trim());
 
         ConsolePrinter.info("Uploading " + local + " -> " + remote + " ...");
         console.getClient(SetFileClient.class).execute(dao);
 
         if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"Uploaded " +
-                CmsFormatUtil.escapeJson(local.trim()) + " to " +
-                CmsFormatUtil.escapeJson(remote.trim()) + " successfully\"}");
+            ConsolePrinter.raw("{\"success\":true,\"message\":\"Uploaded " + CmsFormatUtil.escapeJson(local.trim()) + " to "
+                    + CmsFormatUtil.escapeJson(remote.trim()) + " successfully\"}");
         } else {
             ConsolePrinter.success("Uploaded " + local + " to " + remote + " successfully");
         }

@@ -4,14 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DAO for SetEditSGValue (8.6.3).
- * Holds a list of (reference, value) pairs to be sent to the server.
+ * DAO for SetEditSGValue (8.6.3). Holds a list of (reference, value) pairs to
+ * be sent to the server.
  */
 public class SetEditSgValueDao {
 
     private final List<Entry> entries = new ArrayList<>();
 
-    public List<Entry> entries() { return entries; }
+    public List<Entry> entries() {
+        return entries;
+    }
 
     public SetEditSgValueDao addEntry(String ref, byte[] valueBytes, int choiceType) {
         entries.add(new Entry(ref, valueBytes, choiceType));
@@ -29,8 +31,14 @@ public class SetEditSgValueDao {
             this.choiceType = choiceType;
         }
 
-        public String ref() { return ref; }
-        public byte[] valueBytes() { return valueBytes; }
-        public int choiceType() { return choiceType; }
+        public String ref() {
+            return ref;
+        }
+        public byte[] valueBytes() {
+            return valueBytes;
+        }
+        public int choiceType() {
+            return choiceType;
+        }
     }
 }

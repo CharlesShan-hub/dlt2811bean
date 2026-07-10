@@ -17,21 +17,27 @@ import static org.junit.Assert.*;
 /**
  * Base class for loopback integration tests.
  *
- * <p>Manages a client-server pair on a free port:
+ * <p>
+ * Manages a client-server pair on a free port:
  * <ul>
- *   <li>{@link #setup()} starts the server and connects the client</li>
- *   <li>{@link #cleanup()} closes the client and stops the server</li>
+ * <li>{@link #setup()} starts the server and connects the client</li>
+ * <li>{@link #cleanup()} closes the client and stops the server</li>
  * </ul>
  *
- * <p>Subclasses register their service handlers in the constructor:
- * <pre>{@code
- * public class FooLoopbackTest extends BaseLoopbackTest {
- *     public FooLoopbackTest() {
- *         registerServer(new FooServer());
- *         registerClient(new FooClient(clientNode));
+ * <p>
+ * Subclasses register their service handlers in the constructor:
+ *
+ * <pre>
+ * {
+ *     &#64;code
+ *     public class FooLoopbackTest extends BaseLoopbackTest {
+ *         public FooLoopbackTest() {
+ *             registerServer(new FooServer());
+ *             registerClient(new FooClient(clientNode));
+ *         }
  *     }
  * }
- * }</pre>
+ * </pre>
  */
 public abstract class BaseLoopbackTest {
 
@@ -52,8 +58,10 @@ public abstract class BaseLoopbackTest {
 
     @After
     public void cleanup() {
-        if (clientNode != null) clientNode.close();
-        if (serverNode != null) serverNode.stop();
+        if (clientNode != null)
+            clientNode.close();
+        if (serverNode != null)
+            serverNode.stop();
     }
 
     /**
@@ -67,11 +75,15 @@ public abstract class BaseLoopbackTest {
     protected abstract void registerClients(CmsNode node) throws Exception;
 
     // ──────────────────────────────────────────────
-    //  Protected accessors
+    // Protected accessors
     // ──────────────────────────────────────────────
 
-    protected CmsNode serverNode() { return serverNode; }
-    protected CmsNode clientNode() { return clientNode; }
+    protected CmsNode serverNode() {
+        return serverNode;
+    }
+    protected CmsNode clientNode() {
+        return clientNode;
+    }
 
     /**
      * Convenience: register a server handler.
@@ -96,13 +108,12 @@ public abstract class BaseLoopbackTest {
 
     /**
      * Convenience: associate with the default test sapRef "E1Q1SB1/S1".
-     * <p>Only call this after the {@link AssociateServer} and {@link AssociateClient}
+     * <p>
+     * Only call this after the {@link AssociateServer} and {@link AssociateClient}
      * have been registered (otherwise it will fail with NullPointerException).
      */
     protected void associate() throws Exception {
-        clientNode().getClient(AssociateClient.class)
-            .execute(new AssociateClientDao()
-                .sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
         assertEquals(SessionState.ASSOCIATED, clientNode().getClient().getSession().getState());
     }
 

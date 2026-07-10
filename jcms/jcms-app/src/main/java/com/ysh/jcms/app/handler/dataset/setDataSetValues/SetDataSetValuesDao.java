@@ -15,5 +15,8 @@ public class SetDataSetValuesDao {
     private String referenceAfter;
     private List<String> values = new ArrayList<>();
 
-    public SetDataSetValuesDao addValue(String v) { values.add(v); return this; }
+    public SetDataSetValuesDao addValue(String v) {
+        values.add(v);
+        return this;
+    }
 }

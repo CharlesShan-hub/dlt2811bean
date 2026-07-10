@@ -13,7 +13,7 @@ public class SclRefParserTest {
 
     @Test
     public void testParseLnLevel() {
-            SclRef ref = SclRefParser.parse("LD1/LLN0");
+        SclRef ref = SclRefParser.parse("LD1/LLN0");
         assertEquals("LD1", ref.ldName());
         assertEquals("LLN0", ref.lnName());
         assertNull(ref.doName());
@@ -26,7 +26,7 @@ public class SclRefParserTest {
 
     @Test
     public void testParseDoLevel() {
-            SclRef ref = SclRefParser.parse("LD1/LLN0.Mod");
+        SclRef ref = SclRefParser.parse("LD1/LLN0.Mod");
         assertEquals("LD1", ref.ldName());
         assertEquals("LLN0", ref.lnName());
         assertEquals("Mod", ref.doName());
@@ -39,7 +39,7 @@ public class SclRefParserTest {
 
     @Test
     public void testParseDaLevel() {
-            SclRef ref = SclRefParser.parse("LD1/LLN0.Mod.stVal");
+        SclRef ref = SclRefParser.parse("LD1/LLN0.Mod.stVal");
         assertEquals("LD1", ref.ldName());
         assertEquals("LLN0", ref.lnName());
         assertEquals("Mod", ref.doName());
@@ -52,7 +52,7 @@ public class SclRefParserTest {
 
     @Test
     public void testParseDaLevelWithFc() {
-            SclRef ref = SclRefParser.parse("C1/MMXU1.Amps.mag[MX]");
+        SclRef ref = SclRefParser.parse("C1/MMXU1.Amps.mag[MX]");
         assertEquals("C1", ref.ldName());
         assertEquals("MMXU1", ref.lnName());
         assertEquals("Amps", ref.doName());
@@ -63,7 +63,7 @@ public class SclRefParserTest {
 
     @Test
     public void testParseComplexNames() {
-            SclRef ref = SclRefParser.parse("LD_123/ABC_Def.SomeDO.someDA[ST]");
+        SclRef ref = SclRefParser.parse("LD_123/ABC_Def.SomeDO.someDA[ST]");
         assertEquals("LD_123", ref.ldName());
         assertEquals("ABC_Def", ref.lnName());
         assertEquals("SomeDO", ref.doName());

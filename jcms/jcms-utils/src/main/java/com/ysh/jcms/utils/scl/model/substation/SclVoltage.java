@@ -9,18 +9,26 @@ import lombok.experimental.Accessors;
  * 额定电压 (Voltage)，继承自 tValueWithUnit，单位固定为 V（伏特）。
  * <p>
  * Schema:
- * <pre>{@code
+ *
+ * <pre>
+ * {@code
  * <xs:complexType name="tVoltage">
  *     <xs:simpleContent>
  *         <xs:restriction base="tValueWithUnit">
- *             <xs:attribute name="unit" type="xs:token" use="required" fixed="V"/>
- *             <xs:attribute name="multiplier" type="tUnitMultiplierEnum" use="optional" default=""/>
+ *             <xs:attribute name="unit" type="xs:token" use="required" fixed=
+"V"/>
+ *             <xs:attribute name="multiplier" type="tUnitMultiplierEnum" use=
+"optional" default=""/>
  *         </xs:restriction>
  *     </xs:simpleContent>
  * </xs:complexType>
- * }</pre>
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclVoltage {
     /** 电压数值 (decimal) */
     private String value;

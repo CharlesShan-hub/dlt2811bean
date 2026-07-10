@@ -63,39 +63,39 @@ public class CmsGetAllDataValuesTest {
 
     @Test
     public void response_nested_array_roundup() {
-        /* Nested arrays: Data(CHOICE_ARRAY) → SEQUENCE OF Data
-         * Each inner Data could itself be an ARRAY, forming 2+ levels of
-         * CmsArray nesting — exercises multi-level CMS_RETRY.
+        /*
+         * Nested arrays: Data(CHOICE_ARRAY) → SEQUENCE OF Data Each inner Data could
+         * itself be an ARRAY, forming 2+ levels of CmsArray nesting — exercises
+         * multi-level CMS_RETRY.
          *
-         * Structure:
-         *   Data (CHOICE_ARRAY)
-         *     ├─ Data (CHOICE_BOOLEAN → true)
-         *     └─ Data (CHOICE_ARRAY)
-         *         ├─ Data (CHOICE_INT32 → 1)
-         *         └─ Data (CHOICE_INT32 → 2)
+         * Structure: Data (CHOICE_ARRAY) ├─ Data (CHOICE_BOOLEAN → true) └─ Data
+         * (CHOICE_ARRAY) ├─ Data (CHOICE_INT32 → 1) └─ Data (CHOICE_INT32 → 2)
          */
         CmsData inner = new CmsData();
         inner.choice.value(CmsData.CHOICE_ARRAY);
-        CmsData d1 = new CmsData(); d1.choice.value(CmsData.CHOICE_INT32); d1.alt_int32.value(1);
-        CmsData d2 = new CmsData(); d2.choice.value(CmsData.CHOICE_INT32); d2.alt_int32.value(2);
+        CmsData d1 = new CmsData();
+        d1.choice.value(CmsData.CHOICE_INT32);
+        d1.alt_int32.value(1);
+        CmsData d2 = new CmsData();
+        d2.choice.value(CmsData.CHOICE_INT32);
+        d2.alt_int32.value(2);
         inner.alt_sequence.add(d1).add(d2);
 
         CmsData outer = new CmsData();
         outer.choice.value(CmsData.CHOICE_ARRAY);
-        CmsData d3 = new CmsData(); d3.choice.value(CmsData.CHOICE_BOOLEAN); d3.alt_boolean.value(true);
+        CmsData d3 = new CmsData();
+        d3.choice.value(CmsData.CHOICE_BOOLEAN);
+        d3.alt_boolean.value(true);
         outer.alt_sequence.add(d3).add(inner);
 
         CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse();
         a.reqId.value(50);
-        a.data.add(new CmsDataValueEntry()
-            .reference("nestedRef".getBytes())
-            .value(outer));
+        a.data.add(new CmsDataValueEntry().reference("nestedRef".getBytes()).value(outer));
         a.moreFollows.value(false);
 
         byte[] encoded = a.encode();
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();
         b.decode(encoded);
-
 
         CmsDataValueEntry aEntry = a.data.get(0);
         CmsDataValueEntry bEntry = b.data.get(0);
@@ -113,8 +113,6 @@ public class CmsGetAllDataValuesTest {
             System.out.println("inner[0] a.alt_boolean.value = " + innerA.alt_boolean.value());
             System.out.println("inner[0] b.alt_boolean.value = " + innerB.alt_boolean.value());
         }
-
-
 
         assertEquals(a, b);
     }

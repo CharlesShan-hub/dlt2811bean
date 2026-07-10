@@ -8,7 +8,6 @@ import com.ysh.jcms.svc.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.svc.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.svc.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.svc.sg.CmsSgcbValueChoice;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -38,11 +37,12 @@ public class GetSgcbValuesClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<SgcbResult> getLastResults() { return lastResults; }
+    public List<SgcbResult> getLastResults() {
+        return lastResults;
+    }
 
     public void execute(GetSgcbValuesDao dao) throws Exception {
-        CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest()
-            .reqId(nextReqId());
+        CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest().reqId(nextReqId());
 
         for (String ref : dao.references()) {
             CmsObjectReference objRef = new CmsObjectReference(ref);
@@ -70,10 +70,7 @@ public class GetSgcbValuesClient extends BaseClientHandler {
             CmsSgcbValueChoice choice = resp.sgscb.items.get(i);
             if (choice.choice.value() == CmsSgcbValueChoice.VALUE) {
                 CmsSgcb sgcb = choice.altValue;
-                results.add(new SgcbResult(true,
-                    sgcb.numOfSG.value(),
-                    sgcb.actSG.value(),
-                    sgcb.editSG.value()));
+                results.add(new SgcbResult(true, sgcb.numOfSG.value(), sgcb.actSG.value(), sgcb.editSG.value()));
             } else {
                 results.add(new SgcbResult(false, 0, 0, 0));
             }

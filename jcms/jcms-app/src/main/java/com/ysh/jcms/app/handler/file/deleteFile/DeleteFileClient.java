@@ -17,9 +17,7 @@ public class DeleteFileClient extends BaseClientHandler {
     }
 
     public void execute(DeleteFileDao dao) throws Exception {
-        CmsDeleteFileRequest req = new CmsDeleteFileRequest()
-            .reqId(nextReqId())
-            .filename(dao.fileName());
+        CmsDeleteFileRequest req = new CmsDeleteFileRequest().reqId(nextReqId()).filename(dao.fileName());
 
         send(ServiceName.DELETE_FILE, req);
     }

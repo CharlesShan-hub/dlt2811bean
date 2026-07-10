@@ -7,7 +7,10 @@ import lombok.experimental.Accessors;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter @Accessors(chain = true, fluent = true) @NoArgsConstructor
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
+@NoArgsConstructor
 public class SclPowerTransformer {
     private String name;
     private String desc;
@@ -17,8 +20,20 @@ public class SclPowerTransformer {
     private final List<SclLNode> lNodes = new ArrayList<>();
     private final List<SclEqFunction> eqFunctions = new ArrayList<>();
 
-    public SclPowerTransformer addWinding(SclTransformerWinding winding) { windings.add(winding); return this; }
-    public SclPowerTransformer addSubEquipment(SclSubEquipment subEquipment) { subEquipments.add(subEquipment); return this; }
-    public SclPowerTransformer addLNode(SclLNode lNode) { lNodes.add(lNode); return this; }
-    public SclPowerTransformer addEqFunction(SclEqFunction eqFunction) { eqFunctions.add(eqFunction); return this; }
+    public SclPowerTransformer addWinding(SclTransformerWinding winding) {
+        windings.add(winding);
+        return this;
+    }
+    public SclPowerTransformer addSubEquipment(SclSubEquipment subEquipment) {
+        subEquipments.add(subEquipment);
+        return this;
+    }
+    public SclPowerTransformer addLNode(SclLNode lNode) {
+        lNodes.add(lNode);
+        return this;
+    }
+    public SclPowerTransformer addEqFunction(SclEqFunction eqFunction) {
+        eqFunctions.add(eqFunction);
+        return this;
+    }
 }

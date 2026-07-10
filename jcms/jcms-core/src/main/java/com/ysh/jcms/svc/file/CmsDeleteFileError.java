@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * DeleteFile-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.12.3
+ * DeleteFile-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError }
+ * — 8.12.3
  */
 public class CmsDeleteFileError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsDeleteFileError() { super(Codec.DELETE_FILE_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsDeleteFileError() {
+        super(Codec.DELETE_FILE_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsDeleteFileError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsDeleteFileError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsDeleteFileError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsDeleteFileError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

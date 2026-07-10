@@ -6,7 +6,8 @@ import org.slf4j.LoggerFactory;
 /**
  * Root base class for all service handlers (client and server).
  *
- * <p>Provides the shared {@link Logger} instance.
+ * <p>
+ * Provides the shared {@link Logger} instance.
  */
 public abstract class BaseHandler {
 

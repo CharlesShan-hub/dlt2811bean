@@ -6,7 +6,6 @@ import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesRequest;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesResponse;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -27,12 +26,9 @@ public class GetDataSetValuesClient extends BaseClientHandler {
         }
     }
 
-    private static final String[] CHOICE_NAMES = {
-        "error", "array", "structure", "boolean", "int8", "int16", "int32", "int64",
-        "int8u", "int16u", "int32u", "int64u", "float32", "float64",
-        "bit-string", "octet-string", "visible-string", "unicode-string",
-        "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"
-    };
+    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
+            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
+            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
 
     private List<DataSetValue> lastValues = new ArrayList<>();
 
@@ -40,12 +36,12 @@ public class GetDataSetValuesClient extends BaseClientHandler {
         super(node);
     }
 
-    public List<DataSetValue> getLastValues() { return lastValues; }
+    public List<DataSetValue> getLastValues() {
+        return lastValues;
+    }
 
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest()
-            .reqId(nextReqId())
-            .datasetReference(dao.datasetReference());
+        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
 
         if (dao.referenceAfter() != null && !dao.referenceAfter().isEmpty()) {
             req.refAfter(dao.referenceAfter());
@@ -71,7 +67,8 @@ public class GetDataSetValuesClient extends BaseClientHandler {
         for (int i = 0; i < resp.value.count; i++) {
             CmsData src = resp.value.items.get(i);
             int ct = src.choice.value();
-            if (ct == 0) continue;
+            if (ct == 0)
+                continue;
             String val = extractValue(src, ct);
             entries.add(new DataSetValue(ct, val));
         }
@@ -81,26 +78,38 @@ public class GetDataSetValuesClient extends BaseClientHandler {
 
     private static String extractValue(CmsData d, int ct) {
         switch (ct) {
-            case CmsData.CHOICE_BOOLEAN:       return Boolean.toString(d.alt_boolean.value());
-            case CmsData.CHOICE_INT8:           return Integer.toString(d.alt_int8.value());
-            case CmsData.CHOICE_INT16:          return Integer.toString(d.alt_int16.value());
-            case CmsData.CHOICE_INT32:          return Integer.toString(d.alt_int32.value());
-            case CmsData.CHOICE_INT64:          return Long.toString(d.alt_int64.value());
-            case CmsData.CHOICE_INT8U:          return Integer.toString(d.alt_int8u.value());
-            case CmsData.CHOICE_INT16U:         return Integer.toString(d.alt_int16u.value());
-            case CmsData.CHOICE_INT32U:         return Long.toString(d.alt_int32u.value());
-            case CmsData.CHOICE_INT64U:         return d.alt_int64u.value().toString();
-            case CmsData.CHOICE_FLOAT32:        return Float.toString(d.alt_float32.value());
-            case CmsData.CHOICE_FLOAT64:        return Double.toString(d.alt_float64.value());
-            case CmsData.CHOICE_VISIBLE_STRING:
+            case CmsData.CHOICE_BOOLEAN :
+                return Boolean.toString(d.alt_boolean.value());
+            case CmsData.CHOICE_INT8 :
+                return Integer.toString(d.alt_int8.value());
+            case CmsData.CHOICE_INT16 :
+                return Integer.toString(d.alt_int16.value());
+            case CmsData.CHOICE_INT32 :
+                return Integer.toString(d.alt_int32.value());
+            case CmsData.CHOICE_INT64 :
+                return Long.toString(d.alt_int64.value());
+            case CmsData.CHOICE_INT8U :
+                return Integer.toString(d.alt_int8u.value());
+            case CmsData.CHOICE_INT16U :
+                return Integer.toString(d.alt_int16u.value());
+            case CmsData.CHOICE_INT32U :
+                return Long.toString(d.alt_int32u.value());
+            case CmsData.CHOICE_INT64U :
+                return d.alt_int64u.value().toString();
+            case CmsData.CHOICE_FLOAT32 :
+                return Float.toString(d.alt_float32.value());
+            case CmsData.CHOICE_FLOAT64 :
+                return Double.toString(d.alt_float64.value());
+            case CmsData.CHOICE_VISIBLE_STRING :
                 return new String(d.alt_visible_string.value(), StandardCharsets.UTF_8);
-            case CmsData.CHOICE_UNICODE_STRING:
+            case CmsData.CHOICE_UNICODE_STRING :
                 return new String(d.alt_unicode_string.value(), StandardCharsets.UTF_8);
-            case CmsData.CHOICE_OCTET_STRING:
+            case CmsData.CHOICE_OCTET_STRING :
                 return new String(d.alt_octet_string.value(), StandardCharsets.UTF_8);
-            case CmsData.CHOICE_BIT_STRING:
+            case CmsData.CHOICE_BIT_STRING :
                 return new String(d.alt_bit_string.value(), StandardCharsets.UTF_8);
-            default:                            return "(choice=" + ct + ")";
+            default :
+                return "(choice=" + ct + ")";
         }
     }
 }

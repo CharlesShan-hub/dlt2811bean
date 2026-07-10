@@ -13,16 +13,18 @@ import java.util.Map;
 public class TestConsole implements CommandHandler {
 
     @Override
-    public String name() { return "test"; }
+    public String name() {
+        return "test";
+    }
 
     @Override
-    public String description() { return "测试连接 (Test ping/pong) [--json]"; }
+    public String description() {
+        return "测试连接 (Test ping/pong) [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("json", "JSON 格式输出", ""));
     }
 
     @Override

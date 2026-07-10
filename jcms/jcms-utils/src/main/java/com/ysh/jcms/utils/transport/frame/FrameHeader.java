@@ -17,7 +17,8 @@ import lombok.experimental.Accessors;
  * bit3~0: PI  (protocol identifier, 0x01)
  * </pre>
  */
-@Getter @Setter
+@Getter
+@Setter
 @Accessors(fluent = true, chain = true)
 public class FrameHeader {
 
@@ -33,17 +34,15 @@ public class FrameHeader {
     /** Encode header to 4 bytes: CC, SC, FL(hi), FL(lo). */
     public byte[] encode() {
         byte cc = PI_DEFAULT;
-        if (next) cc |= 0x80;
-        if (resp) cc |= 0x40;
-        if (err)  cc |= 0x20;
+        if (next)
+            cc |= 0x80;
+        if (resp)
+            cc |= 0x40;
+        if (err)
+            cc |= 0x20;
 
         int sc = serviceCode != null ? serviceCode.getCode() : 0;
-        return new byte[] {
-            cc,
-            (byte) sc,
-            (byte) ((frameLength >> 8) & 0xFF),
-            (byte) (frameLength & 0xFF)
-        };
+        return new byte[]{cc, (byte) sc, (byte) ((frameLength >> 8) & 0xFF), (byte) (frameLength & 0xFF)};
     }
 
     /** Decode header from bytes at offset. */
@@ -52,11 +51,8 @@ public class FrameHeader {
             throw new IllegalArgumentException("Header too short");
         }
         byte cc = data[offset];
-        return new FrameHeader()
-            .next((cc & 0x80) != 0)
-            .resp((cc & 0x40) != 0)
-            .err( (cc & 0x20) != 0)
-            .serviceCode(ServiceName.fromCode(data[offset + 1] & 0xFF))
-            .frameLength(((data[offset + 2] & 0xFF) << 8) | (data[offset + 3] & 0xFF));
+        return new FrameHeader().next((cc & 0x80) != 0).resp((cc & 0x40) != 0).err((cc & 0x20) != 0)
+                .serviceCode(ServiceName.fromCode(data[offset + 1] & 0xFF))
+                .frameLength(((data[offset + 2] & 0xFF) << 8) | (data[offset + 3] & 0xFF));
     }
 }

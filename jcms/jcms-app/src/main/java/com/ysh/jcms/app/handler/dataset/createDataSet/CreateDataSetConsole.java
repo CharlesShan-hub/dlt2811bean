@@ -13,19 +13,20 @@ import java.util.Map;
 public class CreateDataSetConsole implements CommandHandler {
 
     @Override
-    public String name() { return "create-dataset"; }
+    public String name() {
+        return "create-dataset";
+    }
 
     @Override
-    public String description() { return "创建数据集 (CreateDataSet)。用法: create-dataset --ds <ref> --members \"<ref1>,<fc1> <ref2>,<fc2>...\" [--json]"; }
+    public String description() {
+        return "创建数据集 (CreateDataSet)。用法: create-dataset --ds <ref> --members \"<ref1>,<fc1> <ref2>,<fc2>...\" [--json]";
+    }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(
-            new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
-            new Param("members", "成员列表（空格分隔，每个成员的格式 ref,fc），如 \"LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST\"", null),
-            new Param("after", "追加到现有数据集后的最后一个成员引用", ""),
-            new Param("json", "JSON 格式输出", "")
-        );
+        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
+                new Param("members", "成员列表（空格分隔，每个成员的格式 ref,fc），如 \"LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST\"", null),
+                new Param("after", "追加到现有数据集后的最后一个成员引用", ""), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -60,16 +61,17 @@ public class CreateDataSetConsole implements CommandHandler {
             return;
         }
 
-        CreateDataSetDao dao = new CreateDataSetDao()
-            .datasetReference(dsRef.trim());
+        CreateDataSetDao dao = new CreateDataSetDao().datasetReference(dsRef.trim());
 
         String[] tokens = membersStr.trim().split("\\s+");
         for (String token : tokens) {
-            if (token.isEmpty()) continue;
+            if (token.isEmpty())
+                continue;
             int commaIdx = token.indexOf(',');
             if (commaIdx <= 0) {
                 if (jsonMode) {
-                    ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid member: " + CmsFormatUtil.escapeJson(token) + " (expected ref,fc)\"}");
+                    ConsolePrinter.raw(
+                            "{\"success\":false,\"error\":\"Invalid member: " + CmsFormatUtil.escapeJson(token) + " (expected ref,fc)\"}");
                 } else {
                     ConsolePrinter.error("Invalid member: " + token + " (expected ref,fc)");
                 }

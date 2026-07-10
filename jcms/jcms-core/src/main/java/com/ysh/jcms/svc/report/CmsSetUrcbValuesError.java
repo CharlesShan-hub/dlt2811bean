@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetURCBValues-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     result          [0] IMPLICIT SEQUENCE OF SetURCBResult
- * }  —  8.7.5
+ * SetURCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, result [0] IMPLICIT
+ * SEQUENCE OF SetURCBResult } — 8.7.5
  */
 public class CmsSetUrcbValuesError extends CmsType {
 
-    public CmsReqId                        reqId;
-    public CmsArray<CmsSetUrcbResult>      result;   /* SEQUENCE OF SetURCBResult */
+    public CmsReqId reqId;
+    public CmsArray<CmsSetUrcbResult> result; /* SEQUENCE OF SetURCBResult */
 
-    public CmsSetUrcbValuesError() { super(Codec.SET_URCB_VALUES_ERROR);
-        this.reqId  = new CmsReqId();
+    public CmsSetUrcbValuesError() {
+        super(Codec.SET_URCB_VALUES_ERROR);
+        this.reqId = new CmsReqId();
         this.result = new CmsArray<>(CmsSetUrcbResult.class);
     }
-    
-    public CmsSetUrcbValuesError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSetUrcbValuesError result(CmsArray<CmsSetUrcbResult> v) { this.result = v; return this; }
+
+    public CmsSetUrcbValuesError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSetUrcbValuesError result(CmsArray<CmsSetUrcbResult> v) {
+        this.result = v;
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

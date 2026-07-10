@@ -26,9 +26,7 @@ public class GetFileAttributeValuesServer extends BaseServerHandler {
     private static final Logger log = LoggerFactory.getLogger(GetFileAttributeValuesServer.class);
 
     public GetFileAttributeValuesServer() {
-        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES,
-            CmsGetFileAttributeValuesRequest.class,
-            CmsGetFileAttributeValuesError.class);
+        super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);
     }
 
     @Override
@@ -58,14 +56,10 @@ public class GetFileAttributeValuesServer extends BaseServerHandler {
 
             long lastMod = attrs.lastModifiedTime().toMillis();
             long seconds = lastMod / 1000;
-            int micros = (int)((lastMod % 1000) * 1000);
-            CmsGetFileAttributeValuesResponse resp = new CmsGetFileAttributeValuesResponse()
-                .reqId(reqId)
-                .fileEntry(new CmsFileEntry()
-                    .fileName(fileName)
-                    .fileSize(attrs.size())
-                    .lastModified(new CmsUtcTime().secondsSinceEpoch(seconds).fractionOfSecond(micros))
-                    .checkSum(crc.getValue()));
+            int micros = (int) ((lastMod % 1000) * 1000);
+            CmsGetFileAttributeValuesResponse resp = new CmsGetFileAttributeValuesResponse().reqId(reqId)
+                    .fileEntry(new CmsFileEntry().fileName(fileName).fileSize(attrs.size())
+                            .lastModified(new CmsUtcTime().secondsSinceEpoch(seconds).fractionOfSecond(micros)).checkSum(crc.getValue()));
 
             log.info("GetFileAttributeValues: file='{}' size={}", fileName, attrs.size());
             return ok(resp, reqId);

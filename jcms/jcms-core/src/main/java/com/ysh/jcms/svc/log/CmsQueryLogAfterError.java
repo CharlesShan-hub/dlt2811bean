@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * QueryLogAfter-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.8.5
+ * QueryLogAfter-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError
+ * } — 8.8.5
  */
 public class CmsQueryLogAfterError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsQueryLogAfterError() { super(Codec.QUERY_LOG_AFTER_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsQueryLogAfterError() {
+        super(Codec.QUERY_LOG_AFTER_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsQueryLogAfterError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsQueryLogAfterError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsQueryLogAfterError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsQueryLogAfterError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

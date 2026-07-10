@@ -102,16 +102,26 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     private boolean hasEntryError(CmsSetUrcbResult r) {
-        if (r.errorPresent.value()) return true;
-        if (r.rptIdErrPresent.value()) return true;
-        if (r.rptEnaErrPresent.value()) return true;
-        if (r.datSetErrPresent.value()) return true;
-        if (r.optFldsErrPresent.value()) return true;
-        if (r.bufTmErrPresent.value()) return true;
-        if (r.trgOpsErrPresent.value()) return true;
-        if (r.intgPdErrPresent.value()) return true;
-        if (r.giErrPresent.value()) return true;
-        if (r.resvErrPresent.value()) return true;
+        if (r.errorPresent.value())
+            return true;
+        if (r.rptIdErrPresent.value())
+            return true;
+        if (r.rptEnaErrPresent.value())
+            return true;
+        if (r.datSetErrPresent.value())
+            return true;
+        if (r.optFldsErrPresent.value())
+            return true;
+        if (r.bufTmErrPresent.value())
+            return true;
+        if (r.trgOpsErrPresent.value())
+            return true;
+        if (r.intgPdErrPresent.value())
+            return true;
+        if (r.giErrPresent.value())
+            return true;
+        if (r.resvErrPresent.value())
+            return true;
         return false;
     }
 
@@ -244,7 +254,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     /** 跨 IED/AccessPoint 查找指定 LD 下的 LN。 */
     private static SclLN findLn(SclDocument doc, String ldName, String lnName) {
         SclIED ied = doc.findIedByLdInst(ldName);
-        if (ied == null) return null;
+        if (ied == null)
+            return null;
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {

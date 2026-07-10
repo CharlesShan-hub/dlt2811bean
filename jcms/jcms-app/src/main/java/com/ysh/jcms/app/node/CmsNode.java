@@ -49,7 +49,8 @@ public class CmsNode {
     }
 
     public void registerServer(ServiceHandler handler) {
-        if (server != null) server.register(handler);
+        if (server != null)
+            server.register(handler);
     }
 
     public void registerClient(Object handler) {
@@ -62,9 +63,8 @@ public class CmsNode {
     }
 
     /**
-     * Execute a registered client handler with the given args.
-     * Looks up the handler by class, finds its {@code execute} method,
-     * and invokes it.
+     * Execute a registered client handler with the given args. Looks up the handler
+     * by class, finds its {@code execute} method, and invokes it.
      *
      * <pre>
      * CmsAssociateResponse resp = node.execute(AssociateClient.class, dao);
@@ -94,8 +94,10 @@ public class CmsNode {
     /**
      * Start the server node.
      *
-     * @param test if {@code true}, load SCL from {@code testSclFiles} (for unit/integration tests);
-     *             otherwise load from {@code sclFiles} (for production server console)
+     * @param test
+     *            if {@code true}, load SCL from {@code testSclFiles} (for
+     *            unit/integration tests); otherwise load from {@code sclFiles} (for
+     *            production server console)
      */
     public void start(boolean test) throws IOException {
         if (server != null) {
@@ -120,13 +122,20 @@ public class CmsNode {
         }
     }
 
-    public SclManager getSclManager() { return sclManager; }
-    public ContentManager getContentManager() { return contentManager; }
-    public GmCredentialManager getCredentialManager() { return credentialManager; }
+    public SclManager getSclManager() {
+        return sclManager;
+    }
+    public ContentManager getContentManager() {
+        return contentManager;
+    }
+    public GmCredentialManager getCredentialManager() {
+        return credentialManager;
+    }
 
     public void stop() {
         client.close();
-        if (server != null) server.stop();
+        if (server != null)
+            server.stop();
     }
 
     public void connect(String host, int port) throws IOException {
@@ -145,9 +154,19 @@ public class CmsNode {
         return client.sendRequest(sc, asduBytes);
     }
 
-    public void close() { client.close(); }
-    public boolean isClientConnected() { return client.isConnected(); }
-    public boolean isServerRunning() { return server != null && server.isRunning(); }
-    public InnerServer getServer() { return server; }
-    public InnerClient getClient() { return client; }
+    public void close() {
+        client.close();
+    }
+    public boolean isClientConnected() {
+        return client.isConnected();
+    }
+    public boolean isServerRunning() {
+        return server != null && server.isRunning();
+    }
+    public InnerServer getServer() {
+        return server;
+    }
+    public InnerClient getClient() {
+        return client;
+    }
 }

@@ -22,11 +22,13 @@ public class SetFileClient extends BaseClientHandler {
     // Leave room for PER overhead
     private static final int CHUNK_SIZE = 64000;
 
-    public SetFileClient(CmsNode node) { super(node); }
+    public SetFileClient(CmsNode node) {
+        super(node);
+    }
 
     /**
-     * Upload a local file to the server.
-     * Splits the file into chunks and sends sequentially.
+     * Upload a local file to the server. Splits the file into chunks and sends
+     * sequentially.
      */
     public void execute(SetFileDao dao) throws Exception {
         String remoteFile = dao.remoteFile();
@@ -45,8 +47,8 @@ public class SetFileClient extends BaseClientHandler {
         log.info("SetFile: uploading '{}' -> '{}' ({} bytes)", localFile, remoteFile, totalBytes);
 
         while (position <= totalBytes + 1) {
-            int offset = (int)(position - 1);
-            int remaining = (int)(totalBytes - offset);
+            int offset = (int) (position - 1);
+            int remaining = (int) (totalBytes - offset);
             int chunkLen = Math.min(remaining, CHUNK_SIZE);
             boolean isLast = (offset + chunkLen >= totalBytes);
 
@@ -58,23 +60,19 @@ public class SetFileClient extends BaseClientHandler {
                 chunk = new byte[0];
             }
 
-            CmsSetFileRequest req = new CmsSetFileRequest()
-                .reqId(nextReqId())
-                .filename(remoteFile)
-                .startPosition(position)
-                .fileData(chunk)
-                .endOfFile(isLast);
+            CmsSetFileRequest req = new CmsSetFileRequest().reqId(nextReqId()).filename(remoteFile).startPosition(position).fileData(chunk)
+                    .endOfFile(isLast);
 
             Frame frame = send(ServiceName.SET_FILE, req);
             CmsSetFileResponse resp = decodeFrame(frame, new CmsSetFileResponse());
             chunks++;
 
-            if (isLast) break;
+            if (isLast)
+                break;
             position += chunkLen;
         }
 
-        log.info("SetFile: uploaded '{}' -> '{}' ({} bytes, {} chunks)", 
-            localFile, remoteFile, totalBytes, chunks);
+        log.info("SetFile: uploaded '{}' -> '{}' ({} bytes, {} chunks)", localFile, remoteFile, totalBytes, chunks);
     }
 
     @Override

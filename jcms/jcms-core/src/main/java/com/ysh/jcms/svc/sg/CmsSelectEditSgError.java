@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SelectEditSG-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.6.2
+ * SelectEditSG-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError
+ * } — 8.6.2
  */
 public class CmsSelectEditSgError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsSelectEditSgError() { super(Codec.SELECT_EDIT_SG_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsSelectEditSgError() {
+        super(Codec.SELECT_EDIT_SG_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsSelectEditSgError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSelectEditSgError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsSelectEditSgError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSelectEditSgError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

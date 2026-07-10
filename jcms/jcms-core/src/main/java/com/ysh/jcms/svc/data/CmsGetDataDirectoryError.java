@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * GetDataDirectory-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.4.3
+ * GetDataDirectory-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
+ * ServiceError } — 8.4.3
  */
 public class CmsGetDataDirectoryError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsGetDataDirectoryError() { super(Codec.GET_DATA_DIRECTORY_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsGetDataDirectoryError() {
+        super(Codec.GET_DATA_DIRECTORY_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsGetDataDirectoryError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsGetDataDirectoryError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsGetDataDirectoryError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetDataDirectoryError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {

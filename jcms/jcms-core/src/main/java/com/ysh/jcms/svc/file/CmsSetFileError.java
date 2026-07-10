@@ -8,23 +8,28 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * SetFile-ErrorPDU ::= SEQUENCE {
- *     reqId           Int16U,
- *     serviceError    ServiceError
- * }  —  8.12.2
+ * SetFile-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError ServiceError } —
+ * 8.12.2
  */
 public class CmsSetFileError extends CmsType {
 
-    public CmsReqId        reqId;
+    public CmsReqId reqId;
     public CmsServiceError serviceError;
 
-    public CmsSetFileError() { super(Codec.SET_FILE_ERROR);
-        this.reqId        = new CmsReqId();
+    public CmsSetFileError() {
+        super(Codec.SET_FILE_ERROR);
+        this.reqId = new CmsReqId();
         this.serviceError = new CmsServiceError();
     }
-    
-    public CmsSetFileError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsSetFileError serviceError(int v) { this.serviceError.value(v); return this; }
+
+    public CmsSetFileError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsSetFileError serviceError(int v) {
+        this.serviceError.value(v);
+        return this;
+    }
 
     @Override
     public List<? extends CmsType> children() {
