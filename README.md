@@ -4,8 +4,6 @@
 
 ## CMS概述
 
-### 概述
-
 **CMS（通信报文规范）**就是国家电网为了摆脱对国外技术的依赖，专门搞出来的**“MMS协议国产替代版”**。它的核心使命是实现电力通信的**自主可控**，同时解决老协议笨重、低效的问题。
 
 * **瘦身提速（PER编码）**：把原来MMS那种臃肿的BER编码换成了紧凑的**PER编码**。
@@ -15,33 +13,37 @@
 本项目就是制作CMS标准的代码实现。主要的思路是，使用C语言编写per编码部分和基础数据结构部分。后续开发可以基于C/C++，也可以将该模块打包成dll，后续迁移到其他语言平台。项目目录包含下边内容：
 
 * **ccms**
-  * [per](docs/ccms-per.md): 底层编码，dlt2811协议使用per编码将asn1转换成字节码。
-  * [data](docs/ccms-data.md): dlt2811 §7 数据结构部分的实现。
-  * [svc](docs/ccms-svc.md): dlt2811 §8 报文段部分的实现。
+  * [per](docs/impl/ccms-per.md): 底层编码，dlt2811协议使用per编码将asn1转换成字节码。
+  * [data](docs/impl/ccms-data.md): dlt2811 §7 数据结构部分的实现。
+  * [svc](docs/impl/ccms-svc.md): dlt2811 §8 报文段部分的实现。
 * **jcms-core**
-  * core: 负责将ccms api映射到java，并且设计基础的`CmsType`等基类。
-  * info: 一些文档性质的枚举和说明。
-  * data: dlt2811 §7的java封装。
-  * svc: dlt2811 §8的java封装。
+  * [core](docs/impl/jcms-core.md): 负责将ccms api映射到java，并且设计基础的`CmsType`等基类。
+  * [info](docs/impl/jcms-info.md): 一些文档性质的枚举和说明。
+  * [data](docs/impl/jcms-data.md): dlt2811 §7的java封装。
+  * [svc](docs/impl/jcms-svc.md): dlt2811 §8的java封装。
 * **jcms-utils**
-  * config: 配置模块。
-  * scl: scd文件解析模块。
-  * security：安全协议。
-  * transport：传输层基础构建。
+  * [config](docs/impl/jcms-utils.md): 配置模块。
+  * [scl](docs/impl/jcms-scl.md):  scd文件解析模块。
+  * [security](docs/impl/jcms-security.md): 安全协议。
+  * [transport](docs/impl/jcms-transport.md): 传输层基础构建。
 * **jcms-app**
-  * node：dlt2811 §6传输层封装。
-  * handler: 各种处理器，比如客户端，服务器，命令行交互界面。
-  * console：命令行交互界面。
-
----
-
-### 资料
-
+  * [node](docs/impl/jcms-node.md): dlt2811 §6传输层封装。
+  * [handler](docs/impl/jcms-handler.md): 各种处理器，比如客户端，服务器，命令行交互界面。
+  * [console](docs/impl/jcms-console.md): 命令行交互界面。
 * [国产自主可控新一代通信标准CMS之总览篇](https://zhuanlan.zhihu.com/p/520653213)
 
 ---
 
 ## 使用方法
+
+* 自定义方法
+  * json格式输出
+  * 清空命令行
+  * 显示报文信息
+* 8.2 连接
+* 8.3 目录
+* 8.4 数据
+* 8.5 数据库
 
 ### 支持json格式输出
 
@@ -1310,6 +1312,52 @@ cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
   Fetching GoCB values for 1 reference(s)
     [CTRL/LLN0.gocb0] goEna=true goID=MyGoCB datSet=dsGOOSE confRev=1 ndsCom=false
 ```
+
+### 8.11.1 Select
+
+这组服务也是需要操作实际设备的，本实现采用缓存模拟
+
+```bash
+select --ref LD0/CTRL1.SPC1 --value true --origin 1 --ctlNum 5 --check syncheck --test true
+```
+
+```bash
+
+```
+
+
+### 8.11.
+
+备注：参数含义
+
+**`--ref LD0/CTRL1.SPC1`** — 你要操作哪个设备
+- `LD0` = 逻辑设备（比如"1号主变"）
+- `CTRL1` = 控制逻辑节点（比如"断路器控制"）
+- `SPC1` = 控制对象（Single Point Control，比如"合闸/分闸"）
+
+**`--value true/false`** — 你想让它变成啥
+- 合闸 = `true`，分闸 = `false`
+- 标准里叫 `ctlVal`（control value）
+
+**`--origin 1`** — 操作源是谁
+- 0 = 本地操作（人在设备面板上按）
+- 1 = 远程操作（调度员在后台点的）
+- 标准里叫 `orCat`（originator category）
+
+**`--ctlNum 5`** — 操作的序号
+- 每次操作递增，服务器可以检测是否有乱序或重放攻击
+- 不传的话服务器就用默认值 0
+
+**`--check syncheck`** — 要不要做校验
+- `syncheck` = 同步校验（需要两个操作员同时确认）
+- `interlock-check` = 联锁校验（检查开关之间的互锁条件）
+- 不传 = 不做额外校验
+
+**`--test true/false`** — 是测试还是真操作
+- `true` = 模拟操作，设备不实际动作
+- `false` = 真实操作（默认）
+
+简单来说就是：**ref** 选谁 → **value** 调成啥 → **origin** 谁点的 → **ctlNum** 第几次 → **check** 要不要复核 → **test** 是真的还是演练。
 
 ### 8.12.1 下载文件
 
