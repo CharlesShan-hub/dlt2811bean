@@ -22,6 +22,7 @@ public abstract class Session {
     private volatile int negotiatedApduSize = 65535;
     private volatile int peerAsduSize;
     private volatile int peerProtocolVersion;
+    private volatile boolean fragmentationSupported = true;
 
     /**
      * Full cleanup: associationId and RCB runtime state. Subclasses may override to
@@ -29,6 +30,7 @@ public abstract class Session {
      */
     public void clear() {
         this.associationId = null;
+        this.fragmentationSupported = true;
         RcbStateManager.clear();
     }
 

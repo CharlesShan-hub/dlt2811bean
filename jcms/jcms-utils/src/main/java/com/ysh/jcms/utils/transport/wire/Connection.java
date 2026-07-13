@@ -28,6 +28,8 @@ public class Connection {
     private final FrameAssembler assembler = new FrameAssembler();
 
     private volatile int maxFrameSize = Frame.MAX_PAYLOAD_SIZE;
+    private volatile int peerAsduSize = Frame.MAX_PAYLOAD_SIZE;
+    private volatile boolean fragmentationSupported = true;
     private volatile boolean running;
     private Thread readerThread;
 
@@ -104,7 +106,12 @@ public class Connection {
 
     /** Send a Frame over the connection. */
     public void send(Frame frame) throws IOException {
-        java.util.List<Frame> segments = FrameCodec.split(frame, maxFrameSize);
+        // 检查：如果需要对端不支持的分帧，抛出异常
+        if (!fragmentationSupported && frame.asduBytes().length > peerAsduSize) {
+            throw new IOException("Fragmentation not supported: ASDU size (" + frame.asduBytes().length
+                    + ") exceeds peer asduSize (" + peerAsduSize + ")");
+        }
+        java.util.List<Frame> segments = FrameCodec.split(frame, peerAsduSize);
         synchronized (dos) {
             for (Frame seg : segments) {
                 byte[] wire = FrameCodec.encode(seg);
@@ -116,6 +123,12 @@ public class Connection {
 
     public void setMaxFrameSize(int maxFrameSize) {
         this.maxFrameSize = maxFrameSize;
+    }
+    public void setPeerAsduSize(int peerAsduSize) {
+        this.peerAsduSize = peerAsduSize;
+    }
+    public void setFragmentationSupported(boolean fragmentationSupported) {
+        this.fragmentationSupported = fragmentationSupported;
     }
     public boolean isConnected() {
         return running && !socket.isClosed();

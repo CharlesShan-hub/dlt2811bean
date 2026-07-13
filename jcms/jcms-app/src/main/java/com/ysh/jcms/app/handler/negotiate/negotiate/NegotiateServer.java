@@ -24,14 +24,21 @@ public class NegotiateServer extends BaseServerHandler {
         CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
 
         if (req.protocolVersion.value() > config.getProtocolVersion())
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         int negotiatedApduSize = Math.min(req.apduSize.value(), config.getApduSize());
+
+        // 标准 b)：apduSize > asduSize → 支持分帧
+        boolean fragSupported = negotiatedApduSize > req.asduSize.value();
+        session.setFragmentationSupported(fragSupported);
+        session.getConnection().setFragmentationSupported(fragSupported);
+
         session.setNegotiatedApduSize(negotiatedApduSize);
         session.setPeerAsduSize((int) req.asduSize.value());
         session.setPeerProtocolVersion((int) req.protocolVersion.value());
         session.setNegotiated(true);
         session.getConnection().setMaxFrameSize(negotiatedApduSize);
+        session.getConnection().setPeerAsduSize((int) req.asduSize.value());
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", negotiatedApduSize,
                 config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());

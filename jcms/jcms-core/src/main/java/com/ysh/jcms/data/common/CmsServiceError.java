@@ -7,6 +7,8 @@ import com.ysh.jcms.core.CmsEnumerated;
  * bits sizeof = 4
  *
  * Alias for CmsEnumerated with named constants.
+ *
+ * 常量名通过 CmsEnumerated.constantName() 反射自动推导，无需手动维护。
  */
 public class CmsServiceError extends CmsEnumerated {
 

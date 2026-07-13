@@ -44,6 +44,8 @@
 * 8.3 目录
 * 8.4 数据
 * 8.5 数据库
+* 8.14 测试：[test](docs/usage/8-14.md)
+* 8.15 协商：[negotiate](docs/usage/8-15.md)
 
 ### 支持json格式输出
 
@@ -1431,14 +1433,14 @@ cms> get-file-dir --path /
 ```bash
 # 使用默认参数（从配置文件读取）
 negotiate
-# 手动指定参数
-negotiate 16384 65531 1;
+# 手动指定参数（--apduSize --asduSize --protocolVersion）
+negotiate --apduSize 16384 --asduSize 65531 --protocolVersion 1
 ```
 
 ```bash
 cms> negotiate
   OK  Negotiate completed.
-cms> negotiate 16384 65531 1;
+cms> negotiate --apduSize 16384 --asduSize 65531 --protocolVersion 1
   OK  Negotiate completed.
 ```
 

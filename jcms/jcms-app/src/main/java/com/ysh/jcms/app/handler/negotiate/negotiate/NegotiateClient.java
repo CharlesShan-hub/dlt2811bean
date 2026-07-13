@@ -22,7 +22,7 @@ public class NegotiateClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
-        throw new IOException("Negotiate rejected: error=" + err.serviceError.value());
+        throw new IOException("Negotiate rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override
@@ -34,7 +34,13 @@ public class NegotiateClient extends BaseClientHandler {
         session.setPeerAsduSize((int) resp.asduSize.value());
         session.setPeerProtocolVersion((int) resp.protocolVersion.value());
         session.setNegotiated(true);
+
+        // 标准 b)：apduSize > asduSize → 支持分帧
+        boolean fragSupported = resp.apduSize.value() > resp.asduSize.value();
+        session.setFragmentationSupported(fragSupported);
+        session.getConnection().setFragmentationSupported(fragSupported);
         session.getConnection().setMaxFrameSize(resp.apduSize.value());
+        session.getConnection().setPeerAsduSize((int) resp.asduSize.value());
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
                 resp.asduSize.value(), resp.protocolVersion.value(), new String(resp.modelVersion.value()));
