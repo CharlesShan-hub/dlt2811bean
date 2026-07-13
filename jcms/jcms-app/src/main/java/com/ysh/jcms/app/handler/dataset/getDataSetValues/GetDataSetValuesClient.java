@@ -45,7 +45,7 @@ public class GetDataSetValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataSetValuesError err = decodeErr(frame, new CmsGetDataSetValuesError());
-        throw new IOException("GetDataSetValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetDataSetValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

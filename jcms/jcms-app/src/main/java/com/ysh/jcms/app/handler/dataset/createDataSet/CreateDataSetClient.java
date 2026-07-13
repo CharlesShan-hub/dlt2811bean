@@ -26,7 +26,7 @@ public class CreateDataSetClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsCreateDataSetError err = decodeErr(frame, new CmsCreateDataSetError());
-        throw new IOException("CreateDataSet rejected: error=" + err.serviceError.value());
+        throw new IOException("CreateDataSet rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

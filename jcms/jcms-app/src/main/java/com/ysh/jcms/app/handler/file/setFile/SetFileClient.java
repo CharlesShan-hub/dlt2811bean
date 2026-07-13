@@ -73,6 +73,6 @@ public class SetFileClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetFileError err = decodeFrame(frame, new CmsSetFileError());
-        throw new IOException("SetFile rejected: error=" + err.serviceError.value());
+        throw new IOException("SetFile rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 }

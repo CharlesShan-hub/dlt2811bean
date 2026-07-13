@@ -34,7 +34,8 @@ public class LnDirClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogicalNodeDirectoryError err = decodeErr(frame, new CmsGetLogicalNodeDirectoryError());
-        throw new IOException("GetLogicalNodeDirectory rejected: error=" + err.serviceError.value());
+        throw new IOException(
+                "GetLogicalNodeDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

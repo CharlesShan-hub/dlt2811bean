@@ -20,7 +20,7 @@ public class DeleteFileClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsDeleteFileError err = decodeErr(frame, new CmsDeleteFileError());
-        throw new IOException("DeleteFile rejected: error=" + err.serviceError.value());
+        throw new IOException("DeleteFile rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

@@ -20,7 +20,7 @@ public class DeleteDataSetClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsDeleteDataSetError err = decodeErr(frame, new CmsDeleteDataSetError());
-        throw new IOException("DeleteDataSet rejected: error=" + err.serviceError.value());
+        throw new IOException("DeleteDataSet rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

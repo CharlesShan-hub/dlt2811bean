@@ -34,7 +34,7 @@ public class AssociateClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
         node.getClient().getSession().setState(SessionState.DISCONNECTED);
-        throw new IOException("Association rejected: error=" + err.serviceError.value());
+        throw new IOException("Association rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override
@@ -44,7 +44,7 @@ public class AssociateClient extends BaseClientHandler {
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
             node.getClient().getSession().setState(SessionState.DISCONNECTED);
-            throw new IOException("Association rejected: error=" + serviceError);
+            throw new IOException("Association rejected: " + new CmsServiceError(serviceError).constantName() + " (" + serviceError + ")");
         }
 
         node.getClient().getSession().setAssociationId(resp.assocId.value());

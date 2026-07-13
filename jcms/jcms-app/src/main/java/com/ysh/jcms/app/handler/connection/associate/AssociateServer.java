@@ -59,11 +59,16 @@ public class AssociateServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
 
         String sapRef = opt(req.sapRefPresent, req.sapRef);
-        if (sapRef == null)
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        if (!resolveAndSetSclAccessPoint(session, sapRef))
+        // 未指定访问点时选默认
+        if (sapRef == null) {
+            if (!resolveDefaultAccessPoint(session)) {
+                log.warn("Associate without sapRef: no default access point available");
+                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            }
+        } else if (!resolveAndSetSclAccessPoint(session, sapRef)) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        }
 
         if (req.authParamPresent.value() && req.authParam.cert.len > 0) {
             ensureSecurityInitialized();
@@ -108,6 +113,28 @@ public class AssociateServer extends BaseServerHandler {
                     return true;
                 }
                 return false;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 未指定访问点时，使用 SCL 中第一个 IED 的第一个访问点作为默认。
+     */
+    private boolean resolveDefaultAccessPoint(Session session) {
+        if (!(session instanceof InnerServer.ServerSession))
+            return true;
+        InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
+        SclDocument scl = ss.getSclDocument();
+        if (scl == null)
+            return true;
+        for (SclIED ied : scl.ieds()) {
+            if (!ied.accessPoints().isEmpty()) {
+                SclAccessPoint ap = ied.accessPoints().get(0);
+                ss.setSclAccessPoint(ap);
+                ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
+                log.info("Resolved default access point: IED={}, AP={}", ied.name(), ap.name());
+                return true;
             }
         }
         return false;

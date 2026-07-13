@@ -76,6 +76,6 @@ public class GetFileClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileError err = decodeFrame(frame, new CmsGetFileError());
-        throw new IOException("GetFile rejected: error=" + err.serviceError.value());
+        throw new IOException("GetFile rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 }

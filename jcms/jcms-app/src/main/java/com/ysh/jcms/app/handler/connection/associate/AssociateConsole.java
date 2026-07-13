@@ -47,19 +47,14 @@ public class AssociateConsole implements CommandHandler {
         }
 
         String sapRef = args.get("ap");
-        if (sapRef == null || sapRef.isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("--ap is required");
-            } else {
-                ConsolePrinter.error("--ap is required");
-            }
-            return;
-        }
+        if (sapRef != null && sapRef.isEmpty())
+            sapRef = null;
 
         boolean secure = "true".equals(args.get("secure"));
 
         console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(secure));
 
-        CmsConsole.outputMessage("Associated: " + sapRef + (secure ? " (secure)" : ""), args);
+        String msg = sapRef != null ? "Associated: " + sapRef + (secure ? " (secure)" : "") : "Associated: (default access point)";
+        CmsConsole.outputMessage(msg, args);
     }
 }

@@ -24,7 +24,8 @@ public class LdDirClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogicalDeviceDirectoryError err = decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
-        throw new IOException("GetLogicalDeviceDirectory rejected: error=" + err.serviceError.value());
+        throw new IOException(
+                "GetLogicalDeviceDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

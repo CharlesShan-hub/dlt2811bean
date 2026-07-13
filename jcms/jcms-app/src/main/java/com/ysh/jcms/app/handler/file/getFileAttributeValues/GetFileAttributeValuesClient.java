@@ -39,7 +39,8 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileAttributeValuesError err = decodeErr(frame, new CmsGetFileAttributeValuesError());
-        throw new IOException("GetFileAttributeValues rejected: error=" + err.serviceError.value());
+        throw new IOException(
+                "GetFileAttributeValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

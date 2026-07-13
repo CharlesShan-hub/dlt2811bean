@@ -38,7 +38,7 @@ public class AllDataDefClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllDataDefinitionError err = decodeErr(frame, new CmsGetAllDataDefinitionError());
-        throw new IOException("GetAllDataDefinition rejected: error=" + err.serviceError.value());
+        throw new IOException("GetAllDataDefinition rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

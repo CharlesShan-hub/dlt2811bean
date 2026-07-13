@@ -27,7 +27,7 @@ public class ReleaseClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsReleaseError err = decodeErr(frame, new CmsReleaseError());
-        throw new IOException("Release rejected: error=" + err.serviceError.value());
+        throw new IOException("Release rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ReleaseClient extends BaseClientHandler {
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
-            throw new IOException("Release rejected: error=" + serviceError);
+            throw new IOException("Release rejected: " + new CmsServiceError(serviceError).constantName() + " (" + serviceError + ")");
         }
 
         node.getClient().getSession().clear();

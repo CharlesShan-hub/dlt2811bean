@@ -50,7 +50,7 @@ public class GetDataDefinitionClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataDefinitionError err = decodeErr(frame, new CmsGetDataDefinitionError());
-        throw new IOException("GetDataDefinition rejected: error=" + err.serviceError.value());
+        throw new IOException("GetDataDefinition rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

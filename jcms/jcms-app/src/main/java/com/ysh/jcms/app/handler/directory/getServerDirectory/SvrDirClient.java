@@ -21,7 +21,7 @@ public class SvrDirClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetServerDirectoryError err = decodeErr(frame, new CmsGetServerDirectoryError());
-        throw new IOException("GetServerDirectory rejected: error=" + err.serviceError.value());
+        throw new IOException("GetServerDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

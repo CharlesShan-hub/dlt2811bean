@@ -59,7 +59,7 @@ public class GetFileDirectoryClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileDirectoryError err = decodeErr(frame, new CmsGetFileDirectoryError());
-        throw new IOException("GetFileDirectory rejected: error=" + err.serviceError.value());
+        throw new IOException("GetFileDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

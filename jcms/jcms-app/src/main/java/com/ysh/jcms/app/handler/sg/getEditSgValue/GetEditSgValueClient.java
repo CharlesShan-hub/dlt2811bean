@@ -41,7 +41,7 @@ public class GetEditSgValueClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetEditSgValueError err = decodeErr(frame, new CmsGetEditSgValueError());
-        throw new IOException("GetEditSGValue rejected: error=" + err.serviceError.value());
+        throw new IOException("GetEditSGValue rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

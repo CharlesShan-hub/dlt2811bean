@@ -108,8 +108,8 @@ public class Connection {
     public void send(Frame frame) throws IOException {
         // 检查：如果需要对端不支持的分帧，抛出异常
         if (!fragmentationSupported && frame.asduBytes().length > peerAsduSize) {
-            throw new IOException("Fragmentation not supported: ASDU size (" + frame.asduBytes().length
-                    + ") exceeds peer asduSize (" + peerAsduSize + ")");
+            throw new IOException("Fragmentation not supported: ASDU size (" + frame.asduBytes().length + ") exceeds peer asduSize ("
+                    + peerAsduSize + ")");
         }
         java.util.List<Frame> segments = FrameCodec.split(frame, peerAsduSize);
         synchronized (dos) {

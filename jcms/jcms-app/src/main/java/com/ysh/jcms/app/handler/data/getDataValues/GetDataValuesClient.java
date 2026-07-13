@@ -50,7 +50,7 @@ public class GetDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataValuesError err = decodeErr(frame, new CmsGetDataValuesError());
-        throw new IOException("GetDataValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetDataValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

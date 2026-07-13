@@ -21,7 +21,7 @@ public class SelectActiveSgClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSelectActiveSgError err = decodeErr(frame, new CmsSelectActiveSgError());
-        throw new IOException("SelectActiveSG rejected: error=" + err.serviceError.value());
+        throw new IOException("SelectActiveSG rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

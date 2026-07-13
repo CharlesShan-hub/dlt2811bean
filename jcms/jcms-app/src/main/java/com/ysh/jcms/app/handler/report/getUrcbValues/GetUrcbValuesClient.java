@@ -39,7 +39,7 @@ public class GetUrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetUrcbValuesError err = decodeErr(frame, new CmsGetUrcbValuesError());
-        throw new IOException("GetURCBValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetURCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

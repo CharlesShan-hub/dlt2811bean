@@ -54,7 +54,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetGooseElementNumberError err = decodeErr(frame, new CmsGetGooseElementNumberError());
-        throw new IOException("GetGOOSEElementNumber rejected: error=" + err.serviceError.value());
+        throw new IOException("GetGOOSEElementNumber rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

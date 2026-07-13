@@ -20,7 +20,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsConfirmEditSgValuesError err = decodeErr(frame, new CmsConfirmEditSgValuesError());
-        throw new IOException("ConfirmEditSGValues rejected: error=" + err.serviceError.value());
+        throw new IOException("ConfirmEditSGValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

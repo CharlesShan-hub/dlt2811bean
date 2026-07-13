@@ -21,7 +21,7 @@ public class SelectEditSgClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSelectEditSgError err = decodeErr(frame, new CmsSelectEditSgError());
-        throw new IOException("SelectEditSG rejected: error=" + err.serviceError.value());
+        throw new IOException("SelectEditSG rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

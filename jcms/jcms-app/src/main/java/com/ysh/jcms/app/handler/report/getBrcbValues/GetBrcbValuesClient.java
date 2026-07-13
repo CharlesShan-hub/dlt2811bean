@@ -39,7 +39,7 @@ public class GetBrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetBrcbValuesError err = decodeErr(frame, new CmsGetBrcbValuesError());
-        throw new IOException("GetBRCBValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetBRCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

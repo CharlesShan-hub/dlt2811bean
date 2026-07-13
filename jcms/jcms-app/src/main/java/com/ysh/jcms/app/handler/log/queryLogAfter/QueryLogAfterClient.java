@@ -22,7 +22,7 @@ public class QueryLogAfterClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsQueryLogAfterError err = decodeErr(frame, new CmsQueryLogAfterError());
-        throw new IOException("QueryLogAfter rejected: error=" + err.serviceError.value());
+        throw new IOException("QueryLogAfter rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

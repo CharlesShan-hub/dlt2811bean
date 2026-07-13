@@ -37,7 +37,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogStatusValuesError err = decodeErr(frame, new CmsGetLogStatusValuesError());
-        throw new IOException("GetLogStatusValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetLogStatusValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

@@ -50,7 +50,7 @@ public class GetSgcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetSgcbValuesError err = decodeErr(frame, new CmsGetSgcbValuesError());
-        throw new IOException("GetSGCBValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetSGCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

@@ -37,7 +37,7 @@ public class AllDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllDataValuesError err = decodeErr(frame, new CmsGetAllDataValuesError());
-        throw new IOException("GetAllDataValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetAllDataValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

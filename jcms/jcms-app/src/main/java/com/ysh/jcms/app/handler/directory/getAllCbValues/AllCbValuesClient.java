@@ -51,7 +51,7 @@ public class AllCbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllCbValuesError err = decodeErr(frame, new CmsGetAllCbValuesError());
-        throw new IOException("GetAllCBValues rejected: error=" + err.serviceError.value());
+        throw new IOException("GetAllCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override

@@ -33,7 +33,7 @@ public class QueryLogByTimeClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsQueryLogByTimeError err = decodeErr(frame, new CmsQueryLogByTimeError());
-        throw new IOException("QueryLogByTime rejected: error=" + err.serviceError.value());
+        throw new IOException("QueryLogByTime rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     private static String str(byte[] data) {

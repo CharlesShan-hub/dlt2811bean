@@ -52,7 +52,7 @@ public class GetGoReferenceClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetGoReferenceError err = decodeErr(frame, new CmsGetGoReferenceError());
-        throw new IOException("GetGoReference rejected: error=" + err.serviceError.value());
+        throw new IOException("GetGoReference rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
     }
 
     @Override
