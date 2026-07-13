@@ -81,6 +81,14 @@
   * 8.8.4 [query-log-by-time](docs/usage/8-8-4.md)
   * 8.8.5 [query-log-after](docs/usage/8-8-5.md)
   * 8.8.6 [get-log-status](docs/usage/8-8-6.md)
+* 8.11 控制（Control）
+  * 8.11.1 [select](docs/usage/8-11-1.md)
+  * 8.11.2 [select-with-value](docs/usage/8-11-2.md)
+  * 8.11.3 [operate](docs/usage/8-11-3.md)
+  * 8.11.4 [cancel](docs/usage/8-11-4.md)
+  * 8.11.5 [command-termination](docs/usage/8-11-5.md)（服务器推送）
+  * 8.11.6 [time-act-ope](docs/usage/8-11-6.md)
+  * 8.11.7 [time-act-ope-term](docs/usage/8-11-7.md)（服务器推送）
 * 8.12 文件（File）
   * 8.12.1 [get-file](docs/usage/8-12-1.md)
   * 8.12.2 [set-file](docs/usage/8-12-2.md)
@@ -218,80 +226,6 @@ cms> get-gocb-vals --refs "CTRL/LLN0.gocb0"
   Fetching GoCB values for 1 reference(s)
     [CTRL/LLN0.gocb0] goEna=true goID=MyGoCB datSet=dsGOOSE confRev=1 ndsCom=false
 ```
-
-### 8.11.1 Select
-
-这组服务也是需要操作实际设备的，本实现采用缓存模拟
-
-```bash
-select --ref LD0/CTRL1.SPC1 --value true --origin 1 --ctlNum 5 --check syncheck --test true
-```
-
-```bash
-
-```
-
-
-### 8.11.
-
-备注：参数含义
-
-**`--ref LD0/CTRL1.SPC1`** — 你要操作哪个设备
-- `LD0` = 逻辑设备（比如"1号主变"）
-- `CTRL1` = 控制逻辑节点（比如"断路器控制"）
-- `SPC1` = 控制对象（Single Point Control，比如"合闸/分闸"）
-
-**`--value true/false`** — 你想让它变成啥
-- 合闸 = `true`，分闸 = `false`
-- 标准里叫 `ctlVal`（control value）
-
-**`--origin 1`** — 操作源是谁
-- 0 = 本地操作（人在设备面板上按）
-- 1 = 远程操作（调度员在后台点的）
-- 标准里叫 `orCat`（originator category）
-
-**`--ctlNum 5`** — 操作的序号
-- 每次操作递增，服务器可以检测是否有乱序或重放攻击
-- 不传的话服务器就用默认值 0
-
-**`--check syncheck`** — 要不要做校验
-- `syncheck` = 同步校验（需要两个操作员同时确认）
-- `interlock-check` = 联锁校验（检查开关之间的互锁条件）
-- 不传 = 不做额外校验
-
-**`--test true/false`** — 是测试还是真操作
-- `true` = 模拟操作，设备不实际动作
-- `false` = 真实操作（默认）
-
-简单来说就是：**ref** 选谁 → **value** 调成啥 → **origin** 谁点的 → **ctlNum** 第几次 → **check** 要不要复核 → **test** 是真的还是演练。
-
-### 8.15 协商
-
-```bash
-# 使用默认参数（从配置文件读取）
-negotiate
-# 手动指定参数（--apduSize --asduSize --protocolVersion）
-negotiate --apduSize 16384 --asduSize 65531 --protocolVersion 1
-```
-
-```bash
-cms> negotiate
-  OK  Negotiate completed.
-cms> negotiate --apduSize 16384 --asduSize 65531 --protocolVersion 1
-  OK  Negotiate completed.
-```
-
-### 8.16 测试ip
-
-```bash
-# 也可以用来实现心跳机制
-test
-```
-
-```bash
-cms> test
-  OK  Ping/pong OK
----
 
 ## ccms
 
