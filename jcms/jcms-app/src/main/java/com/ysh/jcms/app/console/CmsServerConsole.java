@@ -57,6 +57,11 @@ import com.ysh.jcms.app.handler.directory.getAllDataValues.AllDataValuesServer;
 import com.ysh.jcms.app.handler.console.server.ListHandler;
 import com.ysh.jcms.app.handler.console.TracePduHandler;
 import com.ysh.jcms.app.handler.console.ClearHandler;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryServer;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryServer;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition.GetRpcInterfaceDefinitionServer;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition.GetRpcMethodDefinitionServer;
+import com.ysh.jcms.app.handler.rpc.rpcCall.RpcCallServer;
 
 /**
  * Server-side CMS console.
@@ -127,6 +132,11 @@ public class CmsServerConsole extends CmsConsole {
         registerServer(new GetFileServer());
         registerServer(new SetFileServer());
         registerServer(new DeleteFileServer());
+        registerServer(new GetRpcInterfaceDirectoryServer());
+        registerServer(new GetRpcMethodDirectoryServer());
+        registerServer(new GetRpcInterfaceDefinitionServer());
+        registerServer(new GetRpcMethodDefinitionServer());
+        registerServer(new RpcCallServer());
         register(new ClearHandler());
         register(new ListHandler());
         register(new TracePduHandler());

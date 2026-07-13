@@ -3,6 +3,16 @@ package com.ysh.jcms.app.console;
 import com.ysh.jcms.app.handler.console.client.*;
 import com.ysh.jcms.app.handler.console.TracePduHandler;
 import com.ysh.jcms.app.handler.console.ClearHandler;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryClient;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory.GetRpcInterfaceDirectoryConsole;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryClient;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory.GetRpcMethodDirectoryConsole;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition.GetRpcInterfaceDefinitionClient;
+import com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition.GetRpcInterfaceDefinitionConsole;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition.GetRpcMethodDefinitionClient;
+import com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition.GetRpcMethodDefinitionConsole;
+import com.ysh.jcms.app.handler.rpc.rpcCall.RpcCallClient;
+import com.ysh.jcms.app.handler.rpc.rpcCall.RpcCallConsole;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesClient;
 import com.ysh.jcms.app.handler.data.getDataValues.GetDataValuesConsole;
 import com.ysh.jcms.app.handler.data.getDataDirectory.GetDataDirectoryClient;
@@ -197,6 +207,11 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new GetFileClient());
         registerClient(new SetFileClient());
         registerClient(new DeleteFileClient());
+        registerClient(new GetRpcInterfaceDirectoryClient());
+        registerClient(new GetRpcMethodDirectoryClient());
+        registerClient(new GetRpcInterfaceDefinitionClient());
+        registerClient(new GetRpcMethodDefinitionClient());
+        registerClient(new RpcCallClient());
 
         // Set up push handler for incoming REPORT frames from server
         getClient().setReportHandler(frame -> {
@@ -264,6 +279,11 @@ public class CmsClientConsole extends CmsConsole {
         register(new AbortConsole());
         register(new NegotiateConsole());
         register(new TestConsole());
+        register(new GetRpcInterfaceDirectoryConsole());
+        register(new GetRpcMethodDirectoryConsole());
+        register(new GetRpcInterfaceDefinitionConsole());
+        register(new GetRpcMethodDefinitionConsole());
+        register(new RpcCallConsole());
     }
 
     public static void main(String[] args) {

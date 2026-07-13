@@ -92,6 +92,12 @@
   * 8.10.1 [send-msv](docs/usage/8-10-1.md)（服务器推送）
   * 8.10.2 [get-msvcb-vals](docs/usage/8-10-2.md)
   * 8.10.3 [set-msvcb-vals](docs/usage/8-10-3.md)
+* 8.13 RPC
+  * 8.13.2 [rpc-iface-dir](docs/usage/8-13-2.md)
+  * 8.13.3 [rpc-method-dir](docs/usage/8-13-3.md)
+  * 8.13.4 [rpc-iface-def](docs/usage/8-13-4.md)
+  * 8.13.5 [rpc-method-def](docs/usage/8-13-5.md)
+  * 8.13.6 [rpc-call](docs/usage/8-13-6.md)
 * 8.11 控制（Control）
   * 8.11.1 [select](docs/usage/8-11-1.md)
   * 8.11.2 [select-with-value](docs/usage/8-11-2.md)
@@ -106,6 +112,12 @@
   * 8.12.3 [delete-file](docs/usage/8-12-3.md)
   * 8.12.4 [get-file-attrs](docs/usage/8-12-4.md)
   * 8.12.5 [get-file-dir](docs/usage/8-12-5.md)
+* 8.13 RPC
+  * 8.13.2 [rpc-iface-dir](docs/usage/8-13-2.md)
+  * 8.13.3 [rpc-method-dir](docs/usage/8-13-3.md)
+  * 8.13.4 [rpc-iface-def](docs/usage/8-13-4.md)
+  * 8.13.5 [rpc-method-def](docs/usage/8-13-5.md)
+  * 8.13.6 [rpc-call](docs/usage/8-13-6.md)
 * 8.14 测试：[test](docs/usage/8-14.md)
 * 8.15 协商：[negotiate](docs/usage/8-15.md)
 
@@ -249,24 +261,3 @@ chmod +x ccms.sh
 - **SEQUENCE OF**（`cms_sequence.h`）
   - 提供了一个函数：此类数组需要编码元素个数。
 - **工具流**（`cms_stream.h`）
-
-### data
-
-- 这个模块主要实现了dlt2811协议第七章的数据结构，
-  - 7.1基础数值类型（basic）：包括了布尔类型、整数、浮点数、字符串等类型。
-  - 7.2扩展数值类型（extended）：包括了两种时间。
-  - 7.3公共基础类型（common）：包括了比如双点位置(Dbpos)、品质(Quality)等专门对应dlt2811场景语义信息的结构。
-  - 7.4功能约束（fc）：只包含功能约束一个内容。
-  - 7.5控制块相关（control）：控制块是某一种报文的整体的一组数据结构，这种数据结构本身有一些配套的信息，比如控制操作的发出者(Originator)、控制操作的检测(Check)、控制操作的附加原因(AddCause）。
-  - 7.6控制块（block）：各种控制块本身、触发原因以及对应控制块的选项域。
-  - 7.7数据union以及数据类型（data）：Data是一个union，用于表达某一种类型的数据。DataDefinition用于表达类型本身。
-
-
-- 主要包含两种api
-  - 提供给内部使用的api。它接收的参数是流的结构，这样可以避免频繁创建新的流。因为可能有一些组合类型需要多个基础类型组合起来依次编码解码。
-  - 提供给外部使用的api。它编码导出的是byte数组，主要提供给外部作为一个整体使用。
-
-### svc
-
-ccms主要进行的是基础数据结构的构建。所以svc（service）模块虽然负责对第八章的数据结构进行编码解码，但是主要负责的是对数据结构的编码解码，而不是对协议报文段本身的实现。
-
