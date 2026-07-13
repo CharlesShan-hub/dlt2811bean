@@ -68,6 +68,10 @@ import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceClient;
 import com.ysh.jcms.app.handler.goose.getGoReference.GetGoReferenceConsole;
 import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberClient;
 import com.ysh.jcms.app.handler.goose.getGooseElementNumber.GetGooseElementNumberConsole;
+import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesClient;
+import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesConsole;
+import com.ysh.jcms.app.handler.msv.setMsvcbValues.SetMsvcbValuesClient;
+import com.ysh.jcms.app.handler.msv.setMsvcbValues.SetMsvcbValuesConsole;
 import com.ysh.jcms.app.handler.control.cancel.CancelClient;
 import com.ysh.jcms.app.handler.control.cancel.CancelConsole;
 import com.ysh.jcms.app.handler.control.operate.OperateClient;
@@ -182,6 +186,8 @@ public class CmsClientConsole extends CmsConsole {
         registerClient(new SetGoCbValuesClient());
         registerClient(new GetGoReferenceClient());
         registerClient(new GetGooseElementNumberClient());
+        registerClient(new GetMsvcbValuesClient());
+        registerClient(new SetMsvcbValuesClient());
         registerClient(new SelectClient());
         registerClient(new OperateClient());
         registerClient(new CancelClient());
@@ -240,6 +246,8 @@ public class CmsClientConsole extends CmsConsole {
         register(new SetGoCbValuesConsole());
         register(new GetGoReferenceConsole());
         register(new GetGooseElementNumberConsole());
+        register(new GetMsvcbValuesConsole());
+        register(new SetMsvcbValuesConsole());
         register(new SelectConsole());
         register(new OperateConsole());
         register(new CancelConsole());
