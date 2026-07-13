@@ -22,7 +22,7 @@
   * [data](docs/impl/jcms-data.md): dlt2811 §7的java封装。
   * [svc](docs/impl/jcms-svc.md): dlt2811 §8的java封装。
 * **jcms-utils**
-  * [config](docs/impl/jcms-utils.md): 配置模块。
+  * [config](docs/impl/jcms-config.md): 配置模块。
   * [scl](docs/impl/jcms-scl.md):  scd文件解析模块。
   * [security](docs/impl/jcms-security.md): 安全协议。
   * [transport](docs/impl/jcms-transport.md): 传输层基础构建。
