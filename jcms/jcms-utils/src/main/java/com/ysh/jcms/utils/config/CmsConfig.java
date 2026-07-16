@@ -401,6 +401,7 @@ public class CmsConfig {
 
     public static class Security {
         private boolean enabled = false;
+        private long timeTolerance = 300; // 时间容差（秒），默认 5min
         private Keystore keystore = new Keystore();
         private Truststore truststore = new Truststore();
 
@@ -409,6 +410,12 @@ public class CmsConfig {
         }
         public void setEnabled(boolean enabled) {
             this.enabled = enabled;
+        }
+        public long getTimeTolerance() {
+            return timeTolerance;
+        }
+        public void setTimeTolerance(long timeTolerance) {
+            this.timeTolerance = timeTolerance;
         }
         public Keystore getKeystore() {
             return keystore;

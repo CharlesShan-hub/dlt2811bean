@@ -4,16 +4,18 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.svc.connection.CmsAssociateRequest;
 import com.ysh.jcms.svc.connection.CmsAssociateResponse;
 import com.ysh.jcms.svc.connection.CmsAssociateError;
 import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.security.GmAuthenticator;
 import com.ysh.jcms.utils.security.GmSignature;
-import com.ysh.jcms.utils.security.GmTrustManager;
+import com.ysh.jcms.utils.security.SecurityContext;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
@@ -22,14 +24,15 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.KeyPair;
-import java.security.cert.X509Certificate;
+import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
 import java.util.Optional;
 
 public class AssociateServer extends BaseServerHandler {
 
     private static final Logger log = LoggerFactory.getLogger(AssociateServer.class);
     private GmAuthenticator authenticator;
+    private PrivateKey serverPrivateKey;
     private byte[] serverCertificateBytes;
 
     public AssociateServer() {
@@ -40,11 +43,12 @@ public class AssociateServer extends BaseServerHandler {
         if (authenticator != null)
             return;
         try {
-            KeyPair kp = GmSignature.generateKeyPair();
-            X509Certificate cert = GmSignature.generateSelfSignedCertificate(kp);
-            this.authenticator = new GmAuthenticator(new GmTrustManager().trustAll());
-            this.serverCertificateBytes = cert.getEncoded();
-            log.info("Server authentication initialized (self-signed, trust-all)");
+            SecurityContext ctx = SecurityContext.fromConfig(CmsConfigLoader.load());
+            this.authenticator = ctx.authenticator();
+            this.serverCertificateBytes = ctx.certificate().getEncoded();
+            this.serverPrivateKey = ctx.credentialManager().getPrivateKey();
+            String mode = CmsConfigLoader.load().getSecurity().isEnabled() ? "CA" : "self-signed";
+            log.info("Server authentication initialized (mode={})", mode);
         } catch (Exception e) {
             log.error("Failed to initialize server authentication", e);
         }
@@ -79,7 +83,19 @@ public class AssociateServer extends BaseServerHandler {
 
         byte[] assocId = AssociationIdGenerator.generate();
         CmsAssociateResponse resp = new CmsAssociateResponse().reqId(reqId).assocId(assocId).serviceError(CmsServiceError.NO_ERROR);
-        if (serverCertificateBytes != null) {
+
+        // 返回服务端证书 + 签名（标准 B.3.2 要求双向认证）
+        if (serverCertificateBytes != null && serverPrivateKey != null && sapRef != null) {
+            try {
+                byte[] signedData = buildServerSignedData(sapRef);
+                byte[] signature = GmSignature.sign(serverPrivateKey, signedData);
+                resp.authParam(
+                        new CmsAuthenticationParameter().cert(serverCertificateBytes).signedTime(new CmsUtcTime().now()).sigVal(signature));
+                resp.authParamPresent(true);
+            } catch (Exception e) {
+                log.warn("Failed to sign server auth param", e);
+            }
+        } else if (serverCertificateBytes != null) {
             resp.authParam(new CmsAuthenticationParameter().cert(serverCertificateBytes));
             resp.authParamPresent(true);
         }
@@ -118,9 +134,6 @@ public class AssociateServer extends BaseServerHandler {
         return false;
     }
 
-    /**
-     * 未指定访问点时，使用 SCL 中第一个 IED 的第一个访问点作为默认。
-     */
     private boolean resolveDefaultAccessPoint(Session session) {
         if (!(session instanceof InnerServer.ServerSession))
             return true;
@@ -154,15 +167,25 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     private byte[] prepareSignedData(String sapRef, CmsAssociateRequest req) {
-        byte[] sapBytes = sapRef.getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
         if (req.authParamPresent.value() && req.authParam.signedTime != null) {
-            byte[] timeBytes = String.valueOf(req.authParam.signedTime.secondsSinceEpoch.value())
-                    .getBytes(java.nio.charset.StandardCharsets.UTF_8);
+            byte[] timeBytes = String.valueOf(req.authParam.signedTime.secondsSinceEpoch.value()).getBytes(StandardCharsets.UTF_8);
             byte[] result = new byte[sapBytes.length + timeBytes.length];
             System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
             System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);
             return result;
         }
         return sapBytes;
+    }
+
+    private byte[] buildServerSignedData(String sapRef) {
+        // 服务端签名内容：sapRef + 当前时间
+        long now = System.currentTimeMillis() / 1000;
+        byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
+        byte[] timeBytes = String.valueOf(now).getBytes(StandardCharsets.UTF_8);
+        byte[] result = new byte[sapBytes.length + timeBytes.length];
+        System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
+        System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);
+        return result;
     }
 }

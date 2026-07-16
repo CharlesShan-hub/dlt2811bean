@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * In-memory RPC interface and method registry.
  *
  * <p>
- * Stores definitions of available RPC interfaces and their methods.
- * Server implementations register their methods here at startup.
+ * Stores definitions of available RPC interfaces and their methods. Server
+ * implementations register their methods here at startup.
  */
 public class RpcRegistry {
 
@@ -49,7 +49,8 @@ public class RpcRegistry {
     /** Get a method definition by full reference (interface.method). */
     public static MethodDef getMethodByRef(String fullRef) {
         int dot = fullRef.indexOf('.');
-        if (dot < 0) return null;
+        if (dot < 0)
+            return null;
         String iface = fullRef.substring(0, dot);
         String method = fullRef.substring(dot + 1);
         return getMethod(iface, method);
@@ -58,7 +59,8 @@ public class RpcRegistry {
     /** Build RpcMethodEntry for a given method in an interface. */
     public static CmsRpcMethodEntry buildMethodEntry(String iface, String method) {
         MethodDef def = getMethod(iface, method);
-        if (def == null) return null;
+        if (def == null)
+            return null;
         CmsRpcMethodEntry entry = new CmsRpcMethodEntry();
         entry.name(method);
         entry.version(def.version);
@@ -88,8 +90,7 @@ public class RpcRegistry {
             this.name = name;
         }
 
-        public void addMethod(String name, int version, int timeout,
-                              CmsDataDefinition requestDef, CmsDataDefinition responseDef) {
+        public void addMethod(String name, int version, int timeout, CmsDataDefinition requestDef, CmsDataDefinition responseDef) {
             methods.put(name, new MethodDef(name, version, timeout, requestDef, responseDef));
         }
     }
@@ -101,8 +102,7 @@ public class RpcRegistry {
         public final CmsDataDefinition requestDef;
         public final CmsDataDefinition responseDef;
 
-        public MethodDef(String name, int version, int timeout,
-                         CmsDataDefinition requestDef, CmsDataDefinition responseDef) {
+        public MethodDef(String name, int version, int timeout, CmsDataDefinition requestDef, CmsDataDefinition responseDef) {
             this.name = name;
             this.version = version;
             this.timeout = timeout;
