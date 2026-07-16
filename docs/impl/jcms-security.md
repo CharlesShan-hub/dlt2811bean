@@ -249,15 +249,21 @@ GmSslContext ctx = GmSslContext.forServer()
 SecurityContext ctx = SecurityContext.generateSelfSigned();
 node.setCredentialManager(ctx.credentialManager());
 
-// 生产环境：从配置加载
-// (由 application.yaml 的 security.* 配置驱动，
-//  通过 CmsConfigInjector 注入到相应组件)
+// 生产环境：从配置文件加载 CA + 证书 + 私钥
+SecurityContext ctx = SecurityContext.fromConfig(CmsConfigLoader.load());
+// security.enabled=true 时：
+//   - 从 security.truststore.path 加载 CA 根证书
+//   - 从 security.keystore.path 加载本地证书和私钥
+//   - 启用真实 CA 校验（不信任自签名证书）
+//   - 验证签名时间差（防重放，默认 5 分钟）
+// security.enabled=false 时：
+//   - 回退到 generateSelfSigned() + trustAll
 ```
 
 提供三个组件：
 - `credentialManager()` — 客户端签名用的私钥和证书
-- `authenticator()` — 服务端校验客户端认证参数
-- `certificate()` — 服务端证书（响应中带回给客户端）
+- `authenticator()` — 服务端校验客户端认证参数（CA 验签 + 时间检查）
+- `certificate()` — 服务端证书（响应中带回给客户端，含签名和时间戳）
 
 ---
 
@@ -281,12 +287,13 @@ node.setCredentialManager(ctx.credentialManager());
 ```yaml
 security:
   enabled: false                    # 总开关
+  timeTolerance: 300                # 签名时间容差（秒），默认 5min
   keystore:
-    path: "certs/server.pfx"        # 服务端密钥库
+    path: "certs/server.pfx"        # 服务端密钥库（PKCS12）
     password: "changeit"
   truststore:
-    path: "certs/ca.cer"            # 信任证书
+    path: "certs/ca.cer"            # CA 根证书（DER/PEM）
     password: "changeit"
 ```
 
-`CmsConfigInjector` 将以上配置注入到 `GmSslContext` 的 builder 中，实现安全配置的集中管理。
+`SecurityContext.fromConfig()` 读取 `application.yaml` 的 `security.*` 配置，根据 `enabled` 标志决定使用 CA 验证还是自签名 trustAll：

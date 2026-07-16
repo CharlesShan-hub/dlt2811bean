@@ -33,7 +33,6 @@ public class ReportClient extends BaseClientHandler {
 
             String output = sb.toString();
             log.info("Report received: {}", output);
-            System.out.println(output);
 
         } catch (Exception e) {
             log.error("Failed to decode/handle report", e);
