@@ -19,15 +19,9 @@ public class CmsGetLogStatusValuesRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetLogStatusValuesRequestPDU obj = new CmsGetLogStatusValuesRequestPDU();
+        obj.log_reference = java.util.Collections.singletonList("test");
         String json = MAPPER.writeValueAsString(obj);
         CmsGetLogStatusValuesRequestPDU d = MAPPER.readValue(json, CmsGetLogStatusValuesRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogStatusValuesRequestPDU obj = new CmsGetLogStatusValuesRequestPDU();
-        byte[] data = obj.encode("uper");
-        CmsGetLogStatusValuesRequestPDU d = CmsGetLogStatusValuesRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

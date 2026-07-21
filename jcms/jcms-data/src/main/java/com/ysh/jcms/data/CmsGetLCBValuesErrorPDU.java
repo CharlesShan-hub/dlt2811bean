@@ -27,7 +27,7 @@ public class CmsGetLCBValuesErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetLCBValuesErrorPDU", enc, data);
             CmsGetLCBValuesErrorPDU r = new CmsGetLCBValuesErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -24,14 +24,14 @@ public class CmsGetDataSetDirectoryErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsGetDataSetDirectoryErrorPDU obj = new CmsGetDataSetDirectoryErrorPDU(42);
+        CmsGetDataSetDirectoryErrorPDU obj = new CmsGetDataSetDirectoryErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsGetDataSetDirectoryErrorPDU d = MAPPER.readValue(json, CmsGetDataSetDirectoryErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsGetDataSetDirectoryErrorPDU obj = new CmsGetDataSetDirectoryErrorPDU(42);
+        CmsGetDataSetDirectoryErrorPDU obj = new CmsGetDataSetDirectoryErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsGetDataSetDirectoryErrorPDU d = CmsGetDataSetDirectoryErrorPDU.decode("uper", data);
         assertEquals(obj, d);

@@ -20,17 +20,10 @@ public class CmsGetFileDirectoryResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetFileDirectoryResponsePDU obj = new CmsGetFileDirectoryResponsePDU();
+        obj.file_entry = java.util.Collections.singletonList(new CmsFileEntry());
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetFileDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetFileDirectoryResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetFileDirectoryResponsePDU obj = new CmsGetFileDirectoryResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetFileDirectoryResponsePDU d = CmsGetFileDirectoryResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

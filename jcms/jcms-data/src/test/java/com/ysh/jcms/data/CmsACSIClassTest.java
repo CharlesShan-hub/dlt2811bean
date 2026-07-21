@@ -24,14 +24,14 @@ public class CmsACSIClassTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsACSIClass obj = new CmsACSIClass(42);
+        CmsACSIClass obj = new CmsACSIClass(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsACSIClass d = MAPPER.readValue(json, CmsACSIClass.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsACSIClass obj = new CmsACSIClass(42);
+        CmsACSIClass obj = new CmsACSIClass(1);
         byte[] data = obj.encode("uper");
         CmsACSIClass d = CmsACSIClass.decode("uper", data);
         assertEquals(obj, d);

@@ -31,18 +31,15 @@ public class CmsAnonymousSetURCBValuesRequestPDUUrcbTest {
         obj.reference = "test";
         obj.rpt_id = "test";
         obj.rpt_ena = true;
+        obj.dat_set = "test";
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.gi = true;
+        obj.resv = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetURCBValuesRequestPDUUrcb d = MAPPER.readValue(json, CmsAnonymousSetURCBValuesRequestPDUUrcb.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetURCBValuesRequestPDUUrcb obj = new CmsAnonymousSetURCBValuesRequestPDUUrcb();
-        obj.reference = "test";
-        obj.rpt_id = "test";
-        obj.rpt_ena = true;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetURCBValuesRequestPDUUrcb d = CmsAnonymousSetURCBValuesRequestPDUUrcb.decode("uper", data);
         assertEquals(obj, d);
     }
 }

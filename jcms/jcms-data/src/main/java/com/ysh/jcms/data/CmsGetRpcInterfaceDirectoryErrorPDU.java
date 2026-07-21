@@ -27,7 +27,7 @@ public class CmsGetRpcInterfaceDirectoryErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetRpcInterfaceDirectoryErrorPDU", enc, data);
             CmsGetRpcInterfaceDirectoryErrorPDU r = new CmsGetRpcInterfaceDirectoryErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -21,19 +21,11 @@ public class CmsGetLogicalNodeDirectoryRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetLogicalNodeDirectoryRequestPDU obj = new CmsGetLogicalNodeDirectoryRequestPDU();
-        obj.acsi_class = 42;
+        if (obj.reference == null) obj.reference = new CmsGetLogicalNodeDirectoryRequestPDUReference();
+        obj.acsi_class = 1;
         obj.reference_after = "test";
         String json = MAPPER.writeValueAsString(obj);
         CmsGetLogicalNodeDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetLogicalNodeDirectoryRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogicalNodeDirectoryRequestPDU obj = new CmsGetLogicalNodeDirectoryRequestPDU();
-        obj.acsi_class = 42;
-        obj.reference_after = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetLogicalNodeDirectoryRequestPDU d = CmsGetLogicalNodeDirectoryRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

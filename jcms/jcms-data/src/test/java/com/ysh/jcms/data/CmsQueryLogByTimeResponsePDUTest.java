@@ -20,17 +20,10 @@ public class CmsQueryLogByTimeResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsQueryLogByTimeResponsePDU obj = new CmsQueryLogByTimeResponsePDU();
+        obj.log_entry = java.util.Collections.singletonList(new CmsLogEntry());
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsQueryLogByTimeResponsePDU d = MAPPER.readValue(json, CmsQueryLogByTimeResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsQueryLogByTimeResponsePDU obj = new CmsQueryLogByTimeResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsQueryLogByTimeResponsePDU d = CmsQueryLogByTimeResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

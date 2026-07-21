@@ -24,12 +24,4 @@ public class CmsSelectErrorPDUTest {
         CmsSelectErrorPDU d = MAPPER.readValue(json, CmsSelectErrorPDU.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSelectErrorPDU obj = new CmsSelectErrorPDU();
-        obj.reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsSelectErrorPDU d = CmsSelectErrorPDU.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

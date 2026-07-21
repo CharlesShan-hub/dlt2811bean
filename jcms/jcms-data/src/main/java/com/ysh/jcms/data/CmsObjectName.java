@@ -27,7 +27,7 @@ public class CmsObjectName extends CmsBase {
         try {
             String json = CmsNative.decode("ObjectName", enc, data);
             CmsObjectName r = new CmsObjectName();
-            r.value = json.trim();
+            r.value = MAPPER.readTree(json).get("value").asText();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

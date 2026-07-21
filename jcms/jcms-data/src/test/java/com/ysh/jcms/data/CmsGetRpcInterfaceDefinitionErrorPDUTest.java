@@ -24,14 +24,14 @@ public class CmsGetRpcInterfaceDefinitionErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsGetRpcInterfaceDefinitionErrorPDU obj = new CmsGetRpcInterfaceDefinitionErrorPDU(42);
+        CmsGetRpcInterfaceDefinitionErrorPDU obj = new CmsGetRpcInterfaceDefinitionErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsGetRpcInterfaceDefinitionErrorPDU d = MAPPER.readValue(json, CmsGetRpcInterfaceDefinitionErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsGetRpcInterfaceDefinitionErrorPDU obj = new CmsGetRpcInterfaceDefinitionErrorPDU(42);
+        CmsGetRpcInterfaceDefinitionErrorPDU obj = new CmsGetRpcInterfaceDefinitionErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsGetRpcInterfaceDefinitionErrorPDU d = CmsGetRpcInterfaceDefinitionErrorPDU.decode("uper", data);
         assertEquals(obj, d);

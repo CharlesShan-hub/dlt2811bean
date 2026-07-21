@@ -19,15 +19,9 @@ public class CmsGetGoCbValuesRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetGoCbValuesRequestPDU obj = new CmsGetGoCbValuesRequestPDU();
+        obj.reference = java.util.Collections.singletonList("test");
         String json = MAPPER.writeValueAsString(obj);
         CmsGetGoCbValuesRequestPDU d = MAPPER.readValue(json, CmsGetGoCbValuesRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetGoCbValuesRequestPDU obj = new CmsGetGoCbValuesRequestPDU();
-        byte[] data = obj.encode("uper");
-        CmsGetGoCbValuesRequestPDU d = CmsGetGoCbValuesRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

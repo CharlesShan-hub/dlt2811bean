@@ -27,7 +27,7 @@ public class CmsQuality extends CmsBase {
         try {
             String json = CmsNative.decode("Quality", enc, data);
             CmsQuality r = new CmsQuality();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

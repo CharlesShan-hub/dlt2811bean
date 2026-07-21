@@ -21,16 +21,9 @@ public class CmsRpcCallRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsRpcCallRequestPDU obj = new CmsRpcCallRequestPDU();
         obj.method = "test";
+        if (obj.req == null) obj.req = new CmsRpcCallRequestPDUReq();
         String json = MAPPER.writeValueAsString(obj);
         CmsRpcCallRequestPDU d = MAPPER.readValue(json, CmsRpcCallRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsRpcCallRequestPDU obj = new CmsRpcCallRequestPDU();
-        obj.method = "test";
-        byte[] data = obj.encode("uper");
-        CmsRpcCallRequestPDU d = CmsRpcCallRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

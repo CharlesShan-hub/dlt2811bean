@@ -27,7 +27,7 @@ public class CmsGetLogStatusValuesErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetLogStatusValuesErrorPDU", enc, data);
             CmsGetLogStatusValuesErrorPDU r = new CmsGetLogStatusValuesErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

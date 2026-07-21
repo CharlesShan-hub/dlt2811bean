@@ -27,7 +27,7 @@ public class CmsQueryLogAfterErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("QueryLogAfterErrorPDU", enc, data);
             CmsQueryLogAfterErrorPDU r = new CmsQueryLogAfterErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

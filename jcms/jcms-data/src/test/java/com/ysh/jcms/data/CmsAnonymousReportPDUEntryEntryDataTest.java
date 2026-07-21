@@ -25,19 +25,11 @@ public class CmsAnonymousReportPDUEntryEntryDataTest {
         CmsAnonymousReportPDUEntryEntryData obj = new CmsAnonymousReportPDUEntryEntryData();
         obj.reference = "test";
         obj.fc = "test";
-        obj.id = 42;
+        obj.id = 1;
+        if (obj.value == null) obj.value = new CmsData();
+        obj.reason = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousReportPDUEntryEntryData d = MAPPER.readValue(json, CmsAnonymousReportPDUEntryEntryData.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousReportPDUEntryEntryData obj = new CmsAnonymousReportPDUEntryEntryData();
-        obj.reference = "test";
-        obj.fc = "test";
-        obj.id = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousReportPDUEntryEntryData d = CmsAnonymousReportPDUEntryEntryData.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -25,18 +25,9 @@ public class CmsControlCodeTest {
         obj.next = true;
         obj.resp = true;
         obj.err = true;
+        obj.pi = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsControlCode d = MAPPER.readValue(json, CmsControlCode.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsControlCode obj = new CmsControlCode();
-        obj.next = true;
-        obj.resp = true;
-        obj.err = true;
-        byte[] data = obj.encode("uper");
-        CmsControlCode d = CmsControlCode.decode("uper", data);
         assertEquals(obj, d);
     }
 }

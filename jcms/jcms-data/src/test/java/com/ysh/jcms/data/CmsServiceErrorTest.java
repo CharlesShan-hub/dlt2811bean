@@ -24,14 +24,14 @@ public class CmsServiceErrorTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsServiceError obj = new CmsServiceError(42);
+        CmsServiceError obj = new CmsServiceError(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsServiceError d = MAPPER.readValue(json, CmsServiceError.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsServiceError obj = new CmsServiceError(42);
+        CmsServiceError obj = new CmsServiceError(1);
         byte[] data = obj.encode("uper");
         CmsServiceError d = CmsServiceError.decode("uper", data);
         assertEquals(obj, d);

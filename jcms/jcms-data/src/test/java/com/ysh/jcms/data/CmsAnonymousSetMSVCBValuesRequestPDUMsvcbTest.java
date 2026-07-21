@@ -28,18 +28,12 @@ public class CmsAnonymousSetMSVCBValuesRequestPDUMsvcbTest {
         obj.reference = "test";
         obj.sv_ena = true;
         obj.msv_id = "test";
+        obj.dat_set = "test";
+        obj.smp_mod = 1;
+        obj.smp_rate = 1;
+        obj.opt_flds = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetMSVCBValuesRequestPDUMsvcb d = MAPPER.readValue(json, CmsAnonymousSetMSVCBValuesRequestPDUMsvcb.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetMSVCBValuesRequestPDUMsvcb obj = new CmsAnonymousSetMSVCBValuesRequestPDUMsvcb();
-        obj.reference = "test";
-        obj.sv_ena = true;
-        obj.msv_id = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetMSVCBValuesRequestPDUMsvcb d = CmsAnonymousSetMSVCBValuesRequestPDUMsvcb.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -33,7 +33,7 @@ public class CmsMsvcbOptFlds extends CmsBase {
         try {
             String json = CmsNative.decode("MsvcbOptFlds", enc, data);
             CmsMsvcbOptFlds r = new CmsMsvcbOptFlds();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

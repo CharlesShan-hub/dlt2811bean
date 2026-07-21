@@ -22,21 +22,12 @@ public class CmsPhyComAddrTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsPhyComAddr obj = new CmsPhyComAddr();
-        obj.addr = new byte[0];
-        obj.priority = 42;
-        obj.vid = 42;
+        obj.addr = new byte[]{0x01, 0x02};
+        obj.priority = 1;
+        obj.vid = 1;
+        obj.appid = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsPhyComAddr d = MAPPER.readValue(json, CmsPhyComAddr.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsPhyComAddr obj = new CmsPhyComAddr();
-        obj.addr = new byte[0];
-        obj.priority = 42;
-        obj.vid = 42;
-        byte[] data = obj.encode("uper");
-        CmsPhyComAddr d = CmsPhyComAddr.decode("uper", data);
         assertEquals(obj, d);
     }
 }

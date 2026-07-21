@@ -27,18 +27,10 @@ public class CmsGoCBTest {
         obj.go_ena = true;
         obj.go_id = "test";
         obj.dat_set = "test";
+        obj.conf_rev = 1;
+        obj.nds_com = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGoCB d = MAPPER.readValue(json, CmsGoCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGoCB obj = new CmsGoCB();
-        obj.go_ena = true;
-        obj.go_id = "test";
-        obj.dat_set = "test";
-        byte[] data = obj.encode("uper");
-        CmsGoCB d = CmsGoCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -24,14 +24,14 @@ public class CmsGetBRCBValuesErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsGetBRCBValuesErrorPDU obj = new CmsGetBRCBValuesErrorPDU(42);
+        CmsGetBRCBValuesErrorPDU obj = new CmsGetBRCBValuesErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsGetBRCBValuesErrorPDU d = MAPPER.readValue(json, CmsGetBRCBValuesErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsGetBRCBValuesErrorPDU obj = new CmsGetBRCBValuesErrorPDU(42);
+        CmsGetBRCBValuesErrorPDU obj = new CmsGetBRCBValuesErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsGetBRCBValuesErrorPDU d = CmsGetBRCBValuesErrorPDU.decode("uper", data);
         assertEquals(obj, d);

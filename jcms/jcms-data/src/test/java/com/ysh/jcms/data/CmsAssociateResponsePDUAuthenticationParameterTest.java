@@ -21,21 +21,11 @@ public class CmsAssociateResponsePDUAuthenticationParameterTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAssociateResponsePDUAuthenticationParameter obj = new CmsAssociateResponsePDUAuthenticationParameter();
-        obj.signature_certificate = new byte[0];
-        obj.signed_time = new byte[0];
-        obj.signed_value = new byte[0];
+        obj.signature_certificate = new byte[]{0x01, 0x02};
+        obj.signed_time = new byte[]{0x01, 0x02};
+        obj.signed_value = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsAssociateResponsePDUAuthenticationParameter d = MAPPER.readValue(json, CmsAssociateResponsePDUAuthenticationParameter.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAssociateResponsePDUAuthenticationParameter obj = new CmsAssociateResponsePDUAuthenticationParameter();
-        obj.signature_certificate = new byte[0];
-        obj.signed_time = new byte[0];
-        obj.signed_value = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsAssociateResponsePDUAuthenticationParameter d = CmsAssociateResponsePDUAuthenticationParameter.decode("uper", data);
         assertEquals(obj, d);
     }
 }

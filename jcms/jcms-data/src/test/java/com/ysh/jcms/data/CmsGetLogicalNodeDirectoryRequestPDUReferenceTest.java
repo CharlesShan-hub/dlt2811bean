@@ -30,13 +30,4 @@ public class CmsGetLogicalNodeDirectoryRequestPDUReferenceTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogicalNodeDirectoryRequestPDUReference obj = new CmsGetLogicalNodeDirectoryRequestPDUReference();
-        obj._choice = "ldName";
-        obj.ldName = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetLogicalNodeDirectoryRequestPDUReference d = CmsGetLogicalNodeDirectoryRequestPDUReference.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

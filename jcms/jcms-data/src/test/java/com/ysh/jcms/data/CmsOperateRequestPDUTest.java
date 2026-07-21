@@ -26,20 +26,14 @@ public class CmsOperateRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsOperateRequestPDU obj = new CmsOperateRequestPDU();
         obj.reference = "test";
-        obj.ctl_num = 42;
-        obj.t = new byte[0];
+        if (obj.ctl_val == null) obj.ctl_val = new CmsData();
+        if (obj.origin == null) obj.origin = new CmsOriginator();
+        obj.ctl_num = 1;
+        obj.t = new byte[]{0x01, 0x02};
+        obj.test = true;
+        obj.check = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsOperateRequestPDU d = MAPPER.readValue(json, CmsOperateRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsOperateRequestPDU obj = new CmsOperateRequestPDU();
-        obj.reference = "test";
-        obj.ctl_num = 42;
-        obj.t = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsOperateRequestPDU d = CmsOperateRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

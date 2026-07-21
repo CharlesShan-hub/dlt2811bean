@@ -27,7 +27,7 @@ public class CmsGetLogicalNodeDirectoryErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetLogicalNodeDirectoryErrorPDU", enc, data);
             CmsGetLogicalNodeDirectoryErrorPDU r = new CmsGetLogicalNodeDirectoryErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

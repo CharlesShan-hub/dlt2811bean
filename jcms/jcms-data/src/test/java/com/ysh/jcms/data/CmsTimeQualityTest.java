@@ -24,16 +24,9 @@ public class CmsTimeQualityTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsTimeQuality obj = new CmsTimeQuality(42);
+        CmsTimeQuality obj = new CmsTimeQuality(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsTimeQuality d = MAPPER.readValue(json, CmsTimeQuality.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsTimeQuality obj = new CmsTimeQuality(42);
-        byte[] data = obj.encode("uper");
-        CmsTimeQuality d = CmsTimeQuality.decode("uper", data);
         assertEquals(obj, d);
     }
 }

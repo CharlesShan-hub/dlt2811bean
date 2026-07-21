@@ -27,7 +27,7 @@ public class CmsGetFileAttributeValuesErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetFileAttributeValuesErrorPDU", enc, data);
             CmsGetFileAttributeValuesErrorPDU r = new CmsGetFileAttributeValuesErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

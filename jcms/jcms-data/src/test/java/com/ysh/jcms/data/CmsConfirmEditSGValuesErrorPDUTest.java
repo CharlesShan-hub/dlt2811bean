@@ -24,14 +24,14 @@ public class CmsConfirmEditSGValuesErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsConfirmEditSGValuesErrorPDU obj = new CmsConfirmEditSGValuesErrorPDU(42);
+        CmsConfirmEditSGValuesErrorPDU obj = new CmsConfirmEditSGValuesErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsConfirmEditSGValuesErrorPDU d = MAPPER.readValue(json, CmsConfirmEditSGValuesErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsConfirmEditSGValuesErrorPDU obj = new CmsConfirmEditSGValuesErrorPDU(42);
+        CmsConfirmEditSGValuesErrorPDU obj = new CmsConfirmEditSGValuesErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsConfirmEditSGValuesErrorPDU d = CmsConfirmEditSGValuesErrorPDU.decode("uper", data);
         assertEquals(obj, d);

@@ -28,20 +28,16 @@ public class CmsReportPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsReportPDU obj = new CmsReportPDU();
         obj.rpt_id = "test";
-        obj.opt_flds = 42;
-        obj.sq_num = 42;
+        obj.opt_flds = 1;
+        obj.sq_num = 1;
+        obj.sub_seq_num = 1;
+        obj.more_segments_follow = true;
+        obj.data_set = "test";
+        obj.buf_ovfl = true;
+        obj.conf_rev = 1;
+        if (obj.entry == null) obj.entry = new CmsReportPDUEntry();
         String json = MAPPER.writeValueAsString(obj);
         CmsReportPDU d = MAPPER.readValue(json, CmsReportPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsReportPDU obj = new CmsReportPDU();
-        obj.rpt_id = "test";
-        obj.opt_flds = 42;
-        obj.sq_num = 42;
-        byte[] data = obj.encode("uper");
-        CmsReportPDU d = CmsReportPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

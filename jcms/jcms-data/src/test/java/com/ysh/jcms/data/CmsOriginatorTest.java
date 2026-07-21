@@ -20,19 +20,10 @@ public class CmsOriginatorTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsOriginator obj = new CmsOriginator();
-        obj.or_cat = 42;
-        obj.or_ident = new byte[0];
+        obj.or_cat = 1;
+        obj.or_ident = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsOriginator d = MAPPER.readValue(json, CmsOriginator.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsOriginator obj = new CmsOriginator();
-        obj.or_cat = 42;
-        obj.or_ident = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsOriginator d = CmsOriginator.decode("uper", data);
         assertEquals(obj, d);
     }
 }

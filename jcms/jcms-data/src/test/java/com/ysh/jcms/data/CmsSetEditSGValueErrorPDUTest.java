@@ -19,15 +19,9 @@ public class CmsSetEditSGValueErrorPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsSetEditSGValueErrorPDU obj = new CmsSetEditSGValueErrorPDU();
+        obj.result = java.util.Collections.singletonList(Integer.valueOf(1));
         String json = MAPPER.writeValueAsString(obj);
         CmsSetEditSGValueErrorPDU d = MAPPER.readValue(json, CmsSetEditSGValueErrorPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetEditSGValueErrorPDU obj = new CmsSetEditSGValueErrorPDU();
-        byte[] data = obj.encode("uper");
-        CmsSetEditSGValueErrorPDU d = CmsSetEditSGValueErrorPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

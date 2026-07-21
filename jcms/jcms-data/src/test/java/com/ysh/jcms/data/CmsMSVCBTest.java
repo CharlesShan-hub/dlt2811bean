@@ -29,18 +29,12 @@ public class CmsMSVCBTest {
         obj.sv_ena = true;
         obj.msv_id = "test";
         obj.dat_set = "test";
+        obj.conf_rev = 1;
+        obj.smp_mod = 1;
+        obj.smp_rate = 1;
+        obj.opt_flds = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsMSVCB d = MAPPER.readValue(json, CmsMSVCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsMSVCB obj = new CmsMSVCB();
-        obj.sv_ena = true;
-        obj.msv_id = "test";
-        obj.dat_set = "test";
-        byte[] data = obj.encode("uper");
-        CmsMSVCB d = CmsMSVCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

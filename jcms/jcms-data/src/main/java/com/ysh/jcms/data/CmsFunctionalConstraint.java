@@ -27,7 +27,7 @@ public class CmsFunctionalConstraint extends CmsBase {
         try {
             String json = CmsNative.decode("FunctionalConstraint", enc, data);
             CmsFunctionalConstraint r = new CmsFunctionalConstraint();
-            r.value = json.trim();
+            r.value = MAPPER.readTree(json).get("value").asText();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

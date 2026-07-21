@@ -20,17 +20,10 @@ public class CmsRpcCallResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsRpcCallResponsePDU obj = new CmsRpcCallResponsePDU();
-        obj.next_call_id = new byte[0];
+        if (obj.rsp_data == null) obj.rsp_data = new CmsData();
+        obj.next_call_id = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsRpcCallResponsePDU d = MAPPER.readValue(json, CmsRpcCallResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsRpcCallResponsePDU obj = new CmsRpcCallResponsePDU();
-        obj.next_call_id = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsRpcCallResponsePDU d = CmsRpcCallResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

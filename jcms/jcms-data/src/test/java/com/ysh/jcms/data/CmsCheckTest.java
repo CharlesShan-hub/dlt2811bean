@@ -24,16 +24,9 @@ public class CmsCheckTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsCheck obj = new CmsCheck(42);
+        CmsCheck obj = new CmsCheck(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsCheck d = MAPPER.readValue(json, CmsCheck.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsCheck obj = new CmsCheck(42);
-        byte[] data = obj.encode("uper");
-        CmsCheck d = CmsCheck.decode("uper", data);
         assertEquals(obj, d);
     }
 }

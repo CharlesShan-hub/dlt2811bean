@@ -27,7 +27,7 @@ public class CmsSubReference extends CmsBase {
         try {
             String json = CmsNative.decode("SubReference", enc, data);
             CmsSubReference r = new CmsSubReference();
-            r.value = json.trim();
+            r.value = MAPPER.readTree(json).get("value").asText();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

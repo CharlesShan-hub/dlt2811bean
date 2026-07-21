@@ -27,7 +27,7 @@ public class CmsAssociateErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("AssociateErrorPDU", enc, data);
             CmsAssociateErrorPDU r = new CmsAssociateErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

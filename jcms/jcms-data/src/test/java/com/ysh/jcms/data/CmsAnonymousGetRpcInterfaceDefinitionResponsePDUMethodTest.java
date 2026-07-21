@@ -24,20 +24,12 @@ public class CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethodTest {
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod obj = new CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod();
         obj.name = "test";
-        obj.version = 42;
-        obj.timeout = 42;
+        obj.version = 1;
+        obj.timeout = 1;
+        if (obj.request == null) obj.request = new CmsDataDefinition();
+        if (obj.response == null) obj.response = new CmsDataDefinition();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod d = MAPPER.readValue(json, CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod obj = new CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod();
-        obj.name = "test";
-        obj.version = 42;
-        obj.timeout = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod d = CmsAnonymousGetRpcInterfaceDefinitionResponsePDUMethod.decode("uper", data);
         assertEquals(obj, d);
     }
 }

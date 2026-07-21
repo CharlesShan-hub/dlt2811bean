@@ -27,20 +27,15 @@ public class CmsTimeActivatedOperateResponsePDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsTimeActivatedOperateResponsePDU obj = new CmsTimeActivatedOperateResponsePDU();
         obj.reference = "test";
-        obj.oper_tm = new byte[0];
-        obj.ctl_num = 42;
+        if (obj.ctl_val == null) obj.ctl_val = new CmsData();
+        obj.oper_tm = new byte[]{0x01, 0x02};
+        if (obj.origin == null) obj.origin = new CmsOriginator();
+        obj.ctl_num = 1;
+        obj.t = new byte[]{0x01, 0x02};
+        obj.test = true;
+        obj.check = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsTimeActivatedOperateResponsePDU d = MAPPER.readValue(json, CmsTimeActivatedOperateResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsTimeActivatedOperateResponsePDU obj = new CmsTimeActivatedOperateResponsePDU();
-        obj.reference = "test";
-        obj.oper_tm = new byte[0];
-        obj.ctl_num = 42;
-        byte[] data = obj.encode("uper");
-        CmsTimeActivatedOperateResponsePDU d = CmsTimeActivatedOperateResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

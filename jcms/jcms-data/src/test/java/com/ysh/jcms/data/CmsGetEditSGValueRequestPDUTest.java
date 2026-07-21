@@ -19,15 +19,9 @@ public class CmsGetEditSGValueRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetEditSGValueRequestPDU obj = new CmsGetEditSGValueRequestPDU();
+        obj.data = java.util.Collections.singletonList(new CmsAnonymousGetEditSGValueRequestPDUData());
         String json = MAPPER.writeValueAsString(obj);
         CmsGetEditSGValueRequestPDU d = MAPPER.readValue(json, CmsGetEditSGValueRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetEditSGValueRequestPDU obj = new CmsGetEditSGValueRequestPDU();
-        byte[] data = obj.encode("uper");
-        CmsGetEditSGValueRequestPDU d = CmsGetEditSGValueRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

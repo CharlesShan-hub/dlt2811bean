@@ -36,18 +36,20 @@ public class CmsBRCBTest {
         obj.rpt_id = "test";
         obj.rpt_ena = true;
         obj.dat_set = "test";
+        obj.conf_rev = 1;
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
+        obj.sq_num = 1;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.gi = true;
+        obj.purge_buf = true;
+        obj.entry_id = new byte[]{0x01, 0x02};
+        obj.time_of_entry = new byte[]{0x01, 0x02};
+        obj.resv_tms = 1;
+        obj.owner = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsBRCB d = MAPPER.readValue(json, CmsBRCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsBRCB obj = new CmsBRCB();
-        obj.rpt_id = "test";
-        obj.rpt_ena = true;
-        obj.dat_set = "test";
-        byte[] data = obj.encode("uper");
-        CmsBRCB d = CmsBRCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

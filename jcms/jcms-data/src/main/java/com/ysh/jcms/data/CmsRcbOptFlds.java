@@ -48,7 +48,7 @@ public class CmsRcbOptFlds extends CmsBase {
         try {
             String json = CmsNative.decode("RcbOptFlds", enc, data);
             CmsRcbOptFlds r = new CmsRcbOptFlds();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

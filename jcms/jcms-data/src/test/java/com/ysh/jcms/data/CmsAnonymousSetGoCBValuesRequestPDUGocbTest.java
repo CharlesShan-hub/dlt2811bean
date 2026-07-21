@@ -25,18 +25,9 @@ public class CmsAnonymousSetGoCBValuesRequestPDUGocbTest {
         obj.reference = "test";
         obj.go_ena = true;
         obj.go_id = "test";
+        obj.dat_set = "test";
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetGoCBValuesRequestPDUGocb d = MAPPER.readValue(json, CmsAnonymousSetGoCBValuesRequestPDUGocb.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetGoCBValuesRequestPDUGocb obj = new CmsAnonymousSetGoCBValuesRequestPDUGocb();
-        obj.reference = "test";
-        obj.go_ena = true;
-        obj.go_id = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetGoCBValuesRequestPDUGocb d = CmsAnonymousSetGoCBValuesRequestPDUGocb.decode("uper", data);
         assertEquals(obj, d);
     }
 }

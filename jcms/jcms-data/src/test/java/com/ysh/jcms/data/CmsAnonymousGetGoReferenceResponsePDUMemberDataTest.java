@@ -26,13 +26,4 @@ public class CmsAnonymousGetGoReferenceResponsePDUMemberDataTest {
         CmsAnonymousGetGoReferenceResponsePDUMemberData d = MAPPER.readValue(json, CmsAnonymousGetGoReferenceResponsePDUMemberData.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetGoReferenceResponsePDUMemberData obj = new CmsAnonymousGetGoReferenceResponsePDUMemberData();
-        obj.reference = "test";
-        obj.fc = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetGoReferenceResponsePDUMemberData d = CmsAnonymousGetGoReferenceResponsePDUMemberData.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

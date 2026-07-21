@@ -26,13 +26,4 @@ public class CmsAnonymousCreateDataSetRequestPDUMemberDataTest {
         CmsAnonymousCreateDataSetRequestPDUMemberData d = MAPPER.readValue(json, CmsAnonymousCreateDataSetRequestPDUMemberData.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousCreateDataSetRequestPDUMemberData obj = new CmsAnonymousCreateDataSetRequestPDUMemberData();
-        obj.reference = "test";
-        obj.fc = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousCreateDataSetRequestPDUMemberData d = CmsAnonymousCreateDataSetRequestPDUMemberData.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

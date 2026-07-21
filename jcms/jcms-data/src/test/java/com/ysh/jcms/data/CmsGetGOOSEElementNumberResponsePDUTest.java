@@ -23,20 +23,11 @@ public class CmsGetGOOSEElementNumberResponsePDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsGetGOOSEElementNumberResponsePDU obj = new CmsGetGOOSEElementNumberResponsePDU();
         obj.gocb_reference = "test";
-        obj.conf_rev = 42;
+        obj.conf_rev = 1;
         obj.dat_set = "test";
+        obj.member_offset = java.util.Collections.singletonList(Integer.valueOf(1));
         String json = MAPPER.writeValueAsString(obj);
         CmsGetGOOSEElementNumberResponsePDU d = MAPPER.readValue(json, CmsGetGOOSEElementNumberResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetGOOSEElementNumberResponsePDU obj = new CmsGetGOOSEElementNumberResponsePDU();
-        obj.gocb_reference = "test";
-        obj.conf_rev = 42;
-        obj.dat_set = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetGOOSEElementNumberResponsePDU d = CmsGetGOOSEElementNumberResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

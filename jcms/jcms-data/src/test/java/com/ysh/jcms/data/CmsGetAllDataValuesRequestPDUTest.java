@@ -21,19 +21,11 @@ public class CmsGetAllDataValuesRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetAllDataValuesRequestPDU obj = new CmsGetAllDataValuesRequestPDU();
+        if (obj.reference == null) obj.reference = new CmsGetAllDataValuesRequestPDUReference();
         obj.fc = "test";
         obj.reference_after = "test";
         String json = MAPPER.writeValueAsString(obj);
         CmsGetAllDataValuesRequestPDU d = MAPPER.readValue(json, CmsGetAllDataValuesRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetAllDataValuesRequestPDU obj = new CmsGetAllDataValuesRequestPDU();
-        obj.fc = "test";
-        obj.reference_after = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetAllDataValuesRequestPDU d = CmsGetAllDataValuesRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

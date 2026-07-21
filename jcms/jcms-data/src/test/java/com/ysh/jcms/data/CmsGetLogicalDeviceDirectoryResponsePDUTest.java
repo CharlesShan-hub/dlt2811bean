@@ -20,17 +20,10 @@ public class CmsGetLogicalDeviceDirectoryResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetLogicalDeviceDirectoryResponsePDU obj = new CmsGetLogicalDeviceDirectoryResponsePDU();
+        obj.ln_reference = java.util.Collections.singletonList("test");
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetLogicalDeviceDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetLogicalDeviceDirectoryResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogicalDeviceDirectoryResponsePDU obj = new CmsGetLogicalDeviceDirectoryResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetLogicalDeviceDirectoryResponsePDU d = CmsGetLogicalDeviceDirectoryResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

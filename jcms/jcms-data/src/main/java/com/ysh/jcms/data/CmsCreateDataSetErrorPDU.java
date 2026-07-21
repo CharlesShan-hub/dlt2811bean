@@ -27,7 +27,7 @@ public class CmsCreateDataSetErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("CreateDataSetErrorPDU", enc, data);
             CmsCreateDataSetErrorPDU r = new CmsCreateDataSetErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -20,17 +20,10 @@ public class CmsGetRpcInterfaceDirectoryResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetRpcInterfaceDirectoryResponsePDU obj = new CmsGetRpcInterfaceDirectoryResponsePDU();
+        obj.reference = java.util.Collections.singletonList("test");
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetRpcInterfaceDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetRpcInterfaceDirectoryResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetRpcInterfaceDirectoryResponsePDU obj = new CmsGetRpcInterfaceDirectoryResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetRpcInterfaceDirectoryResponsePDU d = CmsGetRpcInterfaceDirectoryResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

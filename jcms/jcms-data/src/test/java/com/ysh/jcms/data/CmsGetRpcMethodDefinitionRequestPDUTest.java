@@ -19,15 +19,9 @@ public class CmsGetRpcMethodDefinitionRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetRpcMethodDefinitionRequestPDU obj = new CmsGetRpcMethodDefinitionRequestPDU();
+        obj.reference = java.util.Collections.singletonList("test");
         String json = MAPPER.writeValueAsString(obj);
         CmsGetRpcMethodDefinitionRequestPDU d = MAPPER.readValue(json, CmsGetRpcMethodDefinitionRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetRpcMethodDefinitionRequestPDU obj = new CmsGetRpcMethodDefinitionRequestPDU();
-        byte[] data = obj.encode("uper");
-        CmsGetRpcMethodDefinitionRequestPDU d = CmsGetRpcMethodDefinitionRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

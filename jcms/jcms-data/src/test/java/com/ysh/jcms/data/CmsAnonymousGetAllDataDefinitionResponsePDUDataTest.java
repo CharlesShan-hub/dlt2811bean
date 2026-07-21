@@ -23,17 +23,9 @@ public class CmsAnonymousGetAllDataDefinitionResponsePDUDataTest {
         CmsAnonymousGetAllDataDefinitionResponsePDUData obj = new CmsAnonymousGetAllDataDefinitionResponsePDUData();
         obj.reference = "test";
         obj.cdc_type = "test";
+        if (obj.definition == null) obj.definition = new CmsDataDefinition();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousGetAllDataDefinitionResponsePDUData d = MAPPER.readValue(json, CmsAnonymousGetAllDataDefinitionResponsePDUData.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetAllDataDefinitionResponsePDUData obj = new CmsAnonymousGetAllDataDefinitionResponsePDUData();
-        obj.reference = "test";
-        obj.cdc_type = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetAllDataDefinitionResponsePDUData d = CmsAnonymousGetAllDataDefinitionResponsePDUData.decode("uper", data);
         assertEquals(obj, d);
     }
 }

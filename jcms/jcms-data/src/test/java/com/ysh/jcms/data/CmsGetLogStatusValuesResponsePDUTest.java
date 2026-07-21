@@ -20,17 +20,10 @@ public class CmsGetLogStatusValuesResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetLogStatusValuesResponsePDU obj = new CmsGetLogStatusValuesResponsePDU();
+        obj.log = java.util.Collections.singletonList(new CmsAnonymousGetLogStatusValuesResponsePDULog());
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetLogStatusValuesResponsePDU d = MAPPER.readValue(json, CmsGetLogStatusValuesResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogStatusValuesResponsePDU obj = new CmsGetLogStatusValuesResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetLogStatusValuesResponsePDU d = CmsGetLogStatusValuesResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

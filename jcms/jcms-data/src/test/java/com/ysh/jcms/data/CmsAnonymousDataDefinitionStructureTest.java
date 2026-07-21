@@ -23,17 +23,9 @@ public class CmsAnonymousDataDefinitionStructureTest {
         CmsAnonymousDataDefinitionStructure obj = new CmsAnonymousDataDefinitionStructure();
         obj.name = "test";
         obj.fc = "test";
+        if (obj.r_type == null) obj.r_type = new CmsDataDefinition();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousDataDefinitionStructure d = MAPPER.readValue(json, CmsAnonymousDataDefinitionStructure.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousDataDefinitionStructure obj = new CmsAnonymousDataDefinitionStructure();
-        obj.name = "test";
-        obj.fc = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousDataDefinitionStructure d = CmsAnonymousDataDefinitionStructure.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -27,7 +27,7 @@ public class CmsRpcCallErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("RpcCallErrorPDU", enc, data);
             CmsRpcCallErrorPDU r = new CmsRpcCallErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

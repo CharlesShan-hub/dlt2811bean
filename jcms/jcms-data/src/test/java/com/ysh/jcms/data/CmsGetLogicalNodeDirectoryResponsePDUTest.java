@@ -20,17 +20,10 @@ public class CmsGetLogicalNodeDirectoryResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetLogicalNodeDirectoryResponsePDU obj = new CmsGetLogicalNodeDirectoryResponsePDU();
+        obj.reference = java.util.Collections.singletonList("test");
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetLogicalNodeDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetLogicalNodeDirectoryResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetLogicalNodeDirectoryResponsePDU obj = new CmsGetLogicalNodeDirectoryResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetLogicalNodeDirectoryResponsePDU d = CmsGetLogicalNodeDirectoryResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

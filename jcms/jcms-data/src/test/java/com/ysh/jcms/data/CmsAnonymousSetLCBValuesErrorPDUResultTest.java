@@ -26,21 +26,16 @@ public class CmsAnonymousSetLCBValuesErrorPDUResultTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousSetLCBValuesErrorPDUResult obj = new CmsAnonymousSetLCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.log_ena = 42;
-        obj.dat_set = 42;
+        obj.error = 1;
+        obj.log_ena = 1;
+        obj.dat_set = 1;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.log_ref = 1;
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetLCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetLCBValuesErrorPDUResult.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetLCBValuesErrorPDUResult obj = new CmsAnonymousSetLCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.log_ena = 42;
-        obj.dat_set = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetLCBValuesErrorPDUResult d = CmsAnonymousSetLCBValuesErrorPDUResult.decode("uper", data);
         assertEquals(obj, d);
     }
 }

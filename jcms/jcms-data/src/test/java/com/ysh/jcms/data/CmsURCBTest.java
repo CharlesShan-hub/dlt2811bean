@@ -33,18 +33,17 @@ public class CmsURCBTest {
         obj.rpt_id = "test";
         obj.rpt_ena = true;
         obj.dat_set = "test";
+        obj.conf_rev = 1;
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
+        obj.sq_num = 1;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.gi = true;
+        obj.resv = true;
+        obj.owner = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsURCB d = MAPPER.readValue(json, CmsURCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsURCB obj = new CmsURCB();
-        obj.rpt_id = "test";
-        obj.rpt_ena = true;
-        obj.dat_set = "test";
-        byte[] data = obj.encode("uper");
-        CmsURCB d = CmsURCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

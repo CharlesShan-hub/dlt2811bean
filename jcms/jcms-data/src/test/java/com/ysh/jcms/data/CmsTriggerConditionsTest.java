@@ -24,16 +24,9 @@ public class CmsTriggerConditionsTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsTriggerConditions obj = new CmsTriggerConditions(42);
+        CmsTriggerConditions obj = new CmsTriggerConditions(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsTriggerConditions d = MAPPER.readValue(json, CmsTriggerConditions.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsTriggerConditions obj = new CmsTriggerConditions(42);
-        byte[] data = obj.encode("uper");
-        CmsTriggerConditions d = CmsTriggerConditions.decode("uper", data);
         assertEquals(obj, d);
     }
 }

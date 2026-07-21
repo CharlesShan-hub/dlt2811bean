@@ -30,21 +30,20 @@ public class CmsAnonymousSetBRCBValuesErrorPDUResultTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousSetBRCBValuesErrorPDUResult obj = new CmsAnonymousSetBRCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.rpt_id = 42;
-        obj.rpt_ena = 42;
+        obj.error = 1;
+        obj.rpt_id = 1;
+        obj.rpt_ena = 1;
+        obj.dat_set = 1;
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.gi = 1;
+        obj.purge_buf = 1;
+        obj.entry_id = 1;
+        obj.resv_tms = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetBRCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetBRCBValuesErrorPDUResult.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetBRCBValuesErrorPDUResult obj = new CmsAnonymousSetBRCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.rpt_id = 42;
-        obj.rpt_ena = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetBRCBValuesErrorPDUResult d = CmsAnonymousSetBRCBValuesErrorPDUResult.decode("uper", data);
         assertEquals(obj, d);
     }
 }

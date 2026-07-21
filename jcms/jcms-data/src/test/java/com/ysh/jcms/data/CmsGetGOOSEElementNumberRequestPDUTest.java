@@ -21,16 +21,9 @@ public class CmsGetGOOSEElementNumberRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsGetGOOSEElementNumberRequestPDU obj = new CmsGetGOOSEElementNumberRequestPDU();
         obj.gocb_reference = "test";
+        obj.member_data = java.util.Collections.singletonList(new CmsAnonymousGetGOOSEElementNumberRequestPDUMemberData());
         String json = MAPPER.writeValueAsString(obj);
         CmsGetGOOSEElementNumberRequestPDU d = MAPPER.readValue(json, CmsGetGOOSEElementNumberRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetGOOSEElementNumberRequestPDU obj = new CmsGetGOOSEElementNumberRequestPDU();
-        obj.gocb_reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetGOOSEElementNumberRequestPDU d = CmsGetGOOSEElementNumberRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

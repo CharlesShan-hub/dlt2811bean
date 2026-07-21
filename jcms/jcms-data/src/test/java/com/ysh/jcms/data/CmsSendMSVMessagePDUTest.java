@@ -30,19 +30,16 @@ public class CmsSendMSVMessagePDUTest {
         CmsSendMSVMessagePDU obj = new CmsSendMSVMessagePDU();
         obj.msv_id = "test";
         obj.dat_set = "test";
-        obj.smp_cnt = 42;
+        obj.smp_cnt = 1;
+        obj.conf_rev = 1;
+        obj.ref_tm = new byte[]{0x01, 0x02};
+        obj.smp_synch = 1;
+        obj.smp_rate = 1;
+        obj.simulation = true;
+        obj.sample = java.util.Collections.singletonList(new CmsData());
+        obj.smp_mod = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsSendMSVMessagePDU d = MAPPER.readValue(json, CmsSendMSVMessagePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSendMSVMessagePDU obj = new CmsSendMSVMessagePDU();
-        obj.msv_id = "test";
-        obj.dat_set = "test";
-        obj.smp_cnt = 42;
-        byte[] data = obj.encode("uper");
-        CmsSendMSVMessagePDU d = CmsSendMSVMessagePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

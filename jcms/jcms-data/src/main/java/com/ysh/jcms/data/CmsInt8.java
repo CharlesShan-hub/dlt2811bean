@@ -27,7 +27,7 @@ public class CmsInt8 extends CmsBase {
         try {
             String json = CmsNative.decode("Int8", enc, data);
             CmsInt8 r = new CmsInt8();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

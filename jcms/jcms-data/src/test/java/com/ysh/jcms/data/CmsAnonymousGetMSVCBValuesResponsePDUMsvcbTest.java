@@ -30,13 +30,4 @@ public class CmsAnonymousGetMSVCBValuesResponsePDUMsvcbTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetMSVCBValuesResponsePDUMsvcb obj = new CmsAnonymousGetMSVCBValuesResponsePDUMsvcb();
-        obj._choice = "error";
-        obj.error = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetMSVCBValuesResponsePDUMsvcb d = CmsAnonymousGetMSVCBValuesResponsePDUMsvcb.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

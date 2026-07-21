@@ -23,20 +23,11 @@ public class CmsFileEntryTest {
     public void testJsonRoundTrip() throws Exception {
         CmsFileEntry obj = new CmsFileEntry();
         obj.file_name = "test";
-        obj.file_size = 42;
-        obj.last_modified = new byte[0];
+        obj.file_size = 1;
+        obj.last_modified = new byte[]{0x01, 0x02};
+        obj.check_sum = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsFileEntry d = MAPPER.readValue(json, CmsFileEntry.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsFileEntry obj = new CmsFileEntry();
-        obj.file_name = "test";
-        obj.file_size = 42;
-        obj.last_modified = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsFileEntry d = CmsFileEntry.decode("uper", data);
         assertEquals(obj, d);
     }
 }

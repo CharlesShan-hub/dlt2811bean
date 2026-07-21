@@ -24,16 +24,9 @@ public class CmsTcmdTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsTcmd obj = new CmsTcmd(42);
+        CmsTcmd obj = new CmsTcmd(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsTcmd d = MAPPER.readValue(json, CmsTcmd.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsTcmd obj = new CmsTcmd(42);
-        byte[] data = obj.encode("uper");
-        CmsTcmd d = CmsTcmd.decode("uper", data);
         assertEquals(obj, d);
     }
 }

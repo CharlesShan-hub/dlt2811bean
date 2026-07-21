@@ -27,7 +27,7 @@ public class CmsBoolean extends CmsBase {
         try {
             String json = CmsNative.decode("Boolean", enc, data);
             CmsBoolean r = new CmsBoolean();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

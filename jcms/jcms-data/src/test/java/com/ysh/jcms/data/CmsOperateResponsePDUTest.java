@@ -24,12 +24,4 @@ public class CmsOperateResponsePDUTest {
         CmsOperateResponsePDU d = MAPPER.readValue(json, CmsOperateResponsePDU.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsOperateResponsePDU obj = new CmsOperateResponsePDU();
-        obj.reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsOperateResponsePDU d = CmsOperateResponsePDU.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

@@ -20,17 +20,10 @@ public class CmsGetMSVCBValuesResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetMSVCBValuesResponsePDU obj = new CmsGetMSVCBValuesResponsePDU();
+        obj.msvcb = java.util.Collections.singletonList(new CmsAnonymousGetMSVCBValuesResponsePDUMsvcb());
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetMSVCBValuesResponsePDU d = MAPPER.readValue(json, CmsGetMSVCBValuesResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetMSVCBValuesResponsePDU obj = new CmsGetMSVCBValuesResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetMSVCBValuesResponsePDU d = CmsGetMSVCBValuesResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

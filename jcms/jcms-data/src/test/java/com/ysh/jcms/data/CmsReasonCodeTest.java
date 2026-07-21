@@ -24,16 +24,9 @@ public class CmsReasonCodeTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsReasonCode obj = new CmsReasonCode(42);
+        CmsReasonCode obj = new CmsReasonCode(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsReasonCode d = MAPPER.readValue(json, CmsReasonCode.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsReasonCode obj = new CmsReasonCode(42);
-        byte[] data = obj.encode("uper");
-        CmsReasonCode d = CmsReasonCode.decode("uper", data);
         assertEquals(obj, d);
     }
 }

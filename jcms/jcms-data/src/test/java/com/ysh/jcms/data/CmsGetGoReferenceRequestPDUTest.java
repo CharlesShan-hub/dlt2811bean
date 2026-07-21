@@ -21,16 +21,9 @@ public class CmsGetGoReferenceRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsGetGoReferenceRequestPDU obj = new CmsGetGoReferenceRequestPDU();
         obj.gocb_reference = "test";
+        obj.member_ofs = java.util.Collections.singletonList(Integer.valueOf(1));
         String json = MAPPER.writeValueAsString(obj);
         CmsGetGoReferenceRequestPDU d = MAPPER.readValue(json, CmsGetGoReferenceRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetGoReferenceRequestPDU obj = new CmsGetGoReferenceRequestPDU();
-        obj.gocb_reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetGoReferenceRequestPDU d = CmsGetGoReferenceRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

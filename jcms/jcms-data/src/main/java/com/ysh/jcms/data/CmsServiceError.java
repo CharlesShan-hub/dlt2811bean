@@ -41,7 +41,7 @@ public class CmsServiceError extends CmsBase {
         try {
             String json = CmsNative.decode("ServiceError", enc, data);
             CmsServiceError r = new CmsServiceError();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

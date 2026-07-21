@@ -24,14 +24,14 @@ public class CmsRpcCallErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsRpcCallErrorPDU obj = new CmsRpcCallErrorPDU(42);
+        CmsRpcCallErrorPDU obj = new CmsRpcCallErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsRpcCallErrorPDU d = MAPPER.readValue(json, CmsRpcCallErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsRpcCallErrorPDU obj = new CmsRpcCallErrorPDU(42);
+        CmsRpcCallErrorPDU obj = new CmsRpcCallErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsRpcCallErrorPDU d = CmsRpcCallErrorPDU.decode("uper", data);
         assertEquals(obj, d);

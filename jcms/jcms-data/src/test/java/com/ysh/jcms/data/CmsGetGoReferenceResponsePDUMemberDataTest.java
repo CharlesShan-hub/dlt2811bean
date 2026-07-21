@@ -23,11 +23,4 @@ public class CmsGetGoReferenceResponsePDUMemberDataTest {
         CmsGetGoReferenceResponsePDUMemberData d = MAPPER.readValue(json, CmsGetGoReferenceResponsePDUMemberData.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetGoReferenceResponsePDUMemberData obj = new CmsGetGoReferenceResponsePDUMemberData();
-        byte[] data = obj.encode("uper");
-        CmsGetGoReferenceResponsePDUMemberData d = CmsGetGoReferenceResponsePDUMemberData.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

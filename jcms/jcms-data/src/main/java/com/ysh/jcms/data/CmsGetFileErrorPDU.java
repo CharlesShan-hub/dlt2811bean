@@ -27,7 +27,7 @@ public class CmsGetFileErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetFileErrorPDU", enc, data);
             CmsGetFileErrorPDU r = new CmsGetFileErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

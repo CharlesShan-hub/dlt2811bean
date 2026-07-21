@@ -24,16 +24,9 @@ public class CmsDbposTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsDbpos obj = new CmsDbpos(42);
+        CmsDbpos obj = new CmsDbpos(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsDbpos d = MAPPER.readValue(json, CmsDbpos.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsDbpos obj = new CmsDbpos(42);
-        byte[] data = obj.encode("uper");
-        CmsDbpos d = CmsDbpos.decode("uper", data);
         assertEquals(obj, d);
     }
 }

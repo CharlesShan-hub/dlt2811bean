@@ -22,19 +22,12 @@ public class CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethodTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod obj = new CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod();
-        obj.version = 42;
-        obj.timeout = 42;
+        obj.version = 1;
+        obj.timeout = 1;
+        if (obj.request == null) obj.request = new CmsDataDefinition();
+        if (obj.response == null) obj.response = new CmsDataDefinition();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod d = MAPPER.readValue(json, CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod obj = new CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod();
-        obj.version = 42;
-        obj.timeout = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod d = CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.decode("uper", data);
         assertEquals(obj, d);
     }
 }

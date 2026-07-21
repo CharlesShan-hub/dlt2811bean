@@ -24,14 +24,14 @@ public class CmsQueryLogByTimeErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsQueryLogByTimeErrorPDU obj = new CmsQueryLogByTimeErrorPDU(42);
+        CmsQueryLogByTimeErrorPDU obj = new CmsQueryLogByTimeErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsQueryLogByTimeErrorPDU d = MAPPER.readValue(json, CmsQueryLogByTimeErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsQueryLogByTimeErrorPDU obj = new CmsQueryLogByTimeErrorPDU(42);
+        CmsQueryLogByTimeErrorPDU obj = new CmsQueryLogByTimeErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsQueryLogByTimeErrorPDU d = CmsQueryLogByTimeErrorPDU.decode("uper", data);
         assertEquals(obj, d);

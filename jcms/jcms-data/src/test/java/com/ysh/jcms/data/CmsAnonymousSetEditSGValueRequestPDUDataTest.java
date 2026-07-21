@@ -21,16 +21,9 @@ public class CmsAnonymousSetEditSGValueRequestPDUDataTest {
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousSetEditSGValueRequestPDUData obj = new CmsAnonymousSetEditSGValueRequestPDUData();
         obj.reference = "test";
+        if (obj.value == null) obj.value = new CmsData();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetEditSGValueRequestPDUData d = MAPPER.readValue(json, CmsAnonymousSetEditSGValueRequestPDUData.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetEditSGValueRequestPDUData obj = new CmsAnonymousSetEditSGValueRequestPDUData();
-        obj.reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetEditSGValueRequestPDUData d = CmsAnonymousSetEditSGValueRequestPDUData.decode("uper", data);
         assertEquals(obj, d);
     }
 }

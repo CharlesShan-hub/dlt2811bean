@@ -27,7 +27,7 @@ public class CmsGetEditSGValueErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetEditSGValueErrorPDU", enc, data);
             CmsGetEditSGValueErrorPDU r = new CmsGetEditSGValueErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

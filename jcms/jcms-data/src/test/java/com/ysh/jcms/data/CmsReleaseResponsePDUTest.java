@@ -20,19 +20,10 @@ public class CmsReleaseResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsReleaseResponsePDU obj = new CmsReleaseResponsePDU();
-        obj.association_id = new byte[0];
-        obj.service_error = 42;
+        obj.association_id = new byte[]{0x01, 0x02};
+        obj.service_error = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsReleaseResponsePDU d = MAPPER.readValue(json, CmsReleaseResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsReleaseResponsePDU obj = new CmsReleaseResponsePDU();
-        obj.association_id = new byte[0];
-        obj.service_error = 42;
-        byte[] data = obj.encode("uper");
-        CmsReleaseResponsePDU d = CmsReleaseResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

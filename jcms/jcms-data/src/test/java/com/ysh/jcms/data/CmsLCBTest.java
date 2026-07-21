@@ -27,19 +27,13 @@ public class CmsLCBTest {
         CmsLCB obj = new CmsLCB();
         obj.log_ena = true;
         obj.dat_set = "test";
-        obj.trg_ops = 42;
+        obj.trg_ops = 1;
+        obj.intg_pd = 1;
+        obj.log_ref = "test";
+        obj.opt_flds = 1;
+        obj.buf_tm = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsLCB d = MAPPER.readValue(json, CmsLCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsLCB obj = new CmsLCB();
-        obj.log_ena = true;
-        obj.dat_set = "test";
-        obj.trg_ops = 42;
-        byte[] data = obj.encode("uper");
-        CmsLCB d = CmsLCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

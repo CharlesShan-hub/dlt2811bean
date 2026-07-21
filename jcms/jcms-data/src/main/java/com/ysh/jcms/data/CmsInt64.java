@@ -27,7 +27,7 @@ public class CmsInt64 extends CmsBase {
         try {
             String json = CmsNative.decode("Int64", enc, data);
             CmsInt64 r = new CmsInt64();
-            r.value = Long.parseLong(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asLong();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

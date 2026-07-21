@@ -27,7 +27,7 @@ public class CmsTcmd extends CmsBase {
         try {
             String json = CmsNative.decode("Tcmd", enc, data);
             CmsTcmd r = new CmsTcmd();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

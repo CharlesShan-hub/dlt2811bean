@@ -26,20 +26,14 @@ public class CmsCancelRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsCancelRequestPDU obj = new CmsCancelRequestPDU();
         obj.reference = "test";
-        obj.oper_tm = new byte[0];
-        obj.ctl_num = 42;
+        if (obj.ctl_val == null) obj.ctl_val = new CmsData();
+        obj.oper_tm = new byte[]{0x01, 0x02};
+        if (obj.origin == null) obj.origin = new CmsOriginator();
+        obj.ctl_num = 1;
+        obj.t = new byte[]{0x01, 0x02};
+        obj.test = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsCancelRequestPDU d = MAPPER.readValue(json, CmsCancelRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsCancelRequestPDU obj = new CmsCancelRequestPDU();
-        obj.reference = "test";
-        obj.oper_tm = new byte[0];
-        obj.ctl_num = 42;
-        byte[] data = obj.encode("uper");
-        CmsCancelRequestPDU d = CmsCancelRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

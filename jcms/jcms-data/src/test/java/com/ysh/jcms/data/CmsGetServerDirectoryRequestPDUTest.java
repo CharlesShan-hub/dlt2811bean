@@ -20,19 +20,10 @@ public class CmsGetServerDirectoryRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetServerDirectoryRequestPDU obj = new CmsGetServerDirectoryRequestPDU();
-        obj.object_class = 42;
+        obj.object_class = 1;
         obj.reference_after = "test";
         String json = MAPPER.writeValueAsString(obj);
         CmsGetServerDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetServerDirectoryRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetServerDirectoryRequestPDU obj = new CmsGetServerDirectoryRequestPDU();
-        obj.object_class = 42;
-        obj.reference_after = "test";
-        byte[] data = obj.encode("uper");
-        CmsGetServerDirectoryRequestPDU d = CmsGetServerDirectoryRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

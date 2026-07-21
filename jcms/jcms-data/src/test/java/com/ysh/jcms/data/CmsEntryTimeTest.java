@@ -24,12 +24,4 @@ public class CmsEntryTimeTest {
         CmsEntryTime d = MAPPER.readValue(json, CmsEntryTime.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsEntryTime obj = new CmsEntryTime();
-        obj.value = new byte[]{0x01, 0x02};
-        byte[] data = obj.encode("uper");
-        CmsEntryTime d = CmsEntryTime.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

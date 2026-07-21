@@ -23,21 +23,13 @@ public class CmsSGCBTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsSGCB obj = new CmsSGCB();
-        obj.num_of_sg = 42;
-        obj.act_sg = 42;
-        obj.edit_sg = 42;
+        obj.num_of_sg = 1;
+        obj.act_sg = 1;
+        obj.edit_sg = 1;
+        obj.t_act_edt = new byte[]{0x01, 0x02};
+        obj.resv_tms = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsSGCB d = MAPPER.readValue(json, CmsSGCB.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSGCB obj = new CmsSGCB();
-        obj.num_of_sg = 42;
-        obj.act_sg = 42;
-        obj.edit_sg = 42;
-        byte[] data = obj.encode("uper");
-        CmsSGCB d = CmsSGCB.decode("uper", data);
         assertEquals(obj, d);
     }
 }

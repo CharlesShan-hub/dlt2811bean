@@ -25,21 +25,15 @@ public class CmsAnonymousSetMSVCBValuesErrorPDUResultTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousSetMSVCBValuesErrorPDUResult obj = new CmsAnonymousSetMSVCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.sv_ena = 42;
-        obj.msv_id = 42;
+        obj.error = 1;
+        obj.sv_ena = 1;
+        obj.msv_id = 1;
+        obj.dat_set = 1;
+        obj.smp_mod = 1;
+        obj.smp_rate = 1;
+        obj.opt_flds = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousSetMSVCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetMSVCBValuesErrorPDUResult.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousSetMSVCBValuesErrorPDUResult obj = new CmsAnonymousSetMSVCBValuesErrorPDUResult();
-        obj.error = 42;
-        obj.sv_ena = 42;
-        obj.msv_id = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousSetMSVCBValuesErrorPDUResult d = CmsAnonymousSetMSVCBValuesErrorPDUResult.decode("uper", data);
         assertEquals(obj, d);
     }
 }

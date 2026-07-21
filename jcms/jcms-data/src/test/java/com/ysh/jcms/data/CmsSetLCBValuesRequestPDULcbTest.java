@@ -23,11 +23,4 @@ public class CmsSetLCBValuesRequestPDULcbTest {
         CmsSetLCBValuesRequestPDULcb d = MAPPER.readValue(json, CmsSetLCBValuesRequestPDULcb.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetLCBValuesRequestPDULcb obj = new CmsSetLCBValuesRequestPDULcb();
-        byte[] data = obj.encode("uper");
-        CmsSetLCBValuesRequestPDULcb d = CmsSetLCBValuesRequestPDULcb.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

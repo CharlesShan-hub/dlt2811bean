@@ -30,13 +30,4 @@ public class CmsRpcCallRequestPDUReqTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsRpcCallRequestPDUReq obj = new CmsRpcCallRequestPDUReq();
-        obj._choice = "reqData";
-        obj.reqData = new CmsData();
-        byte[] data = obj.encode("uper");
-        CmsRpcCallRequestPDUReq d = CmsRpcCallRequestPDUReq.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

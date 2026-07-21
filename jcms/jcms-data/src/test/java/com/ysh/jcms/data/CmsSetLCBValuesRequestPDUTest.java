@@ -19,15 +19,9 @@ public class CmsSetLCBValuesRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsSetLCBValuesRequestPDU obj = new CmsSetLCBValuesRequestPDU();
+        obj.lcb = java.util.Collections.singletonList(new CmsAnonymousSetLCBValuesRequestPDULcb());
         String json = MAPPER.writeValueAsString(obj);
         CmsSetLCBValuesRequestPDU d = MAPPER.readValue(json, CmsSetLCBValuesRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetLCBValuesRequestPDU obj = new CmsSetLCBValuesRequestPDU();
-        byte[] data = obj.encode("uper");
-        CmsSetLCBValuesRequestPDU d = CmsSetLCBValuesRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

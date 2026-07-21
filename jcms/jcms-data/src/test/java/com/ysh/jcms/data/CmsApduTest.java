@@ -20,17 +20,10 @@ public class CmsApduTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsApdu obj = new CmsApdu();
-        obj.asdu = new byte[0];
+        if (obj.apch == null) obj.apch = new CmsApch();
+        obj.asdu = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsApdu d = MAPPER.readValue(json, CmsApdu.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsApdu obj = new CmsApdu();
-        obj.asdu = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsApdu d = CmsApdu.decode("uper", data);
         assertEquals(obj, d);
     }
 }

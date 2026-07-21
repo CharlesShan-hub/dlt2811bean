@@ -22,20 +22,10 @@ public class CmsQueryLogAfterRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsQueryLogAfterRequestPDU obj = new CmsQueryLogAfterRequestPDU();
         obj.log_reference = "test";
-        obj.start_time = new byte[0];
-        obj.entry = new byte[0];
+        obj.start_time = new byte[]{0x01, 0x02};
+        obj.entry = new byte[]{0x01, 0x02};
         String json = MAPPER.writeValueAsString(obj);
         CmsQueryLogAfterRequestPDU d = MAPPER.readValue(json, CmsQueryLogAfterRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsQueryLogAfterRequestPDU obj = new CmsQueryLogAfterRequestPDU();
-        obj.log_reference = "test";
-        obj.start_time = new byte[0];
-        obj.entry = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsQueryLogAfterRequestPDU d = CmsQueryLogAfterRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

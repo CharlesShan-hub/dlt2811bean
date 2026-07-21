@@ -56,7 +56,7 @@ public class CmsAddCause extends CmsBase {
         try {
             String json = CmsNative.decode("AddCause", enc, data);
             CmsAddCause r = new CmsAddCause();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

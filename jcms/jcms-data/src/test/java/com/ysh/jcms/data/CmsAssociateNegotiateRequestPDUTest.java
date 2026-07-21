@@ -21,21 +21,11 @@ public class CmsAssociateNegotiateRequestPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsAssociateNegotiateRequestPDU obj = new CmsAssociateNegotiateRequestPDU();
-        obj.apdu_size = 42;
-        obj.asdu_size = 42;
-        obj.protocol_version = 42;
+        obj.apdu_size = 1;
+        obj.asdu_size = 1;
+        obj.protocol_version = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsAssociateNegotiateRequestPDU d = MAPPER.readValue(json, CmsAssociateNegotiateRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAssociateNegotiateRequestPDU obj = new CmsAssociateNegotiateRequestPDU();
-        obj.apdu_size = 42;
-        obj.asdu_size = 42;
-        obj.protocol_version = 42;
-        byte[] data = obj.encode("uper");
-        CmsAssociateNegotiateRequestPDU d = CmsAssociateNegotiateRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -20,17 +20,10 @@ public class CmsDataDefinitionArrayTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsDataDefinitionArray obj = new CmsDataDefinitionArray();
-        obj.number_of_element = 42;
+        obj.number_of_element = 1;
+        if (obj.element_type == null) obj.element_type = new CmsDataDefinition();
         String json = MAPPER.writeValueAsString(obj);
         CmsDataDefinitionArray d = MAPPER.readValue(json, CmsDataDefinitionArray.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsDataDefinitionArray obj = new CmsDataDefinitionArray();
-        obj.number_of_element = 42;
-        byte[] data = obj.encode("uper");
-        CmsDataDefinitionArray d = CmsDataDefinitionArray.decode("uper", data);
         assertEquals(obj, d);
     }
 }

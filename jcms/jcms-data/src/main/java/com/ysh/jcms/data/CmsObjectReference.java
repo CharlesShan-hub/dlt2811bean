@@ -27,7 +27,7 @@ public class CmsObjectReference extends CmsBase {
         try {
             String json = CmsNative.decode("ObjectReference", enc, data);
             CmsObjectReference r = new CmsObjectReference();
-            r.value = json.trim();
+            r.value = MAPPER.readTree(json).get("value").asText();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

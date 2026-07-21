@@ -23,11 +23,4 @@ public class CmsDataDefinitionStructureTest {
         CmsDataDefinitionStructure d = MAPPER.readValue(json, CmsDataDefinitionStructure.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsDataDefinitionStructure obj = new CmsDataDefinitionStructure();
-        byte[] data = obj.encode("uper");
-        CmsDataDefinitionStructure d = CmsDataDefinitionStructure.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

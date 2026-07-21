@@ -24,14 +24,14 @@ public class CmsGetGOOSEElementNumberErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsGetGOOSEElementNumberErrorPDU obj = new CmsGetGOOSEElementNumberErrorPDU(42);
+        CmsGetGOOSEElementNumberErrorPDU obj = new CmsGetGOOSEElementNumberErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsGetGOOSEElementNumberErrorPDU d = MAPPER.readValue(json, CmsGetGOOSEElementNumberErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsGetGOOSEElementNumberErrorPDU obj = new CmsGetGOOSEElementNumberErrorPDU(42);
+        CmsGetGOOSEElementNumberErrorPDU obj = new CmsGetGOOSEElementNumberErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsGetGOOSEElementNumberErrorPDU d = CmsGetGOOSEElementNumberErrorPDU.decode("uper", data);
         assertEquals(obj, d);

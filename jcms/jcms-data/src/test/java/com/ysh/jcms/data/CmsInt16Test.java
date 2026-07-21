@@ -24,14 +24,14 @@ public class CmsInt16Test {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsInt16 obj = new CmsInt16(42);
+        CmsInt16 obj = new CmsInt16(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsInt16 d = MAPPER.readValue(json, CmsInt16.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsInt16 obj = new CmsInt16(42);
+        CmsInt16 obj = new CmsInt16(1);
         byte[] data = obj.encode("uper");
         CmsInt16 d = CmsInt16.decode("uper", data);
         assertEquals(obj, d);

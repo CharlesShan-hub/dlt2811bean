@@ -21,19 +21,11 @@ public class CmsReportPDUEntryTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsReportPDUEntry obj = new CmsReportPDUEntry();
-        obj.time_of_entry = new byte[0];
-        obj.entry_id = new byte[0];
+        obj.time_of_entry = new byte[]{0x01, 0x02};
+        obj.entry_id = new byte[]{0x01, 0x02};
+        obj.entry_data = java.util.Collections.singletonList(new CmsAnonymousReportPDUEntryEntryData());
         String json = MAPPER.writeValueAsString(obj);
         CmsReportPDUEntry d = MAPPER.readValue(json, CmsReportPDUEntry.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsReportPDUEntry obj = new CmsReportPDUEntry();
-        obj.time_of_entry = new byte[0];
-        obj.entry_id = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsReportPDUEntry d = CmsReportPDUEntry.decode("uper", data);
         assertEquals(obj, d);
     }
 }

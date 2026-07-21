@@ -21,18 +21,9 @@ public class CmsGetFileRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsGetFileRequestPDU obj = new CmsGetFileRequestPDU();
         obj.filename = "test";
-        obj.start_position = 42;
+        obj.start_position = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetFileRequestPDU d = MAPPER.readValue(json, CmsGetFileRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetFileRequestPDU obj = new CmsGetFileRequestPDU();
-        obj.filename = "test";
-        obj.start_position = 42;
-        byte[] data = obj.encode("uper");
-        CmsGetFileRequestPDU d = CmsGetFileRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

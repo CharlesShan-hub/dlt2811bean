@@ -24,14 +24,14 @@ public class CmsDeleteFileErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsDeleteFileErrorPDU obj = new CmsDeleteFileErrorPDU(42);
+        CmsDeleteFileErrorPDU obj = new CmsDeleteFileErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsDeleteFileErrorPDU d = MAPPER.readValue(json, CmsDeleteFileErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsDeleteFileErrorPDU obj = new CmsDeleteFileErrorPDU(42);
+        CmsDeleteFileErrorPDU obj = new CmsDeleteFileErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsDeleteFileErrorPDU d = CmsDeleteFileErrorPDU.decode("uper", data);
         assertEquals(obj, d);

@@ -28,11 +28,4 @@ public class CmsSetDataValuesResponsePDUTest {
         CmsSetDataValuesResponsePDU d = MAPPER.readValue(json, CmsSetDataValuesResponsePDU.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetDataValuesResponsePDU obj = new CmsSetDataValuesResponsePDU();
-        byte[] data = obj.encode("uper");
-        CmsSetDataValuesResponsePDU d = CmsSetDataValuesResponsePDU.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

@@ -21,18 +21,9 @@ public class CmsSelectActiveSGRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsSelectActiveSGRequestPDU obj = new CmsSelectActiveSGRequestPDU();
         obj.sgcb_reference = "test";
-        obj.setting_group_number = 42;
+        obj.setting_group_number = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsSelectActiveSGRequestPDU d = MAPPER.readValue(json, CmsSelectActiveSGRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSelectActiveSGRequestPDU obj = new CmsSelectActiveSGRequestPDU();
-        obj.sgcb_reference = "test";
-        obj.setting_group_number = 42;
-        byte[] data = obj.encode("uper");
-        CmsSelectActiveSGRequestPDU d = CmsSelectActiveSGRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

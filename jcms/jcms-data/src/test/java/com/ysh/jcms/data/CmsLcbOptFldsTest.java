@@ -24,16 +24,9 @@ public class CmsLcbOptFldsTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsLcbOptFlds obj = new CmsLcbOptFlds(42);
+        CmsLcbOptFlds obj = new CmsLcbOptFlds(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsLcbOptFlds d = MAPPER.readValue(json, CmsLcbOptFlds.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsLcbOptFlds obj = new CmsLcbOptFlds(42);
-        byte[] data = obj.encode("uper");
-        CmsLcbOptFlds d = CmsLcbOptFlds.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -27,7 +27,7 @@ public class CmsGetServerDirectoryErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetServerDirectoryErrorPDU", enc, data);
             CmsGetServerDirectoryErrorPDU r = new CmsGetServerDirectoryErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

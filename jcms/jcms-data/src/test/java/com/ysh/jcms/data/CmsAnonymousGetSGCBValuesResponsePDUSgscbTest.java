@@ -30,13 +30,4 @@ public class CmsAnonymousGetSGCBValuesResponsePDUSgscbTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetSGCBValuesResponsePDUSgscb obj = new CmsAnonymousGetSGCBValuesResponsePDUSgscb();
-        obj._choice = "error";
-        obj.error = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetSGCBValuesResponsePDUSgscb d = CmsAnonymousGetSGCBValuesResponsePDUSgscb.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

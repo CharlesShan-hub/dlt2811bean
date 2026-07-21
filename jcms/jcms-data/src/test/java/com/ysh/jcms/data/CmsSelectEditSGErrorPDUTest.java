@@ -24,14 +24,14 @@ public class CmsSelectEditSGErrorPDUTest {
 
     @Test
     public void testJsonRoundTrip() throws Exception {
-        CmsSelectEditSGErrorPDU obj = new CmsSelectEditSGErrorPDU(42);
+        CmsSelectEditSGErrorPDU obj = new CmsSelectEditSGErrorPDU(1);
         String json = MAPPER.writeValueAsString(obj);
         CmsSelectEditSGErrorPDU d = MAPPER.readValue(json, CmsSelectEditSGErrorPDU.class);
         assertEquals(obj, d);
     }
     @Test
     public void testEncodeDecode() throws Exception {
-        CmsSelectEditSGErrorPDU obj = new CmsSelectEditSGErrorPDU(42);
+        CmsSelectEditSGErrorPDU obj = new CmsSelectEditSGErrorPDU(1);
         byte[] data = obj.encode("uper");
         CmsSelectEditSGErrorPDU d = CmsSelectEditSGErrorPDU.decode("uper", data);
         assertEquals(obj, d);

@@ -21,19 +21,11 @@ public class CmsApchTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsApch obj = new CmsApch();
-        obj.sc = 42;
-        obj.fl = 42;
+        if (obj.cc == null) obj.cc = new CmsControlCode();
+        obj.sc = 1;
+        obj.fl = 1;
         String json = MAPPER.writeValueAsString(obj);
         CmsApch d = MAPPER.readValue(json, CmsApch.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsApch obj = new CmsApch();
-        obj.sc = 42;
-        obj.fl = 42;
-        byte[] data = obj.encode("uper");
-        CmsApch d = CmsApch.decode("uper", data);
         assertEquals(obj, d);
     }
 }

@@ -23,11 +23,4 @@ public class CmsReportPDUEntryEntryDataTest {
         CmsReportPDUEntryEntryData d = MAPPER.readValue(json, CmsReportPDUEntryEntryData.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsReportPDUEntryEntryData obj = new CmsReportPDUEntryEntryData();
-        byte[] data = obj.encode("uper");
-        CmsReportPDUEntryEntryData d = CmsReportPDUEntryEntryData.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

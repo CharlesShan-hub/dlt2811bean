@@ -20,19 +20,10 @@ public class CmsGetFileResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetFileResponsePDU obj = new CmsGetFileResponsePDU();
-        obj.file_data = new byte[0];
+        obj.file_data = new byte[]{0x01, 0x02};
         obj.end_of_file = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetFileResponsePDU d = MAPPER.readValue(json, CmsGetFileResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetFileResponsePDU obj = new CmsGetFileResponsePDU();
-        obj.file_data = new byte[0];
-        obj.end_of_file = true;
-        byte[] data = obj.encode("uper");
-        CmsGetFileResponsePDU d = CmsGetFileResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

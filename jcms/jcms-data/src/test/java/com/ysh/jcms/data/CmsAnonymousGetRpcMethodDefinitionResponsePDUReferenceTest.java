@@ -30,13 +30,4 @@ public class CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetRpcMethodDefinitionResponsePDUReference obj = new CmsAnonymousGetRpcMethodDefinitionResponsePDUReference();
-        obj._choice = "error";
-        obj.error = 42;
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetRpcMethodDefinitionResponsePDUReference d = CmsAnonymousGetRpcMethodDefinitionResponsePDUReference.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

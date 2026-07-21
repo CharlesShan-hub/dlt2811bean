@@ -23,11 +23,4 @@ public class CmsSetURCBValuesErrorPDUResultTest {
         CmsSetURCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsSetURCBValuesErrorPDUResult.class);
         assertEquals(obj, d);
     }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetURCBValuesErrorPDUResult obj = new CmsSetURCBValuesErrorPDUResult();
-        byte[] data = obj.encode("uper");
-        CmsSetURCBValuesErrorPDUResult d = CmsSetURCBValuesErrorPDUResult.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

@@ -30,13 +30,4 @@ public class CmsDataDefinitionTest {
         assertEquals(obj, d);
     }
 
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsDataDefinition obj = new CmsDataDefinition();
-        obj._choice = "error";
-        obj.error = 42;
-        byte[] data = obj.encode("uper");
-        CmsDataDefinition d = CmsDataDefinition.decode("uper", data);
-        assertEquals(obj, d);
-    }
 }

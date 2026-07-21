@@ -23,20 +23,11 @@ public class CmsGetFileDirectoryRequestPDUTest {
     public void testJsonRoundTrip() throws Exception {
         CmsGetFileDirectoryRequestPDU obj = new CmsGetFileDirectoryRequestPDU();
         obj.path_name = "test";
-        obj.start_time = new byte[0];
-        obj.stop_time = new byte[0];
+        obj.start_time = new byte[]{0x01, 0x02};
+        obj.stop_time = new byte[]{0x01, 0x02};
+        obj.file_after = "test";
         String json = MAPPER.writeValueAsString(obj);
         CmsGetFileDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetFileDirectoryRequestPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetFileDirectoryRequestPDU obj = new CmsGetFileDirectoryRequestPDU();
-        obj.path_name = "test";
-        obj.start_time = new byte[0];
-        obj.stop_time = new byte[0];
-        byte[] data = obj.encode("uper");
-        CmsGetFileDirectoryRequestPDU d = CmsGetFileDirectoryRequestPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

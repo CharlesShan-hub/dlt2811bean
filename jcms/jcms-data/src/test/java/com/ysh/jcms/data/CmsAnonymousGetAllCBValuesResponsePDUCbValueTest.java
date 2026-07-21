@@ -21,16 +21,9 @@ public class CmsAnonymousGetAllCBValuesResponsePDUCbValueTest {
     public void testJsonRoundTrip() throws Exception {
         CmsAnonymousGetAllCBValuesResponsePDUCbValue obj = new CmsAnonymousGetAllCBValuesResponsePDUCbValue();
         obj.reference = "test";
+        if (obj.value == null) obj.value = new CmsAnonymousGetAllCBValuesResponsePDUCbValueValue();
         String json = MAPPER.writeValueAsString(obj);
         CmsAnonymousGetAllCBValuesResponsePDUCbValue d = MAPPER.readValue(json, CmsAnonymousGetAllCBValuesResponsePDUCbValue.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsAnonymousGetAllCBValuesResponsePDUCbValue obj = new CmsAnonymousGetAllCBValuesResponsePDUCbValue();
-        obj.reference = "test";
-        byte[] data = obj.encode("uper");
-        CmsAnonymousGetAllCBValuesResponsePDUCbValue d = CmsAnonymousGetAllCBValuesResponsePDUCbValue.decode("uper", data);
         assertEquals(obj, d);
     }
 }

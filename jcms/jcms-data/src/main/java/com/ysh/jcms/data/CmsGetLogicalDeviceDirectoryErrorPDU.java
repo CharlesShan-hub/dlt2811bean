@@ -27,7 +27,7 @@ public class CmsGetLogicalDeviceDirectoryErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetLogicalDeviceDirectoryErrorPDU", enc, data);
             CmsGetLogicalDeviceDirectoryErrorPDU r = new CmsGetLogicalDeviceDirectoryErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

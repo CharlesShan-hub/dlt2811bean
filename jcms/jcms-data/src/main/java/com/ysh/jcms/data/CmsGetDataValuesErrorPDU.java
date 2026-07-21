@@ -27,7 +27,7 @@ public class CmsGetDataValuesErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetDataValuesErrorPDU", enc, data);
             CmsGetDataValuesErrorPDU r = new CmsGetDataValuesErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

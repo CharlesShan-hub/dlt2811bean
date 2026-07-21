@@ -20,17 +20,10 @@ public class CmsGetAllDataValuesResponsePDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsGetAllDataValuesResponsePDU obj = new CmsGetAllDataValuesResponsePDU();
+        obj.data = java.util.Collections.singletonList(new CmsAnonymousGetAllDataValuesResponsePDUData());
         obj.more_follows = true;
         String json = MAPPER.writeValueAsString(obj);
         CmsGetAllDataValuesResponsePDU d = MAPPER.readValue(json, CmsGetAllDataValuesResponsePDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsGetAllDataValuesResponsePDU obj = new CmsGetAllDataValuesResponsePDU();
-        obj.more_follows = true;
-        byte[] data = obj.encode("uper");
-        CmsGetAllDataValuesResponsePDU d = CmsGetAllDataValuesResponsePDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

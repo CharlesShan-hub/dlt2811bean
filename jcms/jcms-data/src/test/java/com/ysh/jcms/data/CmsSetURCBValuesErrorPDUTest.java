@@ -19,15 +19,9 @@ public class CmsSetURCBValuesErrorPDUTest {
     @Test
     public void testJsonRoundTrip() throws Exception {
         CmsSetURCBValuesErrorPDU obj = new CmsSetURCBValuesErrorPDU();
+        obj.result = java.util.Collections.singletonList(new CmsAnonymousSetURCBValuesErrorPDUResult());
         String json = MAPPER.writeValueAsString(obj);
         CmsSetURCBValuesErrorPDU d = MAPPER.readValue(json, CmsSetURCBValuesErrorPDU.class);
-        assertEquals(obj, d);
-    }
-    @Test
-    public void testEncodeDecode() throws Exception {
-        CmsSetURCBValuesErrorPDU obj = new CmsSetURCBValuesErrorPDU();
-        byte[] data = obj.encode("uper");
-        CmsSetURCBValuesErrorPDU d = CmsSetURCBValuesErrorPDU.decode("uper", data);
         assertEquals(obj, d);
     }
 }

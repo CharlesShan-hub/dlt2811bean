@@ -27,7 +27,7 @@ public class CmsGetGOOSEElementNumberErrorPDU extends CmsBase {
         try {
             String json = CmsNative.decode("GetGOOSEElementNumberErrorPDU", enc, data);
             CmsGetGOOSEElementNumberErrorPDU r = new CmsGetGOOSEElementNumberErrorPDU();
-            r.value = Integer.parseInt(json.trim());
+            r.value = MAPPER.readTree(json).get("value").asInt();
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);
