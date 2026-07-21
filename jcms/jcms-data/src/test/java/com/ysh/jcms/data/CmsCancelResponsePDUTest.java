@@ -32,4 +32,14 @@ public class CmsCancelResponsePDUTest {
         CmsCancelResponsePDU d = MAPPER.readValue(json, CmsCancelResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsCancelResponsePDU obj = new CmsCancelResponsePDU();
+        obj.reference = "test";
+        obj.oper_tm = new byte[0];
+        obj.ctl_num = 42;
+        byte[] data = obj.encode("uper");
+        CmsCancelResponsePDU d = CmsCancelResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -26,4 +26,13 @@ public class CmsOriginatorTest {
         CmsOriginator d = MAPPER.readValue(json, CmsOriginator.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsOriginator obj = new CmsOriginator();
+        obj.or_cat = 42;
+        obj.or_ident = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsOriginator d = CmsOriginator.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

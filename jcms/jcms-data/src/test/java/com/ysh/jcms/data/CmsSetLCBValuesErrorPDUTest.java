@@ -23,4 +23,11 @@ public class CmsSetLCBValuesErrorPDUTest {
         CmsSetLCBValuesErrorPDU d = MAPPER.readValue(json, CmsSetLCBValuesErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSetLCBValuesErrorPDU obj = new CmsSetLCBValuesErrorPDU();
+        byte[] data = obj.encode("uper");
+        CmsSetLCBValuesErrorPDU d = CmsSetLCBValuesErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

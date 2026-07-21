@@ -34,4 +34,14 @@ public class CmsReportPDUTest {
         CmsReportPDU d = MAPPER.readValue(json, CmsReportPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsReportPDU obj = new CmsReportPDU();
+        obj.rpt_id = "test";
+        obj.opt_flds = 42;
+        obj.sq_num = 42;
+        byte[] data = obj.encode("uper");
+        CmsReportPDU d = CmsReportPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

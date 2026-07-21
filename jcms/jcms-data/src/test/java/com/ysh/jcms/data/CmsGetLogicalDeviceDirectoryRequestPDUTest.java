@@ -26,4 +26,13 @@ public class CmsGetLogicalDeviceDirectoryRequestPDUTest {
         CmsGetLogicalDeviceDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetLogicalDeviceDirectoryRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetLogicalDeviceDirectoryRequestPDU obj = new CmsGetLogicalDeviceDirectoryRequestPDU();
+        obj.ld_name = "test";
+        obj.reference_after = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetLogicalDeviceDirectoryRequestPDU d = CmsGetLogicalDeviceDirectoryRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -30,4 +30,13 @@ public class CmsGetAllDataValuesRequestPDUReferenceTest {
         assertEquals(obj, d);
     }
 
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetAllDataValuesRequestPDUReference obj = new CmsGetAllDataValuesRequestPDUReference();
+        obj._choice = "ldName";
+        obj.ldName = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetAllDataValuesRequestPDUReference d = CmsGetAllDataValuesRequestPDUReference.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

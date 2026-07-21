@@ -29,4 +29,14 @@ public class CmsAnonymousLogEntryEntryDataTest {
         CmsAnonymousLogEntryEntryData d = MAPPER.readValue(json, CmsAnonymousLogEntryEntryData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousLogEntryEntryData obj = new CmsAnonymousLogEntryEntryData();
+        obj.reference = "test";
+        obj.fc = "test";
+        obj.reason = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousLogEntryEntryData d = CmsAnonymousLogEntryEntryData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

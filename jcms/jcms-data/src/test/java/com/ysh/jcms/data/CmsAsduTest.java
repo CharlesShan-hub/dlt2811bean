@@ -24,4 +24,12 @@ public class CmsAsduTest {
         CmsAsdu d = MAPPER.readValue(json, CmsAsdu.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAsdu obj = new CmsAsdu();
+        obj.req_id = 42;
+        byte[] data = obj.encode("uper");
+        CmsAsdu d = CmsAsdu.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

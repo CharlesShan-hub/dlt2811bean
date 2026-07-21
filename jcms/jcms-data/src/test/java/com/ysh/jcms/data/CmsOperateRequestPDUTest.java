@@ -32,4 +32,14 @@ public class CmsOperateRequestPDUTest {
         CmsOperateRequestPDU d = MAPPER.readValue(json, CmsOperateRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsOperateRequestPDU obj = new CmsOperateRequestPDU();
+        obj.reference = "test";
+        obj.ctl_num = 42;
+        obj.t = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsOperateRequestPDU d = CmsOperateRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

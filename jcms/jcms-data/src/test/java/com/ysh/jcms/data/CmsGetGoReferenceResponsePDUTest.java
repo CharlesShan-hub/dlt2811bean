@@ -29,4 +29,14 @@ public class CmsGetGoReferenceResponsePDUTest {
         CmsGetGoReferenceResponsePDU d = MAPPER.readValue(json, CmsGetGoReferenceResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetGoReferenceResponsePDU obj = new CmsGetGoReferenceResponsePDU();
+        obj.gocb_reference = "test";
+        obj.conf_rev = 42;
+        obj.dat_set = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetGoReferenceResponsePDU d = CmsGetGoReferenceResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

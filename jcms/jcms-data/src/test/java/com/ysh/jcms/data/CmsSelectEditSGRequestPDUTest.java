@@ -26,4 +26,13 @@ public class CmsSelectEditSGRequestPDUTest {
         CmsSelectEditSGRequestPDU d = MAPPER.readValue(json, CmsSelectEditSGRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSelectEditSGRequestPDU obj = new CmsSelectEditSGRequestPDU();
+        obj.sgcb_reference = "test";
+        obj.setting_group_number = 42;
+        byte[] data = obj.encode("uper");
+        CmsSelectEditSGRequestPDU d = CmsSelectEditSGRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

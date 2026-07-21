@@ -24,4 +24,12 @@ public class CmsSelectRequestPDUTest {
         CmsSelectRequestPDU d = MAPPER.readValue(json, CmsSelectRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSelectRequestPDU obj = new CmsSelectRequestPDU();
+        obj.reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsSelectRequestPDU d = CmsSelectRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -26,4 +26,13 @@ public class CmsAnonymousGetDataDefinitionRequestPDUDataTest {
         CmsAnonymousGetDataDefinitionRequestPDUData d = MAPPER.readValue(json, CmsAnonymousGetDataDefinitionRequestPDUData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetDataDefinitionRequestPDUData obj = new CmsAnonymousGetDataDefinitionRequestPDUData();
+        obj.reference = "test";
+        obj.fc = "test";
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetDataDefinitionRequestPDUData d = CmsAnonymousGetDataDefinitionRequestPDUData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

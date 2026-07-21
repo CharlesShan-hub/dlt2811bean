@@ -34,4 +34,14 @@ public class CmsCommandTerminationRequestPDUTest {
         CmsCommandTerminationRequestPDU d = MAPPER.readValue(json, CmsCommandTerminationRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsCommandTerminationRequestPDU obj = new CmsCommandTerminationRequestPDU();
+        obj.reference = "test";
+        obj.oper_tm = new byte[0];
+        obj.ctl_num = 42;
+        byte[] data = obj.encode("uper");
+        CmsCommandTerminationRequestPDU d = CmsCommandTerminationRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

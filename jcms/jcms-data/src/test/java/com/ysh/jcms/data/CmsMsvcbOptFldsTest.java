@@ -29,4 +29,11 @@ public class CmsMsvcbOptFldsTest {
         CmsMsvcbOptFlds d = MAPPER.readValue(json, CmsMsvcbOptFlds.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsMsvcbOptFlds obj = new CmsMsvcbOptFlds(42);
+        byte[] data = obj.encode("uper");
+        CmsMsvcbOptFlds d = CmsMsvcbOptFlds.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

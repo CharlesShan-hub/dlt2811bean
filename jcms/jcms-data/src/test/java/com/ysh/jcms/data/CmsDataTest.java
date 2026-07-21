@@ -29,4 +29,13 @@ public class CmsDataTest {
         assertEquals(obj, d);
     }
 
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsData obj = new CmsData();
+        obj._choice = "error";
+        obj.error = 42;
+        byte[] data = obj.encode("uper");
+        CmsData d = CmsData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

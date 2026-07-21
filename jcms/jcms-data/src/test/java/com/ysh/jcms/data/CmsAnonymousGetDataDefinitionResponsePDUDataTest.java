@@ -25,4 +25,12 @@ public class CmsAnonymousGetDataDefinitionResponsePDUDataTest {
         CmsAnonymousGetDataDefinitionResponsePDUData d = MAPPER.readValue(json, CmsAnonymousGetDataDefinitionResponsePDUData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetDataDefinitionResponsePDUData obj = new CmsAnonymousGetDataDefinitionResponsePDUData();
+        obj.cdc_type = "test";
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetDataDefinitionResponsePDUData d = CmsAnonymousGetDataDefinitionResponsePDUData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

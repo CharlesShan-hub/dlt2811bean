@@ -33,4 +33,14 @@ public class CmsOperateErrorPDUTest {
         CmsOperateErrorPDU d = MAPPER.readValue(json, CmsOperateErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsOperateErrorPDU obj = new CmsOperateErrorPDU();
+        obj.reference = "test";
+        obj.ctl_num = 42;
+        obj.t = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsOperateErrorPDU d = CmsOperateErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

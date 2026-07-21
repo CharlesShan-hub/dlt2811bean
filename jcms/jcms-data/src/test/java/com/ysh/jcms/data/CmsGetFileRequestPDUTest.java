@@ -26,4 +26,13 @@ public class CmsGetFileRequestPDUTest {
         CmsGetFileRequestPDU d = MAPPER.readValue(json, CmsGetFileRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetFileRequestPDU obj = new CmsGetFileRequestPDU();
+        obj.filename = "test";
+        obj.start_position = 42;
+        byte[] data = obj.encode("uper");
+        CmsGetFileRequestPDU d = CmsGetFileRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

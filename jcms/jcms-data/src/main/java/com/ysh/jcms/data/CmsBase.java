@@ -5,7 +5,7 @@ package com.ysh.jcms.data;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public abstract class CmsBase {
-    public static final String DEFAULT_ENCODING = "per";
+    public static final String DEFAULT_ENCODING = "ber";
 
     @Override
     public String toString() {

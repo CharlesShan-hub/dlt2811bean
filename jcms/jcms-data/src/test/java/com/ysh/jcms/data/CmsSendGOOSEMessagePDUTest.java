@@ -35,4 +35,14 @@ public class CmsSendGOOSEMessagePDUTest {
         CmsSendGOOSEMessagePDU d = MAPPER.readValue(json, CmsSendGOOSEMessagePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSendGOOSEMessagePDU obj = new CmsSendGOOSEMessagePDU();
+        obj.go_id = "test";
+        obj.dat_set = "test";
+        obj.go_ref = "test";
+        byte[] data = obj.encode("uper");
+        CmsSendGOOSEMessagePDU d = CmsSendGOOSEMessagePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

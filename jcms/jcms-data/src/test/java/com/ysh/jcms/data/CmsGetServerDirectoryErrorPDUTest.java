@@ -29,4 +29,11 @@ public class CmsGetServerDirectoryErrorPDUTest {
         CmsGetServerDirectoryErrorPDU d = MAPPER.readValue(json, CmsGetServerDirectoryErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetServerDirectoryErrorPDU obj = new CmsGetServerDirectoryErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsGetServerDirectoryErrorPDU d = CmsGetServerDirectoryErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

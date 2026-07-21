@@ -29,4 +29,11 @@ public class CmsGetGOOSEElementNumberErrorPDUTest {
         CmsGetGOOSEElementNumberErrorPDU d = MAPPER.readValue(json, CmsGetGOOSEElementNumberErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetGOOSEElementNumberErrorPDU obj = new CmsGetGOOSEElementNumberErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsGetGOOSEElementNumberErrorPDU d = CmsGetGOOSEElementNumberErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

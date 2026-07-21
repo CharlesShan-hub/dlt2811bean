@@ -24,4 +24,12 @@ public class CmsEntryIDTest {
         CmsEntryID d = MAPPER.readValue(json, CmsEntryID.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsEntryID obj = new CmsEntryID();
+        obj.value = new byte[]{0x01, 0x02};
+        byte[] data = obj.encode("uper");
+        CmsEntryID d = CmsEntryID.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

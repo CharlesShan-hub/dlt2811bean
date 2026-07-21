@@ -23,4 +23,11 @@ public class CmsLogEntryEntryDataTest {
         CmsLogEntryEntryData d = MAPPER.readValue(json, CmsLogEntryEntryData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsLogEntryEntryData obj = new CmsLogEntryEntryData();
+        byte[] data = obj.encode("uper");
+        CmsLogEntryEntryData d = CmsLogEntryEntryData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

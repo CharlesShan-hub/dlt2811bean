@@ -24,4 +24,12 @@ public class CmsFloat64Test {
         CmsFloat64 d = MAPPER.readValue(json, CmsFloat64.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsFloat64 obj = new CmsFloat64();
+        obj.value = new byte[]{0x01, 0x02};
+        byte[] data = obj.encode("uper");
+        CmsFloat64 d = CmsFloat64.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

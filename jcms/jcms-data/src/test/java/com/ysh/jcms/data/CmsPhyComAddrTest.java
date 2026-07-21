@@ -29,4 +29,14 @@ public class CmsPhyComAddrTest {
         CmsPhyComAddr d = MAPPER.readValue(json, CmsPhyComAddr.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsPhyComAddr obj = new CmsPhyComAddr();
+        obj.addr = new byte[0];
+        obj.priority = 42;
+        obj.vid = 42;
+        byte[] data = obj.encode("uper");
+        CmsPhyComAddr d = CmsPhyComAddr.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

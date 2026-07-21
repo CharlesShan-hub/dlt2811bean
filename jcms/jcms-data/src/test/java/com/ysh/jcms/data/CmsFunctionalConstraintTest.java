@@ -30,4 +30,12 @@ public class CmsFunctionalConstraintTest {
         CmsFunctionalConstraint d = MAPPER.readValue(json, CmsFunctionalConstraint.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsFunctionalConstraint obj = new CmsFunctionalConstraint();
+        obj.value = "test";
+        byte[] data = obj.encode("uper");
+        CmsFunctionalConstraint d = CmsFunctionalConstraint.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

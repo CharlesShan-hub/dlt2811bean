@@ -27,4 +27,13 @@ public class CmsGetLogicalNodeDirectoryRequestPDUTest {
         CmsGetLogicalNodeDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetLogicalNodeDirectoryRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetLogicalNodeDirectoryRequestPDU obj = new CmsGetLogicalNodeDirectoryRequestPDU();
+        obj.acsi_class = 42;
+        obj.reference_after = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetLogicalNodeDirectoryRequestPDU d = CmsGetLogicalNodeDirectoryRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

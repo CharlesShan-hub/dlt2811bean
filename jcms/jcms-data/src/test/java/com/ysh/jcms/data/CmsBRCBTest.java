@@ -40,4 +40,14 @@ public class CmsBRCBTest {
         CmsBRCB d = MAPPER.readValue(json, CmsBRCB.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsBRCB obj = new CmsBRCB();
+        obj.rpt_id = "test";
+        obj.rpt_ena = true;
+        obj.dat_set = "test";
+        byte[] data = obj.encode("uper");
+        CmsBRCB d = CmsBRCB.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

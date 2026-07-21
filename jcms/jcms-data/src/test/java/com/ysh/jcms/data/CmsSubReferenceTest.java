@@ -30,4 +30,12 @@ public class CmsSubReferenceTest {
         CmsSubReference d = MAPPER.readValue(json, CmsSubReference.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSubReference obj = new CmsSubReference();
+        obj.value = "test";
+        byte[] data = obj.encode("uper");
+        CmsSubReference d = CmsSubReference.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

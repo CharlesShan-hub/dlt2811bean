@@ -27,4 +27,13 @@ public class CmsLogEntryTest {
         CmsLogEntry d = MAPPER.readValue(json, CmsLogEntry.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsLogEntry obj = new CmsLogEntry();
+        obj.time_of_entry = new byte[0];
+        obj.entry_id = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsLogEntry d = CmsLogEntry.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

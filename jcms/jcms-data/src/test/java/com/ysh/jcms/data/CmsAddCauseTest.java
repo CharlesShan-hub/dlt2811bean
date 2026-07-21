@@ -29,4 +29,11 @@ public class CmsAddCauseTest {
         CmsAddCause d = MAPPER.readValue(json, CmsAddCause.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAddCause obj = new CmsAddCause(42);
+        byte[] data = obj.encode("uper");
+        CmsAddCause d = CmsAddCause.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

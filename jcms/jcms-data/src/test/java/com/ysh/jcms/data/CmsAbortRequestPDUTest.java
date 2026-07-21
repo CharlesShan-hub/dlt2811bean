@@ -26,4 +26,13 @@ public class CmsAbortRequestPDUTest {
         CmsAbortRequestPDU d = MAPPER.readValue(json, CmsAbortRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAbortRequestPDU obj = new CmsAbortRequestPDU();
+        obj.association_id = new byte[0];
+        obj.reason = 42;
+        byte[] data = obj.encode("uper");
+        CmsAbortRequestPDU d = CmsAbortRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

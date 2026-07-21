@@ -29,4 +29,14 @@ public class CmsAnonymousGetLogStatusValuesResponsePDULogValueTest {
         CmsAnonymousGetLogStatusValuesResponsePDULogValue d = MAPPER.readValue(json, CmsAnonymousGetLogStatusValuesResponsePDULogValue.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetLogStatusValuesResponsePDULogValue obj = new CmsAnonymousGetLogStatusValuesResponsePDULogValue();
+        obj.old_entr_tm = new byte[0];
+        obj.new_entr_tm = new byte[0];
+        obj.old_entr = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetLogStatusValuesResponsePDULogValue d = CmsAnonymousGetLogStatusValuesResponsePDULogValue.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -25,4 +25,12 @@ public class CmsGetRpcInterfaceDirectoryResponsePDUTest {
         CmsGetRpcInterfaceDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetRpcInterfaceDirectoryResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetRpcInterfaceDirectoryResponsePDU obj = new CmsGetRpcInterfaceDirectoryResponsePDU();
+        obj.more_follows = true;
+        byte[] data = obj.encode("uper");
+        CmsGetRpcInterfaceDirectoryResponsePDU d = CmsGetRpcInterfaceDirectoryResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

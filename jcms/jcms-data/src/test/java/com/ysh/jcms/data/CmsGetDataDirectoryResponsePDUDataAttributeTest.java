@@ -23,4 +23,11 @@ public class CmsGetDataDirectoryResponsePDUDataAttributeTest {
         CmsGetDataDirectoryResponsePDUDataAttribute d = MAPPER.readValue(json, CmsGetDataDirectoryResponsePDUDataAttribute.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetDataDirectoryResponsePDUDataAttribute obj = new CmsGetDataDirectoryResponsePDUDataAttribute();
+        byte[] data = obj.encode("uper");
+        CmsGetDataDirectoryResponsePDUDataAttribute d = CmsGetDataDirectoryResponsePDUDataAttribute.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -33,4 +33,14 @@ public class CmsSelectWithValueResponsePDUTest {
         CmsSelectWithValueResponsePDU d = MAPPER.readValue(json, CmsSelectWithValueResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSelectWithValueResponsePDU obj = new CmsSelectWithValueResponsePDU();
+        obj.reference = "test";
+        obj.oper_tm = new byte[0];
+        obj.ctl_num = 42;
+        byte[] data = obj.encode("uper");
+        CmsSelectWithValueResponsePDU d = CmsSelectWithValueResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

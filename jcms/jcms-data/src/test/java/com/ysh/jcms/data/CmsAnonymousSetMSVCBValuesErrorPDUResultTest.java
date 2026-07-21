@@ -32,4 +32,14 @@ public class CmsAnonymousSetMSVCBValuesErrorPDUResultTest {
         CmsAnonymousSetMSVCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetMSVCBValuesErrorPDUResult.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousSetMSVCBValuesErrorPDUResult obj = new CmsAnonymousSetMSVCBValuesErrorPDUResult();
+        obj.error = 42;
+        obj.sv_ena = 42;
+        obj.msv_id = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousSetMSVCBValuesErrorPDUResult d = CmsAnonymousSetMSVCBValuesErrorPDUResult.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -25,4 +25,12 @@ public class CmsAnonymousGetAllCBValuesResponsePDUCbValueTest {
         CmsAnonymousGetAllCBValuesResponsePDUCbValue d = MAPPER.readValue(json, CmsAnonymousGetAllCBValuesResponsePDUCbValue.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetAllCBValuesResponsePDUCbValue obj = new CmsAnonymousGetAllCBValuesResponsePDUCbValue();
+        obj.reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetAllCBValuesResponsePDUCbValue d = CmsAnonymousGetAllCBValuesResponsePDUCbValue.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

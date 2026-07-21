@@ -37,4 +37,14 @@ public class CmsAnonymousSetBRCBValuesErrorPDUResultTest {
         CmsAnonymousSetBRCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetBRCBValuesErrorPDUResult.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousSetBRCBValuesErrorPDUResult obj = new CmsAnonymousSetBRCBValuesErrorPDUResult();
+        obj.error = 42;
+        obj.rpt_id = 42;
+        obj.rpt_ena = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousSetBRCBValuesErrorPDUResult d = CmsAnonymousSetBRCBValuesErrorPDUResult.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

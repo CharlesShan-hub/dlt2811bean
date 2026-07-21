@@ -25,4 +25,12 @@ public class CmsAssociateRequestPDUTest {
         CmsAssociateRequestPDU d = MAPPER.readValue(json, CmsAssociateRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAssociateRequestPDU obj = new CmsAssociateRequestPDU();
+        obj.server_access_point_reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsAssociateRequestPDU d = CmsAssociateRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

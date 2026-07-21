@@ -23,4 +23,11 @@ public class CmsGetRpcMethodDefinitionRequestPDUTest {
         CmsGetRpcMethodDefinitionRequestPDU d = MAPPER.readValue(json, CmsGetRpcMethodDefinitionRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetRpcMethodDefinitionRequestPDU obj = new CmsGetRpcMethodDefinitionRequestPDU();
+        byte[] data = obj.encode("uper");
+        CmsGetRpcMethodDefinitionRequestPDU d = CmsGetRpcMethodDefinitionRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -24,4 +24,12 @@ public class CmsBinaryTimeTest {
         CmsBinaryTime d = MAPPER.readValue(json, CmsBinaryTime.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsBinaryTime obj = new CmsBinaryTime();
+        obj.value = new byte[]{0x01, 0x02};
+        byte[] data = obj.encode("uper");
+        CmsBinaryTime d = CmsBinaryTime.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

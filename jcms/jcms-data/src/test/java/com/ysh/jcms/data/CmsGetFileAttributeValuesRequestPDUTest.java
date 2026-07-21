@@ -24,4 +24,12 @@ public class CmsGetFileAttributeValuesRequestPDUTest {
         CmsGetFileAttributeValuesRequestPDU d = MAPPER.readValue(json, CmsGetFileAttributeValuesRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetFileAttributeValuesRequestPDU obj = new CmsGetFileAttributeValuesRequestPDU();
+        obj.filename = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetFileAttributeValuesRequestPDU d = CmsGetFileAttributeValuesRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

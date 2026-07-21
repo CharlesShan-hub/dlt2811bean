@@ -25,4 +25,12 @@ public class CmsGetGoReferenceRequestPDUTest {
         CmsGetGoReferenceRequestPDU d = MAPPER.readValue(json, CmsGetGoReferenceRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetGoReferenceRequestPDU obj = new CmsGetGoReferenceRequestPDU();
+        obj.gocb_reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetGoReferenceRequestPDU d = CmsGetGoReferenceRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

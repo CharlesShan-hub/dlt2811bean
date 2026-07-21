@@ -23,4 +23,11 @@ public class CmsCreateDataSetRequestPDUMemberDataTest {
         CmsCreateDataSetRequestPDUMemberData d = MAPPER.readValue(json, CmsCreateDataSetRequestPDUMemberData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsCreateDataSetRequestPDUMemberData obj = new CmsCreateDataSetRequestPDUMemberData();
+        byte[] data = obj.encode("uper");
+        CmsCreateDataSetRequestPDUMemberData d = CmsCreateDataSetRequestPDUMemberData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

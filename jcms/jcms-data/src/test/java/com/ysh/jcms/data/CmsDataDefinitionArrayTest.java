@@ -25,4 +25,12 @@ public class CmsDataDefinitionArrayTest {
         CmsDataDefinitionArray d = MAPPER.readValue(json, CmsDataDefinitionArray.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsDataDefinitionArray obj = new CmsDataDefinitionArray();
+        obj.number_of_element = 42;
+        byte[] data = obj.encode("uper");
+        CmsDataDefinitionArray d = CmsDataDefinitionArray.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

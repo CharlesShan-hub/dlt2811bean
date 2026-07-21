@@ -28,4 +28,14 @@ public class CmsAssociateResponsePDUAuthenticationParameterTest {
         CmsAssociateResponsePDUAuthenticationParameter d = MAPPER.readValue(json, CmsAssociateResponsePDUAuthenticationParameter.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAssociateResponsePDUAuthenticationParameter obj = new CmsAssociateResponsePDUAuthenticationParameter();
+        obj.signature_certificate = new byte[0];
+        obj.signed_time = new byte[0];
+        obj.signed_value = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsAssociateResponsePDUAuthenticationParameter d = CmsAssociateResponsePDUAuthenticationParameter.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

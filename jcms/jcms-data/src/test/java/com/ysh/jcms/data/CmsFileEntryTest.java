@@ -29,4 +29,14 @@ public class CmsFileEntryTest {
         CmsFileEntry d = MAPPER.readValue(json, CmsFileEntry.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsFileEntry obj = new CmsFileEntry();
+        obj.file_name = "test";
+        obj.file_size = 42;
+        obj.last_modified = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsFileEntry d = CmsFileEntry.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

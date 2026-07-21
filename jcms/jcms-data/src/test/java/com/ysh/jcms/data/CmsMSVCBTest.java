@@ -33,4 +33,14 @@ public class CmsMSVCBTest {
         CmsMSVCB d = MAPPER.readValue(json, CmsMSVCB.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsMSVCB obj = new CmsMSVCB();
+        obj.sv_ena = true;
+        obj.msv_id = "test";
+        obj.dat_set = "test";
+        byte[] data = obj.encode("uper");
+        CmsMSVCB d = CmsMSVCB.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

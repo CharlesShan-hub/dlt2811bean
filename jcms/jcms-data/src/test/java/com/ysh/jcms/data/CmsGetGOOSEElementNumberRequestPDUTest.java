@@ -25,4 +25,12 @@ public class CmsGetGOOSEElementNumberRequestPDUTest {
         CmsGetGOOSEElementNumberRequestPDU d = MAPPER.readValue(json, CmsGetGOOSEElementNumberRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetGOOSEElementNumberRequestPDU obj = new CmsGetGOOSEElementNumberRequestPDU();
+        obj.gocb_reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsGetGOOSEElementNumberRequestPDU d = CmsGetGOOSEElementNumberRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

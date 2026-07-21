@@ -29,4 +29,11 @@ public class CmsGetRpcInterfaceDefinitionErrorPDUTest {
         CmsGetRpcInterfaceDefinitionErrorPDU d = MAPPER.readValue(json, CmsGetRpcInterfaceDefinitionErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetRpcInterfaceDefinitionErrorPDU obj = new CmsGetRpcInterfaceDefinitionErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsGetRpcInterfaceDefinitionErrorPDU d = CmsGetRpcInterfaceDefinitionErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

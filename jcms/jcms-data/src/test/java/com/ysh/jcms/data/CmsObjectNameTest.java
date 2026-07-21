@@ -30,4 +30,12 @@ public class CmsObjectNameTest {
         CmsObjectName d = MAPPER.readValue(json, CmsObjectName.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsObjectName obj = new CmsObjectName();
+        obj.value = "test";
+        byte[] data = obj.encode("uper");
+        CmsObjectName d = CmsObjectName.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

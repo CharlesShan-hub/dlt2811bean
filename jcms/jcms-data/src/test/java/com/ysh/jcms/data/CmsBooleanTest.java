@@ -29,4 +29,11 @@ public class CmsBooleanTest {
         CmsBoolean d = MAPPER.readValue(json, CmsBoolean.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsBoolean obj = new CmsBoolean(42);
+        byte[] data = obj.encode("uper");
+        CmsBoolean d = CmsBoolean.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

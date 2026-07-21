@@ -37,4 +37,14 @@ public class CmsURCBTest {
         CmsURCB d = MAPPER.readValue(json, CmsURCB.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsURCB obj = new CmsURCB();
+        obj.rpt_id = "test";
+        obj.rpt_ena = true;
+        obj.dat_set = "test";
+        byte[] data = obj.encode("uper");
+        CmsURCB d = CmsURCB.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

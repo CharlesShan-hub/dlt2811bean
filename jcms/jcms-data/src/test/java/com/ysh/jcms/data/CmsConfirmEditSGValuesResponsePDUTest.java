@@ -28,4 +28,11 @@ public class CmsConfirmEditSGValuesResponsePDUTest {
         CmsConfirmEditSGValuesResponsePDU d = MAPPER.readValue(json, CmsConfirmEditSGValuesResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsConfirmEditSGValuesResponsePDU obj = new CmsConfirmEditSGValuesResponsePDU();
+        byte[] data = obj.encode("uper");
+        CmsConfirmEditSGValuesResponsePDU d = CmsConfirmEditSGValuesResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

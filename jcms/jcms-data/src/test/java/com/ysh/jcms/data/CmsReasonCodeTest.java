@@ -29,4 +29,11 @@ public class CmsReasonCodeTest {
         CmsReasonCode d = MAPPER.readValue(json, CmsReasonCode.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsReasonCode obj = new CmsReasonCode(42);
+        byte[] data = obj.encode("uper");
+        CmsReasonCode d = CmsReasonCode.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

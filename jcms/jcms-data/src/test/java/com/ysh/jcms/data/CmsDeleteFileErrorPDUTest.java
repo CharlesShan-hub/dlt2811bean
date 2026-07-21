@@ -29,4 +29,11 @@ public class CmsDeleteFileErrorPDUTest {
         CmsDeleteFileErrorPDU d = MAPPER.readValue(json, CmsDeleteFileErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsDeleteFileErrorPDU obj = new CmsDeleteFileErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsDeleteFileErrorPDU d = CmsDeleteFileErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

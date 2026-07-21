@@ -29,4 +29,14 @@ public class CmsAssociateNegotiateResponsePDUTest {
         CmsAssociateNegotiateResponsePDU d = MAPPER.readValue(json, CmsAssociateNegotiateResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAssociateNegotiateResponsePDU obj = new CmsAssociateNegotiateResponsePDU();
+        obj.apdu_size = 42;
+        obj.asdu_size = 42;
+        obj.protocol_version = 42;
+        byte[] data = obj.encode("uper");
+        CmsAssociateNegotiateResponsePDU d = CmsAssociateNegotiateResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

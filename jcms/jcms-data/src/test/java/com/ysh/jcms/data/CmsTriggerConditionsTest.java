@@ -29,4 +29,11 @@ public class CmsTriggerConditionsTest {
         CmsTriggerConditions d = MAPPER.readValue(json, CmsTriggerConditions.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsTriggerConditions obj = new CmsTriggerConditions(42);
+        byte[] data = obj.encode("uper");
+        CmsTriggerConditions d = CmsTriggerConditions.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

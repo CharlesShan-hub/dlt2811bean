@@ -29,4 +29,11 @@ public class CmsInt8UTest {
         CmsInt8U d = MAPPER.readValue(json, CmsInt8U.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsInt8U obj = new CmsInt8U(42);
+        byte[] data = obj.encode("uper");
+        CmsInt8U d = CmsInt8U.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

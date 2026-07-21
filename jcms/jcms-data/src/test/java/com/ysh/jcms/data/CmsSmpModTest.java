@@ -29,4 +29,11 @@ public class CmsSmpModTest {
         CmsSmpMod d = MAPPER.readValue(json, CmsSmpMod.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSmpMod obj = new CmsSmpMod(42);
+        byte[] data = obj.encode("uper");
+        CmsSmpMod d = CmsSmpMod.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

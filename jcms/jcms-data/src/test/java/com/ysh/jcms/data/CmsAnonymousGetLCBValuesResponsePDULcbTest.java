@@ -30,4 +30,13 @@ public class CmsAnonymousGetLCBValuesResponsePDULcbTest {
         assertEquals(obj, d);
     }
 
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetLCBValuesResponsePDULcb obj = new CmsAnonymousGetLCBValuesResponsePDULcb();
+        obj._choice = "error";
+        obj.error = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetLCBValuesResponsePDULcb d = CmsAnonymousGetLCBValuesResponsePDULcb.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

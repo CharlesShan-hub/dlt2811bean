@@ -33,4 +33,14 @@ public class CmsAnonymousSetLCBValuesErrorPDUResultTest {
         CmsAnonymousSetLCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetLCBValuesErrorPDUResult.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousSetLCBValuesErrorPDUResult obj = new CmsAnonymousSetLCBValuesErrorPDUResult();
+        obj.error = 42;
+        obj.log_ena = 42;
+        obj.dat_set = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousSetLCBValuesErrorPDUResult d = CmsAnonymousSetLCBValuesErrorPDUResult.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

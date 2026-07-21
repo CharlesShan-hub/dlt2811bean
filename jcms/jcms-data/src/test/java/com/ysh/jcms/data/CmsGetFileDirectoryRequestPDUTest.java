@@ -29,4 +29,14 @@ public class CmsGetFileDirectoryRequestPDUTest {
         CmsGetFileDirectoryRequestPDU d = MAPPER.readValue(json, CmsGetFileDirectoryRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetFileDirectoryRequestPDU obj = new CmsGetFileDirectoryRequestPDU();
+        obj.path_name = "test";
+        obj.start_time = new byte[0];
+        obj.stop_time = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsGetFileDirectoryRequestPDU d = CmsGetFileDirectoryRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

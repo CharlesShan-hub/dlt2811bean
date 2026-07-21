@@ -29,4 +29,11 @@ public class CmsTcmdTest {
         CmsTcmd d = MAPPER.readValue(json, CmsTcmd.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsTcmd obj = new CmsTcmd(42);
+        byte[] data = obj.encode("uper");
+        CmsTcmd d = CmsTcmd.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

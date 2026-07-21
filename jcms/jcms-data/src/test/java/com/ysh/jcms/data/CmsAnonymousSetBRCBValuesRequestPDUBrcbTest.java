@@ -37,4 +37,14 @@ public class CmsAnonymousSetBRCBValuesRequestPDUBrcbTest {
         CmsAnonymousSetBRCBValuesRequestPDUBrcb d = MAPPER.readValue(json, CmsAnonymousSetBRCBValuesRequestPDUBrcb.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousSetBRCBValuesRequestPDUBrcb obj = new CmsAnonymousSetBRCBValuesRequestPDUBrcb();
+        obj.reference = "test";
+        obj.rpt_id = "test";
+        obj.rpt_ena = true;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousSetBRCBValuesRequestPDUBrcb d = CmsAnonymousSetBRCBValuesRequestPDUBrcb.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -26,4 +26,13 @@ public class CmsAnonymousGetEditSGValueRequestPDUDataTest {
         CmsAnonymousGetEditSGValueRequestPDUData d = MAPPER.readValue(json, CmsAnonymousGetEditSGValueRequestPDUData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetEditSGValueRequestPDUData obj = new CmsAnonymousGetEditSGValueRequestPDUData();
+        obj.reference = "test";
+        obj.fc = "test";
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetEditSGValueRequestPDUData d = CmsAnonymousGetEditSGValueRequestPDUData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

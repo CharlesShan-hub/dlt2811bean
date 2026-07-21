@@ -33,4 +33,14 @@ public class CmsTimeActivatedOperateRequestPDUTest {
         CmsTimeActivatedOperateRequestPDU d = MAPPER.readValue(json, CmsTimeActivatedOperateRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsTimeActivatedOperateRequestPDU obj = new CmsTimeActivatedOperateRequestPDU();
+        obj.reference = "test";
+        obj.oper_tm = new byte[0];
+        obj.ctl_num = 42;
+        byte[] data = obj.encode("uper");
+        CmsTimeActivatedOperateRequestPDU d = CmsTimeActivatedOperateRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

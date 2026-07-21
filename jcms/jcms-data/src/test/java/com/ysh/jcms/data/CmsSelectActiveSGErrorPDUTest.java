@@ -29,4 +29,11 @@ public class CmsSelectActiveSGErrorPDUTest {
         CmsSelectActiveSGErrorPDU d = MAPPER.readValue(json, CmsSelectActiveSGErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsSelectActiveSGErrorPDU obj = new CmsSelectActiveSGErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsSelectActiveSGErrorPDU d = CmsSelectActiveSGErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

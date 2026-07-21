@@ -29,4 +29,11 @@ public class CmsACSIClassTest {
         CmsACSIClass d = MAPPER.readValue(json, CmsACSIClass.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsACSIClass obj = new CmsACSIClass(42);
+        byte[] data = obj.encode("uper");
+        CmsACSIClass d = CmsACSIClass.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

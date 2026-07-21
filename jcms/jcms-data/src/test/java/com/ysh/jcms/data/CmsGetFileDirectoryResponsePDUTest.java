@@ -25,4 +25,12 @@ public class CmsGetFileDirectoryResponsePDUTest {
         CmsGetFileDirectoryResponsePDU d = MAPPER.readValue(json, CmsGetFileDirectoryResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetFileDirectoryResponsePDU obj = new CmsGetFileDirectoryResponsePDU();
+        obj.more_follows = true;
+        byte[] data = obj.encode("uper");
+        CmsGetFileDirectoryResponsePDU d = CmsGetFileDirectoryResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

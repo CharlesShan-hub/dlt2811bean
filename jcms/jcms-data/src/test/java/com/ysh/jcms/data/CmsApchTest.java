@@ -27,4 +27,13 @@ public class CmsApchTest {
         CmsApch d = MAPPER.readValue(json, CmsApch.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsApch obj = new CmsApch();
+        obj.sc = 42;
+        obj.fl = 42;
+        byte[] data = obj.encode("uper");
+        CmsApch d = CmsApch.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

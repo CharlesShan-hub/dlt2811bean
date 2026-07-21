@@ -28,4 +28,13 @@ public class CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethodTest {
         CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod d = MAPPER.readValue(json, CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod obj = new CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod();
+        obj.version = 42;
+        obj.timeout = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod d = CmsAnonymousGetRpcMethodDefinitionResponsePDUReferenceMethod.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

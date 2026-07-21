@@ -29,4 +29,11 @@ public class CmsQueryLogByTimeErrorPDUTest {
         CmsQueryLogByTimeErrorPDU d = MAPPER.readValue(json, CmsQueryLogByTimeErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsQueryLogByTimeErrorPDU obj = new CmsQueryLogByTimeErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsQueryLogByTimeErrorPDU d = CmsQueryLogByTimeErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

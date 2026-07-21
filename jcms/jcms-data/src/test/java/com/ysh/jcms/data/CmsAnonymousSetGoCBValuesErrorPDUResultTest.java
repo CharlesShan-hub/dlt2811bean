@@ -29,4 +29,14 @@ public class CmsAnonymousSetGoCBValuesErrorPDUResultTest {
         CmsAnonymousSetGoCBValuesErrorPDUResult d = MAPPER.readValue(json, CmsAnonymousSetGoCBValuesErrorPDUResult.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousSetGoCBValuesErrorPDUResult obj = new CmsAnonymousSetGoCBValuesErrorPDUResult();
+        obj.error = 42;
+        obj.go_ena = 42;
+        obj.go_id = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousSetGoCBValuesErrorPDUResult d = CmsAnonymousSetGoCBValuesErrorPDUResult.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

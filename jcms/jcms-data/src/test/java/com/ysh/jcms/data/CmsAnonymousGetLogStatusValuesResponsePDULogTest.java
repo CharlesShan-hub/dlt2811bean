@@ -30,4 +30,13 @@ public class CmsAnonymousGetLogStatusValuesResponsePDULogTest {
         assertEquals(obj, d);
     }
 
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousGetLogStatusValuesResponsePDULog obj = new CmsAnonymousGetLogStatusValuesResponsePDULog();
+        obj._choice = "error";
+        obj.error = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousGetLogStatusValuesResponsePDULog d = CmsAnonymousGetLogStatusValuesResponsePDULog.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

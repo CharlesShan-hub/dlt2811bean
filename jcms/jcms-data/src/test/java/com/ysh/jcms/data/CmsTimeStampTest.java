@@ -24,4 +24,12 @@ public class CmsTimeStampTest {
         CmsTimeStamp d = MAPPER.readValue(json, CmsTimeStamp.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsTimeStamp obj = new CmsTimeStamp();
+        obj.value = new byte[]{0x01, 0x02};
+        byte[] data = obj.encode("uper");
+        CmsTimeStamp d = CmsTimeStamp.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

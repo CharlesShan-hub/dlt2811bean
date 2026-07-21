@@ -29,4 +29,11 @@ public class CmsGetLogicalDeviceDirectoryErrorPDUTest {
         CmsGetLogicalDeviceDirectoryErrorPDU d = MAPPER.readValue(json, CmsGetLogicalDeviceDirectoryErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetLogicalDeviceDirectoryErrorPDU obj = new CmsGetLogicalDeviceDirectoryErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsGetLogicalDeviceDirectoryErrorPDU d = CmsGetLogicalDeviceDirectoryErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

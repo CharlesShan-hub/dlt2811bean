@@ -25,4 +25,12 @@ public class CmsRpcCallResponsePDUTest {
         CmsRpcCallResponsePDU d = MAPPER.readValue(json, CmsRpcCallResponsePDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsRpcCallResponsePDU obj = new CmsRpcCallResponsePDU();
+        obj.next_call_id = new byte[0];
+        byte[] data = obj.encode("uper");
+        CmsRpcCallResponsePDU d = CmsRpcCallResponsePDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -30,4 +30,14 @@ public class CmsAnonymousReportPDUEntryEntryDataTest {
         CmsAnonymousReportPDUEntryEntryData d = MAPPER.readValue(json, CmsAnonymousReportPDUEntryEntryData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsAnonymousReportPDUEntryEntryData obj = new CmsAnonymousReportPDUEntryEntryData();
+        obj.reference = "test";
+        obj.fc = "test";
+        obj.id = 42;
+        byte[] data = obj.encode("uper");
+        CmsAnonymousReportPDUEntryEntryData d = CmsAnonymousReportPDUEntryEntryData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

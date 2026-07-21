@@ -23,4 +23,11 @@ public class CmsGetDataSetDirectoryResponsePDUMemberDataTest {
         CmsGetDataSetDirectoryResponsePDUMemberData d = MAPPER.readValue(json, CmsGetDataSetDirectoryResponsePDUMemberData.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetDataSetDirectoryResponsePDUMemberData obj = new CmsGetDataSetDirectoryResponsePDUMemberData();
+        byte[] data = obj.encode("uper");
+        CmsGetDataSetDirectoryResponsePDUMemberData d = CmsGetDataSetDirectoryResponsePDUMemberData.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -23,4 +23,11 @@ public class CmsGetLogStatusValuesRequestPDUTest {
         CmsGetLogStatusValuesRequestPDU d = MAPPER.readValue(json, CmsGetLogStatusValuesRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetLogStatusValuesRequestPDU obj = new CmsGetLogStatusValuesRequestPDU();
+        byte[] data = obj.encode("uper");
+        CmsGetLogStatusValuesRequestPDU d = CmsGetLogStatusValuesRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

@@ -24,4 +24,12 @@ public class CmsDeleteDataSetRequestPDUTest {
         CmsDeleteDataSetRequestPDU d = MAPPER.readValue(json, CmsDeleteDataSetRequestPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsDeleteDataSetRequestPDU obj = new CmsDeleteDataSetRequestPDU();
+        obj.dataset_reference = "test";
+        byte[] data = obj.encode("uper");
+        CmsDeleteDataSetRequestPDU d = CmsDeleteDataSetRequestPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }

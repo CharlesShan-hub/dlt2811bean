@@ -29,4 +29,11 @@ public class CmsGetMSVCBValuesErrorPDUTest {
         CmsGetMSVCBValuesErrorPDU d = MAPPER.readValue(json, CmsGetMSVCBValuesErrorPDU.class);
         assertEquals(obj, d);
     }
+    @Test
+    public void testEncodeDecode() throws Exception {
+        CmsGetMSVCBValuesErrorPDU obj = new CmsGetMSVCBValuesErrorPDU(42);
+        byte[] data = obj.encode("uper");
+        CmsGetMSVCBValuesErrorPDU d = CmsGetMSVCBValuesErrorPDU.decode("uper", data);
+        assertEquals(obj, d);
+    }
 }
