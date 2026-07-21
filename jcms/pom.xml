@@ -15,6 +15,7 @@
     <modules>
         <module>jcms-core</module>
         <module>jcms-utils</module>
+        <module>jcms-data</module>
         <module>jcms-app</module>
     </modules>
 
@@ -47,6 +48,11 @@
             <dependency>
                 <groupId>com.ysh</groupId>
                 <artifactId>jcms-app</artifactId>
+                <version>${jcms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ysh</groupId>
+                <artifactId>jcms-data</artifactId>
                 <version>${jcms.version}</version>
             </dependency>
             <dependency>
@@ -101,6 +107,7 @@
                             <excludes>
                                 <exclude>**/NativeBridge.java</exclude>
                                 <exclude>**/info/**</exclude>
+                                <exclude>jcms-data/**</exclude>
                             </excludes>
                         </java>
                     </configuration>
