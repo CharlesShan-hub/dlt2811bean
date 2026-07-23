@@ -1,4 +1,4 @@
-# Configuration Mapping Specification（CMS）
+# Communication Message Specification（CMS）
 
 ---
 

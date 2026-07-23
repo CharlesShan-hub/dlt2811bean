@@ -1,0 +1,42 @@
+// Auto-generated. ASN.1 type: MsvcbOptFlds
+
+package com.ysh.jcms.data;
+
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.*;
+import lombok.Data;
+
+/**
+ * <pre>{@code
+ * MsvcbOptFlds ::= BIT STRING {
+ *     refresh-time                (0),
+ *     reserved                    (1),
+ *     sample-rate                 (2),
+ *     data-set-name               (3),
+ *     security                    (4)
+ * } (SIZE(5))
+ * }</pre>
+ */
+@Data
+public class CmsMsvcbOptFlds extends CmsBase {
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    @JsonProperty public int value;
+    public CmsMsvcbOptFlds() {}
+    public CmsMsvcbOptFlds(int value) { this.value = value; }
+    public byte[] encode(String enc) {
+        return CmsNative.encode("MsvcbOptFlds", enc, String.valueOf(this.value));
+    }
+    public byte[] encode() {
+        return encode(DEFAULT_ENCODING);
+    }
+    public static CmsMsvcbOptFlds decode(String enc, byte[] data) {
+        try {
+            String json = CmsNative.decode("MsvcbOptFlds", enc, data);
+            CmsMsvcbOptFlds r = new CmsMsvcbOptFlds();
+            r.value = MAPPER.readTree(json).get("value").asInt();
+            return r;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
