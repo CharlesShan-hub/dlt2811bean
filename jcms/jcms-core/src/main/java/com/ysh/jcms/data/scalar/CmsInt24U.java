@@ -2,33 +2,40 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerInt24U;
 
 /**
- * typedef struct { uint32_t value; } cms_int24u_t; sizeof = 4 (stored in
- * uint32_t, value 0..16777215)
+ * Wraps {@link InnerInt24U} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt24U extends CmsType {
 
     public static final int MAX = 16777215;
 
-    private int value = 0;
+    private transient InnerInt24U inner = new InnerInt24U();
 
     public CmsInt24U() {
         super(Codec.INT24U);
     }
     public CmsInt24U(int value) {
         super(Codec.INT24U);
-        this.value = value & MAX;
-        write();
+        inner.value = value & MAX;
     }
 
     public int value() {
-        return value;
+        return inner.value;
     }
     public CmsInt24U value(int v) {
-        this.value = v & MAX;
-        write();
+        inner.value = v & MAX;
         return this;
+    }
+
+    @Override
+    public byte[] encode() {
+        return inner.encode();
+    }
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerInt24U.decode(data);
     }
 
     @Override
@@ -37,10 +44,10 @@ public class CmsInt24U extends CmsType {
     }
     @Override
     public void write() {
-        nativePtr.setInt(0, value);
+        nativePtr.setInt(0, inner.value);
     }
     @Override
     public void read() {
-        this.value = nativePtr.getInt(0);
+        inner.value = nativePtr.getInt(0);
     }
 }

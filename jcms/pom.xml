@@ -13,6 +13,7 @@
     <description>Multi-module project: core (JNA binding), utils (SCL, security, config), app (transport, server, client)</description>
 
     <modules>
+        <module>jcms-data</module>
         <module>jcms-core</module>
         <module>jcms-utils</module>
         <module>jcms-app</module>
@@ -47,6 +48,11 @@
             <dependency>
                 <groupId>com.ysh</groupId>
                 <artifactId>jcms-app</artifactId>
+                <version>${jcms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.ysh.jcms</groupId>
+                <artifactId>inner-data</artifactId>
                 <version>${jcms.version}</version>
             </dependency>
             <dependency>

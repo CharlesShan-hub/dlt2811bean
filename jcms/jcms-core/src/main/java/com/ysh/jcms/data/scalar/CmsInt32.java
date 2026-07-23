@@ -2,30 +2,41 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerInt32;
 
 /**
- * typedef struct { int32_t value; } cms_int32_t; sizeof = 4
+ * Wraps {@link InnerInt32} for PER encode/decode via Rust (libasn1.so).
+ * <p>
+ * Retains {@link CmsType} compatibility ({@link #write()}/{@link #read()}/{@link #nativePtr})
+ * so that container types can still use {@code children()} traversal.
  */
 public class CmsInt32 extends CmsType {
 
-    private int value = 0;
+    private transient InnerInt32 inner = new InnerInt32();
 
     public CmsInt32() {
         super(Codec.INT32);
     }
     public CmsInt32(int value) {
         super(Codec.INT32);
-        this.value = value;
-        write();
+        inner.value = value;
     }
 
     public int value() {
-        return value;
+        return inner.value;
     }
     public CmsInt32 value(int v) {
-        this.value = v;
-        write();
+        inner.value = v;
         return this;
+    }
+
+    @Override
+    public byte[] encode() {
+        return inner.encode();
+    }
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerInt32.decode(data);
     }
 
     @Override
@@ -34,10 +45,10 @@ public class CmsInt32 extends CmsType {
     }
     @Override
     public void write() {
-        nativePtr.setInt(0, value);
+        nativePtr.setInt(0, inner.value);
     }
     @Override
     public void read() {
-        this.value = nativePtr.getInt(0);
+        inner.value = nativePtr.getInt(0);
     }
 }

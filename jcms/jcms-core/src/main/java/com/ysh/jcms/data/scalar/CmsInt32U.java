@@ -2,31 +2,41 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerInt32U;
+import com.ysh.jcms.data.InnerNative;
 
 /**
- * typedef struct { uint32_t value; } cms_int32u_t; sizeof = 4 value() 返回 long
- * 以表示 0..4294967295（Java int 装不下全范围）。
+ * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt32U extends CmsType {
 
-    private long value = 0L; /* unsigned int32, 用 long 存 */
+    private transient InnerInt32U inner = new InnerInt32U();
 
     public CmsInt32U() {
         super(Codec.INT32U);
     }
     public CmsInt32U(long value) {
         super(Codec.INT32U);
-        this.value = value & 0xFFFFFFFFL;
-        write();
+        inner.value = (int) (value & 0xFFFFFFFFL);
     }
 
     public long value() {
-        return value;
+        return inner.value & 0xFFFFFFFFL;
     }
     public CmsInt32U value(long v) {
-        this.value = v & 0xFFFFFFFFL;
-        write();
+        inner.value = (int) (v & 0xFFFFFFFFL);
         return this;
+    }
+
+    @Override
+    public byte[] encode() {
+        // Send unsigned long value; inner.value is signed int
+        long unsigned = inner.value & 0xFFFFFFFFL;
+        return InnerNative.encode("Int32U", "aper", String.valueOf(unsigned));
+    }
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerInt32U.decode(data);
     }
 
     @Override
@@ -35,10 +45,10 @@ public class CmsInt32U extends CmsType {
     }
     @Override
     public void write() {
-        nativePtr.setInt(0, (int) value);
+        nativePtr.setInt(0, (int) inner.value);
     }
     @Override
     public void read() {
-        this.value = nativePtr.getInt(0) & 0xFFFFFFFFL;
+        inner.value = nativePtr.getInt(0);
     }
 }

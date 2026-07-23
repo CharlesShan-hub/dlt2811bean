@@ -2,31 +2,38 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerInt16U;
 
 /**
- * typedef struct { uint16_t value; } cms_int16u_t; sizeof = 2 value() 返回 int
- * 0..65535。
+ * Wraps {@link InnerInt16U} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt16U extends CmsType {
 
-    private short value = 0; /* Java short 存 uint16_t 的 bit 模式 */
+    private transient InnerInt16U inner = new InnerInt16U();
 
     public CmsInt16U() {
         super(Codec.INT16U);
     }
     public CmsInt16U(int value) {
         super(Codec.INT16U);
-        this.value = (short) (value & 0xFFFF);
-        write();
+        inner.value = value & 0xFFFF;
     }
 
     public int value() {
-        return value & 0xFFFF;
+        return inner.value & 0xFFFF;
     }
     public CmsInt16U value(int v) {
-        this.value = (short) (v & 0xFFFF);
-        write();
+        inner.value = v & 0xFFFF;
         return this;
+    }
+
+    @Override
+    public byte[] encode() {
+        return inner.encode();
+    }
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerInt16U.decode(data);
     }
 
     @Override
@@ -35,10 +42,10 @@ public class CmsInt16U extends CmsType {
     }
     @Override
     public void write() {
-        nativePtr.setShort(0, value);
+        nativePtr.setShort(0, (short) inner.value);
     }
     @Override
     public void read() {
-        this.value = nativePtr.getShort(0);
+        inner.value = nativePtr.getShort(0) & 0xFFFF;
     }
 }

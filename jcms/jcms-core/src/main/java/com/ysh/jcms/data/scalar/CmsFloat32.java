@@ -2,31 +2,47 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerFloat32;
+import java.nio.ByteBuffer;
 
 /**
- * typedef struct { uint8_t value[4]; } cms_float32_t; sizeof = 4 PER: 4 bytes
- * aligned
+ * Wraps {@link InnerFloat32} for PER encode/decode via Rust (libasn1.so).
+ * InnerFloat32 stores the float as a 4-byte OCTET STRING (IEEE 754 big-endian).
  */
 public class CmsFloat32 extends CmsType {
 
-    private float value = 0.0f;
+    private transient InnerFloat32 inner = new InnerFloat32();
 
     public CmsFloat32() {
         super(Codec.FLOAT32);
     }
     public CmsFloat32(float value) {
         super(Codec.FLOAT32);
-        this.value = value;
-        write();
+        inner.value = floatToBytes(value);
     }
 
     public float value() {
-        return value;
+        return bytesToFloat(inner.value);
     }
     public CmsFloat32 value(float v) {
-        this.value = v;
-        write();
+        inner.value = floatToBytes(v);
         return this;
+    }
+
+    private static byte[] floatToBytes(float v) {
+        return ByteBuffer.allocate(4).putInt(Float.floatToIntBits(v)).array();
+    }
+    private static float bytesToFloat(byte[] b) {
+        return Float.intBitsToFloat(ByteBuffer.wrap(b).getInt());
+    }
+
+    @Override
+    public byte[] encode() {
+        return inner.encode();
+    }
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerFloat32.decode(data);
     }
 
     @Override
@@ -35,10 +51,10 @@ public class CmsFloat32 extends CmsType {
     }
     @Override
     public void write() {
-        nativePtr.setFloat(0, value);
+        nativePtr.setFloat(0, bytesToFloat(inner.value));
     }
     @Override
     public void read() {
-        this.value = nativePtr.getFloat(0);
+        inner.value = floatToBytes(nativePtr.getFloat(0));
     }
 }

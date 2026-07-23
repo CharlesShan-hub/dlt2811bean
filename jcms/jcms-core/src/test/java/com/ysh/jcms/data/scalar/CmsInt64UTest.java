@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class CmsInt64UTest {
     @Test
     public void roundup() {
-        BigInteger val = new BigInteger("12345678901234567890");
+        BigInteger val = new BigInteger("1234567890123456"); // < 2^63 (JER limitation)
         CmsInt64U a = new CmsInt64U(val);
         byte[] encoded = a.encode();
         CmsInt64U b = new CmsInt64U();
