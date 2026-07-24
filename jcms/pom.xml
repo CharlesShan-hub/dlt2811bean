@@ -16,7 +16,6 @@
         <module>jcms-data</module>
         <module>jcms-core</module>
         <module>jcms-utils</module>
-        <module>jcms-data</module>
         <module>jcms-app</module>
     </modules>
 
@@ -52,13 +51,8 @@
                 <version>${jcms.version}</version>
             </dependency>
             <dependency>
-<<<<<<< HEAD
                 <groupId>com.ysh.jcms</groupId>
                 <artifactId>inner-data</artifactId>
-=======
-                <groupId>com.ysh</groupId>
-                <artifactId>jcms-data</artifactId>
->>>>>>> ad968f6fdc50fcc4e2d46da4a013171b7d339d24
                 <version>${jcms.version}</version>
             </dependency>
             <dependency>

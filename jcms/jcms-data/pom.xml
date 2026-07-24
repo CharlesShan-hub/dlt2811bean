@@ -5,19 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ysh.jcms</groupId>
-<<<<<<< HEAD
     <artifactId>inner-data</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>inner-data — Auto-generated ASN.1 POJO data types</name>
-=======
-    <artifactId>cms-data</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-    <name>cms-data — Auto-generated ASN.1 POJO data types</name>
->>>>>>> ad968f6fdc50fcc4e2d46da4a013171b7d339d24
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -63,7 +55,6 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-<<<<<<< HEAD
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -71,8 +62,6 @@
                     <argLine>-Djava.library.path=${project.basedir}/src/main/resources</argLine>
                 </configuration>
             </plugin>
-=======
->>>>>>> ad968f6fdc50fcc4e2d46da4a013171b7d339d24
         </plugins>
     </build>
 </project>

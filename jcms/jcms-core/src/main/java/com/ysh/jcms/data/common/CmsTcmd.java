@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.common;
 
 import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.data.InnerTcmd;
 
 /**
  * Tcmd ::= BIT STRING (SIZE(2)) — 7.3.7 PER: constrained integer (0..3), 2 bits
@@ -15,10 +16,24 @@ public class CmsTcmd extends CmsEnumerated {
     public static final int OPERATE = 2;
     public static final int CANCEL = 3;
 
+    private transient InnerTcmd inner = new InnerTcmd();
+
     public CmsTcmd() {
         super(1, 3, SELECT);
     }
     public CmsTcmd(int value) {
         super(1, 3, value);
+    }
+
+    @Override
+    public byte[] encode() {
+        inner.value = value();
+        return inner.encode();
+    }
+
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerTcmd.decode(data);
+        value(inner.value);
     }
 }

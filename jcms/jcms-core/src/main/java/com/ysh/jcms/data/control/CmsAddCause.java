@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.control;
 
 import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.data.InnerAddCause;
 
 /**
  * AddCause ::= INTEGER (0..27) — 7.5.4 PER: constrained integer (0..27), 5 bits
@@ -39,10 +40,24 @@ public class CmsAddCause extends CmsEnumerated {
     public static final int LOCKED_BY_OTHER_CLIENT = 26;
     public static final int INCONSISTENT_PARAMETERS = 27;
 
+    private transient InnerAddCause inner = new InnerAddCause();
+
     public CmsAddCause() {
         super(0, 27, UNKNOWN);
     }
     public CmsAddCause(int value) {
         super(0, 27, value);
+    }
+
+    @Override
+    public byte[] encode() {
+        inner.value = value();
+        return inner.encode();
+    }
+
+    @Override
+    public void decode(byte[] data) {
+        inner = InnerAddCause.decode(data);
+        value(inner.value);
     }
 }
