@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.directory.CmsGetServerDirectoryError;
@@ -22,7 +22,7 @@ public class SvrDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
         log.info("GetServerDirectory from {}: reqId={}, objectClass={}", session.getSessionId(), reqId, req.objectClass.value());
 

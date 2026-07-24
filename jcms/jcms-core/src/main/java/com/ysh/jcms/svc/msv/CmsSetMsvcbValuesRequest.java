@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.msv;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * SetMSVCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, msvcb [0] IMPLICIT
  * SEQUENCE OF SetMSVCBEntry } — 8.10.3
  */
-public class CmsSetMsvcbValuesRequest extends CmsType {
+public class CmsSetMsvcbValuesRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsSetMsvcbEntry> msvcb; /* SEQUENCE OF SetMSVCBEntry */
@@ -32,7 +32,7 @@ public class CmsSetMsvcbValuesRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, msvcb);
     }
 }

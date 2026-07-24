@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsAssociationId;
@@ -12,7 +12,7 @@ import java.util.List;
  * Release-ResponsePDU ::= SEQUENCE { reqId Int16U, associationId [0] IMPLICIT
  * OCTET STRING (SIZE(0..64)), serviceError [1] IMPLICIT ServiceError } — 8.2.2
  */
-public class CmsReleaseResponse extends CmsType {
+public class CmsReleaseResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsAssociationId assocId;
@@ -43,7 +43,7 @@ public class CmsReleaseResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, assocId, serviceError);
     }
 }

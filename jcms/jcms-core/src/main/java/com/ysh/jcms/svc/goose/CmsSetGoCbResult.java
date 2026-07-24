@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.goose;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Used by SetGoCBValues error.
  */
-public class CmsSetGoCbResult extends CmsType {
+public class CmsSetGoCbResult extends CmsTypeOld {
 
     public CmsBoolean errorPresent;
     public CmsServiceError error;
@@ -69,7 +69,7 @@ public class CmsSetGoCbResult extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(errorPresent, error, goEnaErrPresent, goEnaErr, goIdErrPresent, goIdErr, datSetErrPresent, datSetErr);
     }
 }

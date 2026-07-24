@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -14,7 +14,7 @@ import java.util.List;
  * NOTE: In ASN.1, Associate-ErrorPDU is defined as ServiceError, but C side
  * prepends reqId for all PDUs.
  */
-public class CmsAssociateError extends CmsType {
+public class CmsAssociateError extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsServiceError serviceError;
@@ -35,7 +35,7 @@ public class CmsAssociateError extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, serviceError);
     }
 }

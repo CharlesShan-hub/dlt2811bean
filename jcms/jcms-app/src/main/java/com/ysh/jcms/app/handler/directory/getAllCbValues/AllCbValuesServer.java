@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.directory.CmsAcsiClass;
 import com.ysh.jcms.svc.directory.CmsCbValueChoice;
@@ -36,7 +36,7 @@ public class AllCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetAllCbValuesRequest req = (CmsGetAllCbValuesRequest) rawReq;
         int acsiClass = req.acsiClass.value();
         String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0

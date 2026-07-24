@@ -1,39 +1,33 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.InnerDbpos;
 
 /**
- * Dbpos ::= BIT STRING (SIZE(2)) — 7.3.5 PER: constrained integer (0..3), 2
- * bits sizeof = 4
- *
- * Alias for CmsEnumerated with named constants.
+ * Dbpos ::= BIT STRING (SIZE(2)) — 7.3.5
  */
-public class CmsDbpos extends CmsEnumerated {
+public class CmsDbpos extends CmsType {
 
     public static final int INTERMEDIATE = 0;
     public static final int OFF = 1;
     public static final int ON = 2;
     public static final int BAD_STATE = 3;
 
-    private transient InnerDbpos inner = new InnerDbpos();
-
     public CmsDbpos() {
-        super(0, 3, INTERMEDIATE);
+        super(new InnerDbpos());
     }
     public CmsDbpos(int value) {
-        super(0, 3, value);
+        this();
+        value(value);
     }
 
-    @Override
-    public byte[] encode() {
-        inner.value = value();
-        return inner.encode();
+    public int value() {
+        return ((InnerDbpos) inner).value;
     }
-
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerDbpos.decode(data);
-        value(inner.value);
+    public CmsDbpos value(int v) {
+        if (v < 0 || v > 3)
+            throw new IllegalArgumentException("CmsDbpos out of range [0,3]: " + v);
+        ((InnerDbpos) inner).value = v;
+        return this;
     }
 }

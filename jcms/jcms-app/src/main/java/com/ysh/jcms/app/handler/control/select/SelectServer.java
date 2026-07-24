@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.select;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.control.ControlCache;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.control.CmsSelectError;
 import com.ysh.jcms.svc.control.CmsSelectRequest;
@@ -28,11 +28,11 @@ public class SelectServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
+    protected void prepareDecode(CmsTypeOld decoded) {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsSelectRequest req = (CmsSelectRequest) rawReq;
         String ref = str(req.reference);
         String sid = session.getSessionId();

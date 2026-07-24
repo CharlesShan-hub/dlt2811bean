@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.report;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import java.util.List;
  * [10] IMPLICIT ServiceError OPTIONAL, resv [13] IMPLICIT ServiceError OPTIONAL
  * } — 8.7.5
  */
-public class CmsSetUrcbResult extends CmsType {
+public class CmsSetUrcbResult extends CmsTypeOld {
 
     public CmsBoolean errorPresent;
     public CmsServiceError error; /* OPTIONAL */
@@ -143,7 +143,7 @@ public class CmsSetUrcbResult extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(errorPresent, error, rptIdErrPresent, rptIdErr, rptEnaErrPresent, rptEnaErr, datSetErrPresent, datSetErr,
                 optFldsErrPresent, optFldsErr, bufTmErrPresent, bufTmErr, trgOpsErrPresent, trgOpsErr, intgPdErrPresent, intgPdErr,
                 giErrPresent, giErr, resvErrPresent, resvErr);

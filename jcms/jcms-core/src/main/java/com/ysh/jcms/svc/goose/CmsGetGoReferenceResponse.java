@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -14,7 +14,7 @@ import java.util.List;
  * IMPLICIT ObjectReference, confRev [1] IMPLICIT INT32U, datSet [2] IMPLICIT
  * ObjectReference, memberData [3] IMPLICIT SEQUENCE OF GoRefFcEntry } — 8.9.2
  */
-public class CmsGetGoReferenceResponse extends CmsType {
+public class CmsGetGoReferenceResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference gocbReference;
@@ -61,7 +61,7 @@ public class CmsGetGoReferenceResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, gocbReference, confRev, datSet, memberData);
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.report;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsRcbOptFlds;
 import com.ysh.jcms.data.block.CmsTriggerConditions;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -18,7 +18,7 @@ import java.util.List;
  * TriggerConditions OPTIONAL, intgPd [9] IMPLICIT INT32U OPTIONAL, gi [10]
  * IMPLICIT BOOLEAN OPTIONAL, resv [13] IMPLICIT BOOLEAN OPTIONAL } — 8.7.5
  */
-public class CmsSetUrcbEntry extends CmsType {
+public class CmsSetUrcbEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsBoolean rptIdPresent;
@@ -160,7 +160,7 @@ public class CmsSetUrcbEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, rptIdPresent, rptId, rptEnaPresent, rptEna, datSetPresent, datSet, optFldsPresent, optFlds,
                 bufTmPresent, bufTm, trgOpsPresent, trgOps, intgPdPresent, intgPd, giPresent, gi, resvPresent, resv);
     }

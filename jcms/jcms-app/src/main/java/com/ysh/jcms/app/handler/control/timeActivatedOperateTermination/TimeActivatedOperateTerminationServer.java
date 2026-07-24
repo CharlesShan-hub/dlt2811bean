@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperateTermination;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.control.CmsTimeActivatedOperateTermination;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -18,7 +18,7 @@ public class TimeActivatedOperateTerminationServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsTimeActivatedOperateTermination req = (CmsTimeActivatedOperateTermination) rawReq;
         String ref = str(req.reference);
         log.info("TimeActivatedOperateTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.data;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -13,7 +13,7 @@ import java.util.List;
  * IMPLICIT ObjectReference, referenceAfter [1] IMPLICIT ObjectReference
  * OPTIONAL } — 8.4.3
  */
-public class CmsGetDataDirectoryRequest extends CmsType {
+public class CmsGetDataDirectoryRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference dataReference;
@@ -58,7 +58,7 @@ public class CmsGetDataDirectoryRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, dataReference, refAfterPresent, refAfter);
     }
 }

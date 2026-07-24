@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsSubReference;
 import java.util.Arrays;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Used by GetAllCBValues response (SEQUENCE OF CBValueEntry).
  */
-public class CmsCbValueEntry extends CmsType {
+public class CmsCbValueEntry extends CmsTypeOld {
 
     public CmsSubReference reference;
     public CmsCbValueChoice value;
@@ -35,7 +35,7 @@ public class CmsCbValueEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, value);
     }
 }

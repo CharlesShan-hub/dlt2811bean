@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.data;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Used by GetDataDefinition Response (SEQUENCE OF DataDefResultEntry).
  */
-public class CmsDataDefResultEntry extends CmsType {
+public class CmsDataDefResultEntry extends CmsTypeOld {
 
     public CmsBoolean cdcTypePresent;
     public CmsUint8Array cdcType; /* VisibleString OPTIONAL */
@@ -47,7 +47,7 @@ public class CmsDataDefResultEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(cdcTypePresent, cdcType, definition);
     }
 }

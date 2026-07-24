@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.report;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsEntryId;
 import com.ysh.jcms.data.time.CmsBinaryTime;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Used by ReportPDU.
  */
-public class CmsReportEntry extends CmsType {
+public class CmsReportEntry extends CmsTypeOld {
 
     public CmsBoolean timeOfEntryPresent;
     public CmsBinaryTime timeOfEntry; /* OPTIONAL */
@@ -61,7 +61,7 @@ public class CmsReportEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(timeOfEntryPresent, timeOfEntry, entryIdPresent, entryId, entryData);
     }
 }

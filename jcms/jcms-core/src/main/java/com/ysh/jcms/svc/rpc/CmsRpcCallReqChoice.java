@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.rpc;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.core.CmsEnumerated;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Used by RpcCall request.
  */
-public class CmsRpcCallReqChoice extends CmsType {
+public class CmsRpcCallReqChoice extends CmsTypeOld {
 
     public static final int REQ_DATA = 0;
     public static final int CALL_ID = 1;
@@ -34,7 +34,7 @@ public class CmsRpcCallReqChoice extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(choice, altReqData, altCallId);
     }
 }

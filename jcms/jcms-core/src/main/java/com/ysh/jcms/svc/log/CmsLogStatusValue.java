@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsEntryId;
 import com.ysh.jcms.data.time.CmsBinaryTime;
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Used by GetLogStatusValues response.
  */
-public class CmsLogStatusValue extends CmsType {
+public class CmsLogStatusValue extends CmsTypeOld {
 
     public CmsBinaryTime oldEntrTm;
     public CmsBinaryTime newEntrTm;
@@ -53,7 +53,7 @@ public class CmsLogStatusValue extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(oldEntrTm, newEntrTm, oldEntr, newEntr);
     }
 }

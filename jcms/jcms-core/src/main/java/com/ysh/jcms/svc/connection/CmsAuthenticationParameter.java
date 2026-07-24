@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.data.time.CmsUtcTime;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * OCTET STRING, signedTime [1] IMPLICIT UtcTime, signedValue [2] IMPLICIT OCTET
  * STRING } — 8.2.1
  */
-public class CmsAuthenticationParameter extends CmsType {
+public class CmsAuthenticationParameter extends CmsTypeOld {
 
     public CmsUint8Array cert;
     public CmsUtcTime signedTime;
@@ -45,7 +45,7 @@ public class CmsAuthenticationParameter extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(cert, signedTime, sigVal);
     }
 }

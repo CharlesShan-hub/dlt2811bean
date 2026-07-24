@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -33,7 +33,7 @@ public abstract class BaseClientHandler extends BaseHandler {
 
     /**
      * Send a request (encoded bytes). Subclasses should prefer
-     * {@link #send(ServiceName, CmsType)} for automatic PDU tracing.
+     * {@link #send(ServiceName, CmsTypeOld)} for automatic PDU tracing.
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
         if (node == null)
@@ -50,9 +50,9 @@ public abstract class BaseClientHandler extends BaseHandler {
     /**
      * Encode and send a request (object form), with PDU trace when enabled.
      * Response is NOT automatically traced here — each subclass calls
-     * {@link #traceResp(CmsType)} inside {@link #onSuccess(Frame)} after decoding.
+     * {@link #traceResp(CmsTypeOld)} inside {@link #onSuccess(Frame)} after decoding.
      */
-    protected Frame send(ServiceName sc, CmsType requestObject) throws IOException {
+    protected Frame send(ServiceName sc, CmsTypeOld requestObject) throws IOException {
         trace(">>>\n" + requestObject);
         return send(sc, requestObject.encode());
     }
@@ -71,13 +71,13 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     /** Send a one-way (fire-and-forget) request object. */
-    protected void sendOneWay(ServiceName sc, CmsType requestObject) throws IOException {
+    protected void sendOneWay(ServiceName sc, CmsTypeOld requestObject) throws IOException {
         trace(">>>\n" + requestObject);
         sendOneWay(sc, requestObject.encode());
     }
 
     /** Trace a decoded response PDU. Call from {@link #onSuccess(Frame)}. */
-    protected static void traceResp(CmsType resp) {
+    protected static void traceResp(CmsTypeOld resp) {
         trace("<<<\n" + resp);
     }
 
@@ -88,7 +88,7 @@ public abstract class BaseClientHandler extends BaseHandler {
         throw new IOException("Negative response for " + frame.header().serviceCode());
     }
 
-    protected static <T extends CmsType> T decodeFrame(Frame frame, T pdu) throws IOException {
+    protected static <T extends CmsTypeOld> T decodeFrame(Frame frame, T pdu) throws IOException {
         if (frame == null)
             throw new IOException("Request timed out (no response)");
         try {
@@ -100,7 +100,7 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     /** Decode response PDU from frame and trace it. */
-    protected static <T extends CmsType> T decodeResp(Frame frame, T resp) throws IOException {
+    protected static <T extends CmsTypeOld> T decodeResp(Frame frame, T resp) throws IOException {
         if (frame == null)
             throw new IOException("Request timed out (no response)");
         resp.decode(frame.asduBytes());
@@ -109,7 +109,7 @@ public abstract class BaseClientHandler extends BaseHandler {
     }
 
     /** Decode error PDU from frame. */
-    protected static <T extends CmsType> T decodeErr(Frame frame, T err) throws IOException {
+    protected static <T extends CmsTypeOld> T decodeErr(Frame frame, T err) throws IOException {
         err.decode(frame.asduBytes());
         return err;
     }

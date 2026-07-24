@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.directory.CmsDataValueEntry;
 import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
@@ -34,7 +34,7 @@ public class AllDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetAllDataValuesRequest req = (CmsGetAllDataValuesRequest) rawReq;
         String refAfter = opt(req.refAfterPresent, req.refAfter);
         log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);

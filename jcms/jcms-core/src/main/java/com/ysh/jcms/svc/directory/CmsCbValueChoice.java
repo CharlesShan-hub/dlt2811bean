@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.block.CmsGoCb;
 import com.ysh.jcms.data.block.CmsLcb;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * Used by CBValueEntry in GetAllCBValues response.
  */
-public class CmsCbValueChoice extends CmsType {
+public class CmsCbValueChoice extends CmsTypeOld {
 
     public static final int BRCB = 0;
     public static final int URCB = 1;
@@ -51,7 +51,7 @@ public class CmsCbValueChoice extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(choice, altBrcb, altUrcb, altLcb, altSgecb, altGocb, altMsvcb);
     }
 }

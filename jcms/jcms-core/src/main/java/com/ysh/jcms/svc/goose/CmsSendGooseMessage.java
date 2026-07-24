@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -23,7 +23,7 @@ import java.util.List;
  *
  * Unconfirmed service — no Response or Error PDU.
  */
-public class CmsSendGooseMessage extends CmsType {
+public class CmsSendGooseMessage extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array goId; /* VisibleString129 */
@@ -130,7 +130,7 @@ public class CmsSendGooseMessage extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, goId, datSetPresent, datSet, goRefPresent, goRef, t, stNum, sqNum, simulation, confRev, ndsCom, data);
     }
 }

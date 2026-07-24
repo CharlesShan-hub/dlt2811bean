@@ -2,7 +2,7 @@ package com.ysh.jcms.data.string;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import java.util.Arrays;
 
 /**
@@ -15,7 +15,7 @@ import java.util.Arrays;
  * CmsUint8Array 只管理 { Pointer, len } 的 struct 布局， encode/decode 由具体的别名类（如
  * CmsObjectName）提供。
  */
-public class CmsUint8Array extends CmsType {
+public class CmsUint8Array extends CmsTypeOld {
 
     // ==================== 类型标记 ====================
 

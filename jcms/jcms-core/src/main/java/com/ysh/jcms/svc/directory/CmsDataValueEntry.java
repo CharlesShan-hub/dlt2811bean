@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsSubReference;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Used by GetAllDataValues response (SEQUENCE OF DataValueEntry).
  */
-public class CmsDataValueEntry extends CmsType {
+public class CmsDataValueEntry extends CmsTypeOld {
 
     public CmsSubReference reference;
     public CmsData value;
@@ -36,7 +36,7 @@ public class CmsDataValueEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, value);
     }
 }

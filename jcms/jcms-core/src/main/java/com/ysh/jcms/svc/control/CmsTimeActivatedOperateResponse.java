@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.control;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -20,7 +20,7 @@ import java.util.List;
  * IMPLICIT TimeStamp, test [6] IMPLICIT BOOLEAN, check [7] IMPLICIT Check } —
  * 8.11.6
  */
-public class CmsTimeActivatedOperateResponse extends CmsType {
+public class CmsTimeActivatedOperateResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference reference;
@@ -87,7 +87,7 @@ public class CmsTimeActivatedOperateResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTm, origin, ctlNum, t, test, check);
     }
 }

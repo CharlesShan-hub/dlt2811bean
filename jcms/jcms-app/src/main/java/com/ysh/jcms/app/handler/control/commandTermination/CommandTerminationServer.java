@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.control.commandTermination;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.control.CmsCommandTermination;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -18,7 +18,7 @@ public class CommandTerminationServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsCommandTermination req = (CmsCommandTermination) rawReq;
         String ref = str(req.reference);
         log.info("CommandTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);

@@ -1,25 +1,19 @@
 package com.ysh.jcms.data.choice;
 
-import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.core.CmsEnumerated;
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.string.CmsBitString;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import com.ysh.jcms.data.time.*;
+import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.control.*;
-import java.util.Arrays;
+import com.ysh.jcms.data.scalar.*;
+import com.ysh.jcms.data.time.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Data ::= CHOICE { 24 alternatives } — 7.7
- *
- * Flat all-pointer layout, matching cms_data_t in C: [choice*, alt_sequence*,
- * alt_boolean*, ..., alt_check*]
- *
- * nativeSize = 24 × 8 = 192 bytes
+ * <p>
+ * CmsData wraps {@link InnerData} and maps between Cms* convenience types and
+ * Inner* raw types.
  */
 public class CmsData extends CmsType {
 
@@ -49,10 +43,10 @@ public class CmsData extends CmsType {
     public static final int CHOICE_TCMD = 22;
     public static final int CHOICE_CHECK = 23;
 
-    public CmsEnumerated choice; /* selector 0..23 */
+    public int choice; /* selector 0..23 */
 
     /* ARRAY / STRUCTURE — SEQUENCE OF Data */
-    public CmsArray<CmsData> alt_sequence;
+    public List<CmsData> alt_sequence;
 
     /* all alternatives */
     public CmsServiceError alt_error;
@@ -67,10 +61,10 @@ public class CmsData extends CmsType {
     public CmsInt64U alt_int64u;
     public CmsFloat32 alt_float32;
     public CmsFloat64 alt_float64;
-    public CmsBitString alt_bit_string;
-    public CmsUint8Array alt_octet_string;
-    public CmsUint8Array alt_visible_string;
-    public CmsUint8Array alt_unicode_string;
+    public byte[] alt_bit_string;
+    public byte[] alt_octet_string;
+    public String alt_visible_string;
+    public String alt_unicode_string;
     public CmsUtcTime alt_utc_time;
     public CmsBinaryTime alt_binary_time;
     public CmsQuality alt_quality;
@@ -79,10 +73,8 @@ public class CmsData extends CmsType {
     public CmsCheck alt_check;
 
     public CmsData() {
-        super(Codec.DATA);
-        this.choice = new CmsEnumerated();
-        this.alt_sequence = new CmsArray<>(CmsData.class);
-        this.alt_sequence.allocSize = 0; // 避免嵌套预分配导致栈溢出
+        super(new InnerData());
+        this.alt_sequence = new ArrayList<>();
         this.alt_error = new CmsServiceError();
         this.alt_boolean = new CmsBoolean();
         this.alt_int8 = new CmsInt8();
@@ -95,10 +87,10 @@ public class CmsData extends CmsType {
         this.alt_int64u = new CmsInt64U();
         this.alt_float32 = new CmsFloat32();
         this.alt_float64 = new CmsFloat64();
-        this.alt_bit_string = new CmsBitString();
-        this.alt_octet_string = (new CmsUint8Array()).type(CmsData.CHOICE_OCTET_STRING);
-        this.alt_visible_string = (new CmsUint8Array()).type(CmsData.CHOICE_VISIBLE_STRING);
-        this.alt_unicode_string = (new CmsUint8Array()).type(CmsData.CHOICE_UNICODE_STRING);
+        this.alt_bit_string = new byte[0];
+        this.alt_octet_string = new byte[0];
+        this.alt_visible_string = "";
+        this.alt_unicode_string = "";
         this.alt_utc_time = new CmsUtcTime();
         this.alt_binary_time = new CmsBinaryTime();
         this.alt_quality = new CmsQuality();
@@ -107,139 +99,247 @@ public class CmsData extends CmsType {
         this.alt_check = new CmsCheck();
     }
 
-    public CmsData choice(int v) {
-        this.choice.value(v);
-        return this;
-    }
-
-    /**
-     * Map CHOICE index → the correct child field for debug display. Separate from
-     * children() which matches C struct memory layout.
-     */
-    private CmsType choiceChild() {
-        int v = choice.value();
-        switch (v) {
-            case CHOICE_ERROR :
-                return alt_error;
-            case CHOICE_ARRAY :
-            case CHOICE_STRUCTURE :
-                return alt_sequence;
-            case CHOICE_BOOLEAN :
-                return alt_boolean;
-            case CHOICE_INT8 :
-                return alt_int8;
-            case CHOICE_INT16 :
-                return alt_int16;
-            case CHOICE_INT32 :
-                return alt_int32;
-            case CHOICE_INT64 :
-                return alt_int64;
-            case CHOICE_INT8U :
-                return alt_int8u;
-            case CHOICE_INT16U :
-                return alt_int16u;
-            case CHOICE_INT32U :
-                return alt_int32u;
-            case CHOICE_INT64U :
-                return alt_int64u;
-            case CHOICE_FLOAT32 :
-                return alt_float32;
-            case CHOICE_FLOAT64 :
-                return alt_float64;
-            case CHOICE_BIT_STRING :
-                return alt_bit_string;
-            case CHOICE_OCTET_STRING :
-                return alt_octet_string;
-            case CHOICE_VISIBLE_STRING :
-                return alt_visible_string;
-            case CHOICE_UNICODE_STRING :
-                return alt_unicode_string;
-            case CHOICE_UTC_TIME :
-                return alt_utc_time;
-            case CHOICE_BINARY_TIME :
-                return alt_binary_time;
-            case CHOICE_QUALITY :
-                return alt_quality;
-            case CHOICE_DBPOS :
-                return alt_dbpos;
-            case CHOICE_TCMD :
-                return alt_tcmd;
-            case CHOICE_CHECK :
-                return alt_check;
-            default :
-                return null;
-        }
-    }
+    public CmsData choice(int v) { this.choice = v; return this; }
 
     @Override
-    public String toString() {
-        CmsType child = choiceChild();
-        if (child == null)
-            return "(CmsData) (null)";
-
-        // Build field name map for the child
-        java.util.IdentityHashMap<CmsType, String> fieldNames = new java.util.IdentityHashMap<>();
-        for (java.lang.reflect.Field f : child.getClass().getFields()) {
-            if (CmsType.class.isAssignableFrom(f.getType())) {
-                try {
-                    fieldNames.put((CmsType) f.get(child), f.getName());
-                } catch (Exception e) {
+    public void syncToInner() {
+        InnerData i = (InnerData) inner;
+        switch (choice) {
+            case CHOICE_ERROR:
+                i._choice = "error";
+                alt_error.syncToInner();
+                i.error = (InnerServiceError) alt_error.inner;
+                break;
+            case CHOICE_ARRAY:
+            case CHOICE_STRUCTURE:
+                i._choice = (choice == CHOICE_ARRAY) ? "array" : "structure";
+                List<InnerData> list = new ArrayList<>();
+                for (CmsData elem : alt_sequence) {
+                    elem.syncToInner();
+                    list.add((InnerData) elem.inner);
                 }
-            }
+                if (choice == CHOICE_ARRAY) i.array = list;
+                else i.structure = list;
+                break;
+            case CHOICE_BOOLEAN:
+                i._choice = "Boolean";
+                if (i.Boolean == null) i.Boolean = new InnerBoolean();
+                i.Boolean.value = alt_boolean.value() ? 1 : 0;
+                break;
+            case CHOICE_INT8:
+                i._choice = "int8";
+                if (i.int8 == null) i.int8 = new InnerInt8();
+                i.int8.value = alt_int8.value();
+                break;
+            case CHOICE_INT16:
+                i._choice = "int16";
+                if (i.int16 == null) i.int16 = new InnerInt16();
+                i.int16.value = alt_int16.value();
+                break;
+            case CHOICE_INT32:
+                i._choice = "int32";
+                if (i.int32 == null) i.int32 = new InnerInt32();
+                i.int32.value = alt_int32.value();
+                break;
+            case CHOICE_INT64:
+                i._choice = "int64";
+                if (i.int64 == null) i.int64 = new InnerInt64();
+                i.int64.value = alt_int64.value();
+                break;
+            case CHOICE_INT8U:
+                i._choice = "int8u";
+                if (i.int8u == null) i.int8u = new InnerInt8U();
+                i.int8u.value = alt_int8u.value();
+                break;
+            case CHOICE_INT16U:
+                i._choice = "int16u";
+                if (i.int16u == null) i.int16u = new InnerInt16U();
+                i.int16u.value = alt_int16u.value();
+                break;
+            case CHOICE_INT32U:
+                i._choice = "int32u";
+                if (i.int32u == null) i.int32u = new InnerInt32U();
+                i.int32u.value = (int) alt_int32u.value();
+                break;
+            case CHOICE_INT64U:
+                i._choice = "int64u";
+                if (i.int64u == null) i.int64u = new InnerInt64U();
+                i.int64u.value = alt_int64u.value().longValue();
+                break;
+            case CHOICE_FLOAT32:
+                i._choice = "float32";
+                alt_float32.syncToInner();
+                i.float32 = (InnerFloat32) alt_float32.inner;
+                break;
+            case CHOICE_FLOAT64:
+                i._choice = "float64";
+                alt_float64.syncToInner();
+                i.float64 = (InnerFloat64) alt_float64.inner;
+                break;
+            case CHOICE_BIT_STRING:
+                i._choice = "bit-string";
+                i.bit_string = alt_bit_string;
+                break;
+            case CHOICE_OCTET_STRING:
+                i._choice = "octet-string";
+                i.octet_string = alt_octet_string;
+                break;
+            case CHOICE_VISIBLE_STRING:
+                i._choice = "visible-string";
+                i.visible_string = alt_visible_string;
+                break;
+            case CHOICE_UNICODE_STRING:
+                i._choice = "unicode-string";
+                i.unicode_string = alt_unicode_string;
+                break;
+            case CHOICE_UTC_TIME:
+                i._choice = "utc-time";
+                alt_utc_time.syncToInner();
+                i.utc_time = (InnerUtcTime) alt_utc_time.inner;
+                break;
+            case CHOICE_BINARY_TIME:
+                i._choice = "binary-time";
+                alt_binary_time.syncToInner();
+                i.binary_time = (InnerBinaryTime) alt_binary_time.inner;
+                break;
+            case CHOICE_QUALITY:
+                i._choice = "quality";
+                alt_quality.syncToInner();
+                i.quality = (InnerQuality) alt_quality.inner;
+                break;
+            case CHOICE_DBPOS:
+                i._choice = "dbpos";
+                if (i.dbpos == null) i.dbpos = new InnerDbpos();
+                i.dbpos.value = alt_dbpos.value();
+                break;
+            case CHOICE_TCMD:
+                i._choice = "tcmd";
+                if (i.tcmd == null) i.tcmd = new InnerTcmd();
+                i.tcmd.value = alt_tcmd.value();
+                break;
+            case CHOICE_CHECK:
+                i._choice = "check";
+                alt_check.syncToInner();
+                i.check = (InnerCheck) alt_check.inner;
+                break;
         }
-        return "(CmsData) " + child.toString();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof CmsData))
-            return false;
-        CmsData other = (CmsData) o;
-        if (!choice.equals(other.choice))
-            return false;
-        // Only compare the selected alternative
-        CmsType myChild = choiceChild();
-        CmsType otherChild = other.choiceChild();
-        if (myChild == null && otherChild == null)
-            return true;
-        if (myChild == null || otherChild == null)
-            return false;
-        return myChild.equals(otherChild);
-    }
-
-    @Override
-    protected String toString(int depth) {
-        CmsType child = choiceChild();
-        if (child == null)
-            return "(CmsData) (null)";
-        return "(CmsData) " + child.toString();
-    }
-
-    @Override
-    protected void resize() {
-        // After decodeRaw (-2 / CMS_RETRY), C has written the choice value
-        // into native memory, but Java read() hasn't been called yet.
-        // Sync choice so that resizeList() → choiceChild() picks the right branch.
-        if (choice != null) {
-            choice.read();
+    public void syncFromInner() {
+        InnerData i = (InnerData) inner;
+        String ch = i._choice;
+        if (ch == null) { choice = -1; return; }
+        switch (ch) {
+            case "error":
+                choice = CHOICE_ERROR;
+                alt_error.inner = i.error;
+                alt_error.syncFromInner();
+                break;
+            case "array":
+            case "structure":
+                choice = "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE;
+                List<InnerData> src = "array".equals(ch) ? i.array : i.structure;
+                alt_sequence.clear();
+                if (src != null) {
+                    for (InnerData elem : src) {
+                        CmsData c = new CmsData();
+                        c.inner = elem;
+                        c.syncFromInner();
+                        alt_sequence.add(c);
+                    }
+                }
+                break;
+            case "Boolean":
+                choice = CHOICE_BOOLEAN;
+                alt_boolean.value(i.Boolean.value != 0);
+                break;
+            case "int8":
+                choice = CHOICE_INT8;
+                alt_int8.value(i.int8.value);
+                break;
+            case "int16":
+                choice = CHOICE_INT16;
+                alt_int16.value(i.int16.value);
+                break;
+            case "int32":
+                choice = CHOICE_INT32;
+                alt_int32.value(i.int32.value);
+                break;
+            case "int64":
+                choice = CHOICE_INT64;
+                alt_int64.value(i.int64.value);
+                break;
+            case "int8u":
+                choice = CHOICE_INT8U;
+                alt_int8u.value(i.int8u.value);
+                break;
+            case "int16u":
+                choice = CHOICE_INT16U;
+                alt_int16u.value(i.int16u.value);
+                break;
+            case "int32u":
+                choice = CHOICE_INT32U;
+                alt_int32u.value(i.int32u.value & 0xFFFFFFFFL);
+                break;
+            case "int64u":
+                choice = CHOICE_INT64U;
+                alt_int64u.value(java.math.BigInteger.valueOf(i.int64u.value));
+                break;
+            case "float32":
+                choice = CHOICE_FLOAT32;
+                alt_float32.inner = i.float32;
+                alt_float32.syncFromInner();
+                break;
+            case "float64":
+                choice = CHOICE_FLOAT64;
+                alt_float64.inner = i.float64;
+                alt_float64.syncFromInner();
+                break;
+            case "bit-string":
+                choice = CHOICE_BIT_STRING;
+                alt_bit_string = i.bit_string;
+                break;
+            case "octet-string":
+                choice = CHOICE_OCTET_STRING;
+                alt_octet_string = i.octet_string;
+                break;
+            case "visible-string":
+                choice = CHOICE_VISIBLE_STRING;
+                alt_visible_string = i.visible_string;
+                break;
+            case "unicode-string":
+                choice = CHOICE_UNICODE_STRING;
+                alt_unicode_string = i.unicode_string;
+                break;
+            case "utc-time":
+                choice = CHOICE_UTC_TIME;
+                alt_utc_time.inner = i.utc_time;
+                alt_utc_time.syncFromInner();
+                break;
+            case "binary-time":
+                choice = CHOICE_BINARY_TIME;
+                alt_binary_time.inner = i.binary_time;
+                alt_binary_time.syncFromInner();
+                break;
+            case "quality":
+                choice = CHOICE_QUALITY;
+                alt_quality.inner = i.quality;
+                alt_quality.syncFromInner();
+                break;
+            case "dbpos":
+                choice = CHOICE_DBPOS;
+                alt_dbpos.value(i.dbpos.value);
+                break;
+            case "tcmd":
+                choice = CHOICE_TCMD;
+                alt_tcmd.value(i.tcmd.value);
+                break;
+            case "check":
+                choice = CHOICE_CHECK;
+                alt_check.inner = i.check;
+                alt_check.syncFromInner();
+                break;
         }
-        super.resize();
-    }
-
-    @Override
-    protected List<? extends CmsType> resizeList() {
-        CmsType child = choiceChild();
-        if (child == null)
-            return java.util.Collections.emptyList();
-        return java.util.Collections.singletonList(child);
-    }
-
-    @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(choice, alt_sequence, alt_boolean, alt_int8, alt_int16, alt_int32, alt_int64, alt_int8u, alt_int16u,
-                alt_int32u, alt_int64u, alt_float32, alt_float64, alt_bit_string, alt_octet_string, alt_visible_string, alt_unicode_string,
-                alt_utc_time, alt_binary_time, alt_quality, alt_dbpos, alt_tcmd, alt_check, alt_error);
     }
 }

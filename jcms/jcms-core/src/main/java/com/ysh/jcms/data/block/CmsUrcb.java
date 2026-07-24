@@ -1,21 +1,18 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * URCB ::= SEQUENCE { 13 fields } — 8.7.4
- *
- * OPTIONAL field (owner) uses a CmsBoolean "present" flag before the value.
+ * <p>
+ * OPTIONAL field (owner) uses a hasOwner boolean flag.
  */
 public class CmsUrcb extends CmsType {
 
-    public CmsUint8Array rptID; /* VisibleString */
+    public String rptID;
     public CmsBoolean rptEna;
     public CmsObjectReference datSet;
     public CmsInt32U confRev;
@@ -26,12 +23,12 @@ public class CmsUrcb extends CmsType {
     public CmsInt32U intgPd;
     public CmsBoolean gi;
     public CmsBoolean resv;
-    public CmsBoolean owner_present;
-    public CmsUint8Array owner; /* OPTIONAL */
+    public byte[] owner; /* OPTIONAL */
+    public boolean hasOwner;
 
     public CmsUrcb() {
-        super(Codec.URCB);
-        this.rptID = new CmsUint8Array();
+        super(new InnerURCB());
+        this.rptID = "";
         this.rptEna = new CmsBoolean();
         this.datSet = new CmsObjectReference();
         this.confRev = new CmsInt32U();
@@ -42,81 +39,61 @@ public class CmsUrcb extends CmsType {
         this.intgPd = new CmsInt32U();
         this.gi = new CmsBoolean();
         this.resv = new CmsBoolean();
-        this.owner_present = new CmsBoolean();
-        this.owner = new CmsUint8Array();
+        this.owner = new byte[0];
     }
 
-    public CmsUrcb rptID(byte[] v) {
-        this.rptID.value(v);
-        return this;
-    }
-    public CmsUrcb rptID(String v) {
-        this.rptID.value(v);
-        return this;
-    }
-    public CmsUrcb rptEna(boolean v) {
-        this.rptEna.value(v);
-        return this;
-    }
-    public CmsUrcb datSet(byte[] v) {
-        this.datSet.value(v);
-        return this;
-    }
-    public CmsUrcb datSet(String v) {
-        this.datSet.value(v);
-        return this;
-    }
-    public CmsUrcb confRev(long v) {
-        this.confRev.value(v);
-        return this;
-    }
-    public CmsUrcb optFlds(CmsRcbOptFlds v) {
-        this.optFlds = v;
-        return this;
-    }
-    public CmsUrcb bufTm(long v) {
-        this.bufTm.value(v);
-        return this;
-    }
-    public CmsUrcb sqNum(int v) {
-        this.sqNum.value(v);
-        return this;
-    }
-    public CmsUrcb trgOps(CmsTriggerConditions v) {
-        this.trgOps = v;
-        return this;
-    }
-    public CmsUrcb intgPd(long v) {
-        this.intgPd.value(v);
-        return this;
-    }
-    public CmsUrcb gi(boolean v) {
-        this.gi.value(v);
-        return this;
-    }
-    public CmsUrcb resv(boolean v) {
-        this.resv.value(v);
-        return this;
-    }
-    public CmsUrcb owner_present(boolean v) {
-        this.owner_present.value(v);
-        return this;
-    }
-    public CmsUrcb owner(byte[] v) {
-        this.owner_present.value(v != null && v.length > 0);
-        if (v != null)
-            this.owner.value(v);
-        return this;
-    }
-    public CmsUrcb owner(String v) {
-        this.owner_present.value(v != null);
-        if (v != null)
-            this.owner.value(v);
-        return this;
+    public CmsUrcb rptID(String v) { this.rptID = v; return this; }
+    public CmsUrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
+    public CmsUrcb datSet(String v) { this.datSet.value(v); return this; }
+    public CmsUrcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsUrcb bufTm(long v) { this.bufTm.value(v); return this; }
+    public CmsUrcb sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsUrcb intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsUrcb gi(boolean v) { this.gi.value(v); return this; }
+    public CmsUrcb resv(boolean v) { this.resv.value(v); return this; }
+    public CmsUrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsUrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsUrcb owner(byte[] v) { this.owner = v; this.hasOwner = true; return this; }
+
+    @Override
+    public void syncToInner() {
+        InnerURCB i = (InnerURCB) inner;
+        i.rptID = rptID;
+        i.rptEna.value = rptEna.value() ? 1 : 0;
+        i.datSet.value = datSet.value();
+        i.confRev.value = (int) confRev.value();
+        optFlds.syncToInner();
+        i.optFlds.value = ((InnerRcbOptFlds) optFlds.inner).value;
+        i.bufTm.value = (int) bufTm.value();
+        i.sqNum.value = sqNum.value();
+        trgOps.syncToInner();
+        i.trgOps.value = ((InnerTriggerConditions) trgOps.inner).value;
+        i.intgPd.value = (int) intgPd.value();
+        i.gi.value = gi.value() ? 1 : 0;
+        i.resv.value = resv.value() ? 1 : 0;
+        if (hasOwner) {
+            i.owner = owner;
+            i._set.add("owner");
+        }
     }
 
     @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(rptID, rptEna, datSet, confRev, optFlds, bufTm, sqNum, trgOps, intgPd, gi, resv, owner_present, owner);
+    public void syncFromInner() {
+        InnerURCB i = (InnerURCB) inner;
+        rptID = i.rptID;
+        rptEna.value(i.rptEna.value != 0);
+        datSet.value(i.datSet.value);
+        confRev.value(i.confRev.value & 0xFFFFFFFFL);
+        ((InnerRcbOptFlds) optFlds.inner).value = i.optFlds.value;
+        optFlds.syncFromInner();
+        bufTm.value(i.bufTm.value & 0xFFFFFFFFL);
+        sqNum.value(i.sqNum.value & 0xFFFF);
+        ((InnerTriggerConditions) trgOps.inner).value = i.trgOps.value;
+        trgOps.syncFromInner();
+        intgPd.value(i.intgPd.value & 0xFFFFFFFFL);
+        gi.value(i.gi.value != 0);
+        resv.value(i.resv.value != 0);
+        hasOwner = i._set.contains("owner");
+        if (hasOwner) owner = i.owner;
     }
 }

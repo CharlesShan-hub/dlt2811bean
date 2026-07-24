@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.InnerServer;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * <p>
  * {@link #handleRequest(Session, Frame)} is {@code final} — it auto-decodes the
- * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsType, int)}.
+ * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsTypeOld, int)}.
  *
  * <p>
  * If an error PDU type is provided via constructor, the default
@@ -37,18 +37,18 @@ import java.util.List;
 public abstract class BaseServerHandler extends BaseHandler implements ServiceHandler {
 
     private final ServiceName serviceName;
-    private final Class<? extends CmsType> requestType;
-    private final Class<? extends CmsType> errorType;
+    private final Class<? extends CmsTypeOld> requestType;
+    private final Class<? extends CmsTypeOld> errorType;
 
     /** Full constructor: request PDU + error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType, Class<? extends CmsType> errorType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsTypeOld> requestType, Class<? extends CmsTypeOld> errorType) {
         this.serviceName = serviceName;
         this.requestType = requestType;
         this.errorType = errorType;
     }
 
     /** For services with a request PDU but no distinct error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsTypeOld> requestType) {
         this(serviceName, requestType, null);
     }
 
@@ -65,7 +65,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     @Override
     public final Frame handleRequest(Session session, Frame request) {
         int reqId = request.reqId();
-        CmsType decoded;
+        CmsTypeOld decoded;
         if (requestType != null) {
             try {
                 decoded = requestType.getDeclaredConstructor().newInstance();
@@ -102,7 +102,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * <p>
      * Default implementation does nothing.
      */
-    protected void prepareDecode(CmsType decoded) {
+    protected void prepareDecode(CmsTypeOld decoded) {
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * @throws ServiceException
      *             to abort processing and return an error frame
      */
-    protected abstract Frame onDecodeSuccess(Session session, CmsType req, int reqId);
+    protected abstract Frame onDecodeSuccess(Session session, CmsTypeOld req, int reqId);
 
     /**
      * Build an error response frame.
@@ -139,7 +139,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
             return buildError(new byte[]{0, 0, 0, 0}, reqId);
         }
         try {
-            CmsType errorPdu = errorType.getDeclaredConstructor().newInstance();
+            CmsTypeOld errorPdu = errorType.getDeclaredConstructor().newInstance();
             trySet(errorPdu, "reqId", reqId);
             trySet(errorPdu, "serviceError", err);
             return buildError(errorPdu.encode(), reqId);
@@ -150,7 +150,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     }
 
     @SuppressWarnings("unchecked")
-    private static void trySet(CmsType target, String methodSuffix, int value) throws Exception {
+    private static void trySet(CmsTypeOld target, String methodSuffix, int value) throws Exception {
         // Try reqId(int) or serviceError(int) setter pattern
         String methodName = methodSuffix; // e.g. "reqId" or "serviceError"
         try {
@@ -181,7 +181,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * Convenience: encode a response PDU and wrap in a success frame. Auto-catches
      * encoding exceptions and returns an error frame instead.
      */
-    protected Frame ok(CmsType resp, int reqId) {
+    protected Frame ok(CmsTypeOld resp, int reqId) {
         try {
             return buildSuccess(resp.encode(), reqId);
         } catch (Exception e) {
@@ -267,7 +267,7 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
     // Decode helper
     // ──────────────────────────────────────────────
 
-    protected boolean tryDecode(Session session, Frame request, CmsType pdu) {
+    protected boolean tryDecode(Session session, Frame request, CmsTypeOld pdu) {
         try {
             pdu.decode(request.asduBytes());
             return true;

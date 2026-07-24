@@ -1,54 +1,33 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.InnerInt32U;
-import com.ysh.jcms.data.InnerNative;
 
 /**
  * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so).
+ * <p>
+ * Int32U ::= INTEGER (0..4294967295) — 32-bit unsigned.
  */
 public class CmsInt32U extends CmsType {
 
-    private transient InnerInt32U inner = new InnerInt32U();
+    public static final long MAX_VALUE = 0xFFFFFFFFL;
 
     public CmsInt32U() {
-        super(Codec.INT32U);
+        super(new InnerInt32U());
     }
     public CmsInt32U(long value) {
-        super(Codec.INT32U);
-        inner.value = (int) (value & 0xFFFFFFFFL);
+        this();
+        value(value);
     }
 
+    /** Get unsigned int value as long (always 0..4294967295). */
     public long value() {
-        return inner.value & 0xFFFFFFFFL;
+        return ((InnerInt32U) inner).value & MAX_VALUE;
     }
     public CmsInt32U value(long v) {
-        inner.value = (int) (v & 0xFFFFFFFFL);
+        if (v < 0 || v > MAX_VALUE)
+            throw new IllegalArgumentException("CmsInt32U out of range [0," + MAX_VALUE + "]: " + v);
+        ((InnerInt32U) inner).value = (int) v;
         return this;
-    }
-
-    @Override
-    public byte[] encode() {
-        // Send unsigned long value; inner.value is signed int
-        long unsigned = inner.value & 0xFFFFFFFFL;
-        return InnerNative.encode("Int32U", "aper", String.valueOf(unsigned));
-    }
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerInt32U.decode(data);
-    }
-
-    @Override
-    protected int calcNativeSize() {
-        return 4;
-    }
-    @Override
-    public void write() {
-        nativePtr.setInt(0, (int) inner.value);
-    }
-    @Override
-    public void read() {
-        inner.value = nativePtr.getInt(0);
     }
 }

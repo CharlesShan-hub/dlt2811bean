@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.svc.dataset.CmsCreateDataSetRequest;
@@ -28,7 +28,7 @@ public class CreateDataSetServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.count);
 

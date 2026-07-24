@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * SetLCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, result [0] IMPLICIT
  * SEQUENCE OF SetLCBResult } — 8.8.3
  */
-public class CmsSetLcbValuesError extends CmsType {
+public class CmsSetLcbValuesError extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsSetLcbResult> result; /* SEQUENCE OF SetLCBResult */
@@ -32,7 +32,7 @@ public class CmsSetLcbValuesError extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, result);
     }
 }

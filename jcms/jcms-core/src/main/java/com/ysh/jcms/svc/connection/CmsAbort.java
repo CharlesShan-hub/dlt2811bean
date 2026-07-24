@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsAssociationId;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * NOTE: Abort is a one-way message with no Response or Error PDU.
  */
-public class CmsAbort extends CmsType {
+public class CmsAbort extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsAssociationId assocId;
@@ -46,7 +46,7 @@ public class CmsAbort extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, assocId, reason);
     }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.log.CmsLogEntry;
 import com.ysh.jcms.svc.log.CmsQueryLogAfterError;
 import com.ysh.jcms.svc.log.CmsQueryLogAfterRequest;
@@ -32,7 +32,7 @@ public class QueryLogAfterServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsQueryLogAfterRequest req = (CmsQueryLogAfterRequest) rawReq;
         String logRef = str(req.logReference);
 

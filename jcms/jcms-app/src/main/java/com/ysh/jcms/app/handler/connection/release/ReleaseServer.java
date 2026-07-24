@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.connection.CmsReleaseError;
 import com.ysh.jcms.svc.connection.CmsReleaseRequest;
@@ -21,7 +21,7 @@ public class ReleaseServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsReleaseRequest req = (CmsReleaseRequest) rawReq;
         log.info("Release request from {}: reqId={}", session.getSessionId(), reqId);
 

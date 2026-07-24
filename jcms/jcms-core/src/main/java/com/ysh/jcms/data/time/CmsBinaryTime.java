@@ -1,11 +1,10 @@
 package com.ysh.jcms.data.time;
 
-import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerBinaryTime;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
-import java.util.Arrays;
-import java.util.List;
+import java.nio.ByteBuffer;
 
 /**
  * BinaryTime ::= OCTET STRING (SIZE(6)) — 7.2.2
@@ -16,7 +15,7 @@ public class CmsBinaryTime extends CmsType {
     public CmsInt16U daysSince1984;
 
     public CmsBinaryTime() {
-        super(Codec.BINARY_TIME);
+        super(new InnerBinaryTime());
         this.msOfDay = new CmsInt32U();
         this.daysSince1984 = new CmsInt16U();
     }
@@ -31,7 +30,17 @@ public class CmsBinaryTime extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(msOfDay, daysSince1984);
+    public void syncToInner() {
+        ((InnerBinaryTime) inner).value = ByteBuffer.allocate(6)
+            .putInt((int) msOfDay.value())
+            .putShort((short) daysSince1984.value())
+            .array();
+    }
+
+    @Override
+    public void syncFromInner() {
+        ByteBuffer bb = ByteBuffer.wrap(((InnerBinaryTime) inner).value);
+        msOfDay.value(bb.getInt() & 0xFFFFFFFFL);
+        daysSince1984.value(bb.getShort() & 0xFFFF);
     }
 }

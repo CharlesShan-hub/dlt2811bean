@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.msv;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Used by SetMSVCBValues error.
  */
-public class CmsSetMsvcbResult extends CmsType {
+public class CmsSetMsvcbResult extends CmsTypeOld {
 
     public CmsBoolean errorPresent;
     public CmsServiceError error;
@@ -107,7 +107,7 @@ public class CmsSetMsvcbResult extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(errorPresent, error, svEnaErrPresent, svEnaErr, msvIdErrPresent, msvIdErr, datSetErrPresent, datSetErr,
                 smpModErrPresent, smpModErr, smpRateErrPresent, smpRateErr, optFldsErrPresent, optFldsErr);
     }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.control.timeActivatedOperate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.control.CmsTimeActivatedOperateError;
 import com.ysh.jcms.svc.control.CmsTimeActivatedOperateRequest;
@@ -21,7 +21,7 @@ public class TimeActivatedOperateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsTimeActivatedOperateRequest req = (CmsTimeActivatedOperateRequest) rawReq;
         String ref = str(req.reference);
         log.info("TimeActivatedOperate from {}: reqId={}, ref={}, operTm={}", session.getSessionId(), reqId, ref,

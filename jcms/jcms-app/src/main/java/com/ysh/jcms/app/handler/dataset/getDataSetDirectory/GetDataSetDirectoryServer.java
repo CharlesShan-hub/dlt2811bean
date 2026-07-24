@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.fc.CmsFC;
 import com.ysh.jcms.svc.dataset.CmsDataRefFcEntry;
@@ -28,7 +28,7 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetDataSetDirectoryRequest req = (CmsGetDataSetDirectoryRequest) rawReq;
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.data;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.fc.CmsFC;
@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Used by SetDataValues Request.
  */
-public class CmsDataRefValueEntry extends CmsType {
+public class CmsDataRefValueEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsBoolean fcPresent;
@@ -52,7 +52,7 @@ public class CmsDataRefValueEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, fcPresent, fc, value);
     }
 }

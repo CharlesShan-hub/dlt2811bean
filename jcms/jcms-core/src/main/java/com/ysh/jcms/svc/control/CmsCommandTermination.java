@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.control;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -23,7 +23,7 @@ import java.util.List;
  *
  * Unconfirmed service — no Response or Error PDU.
  */
-public class CmsCommandTermination extends CmsType {
+public class CmsCommandTermination extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference reference;
@@ -108,7 +108,7 @@ public class CmsCommandTermination extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTmPresent, operTm, origin, ctlNum, t, test, check, addCausePresent, addCause);
     }
 }

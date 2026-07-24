@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -12,7 +12,7 @@ import java.util.List;
  * SetEditSGValue-ErrorPDU ::= SEQUENCE { reqId Int16U, result [0] IMPLICIT
  * SEQUENCE OF ServiceError } — 8.6.3
  */
-public class CmsSetEditSgValueError extends CmsType {
+public class CmsSetEditSgValueError extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsServiceError> result; /* SEQUENCE OF ServiceError */
@@ -33,7 +33,7 @@ public class CmsSetEditSgValueError extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, result);
     }
 }

@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.setEditSgValue;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.svc.sg.CmsSetEditSgValueRequest;
 import com.ysh.jcms.svc.sg.CmsSetEditSgValueResponse;
@@ -23,7 +23,7 @@ public class SetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
+    protected void prepareDecode(CmsTypeOld decoded) {
         CmsSetEditSgValueRequest req = (CmsSetEditSgValueRequest) decoded;
         int n = pageSize();
         for (int i = 0; i < n; i++) {
@@ -32,7 +32,7 @@ public class SetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsSetEditSgValueRequest req = (CmsSetEditSgValueRequest) rawReq;
         log.info("SetEditSGValue from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
 

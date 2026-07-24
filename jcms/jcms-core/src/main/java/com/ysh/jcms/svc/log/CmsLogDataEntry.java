@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -15,7 +15,7 @@ import java.util.List;
  *
  * Used by LogEntry entryData.
  */
-public class CmsLogDataEntry extends CmsType {
+public class CmsLogDataEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsFC fc;
@@ -52,7 +52,7 @@ public class CmsLogDataEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, fc, value, reason);
     }
 }

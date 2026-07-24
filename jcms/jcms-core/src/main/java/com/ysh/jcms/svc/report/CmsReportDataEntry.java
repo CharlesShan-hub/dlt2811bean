@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.report;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * Used by ReportPDU entryData.
  */
-public class CmsReportDataEntry extends CmsType {
+public class CmsReportDataEntry extends CmsTypeOld {
 
     public CmsBoolean refPresent;
     public CmsObjectReference reference; /* OPTIONAL */
@@ -80,7 +80,7 @@ public class CmsReportDataEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(refPresent, reference, fcPresent, fc, id, value, reasonPresent, reason);
     }
 }

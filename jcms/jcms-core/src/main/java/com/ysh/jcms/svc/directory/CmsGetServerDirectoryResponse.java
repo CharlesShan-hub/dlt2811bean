@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.directory;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -15,7 +15,7 @@ import java.util.List;
  * IMPLICIT SEQUENCE OF ObjectReference, moreFollows [1] IMPLICIT BOOLEAN
  * DEFAULT TRUE } — 8.3.1
  */
-public class CmsGetServerDirectoryResponse extends CmsType {
+public class CmsGetServerDirectoryResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsObjectReference> reference; /* SEQUENCE OF ObjectReference */
@@ -51,7 +51,7 @@ public class CmsGetServerDirectoryResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, moreFollows);
     }
 }

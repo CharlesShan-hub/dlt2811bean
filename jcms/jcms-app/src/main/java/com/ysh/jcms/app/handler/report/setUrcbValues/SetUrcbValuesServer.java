@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.report.CmsSetUrcbValuesError;
@@ -34,7 +34,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) rawReq;
 
         log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.count);

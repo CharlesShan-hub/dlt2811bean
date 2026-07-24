@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.other;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsObjectName;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.core.CmsEnumerated;
@@ -14,7 +14,7 @@ import java.util.List;
  * Used by GetLogicalNodeDirectory, GetAllDataValues, GetAllDataDefinition,
  * GetAllCBValues.
  */
-public class CmsReferenceChoice extends CmsType {
+public class CmsReferenceChoice extends CmsTypeOld {
 
     public static final int LD_NAME = 0;
     public static final int LN_REFERENCE = 1;
@@ -35,7 +35,7 @@ public class CmsReferenceChoice extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(choice, altLdName, altLnReference);
     }
 }

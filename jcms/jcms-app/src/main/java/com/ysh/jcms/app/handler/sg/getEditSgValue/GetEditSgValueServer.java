@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.getEditSgValue;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.svc.sg.CmsGetEditSgValueError;
@@ -29,7 +29,7 @@ public class GetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetEditSgValueRequest req = (CmsGetEditSgValueRequest) rawReq;
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 

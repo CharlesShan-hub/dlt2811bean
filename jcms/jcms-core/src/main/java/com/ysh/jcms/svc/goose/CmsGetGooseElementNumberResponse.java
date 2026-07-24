@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt16U;
@@ -16,7 +16,7 @@ import java.util.List;
  * IMPLICIT ObjectReference, memberOffset [3] IMPLICIT SEQUENCE OF INT16U } —
  * 8.9.3
  */
-public class CmsGetGooseElementNumberResponse extends CmsType {
+public class CmsGetGooseElementNumberResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference gocbReference;
@@ -63,7 +63,7 @@ public class CmsGetGooseElementNumberResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, gocbReference, confRev, datSet, memberOffset);
     }
 }

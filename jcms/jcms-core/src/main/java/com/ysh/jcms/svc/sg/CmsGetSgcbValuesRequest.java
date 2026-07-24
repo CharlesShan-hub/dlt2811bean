@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -12,7 +12,7 @@ import java.util.List;
  * GetSGCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, sgcbReference [0]
  * IMPLICIT SEQUENCE OF ObjectReference } — 8.6.6
  */
-public class CmsGetSgcbValuesRequest extends CmsType {
+public class CmsGetSgcbValuesRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsObjectReference> sgcbReference; /* SEQUENCE OF ObjectReference */
@@ -33,7 +33,7 @@ public class CmsGetSgcbValuesRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, sgcbReference);
     }
 }

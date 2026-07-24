@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.sg;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.fc.CmsFC;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Used by GetEditSGValue Request.
  */
-public class CmsSgRefFcEntry extends CmsType {
+public class CmsSgRefFcEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsFC fc;
@@ -36,7 +36,7 @@ public class CmsSgRefFcEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, fc);
     }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -13,7 +13,7 @@ import java.util.List;
  * SEQUENCE OF GoCBValueChoice, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE }
  * — 8.9.4
  */
-public class CmsGetGoCbValuesResponse extends CmsType {
+public class CmsGetGoCbValuesResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsGocbValueChoice> gocb; /* SEQUENCE OF GoCBValueChoice */
@@ -40,7 +40,7 @@ public class CmsGetGoCbValuesResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, gocb, moreFollows);
     }
 }

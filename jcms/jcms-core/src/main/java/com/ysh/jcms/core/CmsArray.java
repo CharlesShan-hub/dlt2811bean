@@ -17,7 +17,7 @@ import java.util.List;
  * arr.add(new CmsBoolean(true)); arr.add(new CmsBoolean(false)); arr.write();
  * // writes count + elements pointer to nativePtr
  */
-public class CmsArray<T extends CmsType> extends CmsType {
+public class CmsArray<T extends CmsTypeOld> extends CmsTypeOld {
 
     public static final int SIZEOF = 16;
 
@@ -105,7 +105,7 @@ public class CmsArray<T extends CmsType> extends CmsType {
         int slotCount = Math.max(Math.max(count, allocSize), 1);
         Memory ptrs = new Memory(slotCount * 8L);
         for (int i = 0; i < count; i++) {
-            CmsType item = items.get(i);
+            CmsTypeOld item = items.get(i);
             item.write();
             ptrs.setPointer(i * 8L, item.nativePtr);
         }
@@ -175,7 +175,7 @@ public class CmsArray<T extends CmsType> extends CmsType {
     // ==================== equals / hashCode ====================
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return items;
     }
 

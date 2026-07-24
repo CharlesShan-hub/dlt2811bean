@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.rpc;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -11,7 +11,7 @@ import java.util.List;
  * RpcCall-RequestPDU ::= SEQUENCE { reqId Int16U, method [0] IMPLICIT
  * VisibleString, req [1] IMPLICIT RpcCallReqChoice } — 8.13.6
  */
-public class CmsRpcCallRequest extends CmsType {
+public class CmsRpcCallRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array method; /* VisibleString */
@@ -42,7 +42,7 @@ public class CmsRpcCallRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, method, req);
     }
 }

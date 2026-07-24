@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.log;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsEntryId;
 import com.ysh.jcms.data.time.CmsBinaryTime;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * LogEntry ::= SEQUENCE { timeOfEntry [0] IMPLICIT EntryTime, entryID [1]
  * IMPLICIT EntryID, entryData [2] IMPLICIT SEQUENCE OF LogDataEntry } — 8.8.1
  */
-public class CmsLogEntry extends CmsType {
+public class CmsLogEntry extends CmsTypeOld {
 
     public CmsBinaryTime timeOfEntry;
     public CmsEntryId entryId;
@@ -41,7 +41,7 @@ public class CmsLogEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(timeOfEntry, entryId, entryData);
     }
 }

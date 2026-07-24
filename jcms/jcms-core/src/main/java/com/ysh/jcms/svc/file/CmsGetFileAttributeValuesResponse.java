@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.file;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -11,7 +11,7 @@ import java.util.List;
  * GetFileAttributeValues-ResponsePDU ::= SEQUENCE { reqId Int16U, fileEntry [0]
  * IMPLICIT FileEntry } — 8.12.5
  */
-public class CmsGetFileAttributeValuesResponse extends CmsType {
+public class CmsGetFileAttributeValuesResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsFileEntry fileEntry;
@@ -32,7 +32,7 @@ public class CmsGetFileAttributeValuesResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, fileEntry);
     }
 }

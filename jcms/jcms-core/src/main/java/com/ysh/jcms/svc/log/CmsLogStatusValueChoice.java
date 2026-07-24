@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.core.CmsEnumerated;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Used by GetLogStatusValues response.
  */
-public class CmsLogStatusValueChoice extends CmsType {
+public class CmsLogStatusValueChoice extends CmsTypeOld {
 
     public static final int ERROR = 0;
     public static final int VALUE = 1;
@@ -33,7 +33,7 @@ public class CmsLogStatusValueChoice extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(choice, altError, altValue);
     }
 }

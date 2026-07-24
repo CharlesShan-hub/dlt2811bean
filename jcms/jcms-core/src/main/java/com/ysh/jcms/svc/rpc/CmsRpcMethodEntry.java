@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.rpc;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Used by GetRpcInterfaceDefinition response.
  */
-public class CmsRpcMethodEntry extends CmsType {
+public class CmsRpcMethodEntry extends CmsTypeOld {
 
     public CmsUint8Array name;
     public CmsInt32U version;
@@ -56,7 +56,7 @@ public class CmsRpcMethodEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(name, version, timeout, request, response);
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.msv;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsMsvcbOptFlds;
 import com.ysh.jcms.data.block.CmsSmpMod;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -19,7 +19,7 @@ import java.util.List;
  *
  * Used by SetMSVCBValues request.
  */
-public class CmsSetMsvcbEntry extends CmsType {
+public class CmsSetMsvcbEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsBoolean svEnaPresent;
@@ -125,7 +125,7 @@ public class CmsSetMsvcbEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, svEnaPresent, svEna, msvIdPresent, msvId, datSetPresent, datSet, smpModPresent, smpMod,
                 smpRatePresent, smpRate, optFldsPresent, optFlds);
     }

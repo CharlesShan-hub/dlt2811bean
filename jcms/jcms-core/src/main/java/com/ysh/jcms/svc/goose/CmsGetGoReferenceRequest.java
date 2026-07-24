@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.goose;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt16U;
@@ -13,7 +13,7 @@ import java.util.List;
  * GetGoReference-RequestPDU ::= SEQUENCE { reqId Int16U, gocbReference [0]
  * IMPLICIT ObjectReference, memberOfs [1] IMPLICIT SEQUENCE OF INT16U } — 8.9.2
  */
-public class CmsGetGoReferenceRequest extends CmsType {
+public class CmsGetGoReferenceRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference gocbReference;
@@ -44,7 +44,7 @@ public class CmsGetGoReferenceRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, gocbReference, memberOfs);
     }
 }

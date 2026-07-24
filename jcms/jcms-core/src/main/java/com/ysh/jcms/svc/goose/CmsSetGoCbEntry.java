@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.goose;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -14,7 +14,7 @@ import java.util.List;
  *
  * Used by SetGoCBValues request.
  */
-public class CmsSetGoCbEntry extends CmsType {
+public class CmsSetGoCbEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsBoolean goEnaPresent;
@@ -84,7 +84,7 @@ public class CmsSetGoCbEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, goEnaPresent, goEna, goIdPresent, goId, datSetPresent, datSet);
     }
 }

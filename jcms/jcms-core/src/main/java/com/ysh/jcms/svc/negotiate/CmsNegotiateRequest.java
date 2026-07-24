@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.negotiate;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -13,7 +13,7 @@ import java.util.List;
  * IMPLICIT INT16U, asduSize [1] IMPLICIT INT32U, protocolVersion [2] IMPLICIT
  * INT32U } — 8.13
  */
-public class CmsNegotiateRequest extends CmsType {
+public class CmsNegotiateRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsInt16U apduSize;
@@ -46,7 +46,7 @@ public class CmsNegotiateRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, apduSize, asduSize, protocolVersion);
     }
 }

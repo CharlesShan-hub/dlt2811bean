@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.file.CmsDeleteFileError;
 import com.ysh.jcms.svc.file.CmsDeleteFileRequest;
@@ -26,7 +26,7 @@ public class DeleteFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsDeleteFileRequest req = (CmsDeleteFileRequest) rawReq;
         String fileName = str(req.filename);
         log.info("DeleteFile from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);

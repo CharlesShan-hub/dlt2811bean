@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.rpc.CmsGetRpcInterfaceDefinitionError;
 import com.ysh.jcms.svc.rpc.CmsGetRpcInterfaceDefinitionRequest;
@@ -20,7 +20,7 @@ public class GetRpcInterfaceDefinitionServer extends BaseServerHandler {
         super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class, CmsGetRpcInterfaceDefinitionError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetRpcInterfaceDefinitionRequest req = (CmsGetRpcInterfaceDefinitionRequest) rawReq;
         String iface = str(req.interfaceName);
         if (iface == null)

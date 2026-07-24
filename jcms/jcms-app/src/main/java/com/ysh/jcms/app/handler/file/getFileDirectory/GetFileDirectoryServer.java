@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -34,7 +34,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetFileDirectoryRequest req = (CmsGetFileDirectoryRequest) rawReq;
         log.info("GetFileDirectory from {}: reqId={}", session.getSessionId(), reqId);
 

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.goose;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -11,7 +11,7 @@ import java.util.List;
  * GetGoReference-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
  * ServiceError } — 8.9.2
  */
-public class CmsGetGoReferenceError extends CmsType {
+public class CmsGetGoReferenceError extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsServiceError serviceError;
@@ -32,7 +32,7 @@ public class CmsGetGoReferenceError extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, serviceError);
     }
 }

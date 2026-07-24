@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectName;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -14,7 +14,7 @@ import java.util.List;
  * IMPLICIT ObjectName OPTIONAL, referenceAfter [1] IMPLICIT ObjectReference
  * OPTIONAL } — 8.3.2
  */
-public class CmsGetLogicalDeviceDirectoryRequest extends CmsType {
+public class CmsGetLogicalDeviceDirectoryRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsBoolean ldNamePresent;
@@ -69,7 +69,7 @@ public class CmsGetLogicalDeviceDirectoryRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, ldNamePresent, ldName, refAfterPresent, refAfter);
     }
 }

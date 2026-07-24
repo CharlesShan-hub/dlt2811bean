@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.rpc.rpcCall;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.rpc.CmsRpcCallError;
@@ -34,7 +34,7 @@ public class RpcCallServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsRpcCallRequest req = (CmsRpcCallRequest) rawReq;
         String method = str(req.method);
         if (method == null)

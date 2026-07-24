@@ -1,47 +1,31 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.InnerEntryID;
-import com.ysh.jcms.data.string.CmsUint8Array;
 
 /**
  * EntryID ::= OCTET STRING (SIZE(8)) — 7.3.8
  * <p>
  * Wraps {@link InnerEntryID} for PER encode/decode via Rust (libasn1.so).
  */
-public class CmsEntryId extends CmsUint8Array {
+public class CmsEntryId extends CmsType {
     public static final int LEN = 8;
 
-    private transient InnerEntryID inner = new InnerEntryID();
-
-    {
-        this.codec = Codec.ENTRY_ID;
-    }
-
     public CmsEntryId() {
-        super(LEN);
+        super(new InnerEntryID());
     }
     public CmsEntryId(byte[] data) {
-        super(LEN);
-        inner.value = data;
+        this();
+        value(data);
     }
 
-    @Override
     public byte[] value() {
-        return inner.value;
+        return ((InnerEntryID) inner).value;
     }
-    @Override
     public CmsEntryId value(byte[] v) {
-        inner.value = v;
+        if (v != null && v.length != LEN)
+            throw new IllegalArgumentException("CmsEntryId must be exactly " + LEN + " bytes, got " + v.length);
+        ((InnerEntryID) inner).value = v;
         return this;
-    }
-
-    @Override
-    public byte[] encode() {
-        return inner.encode();
-    }
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerEntryID.decode(data);
     }
 }

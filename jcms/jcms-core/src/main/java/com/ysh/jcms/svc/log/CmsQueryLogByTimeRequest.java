@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsEntryId;
 import com.ysh.jcms.data.time.CmsBinaryTime;
@@ -16,7 +16,7 @@ import java.util.List;
  * [2] IMPLICIT EntryTime OPTIONAL, entryAfter [3] IMPLICIT EntryID OPTIONAL } —
  * 8.8.4
  */
-public class CmsQueryLogByTimeRequest extends CmsType {
+public class CmsQueryLogByTimeRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference logReference;
@@ -85,7 +85,7 @@ public class CmsQueryLogByTimeRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, logReference, startTimePresent, startTime, stopTimePresent, stopTime, entryAfterPresent, entryAfter);
     }
 }

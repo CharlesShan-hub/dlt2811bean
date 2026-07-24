@@ -22,7 +22,7 @@ public class CmsEqualityUtil {
      * equal.
      * </p>
      */
-    public static boolean equals(CmsType a, Object b) {
+    public static boolean equals(CmsTypeOld a, Object b) {
         if (a == b)
             return true;
         if (b == null)
@@ -34,10 +34,10 @@ public class CmsEqualityUtil {
         }
         if (a.getClass() != b.getClass())
             return false;
-        CmsType other = (CmsType) b;
+        CmsTypeOld other = (CmsTypeOld) b;
 
-        List<? extends CmsType> kids = a.children();
-        List<? extends CmsType> otherKids = other.children();
+        List<? extends CmsTypeOld> kids = a.children();
+        List<? extends CmsTypeOld> otherKids = other.children();
 
         if (!kids.isEmpty()) {
             if (kids.size() != otherKids.size())
@@ -70,11 +70,11 @@ public class CmsEqualityUtil {
      * Hash code for a CmsType. Container types combine children hashes; leaf types
      * hash native memory bytes.
      */
-    public static int hashCode(CmsType a) {
-        List<? extends CmsType> kids = a.children();
+    public static int hashCode(CmsTypeOld a) {
+        List<? extends CmsTypeOld> kids = a.children();
         if (!kids.isEmpty()) {
             int h = 1;
-            for (CmsType child : kids)
+            for (CmsTypeOld child : kids)
                 h = 31 * h + (child != null ? child.hashCode() : 0);
             return h;
         }

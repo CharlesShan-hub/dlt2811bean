@@ -1,7 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.InnerFloat32;
 import java.nio.ByteBuffer;
 
@@ -11,21 +10,19 @@ import java.nio.ByteBuffer;
  */
 public class CmsFloat32 extends CmsType {
 
-    private transient InnerFloat32 inner = new InnerFloat32();
-
     public CmsFloat32() {
-        super(Codec.FLOAT32);
+        super(new InnerFloat32());
     }
     public CmsFloat32(float value) {
-        super(Codec.FLOAT32);
-        inner.value = floatToBytes(value);
+        this();
+        ((InnerFloat32) inner).value = floatToBytes(value);
     }
 
     public float value() {
-        return bytesToFloat(inner.value);
+        return bytesToFloat(((InnerFloat32) inner).value);
     }
     public CmsFloat32 value(float v) {
-        inner.value = floatToBytes(v);
+        ((InnerFloat32) inner).value = floatToBytes(v);
         return this;
     }
 
@@ -34,27 +31,5 @@ public class CmsFloat32 extends CmsType {
     }
     private static float bytesToFloat(byte[] b) {
         return Float.intBitsToFloat(ByteBuffer.wrap(b).getInt());
-    }
-
-    @Override
-    public byte[] encode() {
-        return inner.encode();
-    }
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerFloat32.decode(data);
-    }
-
-    @Override
-    protected int calcNativeSize() {
-        return 4;
-    }
-    @Override
-    public void write() {
-        nativePtr.setFloat(0, bytesToFloat(inner.value));
-    }
-    @Override
-    public void read() {
-        inner.value = floatToBytes(nativePtr.getFloat(0));
     }
 }

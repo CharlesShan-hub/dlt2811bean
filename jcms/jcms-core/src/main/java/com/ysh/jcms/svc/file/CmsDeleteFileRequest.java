@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.file;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -11,7 +11,7 @@ import java.util.List;
  * DeleteFile-RequestPDU ::= SEQUENCE { reqId Int16U, filename [0] IMPLICIT
  * VisibleString255 } — 8.12.3
  */
-public class CmsDeleteFileRequest extends CmsType {
+public class CmsDeleteFileRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array filename;
@@ -36,7 +36,7 @@ public class CmsDeleteFileRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, filename);
     }
 }

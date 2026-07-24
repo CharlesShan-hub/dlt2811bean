@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.svc.goose.CmsGetGoReferenceResponse;
@@ -27,7 +27,7 @@ public class GetGoReferenceServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetGoReferenceRequest req = (CmsGetGoReferenceRequest) rawReq;
         String gocbRef = str(req.gocbReference);
         log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.count);

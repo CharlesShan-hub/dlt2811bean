@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.rpc;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
@@ -13,7 +13,7 @@ import java.util.List;
  * IMPLICIT VisibleString OPTIONAL, referenceAfter [1] IMPLICIT VisibleString
  * OPTIONAL } — 8.13.3
  */
-public class CmsGetRpcMethodDirectoryRequest extends CmsType {
+public class CmsGetRpcMethodDirectoryRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsBoolean interfacePresent;
@@ -64,7 +64,7 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, interfacePresent, interfaceName, refAfterPresent, refAfter);
     }
 }

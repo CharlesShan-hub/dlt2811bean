@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.control;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -20,7 +20,7 @@ import java.util.List;
  * IMPLICIT TimeStamp, test [6] IMPLICIT BOOLEAN, addCause [8] IMPLICIT AddCause
  * } — 8.11.4
  */
-public class CmsCancelError extends CmsType {
+public class CmsCancelError extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference reference;
@@ -93,7 +93,7 @@ public class CmsCancelError extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, ctlVal, operTmPresent, operTm, origin, ctlNum, t, test, addCause);
     }
 }

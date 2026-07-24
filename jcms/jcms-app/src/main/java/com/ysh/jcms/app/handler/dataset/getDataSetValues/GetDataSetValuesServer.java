@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.svc.dataset.CmsGetDataSetValuesRequest;
@@ -30,7 +30,7 @@ public class GetDataSetValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetDataSetValuesRequest req = (CmsGetDataSetValuesRequest) rawReq;
         log.info("GetDataSetValues from {}: reqId={}", session.getSessionId(), reqId);
 

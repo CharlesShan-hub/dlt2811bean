@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.file;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsInt32U;
@@ -14,7 +14,7 @@ import java.util.List;
  * VisibleString255, startPosition [1] IMPLICIT INT32U, fileData [2] IMPLICIT
  * OCTET STRING, endOfFile [3] IMPLICIT BOOLEAN DEFAULT FALSE } — 8.12.2
  */
-public class CmsSetFileRequest extends CmsType {
+public class CmsSetFileRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array filename;
@@ -61,7 +61,7 @@ public class CmsSetFileRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, filename, startPosition, fileData, endOfFile);
     }
 }

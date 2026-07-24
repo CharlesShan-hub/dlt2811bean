@@ -1,23 +1,19 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.time.CmsBinaryTime;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * BRCB ::= SEQUENCE { 15 fields } — 8.4
- *
- * OPTIONAL fields (resvTms, owner) use a CmsBoolean "present" flag before the
- * value.
+ * <p>
+ * OPTIONAL fields (resvTms, owner) use has* boolean flags.
  */
 public class CmsBrcb extends CmsType {
 
-    public CmsUint8Array rptID;
+    public String rptID;
     public CmsBoolean rptEna;
     public CmsObjectReference datSet;
     public CmsInt32U confRev;
@@ -30,14 +26,14 @@ public class CmsBrcb extends CmsType {
     public CmsBoolean purgeBuf;
     public CmsEntryId entryID;
     public CmsBinaryTime timeOfEntry;
-    public CmsBoolean resvTms_present;
     public CmsInt16 resvTms; /* OPTIONAL */
-    public CmsBoolean owner_present;
-    public CmsUint8Array owner; /* OPTIONAL */
+    public boolean hasResvTms;
+    public byte[] owner; /* OPTIONAL */
+    public boolean hasOwner;
 
     public CmsBrcb() {
-        super(Codec.BRCB);
-        this.rptID = new CmsUint8Array();
+        super(new InnerBRCB());
+        this.rptID = "";
         this.rptEna = new CmsBoolean();
         this.datSet = new CmsObjectReference();
         this.confRev = new CmsInt32U();
@@ -50,104 +46,76 @@ public class CmsBrcb extends CmsType {
         this.purgeBuf = new CmsBoolean();
         this.entryID = new CmsEntryId();
         this.timeOfEntry = new CmsBinaryTime();
-        this.resvTms_present = new CmsBoolean();
         this.resvTms = new CmsInt16();
-        this.owner_present = new CmsBoolean();
-        this.owner = new CmsUint8Array();
+        this.owner = new byte[0];
     }
 
-    public CmsBrcb rptID(byte[] v) {
-        this.rptID.value(v);
-        return this;
-    }
-    public CmsBrcb rptID(String v) {
-        this.rptID.value(v);
-        return this;
-    }
-    public CmsBrcb rptEna(boolean v) {
-        this.rptEna.value(v);
-        return this;
-    }
-    public CmsBrcb datSet(byte[] v) {
-        this.datSet.value(v);
-        return this;
-    }
-    public CmsBrcb datSet(String v) {
-        this.datSet.value(v);
-        return this;
-    }
-    public CmsBrcb confRev(long v) {
-        this.confRev.value(v);
-        return this;
-    }
-    public CmsBrcb optFlds(CmsRcbOptFlds v) {
-        this.optFlds = v;
-        return this;
-    }
-    public CmsBrcb bufTm(long v) {
-        this.bufTm.value(v);
-        return this;
-    }
-    public CmsBrcb sqNum(int v) {
-        this.sqNum.value(v);
-        return this;
-    }
-    public CmsBrcb trgOps(CmsTriggerConditions v) {
-        this.trgOps = v;
-        return this;
-    }
-    public CmsBrcb intgPd(long v) {
-        this.intgPd.value(v);
-        return this;
-    }
-    public CmsBrcb gi(boolean v) {
-        this.gi.value(v);
-        return this;
-    }
-    public CmsBrcb purgeBuf(boolean v) {
-        this.purgeBuf.value(v);
-        return this;
-    }
-    public CmsBrcb entryID(byte[] v) {
-        this.entryID.value(v);
-        return this;
-    }
-    public CmsBrcb entryID(String v) {
-        this.entryID.value(v);
-        return this;
-    }
-    public CmsBrcb timeOfEntry(CmsBinaryTime v) {
-        this.timeOfEntry = v;
-        return this;
-    }
-    public CmsBrcb resvTms_present(boolean v) {
-        this.resvTms_present.value(v);
-        return this;
-    }
-    public CmsBrcb resvTms(int v) {
-        this.resvTms.value(v);
-        return this;
-    }
-    public CmsBrcb owner_present(boolean v) {
-        this.owner_present.value(v);
-        return this;
-    }
-    public CmsBrcb owner(byte[] v) {
-        this.owner_present.value(v != null && v.length > 0);
-        if (v != null)
-            this.owner.value(v);
-        return this;
-    }
-    public CmsBrcb owner(String v) {
-        this.owner_present.value(v != null);
-        if (v != null)
-            this.owner.value(v);
-        return this;
+    public CmsBrcb rptID(String v) { this.rptID = v; return this; }
+    public CmsBrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
+    public CmsBrcb datSet(String v) { this.datSet.value(v); return this; }
+    public CmsBrcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsBrcb bufTm(long v) { this.bufTm.value(v); return this; }
+    public CmsBrcb sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsBrcb intgPd(long v) { this.intgPd.value(v); return this; }
+    public CmsBrcb gi(boolean v) { this.gi.value(v); return this; }
+    public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
+    public CmsBrcb entryID(byte[] v) { this.entryID.value(v); return this; }
+    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
+    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsBrcb resvTms(int v) { this.resvTms.value(v); this.hasResvTms = true; return this; }
+    public CmsBrcb owner(byte[] v) { this.owner = v; this.hasOwner = true; return this; }
+
+    @Override
+    public void syncToInner() {
+        InnerBRCB i = (InnerBRCB) inner;
+        i.rptID = rptID;
+        i.rptEna.value = rptEna.value() ? 1 : 0;
+        i.datSet.value = datSet.value();
+        i.confRev.value = (int) confRev.value();
+        optFlds.syncToInner();
+        i.optFlds.value = ((InnerRcbOptFlds) optFlds.inner).value;
+        i.bufTm.value = (int) bufTm.value();
+        i.sqNum.value = sqNum.value();
+        trgOps.syncToInner();
+        i.trgOps.value = ((InnerTriggerConditions) trgOps.inner).value;
+        i.intgPd.value = (int) intgPd.value();
+        i.gi.value = gi.value() ? 1 : 0;
+        i.purgeBuf.value = purgeBuf.value() ? 1 : 0;
+        i.entryID.value = entryID.value();
+        timeOfEntry.syncToInner();
+        i.timeOfEntry.value = ((InnerBinaryTime) timeOfEntry.inner).value;
+        if (hasResvTms) {
+            i.resvTms.value = resvTms.value();
+            i._set.add("resvTms");
+        }
+        if (hasOwner) {
+            i.owner = owner;
+            i._set.add("owner");
+        }
     }
 
     @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(rptID, rptEna, datSet, confRev, optFlds, bufTm, sqNum, trgOps, intgPd, gi, purgeBuf, entryID, timeOfEntry,
-                resvTms_present, resvTms, owner_present, owner);
+    public void syncFromInner() {
+        InnerBRCB i = (InnerBRCB) inner;
+        rptID = i.rptID;
+        rptEna.value(i.rptEna.value != 0);
+        datSet.value(i.datSet.value);
+        confRev.value(i.confRev.value & 0xFFFFFFFFL);
+        ((InnerRcbOptFlds) optFlds.inner).value = i.optFlds.value;
+        optFlds.syncFromInner();
+        bufTm.value(i.bufTm.value & 0xFFFFFFFFL);
+        sqNum.value(i.sqNum.value & 0xFFFF);
+        ((InnerTriggerConditions) trgOps.inner).value = i.trgOps.value;
+        trgOps.syncFromInner();
+        intgPd.value(i.intgPd.value & 0xFFFFFFFFL);
+        gi.value(i.gi.value != 0);
+        purgeBuf.value(i.purgeBuf.value != 0);
+        entryID.value(i.entryID.value);
+        ((InnerBinaryTime) timeOfEntry.inner).value = i.timeOfEntry.value;
+        timeOfEntry.syncFromInner();
+        hasResvTms = i._set.contains("resvTms");
+        if (hasResvTms) resvTms.value(i.resvTms.value);
+        hasOwner = i._set.contains("owner");
+        if (hasOwner) owner = i.owner;
     }
 }

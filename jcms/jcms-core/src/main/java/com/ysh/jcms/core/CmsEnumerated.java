@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Base class for all ENUMERATED / coded-enum types: CmsDbpos, CmsTcmd,
  * CmsServiceError, CmsOrCat, etc.
  */
-public class CmsEnumerated extends CmsType {
+public class CmsEnumerated extends CmsTypeOld {
 
     private static final Map<Class<?>, Map<Integer, String>> CONSTANT_NAMES = new ConcurrentHashMap<>();
 

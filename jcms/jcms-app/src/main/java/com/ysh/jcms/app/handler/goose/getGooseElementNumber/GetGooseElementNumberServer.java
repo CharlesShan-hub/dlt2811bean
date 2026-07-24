@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberResponse;
@@ -27,7 +27,7 @@ public class GetGooseElementNumberServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetGooseElementNumberRequest req = (CmsGetGooseElementNumberRequest) rawReq;
         String gocbRef = str(req.gocbReference);
         log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.getSessionId(), reqId, gocbRef,

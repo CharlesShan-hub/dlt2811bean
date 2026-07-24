@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.svc.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.svc.rpc.CmsGetRpcInterfaceDirectoryRequest;
@@ -19,7 +19,7 @@ public class GetRpcInterfaceDirectoryServer extends BaseServerHandler {
         super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectoryRequest.class, CmsGetRpcInterfaceDirectoryError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         log.info("GetRpcInterfaceDirectory from {}", session.getSessionId());
         CmsGetRpcInterfaceDirectoryResponse resp = new CmsGetRpcInterfaceDirectoryResponse().reqId(reqId);
         for (String name : RpcRegistry.getInterfaceNames()) {

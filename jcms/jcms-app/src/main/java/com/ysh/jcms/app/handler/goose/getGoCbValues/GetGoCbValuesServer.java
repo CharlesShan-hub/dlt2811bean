@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.goose.GoCbCache;
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsGoCb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.goose.CmsGetGoCbValuesError;
@@ -31,7 +31,7 @@ public class GetGoCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) rawReq;
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 

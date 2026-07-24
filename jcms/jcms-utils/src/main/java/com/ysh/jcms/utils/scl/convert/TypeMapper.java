@@ -1,6 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsDbpos;
 import com.ysh.jcms.data.common.CmsTcmd;
 import com.ysh.jcms.data.control.CmsCheck;
@@ -11,7 +11,7 @@ import com.ysh.jcms.data.string.CmsUint8Array;
 /**
  * bType → CMS 协议类型 映射器。
  * <p>
- * 纯查表，将 bType 字符串和值转换为对应的 {@link CmsType} 实例。
+ * 纯查表，将 bType 字符串和值转换为对应的 {@link CmsTypeOld} 实例。
  */
 public final class TypeMapper {
 
@@ -27,7 +27,7 @@ public final class TypeMapper {
      *            字符串值
      * @return CmsType 实例，解析失败返回 CmsUint8Array 兜底
      */
-    public static CmsType createTypedValue(String bType, String value) {
+    public static CmsTypeOld createTypedValue(String bType, String value) {
         if (bType == null || value == null) {
             return new CmsUint8Array(value != null ? value : "");
         }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.msv;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.block.CmsSmpMod;
 import com.ysh.jcms.data.choice.CmsData;
@@ -26,7 +26,7 @@ import java.util.List;
  *
  * Unconfirmed service — no Response or Error PDU.
  */
-public class CmsSendMsvMessage extends CmsType {
+public class CmsSendMsvMessage extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array msvId; /* VisibleString129 */
@@ -137,7 +137,7 @@ public class CmsSendMsvMessage extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, msvId, datSetPresent, datSet, smpCnt, confRev, refTmPresent, refTm, smpSynch, smpRatePresent, smpRate,
                 simulation, sample, smpModPresent, smpMod);
     }

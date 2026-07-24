@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.rpc;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReqId;
@@ -13,7 +13,7 @@ import java.util.List;
  * IMPLICIT SEQUENCE OF RpcMethodDefChoice, moreFollows [1] IMPLICIT BOOLEAN
  * DEFAULT TRUE } — 8.13.5
  */
-public class CmsGetRpcMethodDefinitionResponse extends CmsType {
+public class CmsGetRpcMethodDefinitionResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsRpcMethodDefChoice> reference; /* SEQUENCE OF RpcMethodDefChoice */
@@ -40,7 +40,7 @@ public class CmsGetRpcMethodDefinitionResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, moreFollows);
     }
 }

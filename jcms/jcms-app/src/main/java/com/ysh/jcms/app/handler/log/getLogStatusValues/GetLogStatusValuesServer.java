@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.svc.log.CmsGetLogStatusValuesRequest;
@@ -31,7 +31,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) rawReq;
 
         log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.count);

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.dataset;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  *
  * Response has no payload besides reqId.
  */
-public class CmsSetDataSetValuesResponse extends CmsType {
+public class CmsSetDataSetValuesResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
 
@@ -26,7 +26,7 @@ public class CmsSetDataSetValuesResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId);
     }
 }

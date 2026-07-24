@@ -1,54 +1,54 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerFileEntry;
+import com.ysh.jcms.data.InnerUtcTime;
 import com.ysh.jcms.data.scalar.CmsInt32U;
-import com.ysh.jcms.data.string.CmsUint8Array;
 import com.ysh.jcms.data.time.CmsUtcTime;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum } —
  * 7.3.10
+ * <p>
+ * Wraps {@link InnerFileEntry} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsFileEntry extends CmsType {
 
-    public CmsUint8Array fileName;
+    public String fileName;
     public CmsInt32U fileSize;
     public CmsUtcTime lastModified;
     public CmsInt32U checkSum;
 
     public CmsFileEntry() {
-        super(Codec.FILE_ENTRY);
-        this.fileName = new CmsUint8Array();
+        super(new InnerFileEntry());
+        this.fileName = "";
         this.fileSize = new CmsInt32U();
         this.lastModified = new CmsUtcTime();
         this.checkSum = new CmsInt32U();
     }
 
-    public CmsFileEntry fileName(byte[] v) {
-        this.fileName.value(v);
-        return this;
-    }
-    public CmsFileEntry fileName(String v) {
-        this.fileName.value(v);
-        return this;
-    }
-    public CmsFileEntry fileSize(long v) {
-        this.fileSize.value(v);
-        return this;
-    }
-    public CmsFileEntry lastModified(CmsUtcTime v) {
-        this.lastModified = v;
-        return this;
-    }
-    public CmsFileEntry checkSum(long v) {
-        this.checkSum.value(v);
-        return this;
-    }
+    public CmsFileEntry fileName(String v) { this.fileName = v; return this; }
+    public CmsFileEntry fileSize(long v) { this.fileSize.value(v); return this; }
+    public CmsFileEntry lastModified(CmsUtcTime v) { this.lastModified = v; return this; }
+    public CmsFileEntry checkSum(long v) { this.checkSum.value(v); return this; }
+
     @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(fileName, fileSize, lastModified, checkSum);
+    public void syncToInner() {
+        InnerFileEntry i = (InnerFileEntry) inner;
+        i.fileName = fileName;
+        i.fileSize.value = (int) fileSize.value();
+        lastModified.syncToInner();
+        i.lastModified.value = ((InnerUtcTime) lastModified.inner).value;
+        i.checkSum.value = (int) checkSum.value();
+    }
+
+    @Override
+    public void syncFromInner() {
+        InnerFileEntry i = (InnerFileEntry) inner;
+        fileName = i.fileName;
+        fileSize.value(i.fileSize.value & 0xFFFFFFFFL);
+        ((InnerUtcTime) lastModified.inner).value = i.lastModified.value;
+        lastModified.syncFromInner();
+        checkSum.value(i.checkSum.value & 0xFFFFFFFFL);
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.sg;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import java.util.Arrays;
@@ -12,7 +12,7 @@ import java.util.List;
  *
  * Used by SetEditSGValue Request.
  */
-public class CmsSgRefValueEntry extends CmsType {
+public class CmsSgRefValueEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsData value;
@@ -36,7 +36,7 @@ public class CmsSgRefValueEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, value);
     }
 }

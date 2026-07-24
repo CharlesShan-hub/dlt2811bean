@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.data.CmsDataRefValueEntry;
@@ -23,13 +23,13 @@ public class SetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsType decoded) {
+    protected void prepareDecode(CmsTypeOld decoded) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) decoded;
         req.data.add(new CmsDataRefValueEntry());
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) rawReq;
         log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
 

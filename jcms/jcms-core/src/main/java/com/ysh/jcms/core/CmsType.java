@@ -1,230 +1,149 @@
 package com.ysh.jcms.core;
 
-import com.sun.jna.Memory;
-import com.sun.jna.Pointer;
-import com.ysh.jcms.core.NativeBridge.Codec;
-import java.util.Collections;
-import java.util.IdentityHashMap;
+import com.ysh.jcms.data.InnerBase;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-/**
- * jcms base class.
- *
- * Two modes:
- *
- * 1. Leaf type (Boolean, Int8, etc.): - No children - Manages its own native
- * memory, implements write()/read()/encode()/decode()
- *
- * 2. Container type (SEQUENCE, CHOICE, etc.): - children() returns the list of
- * child fields - Base class auto-write/read: writes child.nativePtr
- * sequentially into parent native memory - encode()/decode() handled by C side
- * (requires C function support)
- */
 public abstract class CmsType {
+    public InnerBase inner;
+    private final Method encodeMethod;
+    private final Method staticDecodeMethod;
 
-    private static final Logger log = LoggerFactory.getLogger(CmsType.class);
-
-    public Pointer nativePtr;
-    public int nativeSize;
-    protected Codec codec;
-
-    protected CmsType() {
-        this.nativeSize = calcNativeSize();
-        this.nativePtr = new Memory(nativeSize);
-        zero();
-    }
-
-    protected CmsType(Codec codec) {
-        this();
-        this.codec = codec;
-    }
-
-    // ==================== Overridable by subclasses ====================
-
-    /**
-     * Return child fields (overridden by container types; leaf types return empty
-     * list).
-     */
-    public List<? extends CmsType> children() {
-        return Collections.emptyList();
-    }
-
-    /**
-     * Compute native memory size. Leaf types override; container types default to
-     * children.size() * 8.
-     */
-    protected int calcNativeSize() {
-        return children().size() * 8;
-    }
-
-    /**
-     * Sync Java fields -> native memory. - Leaf types: write fields directly to
-     * nativePtr - Container types: iterate children -> child.write() -> write
-     * child.nativePtr
-     */
-    public void write() {
-        List<? extends CmsType> kids = children();
-        for (int i = 0; i < kids.size(); i++) {
-            CmsType child = kids.get(i);
-            if (child == null) {
-                nativePtr.setPointer(i * 8L, Pointer.NULL);
-                continue;
-            }
-            child.write();
-            nativePtr.setPointer(i * 8L, child.nativePtr);
+    protected CmsType(InnerBase inner) {
+        this.inner = inner;
+        try {
+            this.encodeMethod = inner.getClass().getMethod("encode");
+            this.staticDecodeMethod = inner.getClass().getMethod("decode", byte[].class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /**
-     * Sync native memory -> Java fields. - Leaf types: read fields from nativePtr -
-     * Container types: read child pointer -> set child.nativePtr -> child.read()
-     */
-    public void read() {
-        List<? extends CmsType> kids = children();
-        for (int i = 0; i < kids.size(); i++) {
-            CmsType child = kids.get(i);
-            if (child == null)
-                continue;
-            Pointer ptr = nativePtr.getPointer(i * 8L);
-            if (ptr != null) {
-                child.nativePtr = ptr;
-                child.read();
-            }
-        }
-    }
-
-    /**
-     * PER encode: encodes the current structure to a byte array. Uses
-     * {@link #codec} if set, otherwise throws.
-     */
     public byte[] encode() {
-        if (codec == null)
-            throw new UnsupportedOperationException(getClass().getSimpleName() + " has no FFI encode (codec not set)");
-        // log.debug("encode {} start", getClass().getSimpleName());
-        write();
-        byte[] result = codec.encode(nativePtr);
-        // log.debug("encode {} OK, resultLen={}", getClass().getSimpleName(),
-        // result.length);
-        return result;
+        syncToInner();
+        try {
+            return (byte[]) encodeMethod.invoke(inner);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    /**
-     * PER decode: decodes from a byte array into the current structure. Uses
-     * {@link #codec} if set, otherwise throws.
-     *
-     * <p>
-     * Auto-retry decode: each decode attempt pre-allocates
-     * {@link CmsArray#allocSize} slots per CmsArray in the tree. If a SEQUENCE OF
-     * has more elements than slots, the C decoder writes the actual count into
-     * {@code cms_array_t.count} then returns {@code CMS_RETRY (-2)}. Java reads the
-     * count, adjusts allocSize, clears items, and retries. Retries in a while loop
-     * until C returns 0 (success) or a genuine error.
-     */
     public void decode(byte[] data) {
-        if (codec == null)
-            throw new UnsupportedOperationException(getClass().getSimpleName() + " has no FFI decode (codec not set)");
-
-        // log.debug("decode {} start, dataLen={}", getClass().getSimpleName(),
-        // data.length);
-
-        int retry = 200;
-        while (retry-- > 0) {
-            // log.debug("decode {} retry={}", getClass().getSimpleName(), 200 - retry - 1);
-
-            // Fresh native memory
-            allocate();
-            log.trace("  allocate: nativePtr={}, nativeSize={}", nativePtr, nativeSize);
-
-            write();
-            log.trace("  write done");
-
-            int rc = codec.decodeRaw(nativePtr, data);
-            // log.debug(" decodeRaw rc={}", rc);
-
-            if (rc == 0) {
-                log.trace("  calling read()...");
-                read();
-                // log.debug("decode {} OK", getClass().getSimpleName());
-                return;
-            }
-            if (rc != -2) // not CMS_RETRY → real error
-                throw new RuntimeException("decode failed: rc=" + rc + " for " + getClass().getSimpleName());
-
-            // CMS_RETRY: C wrote the actual count(s); read them and resize
-            // log.debug(" CMS_RETRY: reading array counts from native memory");
-            resize();
-        }
-        throw new RuntimeException("decode failed: too many retries (200) for " + getClass().getSimpleName());
-    }
-
-    /**
-     * After CMS_RETRY, resize the tree so that every CmsArray has enough slots for
-     * the actual element count reported by C. Default implementation: recurse into
-     * children. CmsArray overrides this to read its native count and resize items.
-     */
-    /**
-     * Which children to resize after CMS_RETRY. Default: all children(). CHOICE
-     * types override to return only the selected alternative, preventing expansion
-     * of unselected branches.
-     */
-    protected List<? extends CmsType> resizeList() {
-        return children();
-    }
-
-    protected void resize() {
-        List<? extends CmsType> kids = resizeList();
-        for (int i = 0; i < kids.size(); i++) {
-            CmsType child = kids.get(i);
-            if (child != null)
-                child.resize();
+        try {
+            inner = (InnerBase) staticDecodeMethod.invoke(null, data);
+            syncFromInner();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 
-    /** Allocate (or re-allocate) native memory to a clean zeroed state. */
-    private void allocate() {
-        this.nativeSize = calcNativeSize();
-        this.nativePtr = new Memory(nativeSize);
-        zero();
-    }
-
-    // ==================== equals / hashCode / toString ====================
+    public void syncToInner() {}
+    public void syncFromInner() {}
 
     @Override
     public boolean equals(Object o) {
-        return CmsEqualityUtil.equals(this, o);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return fieldsEqual(this, o);
     }
 
     @Override
     public int hashCode() {
-        return CmsEqualityUtil.hashCode(this);
+        int h = 0;
+        for (Field f : getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            if (f.getName().equals("inner")) continue;
+            Object val;
+            try { val = f.get(this); } catch (Exception e) { continue; }
+            if (val == null) continue;
+            h = 31 * h + fieldHash(val);
+        }
+        return h;
+    }
+
+    private static boolean fieldsEqual(Object a, Object b) {
+        for (Field f : a.getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            if (f.getName().equals("inner")) continue;
+            Object va, vb;
+            try { va = f.get(a); vb = f.get(b); } catch (Exception e) { return false; }
+            if (!fieldEquals(va, vb)) return false;
+        }
+        return true;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static boolean fieldEquals(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null || b == null) return false;
+        if (a instanceof CmsType && b instanceof CmsType)
+            return fieldsEqual(a, b);
+        if (a instanceof byte[] && b instanceof byte[])
+            return java.util.Arrays.equals((byte[]) a, (byte[]) b);
+        if (a instanceof List && b instanceof List) {
+            List<Object> la = (List<Object>) a, lb = (List<Object>) b;
+            if (la.size() != lb.size()) return false;
+            for (int i = 0; i < la.size(); i++) {
+                if (!fieldEquals(la.get(i), lb.get(i))) return false;
+            }
+            return true;
+        }
+        return a.equals(b);
+    }
+
+    private static int fieldHash(Object val) {
+        if (val instanceof CmsType) return ((CmsType) val).hashCode();
+        if (val instanceof byte[]) return java.util.Arrays.hashCode((byte[]) val);
+        if (val instanceof List) {
+            int h = 0;
+            for (Object v : (List<?>) val) h = 31 * h + (v == null ? 0 : fieldHash(v));
+            return h;
+        }
+        return val.hashCode();
     }
 
     @Override
     public String toString() {
-        return toString(0);
+        return toString(0).trim();
     }
 
-    protected String toString(int depth) {
-        // Build field name map for debug output
-        java.util.Map<CmsType, String> fieldNames = new IdentityHashMap<>();
-        for (java.lang.reflect.Field f : getClass().getFields()) {
-            if (CmsType.class.isAssignableFrom(f.getType())) {
-                try {
-                    fieldNames.put((CmsType) f.get(this), f.getName());
-                } catch (Exception e) {
-                }
+    private String toString(int depth) {
+        String indent = repeat("    ", depth);
+        String indent1 = repeat("    ", depth + 1);
+        StringBuilder sb = new StringBuilder();
+        sb.append("(").append(getClass().getSimpleName()).append(")\n");
+        for (Field f : getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            if (f.getName().equals("inner")) continue;
+            Object val;
+            try { val = f.get(this); } catch (Exception e) { continue; }
+            if (val == null) continue;
+            sb.append(indent1).append(f.getName()).append(": ");
+            if (val instanceof CmsType) {
+                sb.append(((CmsType) val).toString(depth + 1));
+            } else if (val instanceof byte[]) {
+                sb.append(bytesToHex((byte[]) val)).append("\n");
+            } else if (val instanceof List && !((List<?>) val).isEmpty()
+                    && ((List<?>) val).get(0) instanceof CmsType) {
+                sb.append("[").append(((List<?>) val).size()).append("]\n");
+            } else {
+                sb.append(val).append("\n");
             }
         }
-        return CmsFormatUtil.toString(this, depth, fieldNames);
+        return sb.toString();
     }
 
-    // ==================== Memory helper ====================
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder("0x");
+        for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
+        return sb.toString();
+    }
 
-    public void zero() {
-        if (nativePtr != null) {
-            nativePtr.clear((long) nativeSize);
-        }
+    private static String repeat(String s, int count) {
+        StringBuilder sb = new StringBuilder(s.length() * count);
+        for (int i = 0; i < count; i++) sb.append(s);
+        return sb.toString();
     }
 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.data.CmsDataRefEntry;
@@ -24,7 +24,7 @@ public class GetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetDataValuesRequest req = (CmsGetDataValuesRequest) rawReq;
         log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
 

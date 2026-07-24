@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.msv.MsvcbCache;
 import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesServer;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsMsvcb;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesError;
@@ -32,7 +32,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) rawReq;
         log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.count);
 

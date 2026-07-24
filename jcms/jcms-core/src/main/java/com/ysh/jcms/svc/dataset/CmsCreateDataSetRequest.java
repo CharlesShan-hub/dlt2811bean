@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.dataset;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -14,7 +14,7 @@ import java.util.List;
  * IMPLICIT ObjectReference, referenceAfter [1] IMPLICIT ObjectReference
  * OPTIONAL, memberData [2] IMPLICIT SEQUENCE OF DataRefFcEntry } — 8.5.3
  */
-public class CmsCreateDataSetRequest extends CmsType {
+public class CmsCreateDataSetRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference datasetReference;
@@ -65,7 +65,7 @@ public class CmsCreateDataSetRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, datasetReference, refAfterPresent, refAfter, memberData);
     }
 }

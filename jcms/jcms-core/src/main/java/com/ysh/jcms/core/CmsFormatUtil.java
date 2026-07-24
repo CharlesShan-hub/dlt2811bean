@@ -26,8 +26,8 @@ public class CmsFormatUtil {
      * @param fieldNames
      *            optional mapping from CmsType pointer -> field name (can be null)
      */
-    public static String toString(CmsType type, int depth, Map<CmsType, String> fieldNames) {
-        List<? extends CmsType> kids = type.children();
+    public static String toString(CmsTypeOld type, int depth, Map<CmsTypeOld, String> fieldNames) {
+        List<? extends CmsTypeOld> kids = type.children();
 
         if (!kids.isEmpty()) {
             if (isChoice(kids)) {
@@ -47,15 +47,15 @@ public class CmsFormatUtil {
     /**
      * Render a CmsType subtree as a compact JSON string.
      */
-    public static String toJson(CmsType type) {
-        Map<CmsType, String> fieldNames = buildFieldNameMap(type, type.children());
+    public static String toJson(CmsTypeOld type) {
+        Map<CmsTypeOld, String> fieldNames = buildFieldNameMap(type, type.children());
         StringBuilder sb = new StringBuilder();
         toJson(type, fieldNames, sb);
         return sb.toString();
     }
 
-    private static void toJson(CmsType type, Map<CmsType, String> fieldNames, StringBuilder sb) {
-        List<? extends CmsType> kids = type.children();
+    private static void toJson(CmsTypeOld type, Map<CmsTypeOld, String> fieldNames, StringBuilder sb) {
+        List<? extends CmsTypeOld> kids = type.children();
 
         // CmsArray → JSON array
         if (type instanceof CmsArray) {
@@ -75,7 +75,7 @@ public class CmsFormatUtil {
                 // CHOICE → only the selected alternative
                 CmsEnumerated choice = (CmsEnumerated) kids.get(0);
                 int idx = 1 + choice.value();
-                CmsType selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
+                CmsTypeOld selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
                 if (selected != null) {
                     toJson(selected, fieldNames, sb);
                 } else {
@@ -86,7 +86,7 @@ public class CmsFormatUtil {
                 sb.append('{');
                 int count = 0;
                 for (int i = 0; i < kids.size(); i++) {
-                    CmsType child = kids.get(i);
+                    CmsTypeOld child = kids.get(i);
                     if (child == null)
                         continue;
                     String name = fieldNames != null ? fieldNames.getOrDefault(child, "field" + i) : "field" + i;
@@ -125,7 +125,7 @@ public class CmsFormatUtil {
         }
     }
 
-    private static void scalarToJson(CmsType type, StringBuilder sb) {
+    private static void scalarToJson(CmsTypeOld type, StringBuilder sb) {
         String name = type.getClass().getSimpleName();
         long val;
         switch (type.nativeSize) {
@@ -159,28 +159,28 @@ public class CmsFormatUtil {
      * Build a field name map for a CmsType and its subtree. Recursively walks
      * children to find all reachable CmsType instances.
      */
-    private static Map<CmsType, String> buildFieldNameMap(CmsType type, List<? extends CmsType> directChildren) {
-        Map<CmsType, String> map = new IdentityHashMap<>();
+    private static Map<CmsTypeOld, String> buildFieldNameMap(CmsTypeOld type, List<? extends CmsTypeOld> directChildren) {
+        Map<CmsTypeOld, String> map = new IdentityHashMap<>();
         collectFieldNames(type, map);
         return map;
     }
 
-    private static void collectFieldNames(CmsType type, Map<CmsType, String> map) {
-        if (type == null || type.getClass() == CmsType.class)
+    private static void collectFieldNames(CmsTypeOld type, Map<CmsTypeOld, String> map) {
+        if (type == null || type.getClass() == CmsTypeOld.class)
             return;
         for (java.lang.reflect.Field f : type.getClass().getFields()) {
-            if (CmsType.class.isAssignableFrom(f.getType())) {
+            if (CmsTypeOld.class.isAssignableFrom(f.getType())) {
                 try {
                     Object v = f.get(type);
-                    if (v != null && v instanceof CmsType) {
-                        map.put((CmsType) v, f.getName());
+                    if (v != null && v instanceof CmsTypeOld) {
+                        map.put((CmsTypeOld) v, f.getName());
                     }
                 } catch (Exception ignored) {
                 }
             }
         }
         // Recurse through children for nested fields
-        for (CmsType child : type.children()) {
+        for (CmsTypeOld child : type.children()) {
             if (child != null && child != type) {
                 collectFieldNames(child, map);
             }
@@ -190,23 +190,23 @@ public class CmsFormatUtil {
     // ==================== Existing toString methods (unchanged)
     // ====================
 
-    private static boolean isChoice(List<? extends CmsType> kids) {
+    private static boolean isChoice(List<? extends CmsTypeOld> kids) {
         return !kids.isEmpty() && kids.get(0) instanceof CmsEnumerated;
     }
 
-    private static String choiceToString(CmsType type, List<? extends CmsType> kids, int depth, Map<CmsType, String> fieldNames) {
+    private static String choiceToString(CmsTypeOld type, List<? extends CmsTypeOld> kids, int depth, Map<CmsTypeOld, String> fieldNames) {
         CmsEnumerated choice = (CmsEnumerated) kids.get(0);
         int idx = 1 + choice.value();
-        CmsType selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
+        CmsTypeOld selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
         String val = (selected != null) ? toString(selected, depth, fieldNames) : "(null)";
         return "(" + type.getClass().getSimpleName() + ") " + val;
     }
 
-    private static String containerToString(CmsType type, List<? extends CmsType> kids, int depth, Map<CmsType, String> fieldNames) {
+    private static String containerToString(CmsTypeOld type, List<? extends CmsTypeOld> kids, int depth, Map<CmsTypeOld, String> fieldNames) {
         String indent = repeat("    ", depth + 1);
         StringBuilder sb = new StringBuilder().append("(").append(type.getClass().getSimpleName()).append(")\n");
         for (int i = 0; i < kids.size(); i++) {
-            CmsType child = kids.get(i);
+            CmsTypeOld child = kids.get(i);
             String name = (fieldNames != null) ? fieldNames.getOrDefault(child, "[" + i + "]") : "[" + i + "]";
             boolean skipPos = name.startsWith("[");
             sb.append(indent);
@@ -235,7 +235,7 @@ public class CmsFormatUtil {
         return prefix + "(empty)";
     }
 
-    private static String scalarToString(CmsType type) {
+    private static String scalarToString(CmsTypeOld type) {
         long val = 0;
         switch (type.nativeSize) {
             case 1 :

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsLcbOptFlds;
 import com.ysh.jcms.data.block.CmsTriggerConditions;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -18,7 +18,7 @@ import java.util.List;
  *
  * Used by SetLCBValues request.
  */
-public class CmsSetLcbEntry extends CmsType {
+public class CmsSetLcbEntry extends CmsTypeOld {
 
     public CmsObjectReference reference;
     public CmsBoolean logEnaPresent;
@@ -136,7 +136,7 @@ public class CmsSetLcbEntry extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reference, logEnaPresent, logEna, datSetPresent, datSet, trgOpsPresent, trgOps, intgPdPresent, intgPd,
                 logRefPresent, logRef, optFldsPresent, optFlds, bufTmPresent, bufTm);
     }

@@ -1,39 +1,33 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.InnerTcmd;
 
 /**
- * Tcmd ::= BIT STRING (SIZE(2)) — 7.3.7 PER: constrained integer (0..3), 2 bits
- * sizeof = 4
- *
- * Alias for CmsEnumerated with named constants.
+ * Tcmd ::= BIT STRING (SIZE(2)) — 7.3.7
  */
-public class CmsTcmd extends CmsEnumerated {
+public class CmsTcmd extends CmsType {
 
     public static final int RESERVED = 0;
     public static final int SELECT = 1;
     public static final int OPERATE = 2;
     public static final int CANCEL = 3;
 
-    private transient InnerTcmd inner = new InnerTcmd();
-
     public CmsTcmd() {
-        super(1, 3, SELECT);
+        super(new InnerTcmd());
     }
     public CmsTcmd(int value) {
-        super(1, 3, value);
+        this();
+        value(value);
     }
 
-    @Override
-    public byte[] encode() {
-        inner.value = value();
-        return inner.encode();
+    public int value() {
+        return ((InnerTcmd) inner).value;
     }
-
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerTcmd.decode(data);
-        value(inner.value);
+    public CmsTcmd value(int v) {
+        if (v < 0 || v > 3)
+            throw new IllegalArgumentException("CmsTcmd out of range [0,3]: " + v);
+        ((InnerTcmd) inner).value = v;
+        return this;
     }
 }

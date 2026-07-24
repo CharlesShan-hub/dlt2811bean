@@ -1,30 +1,33 @@
 package com.ysh.jcms.data.block;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.InnerLcbOptFlds;
 import com.ysh.jcms.data.scalar.CmsBoolean;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * LcbOptFlds ::= BIT STRING (SIZE(1)) — 7.6.5 PER: align + 1 byte (1 bit)
+ * LcbOptFlds ::= BIT STRING (SIZE(1)) — 7.6.5
+ * <p>
+ * CmsLcbOptFlds stores 1 boolean field; InnerLcbOptFlds packs it as a single
+ * int (bit 0 = refresh_time).
  */
 public class CmsLcbOptFlds extends CmsType {
 
     public CmsBoolean value;
 
     public CmsLcbOptFlds() {
-        super(Codec.LCB_OPT_FLDS);
+        super(new InnerLcbOptFlds());
         this.value = new CmsBoolean();
     }
 
-    public CmsLcbOptFlds value(boolean v) {
-        this.value.value(v);
-        return this;
+    public CmsLcbOptFlds value(boolean v) { this.value.value(v); return this; }
+
+    @Override
+    public void syncToInner() {
+        ((InnerLcbOptFlds) inner).value = value.value() ? 1 : 0;
     }
 
     @Override
-    public List<? extends CmsType> children() {
-        return Arrays.asList(value);
+    public void syncFromInner() {
+        value.value((((InnerLcbOptFlds) inner).value & 1) != 0);
     }
 }

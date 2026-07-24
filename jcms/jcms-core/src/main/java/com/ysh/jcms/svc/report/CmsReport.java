@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.report;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.block.CmsRcbOptFlds;
 import com.ysh.jcms.data.common.CmsObjectReference;
@@ -22,7 +22,7 @@ import java.util.List;
  *
  * Unconfirmed service (0x35) — no Response or Error PDU.
  */
-public class CmsReport extends CmsType {
+public class CmsReport extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array rptID; /* VisibleString129 */
@@ -139,7 +139,7 @@ public class CmsReport extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, rptID, optFlds, sqNumPresent, sqNum, subSeqNumPresent, subSeqNum, moreSegmentsFollowPresent,
                 moreSegmentsFollow, dataSetPresent, dataSet, bufOvflPresent, bufOvfl, confRevPresent, confRev, entry);
     }

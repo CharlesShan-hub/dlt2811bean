@@ -1,51 +1,42 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.core.CmsType;
-import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.InnerInt64;
+import java.math.BigInteger;
 
 /**
  * Wraps {@link InnerInt64} for PER encode/decode via Rust (libasn1.so).
+ * <p>
+ * Int64 ::= INTEGER (-9223372036854775808..9223372036854775807)
  */
 public class CmsInt64 extends CmsType {
 
-    private transient InnerInt64 inner = new InnerInt64();
+    private static final BigInteger MIN = BigInteger.valueOf(Long.MIN_VALUE);
+    private static final BigInteger MAX = BigInteger.valueOf(Long.MAX_VALUE);
 
     public CmsInt64() {
-        super(Codec.INT64);
+        super(new InnerInt64());
     }
     public CmsInt64(long value) {
-        super(Codec.INT64);
-        inner.value = value;
+        this();
+        ((InnerInt64) inner).value = value;
+    }
+    public CmsInt64(BigInteger value) {
+        this();
+        value(value);
     }
 
     public long value() {
-        return inner.value;
+        return ((InnerInt64) inner).value;
     }
     public CmsInt64 value(long v) {
-        inner.value = v;
+        ((InnerInt64) inner).value = v;
         return this;
     }
-
-    @Override
-    public byte[] encode() {
-        return inner.encode();
-    }
-    @Override
-    public void decode(byte[] data) {
-        inner = InnerInt64.decode(data);
-    }
-
-    @Override
-    protected int calcNativeSize() {
-        return 8;
-    }
-    @Override
-    public void write() {
-        nativePtr.setLong(0, inner.value);
-    }
-    @Override
-    public void read() {
-        inner.value = nativePtr.getLong(0);
+    public CmsInt64 value(BigInteger v) {
+        if (v.compareTo(MIN) < 0 || v.compareTo(MAX) > 0)
+            throw new IllegalArgumentException("CmsInt64 out of range [" + MIN + "," + MAX + "]: " + v);
+        ((InnerInt64) inner).value = v.longValue();
+        return this;
     }
 }

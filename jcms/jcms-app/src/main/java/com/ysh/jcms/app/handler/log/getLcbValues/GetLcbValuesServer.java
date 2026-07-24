@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsLcb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.log.CmsGetLcbValuesError;
@@ -27,7 +27,7 @@ public class GetLcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetLcbValuesRequest req = (CmsGetLcbValuesRequest) rawReq;
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
 

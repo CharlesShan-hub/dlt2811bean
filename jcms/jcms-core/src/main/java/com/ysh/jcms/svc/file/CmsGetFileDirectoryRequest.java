@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.file;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.time.CmsUtcTime;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -15,7 +15,7 @@ import java.util.List;
  * stopTime [2] IMPLICIT TimeStamp OPTIONAL, fileAfter [3] IMPLICIT
  * VisibleString255 OPTIONAL } — 8.12.4
  */
-public class CmsGetFileDirectoryRequest extends CmsType {
+public class CmsGetFileDirectoryRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsUint8Array pathName;
@@ -84,7 +84,7 @@ public class CmsGetFileDirectoryRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, pathName, startTimePresent, startTime, stopTimePresent, stopTime, fileAfterPresent, fileAfter);
     }
 }

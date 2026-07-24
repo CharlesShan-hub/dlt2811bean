@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.file;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -14,7 +14,7 @@ import java.util.List;
  * IMPLICIT SEQUENCE OF FileEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE
  * } — 8.12.4
  */
-public class CmsGetFileDirectoryResponse extends CmsType {
+public class CmsGetFileDirectoryResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsFileEntry> fileEntry; /* SEQUENCE OF FileEntry */
@@ -41,7 +41,7 @@ public class CmsGetFileDirectoryResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, fileEntry, moreFollows);
     }
 }

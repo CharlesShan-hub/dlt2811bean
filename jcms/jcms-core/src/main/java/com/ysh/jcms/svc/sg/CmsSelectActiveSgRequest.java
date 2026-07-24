@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.sg;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsInt8U;
@@ -12,7 +12,7 @@ import java.util.List;
  * SelectActiveSG-RequestPDU ::= SEQUENCE { reqId Int16U, sgcbReference [0]
  * IMPLICIT ObjectReference, settingGroupNumber [1] IMPLICIT INT8U } — 8.6.1
  */
-public class CmsSelectActiveSgRequest extends CmsType {
+public class CmsSelectActiveSgRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsObjectReference sgcbReference;
@@ -43,7 +43,7 @@ public class CmsSelectActiveSgRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, sgcbReference, settingGroupNumber);
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -15,7 +15,7 @@ import java.util.List;
  * authenticationParameter [2] IMPLICIT AuthenticationParameter OPTIONAL } —
  * 8.2.1
  */
-public class CmsAssociateResponse extends CmsType {
+public class CmsAssociateResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsAssociationId assocId;
@@ -58,7 +58,7 @@ public class CmsAssociateResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, assocId, serviceError, authParamPresent, authParam);
     }
 }

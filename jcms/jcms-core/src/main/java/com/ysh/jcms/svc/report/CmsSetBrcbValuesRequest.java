@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.report;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * SetBRCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, brcb [0] IMPLICIT
  * SEQUENCE OF SetBRCBEntry } — 8.7.3
  */
-public class CmsSetBrcbValuesRequest extends CmsType {
+public class CmsSetBrcbValuesRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsSetBrcbEntry> brcb; /* SEQUENCE OF SetBRCBEntry */
@@ -32,7 +32,7 @@ public class CmsSetBrcbValuesRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, brcb);
     }
 }

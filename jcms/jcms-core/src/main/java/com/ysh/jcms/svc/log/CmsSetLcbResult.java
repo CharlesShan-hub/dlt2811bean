@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import java.util.List;
  *
  * Used by SetLCBValues error (SEQUENCE OF SetLCBResult).
  */
-public class CmsSetLcbResult extends CmsType {
+public class CmsSetLcbResult extends CmsTypeOld {
 
     public CmsBoolean errorPresent;
     public CmsServiceError error;
@@ -120,7 +120,7 @@ public class CmsSetLcbResult extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(errorPresent, error, logEnaErrPresent, logEnaErr, datSetErrPresent, datSetErr, trgOpsErrPresent, trgOpsErr,
                 intgPdErrPresent, intgPdErr, logRefErrPresent, logRefErr, optFldsErrPresent, optFldsErr, bufTmErrPresent, bufTmErr);
     }

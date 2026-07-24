@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsFileEntry;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.data.time.CmsUtcTime;
@@ -30,7 +30,7 @@ public class GetFileAttributeValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetFileAttributeValuesRequest req = (CmsGetFileAttributeValuesRequest) rawReq;
         String fileName = str(req.filename);
         log.info("GetFileAttributeValues from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);

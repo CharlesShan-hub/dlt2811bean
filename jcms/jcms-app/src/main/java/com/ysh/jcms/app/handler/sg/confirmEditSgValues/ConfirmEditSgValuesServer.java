@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.sg.CmsConfirmEditSgValuesError;
 import com.ysh.jcms.svc.sg.CmsConfirmEditSgValuesRequest;
@@ -23,7 +23,7 @@ public class ConfirmEditSgValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsConfirmEditSgValuesRequest req = (CmsConfirmEditSgValuesRequest) rawReq;
 
         String ref = str(req.sgcbReference);

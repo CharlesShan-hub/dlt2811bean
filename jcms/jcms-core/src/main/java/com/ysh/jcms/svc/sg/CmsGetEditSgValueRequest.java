@@ -1,7 +1,7 @@
 package com.ysh.jcms.svc.sg;
 
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import java.util.List;
  * GetEditSGValue-RequestPDU ::= SEQUENCE { reqId Int16U, data [0] IMPLICIT
  * SEQUENCE OF SGRefFcEntry } — 8.6.5
  */
-public class CmsGetEditSgValueRequest extends CmsType {
+public class CmsGetEditSgValueRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsArray<CmsSgRefFcEntry> data; /* SEQUENCE OF SGRefFcEntry */
@@ -32,7 +32,7 @@ public class CmsGetEditSgValueRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, data);
     }
 }

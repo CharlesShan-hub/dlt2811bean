@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.data.common.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
@@ -14,7 +14,7 @@ import java.util.List;
  * ReferenceChoice, acsiClass [1] IMPLICIT ACSIClass, referenceAfter [2]
  * IMPLICIT ObjectReference OPTIONAL } — 8.3.6
  */
-public class CmsGetAllCbValuesRequest extends CmsType {
+public class CmsGetAllCbValuesRequest extends CmsTypeOld {
 
     public CmsReqId reqId;
     public CmsReferenceChoice reference;
@@ -61,7 +61,7 @@ public class CmsGetAllCbValuesRequest extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId, reference, acsiClass, refAfterPresent, refAfter);
     }
 }

@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.sg;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.core.NativeBridge.Codec;
 import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.Arrays;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * SelectEditSG-ResponsePDU ::= SEQUENCE { reqId Int16U } — 8.6.2
  */
-public class CmsSelectEditSgResponse extends CmsType {
+public class CmsSelectEditSgResponse extends CmsTypeOld {
 
     public CmsReqId reqId;
 
@@ -24,7 +24,7 @@ public class CmsSelectEditSgResponse extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(reqId);
     }
 }

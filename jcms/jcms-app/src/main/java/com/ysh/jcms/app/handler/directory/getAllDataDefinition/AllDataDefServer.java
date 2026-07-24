@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.choice.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.common.CmsServiceError;
@@ -60,7 +60,7 @@ public class AllDataDefServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
         CmsGetAllDataDefinitionRequest req = (CmsGetAllDataDefinitionRequest) rawReq;
         String refAfter = opt(req.refAfterPresent, req.refAfter);
 

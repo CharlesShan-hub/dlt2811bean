@@ -1,6 +1,6 @@
 package com.ysh.jcms.svc.log;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.block.CmsLcb;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.core.CmsEnumerated;
@@ -13,7 +13,7 @@ import java.util.List;
  *
  * Used by GetLCBValues response.
  */
-public class CmsLcbValueChoice extends CmsType {
+public class CmsLcbValueChoice extends CmsTypeOld {
 
     public static final int ERROR = 0;
     public static final int VALUE = 1;
@@ -34,7 +34,7 @@ public class CmsLcbValueChoice extends CmsType {
     }
 
     @Override
-    public List<? extends CmsType> children() {
+    public List<? extends CmsTypeOld> children() {
         return Arrays.asList(choice, altError, altValue);
     }
 }
