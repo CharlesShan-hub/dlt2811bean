@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt64;
 import java.math.BigInteger;
 
@@ -9,7 +9,7 @@ import java.math.BigInteger;
  * <p>
  * Int64 ::= INTEGER (-9223372036854775808..9223372036854775807)
  */
-public class CmsInt64 extends CmsType {
+public class CmsInt64 extends CmsScalar {
 
     private static final BigInteger MIN = BigInteger.valueOf(Long.MIN_VALUE);
     private static final BigInteger MAX = BigInteger.valueOf(Long.MAX_VALUE);
@@ -20,6 +20,7 @@ public class CmsInt64 extends CmsType {
     public CmsInt64(long value) {
         this();
         ((InnerInt64) inner).value = value;
+        innerSet(((InnerInt64) inner).value);
     }
     public CmsInt64(BigInteger value) {
         this();
@@ -27,16 +28,17 @@ public class CmsInt64 extends CmsType {
     }
 
     public long value() {
-        return ((InnerInt64) inner).value;
+        Long v = (Long) innerGet();
+        return v != null ? v : 0L;
     }
     public CmsInt64 value(long v) {
-        ((InnerInt64) inner).value = v;
+        innerSet(v);
         return this;
     }
     public CmsInt64 value(BigInteger v) {
         if (v.compareTo(MIN) < 0 || v.compareTo(MAX) > 0)
             throw new IllegalArgumentException("CmsInt64 out of range [" + MIN + "," + MAX + "]: " + v);
-        ((InnerInt64) inner).value = v.longValue();
+        innerSet(v.longValue());
         return this;
     }
 }

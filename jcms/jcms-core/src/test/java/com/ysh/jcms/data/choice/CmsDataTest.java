@@ -190,7 +190,7 @@ public class CmsDataTest {
         a.choice = CmsData.CHOICE_UTC_TIME;
         a.alt_utc_time.secondsSinceEpoch.value(1234567890L);
         a.alt_utc_time.fractionOfSecond.value(500000);
-        a.alt_utc_time.timeQuality.leap_seconds_known.value(true);
+        a.alt_utc_time.timeQuality.leap_seconds_known(true);
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
@@ -213,13 +213,13 @@ public class CmsDataTest {
     public void roundup_quality() {
         CmsData a = new CmsData();
         a.choice = CmsData.CHOICE_QUALITY;
-        a.alt_quality.validity.value(1);
-        a.alt_quality.overflow.value(true);
-        a.alt_quality.failure.value(true);
+        a.alt_quality.validity(CmsQuality.INVALID);
+        a.alt_quality.overflow(true);
+        a.alt_quality.failure(true);
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
-        assertEquals(a.alt_quality.validity.value(), b.alt_quality.validity.value());
+        assertEquals(a.alt_quality.validity(), b.alt_quality.validity());
     }
 
     @Test
@@ -248,12 +248,12 @@ public class CmsDataTest {
     public void roundup_check() {
         CmsData a = new CmsData();
         a.choice = CmsData.CHOICE_CHECK;
-        a.alt_check.syncheck.value(true);
-        a.alt_check.interlock_check.value(false);
+        a.alt_check.syncheck(true);
+        a.alt_check.interlock_check(false);
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
-        assertEquals(a.alt_check.syncheck.value(), b.alt_check.syncheck.value());
+        assertEquals(a.alt_check.syncheck(), b.alt_check.syncheck());
     }
 
     @Test

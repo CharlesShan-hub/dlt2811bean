@@ -1,13 +1,10 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerGetLogicalDeviceDirectoryResponsePDU;
+import com.ysh.jcms.data.InnerSubReference;
 import com.ysh.jcms.data.common.CmsSubReference;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,43 +12,53 @@ import java.util.List;
  * lnReference [0] IMPLICIT SEQUENCE OF SubReference, moreFollows [1] IMPLICIT
  * BOOLEAN DEFAULT TRUE } — 8.3.2
  */
-public class CmsGetLogicalDeviceDirectoryResponse extends CmsTypeOld {
+public class CmsGetLogicalDeviceDirectoryResponse extends CmsType {
 
-    public CmsReqId reqId;
-    public CmsArray<CmsSubReference> lnReference; /* SEQUENCE OF SubReference */
-    public CmsBoolean moreFollows; /* DEFAULT TRUE */
+    public List<CmsSubReference> lnReference; /* SEQUENCE OF SubReference */
+    public boolean moreFollows; /* DEFAULT TRUE */
 
     public CmsGetLogicalDeviceDirectoryResponse() {
-        super(Codec.GET_LOGICAL_DEVICE_DIRECTORY_RESPONSE);
-        this.reqId = new CmsReqId();
-        this.lnReference = new CmsArray<>(CmsSubReference.class);
-        this.moreFollows = new CmsBoolean();
+        super(new InnerGetLogicalDeviceDirectoryResponsePDU());
+        this.lnReference = new ArrayList<>();
     }
 
-    public CmsGetLogicalDeviceDirectoryResponse reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
-    public CmsGetLogicalDeviceDirectoryResponse lnReference(CmsArray<CmsSubReference> v) {
+    public CmsGetLogicalDeviceDirectoryResponse lnReference(List<CmsSubReference> v) {
         this.lnReference = v;
         return this;
     }
     public CmsGetLogicalDeviceDirectoryResponse moreFollows(boolean v) {
-        this.moreFollows.value(v);
+        this.moreFollows = v;
         return this;
     }
 
     /** Convenience: extract LN reference strings as List. */
     public List<String> lnNames() {
         List<String> names = new ArrayList<>();
-        for (int i = 0; i < lnReference.count; i++) {
-            names.add(new String(lnReference.items.get(i).value()));
+        for (CmsSubReference ref : lnReference) {
+            names.add(ref.value());
         }
         return names;
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, lnReference, moreFollows);
+    public void syncToInner() {
+        InnerGetLogicalDeviceDirectoryResponsePDU inner = (InnerGetLogicalDeviceDirectoryResponsePDU) this.inner;
+        inner.lnReference.clear();
+        for (CmsSubReference ref : lnReference) {
+            inner.lnReference.add((InnerSubReference) ref.inner);
+        }
+        inner.moreFollows.value = moreFollows ? 1 : 0;
+    }
+
+    @Override
+    public void syncFromInner() {
+        InnerGetLogicalDeviceDirectoryResponsePDU inner = (InnerGetLogicalDeviceDirectoryResponsePDU) this.inner;
+        lnReference = new ArrayList<>();
+        for (InnerSubReference innerRef : inner.lnReference) {
+            CmsSubReference ref = new CmsSubReference();
+            ref.inner = innerRef;
+            lnReference.add(ref);
+        }
+        this.moreFollows = inner.moreFollows.value() != 0;
     }
 }

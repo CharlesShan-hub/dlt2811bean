@@ -1,75 +1,46 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsField;
+import com.ysh.jcms.core.CmsSequence;
+import com.ysh.jcms.data.InnerGetLogicalDeviceDirectoryRequestPDU;
 import com.ysh.jcms.data.common.CmsObjectName;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GetLogicalDeviceDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, ldName [0]
  * IMPLICIT ObjectName OPTIONAL, referenceAfter [1] IMPLICIT ObjectReference
  * OPTIONAL } — 8.3.2
  */
-public class CmsGetLogicalDeviceDirectoryRequest extends CmsTypeOld {
+public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
 
-    public CmsReqId reqId;
-    public CmsBoolean ldNamePresent;
+    @CmsField(optional = true)
     public CmsObjectName ldName; /* OPTIONAL */
-    public CmsBoolean refAfterPresent;
+
+    @CmsField(inner = "referenceAfter", optional = true)
     public CmsObjectReference refAfter; /* OPTIONAL */
 
     public CmsGetLogicalDeviceDirectoryRequest() {
-        super(Codec.GET_LOGICAL_DEVICE_DIRECTORY_REQUEST);
-        this.reqId = new CmsReqId();
-        this.ldNamePresent = new CmsBoolean();
+        super(new InnerGetLogicalDeviceDirectoryRequestPDU());
         this.ldName = new CmsObjectName();
-        this.refAfterPresent = new CmsBoolean();
         this.refAfter = new CmsObjectReference();
     }
 
-    public CmsGetLogicalDeviceDirectoryRequest reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
-    public CmsGetLogicalDeviceDirectoryRequest ldNamePresent(boolean v) {
-        this.ldNamePresent.value(v);
-        return this;
-    }
     public CmsGetLogicalDeviceDirectoryRequest ldName(byte[] v) {
-        this.ldNamePresent.value(v != null && v.length > 0);
-        if (v != null)
-            this.ldName.value(v);
-        return this;
+        return ldName(v != null ? new String(v) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest ldName(String v) {
-        this.ldNamePresent.value(v != null);
+        setPresent("ldName", v != null);
         if (v != null)
             this.ldName.value(v);
-        return this;
-    }
-    public CmsGetLogicalDeviceDirectoryRequest refAfterPresent(boolean v) {
-        this.refAfterPresent.value(v);
         return this;
     }
     public CmsGetLogicalDeviceDirectoryRequest refAfter(byte[] v) {
-        this.refAfterPresent.value(v != null && v.length > 0);
-        if (v != null)
-            this.refAfter.value(v);
-        return this;
+        return refAfter(v != null ? new String(v) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest refAfter(String v) {
-        this.refAfterPresent.value(v != null);
+        setPresent("refAfter", v != null);
         if (v != null)
             this.refAfter.value(v);
         return this;
-    }
-
-    @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, ldNamePresent, ldName, refAfterPresent, refAfter);
     }
 }

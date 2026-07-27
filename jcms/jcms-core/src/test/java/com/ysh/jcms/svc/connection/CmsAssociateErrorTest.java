@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class CmsAssociateErrorTest {
     @Test
     public void roundup() {
-        CmsAssociateError a = new CmsAssociateError().reqId(5).serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsAssociateError a = new CmsAssociateError().serviceError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         byte[] encoded = a.encode();
 
         CmsAssociateError b = new CmsAssociateError();

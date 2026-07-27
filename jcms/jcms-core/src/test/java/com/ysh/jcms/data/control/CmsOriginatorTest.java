@@ -6,7 +6,9 @@ import static org.junit.Assert.*;
 public class CmsOriginatorTest {
     @Test
     public void roundup() {
-        CmsOriginator a = new CmsOriginator().orCat(CmsOriginator.OR_CAT_BAY_CONTROL).orIdent("testIdent".getBytes());
+        CmsOriginator a = new CmsOriginator();
+        a.orCat.value(CmsOrCat.BAY_CONTROL);
+        a.orIdent("testIdent".getBytes());
         byte[] encoded = a.encode();
         CmsOriginator b = new CmsOriginator();
         b.decode(encoded);

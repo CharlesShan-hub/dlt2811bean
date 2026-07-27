@@ -1,12 +1,13 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsEnum;
 import com.ysh.jcms.data.InnerServiceError;
 
 /**
- * ServiceError ::= INTEGER (0..12) — 7.3.11 PER: constrained integer (0..12), 4 bits.
+ * ServiceError ::= INTEGER (0..12) — 7.3.11
  */
-public class CmsServiceError extends CmsType {
+@CmsEnum.ValueRange(min = 0, max = 12)
+public class CmsServiceError extends CmsEnum<CmsServiceError> {
 
     public static final int NO_ERROR = 0;
     public static final int INSTANCE_NOT_AVAILABLE = 1;
@@ -22,21 +23,6 @@ public class CmsServiceError extends CmsType {
     public static final int FAILED_DUE_TO_COMMUNICATIONS_CONSTRAINT = 11;
     public static final int FAILED_DUE_TO_SERVER_CONSTRAINT = 12;
 
-    public CmsServiceError() {
-        super(new InnerServiceError());
-    }
-    public CmsServiceError(int value) {
-        this();
-        value(value);
-    }
-
-    public int value() {
-        return ((InnerServiceError) inner).value;
-    }
-    public CmsServiceError value(int v) {
-        if (v < 0 || v > 12)
-            throw new IllegalArgumentException("CmsServiceError out of range [0,12]: " + v);
-        ((InnerServiceError) inner).value = v;
-        return this;
-    }
+    public CmsServiceError() { super(new InnerServiceError()); }
+    public CmsServiceError(int v) { this(); value(v); }
 }

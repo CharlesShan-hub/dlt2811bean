@@ -6,11 +6,54 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+/**
+ * Base class for all CMS wrapper types that use Rust-based PER encoding.
+ *
+ * <p>Subclasses fall into two categories:
+ * <ul>
+ *   <li><b>PDU types</b> — wrap an auto-generated Inner*PDU (from {@code jcms-data})
+ *       via {@code super(new InnerXxxPDU())}. These have real
+ *       {@link #encode()} / {@link #decode(byte[])} backed by Rust FFI.</li>
+ *   <li><b>Container types</b> — use the no-arg {@code CmsType()} constructor
+ *       which defaults to {@link InnerEmpty}. These are field holders within
+ *       larger PDUs; encode/decode is handled by the parent PDU.</li>
+ * </ul>
+ *
+ * <p>{@link #equals(Object)} and {@link #hashCode()} use reflection to
+ * compare all public (non-static, non-{@code inner}) fields automatically.
+ * Nested {@code CmsType} fields recurse; {@code byte[]} fields use
+ * {@link java.util.Arrays#equals(byte[], byte[])}; {@link List} fields
+ * are compared element-by-element with the same rules.
+ */
 public abstract class CmsType {
+    /** The Inner* instance backing this wrapper. */
     public InnerBase inner;
+
+    /** Unified data cache: {@code "value" → inner} for scalars,
+     *  {@code fieldName → value/wrapper} for sequences. */
+    public final java.util.Map<String, Object> innerCache = new java.util.HashMap<>();
+
+    /** Cached reflection handle for inner.encode(). */
     private final Method encodeMethod;
+    /** Cached reflection handle for InnerXxx.decode(byte[]). */
     private final Method staticDecodeMethod;
 
+    /**
+     * Creates a CmsType with an {@link InnerEmpty} placeholder.
+     * Used by container types that do not have a standalone ASN.1 PDU.
+     */
+    protected CmsType() {
+        this(new InnerEmpty());
+    }
+
+    /**
+     * Creates a CmsType backed by the given Inner* instance.
+     *
+     * @param inner the auto-generated Inner* PDU type (must have
+     *              {@code encode()} instance method and
+     *              {@code static decode(byte[])} method)
+     * @throws RuntimeException if the required methods are not found
+     */
     protected CmsType(InnerBase inner) {
         this.inner = inner;
         try {
@@ -21,6 +64,13 @@ public abstract class CmsType {
         }
     }
 
+    // ── encode / decode ──────────────────────────────────────────────────
+
+    /**
+     * Encodes this wrapper to APER bytes.
+     * Calls {@link #syncToInner()} first to push field values into the
+     * backing Inner*, then delegates to {@code Inner*.encode()} via Rust FFI.
+     */
     public byte[] encode() {
         syncToInner();
         try {
@@ -30,6 +80,11 @@ public abstract class CmsType {
         }
     }
 
+    /**
+     * Decodes APER bytes into this wrapper.
+     * Calls {@code InnerXxx.decode(data)} via Rust FFI to populate the
+     * backing Inner*, then {@link #syncFromInner()} to pull values out.
+     */
     public void decode(byte[] data) {
         try {
             inner = (InnerBase) staticDecodeMethod.invoke(null, data);
@@ -39,8 +94,15 @@ public abstract class CmsType {
         }
     }
 
+    // ── sync hooks ───────────────────────────────────────────────────────
+
+    /** Push field values from this wrapper into the backing Inner* PDU. */
     public void syncToInner() {}
+
+    /** Pull field values from the backing Inner* PDU into this wrapper. */
     public void syncFromInner() {}
+
+    // ── equals / hashCode ────────────────────────────────────────────────
 
     @Override
     public boolean equals(Object o) {
@@ -62,6 +124,8 @@ public abstract class CmsType {
         }
         return h;
     }
+
+    // ── private helpers ─────────────────────────────────────────────────
 
     private static boolean fieldsEqual(Object a, Object b) {
         for (Field f : a.getClass().getFields()) {
@@ -103,6 +167,8 @@ public abstract class CmsType {
         }
         return val.hashCode();
     }
+
+    // ── toString ─────────────────────────────────────────────────────────
 
     @Override
     public String toString() {

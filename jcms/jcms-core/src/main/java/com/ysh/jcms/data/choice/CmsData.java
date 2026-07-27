@@ -101,6 +101,39 @@ public class CmsData extends CmsType {
 
     public CmsData choice(int v) { this.choice = v; return this; }
 
+    /**
+     * Set choice and value in one call.
+     * <pre>{@code
+     * data.value(CmsData.CHOICE_BOOLEAN, true);
+     * data.value(CmsData.CHOICE_INT32, 12345);
+     * data.value(CmsData.CHOICE_VISIBLE_STRING, "hello");
+     * }</pre>
+     */
+    public CmsData value(int ch, Object val) {
+        this.choice = ch;
+        switch (ch) {
+            case CHOICE_ERROR:           alt_error.value((Integer) val); break;
+            case CHOICE_BOOLEAN:         alt_boolean.value((Boolean) val); break;
+            case CHOICE_INT8:            alt_int8.value((Integer) val); break;
+            case CHOICE_INT16:           alt_int16.value((Integer) val); break;
+            case CHOICE_INT32:           alt_int32.value((Integer) val); break;
+            case CHOICE_INT64:           alt_int64.value((Long) val); break;
+            case CHOICE_INT8U:           alt_int8u.value((Integer) val); break;
+            case CHOICE_INT16U:          alt_int16u.value((Integer) val); break;
+            case CHOICE_INT32U:          alt_int32u.value((Integer) val); break;
+            case CHOICE_INT64U:          alt_int64u.value((java.math.BigInteger) val); break;
+            case CHOICE_FLOAT32:         alt_float32.value((Float) val); break;
+            case CHOICE_FLOAT64:         alt_float64.value((Double) val); break;
+            case CHOICE_BIT_STRING:      alt_bit_string = (byte[]) val; break;
+            case CHOICE_OCTET_STRING:    alt_octet_string = (byte[]) val; break;
+            case CHOICE_VISIBLE_STRING:  alt_visible_string = (String) val; break;
+            case CHOICE_UNICODE_STRING:  alt_unicode_string = (String) val; break;
+            case CHOICE_DBPOS:           alt_dbpos.value((Integer) val); break;
+            case CHOICE_TCMD:            alt_tcmd.value((Integer) val); break;
+        }
+        return this;
+    }
+
     @Override
     public void syncToInner() {
         InnerData i = (InnerData) inner;

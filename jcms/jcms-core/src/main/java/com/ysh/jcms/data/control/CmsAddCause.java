@@ -1,13 +1,14 @@
 package com.ysh.jcms.data.control;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsEnum;
 import com.ysh.jcms.data.InnerAddCause;
 
 /**
  * AddCause ::= INTEGER (0..27) — 7.5.4 PER: constrained integer (0..27), 5 bits
  * sizeof = 4
  */
-public class CmsAddCause extends CmsType {
+@CmsEnum.ValueRange(min = 0, max = 27)
+public class CmsAddCause extends CmsEnum<CmsAddCause> {
 
     public static final int UNKNOWN = 0;
     public static final int NOT_SUPPORTED = 1;
@@ -38,21 +39,6 @@ public class CmsAddCause extends CmsType {
     public static final int LOCKED_BY_OTHER_CLIENT = 26;
     public static final int INCONSISTENT_PARAMETERS = 27;
 
-    public CmsAddCause() {
-        super(new InnerAddCause());
-    }
-    public CmsAddCause(int value) {
-        this();
-        value(value);
-    }
-
-    public int value() {
-        return ((InnerAddCause) inner).value;
-    }
-    public CmsAddCause value(int v) {
-        if (v < 0 || v > 27)
-            throw new IllegalArgumentException("CmsAddCause out of range [0,27]: " + v);
-        ((InnerAddCause) inner).value = v;
-        return this;
-    }
+    public CmsAddCause() { super(new InnerAddCause()); }
+    public CmsAddCause(int v) { this(); value(v); }
 }

@@ -5,22 +5,16 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 
-/**
- * MSVCB ::= SEQUENCE { 10 fields } — 8.10.2
- * <p>
- * OPTIONAL fields (smpMod, dstAddress) use has* boolean flags.
- */
 public class CmsMsvcb extends CmsType {
-
     public CmsBoolean svEna;
     public String msvID;
     public CmsObjectReference datSet;
     public CmsInt32U confRev;
-    public CmsSmpMod smpMod; /* OPTIONAL */
+    public CmsSmpMod smpMod;
     public boolean hasSmpMod;
     public CmsInt16U smpRate;
     public CmsMsvcbOptFlds optFlds;
-    public CmsPhyComAddr dstAddress; /* OPTIONAL */
+    public CmsPhyComAddr dstAddress;
     public boolean hasDstAddress;
 
     public CmsMsvcb() {
@@ -41,6 +35,7 @@ public class CmsMsvcb extends CmsType {
     public CmsMsvcb confRev(long v) { this.confRev.value(v); return this; }
     public CmsMsvcb smpMod(int v) { this.smpMod.value(v); this.hasSmpMod = true; return this; }
     public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
+    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds = v; return this; }
     public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress = v; this.hasDstAddress = true; return this; }
 
     @Override
@@ -50,13 +45,13 @@ public class CmsMsvcb extends CmsType {
         i.msvID = msvID;
         i.datSet.value = datSet.value();
         i.confRev.value = (int) confRev.value();
+        i.smpRate.value = smpRate.value();
+        optFlds.syncToInner();
+        i.optFlds = (InnerMsvcbOptFlds) optFlds.inner;
         if (hasSmpMod) {
             i.smpMod.value = smpMod.value();
             i._set.add("smpMod");
         }
-        i.smpRate.value = smpRate.value();
-        optFlds.syncToInner();
-        i.optFlds.value = ((InnerMsvcbOptFlds) optFlds.inner).value;
         if (hasDstAddress) {
             dstAddress.syncToInner();
             i.dstAddress = (InnerPhyComAddr) dstAddress.inner;
@@ -71,11 +66,13 @@ public class CmsMsvcb extends CmsType {
         msvID = i.msvID;
         datSet.value(i.datSet.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
-        hasSmpMod = i._set.contains("smpMod");
-        if (hasSmpMod) smpMod.value(i.smpMod.value);
         smpRate.value(i.smpRate.value & 0xFFFF);
-        ((InnerMsvcbOptFlds) optFlds.inner).value = i.optFlds.value;
+        optFlds.inner = i.optFlds;
         optFlds.syncFromInner();
+        hasSmpMod = i._set.contains("smpMod");
+        if (hasSmpMod) {
+            smpMod.value(i.smpMod.value);
+        }
         hasDstAddress = i._set.contains("dstAddress");
         if (hasDstAddress) {
             dstAddress.inner = i.dstAddress;

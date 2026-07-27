@@ -1,13 +1,10 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsField;
+import com.ysh.jcms.core.CmsSequence;
+import com.ysh.jcms.data.InnerGetLogicalNodeDirectoryResponsePDU;
 import com.ysh.jcms.data.common.CmsSubReference;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.svc.other.CmsReqId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -15,43 +12,34 @@ import java.util.List;
  * [0] IMPLICIT SEQUENCE OF SubReference, moreFollows [1] IMPLICIT BOOLEAN
  * DEFAULT TRUE } — 8.3.3
  */
-public class CmsGetLogicalNodeDirectoryResponse extends CmsTypeOld {
+public class CmsGetLogicalNodeDirectoryResponse extends CmsSequence {
 
-    public CmsReqId reqId;
-    public CmsArray<CmsSubReference> reference; /* SEQUENCE OF SubReference */
-    public CmsBoolean moreFollows; /* DEFAULT TRUE */
+    @CmsField(sequenceOf = true, elementType = CmsSubReference.class)
+    public List<CmsSubReference> reference; /* SEQUENCE OF SubReference */
+
+    @CmsField
+    public boolean moreFollows; /* DEFAULT TRUE */
 
     public CmsGetLogicalNodeDirectoryResponse() {
-        super(Codec.GET_LOGICAL_NODE_DIRECTORY_RESPONSE);
-        this.reqId = new CmsReqId();
-        this.reference = new CmsArray<>(CmsSubReference.class);
-        this.moreFollows = new CmsBoolean();
+        super(new InnerGetLogicalNodeDirectoryResponsePDU());
+        this.reference = new ArrayList<>();
     }
 
-    public CmsGetLogicalNodeDirectoryResponse reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
-    public CmsGetLogicalNodeDirectoryResponse reference(CmsArray<CmsSubReference> v) {
+    public CmsGetLogicalNodeDirectoryResponse reference(List<CmsSubReference> v) {
         this.reference = v;
         return this;
     }
     public CmsGetLogicalNodeDirectoryResponse moreFollows(boolean v) {
-        this.moreFollows.value(v);
+        this.moreFollows = v;
         return this;
     }
 
     /** Convenience: extract reference strings as List. */
     public List<String> refs() {
         List<String> refs = new ArrayList<>();
-        for (int i = 0; i < reference.count; i++) {
-            refs.add(new String(reference.items.get(i).value()));
+        for (CmsSubReference ref : reference) {
+            refs.add(ref.value());
         }
         return refs;
-    }
-
-    @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, reference, moreFollows);
     }
 }

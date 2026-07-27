@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsFixedOctet;
 import com.ysh.jcms.data.InnerFloat64;
 import java.nio.ByteBuffer;
 
@@ -8,21 +8,22 @@ import java.nio.ByteBuffer;
  * Wraps {@link InnerFloat64} for PER encode/decode via Rust (libasn1.so).
  * InnerFloat64 stores the double as an 8-byte OCTET STRING (IEEE 754 big-endian).
  */
-public class CmsFloat64 extends CmsType {
+public class CmsFloat64 extends CmsFixedOctet {
 
     public CmsFloat64() {
         super(new InnerFloat64());
     }
     public CmsFloat64(double value) {
         this();
-        ((InnerFloat64) inner).value = doubleToBytes(value);
+        innerSet(doubleToBytes(value));
     }
 
     public double value() {
-        return bytesToDouble(((InnerFloat64) inner).value);
+        byte[] b = (byte[]) innerGet();
+        return bytesToDouble(b);
     }
     public CmsFloat64 value(double v) {
-        ((InnerFloat64) inner).value = doubleToBytes(v);
+        innerSet(doubleToBytes(v));
         return this;
     }
 

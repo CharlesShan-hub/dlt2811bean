@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.fc;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerFunctionalConstraint;
 
 /**
@@ -9,7 +9,7 @@ import com.ysh.jcms.data.InnerFunctionalConstraint;
  * CmsFC stores the value as int (0..12), while inner
  * {@link InnerFunctionalConstraint} stores it as 2-char code ("ST".."XX").
  */
-public class CmsFC extends CmsType {
+public class CmsFC extends CmsScalar {
 
     public static final int ST = 0;
     public static final int MX = 1;

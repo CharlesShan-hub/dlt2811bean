@@ -1,15 +1,13 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.block.CmsBrcb;
 import com.ysh.jcms.data.block.CmsGoCb;
 import com.ysh.jcms.data.block.CmsLcb;
 import com.ysh.jcms.data.block.CmsMsvcb;
 import com.ysh.jcms.data.block.CmsSgcb;
 import com.ysh.jcms.data.block.CmsUrcb;
-import com.ysh.jcms.core.CmsEnumerated;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * CBValue ::= CHOICE { brcb [0] IMPLICIT BRCB, urcb [1] IMPLICIT URCB, lcb [2]
@@ -17,8 +15,9 @@ import java.util.List;
  * IMPLICIT MSVCB } — 8.3.6
  *
  * Used by CBValueEntry in GetAllCBValues response.
+ * PER encode/decode is handled by the parent PDU's Inner* type.
  */
-public class CmsCbValueChoice extends CmsTypeOld {
+public class CmsCbValueChoice extends CmsType {
 
     public static final int BRCB = 0;
     public static final int URCB = 1;
@@ -48,10 +47,5 @@ public class CmsCbValueChoice extends CmsTypeOld {
     public CmsCbValueChoice choice(int v) {
         this.choice.value(v);
         return this;
-    }
-
-    @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(choice, altBrcb, altUrcb, altLcb, altSgecb, altGocb, altMsvcb);
     }
 }

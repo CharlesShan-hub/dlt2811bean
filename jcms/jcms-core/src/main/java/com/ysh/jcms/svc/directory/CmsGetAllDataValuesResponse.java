@@ -1,11 +1,11 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.data.scalar.CmsBoolean;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
+import com.ysh.jcms.core.CmsField;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerAnonymousGetAllDataValuesResponsePDUData;
+import com.ysh.jcms.data.InnerGetAllDataValuesResponsePDU;
+import com.ysh.jcms.data.InnerSubReference;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,34 +13,52 @@ import java.util.List;
  * SEQUENCE OF DataValueEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE } —
  * 8.3.4
  */
-public class CmsGetAllDataValuesResponse extends CmsTypeOld {
+public class CmsGetAllDataValuesResponse extends CmsType {
 
-    public CmsReqId reqId;
-    public CmsArray<CmsDataValueEntry> data; /* SEQUENCE OF DataValueEntry */
-    public CmsBoolean moreFollows; /* DEFAULT TRUE */
+    public List<CmsDataValueEntry> data; /* SEQUENCE OF DataValueEntry */
+
+    @CmsField
+    public boolean moreFollows; /* DEFAULT TRUE */
 
     public CmsGetAllDataValuesResponse() {
-        super(Codec.GET_ALL_DATA_VALUES_RESPONSE);
-        this.reqId = new CmsReqId();
-        this.data = new CmsArray<>(CmsDataValueEntry.class);
-        this.moreFollows = new CmsBoolean();
+        super(new InnerGetAllDataValuesResponsePDU());
+        this.data = new ArrayList<>();
     }
 
-    public CmsGetAllDataValuesResponse reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
-    public CmsGetAllDataValuesResponse data(CmsArray<CmsDataValueEntry> v) {
+    public CmsGetAllDataValuesResponse data(List<CmsDataValueEntry> v) {
         this.data = v;
         return this;
     }
     public CmsGetAllDataValuesResponse moreFollows(boolean v) {
-        this.moreFollows.value(v);
+        this.moreFollows = v;
         return this;
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, data, moreFollows);
+    public void syncToInner() {
+        InnerGetAllDataValuesResponsePDU inner = (InnerGetAllDataValuesResponsePDU) this.inner;
+        inner.data.value.clear();
+        for (CmsDataValueEntry entry : data) {
+            InnerAnonymousGetAllDataValuesResponsePDUData innerEntry = new InnerAnonymousGetAllDataValuesResponsePDUData();
+            innerEntry.reference = (InnerSubReference) entry.reference.inner;
+            entry.value.syncToInner();
+            innerEntry.value = (com.ysh.jcms.data.InnerData) entry.value.inner;
+            inner.data.value.add(innerEntry);
+        }
+        inner.moreFollows.value = moreFollows ? 1 : 0;
+    }
+
+    @Override
+    public void syncFromInner() {
+        InnerGetAllDataValuesResponsePDU inner = (InnerGetAllDataValuesResponsePDU) this.inner;
+        data = new ArrayList<>();
+        for (InnerAnonymousGetAllDataValuesResponsePDUData innerEntry : inner.data.value) {
+            CmsDataValueEntry entry = new CmsDataValueEntry();
+            entry.reference.inner = innerEntry.reference;
+            entry.value.inner = innerEntry.value;
+            entry.value.syncFromInner();
+            data.add(entry);
+        }
+        this.moreFollows = inner.moreFollows.value() != 0;
     }
 }

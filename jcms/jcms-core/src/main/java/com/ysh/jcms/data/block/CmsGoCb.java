@@ -5,19 +5,13 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 
-/**
- * GoCB ::= SEQUENCE { 7 fields } — 8.9.4
- * <p>
- * OPTIONAL field (dstAddress) uses a hasDstAddress boolean flag.
- */
 public class CmsGoCb extends CmsType {
-
     public CmsBoolean goEna;
     public String goID;
     public CmsObjectReference datSet;
     public CmsInt32U confRev;
     public CmsBoolean ndsCom;
-    public CmsPhyComAddr dstAddress; /* OPTIONAL */
+    public CmsPhyComAddr dstAddress;
     public boolean hasDstAddress;
 
     public CmsGoCb() {

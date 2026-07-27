@@ -1,34 +1,29 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerReleaseResponsePDU;
 import com.ysh.jcms.data.common.CmsServiceError;
 import com.ysh.jcms.svc.other.CmsAssociationId;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * Release-ResponsePDU ::= SEQUENCE { reqId Int16U, associationId [0] IMPLICIT
- * OCTET STRING (SIZE(0..64)), serviceError [1] IMPLICIT ServiceError } — 8.2.2
+ * Release-ResponsePDU ::= SEQUENCE {
+ *     associationId    [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *     serviceError     [1] IMPLICIT ServiceError
+ * } — 8.2.2
+ *
+ * NOTE: reqId is handled at the protocol level, not part of the ASN.1 definition.
  */
-public class CmsReleaseResponse extends CmsTypeOld {
+public class CmsReleaseResponse extends CmsType {
 
-    public CmsReqId reqId;
     public CmsAssociationId assocId;
     public CmsServiceError serviceError;
 
     public CmsReleaseResponse() {
-        super(Codec.RELEASE_RESPONSE);
-        this.reqId = new CmsReqId();
+        super(new InnerReleaseResponsePDU());
         this.assocId = new CmsAssociationId();
         this.serviceError = new CmsServiceError();
     }
 
-    public CmsReleaseResponse reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
     public CmsReleaseResponse assocId(byte[] v) {
         this.assocId.value(v);
         return this;
@@ -43,7 +38,16 @@ public class CmsReleaseResponse extends CmsTypeOld {
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, assocId, serviceError);
+    public void syncToInner() {
+        InnerReleaseResponsePDU inner = (InnerReleaseResponsePDU) this.inner;
+        inner.associationId = assocId.value();
+        inner.serviceError.value = serviceError.value();
+    }
+
+    @Override
+    public void syncFromInner() {
+        InnerReleaseResponsePDU inner = (InnerReleaseResponsePDU) this.inner;
+        this.assocId.value(inner.associationId);
+        this.serviceError.value(inner.serviceError.value);
     }
 }

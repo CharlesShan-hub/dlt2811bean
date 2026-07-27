@@ -1,38 +1,31 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerGetAllDataDefinitionErrorPDU;
 
 /**
- * GetAllDataDefinition-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
- * ServiceError } — 8.3.5
+ * GetAllDataDefinition-ErrorPDU ::= ServiceError — 8.3.5
  */
-public class CmsGetAllDataDefinitionError extends CmsTypeOld {
+public class CmsGetAllDataDefinitionError extends CmsType {
 
-    public CmsReqId reqId;
-    public CmsServiceError serviceError;
+    public int serviceError;
 
     public CmsGetAllDataDefinitionError() {
-        super(Codec.GET_ALL_DATA_DEFINITION_ERROR);
-        this.reqId = new CmsReqId();
-        this.serviceError = new CmsServiceError();
+        super(new InnerGetAllDataDefinitionErrorPDU());
     }
 
-    public CmsGetAllDataDefinitionError reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
     public CmsGetAllDataDefinitionError serviceError(int v) {
-        this.serviceError.value(v);
+        this.serviceError = v;
         return this;
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, serviceError);
+    public void syncToInner() {
+        ((InnerGetAllDataDefinitionErrorPDU) inner).value = serviceError;
+    }
+
+    @Override
+    public void syncFromInner() {
+        this.serviceError = ((InnerGetAllDataDefinitionErrorPDU) inner).value;
     }
 }

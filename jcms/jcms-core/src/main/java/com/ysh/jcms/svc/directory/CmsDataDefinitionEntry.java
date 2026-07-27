@@ -1,12 +1,9 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.common.CmsSubReference;
-import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.string.CmsUint8Array;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * DataDefinitionEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference,
@@ -14,23 +11,23 @@ import java.util.List;
  * DataDefinition } — 8.3.5
  *
  * Used by GetAllDataDefinition response (SEQUENCE OF DataDefinitionEntry).
+ * PER encode/decode is handled by the parent PDU's Inner* type.
  */
-public class CmsDataDefinitionEntry extends CmsTypeOld {
+public class CmsDataDefinitionEntry extends CmsType {
 
     public CmsSubReference reference;
-    public CmsBoolean cdcTypePresent;
+    public boolean cdcTypePresent;
     public CmsUint8Array cdcType; /* VisibleString OPTIONAL */
     public CmsDataDefinition definition;
 
     public CmsDataDefinitionEntry() {
         this.reference = new CmsSubReference();
-        this.cdcTypePresent = new CmsBoolean();
         this.cdcType = new CmsUint8Array();
         this.definition = new CmsDataDefinition();
     }
 
     public CmsDataDefinitionEntry reference(byte[] v) {
-        this.reference.value(v);
+        this.reference.value(new String(v));
         return this;
     }
     public CmsDataDefinitionEntry reference(String v) {
@@ -38,17 +35,17 @@ public class CmsDataDefinitionEntry extends CmsTypeOld {
         return this;
     }
     public CmsDataDefinitionEntry cdcTypePresent(boolean v) {
-        this.cdcTypePresent.value(v);
+        this.cdcTypePresent = v;
         return this;
     }
     public CmsDataDefinitionEntry cdcType(byte[] v) {
-        this.cdcTypePresent.value(v != null && v.length > 0);
+        this.cdcTypePresent = v != null && v.length > 0;
         if (v != null)
             this.cdcType.value(v);
         return this;
     }
     public CmsDataDefinitionEntry cdcType(String v) {
-        this.cdcTypePresent.value(v != null);
+        this.cdcTypePresent = v != null;
         if (v != null)
             this.cdcType.value(v);
         return this;
@@ -56,10 +53,5 @@ public class CmsDataDefinitionEntry extends CmsTypeOld {
     public CmsDataDefinitionEntry definition(CmsDataDefinition v) {
         this.definition = v;
         return this;
-    }
-
-    @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reference, cdcTypePresent, cdcType, definition);
     }
 }

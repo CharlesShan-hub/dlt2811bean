@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt64U;
 import java.math.BigInteger;
 
@@ -11,7 +11,7 @@ import java.math.BigInteger;
  * Java {@code long} cannot represent values above {@link Long#MAX_VALUE},
  * so this wrapper uses {@link BigInteger}.
  */
-public class CmsInt64U extends CmsType {
+public class CmsInt64U extends CmsScalar {
 
     private static final BigInteger MIN = BigInteger.ZERO;
     private static final BigInteger MAX = new BigInteger("18446744073709551615");
@@ -25,14 +25,15 @@ public class CmsInt64U extends CmsType {
     }
 
     public BigInteger value() {
-        long v = ((InnerInt64U) inner).value;
+        Long v = (Long) innerGet();
+        if (v == null) return BigInteger.ZERO;
         if (v >= 0) return BigInteger.valueOf(v);
         return BigInteger.valueOf(v).and(MAX);
     }
     public CmsInt64U value(BigInteger v) {
         if (v.compareTo(MIN) < 0 || v.compareTo(MAX) > 0)
             throw new IllegalArgumentException("CmsInt64U out of range [" + MIN + "," + MAX + "]: " + v);
-        ((InnerInt64U) inner).value = v.longValue();
+        innerSet(v.longValue());
         return this;
     }
 }

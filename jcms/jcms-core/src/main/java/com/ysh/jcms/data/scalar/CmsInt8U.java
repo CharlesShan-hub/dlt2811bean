@@ -1,12 +1,12 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt8U;
 
 /**
  * Wraps {@link InnerInt8U} for PER encode/decode via Rust (libasn1.so).
  */
-public class CmsInt8U extends CmsType {
+public class CmsInt8U extends CmsScalar {
 
     public CmsInt8U() {
         super(new InnerInt8U());
@@ -17,12 +17,13 @@ public class CmsInt8U extends CmsType {
     }
 
     public int value() {
-        return ((InnerInt8U) inner).value & 0xFF;
+        Integer v = (Integer) innerGet();
+        return v != null ? v & 0xFF : 0;
     }
     public CmsInt8U value(int v) {
         if (v < 0 || v > 0xFF)
             throw new IllegalArgumentException("CmsInt8U out of range [0," + 0xFF + "]: " + v);
-        ((InnerInt8U) inner).value = v;
+        innerSet(v);
         return this;
     }
 }

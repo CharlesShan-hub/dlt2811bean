@@ -1,38 +1,31 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerGetAllCBValuesErrorPDU;
 
 /**
- * GetAllCBValues-ErrorPDU ::= SEQUENCE { reqId Int16U, serviceError
- * ServiceError } — 8.3.6
+ * GetAllCBValues-ErrorPDU ::= ServiceError — 8.3.6
  */
-public class CmsGetAllCbValuesError extends CmsTypeOld {
+public class CmsGetAllCbValuesError extends CmsType {
 
-    public CmsReqId reqId;
-    public CmsServiceError serviceError;
+    public int serviceError;
 
     public CmsGetAllCbValuesError() {
-        super(Codec.GET_ALL_CB_VALUES_ERROR);
-        this.reqId = new CmsReqId();
-        this.serviceError = new CmsServiceError();
+        super(new InnerGetAllCBValuesErrorPDU());
     }
 
-    public CmsGetAllCbValuesError reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
     public CmsGetAllCbValuesError serviceError(int v) {
-        this.serviceError.value(v);
+        this.serviceError = v;
         return this;
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, serviceError);
+    public void syncToInner() {
+        ((InnerGetAllCBValuesErrorPDU) inner).value = serviceError;
+    }
+
+    @Override
+    public void syncFromInner() {
+        this.serviceError = ((InnerGetAllCBValuesErrorPDU) inner).value;
     }
 }

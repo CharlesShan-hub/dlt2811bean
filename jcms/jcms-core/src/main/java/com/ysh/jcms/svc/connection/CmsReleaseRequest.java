@@ -1,31 +1,25 @@
 package com.ysh.jcms.svc.connection;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerReleaseRequestPDU;
 import com.ysh.jcms.svc.other.CmsAssociationId;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
 
 /**
- * Release-RequestPDU ::= SEQUENCE { reqId Int16U, associationId [0] IMPLICIT
- * OCTET STRING (SIZE(0..64)) } — 8.2.2
+ * Release-RequestPDU ::= SEQUENCE {
+ *     associationId    [0] IMPLICIT OCTET STRING (SIZE (0..64))
+ * } — 8.2.2
+ *
+ * NOTE: reqId is handled at the protocol level, not part of the ASN.1 definition.
  */
-public class CmsReleaseRequest extends CmsTypeOld {
+public class CmsReleaseRequest extends CmsType {
 
-    public CmsReqId reqId;
     public CmsAssociationId assocId;
 
     public CmsReleaseRequest() {
-        super(Codec.RELEASE_REQUEST);
-        this.reqId = new CmsReqId();
+        super(new InnerReleaseRequestPDU());
         this.assocId = new CmsAssociationId();
     }
 
-    public CmsReleaseRequest reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
     public CmsReleaseRequest assocId(byte[] v) {
         this.assocId.value(v);
         return this;
@@ -36,7 +30,12 @@ public class CmsReleaseRequest extends CmsTypeOld {
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, assocId);
+    public void syncToInner() {
+        ((InnerReleaseRequestPDU) inner).associationId = assocId.value();
+    }
+
+    @Override
+    public void syncFromInner() {
+        this.assocId.value(((InnerReleaseRequestPDU) inner).associationId);
     }
 }

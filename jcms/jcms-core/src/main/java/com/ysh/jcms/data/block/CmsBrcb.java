@@ -4,15 +4,8 @@ import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.time.CmsBinaryTime;
 
-/**
- * BRCB ::= SEQUENCE { 15 fields } — 8.4
- * <p>
- * OPTIONAL fields (resvTms, owner) use has* boolean flags.
- */
 public class CmsBrcb extends CmsType {
-
     public String rptID;
     public CmsBoolean rptEna;
     public CmsObjectReference datSet;
@@ -25,10 +18,10 @@ public class CmsBrcb extends CmsType {
     public CmsBoolean gi;
     public CmsBoolean purgeBuf;
     public CmsEntryId entryID;
-    public CmsBinaryTime timeOfEntry;
-    public CmsInt16 resvTms; /* OPTIONAL */
+    public byte[] timeOfEntry;
+    public CmsInt16 resvTms;
     public boolean hasResvTms;
-    public byte[] owner; /* OPTIONAL */
+    public byte[] owner;
     public boolean hasOwner;
 
     public CmsBrcb() {
@@ -45,7 +38,7 @@ public class CmsBrcb extends CmsType {
         this.gi = new CmsBoolean();
         this.purgeBuf = new CmsBoolean();
         this.entryID = new CmsEntryId();
-        this.timeOfEntry = new CmsBinaryTime();
+        this.timeOfEntry = new byte[6];
         this.resvTms = new CmsInt16();
         this.owner = new byte[0];
     }
@@ -54,14 +47,15 @@ public class CmsBrcb extends CmsType {
     public CmsBrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
     public CmsBrcb datSet(String v) { this.datSet.value(v); return this; }
     public CmsBrcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
     public CmsBrcb bufTm(long v) { this.bufTm.value(v); return this; }
     public CmsBrcb sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
     public CmsBrcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsBrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
     public CmsBrcb entryID(byte[] v) { this.entryID.value(v); return this; }
-    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
-    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
+    public CmsBrcb timeOfEntry(byte[] v) { this.timeOfEntry = v; return this; }
     public CmsBrcb resvTms(int v) { this.resvTms.value(v); this.hasResvTms = true; return this; }
     public CmsBrcb owner(byte[] v) { this.owner = v; this.hasOwner = true; return this; }
 
@@ -73,22 +67,22 @@ public class CmsBrcb extends CmsType {
         i.datSet.value = datSet.value();
         i.confRev.value = (int) confRev.value();
         optFlds.syncToInner();
-        i.optFlds.value = ((InnerRcbOptFlds) optFlds.inner).value;
+        i.optFlds = (InnerRcbOptFlds) optFlds.inner;
         i.bufTm.value = (int) bufTm.value();
         i.sqNum.value = sqNum.value();
         trgOps.syncToInner();
-        i.trgOps.value = ((InnerTriggerConditions) trgOps.inner).value;
+        i.trgOps = (InnerTriggerConditions) trgOps.inner;
         i.intgPd.value = (int) intgPd.value();
         i.gi.value = gi.value() ? 1 : 0;
         i.purgeBuf.value = purgeBuf.value() ? 1 : 0;
-        i.entryID.value = entryID.value();
-        timeOfEntry.syncToInner();
-        i.timeOfEntry.value = ((InnerBinaryTime) timeOfEntry.inner).value;
+        entryID.syncToInner();
+        i.entryID = (InnerEntryID) entryID.inner;
+        i.timeOfEntry.value = timeOfEntry;
         if (hasResvTms) {
             i.resvTms.value = resvTms.value();
             i._set.add("resvTms");
         }
-        if (hasOwner) {
+        if (hasOwner && owner != null) {
             i.owner = owner;
             i._set.add("owner");
         }
@@ -101,21 +95,25 @@ public class CmsBrcb extends CmsType {
         rptEna.value(i.rptEna.value != 0);
         datSet.value(i.datSet.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
-        ((InnerRcbOptFlds) optFlds.inner).value = i.optFlds.value;
+        optFlds.inner = i.optFlds;
         optFlds.syncFromInner();
         bufTm.value(i.bufTm.value & 0xFFFFFFFFL);
         sqNum.value(i.sqNum.value & 0xFFFF);
-        ((InnerTriggerConditions) trgOps.inner).value = i.trgOps.value;
+        trgOps.inner = i.trgOps;
         trgOps.syncFromInner();
         intgPd.value(i.intgPd.value & 0xFFFFFFFFL);
         gi.value(i.gi.value != 0);
         purgeBuf.value(i.purgeBuf.value != 0);
-        entryID.value(i.entryID.value);
-        ((InnerBinaryTime) timeOfEntry.inner).value = i.timeOfEntry.value;
-        timeOfEntry.syncFromInner();
+        entryID.inner = i.entryID;
+        entryID.syncFromInner();
+        timeOfEntry = i.timeOfEntry.value;
         hasResvTms = i._set.contains("resvTms");
-        if (hasResvTms) resvTms.value(i.resvTms.value);
+        if (hasResvTms) {
+            resvTms.value(i.resvTms.value);
+        }
         hasOwner = i._set.contains("owner");
-        if (hasOwner) owner = i.owner;
+        if (hasOwner) {
+            owner = i.owner;
+        }
     }
 }

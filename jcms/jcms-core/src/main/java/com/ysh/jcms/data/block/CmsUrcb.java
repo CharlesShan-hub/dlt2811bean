@@ -5,13 +5,7 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
 
-/**
- * URCB ::= SEQUENCE { 13 fields } — 8.7.4
- * <p>
- * OPTIONAL field (owner) uses a hasOwner boolean flag.
- */
 public class CmsUrcb extends CmsType {
-
     public String rptID;
     public CmsBoolean rptEna;
     public CmsObjectReference datSet;
@@ -23,7 +17,7 @@ public class CmsUrcb extends CmsType {
     public CmsInt32U intgPd;
     public CmsBoolean gi;
     public CmsBoolean resv;
-    public byte[] owner; /* OPTIONAL */
+    public byte[] owner;
     public boolean hasOwner;
 
     public CmsUrcb() {
@@ -46,13 +40,13 @@ public class CmsUrcb extends CmsType {
     public CmsUrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
     public CmsUrcb datSet(String v) { this.datSet.value(v); return this; }
     public CmsUrcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsUrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
     public CmsUrcb bufTm(long v) { this.bufTm.value(v); return this; }
     public CmsUrcb sqNum(int v) { this.sqNum.value(v); return this; }
+    public CmsUrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
     public CmsUrcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsUrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsUrcb resv(boolean v) { this.resv.value(v); return this; }
-    public CmsUrcb optFlds(CmsRcbOptFlds v) { this.optFlds = v; return this; }
-    public CmsUrcb trgOps(CmsTriggerConditions v) { this.trgOps = v; return this; }
     public CmsUrcb owner(byte[] v) { this.owner = v; this.hasOwner = true; return this; }
 
     @Override
@@ -63,15 +57,15 @@ public class CmsUrcb extends CmsType {
         i.datSet.value = datSet.value();
         i.confRev.value = (int) confRev.value();
         optFlds.syncToInner();
-        i.optFlds.value = ((InnerRcbOptFlds) optFlds.inner).value;
+        i.optFlds = (InnerRcbOptFlds) optFlds.inner;
         i.bufTm.value = (int) bufTm.value();
         i.sqNum.value = sqNum.value();
         trgOps.syncToInner();
-        i.trgOps.value = ((InnerTriggerConditions) trgOps.inner).value;
+        i.trgOps = (InnerTriggerConditions) trgOps.inner;
         i.intgPd.value = (int) intgPd.value();
         i.gi.value = gi.value() ? 1 : 0;
         i.resv.value = resv.value() ? 1 : 0;
-        if (hasOwner) {
+        if (hasOwner && owner != null) {
             i.owner = owner;
             i._set.add("owner");
         }
@@ -84,16 +78,18 @@ public class CmsUrcb extends CmsType {
         rptEna.value(i.rptEna.value != 0);
         datSet.value(i.datSet.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
-        ((InnerRcbOptFlds) optFlds.inner).value = i.optFlds.value;
+        optFlds.inner = i.optFlds;
         optFlds.syncFromInner();
         bufTm.value(i.bufTm.value & 0xFFFFFFFFL);
         sqNum.value(i.sqNum.value & 0xFFFF);
-        ((InnerTriggerConditions) trgOps.inner).value = i.trgOps.value;
+        trgOps.inner = i.trgOps;
         trgOps.syncFromInner();
         intgPd.value(i.intgPd.value & 0xFFFFFFFFL);
         gi.value(i.gi.value != 0);
         resv.value(i.resv.value != 0);
         hasOwner = i._set.contains("owner");
-        if (hasOwner) owner = i.owner;
+        if (hasOwner) {
+            owner = i.owner;
+        }
     }
 }

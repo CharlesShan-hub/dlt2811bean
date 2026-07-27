@@ -1,40 +1,33 @@
 package com.ysh.jcms.svc.directory;
 
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.InnerGetLogicalNodeDirectoryRequestPDU;
+import com.ysh.jcms.data.InnerGetLogicalNodeDirectoryRequestPDUReference;
+import com.ysh.jcms.data.InnerObjectName;
+import com.ysh.jcms.data.InnerObjectReference;
 import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.svc.other.CmsReferenceChoice;
-import com.ysh.jcms.svc.other.CmsReqId;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * GetLogicalNodeDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0]
  * IMPLICIT ReferenceChoice, acsiClass [1] IMPLICIT ACSIClass, referenceAfter
  * [2] IMPLICIT ObjectReference OPTIONAL } — 8.3.3
  */
-public class CmsGetLogicalNodeDirectoryRequest extends CmsTypeOld {
+public class CmsGetLogicalNodeDirectoryRequest extends CmsType {
 
-    public CmsReqId reqId;
     public CmsReferenceChoice reference;
     public CmsAcsiClass acsiClass;
-    public CmsBoolean refAfterPresent;
+    public boolean refAfterPresent;
     public CmsObjectReference refAfter; /* OPTIONAL */
 
     public CmsGetLogicalNodeDirectoryRequest() {
-        super(Codec.GET_LOGICAL_NODE_DIRECTORY_REQUEST);
-        this.reqId = new CmsReqId();
+        super(new InnerGetLogicalNodeDirectoryRequestPDU());
         this.reference = new CmsReferenceChoice();
+        this.reference.inner = ((InnerGetLogicalNodeDirectoryRequestPDU) this.inner).reference;
         this.acsiClass = new CmsAcsiClass();
-        this.refAfterPresent = new CmsBoolean();
         this.refAfter = new CmsObjectReference();
     }
 
-    public CmsGetLogicalNodeDirectoryRequest reqId(int v) {
-        this.reqId.value(v);
-        return this;
-    }
     public CmsGetLogicalNodeDirectoryRequest reference(CmsReferenceChoice v) {
         this.reference = v;
         return this;
@@ -43,25 +36,50 @@ public class CmsGetLogicalNodeDirectoryRequest extends CmsTypeOld {
         this.acsiClass.value(v);
         return this;
     }
-    public CmsGetLogicalNodeDirectoryRequest refAfterPresent(boolean v) {
-        this.refAfterPresent.value(v);
-        return this;
-    }
     public CmsGetLogicalNodeDirectoryRequest refAfter(byte[] v) {
-        this.refAfterPresent.value(v != null && v.length > 0);
+        this.refAfterPresent = v != null && v.length > 0;
         if (v != null)
-            this.refAfter.value(v);
+            this.refAfter.value(new String(v));
         return this;
     }
     public CmsGetLogicalNodeDirectoryRequest refAfter(String v) {
-        this.refAfterPresent.value(v != null);
+        this.refAfterPresent = v != null;
         if (v != null)
             this.refAfter.value(v);
         return this;
     }
 
     @Override
-    public List<? extends CmsTypeOld> children() {
-        return Arrays.asList(reqId, reference, acsiClass, refAfterPresent, refAfter);
+    public void syncToInner() {
+        InnerGetLogicalNodeDirectoryRequestPDU inner = (InnerGetLogicalNodeDirectoryRequestPDU) this.inner;
+        InnerGetLogicalNodeDirectoryRequestPDUReference innerRef = inner.reference;
+        int choice = reference.choice.value();
+        if (choice == CmsReferenceChoice.LD_NAME && reference.altLdName != null) {
+            innerRef._choice = "ldName";
+            innerRef.ldName = (InnerObjectName) reference.altLdName.inner;
+        } else if (reference.altLnReference != null) {
+            innerRef._choice = "lnReference";
+            innerRef.lnReference = (InnerObjectReference) reference.altLnReference.inner;
+        }
+        inner.acsiClass.value = acsiClass.value();
+        if (refAfterPresent && refAfter != null) {
+            inner.referenceAfter((InnerObjectReference) refAfter.inner);
+        }
+    }
+
+    @Override
+    public void syncFromInner() {
+        InnerGetLogicalNodeDirectoryRequestPDU inner = (InnerGetLogicalNodeDirectoryRequestPDU) this.inner;
+        InnerGetLogicalNodeDirectoryRequestPDUReference innerRef = inner.reference;
+        if ("ldName".equals(innerRef._choice)) {
+            reference.choice.value(CmsReferenceChoice.LD_NAME);
+            reference.altLdName.inner = innerRef.ldName;
+        } else {
+            reference.choice.value(CmsReferenceChoice.LN_REFERENCE);
+            reference.altLnReference.inner = innerRef.lnReference;
+        }
+        this.acsiClass.value(inner.acsiClass.value);
+        this.refAfter.inner = inner.referenceAfter;
+        this.refAfterPresent = !"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx".equals(inner.referenceAfter.value);
     }
 }
