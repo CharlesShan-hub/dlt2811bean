@@ -10,17 +10,13 @@ import com.ysh.jcms.data.scalar.CmsInt8U;
  */
 public class CmsPhyComAddr extends CmsType {
 
-    public byte[] addr;
-    public CmsInt8U priority;
-    public CmsInt16U vid;
-    public CmsInt16U appid;
+    public byte[] addr = new byte[6];
+    public CmsInt8U priority = new CmsInt8U();
+    public CmsInt16U vid = new CmsInt16U();
+    public CmsInt16U appid = new CmsInt16U();
 
     public CmsPhyComAddr() {
         super(new InnerPhyComAddr());
-        this.addr = new byte[6];
-        this.priority = new CmsInt8U();
-        this.vid = new CmsInt16U();
-        this.appid = new CmsInt16U();
     }
 
     public CmsPhyComAddr addr(byte[] v) { this.addr = v; return this; }

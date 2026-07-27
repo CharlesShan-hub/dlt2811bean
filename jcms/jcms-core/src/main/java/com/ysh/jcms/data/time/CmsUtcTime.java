@@ -1,25 +1,24 @@
 package com.ysh.jcms.data.time;
 
+import com.ysh.jcms.util.CmsBytesUtil;
 import com.ysh.jcms.core.CmsType;
 import com.ysh.jcms.data.InnerTimeQuality;
 import com.ysh.jcms.data.InnerUtcTime;
 import com.ysh.jcms.data.scalar.CmsInt24U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
+import java.nio.ByteBuffer;
 
 /**
  * UtcTime ::= OCTET STRING (SIZE(8)) — 7.2.1
  */
 public class CmsUtcTime extends CmsType {
 
-    public CmsInt32U secondsSinceEpoch;
-    public CmsInt24U fractionOfSecond;
-    public CmsTimeQuality timeQuality;
+    public CmsInt32U secondsSinceEpoch = new CmsInt32U();
+    public CmsInt24U fractionOfSecond = new CmsInt24U();
+    public CmsTimeQuality timeQuality = new CmsTimeQuality();
 
     public CmsUtcTime() {
         super(new InnerUtcTime());
-        this.secondsSinceEpoch = new CmsInt32U();
-        this.fractionOfSecond = new CmsInt24U();
-        this.timeQuality = new CmsTimeQuality();
     }
 
     public CmsUtcTime secondsSinceEpoch(long v) {
@@ -47,28 +46,20 @@ public class CmsUtcTime extends CmsType {
         timeQuality.syncToInner();
         int tqValue = ((InnerTimeQuality) timeQuality.inner).value;
 
-        long secs = secondsSinceEpoch.value();
-        int frac = fractionOfSecond.value();
-        ((InnerUtcTime) inner).value = new byte[] {
-            (byte) (secs >> 24), (byte) (secs >> 16), (byte) (secs >> 8), (byte) secs,
-            (byte) (frac >> 16), (byte) (frac >> 8), (byte) frac,
-            (byte) tqValue
-        };
+        ByteBuffer buf = ByteBuffer.allocate(8);
+        CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
+        CmsBytesUtil.putInt24(buf, fractionOfSecond.value());
+        buf.put((byte) tqValue);
+        ((InnerUtcTime) inner).value = buf.array();
     }
 
     @Override
     public void syncFromInner() {
-        byte[] buf = ((InnerUtcTime) inner).value;
-        long secs = ((long) (buf[0] & 0xFF) << 24)
-                  | ((long) (buf[1] & 0xFF) << 16)
-                  | ((long) (buf[2] & 0xFF) << 8)
-                  | (long) (buf[3] & 0xFF);
-        secondsSinceEpoch.value(secs);
+        ByteBuffer buf = ByteBuffer.wrap(((InnerUtcTime) inner).value);
+        secondsSinceEpoch.value(CmsBytesUtil.getInt32u(buf));
+        fractionOfSecond.value(CmsBytesUtil.getInt24(buf));
 
-        int frac = ((buf[4] & 0xFF) << 16) | ((buf[5] & 0xFF) << 8) | (buf[6] & 0xFF);
-        fractionOfSecond.value(frac);
-
-        int tqValue = buf[7] & 0xFF;
+        int tqValue = buf.get() & 0xFF;
         ((InnerTimeQuality) timeQuality.inner).value = tqValue;
         timeQuality.syncFromInner();
     }

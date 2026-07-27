@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerSubReference;
 
 /**
@@ -8,7 +8,7 @@ import com.ysh.jcms.data.InnerSubReference;
  * <p>
  * Wraps {@link InnerSubReference} for PER encode/decode via Rust (libasn1.so).
  */
-public class CmsSubReference extends CmsType {
+public class CmsSubReference extends CmsScalar {
     public static final int MAX_LEN = 129;
 
     public CmsSubReference() {
@@ -16,16 +16,16 @@ public class CmsSubReference extends CmsType {
     }
     public CmsSubReference(String s) {
         this();
-        value(s);
+        innerSet(s);
     }
 
     public String value() {
-        return ((InnerSubReference) inner).value;
+        return (String) innerGet();
     }
     public CmsSubReference value(String s) {
         if (s != null && s.length() > MAX_LEN)
             throw new IllegalArgumentException("CmsSubReference too long (max " + MAX_LEN + "): " + s.length());
-        ((InnerSubReference) inner).value = s;
+        innerSet(s);
         return this;
     }
 }

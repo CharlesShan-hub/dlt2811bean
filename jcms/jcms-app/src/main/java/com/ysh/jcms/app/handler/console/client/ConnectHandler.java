@@ -8,7 +8,7 @@ import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
-import com.ysh.jcms.core.CmsFormatUtil;
+import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import javax.net.ssl.SSLContext;

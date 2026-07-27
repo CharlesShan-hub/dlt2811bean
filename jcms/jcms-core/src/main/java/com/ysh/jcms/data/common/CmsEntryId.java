@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerEntryID;
 
 /**
@@ -8,7 +8,7 @@ import com.ysh.jcms.data.InnerEntryID;
  * <p>
  * Wraps {@link InnerEntryID} for PER encode/decode via Rust (libasn1.so).
  */
-public class CmsEntryId extends CmsType {
+public class CmsEntryId extends CmsScalar {
     public static final int LEN = 8;
 
     public CmsEntryId() {
@@ -16,16 +16,16 @@ public class CmsEntryId extends CmsType {
     }
     public CmsEntryId(byte[] data) {
         this();
-        value(data);
+        innerSet(data);
     }
 
     public byte[] value() {
-        return ((InnerEntryID) inner).value;
+        return (byte[]) innerGet();
     }
     public CmsEntryId value(byte[] v) {
         if (v != null && v.length != LEN)
             throw new IllegalArgumentException("CmsEntryId must be exactly " + LEN + " bytes, got " + v.length);
-        ((InnerEntryID) inner).value = v;
+        innerSet(v);
         return this;
     }
 }

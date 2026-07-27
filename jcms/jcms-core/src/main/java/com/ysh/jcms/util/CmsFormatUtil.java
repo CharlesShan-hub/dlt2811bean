@@ -1,5 +1,8 @@
-package com.ysh.jcms.core;
+package com.ysh.jcms.util;
 
+import com.ysh.jcms.core.CmsArray;
+import com.ysh.jcms.core.CmsEnumerated;
+import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.string.CmsUint8Array;
 import java.nio.charset.StandardCharsets;
 import java.util.IdentityHashMap;

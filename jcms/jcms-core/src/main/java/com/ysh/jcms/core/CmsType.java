@@ -1,6 +1,7 @@
 package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.InnerBase;
+import com.ysh.jcms.data.InnerEmpty;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;

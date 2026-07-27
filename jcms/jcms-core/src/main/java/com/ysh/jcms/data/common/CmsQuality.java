@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.common;
 
-import com.ysh.jcms.core.CmsBitString;
+import com.ysh.jcms.core.CmsBits;
 import com.ysh.jcms.data.InnerQuality;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
  * Quality ::= BIT STRING (SIZE(13)) — 7.3.6
  */
 @Getter @Setter @Accessors(chain = true, fluent = true)
-public class CmsQuality extends CmsBitString {
+public class CmsQuality extends CmsBits {
 
     /** Validity values (2-bit field). */
     public static final int GOOD = 0;

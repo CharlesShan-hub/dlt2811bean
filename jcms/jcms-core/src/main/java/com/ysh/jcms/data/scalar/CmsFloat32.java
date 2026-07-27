@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsFixedOctet;
+import com.ysh.jcms.core.CmsScalar;
 import com.ysh.jcms.data.InnerFloat32;
 import java.nio.ByteBuffer;
 
@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
  * Wraps {@link InnerFloat32} for PER encode/decode via Rust (libasn1.so).
  * InnerFloat32 stores the float as a 4-byte OCTET STRING (IEEE 754 big-endian).
  */
-public class CmsFloat32 extends CmsFixedOctet {
+public class CmsFloat32 extends CmsScalar {
 
     public CmsFloat32() {
         super(new InnerFloat32());

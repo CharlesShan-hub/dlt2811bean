@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.block;
 
-import com.ysh.jcms.core.CmsBitString;
+import com.ysh.jcms.core.CmsBits;
 import com.ysh.jcms.data.InnerRcbOptFlds;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
  * RcbOptFlds ::= BIT STRING (SIZE(10)) — 7.6.4
  */
 @Getter @Setter @Accessors(chain = true, fluent = true)
-public class CmsRcbOptFlds extends CmsBitString {
+public class CmsRcbOptFlds extends CmsBits {
 
     @Bit(1) public boolean sequence_number;
     @Bit(2) public boolean report_time_stamp;

@@ -1,5 +1,6 @@
-package com.ysh.jcms.core;
+package com.ysh.jcms.util;
 
+import com.ysh.jcms.core.CmsTypeOld;
 import java.util.Arrays;
 import java.util.List;
 

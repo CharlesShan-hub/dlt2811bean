@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.time;
 
-import com.ysh.jcms.core.CmsBitString;
+import com.ysh.jcms.core.CmsBits;
 import com.ysh.jcms.data.InnerTimeQuality;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
  * clock-not-synchronized } (SIZE(8))
  */
 @Getter @Setter @Accessors(chain = true, fluent = true)
-public class CmsTimeQuality extends CmsBitString {
+public class CmsTimeQuality extends CmsBits {
 
     @Bit(0) public boolean leap_seconds_known;
     @Bit(1) public boolean clock_failure;

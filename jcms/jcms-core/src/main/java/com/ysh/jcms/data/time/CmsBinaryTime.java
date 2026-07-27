@@ -11,13 +11,11 @@ import java.nio.ByteBuffer;
  */
 public class CmsBinaryTime extends CmsType {
 
-    public CmsInt32U msOfDay;
-    public CmsInt16U daysSince1984;
+    public CmsInt32U msOfDay = new CmsInt32U();
+    public CmsInt16U daysSince1984 = new CmsInt16U();
 
     public CmsBinaryTime() {
         super(new InnerBinaryTime());
-        this.msOfDay = new CmsInt32U();
-        this.daysSince1984 = new CmsInt16U();
     }
 
     public CmsBinaryTime msOfDay(long v) {

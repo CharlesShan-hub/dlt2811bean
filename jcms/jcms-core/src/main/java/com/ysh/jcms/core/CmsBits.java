@@ -21,14 +21,14 @@ import java.lang.reflect.Field;
  * <p>{@code syncToInner()} and {@code syncFromInner()} are automatic.
  *
  * <pre>{@code
- * public class CmsQuality extends CmsBitString {
+ * public class CmsQuality extends CmsBits {
  *     @Bit(value = 0, length = 2) public int validity;    // 2 bits
  *     @Bit(2) public boolean overflow;                   // 1 bit
  *     // ...
  * }
  * }</pre>
  */
-public abstract class CmsBitString extends CmsType {
+public abstract class CmsBits extends CmsType {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
@@ -41,7 +41,7 @@ public abstract class CmsBitString extends CmsType {
 
     private final Field innerValueField;
 
-    protected CmsBitString(InnerBase inner) {
+    protected CmsBits(InnerBase inner) {
         super(inner);
         Field vf;
         try { vf = inner.getClass().getField("value"); }
