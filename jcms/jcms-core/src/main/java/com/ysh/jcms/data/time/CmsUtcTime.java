@@ -2,10 +2,12 @@ package com.ysh.jcms.data.time;
 
 import com.ysh.jcms.util.CmsBytesUtil;
 import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerTimeQuality;
 import com.ysh.jcms.data.InnerUtcTime;
 import com.ysh.jcms.data.scalar.CmsInt24U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 /**
@@ -50,17 +52,37 @@ public class CmsUtcTime extends CmsType {
         CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
         CmsBytesUtil.putInt24(buf, fractionOfSecond.value());
         buf.put((byte) tqValue);
-        ((InnerUtcTime) inner).value.value = buf.array();
+        innerValueBuf(buf.array());
     }
 
     @Override
     public void syncFromInner() {
-        ByteBuffer buf = ByteBuffer.wrap(((InnerUtcTime) inner).value.value);
+        ByteBuffer buf = ByteBuffer.wrap(innerValueBuf());
         secondsSinceEpoch.value(CmsBytesUtil.getInt32u(buf));
         fractionOfSecond.value(CmsBytesUtil.getInt24(buf));
 
         int tqValue = buf.get() & 0xFF;
         ((InnerTimeQuality) timeQuality.inner).value = tqValue;
         timeQuality.syncFromInner();
+    }
+
+    /** Access inner.value (DefaultInnerOctetString) reflectively — works for InnerUtcTime and subtypes like InnerTimeStamp. */
+    private DefaultInnerOctetString innerValue() {
+        try {
+            Field f = inner.getClass().getField("value");
+            DefaultInnerOctetString v = (DefaultInnerOctetString) f.get(inner);
+            if (v == null) { v = new DefaultInnerOctetString(); f.set(inner, v); }
+            return v;
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
+    private byte[] innerValueBuf() {
+        DefaultInnerOctetString v = innerValue();
+        if (v.value == null || v.value.length < 8) v.value = new byte[8];
+        return v.value;
+    }
+
+    private void innerValueBuf(byte[] buf) {
+        innerValue().value = buf;
     }
 }

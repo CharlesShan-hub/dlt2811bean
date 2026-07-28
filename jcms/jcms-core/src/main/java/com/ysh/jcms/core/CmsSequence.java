@@ -8,7 +8,7 @@ import java.util.*;
 /**
  * Base class for SEQUENCE types backed directly by an Inner* PDU.
  *
- * <p>Subclasses declare public CmsType fields annotated with {@link InnerField}.
+ * <p>Subclasses declare public CmsType fields annotated with {@link CmsField}.
  * The base class constructor automatically creates wrapper instances, binds
  * their {@code inner} reference to the corresponding Inner* field, and shares
  * their {@code innerCache} under the parent's cache.
@@ -19,8 +19,8 @@ import java.util.*;
  *
  * <pre>{@code
  * public class CmsBrcb extends CmsSequence {
- *     @InnerField public CmsBoolean rptEna;
- *     @InnerField(optional = true) public CmsInt16 resvTms;
+ *     @CmsField public CmsBoolean rptEna;
+ *     @CmsField(optional = true) public CmsInt16 resvTms;
  *     // ...
  *     public CmsBrcb() { super(new InnerBRCB()); }
  * }
@@ -29,7 +29,7 @@ import java.util.*;
 public abstract class CmsSequence extends CmsType {
 
     private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
-    /** Field names annotated with {@code @InnerField(optional = true)}. */
+    /** Field names annotated with {@code @CmsField(optional = true)}. */
     private final Set<String> optionalFields = new HashSet<>();
 
     protected CmsSequence() {}
@@ -40,12 +40,12 @@ public abstract class CmsSequence extends CmsType {
         injectFields();
     }
 
-    // ── @InnerField injection ──────────────────────────────────────────
+    // ── @CmsField injection ──────────────────────────────────────────
 
     private void injectFields() {
         for (Field f : getClass().getFields()) {
             if (Modifier.isStatic(f.getModifiers())) continue;
-            InnerField ann = f.getAnnotation(InnerField.class);
+            CmsField ann = f.getAnnotation(CmsField.class);
             if (ann == null) continue;
             if (!CmsType.class.isAssignableFrom(f.getType())) continue;
 
@@ -79,7 +79,7 @@ public abstract class CmsSequence extends CmsType {
             } catch (NoSuchFieldException e) {
                 // Inner* doesn't have this field — skip silently
             } catch (Exception e) {
-                throw new RuntimeException("Failed to inject @InnerField " + fieldName, e);
+                throw new RuntimeException("Failed to inject @CmsField " + fieldName, e);
             }
         }
     }
@@ -184,53 +184,16 @@ public abstract class CmsSequence extends CmsType {
         }
     }
 
-    /**
-     * Replace an injected wrapper, keeping the original inner reference so
-     * that {@code syncToInner()} writes to the correct Inner* field.
-     */
-    @SuppressWarnings("unchecked")
-    protected <T extends CmsType> T replaceWrapper(String fieldName, T newWrapper) {
-        CmsType old = injectedWrappers.get(fieldName);
-        if (old != null) {
-            newWrapper.inner = old.inner;
-            newWrapper.innerCache.clear();
-            newWrapper.innerCache.putAll(old.innerCache);
-        }
-        newWrapper.syncToInner();
-        injectedWrappers.put(fieldName, newWrapper);
-        innerCache.put(fieldName, newWrapper.innerCache);
-        try {
-            getClass().getField(fieldName).set(this, newWrapper);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return newWrapper;
-    }
-
     // ── automatic sync ───────────────────────────────────────────
-
-    /**
-     * Copy {@code @Bit}-annotated field values from one CmsBits instance to another.
-     * Both must be the same concrete class. Used by fluent setters that receive
-     * a new CmsBits instance and need to apply its values to the already-bound
-     * instance.
-     */
-    protected static void copyBits(CmsBits src, CmsBits dst) {
-        for (Field f : src.getClass().getFields()) {
-            if (f.getAnnotation(CmsBits.Bit.class) != null) {
-                try { f.set(dst, f.get(src)); } catch (Exception e) {
-                    throw new RuntimeException("Failed to copy @" + CmsBits.Bit.class.getSimpleName()
-                        + " field " + f.getName(), e);
-                }
-            }
-        }
-    }
 
     @Override
     public void syncToInner() {
-        // push cached wrappers → inner
-        for (CmsType w : injectedWrappers.values()) {
-            w.syncToInner();
+        // push cached wrappers → inner (skip non-presented optional fields)
+        for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
+            if (optionalFields.contains(e.getKey()) && !Boolean.TRUE.equals(innerCache.get(presKey(e.getKey())))) {
+                continue; // optional field not marked present — leave inner untouched
+            }
+            e.getValue().syncToInner();
         }
         // push optional field presence → inner._set
         Set<String> s = innerSetField();
@@ -269,7 +232,7 @@ public abstract class CmsSequence extends CmsType {
     }
 
     // ── equals / hashCode — delegates to CmsType's field-based reflection ─
-    // @InnerField wrappers are public fields, so CmsType.equals() compares them
+    // @CmsField wrappers are public fields, so CmsType.equals() compares them
     // through CmsScalar's value-based equals.  No override needed.
 
     @Override

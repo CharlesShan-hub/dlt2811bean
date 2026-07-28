@@ -6,47 +6,20 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a field in a {@link CmsSequence} subclass for automatic
- * {@link CmsSequence#syncToInner() sync} / {@link CmsSequence#syncFromInner()
- * syncFromInner} with the backing Inner* PDU.
+ * Marks a public CmsType field in a {@link CmsSequence} subclass for automatic
+ * injection by the base class constructor.
  *
- * <p>Examples:
- * <pre>{@code
- * @CmsField
- * public int objectClass;
+ * <p>The annotated field's {@code inner} reference will point to the
+ * corresponding Inner* field, and its {@code innerCache} will be shared
+ * under the parent's {@code innerCache} keyed by the field name.
  *
- * @CmsField(inner = "referenceAfter", optional = true)
- * public CmsObjectReference refAfter;
- *
- * @CmsField(sequenceOf = true, elementType = CmsObjectReference.class)
- * public List<CmsObjectReference> reference;
- * }</pre>
- *
- * <p>For {@code optional = true} fields, use {@link CmsSequence#setPresent}
- * to mark presence:
- * <pre>{@code
- * setPresent("refAfter", v != null);
- * }</pre>
+ * <p>If {@link #optional()} is true, the parent automatically syncs
+ * {@code innerCache["has&lt;FieldName&gt;"]} with the Inner* {@code _set}
+ * during encode/decode.
  */
-@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.FIELD)
 public @interface CmsField {
-
-    /** Inner* PDU field name. Defaults to the Java field name. */
-    String inner() default "";
-
-    /** Whether this field is OPTIONAL in the ASN.1 definition. */
+    /** True if this field is OPTIONAL in the ASN.1 SEQUENCE. */
     boolean optional() default false;
-
-    /**
-     * ASN.1 DEFAULT value, as a string.
-     * For example, {@code "true"} for {@code BOOLEAN DEFAULT TRUE}.
-     */
-    String defaultAsn1() default "";
-
-    /** Whether this field is a SEQUENCE OF (i.e. a {@link java.util.List}). */
-    boolean sequenceOf() default false;
-
-    /** The element type of the list when {@link #sequenceOf()} is true. */
-    Class<?> elementType() default void.class;
 }

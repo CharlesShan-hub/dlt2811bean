@@ -7,9 +7,13 @@ import lombok.Data;
 
 @Data
 public class DefaultInnerVisibleString extends InnerBase {
-    @JsonValue public String value;
+    public String value;
     public DefaultInnerVisibleString() { this.value = ""; }
-    @JsonCreator public DefaultInnerVisibleString(String value) { this.value = value; }
+    public DefaultInnerVisibleString(String value) { this.value = value; }
+        @JsonValue
+    public String toJsonValue() { return this.value; }
+    @JsonCreator
+    public static DefaultInnerVisibleString fromJson(String v) { return new DefaultInnerVisibleString(v); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerVisibleString has no standalone ASN.1 definition"); }
     public static DefaultInnerVisibleString decode(byte[] data) { return new DefaultInnerVisibleString(); }
 }

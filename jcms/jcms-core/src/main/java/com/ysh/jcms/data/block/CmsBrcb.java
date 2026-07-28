@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.block;
 
+import com.ysh.jcms.core.CmsField;
 import com.ysh.jcms.core.CmsSequence;
-import com.ysh.jcms.core.InnerField;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.common.*;
 import com.ysh.jcms.data.scalar.*;
@@ -10,21 +10,21 @@ import com.ysh.jcms.data.string.CmsString;
 import com.ysh.jcms.data.time.CmsBinaryTime;
 
 public class CmsBrcb extends CmsSequence {
-    @InnerField public CmsString rptID;
-    @InnerField public CmsBoolean rptEna;
-    @InnerField public CmsObjectReference datSet;
-    @InnerField public CmsInt32U confRev;
-    @InnerField public CmsRcbOptFlds optFlds;
-    @InnerField public CmsInt32U bufTm;
-    @InnerField public CmsInt16U sqNum;
-    @InnerField public CmsTriggerConditions trgOps;
-    @InnerField public CmsInt32U intgPd;
-    @InnerField public CmsBoolean gi;
-    @InnerField public CmsBoolean purgeBuf;
-    @InnerField public CmsEntryId entryID;
-    @InnerField public CmsBinaryTime timeOfEntry;
-    @InnerField(optional = true) public CmsInt16 resvTms;
-    @InnerField(optional = true) public CmsOctetString owner;
+    @CmsField public CmsString rptID;
+    @CmsField public CmsBoolean rptEna;
+    @CmsField public CmsObjectReference datSet;
+    @CmsField public CmsInt32U confRev;
+    @CmsField public CmsRcbOptFlds optFlds;
+    @CmsField public CmsInt32U bufTm;
+    @CmsField public CmsInt16U sqNum;
+    @CmsField public CmsTriggerConditions trgOps;
+    @CmsField public CmsInt32U intgPd;
+    @CmsField public CmsBoolean gi;
+    @CmsField public CmsBoolean purgeBuf;
+    @CmsField public CmsEntryId entryID;
+    @CmsField public CmsBinaryTime timeOfEntry;
+    @CmsField(optional = true) public CmsInt16 resvTms;
+    @CmsField(optional = true) public CmsOctetString owner;
 
     public CmsBrcb() { super(new InnerBRCB()); }
 

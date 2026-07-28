@@ -6,7 +6,7 @@ import com.ysh.jcms.data.DefaultInnerVisibleString;
 /**
  * Generic VisibleString wrapper, backed by DefaultInnerVisibleString.
  * Sync to the real Inner* field is handled by the parent CmsSequence
- * via @InnerField injection.
+ * via @Field injection.
  */
 public class CmsString extends CmsScalar {
 

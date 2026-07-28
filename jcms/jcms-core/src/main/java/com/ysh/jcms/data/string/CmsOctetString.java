@@ -6,7 +6,7 @@ import com.ysh.jcms.data.DefaultInnerOctetString;
 /**
  * Generic OCTET STRING wrapper, backed by DefaultInnerOctetString.
  * Sync to the real Inner* field is handled by the parent CmsSequence
- * via @InnerField injection.
+ * via @Field injection.
  */
 public class CmsOctetString extends CmsScalar {
 

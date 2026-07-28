@@ -20,11 +20,9 @@ import java.util.List;
  *       larger PDUs; encode/decode is handled by the parent PDU.</li>
  * </ul>
  *
- * <p>{@link #equals(Object)} and {@link #hashCode()} use reflection to
- * compare all public (non-static, non-{@code inner}) fields automatically.
- * Nested {@code CmsType} fields recurse; {@code byte[]} fields use
- * {@link java.util.Arrays#equals(byte[], byte[])}; {@link List} fields
- * are compared element-by-element with the same rules.
+ * <p>{@link #equals(Object)} and {@link #hashCode()} delegate to the
+ * backing {@link #inner} object's Lombok-generated {@code equals/hashCode}
+ * after calling {@link #syncToInner()} on both sides.
  */
 public abstract class CmsType {
     /** The Inner* instance backing this wrapper. */
@@ -109,64 +107,15 @@ public abstract class CmsType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        return fieldsEqual(this, o);
+        syncToInner();
+        ((CmsType) o).syncToInner();
+        return java.util.Objects.equals(this.inner, ((CmsType) o).inner);
     }
 
     @Override
     public int hashCode() {
-        int h = 0;
-        for (Field f : getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            if (f.getName().equals("inner")) continue;
-            Object val;
-            try { val = f.get(this); } catch (Exception e) { continue; }
-            if (val == null) continue;
-            h = 31 * h + fieldHash(val);
-        }
-        return h;
-    }
-
-    // ── private helpers ─────────────────────────────────────────────────
-
-    private static boolean fieldsEqual(Object a, Object b) {
-        for (Field f : a.getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            if (f.getName().equals("inner")) continue;
-            Object va, vb;
-            try { va = f.get(a); vb = f.get(b); } catch (Exception e) { return false; }
-            if (!fieldEquals(va, vb)) return false;
-        }
-        return true;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static boolean fieldEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null || b == null) return false;
-        if (a instanceof CmsType && b instanceof CmsType)
-            return fieldsEqual(a, b);
-        if (a instanceof byte[] && b instanceof byte[])
-            return java.util.Arrays.equals((byte[]) a, (byte[]) b);
-        if (a instanceof List && b instanceof List) {
-            List<Object> la = (List<Object>) a, lb = (List<Object>) b;
-            if (la.size() != lb.size()) return false;
-            for (int i = 0; i < la.size(); i++) {
-                if (!fieldEquals(la.get(i), lb.get(i))) return false;
-            }
-            return true;
-        }
-        return a.equals(b);
-    }
-
-    private static int fieldHash(Object val) {
-        if (val instanceof CmsType) return ((CmsType) val).hashCode();
-        if (val instanceof byte[]) return java.util.Arrays.hashCode((byte[]) val);
-        if (val instanceof List) {
-            int h = 0;
-            for (Object v : (List<?>) val) h = 31 * h + (v == null ? 0 : fieldHash(v));
-            return h;
-        }
-        return val.hashCode();
+        syncToInner();
+        return inner != null ? inner.hashCode() : 0;
     }
 
     // ── toString ─────────────────────────────────────────────────────────

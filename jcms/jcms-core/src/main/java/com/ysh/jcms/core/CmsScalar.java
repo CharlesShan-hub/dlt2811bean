@@ -2,8 +2,6 @@ package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.InnerBase;
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * Base for single-value types whose Inner* stores the value in
@@ -104,25 +102,4 @@ public abstract class CmsScalar extends CmsType {
         super.syncToInner();
     }
 
-    // ── equals / hashCode ──────────────────────────────────────────────
-
-    @Override
-    public boolean equals(Object o) {
-        if (!super.equals(o)) return false;
-        if (!(o instanceof CmsScalar)) return false;
-        Object va = innerCache.get("value");
-        Object vb = ((CmsScalar) o).innerCache.get("value");
-        if (va instanceof byte[] && vb instanceof byte[]) {
-            return Arrays.equals((byte[]) va, (byte[]) vb);
-        }
-        return Objects.equals(va, vb);
-    }
-
-    @Override
-    public int hashCode() {
-        int h = super.hashCode();
-        Object v = innerCache.get("value");
-        if (v != null) h = 31 * h + v.hashCode();
-        return h;
-    }
 }

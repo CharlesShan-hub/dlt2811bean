@@ -7,9 +7,13 @@ import lombok.Data;
 
 @Data
 public class DefaultInnerOctetString extends InnerBase {
-    @JsonValue public byte[] value;
+    public byte[] value;
     public DefaultInnerOctetString() { this.value = new byte[0]; }
-    @JsonCreator public DefaultInnerOctetString(byte[] value) { this.value = value; }
+    public DefaultInnerOctetString(byte[] value) { this.value = value; }
+        @JsonValue
+    public String toJsonValue() { return InnerBase.hex(this.value); }
+    @JsonCreator
+    public static DefaultInnerOctetString fromJson(String hex) { return new DefaultInnerOctetString(InnerBase.unhex(hex)); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerOctetString has no standalone ASN.1 definition"); }
     public static DefaultInnerOctetString decode(byte[] data) { return new DefaultInnerOctetString(); }
 }

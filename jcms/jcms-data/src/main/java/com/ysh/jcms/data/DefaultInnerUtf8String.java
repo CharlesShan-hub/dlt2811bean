@@ -7,9 +7,13 @@ import lombok.Data;
 
 @Data
 public class DefaultInnerUtf8String extends InnerBase {
-    @JsonValue public String value;
+    public String value;
     public DefaultInnerUtf8String() { this.value = ""; }
-    @JsonCreator public DefaultInnerUtf8String(String value) { this.value = value; }
+    public DefaultInnerUtf8String(String value) { this.value = value; }
+        @JsonValue
+    public String toJsonValue() { return this.value; }
+    @JsonCreator
+    public static DefaultInnerUtf8String fromJson(String v) { return new DefaultInnerUtf8String(v); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerUtf8String has no standalone ASN.1 definition"); }
     public static DefaultInnerUtf8String decode(byte[] data) { return new DefaultInnerUtf8String(); }
 }
