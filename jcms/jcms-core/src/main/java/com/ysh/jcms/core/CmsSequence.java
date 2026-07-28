@@ -2,78 +2,116 @@ package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.InnerBase;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * Base class for SEQUENCE types backed directly by an Inner* PDU.
  *
- * <p>Instead of holding separate Cms* fields, subclasses read/write the
- * Inner* instance directly via helper methods. CmsType wrapper objects
- * are lazily created and cached, sharing the same Inner* reference.
+ * <p>Subclasses declare public CmsType fields annotated with {@link InnerField}.
+ * The base class constructor automatically creates wrapper instances, binds
+ * their {@code inner} reference to the corresponding Inner* field, and shares
+ * their {@code innerCache} under the parent's cache.
  *
- * <p>{@link #syncToInner()} / {@link #syncFromInner()} automatically
- * sync all cached wrappers and presence flags — subclasses generally
- * do NOT need to override them.
+ * <p>{@link #syncToInner()} / {@link #syncFromInner()} automatically sync all
+ * injected wrappers and presence flags — subclasses generally do NOT need to
+ * override them.
  *
  * <pre>{@code
- * public class CmsGetServerDirectoryRequest extends CmsSequence {
- *     public CmsGetServerDirectoryRequest() {
- *         super(new InnerGetServerDirectoryRequestPDU());
- *     }
- *
- *     public int getObjectClass() { return getInt("objectClass"); }
- *     public CmsGetServerDirectoryRequest objectClass(int v) {
- *         setInt("objectClass", v); return this;
- *     }
- *
- *     public CmsObjectReference refAfter() {
- *         return getWrapper("referenceAfter", CmsObjectReference.class);
- *     }
- *     public CmsGetServerDirectoryRequest refAfter(String v) {
- *         setPresent("referenceAfter", v != null);
- *         if (v != null) refAfter().value(v);
- *         return this;
- *     }
+ * public class CmsBrcb extends CmsSequence {
+ *     @InnerField public CmsBoolean rptEna;
+ *     @InnerField(optional = true) public CmsInt16 resvTms;
+ *     // ...
+ *     public CmsBrcb() { super(new InnerBRCB()); }
  * }
  * }</pre>
  */
 public abstract class CmsSequence extends CmsType {
 
-    private Map<String, CmsType> wrapperCache;
-    private Set<String> presentFields;
+    private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
+    /** Field names annotated with {@code @InnerField(optional = true)}. */
+    private final Set<String> optionalFields = new HashSet<>();
 
-    protected CmsSequence() {
-        initCaches();
-    }
+    protected CmsSequence() {}
 
+    @SuppressWarnings("unchecked")
     protected CmsSequence(InnerBase inner) {
         super(inner);
-        initCaches();
+        injectFields();
     }
 
-    private void initCaches() {
-        this.wrapperCache = new HashMap<>();
-        this.presentFields = new HashSet<>();
+    // ── @InnerField injection ──────────────────────────────────────────
+
+    private void injectFields() {
+        for (Field f : getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            InnerField ann = f.getAnnotation(InnerField.class);
+            if (ann == null) continue;
+            if (!CmsType.class.isAssignableFrom(f.getType())) continue;
+
+            Class<? extends CmsType> wrapperType = (Class<? extends CmsType>) f.getType();
+            String fieldName = f.getName();
+
+            try {
+                CmsType wrapper = wrapperType.getDeclaredConstructor().newInstance();
+                Field innerField = inner.getClass().getField(fieldName);
+
+                // If the Inner* field is an InnerBase subtype, share the reference
+                if (InnerBase.class.isAssignableFrom(innerField.getType())) {
+                    wrapper.inner = (InnerBase) innerField.get(inner);
+                    wrapper.syncFromInner();
+                }
+                // else: wrapper keeps its own InnerEmpty; sync is manual by parent
+
+                // share innerCache — parent's innerCache[fieldName] = wrapper.innerCache
+                innerCache.put(fieldName, wrapper.innerCache);
+
+                // set the field on this instance
+                f.set(this, wrapper);
+                injectedWrappers.put(fieldName, wrapper);
+
+                if (ann.optional()) {
+                    optionalFields.add(fieldName);
+                }
+            } catch (NoSuchFieldException e) {
+                // Inner* doesn't have this field — skip silently
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to inject @InnerField " + fieldName, e);
+            }
+        }
+    }
+
+    /** Rebind wrapper inner references after decode creates a new Inner*. */
+    private void rebindWrappers() {
+        for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
+            try {
+                Field innerField = inner.getClass().getField(entry.getKey());
+                CmsType wrapper = entry.getValue();
+                if (InnerBase.class.isAssignableFrom(innerField.getType())) {
+                    wrapper.inner = (InnerBase) innerField.get(inner);
+                    wrapper.syncFromInner();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to rebind " + entry.getKey(), e);
+            }
+        }
     }
 
     // ── presence API ─────────────────────────────────────────────────
 
-    /** Mark an optional field as present/absent, updating Inner* {@code _set}. */
-    protected void setPresent(String innerFieldName, boolean v) {
-        if (v) {
-            presentFields.add(innerFieldName);
-            Set<String> s = innerSetField();
-            if (s != null) s.add(innerFieldName);
-        } else {
-            presentFields.remove(innerFieldName);
-        }
+    /** Presence key in innerCache for an optional field. */
+    private static String presKey(String fieldName) {
+        return "has" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
     }
 
+    /** Mark an optional field as present/absent. */
+    protected void setPresent(String innerFieldName, boolean v) {
+        innerCache.put(presKey(innerFieldName), v);
+    }
+
+    /** Check if an optional field is present. */
     protected boolean isPresent(String fieldName) {
-        return presentFields.contains(fieldName);
+        return Boolean.TRUE.equals(innerCache.get(presKey(fieldName)));
     }
 
     /** Look up Inner* {@code _set} field dynamically (declared on each subclass). */
@@ -126,7 +164,7 @@ public abstract class CmsSequence extends CmsType {
     /** Get or create a cached CmsType wrapper sharing the inner field. */
     @SuppressWarnings("unchecked")
     protected <T extends CmsType> T getWrapper(String innerField, Class<T> wrapperType) {
-        CmsType cached = wrapperCache.get(innerField);
+        CmsType cached = injectedWrappers.get(innerField);
         if (cached != null) return (T) cached;
 
         try {
@@ -134,8 +172,11 @@ public abstract class CmsSequence extends CmsType {
             Field innerFieldRef = inner.getClass().getField(innerField);
             wrapper.inner = (InnerBase) innerFieldRef.get(inner);
             wrapper.syncFromInner();
-            wrapperCache.put(innerField, wrapper);
+            innerCache.put(innerField, wrapper.innerCache);
+            injectedWrappers.put(innerField, wrapper);
             return wrapper;
+        } catch (NoSuchFieldException e) {
+            return null;
         } catch (Exception e) {
             throw new RuntimeException("Failed to create wrapper for " + innerField, e);
         }
@@ -146,49 +187,48 @@ public abstract class CmsSequence extends CmsType {
     @Override
     public void syncToInner() {
         // push cached wrappers → inner
-        for (CmsType w : wrapperCache.values()) {
+        for (CmsType w : injectedWrappers.values()) {
             w.syncToInner();
         }
-        // sync presentFields → inner._set
+        // push optional field presence → inner._set
         Set<String> s = innerSetField();
-        if (s != null) s.addAll(presentFields);
+        if (s != null) {
+            for (String opt : optionalFields) {
+                if (Boolean.TRUE.equals(innerCache.get(presKey(opt)))) {
+                    s.add(opt);
+                }
+            }
+        }
         super.syncToInner();
     }
 
     @Override
     public void syncFromInner() {
         super.syncFromInner();
-        // sync inner._set → presentFields
+        // pull inner._set → optional field presence
         Set<String> s = innerSetField();
-        if (s != null) presentFields.addAll(s);
+        if (s != null) {
+            for (String opt : optionalFields) {
+                innerCache.put(presKey(opt), s.contains(opt));
+            }
+        }
         // sync inner → cached wrappers
-        for (CmsType w : wrapperCache.values()) {
+        for (CmsType w : injectedWrappers.values()) {
             w.syncFromInner();
         }
     }
 
-    // ── decode override — clears cache ──────────────────────────────
+    // ── decode override — rebind wrappers ──────────────────────────────
 
     @Override
     public void decode(byte[] data) {
         super.decode(data);
-        wrapperCache.clear();
-        presentFields.clear();
+        rebindWrappers();
     }
 
-    // ── equals / hashCode via inner ────────────────────────────────
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof CmsSequence)) return false;
-        return inner.equals(((CmsSequence) o).inner);
-    }
-
-    @Override
-    public int hashCode() {
-        return inner.hashCode();
-    }
+    // ── equals / hashCode — delegates to CmsType's field-based reflection ─
+    // @InnerField wrappers are public fields, so CmsType.equals() compares them
+    // through CmsScalar's value-based equals.  No override needed.
 
     @Override
     public String toString() {
