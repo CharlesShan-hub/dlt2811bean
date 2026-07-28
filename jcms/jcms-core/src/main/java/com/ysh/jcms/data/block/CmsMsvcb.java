@@ -42,8 +42,8 @@ public class CmsMsvcb extends CmsType {
     public void syncToInner() {
         InnerMSVCB i = (InnerMSVCB) inner;
         i.svEna.value = svEna.value() ? 1 : 0;
-        i.msvID = msvID;
-        i.datSet.value = datSet.value();
+        i.msvID.value = msvID;
+        i.datSet.value.value = datSet.value();
         i.confRev.value = (int) confRev.value();
         i.smpRate.value = smpRate.value();
         optFlds.syncToInner();
@@ -63,8 +63,8 @@ public class CmsMsvcb extends CmsType {
     public void syncFromInner() {
         InnerMSVCB i = (InnerMSVCB) inner;
         svEna.value(i.svEna.value != 0);
-        msvID = i.msvID;
-        datSet.value(i.datSet.value);
+        msvID = i.msvID.value;
+        datSet.value(i.datSet.value.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
         smpRate.value(i.smpRate.value & 0xFFFF);
         optFlds.inner = i.optFlds;

@@ -50,12 +50,12 @@ public class CmsUtcTime extends CmsType {
         CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
         CmsBytesUtil.putInt24(buf, fractionOfSecond.value());
         buf.put((byte) tqValue);
-        ((InnerUtcTime) inner).value = buf.array();
+        ((InnerUtcTime) inner).value.value = buf.array();
     }
 
     @Override
     public void syncFromInner() {
-        ByteBuffer buf = ByteBuffer.wrap(((InnerUtcTime) inner).value);
+        ByteBuffer buf = ByteBuffer.wrap(((InnerUtcTime) inner).value.value);
         secondsSinceEpoch.value(CmsBytesUtil.getInt32u(buf));
         fractionOfSecond.value(CmsBytesUtil.getInt24(buf));
 

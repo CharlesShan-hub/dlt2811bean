@@ -155,18 +155,18 @@ public class CmsDataTest {
     public void roundup_octet_string() {
         CmsData a = new CmsData();
         a.choice = CmsData.CHOICE_OCTET_STRING;
-        a.alt_octet_string = "Hello".getBytes();
+        a.alt_octet_string.value = "Hello".getBytes();
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
-        assertArrayEquals(a.alt_octet_string, b.alt_octet_string);
+        assertArrayEquals(a.alt_octet_string.value, b.alt_octet_string.value);
     }
 
     @Test
     public void roundup_visible_string() {
         CmsData a = new CmsData();
         a.choice = CmsData.CHOICE_VISIBLE_STRING;
-        a.alt_visible_string = "ABC-123";
+        a.alt_visible_string.value = "ABC-123";
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
@@ -177,7 +177,7 @@ public class CmsDataTest {
     public void roundup_unicode_string() {
         CmsData a = new CmsData();
         a.choice = CmsData.CHOICE_UNICODE_STRING;
-        a.alt_unicode_string = "你好世界";
+        a.alt_unicode_string.value = "你好世界";
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);

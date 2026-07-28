@@ -80,11 +80,11 @@ public class CmsFC extends CmsScalar {
 
     @Override
     public void syncToInner() {
-        ((InnerFunctionalConstraint) inner).value = CODES[val];
+        ((InnerFunctionalConstraint) inner).value.value = CODES[val];
     }
 
     @Override
     public void syncFromInner() {
-        this.val = fromCode(((InnerFunctionalConstraint) inner).value);
+        this.val = fromCode(((InnerFunctionalConstraint) inner).value.value);
     }
 }

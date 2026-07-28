@@ -15,7 +15,7 @@ public class CmsOriginator extends CmsType {
     }
 
     public CmsOriginator orIdent(byte[] v) {
-        ((InnerOriginator) inner).orIdent = v;
+        ((InnerOriginator) inner).orIdent.value = v;
         return this;
     }
 

@@ -35,8 +35,8 @@ public class CmsGoCb extends CmsType {
     public void syncToInner() {
         InnerGoCB i = (InnerGoCB) inner;
         i.goEna.value = goEna.value() ? 1 : 0;
-        i.goID = goID;
-        i.datSet.value = datSet.value();
+        i.goID.value = goID;
+        i.datSet.value.value = datSet.value();
         i.confRev.value = (int) confRev.value();
         i.ndsCom.value = ndsCom.value() ? 1 : 0;
         if (hasDstAddress) {
@@ -50,8 +50,8 @@ public class CmsGoCb extends CmsType {
     public void syncFromInner() {
         InnerGoCB i = (InnerGoCB) inner;
         goEna.value(i.goEna.value != 0);
-        goID = i.goID;
-        datSet.value(i.datSet.value);
+        goID = i.goID.value;
+        datSet.value(i.datSet.value.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
         ndsCom.value(i.ndsCom.value != 0);
         hasDstAddress = i._set.contains("dstAddress");

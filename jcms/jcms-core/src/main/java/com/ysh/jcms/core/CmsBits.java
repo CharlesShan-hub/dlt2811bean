@@ -51,7 +51,11 @@ public abstract class CmsBits extends CmsType {
 
     private int readPacked() {
         try {
-            return innerValueField != null ? innerValueField.getInt(inner) : 0;
+            if (innerValueField == null) return 0;
+            Object val = innerValueField.get(inner);
+            if (val == null) return 0;
+            if (val instanceof Integer) return (Integer) val;
+            return innerValueField.getInt(inner);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -59,7 +63,12 @@ public abstract class CmsBits extends CmsType {
 
     private void writePacked(int v) {
         try {
-            if (innerValueField != null) innerValueField.setInt(inner, v);
+            if (innerValueField == null) return;
+            if (innerValueField.getType() == Integer.class) {
+                innerValueField.set(inner, v);
+            } else {
+                innerValueField.setInt(inner, v);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -67,6 +76,18 @@ public abstract class CmsBits extends CmsType {
 
     private static int mask(int len) {
         return len >= 32 ? -1 : (1 << len) - 1;
+    }
+
+    /** Get the packed bit-field value. */
+    public int packed() { return readPacked(); }
+
+    /** Set the packed bit-field value and unpack to @Bit fields. */
+    public void packed(int v) { writePacked(v); syncFromInner(); }
+
+    /** Copy the packed value from another CmsBits instance. */
+    public void packed(CmsBits v) {
+        v.syncToInner();        // push v's @Bit fields → v's inner.value
+        packed(v.packed());     // read v's packed value → write to this → unpack
     }
 
     @Override

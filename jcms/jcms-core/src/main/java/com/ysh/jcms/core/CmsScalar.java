@@ -2,6 +2,7 @@ package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.InnerBase;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -56,7 +57,14 @@ public abstract class CmsScalar extends CmsType {
     private void syncFromInnerValue() {
         if (valueField == null) return;
         try {
-            innerCache.put("value", valueField.get(inner));
+            Object val = valueField.get(inner);
+            // DefaultInner* wrappers — unwrap one more level
+            if (val instanceof InnerBase) {
+                Field innerValF = val.getClass().getField("value");
+                innerCache.put("value", innerValF.get(val));
+            } else {
+                innerCache.put("value", val);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +74,20 @@ public abstract class CmsScalar extends CmsType {
     private void syncToInnerValue() {
         if (valueField == null) return;
         try {
-            valueField.set(inner, innerCache.get("value"));
+            Object val = valueField.get(inner);
+            if (val instanceof InnerBase) {
+                // DefaultInner* wrappers — set inner.value.value
+                Field innerValF = val.getClass().getField("value");
+                innerValF.set(val, innerCache.get("value"));
+            } else if (val == null && InnerBase.class.isAssignableFrom(valueField.getType())) {
+                // Lazy-init null DefaultInner* inside Inner* (e.g. InnerObjectReference.value)
+                Object wrapper = valueField.getType().getDeclaredConstructor().newInstance();
+                Field innerValF = wrapper.getClass().getField("value");
+                innerValF.set(wrapper, innerCache.get("value"));
+                valueField.set(inner, wrapper);
+            } else {
+                valueField.set(inner, innerCache.get("value"));
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -89,7 +110,12 @@ public abstract class CmsScalar extends CmsType {
     public boolean equals(Object o) {
         if (!super.equals(o)) return false;
         if (!(o instanceof CmsScalar)) return false;
-        return Objects.equals(innerCache.get("value"), ((CmsScalar) o).innerCache.get("value"));
+        Object va = innerCache.get("value");
+        Object vb = ((CmsScalar) o).innerCache.get("value");
+        if (va instanceof byte[] && vb instanceof byte[]) {
+            return Arrays.equals((byte[]) va, (byte[]) vb);
+        }
+        return Objects.equals(va, vb);
     }
 
     @Override

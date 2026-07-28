@@ -27,7 +27,7 @@ public class CmsPhyComAddr extends CmsType {
     @Override
     public void syncToInner() {
         InnerPhyComAddr i = (InnerPhyComAddr) inner;
-        i.addr = addr;
+        i.addr.value = addr;
         i.priority.value = priority.value();
         i.vid.value = vid.value();
         i.appid.value = appid.value();
@@ -36,7 +36,7 @@ public class CmsPhyComAddr extends CmsType {
     @Override
     public void syncFromInner() {
         InnerPhyComAddr i = (InnerPhyComAddr) inner;
-        addr = i.addr;
+        addr = i.addr.value;
         priority.value(i.priority.value);
         vid.value(i.vid.value);
         appid.value(i.appid.value);

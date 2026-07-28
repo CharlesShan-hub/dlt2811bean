@@ -35,7 +35,7 @@ public class CmsFileEntry extends CmsType {
     @Override
     public void syncToInner() {
         InnerFileEntry i = (InnerFileEntry) inner;
-        i.fileName = fileName;
+        i.fileName.value = fileName;
         i.fileSize.value = (int) fileSize.value();
         lastModified.syncToInner();
         i.lastModified.value = ((InnerUtcTime) lastModified.inner).value;
@@ -45,7 +45,7 @@ public class CmsFileEntry extends CmsType {
     @Override
     public void syncFromInner() {
         InnerFileEntry i = (InnerFileEntry) inner;
-        fileName = i.fileName;
+        fileName = i.fileName.value;
         fileSize.value(i.fileSize.value & 0xFFFFFFFFL);
         ((InnerUtcTime) lastModified.inner).value = i.lastModified.value;
         lastModified.syncFromInner();

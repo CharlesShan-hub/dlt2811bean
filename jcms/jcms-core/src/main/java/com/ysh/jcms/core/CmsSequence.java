@@ -59,9 +59,12 @@ public abstract class CmsSequence extends CmsType {
                 // If the Inner* field is an InnerBase subtype, share the reference
                 if (InnerBase.class.isAssignableFrom(innerField.getType())) {
                     wrapper.inner = (InnerBase) innerField.get(inner);
-                    wrapper.syncFromInner();
+                    // NOTE: syncFromInner is NOT called here — compound types
+                    // (e.g. CmsBinaryTime) may not have valid data yet during
+                    // construction. syncFromInner is called in rebindWrappers()
+                    // after decode, and scalar types populate their cache in
+                    // CmsScalar's constructor.
                 }
-                // else: wrapper keeps its own InnerEmpty; sync is manual by parent
 
                 // share innerCache — parent's innerCache[fieldName] = wrapper.innerCache
                 innerCache.put(fieldName, wrapper.innerCache);
@@ -171,7 +174,6 @@ public abstract class CmsSequence extends CmsType {
             T wrapper = wrapperType.getDeclaredConstructor().newInstance();
             Field innerFieldRef = inner.getClass().getField(innerField);
             wrapper.inner = (InnerBase) innerFieldRef.get(inner);
-            wrapper.syncFromInner();
             innerCache.put(innerField, wrapper.innerCache);
             injectedWrappers.put(innerField, wrapper);
             return wrapper;
@@ -182,7 +184,47 @@ public abstract class CmsSequence extends CmsType {
         }
     }
 
+    /**
+     * Replace an injected wrapper, keeping the original inner reference so
+     * that {@code syncToInner()} writes to the correct Inner* field.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T extends CmsType> T replaceWrapper(String fieldName, T newWrapper) {
+        CmsType old = injectedWrappers.get(fieldName);
+        if (old != null) {
+            newWrapper.inner = old.inner;
+            newWrapper.innerCache.clear();
+            newWrapper.innerCache.putAll(old.innerCache);
+        }
+        newWrapper.syncToInner();
+        injectedWrappers.put(fieldName, newWrapper);
+        innerCache.put(fieldName, newWrapper.innerCache);
+        try {
+            getClass().getField(fieldName).set(this, newWrapper);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return newWrapper;
+    }
+
     // ── automatic sync ───────────────────────────────────────────
+
+    /**
+     * Copy {@code @Bit}-annotated field values from one CmsBits instance to another.
+     * Both must be the same concrete class. Used by fluent setters that receive
+     * a new CmsBits instance and need to apply its values to the already-bound
+     * instance.
+     */
+    protected static void copyBits(CmsBits src, CmsBits dst) {
+        for (Field f : src.getClass().getFields()) {
+            if (f.getAnnotation(CmsBits.Bit.class) != null) {
+                try { f.set(dst, f.get(src)); } catch (Exception e) {
+                    throw new RuntimeException("Failed to copy @" + CmsBits.Bit.class.getSimpleName()
+                        + " field " + f.getName(), e);
+                }
+            }
+        }
+    }
 
     @Override
     public void syncToInner() {

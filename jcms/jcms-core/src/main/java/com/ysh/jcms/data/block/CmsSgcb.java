@@ -36,7 +36,7 @@ public class CmsSgcb extends CmsType {
         i.numOfSG.value = numOfSG.value();
         i.actSG.value = actSG.value();
         i.editSG.value = editSG.value();
-        i.tActEdt.value = tActEdt;
+        i.tActEdt.value.value = tActEdt;
         if (hasResvTms) {
             i.resvTms.value = resvTms.value();
             i._set.add("resvTms");
@@ -49,7 +49,7 @@ public class CmsSgcb extends CmsType {
         numOfSG.value(i.numOfSG.value);
         actSG.value(i.actSG.value);
         editSG.value(i.editSG.value);
-        tActEdt = i.tActEdt.value;
+        tActEdt = i.tActEdt.value.value;
         hasResvTms = i._set.contains("resvTms");
         if (hasResvTms) resvTms.value(i.resvTms.value);
     }

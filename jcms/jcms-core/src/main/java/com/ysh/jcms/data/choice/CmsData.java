@@ -62,9 +62,9 @@ public class CmsData extends CmsType {
     public CmsFloat32 alt_float32;
     public CmsFloat64 alt_float64;
     public byte[] alt_bit_string;
-    public byte[] alt_octet_string;
-    public String alt_visible_string;
-    public String alt_unicode_string;
+    public DefaultInnerOctetString alt_octet_string;
+    public DefaultInnerVisibleString alt_visible_string;
+    public DefaultInnerUtf8String alt_unicode_string;
     public CmsUtcTime alt_utc_time;
     public CmsBinaryTime alt_binary_time;
     public CmsQuality alt_quality;
@@ -88,9 +88,9 @@ public class CmsData extends CmsType {
         this.alt_float32 = new CmsFloat32();
         this.alt_float64 = new CmsFloat64();
         this.alt_bit_string = new byte[0];
-        this.alt_octet_string = new byte[0];
-        this.alt_visible_string = "";
-        this.alt_unicode_string = "";
+        this.alt_octet_string = new DefaultInnerOctetString();
+        this.alt_visible_string = new DefaultInnerVisibleString();
+        this.alt_unicode_string = new DefaultInnerUtf8String();
         this.alt_utc_time = new CmsUtcTime();
         this.alt_binary_time = new CmsBinaryTime();
         this.alt_quality = new CmsQuality();
@@ -125,9 +125,9 @@ public class CmsData extends CmsType {
             case CHOICE_FLOAT32:         alt_float32.value((Float) val); break;
             case CHOICE_FLOAT64:         alt_float64.value((Double) val); break;
             case CHOICE_BIT_STRING:      alt_bit_string = (byte[]) val; break;
-            case CHOICE_OCTET_STRING:    alt_octet_string = (byte[]) val; break;
-            case CHOICE_VISIBLE_STRING:  alt_visible_string = (String) val; break;
-            case CHOICE_UNICODE_STRING:  alt_unicode_string = (String) val; break;
+            case CHOICE_OCTET_STRING:    alt_octet_string.value = (byte[]) val; break;
+            case CHOICE_VISIBLE_STRING:  alt_visible_string.value = (String) val; break;
+            case CHOICE_UNICODE_STRING:  alt_unicode_string.value = (String) val; break;
             case CHOICE_DBPOS:           alt_dbpos.value((Integer) val); break;
             case CHOICE_TCMD:            alt_tcmd.value((Integer) val); break;
         }

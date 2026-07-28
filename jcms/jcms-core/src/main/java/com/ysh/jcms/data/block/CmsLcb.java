@@ -39,11 +39,11 @@ public class CmsLcb extends CmsType {
     public void syncToInner() {
         InnerLCB i = (InnerLCB) inner;
         i.logEna.value = logEna.value() ? 1 : 0;
-        i.datSet.value = datSet.value();
+        i.datSet.value.value = datSet.value();
         trgOps.syncToInner();
         i.trgOps = (InnerTriggerConditions) trgOps.inner;
         i.intgPd.value = (int) intgPd.value();
-        i.logRef.value = logRef.value();
+        i.logRef.value.value = logRef.value();
         if (hasOptFlds) {
             optFlds.syncToInner();
             i.optFlds = (InnerLcbOptFlds) optFlds.inner;
@@ -59,11 +59,11 @@ public class CmsLcb extends CmsType {
     public void syncFromInner() {
         InnerLCB i = (InnerLCB) inner;
         logEna.value(i.logEna.value != 0);
-        datSet.value(i.datSet.value);
+        datSet.value(i.datSet.value.value);
         trgOps.inner = i.trgOps;
         trgOps.syncFromInner();
         intgPd.value(i.intgPd.value & 0xFFFFFFFFL);
-        logRef.value(i.logRef.value);
+        logRef.value(i.logRef.value.value);
         hasOptFlds = i._set.contains("optFlds");
         if (hasOptFlds) {
             optFlds.inner = i.optFlds;

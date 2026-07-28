@@ -52,9 +52,9 @@ public class CmsUrcb extends CmsType {
     @Override
     public void syncToInner() {
         InnerURCB i = (InnerURCB) inner;
-        i.rptID = rptID;
+        i.rptID.value = rptID;
         i.rptEna.value = rptEna.value() ? 1 : 0;
-        i.datSet.value = datSet.value();
+        i.datSet.value.value = datSet.value();
         i.confRev.value = (int) confRev.value();
         optFlds.syncToInner();
         i.optFlds = (InnerRcbOptFlds) optFlds.inner;
@@ -66,7 +66,7 @@ public class CmsUrcb extends CmsType {
         i.gi.value = gi.value() ? 1 : 0;
         i.resv.value = resv.value() ? 1 : 0;
         if (hasOwner && owner != null) {
-            i.owner = owner;
+            i.owner.value = owner;
             i._set.add("owner");
         }
     }
@@ -74,9 +74,9 @@ public class CmsUrcb extends CmsType {
     @Override
     public void syncFromInner() {
         InnerURCB i = (InnerURCB) inner;
-        rptID = i.rptID;
+        rptID = i.rptID.value;
         rptEna.value(i.rptEna.value != 0);
-        datSet.value(i.datSet.value);
+        datSet.value(i.datSet.value.value);
         confRev.value(i.confRev.value & 0xFFFFFFFFL);
         optFlds.inner = i.optFlds;
         optFlds.syncFromInner();
@@ -89,7 +89,7 @@ public class CmsUrcb extends CmsType {
         resv.value(i.resv.value != 0);
         hasOwner = i._set.contains("owner");
         if (hasOwner) {
-            owner = i.owner;
+            owner = i.owner.value;
         }
     }
 }
