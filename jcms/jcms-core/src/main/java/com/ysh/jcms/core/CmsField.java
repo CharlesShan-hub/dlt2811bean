@@ -6,12 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Marks a public CmsType field in a {@link CmsSequence} subclass for automatic
- * injection by the base class constructor.
+ * Marks a public field in a {@link CmsSequence} subclass for automatic
+ * injection and sync by the base class constructor.
  *
- * <p>The annotated field's {@code inner} reference will point to the
- * corresponding Inner* field, and its {@code innerCache} will be shared
- * under the parent's {@code innerCache} keyed by the field name.
+ * <p>For single {@link CmsType} fields, the inner reference is automatically
+ * bound and synced. For {@link #sequenceOf()} fields (SEQUENCE OF), the
+ * {@link #elementType()} specifies the CmsType wrapper class for each element.
  *
  * <p>If {@link #optional()} is true, the parent automatically syncs
  * {@code innerCache["has&lt;FieldName&gt;"]} with the Inner* {@code _set}
@@ -22,4 +22,16 @@ import java.lang.annotation.Target;
 public @interface CmsField {
     /** True if this field is OPTIONAL in the ASN.1 SEQUENCE. */
     boolean optional() default false;
+
+    /** True if this field is SEQUENCE OF (List of CmsType elements). */
+    boolean sequenceOf() default false;
+
+    /** For {@code sequenceOf = true}: the CmsType class of each element. */
+    Class<? extends CmsType> elementType() default CmsType.class;
+
+    /**
+     * Inner* field name when it differs from the Cms field name.
+     * E.g. Cms field {@code refAfter} → Inner field {@code referenceAfter}.
+     */
+    String inner() default "";
 }

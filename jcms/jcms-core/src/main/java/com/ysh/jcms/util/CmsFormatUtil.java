@@ -1,260 +1,146 @@
 package com.ysh.jcms.util;
 
-import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsEnumerated;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.string.CmsUint8Array;
-import java.nio.charset.StandardCharsets;
-import java.util.IdentityHashMap;
-import java.util.List;
+import com.ysh.jcms.core.CmsChoice;
+import com.ysh.jcms.core.CmsType;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.Collection;
 import java.util.Map;
 
 /**
- * Static helpers for formatting CmsType trees to string or JSON.
+ * Static helpers for formatting {@link CmsType} trees to string or JSON.
+ *
+ * <p>Works with the new {@code CmsType} / {@code CmsChoice} / {@code CmsSequence}
+ * hierarchy via reflection — no dependency on the old {@code CmsTypeOld} system.
  */
 public class CmsFormatUtil {
 
-    private CmsFormatUtil() {
-    }
+    private CmsFormatUtil() {}
 
     // ==================== toString (YAML-like debug output) ====================
 
     /**
      * Render a CmsType subtree to a multi-line debug string.
-     *
-     * @param type
-     *            the type to render
-     * @param depth
-     *            indentation depth (0 = root)
-     * @param fieldNames
-     *            optional mapping from CmsType pointer -> field name (can be null)
+     * Delegates to {@link CmsType#toString()}.
      */
-    public static String toString(CmsTypeOld type, int depth, Map<CmsTypeOld, String> fieldNames) {
-        List<? extends CmsTypeOld> kids = type.children();
-
-        if (!kids.isEmpty()) {
-            if (isChoice(kids)) {
-                return choiceToString(type, kids, depth, fieldNames);
-            }
-            return containerToString(type, kids, depth, fieldNames);
-        }
-        if (type instanceof CmsUint8Array) {
-            return uint8ArrayToString((CmsUint8Array) type);
-        }
-        return scalarToString(type);
+    public static String toString(CmsType type) {
+        return type.toString();
     }
 
-    // ==================== toJson (machine-readable JSON output)
-    // ====================
+    // ==================== toJson (machine-readable JSON output) ====================
 
     /**
      * Render a CmsType subtree as a compact JSON string.
      */
-    public static String toJson(CmsTypeOld type) {
-        Map<CmsTypeOld, String> fieldNames = buildFieldNameMap(type, type.children());
+    public static String toJson(CmsType type) {
         StringBuilder sb = new StringBuilder();
-        toJson(type, fieldNames, sb);
+        toJson(type, sb);
         return sb.toString();
     }
 
-    private static void toJson(CmsTypeOld type, Map<CmsTypeOld, String> fieldNames, StringBuilder sb) {
-        List<? extends CmsTypeOld> kids = type.children();
+    private static void toJson(CmsType type, StringBuilder sb) {
+        if (type == null) { sb.append("null"); return; }
 
-        // CmsArray → JSON array
-        if (type instanceof CmsArray) {
-            CmsArray<?> arr = (CmsArray<?>) type;
+        // CmsChoice → output only the selected variant value
+        if (type instanceof CmsChoice) {
+            choiceToJson((CmsChoice) type, sb);
+            return;
+        }
+
+        // CmsSequence / other container → JSON object
+        java.util.Map<String, Object> fields = collectFields(type);
+        if (!fields.isEmpty()) {
+            sb.append('{');
+            boolean first = true;
+            for (Map.Entry<String, Object> e : fields.entrySet()) {
+                if (!first) sb.append(',');
+                first = false;
+                sb.append('"').append(escapeJson(e.getKey())).append("\":");
+                toJsonValue(e.getValue(), sb);
+            }
+            sb.append('}');
+            return;
+        }
+
+        // Leaf: scalar via innerCache / inner field
+        scalarToJson(type, sb);
+    }
+
+    private static void choiceToJson(CmsChoice choice, StringBuilder sb) {
+        int ch = choice.choice();
+        if (ch < 0) { sb.append("null"); return; }
+
+        // Find the selected variant field via reflection
+        for (Field f : choice.getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            // Look for @Choice annotation matching the current choice index
+            CmsChoice.Choice ann = f.getAnnotation(CmsChoice.Choice.class);
+            if (ann == null || ann.index() != ch) continue;
+            try {
+                Object val = f.get(choice);
+                toJsonValue(val, sb);
+                return;
+            } catch (Exception e) {
+                sb.append("null");
+                return;
+            }
+        }
+
+        // Fallback: no matching @Choice field (e.g. NULL variant)
+        sb.append("null");
+    }
+
+    @SuppressWarnings("unchecked")
+    private static void toJsonValue(Object val, StringBuilder sb) {
+        if (val == null) { sb.append("null"); return; }
+        if (val instanceof CmsType) { toJson((CmsType) val, sb); return; }
+        if (val instanceof byte[]) { sb.append('"').append(escapeJson(bytesToHex((byte[]) val))).append('"'); return; }
+        if (val instanceof String) { sb.append('"').append(escapeJson((String) val)).append('"'); return; }
+        if (val instanceof Boolean || val instanceof Number) { sb.append(val); return; }
+        if (val instanceof Collection) {
             sb.append('[');
-            for (int i = 0; i < arr.items.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                toJson(arr.items.get(i), fieldNames, sb);
+            boolean first = true;
+            for (Object item : (Collection<Object>) val) {
+                if (!first) sb.append(',');
+                first = false;
+                toJsonValue(item, sb);
             }
             sb.append(']');
             return;
         }
+        // Fallback
+        sb.append('"').append(escapeJson(val.toString())).append('"');
+    }
 
-        if (!kids.isEmpty()) {
-            if (isChoice(kids)) {
-                // CHOICE → only the selected alternative
-                CmsEnumerated choice = (CmsEnumerated) kids.get(0);
-                int idx = 1 + choice.value();
-                CmsTypeOld selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
-                if (selected != null) {
-                    toJson(selected, fieldNames, sb);
-                } else {
-                    sb.append("null");
-                }
-            } else {
-                // Container → JSON object
-                sb.append('{');
-                int count = 0;
-                for (int i = 0; i < kids.size(); i++) {
-                    CmsTypeOld child = kids.get(i);
-                    if (child == null)
-                        continue;
-                    String name = fieldNames != null ? fieldNames.getOrDefault(child, "field" + i) : "field" + i;
-                    if (count > 0)
-                        sb.append(',');
-                    sb.append('"').append(escapeJson(name)).append("\":");
-                    toJson(child, fieldNames, sb);
-                    count++;
-                }
-                sb.append('}');
-            }
+    private static java.util.Map<String, Object> collectFields(CmsType type) {
+        java.util.Map<String, Object> fields = new java.util.LinkedHashMap<>();
+        for (Field f : type.getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            String name = f.getName();
+            if ("inner".equals(name) || "innerCache".equals(name)) continue;
+            try {
+                Object val = f.get(type);
+                if (val != null) fields.put(name, val);
+            } catch (Exception ignored) {}
+        }
+        return fields;
+    }
+
+    private static void scalarToJson(CmsType type, StringBuilder sb) {
+        // Try innerCache["value"] first (CmsScalar pattern)
+        Object cached = type.innerCache.get("value");
+        if (cached != null) {
+            toJsonValue(cached, sb);
             return;
         }
-
-        // Leaf: CmsUint8Array → JSON string
-        if (type instanceof CmsUint8Array) {
-            uint8ArrayToJson((CmsUint8Array) type, sb);
-            return;
+        // Fallback: low-level scalar → read from inner's "value" field
+        try {
+            Field vf = type.inner.getClass().getField("value");
+            Object val = vf.get(type.inner);
+            toJsonValue(val, sb);
+        } catch (Exception e) {
+            sb.append("null");
         }
-
-        // Leaf: scalar → number or boolean
-        scalarToJson(type, sb);
-    }
-
-    private static void uint8ArrayToJson(CmsUint8Array arr, StringBuilder sb) {
-        byte[] data = arr.value();
-        if (arr.len > 0 && data.length > 0) {
-            String s = new String(data, StandardCharsets.UTF_8);
-            if (isPrintable(s)) {
-                sb.append('"').append(escapeJson(s)).append('"');
-            } else {
-                sb.append('"').append("hex:").append(bytesToHex(data)).append('"');
-            }
-        } else {
-            sb.append("\"\"");
-        }
-    }
-
-    private static void scalarToJson(CmsTypeOld type, StringBuilder sb) {
-        String name = type.getClass().getSimpleName();
-        long val;
-        switch (type.nativeSize) {
-            case 1 :
-                val = type.nativePtr.getByte(0);
-                break;
-            case 2 :
-                val = type.nativePtr.getShort(0);
-                break;
-            case 4 :
-                val = type.nativePtr.getInt(0);
-                break;
-            case 8 :
-                val = type.nativePtr.getLong(0);
-                break;
-            default :
-                sb.append("null");
-                return;
-        }
-        // CmsBoolean → true/false
-        if ("CmsBoolean".equals(name) || "CmsBOOLEAN".equals(name)) {
-            sb.append(val != 0 ? "true" : "false");
-        } else {
-            sb.append(val);
-        }
-    }
-
-    // ==================== Field name resolution ====================
-
-    /**
-     * Build a field name map for a CmsType and its subtree. Recursively walks
-     * children to find all reachable CmsType instances.
-     */
-    private static Map<CmsTypeOld, String> buildFieldNameMap(CmsTypeOld type, List<? extends CmsTypeOld> directChildren) {
-        Map<CmsTypeOld, String> map = new IdentityHashMap<>();
-        collectFieldNames(type, map);
-        return map;
-    }
-
-    private static void collectFieldNames(CmsTypeOld type, Map<CmsTypeOld, String> map) {
-        if (type == null || type.getClass() == CmsTypeOld.class)
-            return;
-        for (java.lang.reflect.Field f : type.getClass().getFields()) {
-            if (CmsTypeOld.class.isAssignableFrom(f.getType())) {
-                try {
-                    Object v = f.get(type);
-                    if (v != null && v instanceof CmsTypeOld) {
-                        map.put((CmsTypeOld) v, f.getName());
-                    }
-                } catch (Exception ignored) {
-                }
-            }
-        }
-        // Recurse through children for nested fields
-        for (CmsTypeOld child : type.children()) {
-            if (child != null && child != type) {
-                collectFieldNames(child, map);
-            }
-        }
-    }
-
-    // ==================== Existing toString methods (unchanged)
-    // ====================
-
-    private static boolean isChoice(List<? extends CmsTypeOld> kids) {
-        return !kids.isEmpty() && kids.get(0) instanceof CmsEnumerated;
-    }
-
-    private static String choiceToString(CmsTypeOld type, List<? extends CmsTypeOld> kids, int depth, Map<CmsTypeOld, String> fieldNames) {
-        CmsEnumerated choice = (CmsEnumerated) kids.get(0);
-        int idx = 1 + choice.value();
-        CmsTypeOld selected = (idx >= 1 && idx < kids.size()) ? kids.get(idx) : null;
-        String val = (selected != null) ? toString(selected, depth, fieldNames) : "(null)";
-        return "(" + type.getClass().getSimpleName() + ") " + val;
-    }
-
-    private static String containerToString(CmsTypeOld type, List<? extends CmsTypeOld> kids, int depth, Map<CmsTypeOld, String> fieldNames) {
-        String indent = repeat("    ", depth + 1);
-        StringBuilder sb = new StringBuilder().append("(").append(type.getClass().getSimpleName()).append(")\n");
-        for (int i = 0; i < kids.size(); i++) {
-            CmsTypeOld child = kids.get(i);
-            String name = (fieldNames != null) ? fieldNames.getOrDefault(child, "[" + i + "]") : "[" + i + "]";
-            boolean skipPos = name.startsWith("[");
-            sb.append(indent);
-            if (!skipPos)
-                sb.append("[").append(i).append("] ");
-            sb.append(name).append(": ");
-            String val = (child != null) ? toString(child, depth + 1, fieldNames) : "(null)";
-            sb.append(val).append("\n");
-        }
-        if (!kids.isEmpty()) {
-            sb.setLength(sb.length() - 1);
-        }
-        return sb.toString();
-    }
-
-    private static String uint8ArrayToString(CmsUint8Array arr) {
-        String prefix = "(" + arr.getClass().getSimpleName() + ") ";
-        byte[] data = arr.value();
-        if (arr.len > 0 && data.length > 0) {
-            String s = new String(data, StandardCharsets.UTF_8);
-            if (isPrintable(s)) {
-                return prefix + "'" + s + "'";
-            }
-            return prefix + "hex:" + bytesToHex(data);
-        }
-        return prefix + "(empty)";
-    }
-
-    private static String scalarToString(CmsTypeOld type) {
-        long val = 0;
-        switch (type.nativeSize) {
-            case 1 :
-                val = type.nativePtr.getByte(0);
-                break;
-            case 2 :
-                val = type.nativePtr.getShort(0);
-                break;
-            case 4 :
-                val = type.nativePtr.getInt(0);
-                break;
-            case 8 :
-                val = type.nativePtr.getLong(0);
-                break;
-        }
-        return "(" + type.getClass().getSimpleName() + ") " + val;
     }
 
     // ==================== Helpers ====================
@@ -290,27 +176,13 @@ public class CmsFormatUtil {
         for (int i = 0; i < s.length(); i++) {
             char c = s.charAt(i);
             switch (c) {
-                case '"' :
-                    sb.append("\\\"");
-                    break;
-                case '\\' :
-                    sb.append("\\\\");
-                    break;
-                case '\b' :
-                    sb.append("\\b");
-                    break;
-                case '\f' :
-                    sb.append("\\f");
-                    break;
-                case '\n' :
-                    sb.append("\\n");
-                    break;
-                case '\r' :
-                    sb.append("\\r");
-                    break;
-                case '\t' :
-                    sb.append("\\t");
-                    break;
+                case '"' :  sb.append("\\\""); break;
+                case '\\' : sb.append("\\\\"); break;
+                case '\b' : sb.append("\\b");  break;
+                case '\f' : sb.append("\\f");  break;
+                case '\n' : sb.append("\\n");  break;
+                case '\r' : sb.append("\\r");  break;
+                case '\t' : sb.append("\\t");  break;
                 default :
                     if (c < 0x20) {
                         sb.append(String.format("\\u%04x", (int) c));

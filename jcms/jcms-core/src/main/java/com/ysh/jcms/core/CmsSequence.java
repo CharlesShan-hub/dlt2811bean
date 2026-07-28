@@ -31,6 +31,11 @@ public abstract class CmsSequence extends CmsType {
     private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
     /** Field names annotated with {@code @CmsField(optional = true)}. */
     private final Set<String> optionalFields = new HashSet<>();
+    /** Non-InnerBase inner fields — CmsSequence reads/writes inner field directly. */
+    private final Map<String, CmsType> directWrappers = new LinkedHashMap<>();
+    private final Map<String, Field> directFields = new LinkedHashMap<>();
+    /** SEQUENCE OF fields — fieldName → element wrapper type. */
+    private final Map<String, Class<? extends CmsType>> sequenceFields = new LinkedHashMap<>();
 
     protected CmsSequence() {}
 
@@ -47,10 +52,24 @@ public abstract class CmsSequence extends CmsType {
             if (Modifier.isStatic(f.getModifiers())) continue;
             CmsField ann = f.getAnnotation(CmsField.class);
             if (ann == null) continue;
+
+            String fieldName = f.getName();
+
+            // SEQUENCE OF field
+            if (ann.sequenceOf()) {
+                try {
+                    f.set(this, new ArrayList<>());
+                    sequenceFields.put(fieldName, ann.elementType());
+                    if (ann.optional()) optionalFields.add(fieldName);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to init sequence field " + fieldName, e);
+                }
+                continue;
+            }
+
             if (!CmsType.class.isAssignableFrom(f.getType())) continue;
 
             Class<? extends CmsType> wrapperType = (Class<? extends CmsType>) f.getType();
-            String fieldName = f.getName();
 
             try {
                 CmsType wrapper = wrapperType.getDeclaredConstructor().newInstance();
@@ -59,11 +78,17 @@ public abstract class CmsSequence extends CmsType {
                 // If the Inner* field is an InnerBase subtype, share the reference
                 if (InnerBase.class.isAssignableFrom(innerField.getType())) {
                     wrapper.inner = (InnerBase) innerField.get(inner);
+                    if (wrapper instanceof CmsChoice)
+                        ((CmsChoice) wrapper).rebindChoices();
                     // NOTE: syncFromInner is NOT called here — compound types
                     // (e.g. CmsBinaryTime) may not have valid data yet during
                     // construction. syncFromInner is called in rebindWrappers()
                     // after decode, and scalar types populate their cache in
                     // CmsScalar's constructor.
+                } else {
+                    // Non-InnerBase field (e.g. Integer): read/write directly
+                    directWrappers.put(fieldName, wrapper);
+                    directFields.put(fieldName, innerField);
                 }
 
                 // share innerCache — parent's innerCache[fieldName] = wrapper.innerCache
@@ -85,18 +110,30 @@ public abstract class CmsSequence extends CmsType {
     }
 
     /** Rebind wrapper inner references after decode creates a new Inner*. */
-    private void rebindWrappers() {
+    public void rebindWrappers() {
         for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
             try {
                 Field innerField = inner.getClass().getField(entry.getKey());
                 CmsType wrapper = entry.getValue();
                 if (InnerBase.class.isAssignableFrom(innerField.getType())) {
                     wrapper.inner = (InnerBase) innerField.get(inner);
+                    if (wrapper instanceof CmsChoice)
+                        ((CmsChoice) wrapper).rebindChoices();
                     wrapper.syncFromInner();
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to rebind " + entry.getKey(), e);
             }
+        }
+        // Rebind direct fields: read value from new inner into wrapper cache
+        for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
+            try {
+                Field innerField = inner.getClass().getField(e.getKey());
+                Object val = innerField.get(inner);
+                if (val != null) {
+                    e.getValue().innerCache.put("value", val);
+                }
+            } catch (Exception ignored) {}
         }
     }
 
@@ -108,12 +145,12 @@ public abstract class CmsSequence extends CmsType {
     }
 
     /** Mark an optional field as present/absent. */
-    protected void setPresent(String innerFieldName, boolean v) {
+    public void setPresent(String innerFieldName, boolean v) {
         innerCache.put(presKey(innerFieldName), v);
     }
 
     /** Check if an optional field is present. */
-    protected boolean isPresent(String fieldName) {
+    public boolean isPresent(String fieldName) {
         return Boolean.TRUE.equals(innerCache.get(presKey(fieldName)));
     }
 
@@ -133,13 +170,20 @@ public abstract class CmsSequence extends CmsType {
     // ── field access — direct to inner, no cache ─────────────────
 
     protected int getInt(String innerField) {
-        try { return inner.getClass().getField(innerField).getInt(inner); }
-        catch (Exception e) { throw new RuntimeException(e); }
+        try {
+            Field f = inner.getClass().getField(innerField);
+            if (f.getType() == int.class) return f.getInt(inner);
+            Object val = f.get(inner);
+            return val instanceof Integer ? (Integer) val : 0;
+        } catch (Exception e) { throw new RuntimeException(e); }
     }
 
     protected void setInt(String innerField, int v) {
-        try { inner.getClass().getField(innerField).setInt(inner, v); }
-        catch (Exception e) { throw new RuntimeException(e); }
+        try {
+            Field f = inner.getClass().getField(innerField);
+            if (f.getType() == int.class) f.setInt(inner, v);
+            else f.set(inner, v);
+        } catch (Exception e) { throw new RuntimeException(e); }
     }
 
     protected String getString(String innerField) {
@@ -195,6 +239,34 @@ public abstract class CmsSequence extends CmsType {
             }
             e.getValue().syncToInner();
         }
+        // push direct field wrappers → inner native field
+        for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
+            try {
+                Object val = e.getValue().innerCache.get("value");
+                if (val != null) {
+                    directFields.get(e.getKey()).set(inner, val);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to sync direct field " + e.getKey(), ex);
+            }
+        }
+        // push SEQUENCE OF fields → inner
+        for (Map.Entry<String, Class<? extends CmsType>> e : sequenceFields.entrySet()) {
+            try {
+                Field f = getClass().getField(e.getKey());
+                Field innerF = inner.getClass().getField(e.getKey());
+                List<CmsType> list = (List<CmsType>) f.get(this);
+                if (list == null) continue;
+                List<Object> innerList = new ArrayList<>();
+                for (CmsType elem : list) {
+                    elem.syncToInner();
+                    innerList.add(elem.inner);
+                }
+                innerF.set(inner, innerList);
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
+            }
+        }
         // push optional field presence → inner._set
         Set<String> s = innerSetField();
         if (s != null) {
@@ -205,11 +277,47 @@ public abstract class CmsSequence extends CmsType {
             }
         }
         super.syncToInner();
+        // ensure innerCache completeness (SEQUENCE OF lists, InnerEmpty fields)
+        ensureInnerCacheComplete();
     }
 
     @Override
     public void syncFromInner() {
         super.syncFromInner();
+        // pull inner native field → direct field wrapper cache
+        for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
+            try {
+                Object val = directFields.get(e.getKey()).get(inner);
+                if (val != null) {
+                    e.getValue().innerCache.put("value", val);
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to sync direct field " + e.getKey(), ex);
+            }
+        }
+        // pull SEQUENCE OF fields from inner
+        for (Map.Entry<String, Class<? extends CmsType>> e : sequenceFields.entrySet()) {
+            try {
+                Field f = getClass().getField(e.getKey());
+                Field innerF = inner.getClass().getField(e.getKey());
+                List<Object> innerList = (List<Object>) innerF.get(inner);
+                List<CmsType> list = (List<CmsType>) f.get(this);
+                if (list == null) { list = new ArrayList<>(); f.set(this, list); }
+                list.clear();
+                if (innerList != null) {
+                    for (Object innerElem : innerList) {
+                        CmsType wrapper = e.getValue().getDeclaredConstructor().newInstance();
+                        if (innerElem instanceof InnerBase) {
+                            wrapper.inner = (InnerBase) innerElem;
+                        }
+                        wrapper.syncFromInner();
+                        list.add(wrapper);
+                    }
+                }
+            } catch (Exception ex) {
+                throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
+            }
+        }
         // pull inner._set → optional field presence
         Set<String> s = innerSetField();
         if (s != null) {
@@ -220,6 +328,41 @@ public abstract class CmsSequence extends CmsType {
         // sync inner → cached wrappers
         for (CmsType w : injectedWrappers.values()) {
             w.syncFromInner();
+        }
+        // ensure innerCache completeness (SEQUENCE OF lists, InnerEmpty fields)
+        ensureInnerCacheComplete();
+    }
+
+    /**
+     * Scan @CmsField-annotated fields and ensure they are present in innerCache.
+     * This handles:
+     * <ul>
+     *   <li>SEQUENCE OF fields (list) — not in innerCache by default</li>
+     *   <li>@CmsField wrappers on InnerEmpty subclasses — injectFields skipped them</li>
+     * </ul>
+     */
+    private void ensureInnerCacheComplete() {
+        for (Field f : getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            CmsField ann = f.getAnnotation(CmsField.class);
+            if (ann == null) continue;
+            String name = f.getName();
+            if (innerCache.containsKey(name)) continue; // already present
+            try {
+                if (ann.sequenceOf()) {
+                    innerCache.put(name, f.get(this));
+                } else if (CmsType.class.isAssignableFrom(f.getType())
+                        && !injectedWrappers.containsKey(name)) {
+                    // InnerEmpty or no-match @CmsField: share wrapper's innerCache
+                    Object val = f.get(this);
+                    if (val instanceof CmsType) {
+                        innerCache.put(name, ((CmsType) val).innerCache);
+                        injectedWrappers.put(name, (CmsType) val);
+                    }
+                }
+            } catch (Exception e) {
+                // skip fields that fail reflection
+            }
         }
     }
 

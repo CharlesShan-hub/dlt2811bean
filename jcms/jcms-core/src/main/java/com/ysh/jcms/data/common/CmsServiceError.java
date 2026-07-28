@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.common;
 
 import com.ysh.jcms.core.CmsEnum;
+import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerServiceError;
 
 /**
@@ -25,4 +26,7 @@ public class CmsServiceError extends CmsEnum<CmsServiceError> {
 
     public CmsServiceError() { super(new InnerServiceError()); }
     public CmsServiceError(int v) { this(); value(v); }
+
+    /** For subtype aliases with a different Inner* type (e.g. CmsAssociateError). */
+    protected CmsServiceError(InnerBase inner) { super(inner); }
 }
