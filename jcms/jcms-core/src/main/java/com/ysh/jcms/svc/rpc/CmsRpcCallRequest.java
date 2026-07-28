@@ -1,0 +1,48 @@
+package com.ysh.jcms.svc.rpc;
+
+import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.string.CmsUint8Array;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * RpcCall-RequestPDU ::= SEQUENCE { reqId Int16U, method [0] IMPLICIT
+ * VisibleString, req [1] IMPLICIT RpcCallReqChoice } — 8.13.6
+ */
+public class CmsRpcCallRequest extends CmsTypeOld {
+
+    public CmsReqId reqId;
+    public CmsUint8Array method; /* VisibleString */
+    public CmsRpcCallReqChoice req;
+
+    public CmsRpcCallRequest() {
+        super(Codec.RPC_CALL_REQUEST);
+        this.reqId = new CmsReqId();
+        this.method = new CmsUint8Array();
+        this.req = new CmsRpcCallReqChoice();
+    }
+
+    public CmsRpcCallRequest reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest method(byte[] v) {
+        this.method.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest method(String v) {
+        this.method.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest req(CmsRpcCallReqChoice v) {
+        this.req = v;
+        return this;
+    }
+
+    @Override
+    public List<? extends CmsTypeOld> children() {
+        return Arrays.asList(reqId, method, req);
+    }
+}

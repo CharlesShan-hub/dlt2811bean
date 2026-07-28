@@ -2,6 +2,7 @@ package com.ysh.jcms.core;
 
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
+import com.ysh.jcms.util.CmsEqualUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -106,16 +107,13 @@ public abstract class CmsType {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        syncToInner();
-        ((CmsType) o).syncToInner();
-        return java.util.Objects.equals(this.inner, ((CmsType) o).inner);
+        if (o == null || !(o instanceof CmsType)) return false;
+        return CmsEqualUtil.equal(this, (CmsType) o);
     }
 
     @Override
     public int hashCode() {
-        syncToInner();
-        return inner != null ? inner.hashCode() : 0;
+        return getClass().hashCode();
     }
 
     // ── toString ─────────────────────────────────────────────────────────

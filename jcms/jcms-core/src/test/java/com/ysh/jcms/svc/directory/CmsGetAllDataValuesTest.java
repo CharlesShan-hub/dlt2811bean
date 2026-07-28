@@ -45,25 +45,7 @@ public class CmsGetAllDataValuesTest {
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();
         b.decode(encoded);
         // Compare field by field (avoids InnerData null-vs-default mismatch)
-
-        assertEquals(a.data.size(), b.data.size());
-        if (a.data.size() > 0) {
-            assertEquals(a.data.get(0).reference.value(), b.data.get(0).reference.value());
-            assertEquals(a.data.get(0).value.choice(), b.data.get(0).value.choice());
-            if (a.data.get(0).value.choice() == CmsData.CHOICE_BOOLEAN)
-                assertEquals(a.data.get(0).value.alt_boolean.value(), b.data.get(0).value.alt_boolean.value());
-            if (a.data.get(0).value.choice() == CmsData.CHOICE_INT32)
-                assertEquals(a.data.get(0).value.alt_int32.value(), b.data.get(0).value.alt_int32.value());
-        }
-        if (a.data.size() > 1) {
-            assertEquals(a.data.get(1).reference.value(), b.data.get(1).reference.value());
-            assertEquals(a.data.get(1).value.choice(), b.data.get(1).value.choice());
-            if (a.data.get(1).value.choice() == CmsData.CHOICE_BOOLEAN)
-                assertEquals(a.data.get(1).value.alt_boolean.value(), b.data.get(1).value.alt_boolean.value());
-            if (a.data.get(1).value.choice() == CmsData.CHOICE_INT32)
-                assertEquals(a.data.get(1).value.alt_int32.value(), b.data.get(1).value.alt_int32.value());
-        }
-        assertEquals(a.moreFollows.value(), b.moreFollows.value());
+        assertEquals(a, b);
     }
 
     @Test

@@ -80,11 +80,12 @@ public abstract class CmsSequence extends CmsType {
                     wrapper.inner = (InnerBase) innerField.get(inner);
                     if (wrapper instanceof CmsChoice)
                         ((CmsChoice) wrapper).rebindChoices();
-                    // NOTE: syncFromInner is NOT called here — compound types
-                    // (e.g. CmsBinaryTime) may not have valid data yet during
-                    // construction. syncFromInner is called in rebindWrappers()
-                    // after decode, and scalar types populate their cache in
-                    // CmsScalar's constructor.
+                    // CmsScalar subclasses cache the value in their constructor
+                    // but the Inner* field may have a different default (e.g.
+                    // new byte[6] vs new byte[0]), so re-sync after rebinding.
+                    if (wrapper instanceof CmsScalar) {
+                        wrapper.syncFromInner();
+                    }
                 } else {
                     // Non-InnerBase field (e.g. Integer): read/write directly
                     directWrappers.put(fieldName, wrapper);
@@ -228,6 +229,25 @@ public abstract class CmsSequence extends CmsType {
         }
     }
 
+    /**
+     * Bind an externally-created CmsType wrapper to a field, replacing the
+     * auto-injected wrapper.  Updates injectedWrappers and shares innerCache
+     * so that sync and equality checks see the new wrapper's data.
+     *
+     * <p>Call from subclass setters that replace (not just mutate) a wrapper:
+     * <pre>{@code
+     * public MySeq authenticationParameter(CmsAuthenticationParameter v) {
+     *     bindWrapper("authenticationParameter", v);
+     *     setPresent("authenticationParameter", true);
+     *     return this;
+     * }
+     * }</pre>
+     */
+    protected void bindWrapper(String fieldName, CmsType wrapper) {
+        injectedWrappers.put(fieldName, wrapper);
+        innerCache.put(fieldName, wrapper.innerCache);
+    }
+
     // ── automatic sync ───────────────────────────────────────────
 
     @Override
@@ -266,6 +286,10 @@ public abstract class CmsSequence extends CmsType {
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
             }
+        }
+        // Ensure OPTIONAL presence keys exist in innerCache (for CmsEqualUtil)
+        for (String opt : optionalFields) {
+            innerCache.putIfAbsent(presKey(opt), false);
         }
         // push optional field presence → inner._set
         Set<String> s = innerSetField();

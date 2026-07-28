@@ -26,6 +26,10 @@ public class CmsFileEntry extends CmsSequence {
 
     public CmsFileEntry fileName(String v) { this.fileName.value(v); return this; }
     public CmsFileEntry fileSize(long v) { this.fileSize.value(v); return this; }
-    public CmsFileEntry lastModified(CmsUtcTime v) { this.lastModified = v; return this; }
+    public CmsFileEntry lastModified(CmsUtcTime v) {
+        this.lastModified = v;
+        bindWrapper("lastModified", v);
+        return this;
+    }
     public CmsFileEntry checkSum(long v) { this.checkSum.value(v); return this; }
 }

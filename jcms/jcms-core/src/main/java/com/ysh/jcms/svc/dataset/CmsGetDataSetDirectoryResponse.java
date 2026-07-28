@@ -1,0 +1,56 @@
+package com.ysh.jcms.svc.dataset;
+
+import com.ysh.jcms.core.CmsArray;
+import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * GetDataSetDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, memberData [0]
+ * IMPLICIT SEQUENCE OF DataRefFcEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT
+ * TRUE } — 8.5.5
+ */
+public class CmsGetDataSetDirectoryResponse extends CmsTypeOld {
+
+    public CmsReqId reqId;
+    public CmsArray<CmsDataRefFcEntry> memberData; /* SEQUENCE OF DataRefFcEntry */
+    public CmsBoolean moreFollows; /* DEFAULT TRUE */
+
+    public CmsGetDataSetDirectoryResponse() {
+        super(Codec.GET_DATA_SET_DIRECTORY_RESPONSE);
+        this.reqId = new CmsReqId();
+        this.memberData = new CmsArray<>(CmsDataRefFcEntry.class);
+        this.moreFollows = new CmsBoolean();
+    }
+
+    public CmsGetDataSetDirectoryResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetDataSetDirectoryResponse memberData(CmsArray<CmsDataRefFcEntry> v) {
+        this.memberData = v;
+        return this;
+    }
+    public CmsGetDataSetDirectoryResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
+
+    /** Convenience: extract member reference strings as List. */
+    public List<String> memberRefs() {
+        List<String> refs = new ArrayList<>();
+        for (int i = 0; i < memberData.count; i++) {
+            refs.add(new String(memberData.items.get(i).reference.value()));
+        }
+        return refs;
+    }
+
+    @Override
+    public List<? extends CmsTypeOld> children() {
+        return Arrays.asList(reqId, memberData, moreFollows);
+    }
+}

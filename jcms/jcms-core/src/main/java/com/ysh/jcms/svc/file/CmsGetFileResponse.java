@@ -1,0 +1,49 @@
+package com.ysh.jcms.svc.file;
+
+import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.core.NativeBridge.Codec;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.data.string.CmsUint8Array;
+import com.ysh.jcms.svc.other.CmsReqId;
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * GetFile-ResponsePDU ::= SEQUENCE { reqId Int16U, fileData [0] IMPLICIT OCTET
+ * STRING, endOfFile [1] IMPLICIT BOOLEAN DEFAULT FALSE } — 8.12.1
+ */
+public class CmsGetFileResponse extends CmsTypeOld {
+
+    public CmsReqId reqId;
+    public CmsUint8Array fileData;
+    public CmsBoolean endOfFile; /* DEFAULT FALSE */
+
+    public CmsGetFileResponse() {
+        super(Codec.GET_FILE_RESPONSE);
+        this.reqId = new CmsReqId();
+        this.fileData = new CmsUint8Array();
+        this.endOfFile = new CmsBoolean();
+    }
+
+    public CmsGetFileResponse reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsGetFileResponse fileData(byte[] v) {
+        this.fileData.value(v);
+        return this;
+    }
+    public CmsGetFileResponse fileData(String v) {
+        this.fileData.value(v);
+        return this;
+    }
+    public CmsGetFileResponse endOfFile(boolean v) {
+        this.endOfFile.value(v);
+        return this;
+    }
+
+    @Override
+    public List<? extends CmsTypeOld> children() {
+        return Arrays.asList(reqId, fileData, endOfFile);
+    }
+}

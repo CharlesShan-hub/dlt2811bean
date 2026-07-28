@@ -29,7 +29,26 @@ public class CmsEqualUtil {
         if (a.getClass() != b.getClass()) return false;
 
         // 1. Compare innerCache maps (CmsScalar values, CmsSequence @CmsField wrappers)
-        if (!compareValue(a.innerCache, b.innerCache)) return false;
+        if (!compareValue(a.innerCache, b.innerCache)) {
+            System.err.println("=== CmsEqualUtil DEBUG " + a.getClass().getSimpleName() + " ===");
+            System.err.println("a.innerCache: " + a.innerCache);
+            System.err.println("b.innerCache: " + b.innerCache);
+            for (String k : a.innerCache.keySet()) {
+                if (isPresenceKey(k)) continue;
+                if (!b.innerCache.containsKey(k)) {
+                    System.err.println("  key only in a: " + k);
+                } else if (!compareValue(a.innerCache.get(k), b.innerCache.get(k))) {
+                    System.err.println("  diff key: " + k + " a=" + a.innerCache.get(k) + " b=" + b.innerCache.get(k));
+                }
+            }
+            for (String k : b.innerCache.keySet()) {
+                if (isPresenceKey(k)) continue;
+                if (!a.innerCache.containsKey(k)) {
+                    System.err.println("  key only in b: " + k);
+                }
+            }
+            return false;
+        }
 
         // 2. Compare public CmsType / List fields (CmsChoice variant wrappers, SEQUENCE OF)
         try {
@@ -66,7 +85,13 @@ public class CmsEqualUtil {
             return compareLists((List<Object>) va, (List<Object>) vb);
         }
         if (va instanceof byte[]) {
-            return Arrays.equals((byte[]) va, (byte[]) vb);
+            boolean eq = Arrays.equals((byte[]) va, (byte[]) vb);
+            if (!eq) {
+                byte[] ba = (byte[])va, bb = (byte[])vb;
+                System.err.println("  byte[] diff: len a=" + ba.length + " b=" + bb.length
+                    + " a=" + java.util.Arrays.toString(ba) + " b=" + java.util.Arrays.toString(bb));
+            }
+            return eq;
         }
         if (va instanceof CmsType) {
             return equal((CmsType) va, (CmsType) vb);
@@ -75,14 +100,25 @@ public class CmsEqualUtil {
     }
 
     private static boolean compareMaps(Map<String, Object> ma, Map<String, Object> mb) {
-        if (ma.size() != mb.size()) return false;
+        // Compare only non-presence keys (skip hasXxx — they are sync-internal)
         for (Map.Entry<String, Object> e : ma.entrySet()) {
             String key = e.getKey();
+            if (isPresenceKey(key)) continue;
             Object va = e.getValue();
             Object vb = mb.get(key);
             if (!compareValue(va, vb)) return false;
         }
+        for (String key : mb.keySet()) {
+            if (isPresenceKey(key)) continue;
+            if (!ma.containsKey(key)) return false;
+        }
         return true;
+    }
+
+    /** Detect {@code hasXxx} presence keys used by CmsSequence's OPTIONAL tracking. */
+    private static boolean isPresenceKey(String key) {
+        return key.startsWith("has") && key.length() > 3
+            && Character.isUpperCase(key.charAt(3));
     }
 
     private static boolean compareLists(List<Object> la, List<Object> lb) {
