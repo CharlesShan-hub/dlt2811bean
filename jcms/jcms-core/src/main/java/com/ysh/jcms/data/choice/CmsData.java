@@ -8,8 +8,8 @@ import com.ysh.jcms.data.enumerate.CmsDbpos;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.enumerate.CmsTcmd;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.time.CmsBinaryTime;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,6 +167,14 @@ public class CmsData extends CmsChoice {
     public CmsData alt_dbpos(int v) { choice(CHOICE_DBPOS); this.alt_dbpos.value(v); return this; }
     /** Select tcmd + set value. */
     public CmsData alt_tcmd(int v) { choice(CHOICE_TCMD); this.alt_tcmd.value(v); return this; }
+    /** Select utc-time + set value. */
+    public CmsData alt_utc_time(CmsUtcTime v) { choice(CHOICE_UTC_TIME); this.alt_utc_time.value(v); return this; }
+    /** Select binary-time + set value. */
+    public CmsData alt_binary_time(CmsBinaryTime v) { choice(CHOICE_BINARY_TIME); this.alt_binary_time.value(v); return this; }
+    /** Select quality + set value. */
+    public CmsData alt_quality(CmsQuality v) { choice(CHOICE_QUALITY); this.alt_quality.value(v); return this; }
+    /** Select check + set value. */
+    public CmsData alt_check(CmsCheck v) { choice(CHOICE_CHECK); this.alt_check.value(v); return this; }
 
     /**
      * Set choice and value in one call.
@@ -192,6 +200,47 @@ public class CmsData extends CmsChoice {
             case CHOICE_UNICODE_STRING:  alt_unicode_string.value = (String) val; break;
             case CHOICE_DBPOS:           alt_dbpos.value((Integer) val); break;
             case CHOICE_TCMD:            alt_tcmd.value((Integer) val); break;
+            // CHOICE_UTC_TIME through CHOICE_CHECK use value(CmsType) instead
+        }
+        return this;
+    }
+
+    /** Copy choice selection and value from another CmsData (fluent). */
+    public CmsData value(CmsData v) {
+        int ch = v.choice();
+        choice(ch);
+        switch (ch) {
+            case CHOICE_ERROR:           alt_error(v.alt_error.value()); break;
+            case CHOICE_BOOLEAN:         alt_boolean(v.alt_boolean.value()); break;
+            case CHOICE_INT8:            alt_int8(v.alt_int8.value()); break;
+            case CHOICE_INT16:           alt_int16(v.alt_int16.value()); break;
+            case CHOICE_INT32:           alt_int32(v.alt_int32.value()); break;
+            case CHOICE_INT64:           alt_int64(v.alt_int64.value()); break;
+            case CHOICE_INT8U:           alt_int8u(v.alt_int8u.value()); break;
+            case CHOICE_INT16U:          alt_int16u(v.alt_int16u.value()); break;
+            case CHOICE_INT32U:          alt_int32u(v.alt_int32u.value()); break;
+            case CHOICE_INT64U:          alt_int64u(v.alt_int64u.value()); break;
+            case CHOICE_FLOAT32:         alt_float32(v.alt_float32.value()); break;
+            case CHOICE_FLOAT64:         alt_float64(v.alt_float64.value()); break;
+            case CHOICE_BIT_STRING:      this.alt_bit_string = v.alt_bit_string.clone(); break;
+            case CHOICE_OCTET_STRING:    this.alt_octet_string.value = v.alt_octet_string.value.clone(); break;
+            case CHOICE_VISIBLE_STRING:  this.alt_visible_string.value = v.alt_visible_string.value; break;
+            case CHOICE_UNICODE_STRING:  this.alt_unicode_string.value = v.alt_unicode_string.value; break;
+            case CHOICE_UTC_TIME:        this.alt_utc_time.value(v.alt_utc_time); break;
+            case CHOICE_BINARY_TIME:     this.alt_binary_time.value(v.alt_binary_time); break;
+            case CHOICE_QUALITY:         this.alt_quality.value(v.alt_quality); break;
+            case CHOICE_DBPOS:           alt_dbpos(v.alt_dbpos.value()); break;
+            case CHOICE_TCMD:            alt_tcmd(v.alt_tcmd.value()); break;
+            case CHOICE_CHECK:           this.alt_check.value(v.alt_check); break;
+            case CHOICE_ARRAY:
+            case CHOICE_STRUCTURE:
+                this.alt_sequence.clear();
+                for (CmsData e : v.alt_sequence) {
+                    CmsData c = new CmsData();
+                    c.value(e);
+                    this.alt_sequence.add(c);
+                }
+                break;
         }
         return this;
     }

@@ -4,7 +4,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
 import com.ysh.jcms.data.core.CmsString;
 
@@ -26,6 +26,17 @@ public class CmsGoCb extends CmsSequence {
     public CmsGoCb dstAddress(CmsPhyComAddr v) {
         this.dstAddress.value(v);
         setPresent("dstAddress", true);
+        return this;
+    }
+
+    /** Copy all field values from another CmsGoCb (fluent). */
+    public CmsGoCb value(CmsGoCb v) {
+        goEna(v.goEna.value());
+        goID(v.goID.value());
+        datSet(v.datSet.value());
+        confRev(v.confRev.value());
+        ndsCom(v.ndsCom.value());
+        if (v.isPresent("dstAddress")) this.dstAddress.value(v.dstAddress);
         return this;
     }
 }

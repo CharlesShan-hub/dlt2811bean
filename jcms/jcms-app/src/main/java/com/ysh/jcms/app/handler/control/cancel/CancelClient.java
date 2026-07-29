@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.cancel;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.sequence.control.CmsOriginator;
+import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.pdu.control.CmsCancelError;
 import com.ysh.jcms.pdu.control.CmsCancelRequest;
 import com.ysh.jcms.pdu.control.CmsCancelResponse;

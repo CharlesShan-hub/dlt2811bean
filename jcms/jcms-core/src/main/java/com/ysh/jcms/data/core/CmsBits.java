@@ -86,8 +86,14 @@ public abstract class CmsBits extends CmsType {
 
     /** Copy the packed value from another CmsBits instance. */
     public void packed(CmsBits v) {
-        v.syncToInner();        // push v's @Bit fields → v's inner.value
-        packed(v.packed());     // read v's packed value → write to this → unpack
+        v.syncToInner();
+        packed(v.packed());
+    }
+
+    /** Copy all bit-field values from another CmsBits instance (fluent). */
+    public CmsBits value(CmsBits v) {
+        packed(v);
+        return this;
     }
 
     @Override

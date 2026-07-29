@@ -27,9 +27,12 @@ public class CmsAssociateResponse extends CmsSequence {
     public CmsAssociateResponse associationId(byte[] v) { this.associationId.value(v); return this; }
     public CmsAssociateResponse serviceError(int v) { this.serviceError.value(v); return this; }
     public CmsAssociateResponse authenticationParameter(CmsAuthenticationParameter v) {
-        this.authenticationParameter = v;
-        bindWrapper("authenticationParameter", v);
-        setPresent("authenticationParameter", true);
+        if (v != null) {
+            this.authenticationParameter.value(v);
+            setPresent("authenticationParameter", true);
+        } else {
+            setPresent("authenticationParameter", false);
+        }
         return this;
     }
 }

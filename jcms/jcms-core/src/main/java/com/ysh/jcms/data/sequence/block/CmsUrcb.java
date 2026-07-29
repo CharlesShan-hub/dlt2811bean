@@ -6,7 +6,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.core.CmsOctetString;
 import com.ysh.jcms.data.core.CmsString;
 
@@ -38,4 +38,21 @@ public class CmsUrcb extends CmsSequence {
     public CmsUrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsUrcb resv(boolean v) { this.resv.value(v); return this; }
     public CmsUrcb owner(byte[] v) { this.owner.value(v); setPresent("owner", true); return this; }
+
+    /** Copy all field values from another CmsUrcb (fluent). */
+    public CmsUrcb value(CmsUrcb v) {
+        rptID(v.rptID.value());
+        rptEna(v.rptEna.value());
+        datSet(v.datSet.value());
+        confRev(v.confRev.value());
+        optFlds(v.optFlds);
+        bufTm(v.bufTm.value());
+        sqNum(v.sqNum.value());
+        trgOps(v.trgOps);
+        intgPd(v.intgPd.value());
+        gi(v.gi.value());
+        resv(v.resv.value());
+        if (v.isPresent("owner")) this.owner.value(v.owner.value());
+        return this;
+    }
 }

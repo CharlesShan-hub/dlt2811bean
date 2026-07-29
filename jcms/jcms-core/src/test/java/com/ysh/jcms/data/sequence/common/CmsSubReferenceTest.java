@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.sequence.common;
 
-import com.ysh.jcms.data.sequence.common.CmsSubReference;
+import com.ysh.jcms.data.scalar.CmsSubReference;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

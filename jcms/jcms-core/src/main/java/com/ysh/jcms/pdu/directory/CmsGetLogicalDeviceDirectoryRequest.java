@@ -3,8 +3,8 @@ package com.ysh.jcms.pdu.directory;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetLogicalDeviceDirectoryRequestPDU;
-import com.ysh.jcms.data.sequence.common.CmsObjectName;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectName;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
  * GetLogicalDeviceDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, ldName [0]

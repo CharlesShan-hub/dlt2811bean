@@ -1,7 +1,6 @@
-package com.ysh.jcms.data.sequence.control;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.enumerate.CmsOrCat;
-import com.ysh.jcms.data.sequence.control.CmsOriginator;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.sequence.time;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.bitarray.CmsTimeQuality;
 import com.ysh.jcms.util.CmsBytesUtil;
@@ -33,7 +33,7 @@ public class CmsUtcTime extends CmsType {
         return this;
     }
     public CmsUtcTime timeQuality(CmsTimeQuality v) {
-        this.timeQuality = v;
+        this.timeQuality.value(v);
         return this;
     }
     public CmsUtcTime now() {
@@ -85,5 +85,11 @@ public class CmsUtcTime extends CmsType {
 
     private void innerValueBuf(byte[] buf) {
         innerValue().value = buf;
+    }
+
+    public CmsUtcTime value(CmsUtcTime v) {
+        return secondsSinceEpoch(v.secondsSinceEpoch.value())
+            .fractionOfSecond(v.fractionOfSecond.value())
+            .timeQuality(v.timeQuality);
     }
 }

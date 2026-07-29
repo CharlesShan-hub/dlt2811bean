@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.block.CmsLcb;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesResponse;

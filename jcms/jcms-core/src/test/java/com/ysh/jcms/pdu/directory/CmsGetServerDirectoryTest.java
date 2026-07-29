@@ -1,7 +1,7 @@
 package com.ysh.jcms.pdu.directory;
 
 import com.ysh.jcms.data.enumerate.CmsObjectClass;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import org.junit.Test;
 import static org.junit.Assert.*;

@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.sequence.time;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.DefaultInnerOctetString;
@@ -26,6 +26,11 @@ public class CmsBinaryTime extends CmsType {
     }
     public CmsBinaryTime daysSince1984(int v) {
         this.daysSince1984.value(v);
+        return this;
+    }
+    public CmsBinaryTime value(CmsBinaryTime v) {
+        this.msOfDay.value(v.msOfDay.value());
+        this.daysSince1984.value(v.daysSince1984.value());
         return this;
     }
 

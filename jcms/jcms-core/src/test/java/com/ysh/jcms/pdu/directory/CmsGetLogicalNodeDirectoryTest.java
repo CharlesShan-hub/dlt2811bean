@@ -1,7 +1,7 @@
 package com.ysh.jcms.pdu.directory;
 
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
-import com.ysh.jcms.data.sequence.common.CmsSubReference;
+import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import org.junit.Test;

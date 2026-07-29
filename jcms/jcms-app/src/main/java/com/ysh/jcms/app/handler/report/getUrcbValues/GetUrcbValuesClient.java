@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesResponse;

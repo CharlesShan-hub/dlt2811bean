@@ -35,4 +35,19 @@ public class CmsCbValueChoice extends CmsChoice {
     }
 
     public CmsCbValueChoice choice(int v) { super.choice(v); return this; }
+
+    /** Copy choice selection and value from another CmsCbValueChoice (fluent). */
+    public CmsCbValueChoice value(CmsCbValueChoice v) {
+        int ch = v.choice();
+        super.choice(ch);
+        switch (ch) {
+            case BRCB:   this.altBrcb.value(v.altBrcb); break;
+            case URCB:   this.altUrcb.value(v.altUrcb); break;
+            case LCB:    this.altLcb.value(v.altLcb); break;
+            case SGECB:  this.altSgecb.value(v.altSgecb); break;
+            case GOCB:   this.altGocb.value(v.altGocb); break;
+            case MSVCB:  this.altMsvcb.value(v.altMsvcb); break;
+        }
+        return this;
+    }
 }

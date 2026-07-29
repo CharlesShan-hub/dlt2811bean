@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.control.selectWithValue;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.bitarray.CmsCheck;
-import com.ysh.jcms.data.sequence.control.CmsOriginator;
+import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueError;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueRequest;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueResponse;

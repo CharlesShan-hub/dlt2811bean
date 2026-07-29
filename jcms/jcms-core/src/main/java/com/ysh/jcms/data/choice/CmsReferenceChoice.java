@@ -3,8 +3,8 @@ package com.ysh.jcms.data.choice;
 import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
-import com.ysh.jcms.data.sequence.common.CmsObjectName;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectName;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
  * ReferenceChoice ::= CHOICE {
@@ -43,6 +43,20 @@ public class CmsReferenceChoice extends CmsChoice {
 
     /** Select lnReference and set value in one call. */
     public CmsReferenceChoice altLnReference(String v) { choice(LN_REFERENCE); this.altLnReference.value(v); return this; }
+
+    public CmsReferenceChoice value(CmsReferenceChoice v) {
+        int ch = v.choice();
+        choice(ch);
+        switch (ch) {
+            case LD_NAME:
+                this.altLdName.value(v.altLdName.value());
+                break;
+            case LN_REFERENCE:
+                this.altLnReference.value(v.altLnReference.value());
+                break;
+        }
+        return this;
+    }
 
     public CmsReferenceChoice value(int ch, Object val) {
         choice(ch);

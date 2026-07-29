@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.file.CmsGetFileAttributeValuesError;
 import com.ysh.jcms.pdu.file.CmsGetFileAttributeValuesRequest;
 import com.ysh.jcms.pdu.file.CmsGetFileAttributeValuesResponse;

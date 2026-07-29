@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesResponse;

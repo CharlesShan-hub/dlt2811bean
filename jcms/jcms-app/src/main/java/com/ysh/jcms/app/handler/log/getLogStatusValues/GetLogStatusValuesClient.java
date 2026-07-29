@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;

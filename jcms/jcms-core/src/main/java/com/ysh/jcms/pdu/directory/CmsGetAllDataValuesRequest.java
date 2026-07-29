@@ -3,7 +3,7 @@ package com.ysh.jcms.pdu.directory;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetAllDataValuesRequestPDU;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 
@@ -27,10 +27,7 @@ public class CmsGetAllDataValuesRequest extends CmsSequence {
         super(new InnerGetAllDataValuesRequestPDU());
     }
 
-    public CmsGetAllDataValuesRequest reference(CmsReferenceChoice v) {
-        this.reference = v;
-        return this;
-    }
+    public CmsGetAllDataValuesRequest reference(CmsReferenceChoice v) { this.reference.value(v); return this; }
     public CmsGetAllDataValuesRequest fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

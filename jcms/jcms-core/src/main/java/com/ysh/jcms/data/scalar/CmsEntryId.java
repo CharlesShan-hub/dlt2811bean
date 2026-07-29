@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.sequence.common;
+package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerEntryID;

@@ -2,7 +2,7 @@ package com.ysh.jcms.pdu.connection;
 
 import com.ysh.jcms.data.bitarray.CmsTimeQuality;
 import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

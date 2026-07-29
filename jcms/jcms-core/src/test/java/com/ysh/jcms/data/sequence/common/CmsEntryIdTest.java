@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.sequence.common;
 
-import com.ysh.jcms.data.sequence.common.CmsEntryId;
+import com.ysh.jcms.data.scalar.CmsEntryId;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.sequence.common;
 
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

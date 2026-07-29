@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.sequence.choice;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.core.CmsField;
@@ -20,5 +20,5 @@ public class CmsDataDefinitionArray extends CmsSequence {
     }
 
     public CmsDataDefinitionArray numberOfElement(int v) { this.numberOfElement.value(v); return this; }
-    public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType = v; return this; }
+    public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType.value(v); return this; }
 }

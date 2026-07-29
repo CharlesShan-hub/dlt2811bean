@@ -3,7 +3,7 @@ package com.ysh.jcms.pdu.directory;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetLogicalDeviceDirectoryResponsePDU;
-import com.ysh.jcms.data.sequence.common.CmsSubReference;
+import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.util.ArrayList;
 import java.util.List;

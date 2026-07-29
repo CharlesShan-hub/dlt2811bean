@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.sequence.connection;
 
 import com.ysh.jcms.data.bitarray.CmsTimeQuality;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -14,7 +14,7 @@ public class CmsAuthenticationParameterTest {
                 .signedTime(new CmsUtcTime()
                         .secondsSinceEpoch(1234567890L)
                         .fractionOfSecond(0)
-                        .timeQuality(new CmsTimeQuality()    
+                        .timeQuality(new CmsTimeQuality()
                             .leap_seconds_known(true)  // 知道闰秒
                             .clock_failure(false)            // 没故障
                             .clock_not_synchronized(false)   // 已同步

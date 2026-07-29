@@ -6,7 +6,7 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.enumerate.CmsSmpMod;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
 import com.ysh.jcms.data.core.CmsString;
 
@@ -30,4 +30,17 @@ public class CmsMsvcb extends CmsSequence {
     public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
     public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds.packed(v); return this; }
     public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress.value(v); setPresent("dstAddress", true); return this; }
+
+    /** Copy all field values from another CmsMsvcb (fluent). */
+    public CmsMsvcb value(CmsMsvcb v) {
+        svEna(v.svEna.value());
+        msvID(v.msvID.value());
+        datSet(v.datSet.value());
+        confRev(v.confRev.value());
+        if (v.isPresent("smpMod")) this.smpMod.value(v.smpMod.value());
+        smpRate(v.smpRate.value());
+        optFlds(v.optFlds);
+        if (v.isPresent("dstAddress")) this.dstAddress.value(v.dstAddress);
+        return this;
+    }
 }

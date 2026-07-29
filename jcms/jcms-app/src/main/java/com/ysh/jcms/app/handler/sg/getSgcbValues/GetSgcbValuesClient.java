@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesResponse;

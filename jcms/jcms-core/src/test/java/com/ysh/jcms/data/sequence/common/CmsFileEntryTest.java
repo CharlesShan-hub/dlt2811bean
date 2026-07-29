@@ -1,7 +1,5 @@
 package com.ysh.jcms.data.sequence.common;
 
-import com.ysh.jcms.data.sequence.common.CmsFileEntry;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

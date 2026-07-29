@@ -5,7 +5,7 @@ import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsOctetString;
 import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
  * AuthenticationParameter ::= SEQUENCE { signatureCertificate [0] IMPLICIT
@@ -35,8 +35,7 @@ public class CmsAuthenticationParameter extends CmsSequence {
     }
 
     public CmsAuthenticationParameter signedTime(CmsUtcTime v) {
-        this.signedTime = v;
-        bindWrapper("signedTime", v);
+        this.signedTime.value(v);
         return this;
     }
 
@@ -48,5 +47,11 @@ public class CmsAuthenticationParameter extends CmsSequence {
     public CmsAuthenticationParameter signedValue(byte[] v) {
         this.signedValue.value(v);
         return this;
+    }
+
+    public CmsAuthenticationParameter value(CmsAuthenticationParameter v) {
+        return signatureCertificate(v.signatureCertificate.value())
+            .signedTime(v.signedTime)
+            .signedValue(v.signedValue.value());
     }
 }

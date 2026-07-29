@@ -1,6 +1,5 @@
-package com.ysh.jcms.data.sequence.time;
+package com.ysh.jcms.data.sequence.common;
 
-import com.ysh.jcms.data.sequence.time.CmsBinaryTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

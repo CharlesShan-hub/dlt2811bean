@@ -3,7 +3,7 @@ package com.ysh.jcms.pdu.directory;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetServerDirectoryRequestPDU;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
  * GetServerDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, objectClass [0]

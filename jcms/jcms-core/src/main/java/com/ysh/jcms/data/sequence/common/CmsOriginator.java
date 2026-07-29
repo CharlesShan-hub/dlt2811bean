@@ -1,4 +1,4 @@
-package com.ysh.jcms.data.sequence.control;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -20,4 +20,10 @@ public class CmsOriginator extends CmsSequence {
 
     public CmsOriginator orCat(int v) { this.orCat.value(v); return this; }
     public CmsOriginator orIdent(byte[] v) { this.orIdent.value(v); return this; }
+
+    /** Copy all field values from another CmsOriginator (fluent). */
+    public CmsOriginator value(CmsOriginator v) {
+        return orCat(v.orCat.value())
+            .orIdent(v.orIdent.value());
+    }
 }

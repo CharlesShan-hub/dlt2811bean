@@ -4,7 +4,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetAllCBValuesRequestPDU;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 
 /**
@@ -27,10 +27,7 @@ public class CmsGetAllCbValuesRequest extends CmsSequence {
         super(new InnerGetAllCBValuesRequestPDU());
     }
 
-    public CmsGetAllCbValuesRequest reference(CmsReferenceChoice v) {
-        this.reference = v;
-        return this;
-    }
+    public CmsGetAllCbValuesRequest reference(CmsReferenceChoice v) { this.reference.value(v); return this; }
     public CmsGetAllCbValuesRequest acsiClass(int v) {
         this.acsiClass.value(v);
         return this;

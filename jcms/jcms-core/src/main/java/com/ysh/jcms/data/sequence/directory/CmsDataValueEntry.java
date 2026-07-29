@@ -4,7 +4,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerEmpty;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.sequence.common.CmsSubReference;
+import com.ysh.jcms.data.scalar.CmsSubReference;
 
 /**
  * DataValueEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference, value [1]
@@ -26,5 +26,5 @@ public class CmsDataValueEntry extends CmsSequence {
 
     public CmsDataValueEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
     public CmsDataValueEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataValueEntry value(CmsData v) { this.value = v; return this; }
+    public CmsDataValueEntry value(CmsData v) { this.value.value(v); return this; }
 }

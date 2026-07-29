@@ -1,10 +1,10 @@
-package com.ysh.jcms.data.sequence.choice;
+package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerAnonymousDataDefinitionStructure;
-import com.ysh.jcms.data.sequence.common.CmsObjectName;
+import com.ysh.jcms.data.scalar.CmsObjectName;
 import com.ysh.jcms.data.scalar.CmsFC;
 
 /**
@@ -25,7 +25,7 @@ public class CmsDataDefinitionStructElem extends CmsSequence {
 
     public CmsDataDefinitionStructElem name(String v) { this.name.value(v); return this; }
     public CmsDataDefinitionStructElem fc(int v) { this.fc.value(v); setPresent("fc", true); return this; }
-    public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type = v; return this; }
+    public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type.value(v); return this; }
 
     public boolean hasFc() { return isPresent("fc"); }
 }

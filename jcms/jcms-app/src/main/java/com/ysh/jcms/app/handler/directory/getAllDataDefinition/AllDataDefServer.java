@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;

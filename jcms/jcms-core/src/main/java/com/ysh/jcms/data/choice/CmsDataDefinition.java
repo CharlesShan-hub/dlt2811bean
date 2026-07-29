@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.choice;
 
-import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionArray;
-import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.sequence.common.CmsDataDefinitionArray;
+import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
@@ -99,6 +99,34 @@ public class CmsDataDefinition extends CmsChoice {
     public CmsDataDefinition alt_octet_string_len(int v) { choice(CHOICE_OCTET_STRING); this.alt_octet_string_len.value(v); return this; }
     public CmsDataDefinition alt_visible_string_len(int v) { choice(CHOICE_VISIBLE_STRING); this.alt_visible_string_len.value(v); return this; }
     public CmsDataDefinition alt_unicode_string_len(int v) { choice(CHOICE_UNICODE_STRING); this.alt_unicode_string_len.value(v); return this; }
+
+    /** Copy choice selection and value from another CmsDataDefinition (fluent). */
+    public CmsDataDefinition value(CmsDataDefinition v) {
+        int ch = v.choice();
+        choice(ch);
+        switch (ch) {
+            case CHOICE_ERROR:
+                this.alt_error.value(v.alt_error.value());
+                break;
+            case CHOICE_ARRAY:
+                this.alt_array = v.alt_array;
+                break;
+            case CHOICE_BIT_STRING:
+                this.alt_bit_string_len.value(v.alt_bit_string_len.value());
+                break;
+            case CHOICE_OCTET_STRING:
+                this.alt_octet_string_len.value(v.alt_octet_string_len.value());
+                break;
+            case CHOICE_VISIBLE_STRING:
+                this.alt_visible_string_len.value(v.alt_visible_string_len.value());
+                break;
+            case CHOICE_UNICODE_STRING:
+                this.alt_unicode_string_len.value(v.alt_unicode_string_len.value());
+                break;
+            // CHOICE_STRUCTURE, BOOLEAN..FLOAT64, UTC_TIME..CHECK are NULL — choice only
+        }
+        return this;
+    }
 
     @Override
     public void syncToInner() {

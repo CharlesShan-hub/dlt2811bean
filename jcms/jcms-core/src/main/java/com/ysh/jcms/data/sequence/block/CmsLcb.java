@@ -6,7 +6,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 public class CmsLcb extends CmsSequence {
     @CmsField public CmsBoolean logEna;
@@ -28,4 +28,16 @@ public class CmsLcb extends CmsSequence {
     public CmsLcb logRef(String v) { this.logRef.value(v); return this; }
     public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds.packed(v); setPresent("optFlds", true); return this; }
     public CmsLcb bufTm(long v) { this.bufTm.value(v); setPresent("bufTm", true); return this; }
+
+    /** Copy all field values from another CmsLcb (fluent). */
+    public CmsLcb value(CmsLcb v) {
+        logEna(v.logEna.value());
+        datSet(v.datSet.value());
+        trgOps(v.trgOps);
+        intgPd(v.intgPd.value());
+        logRef(v.logRef.value());
+        if (v.isPresent("optFlds")) this.optFlds.value(v.optFlds);
+        if (v.isPresent("bufTm")) this.bufTm.value(v.bufTm.value());
+        return this;
+    }
 }
