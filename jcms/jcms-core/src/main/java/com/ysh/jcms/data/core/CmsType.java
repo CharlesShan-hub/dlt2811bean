@@ -9,50 +9,63 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 /**
- * Base class for all CMS wrapper types that use Rust-based PER encoding.
+ * Root of the Cms* wrapper hierarchy.
  *
- * <p>Subclasses fall into two categories:
+ * <p>A CmsType wraps an auto-generated {@code Inner*} instance (from jcms-data),
+ * forming a two-layer structure:
  * <ul>
- *   <li><b>PDU types</b> — wrap an auto-generated Inner*PDU (from {@code jcms-data})
- *       via {@code super(new InnerXxxPDU())}. These have real
- *       {@link #encode()} / {@link #decode(byte[])} backed by Rust FFI.</li>
- *   <li><b>Container types</b> — use the no-arg {@code CmsType()} constructor
- *       which defaults to {@link InnerEmpty}. These are field holders within
- *       larger PDUs; encode/decode is handled by the parent PDU.</li>
+ *   <li><b>Inner* tree</b> — the raw data nodes ({@link InnerBase} subclasses).
+ *       Rust FFI encodes/decodes this tree directly via JSON interchange.</li>
+ *   <li><b>innerCache</b> — a {@code Map<String, Object>} that mirrors the Inner* tree
+ *       but is the single source of truth for {@link #equals(Object)} comparisons
+ *       via {@link CmsEqualUtil}.</li>
  * </ul>
  *
- * <p>{@link #equals(Object)} and {@link #hashCode()} delegate to the
- * backing {@link #inner} object's Lombok-generated {@code equals/hashCode}
- * after calling {@link #syncToInner()} on both sides.
+ * <p>Two kinds of subclasses:
+ * <ul>
+ *   <li><b>PDU types</b> — constructed with {@code super(new InnerXxxPDU())}.
+ *       Have real {@link #encode()} / {@link #decode(byte[])} backed by Rust.</li>
+ *   <li><b>Container types</b> — constructed with the no-arg constructor,
+ *       backed by {@link InnerEmpty}. These are field holders embedded in a parent PDU.</li>
+ * </ul>
  */
 public abstract class CmsType {
+
+    // ── Core fields ──────────────────────────────────────────────────
+
     /** The Inner* instance backing this wrapper. */
     public InnerBase inner;
 
-    /** Unified data cache: {@code "value" → inner} for scalars,
-     *  {@code fieldName → value/wrapper} for sequences. */
+    /**
+     * Data cache that mirrors the Inner* tree.
+     *
+     * <p>Key semantics by subclass:
+     * <ul>
+     *   <li>{@link CmsScalar} — {@code "value" → the actual value}</li>
+     *   <li>{@link CmsSequence} — {@code fieldName → child wrapper's innerCache}</li>
+     *   <li>{@link CmsChoice} — {@code "choice" → current variant index}</li>
+     *   <li>OPTIONAL fields — {@code "hasFieldName" → Boolean}</li>
+     * </ul>
+     */
     public final java.util.Map<String, Object> innerCache = new java.util.HashMap<>();
 
-    /** Cached reflection handle for inner.encode(). */
+    /** Cached reflection handle for {@code Inner*.encode()}. */
     private final Method encodeMethod;
-    /** Cached reflection handle for InnerXxx.decode(byte[]). */
+    /** Cached reflection handle for {@code Inner*.decode(byte[])}. */
     private final Method staticDecodeMethod;
 
-    /**
-     * Creates a CmsType with an {@link InnerEmpty} placeholder.
-     * Used by container types that do not have a standalone ASN.1 PDU.
-     */
+    // ── Constructors ─────────────────────────────────────────────────
+
+    /** Creates a container type backed by {@link InnerEmpty}. */
     protected CmsType() {
         this(new InnerEmpty());
     }
 
     /**
-     * Creates a CmsType backed by the given Inner* instance.
+     * Creates a PDU type backed by the given Inner* instance.
      *
-     * @param inner the auto-generated Inner* PDU type (must have
-     *              {@code encode()} instance method and
-     *              {@code static decode(byte[])} method)
-     * @throws RuntimeException if the required methods are not found
+     * <p>Reflection-caches {@code encode()} and {@code static decode(byte[])}
+     * on the Inner* class at construction time.
      */
     protected CmsType(InnerBase inner) {
         this.inner = inner;
@@ -64,12 +77,13 @@ public abstract class CmsType {
         }
     }
 
-    // ── encode / decode ──────────────────────────────────────────────────
+    // ── Encode / decode ──────────────────────────────────────────────
 
     /**
      * Encodes this wrapper to APER bytes.
-     * Calls {@link #syncToInner()} first to push field values into the
-     * backing Inner*, then delegates to {@code Inner*.encode()} via Rust FFI.
+     *
+     * <p>Calls {@link #syncToInner()} first to push cache values into the
+     * Inner* tree, then delegates to {@code Inner*.encode()} via Rust FFI.
      */
     public byte[] encode() {
         syncToInner();
@@ -82,8 +96,9 @@ public abstract class CmsType {
 
     /**
      * Decodes APER bytes into this wrapper.
-     * Calls {@code InnerXxx.decode(data)} via Rust FFI to populate the
-     * backing Inner*, then {@link #syncFromInner()} to pull values out.
+     *
+     * <p>Rust FFI decodes the bytes, Jackson creates a fresh Inner* tree,
+     * then {@link #syncFromInner()} pulls values back into the cache.
      */
     public void decode(byte[] data) {
         try {
@@ -94,16 +109,22 @@ public abstract class CmsType {
         }
     }
 
-    // ── sync hooks ───────────────────────────────────────────────────────
+    // ── Sync hooks (subclasses override) ─────────────────────────────
 
-    /** Push field values from this wrapper into the backing Inner* PDU. */
+    /** Pushes innerCache values into the Inner* tree before encode. */
     public void syncToInner() {}
 
-    /** Pull field values from the backing Inner* PDU into this wrapper. */
+    /** Pulls values from a fresh Inner* tree into innerCache after decode. */
     public void syncFromInner() {}
 
-    // ── equals / hashCode ────────────────────────────────────────────────
+    // ── Object overrides ─────────────────────────────────────────────
 
+    /**
+     * Compares two CmsType objects by walking their innerCache trees.
+     *
+     * <p>Delegates to {@link CmsEqualUtil} to avoid the null-vs-default-value
+     * problem in Lombok-generated {@code Inner*.equals()}.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,8 +137,10 @@ public abstract class CmsType {
         return getClass().hashCode();
     }
 
-    // ── toString ─────────────────────────────────────────────────────────
-
+    /**
+     * Returns a human-readable representation of this wrapper and its
+     * public CmsType fields, recursively.
+     */
     @Override
     public String toString() {
         return toString(0).trim();
@@ -138,12 +161,12 @@ public abstract class CmsType {
             if (val instanceof CmsType) {
                 sb.append(((CmsType) val).toString(depth + 1));
             } else if (val instanceof byte[]) {
-                sb.append(bytesToHex((byte[]) val)).append("\n");
+                sb.append(bytesToHex((byte[]) val)).append('\n');
             } else if (val instanceof List && !((List<?>) val).isEmpty()
                     && ((List<?>) val).get(0) instanceof CmsType) {
-                sb.append("[").append(((List<?>) val).size()).append("]\n");
+                sb.append('[').append(((List<?>) val).size()).append("]\n");
             } else {
-                sb.append(val).append("\n");
+                sb.append(val).append('\n');
             }
         }
         return sb.toString();

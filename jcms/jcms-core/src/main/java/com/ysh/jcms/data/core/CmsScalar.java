@@ -7,18 +7,23 @@ import java.lang.reflect.Field;
  * Base for single-value types whose Inner* stores the value in
  * a public field named {@code value}.
  *
- * <p>Subclasses read/write {@code innerCache["value"]} only; the
- * sync to/from {@code inner.value} happens automatically:
- * <ul>
- *   <li>{@link #innerSet(Object)} — immediately pushes cache → inner
- *   <li>{@link #syncFromInner()} — after decode, pulls inner → cache
- * </ul>
- * So {@code innerCache["value"]} and {@code inner.value} are always
- * in sync — no delayed sync step needed.
+ * <p>Subclasses read/write {@code innerCache["value"]} only;
+ * {@link #innerSet(Object)} immediately pushes the value into
+ * the Inner* tree, so {@code innerCache["value"]} and
+ * {@code inner.value} are always in sync.
+ *
+ * <p>The no-arg constructor is for container types whose Inner*
+ * does not have a {@code value} field (the {@code valueField}
+ * reflection handle will be {@code null}).
  */
 public abstract class CmsScalar extends CmsType {
 
+    // ── 反射缓存 ──────────────────────────────────────────────────────
+
+    /** Inner*.value 字段的反射句柄。 */
     private final Field valueField;
+
+    // ── 构造器 ─────────────────────────────────────────────────────────
 
     protected CmsScalar() {
         this.valueField = null;
@@ -38,28 +43,28 @@ public abstract class CmsScalar extends CmsType {
         }
     }
 
-    // ── convenience accessors ──────────────────────────────────────
+    // ── 读写 innerCache["value"] ─────────────────────────────────────
 
-    /** Read the cached value. */
+    /** 读取 innerCache["value"]。 */
     protected Object innerGet() {
         return innerCache.get("value");
     }
 
-    /** Write the cached value and immediately sync to inner. */
+    /** 写入 innerCache["value"] 并立即同步到 inner.value。 */
     protected void innerSet(Object v) {
         innerCache.put("value", v);
         syncToInnerValue();
     }
 
-    // ── automatic sync ─────────────────────────────────────────────
+    // ── inner ↔ innerCache 同步 ──────────────────────────────────────
 
-    /** Pull {@code inner.value → innerCache["value"]}. */
+    /** 从 inner.value 拉取到 innerCache["value"]。 */
     private void syncFromInnerValue() {
         if (valueField == null) return;
         try {
             Object val = valueField.get(inner);
-            // DefaultInner* wrappers — unwrap one more level
             if (val instanceof InnerBase) {
+                // DefaultInner* 包装，再解一层
                 Field innerValF = val.getClass().getField("value");
                 innerCache.put("value", innerValF.get(val));
             } else {
@@ -70,17 +75,16 @@ public abstract class CmsScalar extends CmsType {
         }
     }
 
-    /** Push {@code innerCache["value"] → inner.value}. */
+    /** 从 innerCache["value"] 推送到 inner.value。
+     *  处理 DefaultInner* 嵌套和 null 懒初始化。 */
     private void syncToInnerValue() {
         if (valueField == null) return;
         try {
             Object val = valueField.get(inner);
             if (val instanceof InnerBase) {
-                // DefaultInner* wrappers — set inner.value.value
                 Field innerValF = val.getClass().getField("value");
                 innerValF.set(val, innerCache.get("value"));
             } else if (val == null && InnerBase.class.isAssignableFrom(valueField.getType())) {
-                // Lazy-init null DefaultInner* inside Inner* (e.g. InnerObjectReference.value)
                 Object wrapper = valueField.getType().getDeclaredConstructor().newInstance();
                 Field innerValF = wrapper.getClass().getField("value");
                 innerValF.set(wrapper, innerCache.get("value"));
@@ -100,8 +104,7 @@ public abstract class CmsScalar extends CmsType {
 
     @Override
     public void syncToInner() {
-        // No-op: innerSet() already pushed cache → inner immediately.
+        // innerSet() 已即时同步，无需操作
         super.syncToInner();
     }
-
 }
