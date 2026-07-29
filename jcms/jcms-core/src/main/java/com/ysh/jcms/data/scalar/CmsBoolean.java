@@ -6,8 +6,7 @@ import com.ysh.jcms.data.InnerBoolean;
 /**
  * BOOLEAN — 8.2.1.
  *
- * <p>Read/write via {@code innerCache["value"]} only.
- * CmsScalar auto-syncs to/from {@code inner.value} at encode/decode time.
+ * <p>Read/write via CmsScalar which reads {@code inner.value} directly.
  */
 public class CmsBoolean extends CmsScalar {
 

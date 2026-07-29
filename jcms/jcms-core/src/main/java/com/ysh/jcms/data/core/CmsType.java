@@ -10,14 +10,9 @@ import java.util.List;
 /**
  * Root of the Cms* wrapper hierarchy.
  *
- * <p>A CmsType wraps an auto-generated {@code Inner*} instance (from jcms-data),
- * forming a two-layer structure:
- * <ul>
- *   <li><b>Inner* tree</b> — the raw data nodes ({@link InnerBase} subclasses).
- *       Rust FFI encodes/decodes this tree directly via JSON interchange.</li>
- *   <li><b>innerCache</b> — a {@code Map<String, Object>} that mirrors the Inner* tree
- *       for fast access. {@link #equals(Object)} now compares Inner* instances directly.</li>
- * </ul>
+ * <p>A CmsType wraps an auto-generated {@code Inner*} instance (from jcms-data).
+ * The {@link InnerBase Inner*} tree is the single source of truth; encode/decode
+ * operate directly on it via Rust FFI and JSON interchange.
  *
  * <p>Two kinds of subclasses:
  * <ul>
@@ -33,19 +28,6 @@ public abstract class CmsType {
 
     /** The Inner* instance backing this wrapper. */
     public InnerBase inner;
-
-    /**
-     * Data cache that mirrors the Inner* tree.
-     *
-     * <p>Key semantics by subclass:
-     * <ul>
-     *   <li>{@link CmsScalar} — {@code "value" → the actual value}</li>
-     *   <li>{@link CmsSequence} — {@code fieldName → child wrapper's innerCache}</li>
-     *   <li>{@link CmsChoice} — {@code "choice" → current variant index}</li>
-     *   <li>OPTIONAL fields — {@code "hasFieldName" → Boolean}</li>
-     * </ul>
-     */
-    public final java.util.Map<String, Object> innerCache = new java.util.HashMap<>();
 
     /** Cached reflection handle for {@code Inner*.encode()}. */
     private final Method encodeMethod;
@@ -80,7 +62,7 @@ public abstract class CmsType {
     /**
      * Encodes this wrapper to APER bytes.
      *
-     * <p>Calls {@link #syncToInner()} first to push cache values into the
+     * <p>Calls {@link #syncToInner()} first to push wrapper state into the
      * Inner* tree, then delegates to {@code Inner*.encode()} via Rust FFI.
      */
     public byte[] encode() {
@@ -96,7 +78,7 @@ public abstract class CmsType {
      * Decodes APER bytes into this wrapper.
      *
      * <p>Rust FFI decodes the bytes, Jackson creates a fresh Inner* tree,
-     * then {@link #syncFromInner()} pulls values back into the cache.
+     * then {@link #syncFromInner()} pulls values back into the wrapper.
      */
     public void decode(byte[] data) {
         try {
@@ -109,10 +91,10 @@ public abstract class CmsType {
 
     // ── Sync hooks (subclasses override) ─────────────────────────────
 
-    /** Pushes innerCache values into the Inner* tree before encode. */
+    /** Pushes wrapper state into the Inner* tree before encode. */
     public void syncToInner() {}
 
-    /** Pulls values from a fresh Inner* tree into innerCache after decode. */
+    /** Pulls values from a fresh Inner* tree into the wrapper after decode. */
     public void syncFromInner() {}
 
     // ── Object overrides ─────────────────────────────────────────────

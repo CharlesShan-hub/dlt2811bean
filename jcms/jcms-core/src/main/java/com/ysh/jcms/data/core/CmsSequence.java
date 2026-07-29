@@ -9,9 +9,8 @@ import java.util.*;
  * Base class for SEQUENCE types backed directly by an Inner* PDU.
  *
  * <p>Subclasses declare public CmsType fields annotated with {@link CmsField}.
- * The base class constructor automatically creates wrapper instances, binds
- * their {@code inner} reference to the corresponding Inner* field, and shares
- * their {@code innerCache} under the parent's cache.
+ * The base class constructor automatically creates wrapper instances and binds
+ * their {@code inner} reference to the corresponding Inner* field.
  *
  * <p>{@link #syncToInner()} / {@link #syncFromInner()} automatically sync all
  * injected wrappers and presence flags — subclasses generally do NOT need to
@@ -31,6 +30,9 @@ public abstract class CmsSequence extends CmsType {
     private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
     /** Field names annotated with {@code @CmsField(optional = true)}. */
     private final Set<String> optionalFields = new HashSet<>();
+    /** Non-InnerBase inner fields — CmsSequence reads/writes inner field directly. */
+    private final Map<String, CmsType> directWrappers = new LinkedHashMap<>();
+    private final Map<String, Field> directFields = new LinkedHashMap<>();
     /** SEQUENCE OF fields — fieldName → element wrapper type. */
     private final Map<String, Class<? extends CmsType>> sequenceFields = new LinkedHashMap<>();
 
@@ -89,9 +91,6 @@ public abstract class CmsSequence extends CmsType {
                     directFields.put(fieldName, innerField);
                 }
 
-                // share innerCache — parent's innerCache[fieldName] = wrapper.innerCache
-                innerCache.put(fieldName, wrapper.innerCache);
-
                 // set the field on this instance
                 f.set(this, wrapper);
                 injectedWrappers.put(fieldName, wrapper);
@@ -131,13 +130,13 @@ public abstract class CmsSequence extends CmsType {
                 throw new RuntimeException("Failed to rebind " + entry.getKey(), e);
             }
         }
-        // Rebind direct fields: read value from new inner into wrapper cache
+        // Rebind direct fields: read value from new inner into wrapper
         for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
             try {
                 Field innerField = inner.getClass().getField(e.getKey());
                 Object val = innerField.get(inner);
-                if (val != null) {
-                    e.getValue().innerCache.put("value", val);
+                if (val != null && e.getValue() instanceof CmsScalar) {
+                    ((CmsScalar) e.getValue()).innerSet(val);
                 }
             } catch (Exception ignored) {}
         }
@@ -145,15 +144,8 @@ public abstract class CmsSequence extends CmsType {
 
     // ── presence API ─────────────────────────────────────────────────
 
-    /** Presence key in innerCache for an optional field. */
-    private static String presKey(String fieldName) {
-        return "has" + Character.toUpperCase(fieldName.charAt(0)) + fieldName.substring(1);
-    }
-
-    /** Mark an optional field as present/absent. */
+    /** Mark an optional field as present/absent. Pushes directly to inner._set. */
     public void setPresent(String innerFieldName, boolean v) {
-        innerCache.put(presKey(innerFieldName), v);
-        // Immediately push to inner._set so it's always in sync.
         Set<String> s = innerSetField();
         if (s != null) {
             if (v) s.add(innerFieldName);
@@ -161,9 +153,10 @@ public abstract class CmsSequence extends CmsType {
         }
     }
 
-    /** Check if an optional field is present. */
+    /** Check if an optional field is present. Reads directly from inner._set. */
     public boolean isPresent(String fieldName) {
-        return Boolean.TRUE.equals(innerCache.get(presKey(fieldName)));
+        Set<String> s = innerSetField();
+        return s != null && s.contains(fieldName);
     }
 
     /** Look up Inner* {@code _set} field dynamically (declared on each subclass). */
@@ -230,7 +223,6 @@ public abstract class CmsSequence extends CmsType {
             T wrapper = wrapperType.getDeclaredConstructor().newInstance();
             Field innerFieldRef = inner.getClass().getField(innerField);
             wrapper.inner = (InnerBase) innerFieldRef.get(inner);
-            innerCache.put(innerField, wrapper.innerCache);
             injectedWrappers.put(innerField, wrapper);
             return wrapper;
         } catch (NoSuchFieldException e) {
@@ -242,8 +234,8 @@ public abstract class CmsSequence extends CmsType {
 
     /**
      * Bind an externally-created CmsType wrapper to a field, replacing the
-     * auto-injected wrapper.  Updates injectedWrappers and shares innerCache
-     * so that sync and equality checks see the new wrapper's data.
+     * auto-injected wrapper.  Updates injectedWrappers so that sync sees the
+     * new wrapper's data.
      *
      * <p>Also rebinds {@code wrapper.inner} to the parent Inner*'s field so that
      * {@code syncToInner()} writes data into the right place.  Without this, a
@@ -261,7 +253,6 @@ public abstract class CmsSequence extends CmsType {
      */
     protected void bindWrapper(String fieldName, CmsType wrapper) {
         injectedWrappers.put(fieldName, wrapper);
-        innerCache.put(fieldName, wrapper.innerCache);
         // Rebind wrapper.inner to the parent Inner*'s field so that
         // syncToInner() pushes data to the right Inner* object.
         try {
@@ -297,15 +288,16 @@ public abstract class CmsSequence extends CmsType {
         detectWrapperReplacements();
         // push cached wrappers → inner (skip non-presented optional fields)
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
-            if (optionalFields.contains(e.getKey()) && !Boolean.TRUE.equals(innerCache.get(presKey(e.getKey())))) {
+            if (optionalFields.contains(e.getKey()) && !isPresent(e.getKey())) {
                 continue; // optional field not marked present — leave inner untouched
             }
             e.getValue().syncToInner();
         }
-        // push direct field wrappers → inner native field
+        // push direct field wrappers → inner native field (via innerGet)
         for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
             try {
-                Object val = e.getValue().innerCache.get("value");
+                Object val = e.getValue() instanceof CmsScalar
+                    ? ((CmsScalar) e.getValue()).innerGet() : null;
                 if (val != null) {
                     directFields.get(e.getKey()).set(inner, val);
                 }
@@ -330,33 +322,20 @@ public abstract class CmsSequence extends CmsType {
                 throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
             }
         }
-        // Ensure OPTIONAL presence keys exist in innerCache
-        for (String opt : optionalFields) {
-            innerCache.putIfAbsent(presKey(opt), false);
-        }
-        // push optional field presence → inner._set
-        Set<String> s = innerSetField();
-        if (s != null) {
-            for (String opt : optionalFields) {
-                if (Boolean.TRUE.equals(innerCache.get(presKey(opt)))) {
-                    s.add(opt);
-                }
-            }
-        }
         super.syncToInner();
-        // ensure innerCache completeness (SEQUENCE OF lists, InnerEmpty fields)
+        // ensure wrapper replacements are detected (reassigned @CmsField wrappers)
         ensureInnerCacheComplete();
     }
 
     @Override
     public void syncFromInner() {
         super.syncFromInner();
-        // pull inner native field → direct field wrapper cache
+        // pull inner native field → direct field wrapper (via innerSet)
         for (Map.Entry<String, CmsType> e : directWrappers.entrySet()) {
             try {
                 Object val = directFields.get(e.getKey()).get(inner);
-                if (val != null) {
-                    e.getValue().innerCache.put("value", val);
+                if (val != null && e.getValue() instanceof CmsScalar) {
+                    ((CmsScalar) e.getValue()).innerSet(val);
                 }
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to sync direct field " + e.getKey(), ex);
@@ -387,23 +366,16 @@ public abstract class CmsSequence extends CmsType {
                 throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
             }
         }
-        // pull inner._set → optional field presence
-        Set<String> s = innerSetField();
-        if (s != null) {
-            for (String opt : optionalFields) {
-                innerCache.put(presKey(opt), s.contains(opt));
-            }
-        }
         // sync inner → cached wrappers
         for (CmsType w : injectedWrappers.values()) {
             w.syncFromInner();
         }
-        // ensure innerCache completeness (SEQUENCE OF lists, InnerEmpty fields)
+        // ensure wrapper replacements are detected (reassigned @CmsField wrappers)
         ensureInnerCacheComplete();
     }
 
     /**
-     * Scan public @CmsField wrappers and update injectedWrappers/innerCache
+     * Scan public @CmsField wrappers and update injectedWrappers
      * when the field has been replaced by direct assignment (e.g.
      * {@code p.signedTime = new CmsUtcTime()}).  Also rebinds the new
      * wrapper's {@code inner} to the correct Inner* field so that
@@ -422,9 +394,8 @@ public abstract class CmsSequence extends CmsType {
                 CmsType existing = injectedWrappers.get(name);
                 if (existing == val) continue; // not replaced
 
-                // Register the new wrapper in injectedWrappers + innerCache
+                // Register the new wrapper in injectedWrappers
                 CmsType wrapper = (CmsType) val;
-                innerCache.put(name, wrapper.innerCache);
                 injectedWrappers.put(name, wrapper);
 
                 // Rebind the new wrapper's inner to the parent's Inner* field
@@ -451,29 +422,11 @@ public abstract class CmsSequence extends CmsType {
     }
 
     /**
-     * Scan @CmsField-annotated fields and ensure they are present in innerCache.
-     * This handles:
-     * <ul>
-     *   <li>SEQUENCE OF fields (list) — not in innerCache by default</li>
-     *   <li>@CmsField wrappers on InnerEmpty subclasses — injectFields skipped them</li>
-     * </ul>
+     * Detect wrapper replacements (field reassignments) in @CmsField fields.
+     * Calls {@link #detectWrapperReplacements()} internally.
      */
     protected void ensureInnerCacheComplete() {
         detectWrapperReplacements();
-        for (Field f : getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            CmsField ann = f.getAnnotation(CmsField.class);
-            if (ann == null) continue;
-            String name = f.getName();
-            try {
-                if (innerCache.containsKey(name)) continue; // already present
-                if (ann.sequenceOf()) {
-                    innerCache.put(name, f.get(this));
-                }
-            } catch (Exception e) {
-                // skip fields that fail reflection
-            }
-        }
     }
 
     // ── decode override — rebind wrappers ──────────────────────────────

@@ -127,13 +127,6 @@ public class CmsFormatUtil {
     }
 
     private static void scalarToJson(CmsType type, StringBuilder sb) {
-        // Try innerCache["value"] first (CmsScalar pattern)
-        Object cached = type.innerCache.get("value");
-        if (cached != null) {
-            toJsonValue(cached, sb);
-            return;
-        }
-        // Fallback: low-level scalar → read from inner's "value" field
         try {
             Field vf = type.inner.getClass().getField("value");
             Object val = vf.get(type.inner);

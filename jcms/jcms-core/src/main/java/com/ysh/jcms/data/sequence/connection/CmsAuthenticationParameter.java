@@ -27,7 +27,7 @@ public class CmsAuthenticationParameter extends CmsSequence {
         this.signatureCertificate = new CmsOctetString();
         this.signedTime = new CmsUtcTime();
         this.signedValue = new CmsOctetString();
-        ensureInnerCacheComplete(); // populate injectedWrappers + innerCache so symmetry holds
+        ensureInnerCacheComplete(); // detect wrapper replacements so injectedWrappers is populated
     }
 
     /** Constructor with specific Inner*AuthenticationParameter. */

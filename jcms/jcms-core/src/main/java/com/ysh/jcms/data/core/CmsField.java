@@ -13,9 +13,9 @@ import java.lang.annotation.Target;
  * bound and synced. For {@link #sequenceOf()} fields (SEQUENCE OF), the
  * {@link #elementType()} specifies the CmsType wrapper class for each element.
  *
- * <p>If {@link #optional()} is true, the parent automatically syncs
- * {@code innerCache["has&lt;FieldName&gt;"]} with the Inner* {@code _set}
- * during encode/decode.
+ * <p>If {@link #optional()} is true, the parent reads/writes presence from
+ * the Inner* {@code _set} directly via {@link CmsSequence#setPresent} /
+ * {@link CmsSequence#isPresent}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)

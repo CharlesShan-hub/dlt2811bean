@@ -150,11 +150,11 @@ public class CmsDataDefinition extends CmsChoice {
     public void syncFromInner() {
         InnerDataDefinition i = (InnerDataDefinition) inner;
         String ch = i._choice;
-        if (ch == null) { innerCache.put("choice", -1); return; }
+        if (ch == null) return;
 
         // Handle structure manually
         if ("structure".equals(ch)) {
-            innerCache.put("choice", CHOICE_STRUCTURE);
+            selectedChoiceIndex = CHOICE_STRUCTURE;
             alt_structure.clear();
             if (i.structure != null && i.structure.value != null) {
                 for (InnerAnonymousDataDefinitionStructure elem : i.structure.value) {
@@ -169,22 +169,22 @@ public class CmsDataDefinition extends CmsChoice {
 
         // Handle string length variants
         if ("bit-string".equals(ch)) {
-            innerCache.put("choice", CHOICE_BIT_STRING);
+            selectedChoiceIndex = CHOICE_BIT_STRING;
             alt_bit_string_len.value(i.bit_string);
             return;
         }
         if ("octet-string".equals(ch)) {
-            innerCache.put("choice", CHOICE_OCTET_STRING);
+            selectedChoiceIndex = CHOICE_OCTET_STRING;
             alt_octet_string_len.value(i.octet_string);
             return;
         }
         if ("visible-string".equals(ch)) {
-            innerCache.put("choice", CHOICE_VISIBLE_STRING);
+            selectedChoiceIndex = CHOICE_VISIBLE_STRING;
             alt_visible_string_len.value(i.visible_string);
             return;
         }
         if ("unicode-string".equals(ch)) {
-            innerCache.put("choice", CHOICE_UNICODE_STRING);
+            selectedChoiceIndex = CHOICE_UNICODE_STRING;
             alt_unicode_string_len.value(i.unicode_string);
             return;
         }

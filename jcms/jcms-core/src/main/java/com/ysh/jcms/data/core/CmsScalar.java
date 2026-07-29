@@ -21,6 +21,8 @@ public abstract class CmsScalar extends CmsType {
 
     /** Inner*.value 字段的反射句柄。 */
     private final Field valueField;
+    /** 当 valueField 为 null 时的兜底存储（如 directWrappers 场景）。 */
+    private Object directValue;
 
     // ── 构造器 ─────────────────────────────────────────────────────────
 
@@ -31,7 +33,19 @@ public abstract class CmsScalar extends CmsType {
     protected CmsScalar(InnerBase inner) {
         super(inner);
         this.valueField = findValueField(inner);
-        syncFromInnerValue();
+        if (valueField != null) {
+            try {
+                Object val = valueField.get(inner);
+                if (val instanceof InnerBase) {
+                    Field innerValF = val.getClass().getField("value");
+                    this.directValue = innerValF.get(val);
+                } else {
+                    this.directValue = val;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private static Field findValueField(InnerBase inner) {
@@ -44,63 +58,39 @@ public abstract class CmsScalar extends CmsType {
 
     // ── 读写 value ───────────────────────────────────────────────────
 
-    /** 从 inner.value 读取，不再经过 innerCache。 */
+    /** 从 inner.value 或 directValue 读取。 */
     protected Object innerGet() {
-        if (valueField == null) return null;
-        try {
-            Object val = valueField.get(inner);
-            if (val instanceof InnerBase) {
-                // DefaultInner* 包装类型，解一层取 .value
-                Field innerValF = val.getClass().getField("value");
-                return innerValF.get(val);
+        if (valueField != null) {
+            try {
+                Object val = valueField.get(inner);
+                if (val instanceof InnerBase) {
+                    Field innerValF = val.getClass().getField("value");
+                    return innerValF.get(val);
+                }
+                return val;
+            } catch (Exception e) {
+                return null;
             }
-            return val;
-        } catch (Exception e) {
-            return null;
         }
+        return directValue;
     }
 
-    /** 写入 innerCache["value"] 并立即同步到 inner.value。 */
+    /** 写入 directValue 并立即同步到 inner.value（存在 valueField 时）。 */
     protected void innerSet(Object v) {
-        innerCache.put("value", v);
-        syncToInnerValue();
-    }
-
-    // ── inner ↔ innerCache 同步 ──────────────────────────────────────
-
-    /** 从 inner.value 拉取到 innerCache["value"]。 */
-    private void syncFromInnerValue() {
-        if (valueField == null) return;
-        try {
-            Object val = valueField.get(inner);
-            if (val instanceof InnerBase) {
-                // DefaultInner* 包装，再解一层
-                Field innerValF = val.getClass().getField("value");
-                innerCache.put("value", innerValF.get(val));
-            } else {
-                innerCache.put("value", val);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** 从 innerCache["value"] 推送到 inner.value。
-     *  处理 DefaultInner* 嵌套和 null 懒初始化。 */
-    private void syncToInnerValue() {
+        this.directValue = v;
         if (valueField == null) return;
         try {
             Object val = valueField.get(inner);
             if (val instanceof InnerBase) {
                 Field innerValF = val.getClass().getField("value");
-                innerValF.set(val, innerCache.get("value"));
+                innerValF.set(val, v);
             } else if (val == null && InnerBase.class.isAssignableFrom(valueField.getType())) {
                 Object wrapper = valueField.getType().getDeclaredConstructor().newInstance();
                 Field innerValF = wrapper.getClass().getField("value");
-                innerValF.set(wrapper, innerCache.get("value"));
+                innerValF.set(wrapper, v);
                 valueField.set(inner, wrapper);
             } else {
-                valueField.set(inner, innerCache.get("value"));
+                valueField.set(inner, v);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -109,7 +99,19 @@ public abstract class CmsScalar extends CmsType {
 
     @Override
     public void syncFromInner() {
-        syncFromInnerValue();
+        if (valueField != null) {
+            try {
+                Object val = valueField.get(inner);
+                if (val instanceof InnerBase) {
+                    Field innerValF = val.getClass().getField("value");
+                    this.directValue = innerValF.get(val);
+                } else {
+                    this.directValue = val;
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override

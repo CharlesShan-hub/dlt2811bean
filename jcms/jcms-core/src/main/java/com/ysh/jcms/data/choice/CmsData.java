@@ -204,9 +204,6 @@ public class CmsData extends CmsChoice {
 
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if (ch == CHOICE_ARRAY || ch == CHOICE_STRUCTURE) {
-            // Clear previous variant data from innerCache (keep "choice")
-            innerCache.keySet().removeIf(k -> !"choice".equals(k));
-
             i._choice = (ch == CHOICE_ARRAY) ? "array" : "structure";
             List<InnerData> list = new ArrayList<>();
             for (CmsData elem : alt_sequence) {
@@ -215,7 +212,6 @@ public class CmsData extends CmsChoice {
             }
             if (ch == CHOICE_ARRAY) i.array = list;
             else i.structure = list;
-            innerCache.put("alt_sequence", alt_sequence);
             return;
         }
 
@@ -227,15 +223,11 @@ public class CmsData extends CmsChoice {
     public void syncFromInner() {
         InnerData i = (InnerData) inner;
         String ch = i._choice;
-        if (ch == null) { innerCache.put("choice", -1); return; }
+        if (ch == null) return;
 
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if ("array".equals(ch) || "structure".equals(ch)) {
             selectedChoiceIndex = "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE;
-            // Clear previous variant data from innerCache (keep "choice")
-            innerCache.keySet().removeIf(k -> !"choice".equals(k));
-
-            innerCache.put("choice", selectedChoiceIndex);
             List<InnerData> src = "array".equals(ch) ? i.array : i.structure;
             alt_sequence.clear();
             if (src != null) {
@@ -246,7 +238,6 @@ public class CmsData extends CmsChoice {
                     alt_sequence.add(c);
                 }
             }
-            innerCache.put("alt_sequence", alt_sequence);
             return;
         }
 
