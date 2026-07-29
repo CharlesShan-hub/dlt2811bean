@@ -7,10 +7,9 @@ import java.lang.reflect.Field;
  * Base for single-value types whose Inner* stores the value in
  * a public field named {@code value}.
  *
- * <p>Subclasses read/write {@code innerCache["value"]} only;
+ * <p>{@link #innerGet()} reads directly from {@code inner.value};
  * {@link #innerSet(Object)} immediately pushes the value into
- * the Inner* tree, so {@code innerCache["value"]} and
- * {@code inner.value} are always in sync.
+ * the Inner* tree.
  *
  * <p>The no-arg constructor is for container types whose Inner*
  * does not have a {@code value} field (the {@code valueField}
@@ -43,11 +42,22 @@ public abstract class CmsScalar extends CmsType {
         }
     }
 
-    // ── 读写 innerCache["value"] ─────────────────────────────────────
+    // ── 读写 value ───────────────────────────────────────────────────
 
-    /** 读取 innerCache["value"]。 */
+    /** 从 inner.value 读取，不再经过 innerCache。 */
     protected Object innerGet() {
-        return innerCache.get("value");
+        if (valueField == null) return null;
+        try {
+            Object val = valueField.get(inner);
+            if (val instanceof InnerBase) {
+                // DefaultInner* 包装类型，解一层取 .value
+                Field innerValF = val.getClass().getField("value");
+                return innerValF.get(val);
+            }
+            return val;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     /** 写入 innerCache["value"] 并立即同步到 inner.value。 */

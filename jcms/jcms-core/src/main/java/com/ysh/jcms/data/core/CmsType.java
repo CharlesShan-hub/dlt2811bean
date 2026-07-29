@@ -2,7 +2,6 @@ package com.ysh.jcms.data.core;
 
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
-import com.ysh.jcms.util.CmsEqualUtil;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -17,8 +16,7 @@ import java.util.List;
  *   <li><b>Inner* tree</b> — the raw data nodes ({@link InnerBase} subclasses).
  *       Rust FFI encodes/decodes this tree directly via JSON interchange.</li>
  *   <li><b>innerCache</b> — a {@code Map<String, Object>} that mirrors the Inner* tree
- *       but is the single source of truth for {@link #equals(Object)} comparisons
- *       via {@link CmsEqualUtil}.</li>
+ *       for fast access. {@link #equals(Object)} now compares Inner* instances directly.</li>
  * </ul>
  *
  * <p>Two kinds of subclasses:
@@ -120,21 +118,19 @@ public abstract class CmsType {
     // ── Object overrides ─────────────────────────────────────────────
 
     /**
-     * Compares two CmsType objects by walking their innerCache trees.
-     *
-     * <p>Delegates to {@link CmsEqualUtil} to avoid the null-vs-default-value
-     * problem in Lombok-generated {@code Inner*.equals()}.
+     * <p>{@link #equals(Object)} compares the underlying Inner* instances directly,
+     * avoiding the null-vs-default-value problem of Lombok-generated equals.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || !(o instanceof CmsType)) return false;
-        return CmsEqualUtil.equal(this, (CmsType) o);
+        return inner.equals(((CmsType) o).inner);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return inner.hashCode();
     }
 
     /**

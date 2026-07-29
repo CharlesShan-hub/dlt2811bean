@@ -31,9 +31,6 @@ public abstract class CmsSequence extends CmsType {
     private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
     /** Field names annotated with {@code @CmsField(optional = true)}. */
     private final Set<String> optionalFields = new HashSet<>();
-    /** Non-InnerBase inner fields — CmsSequence reads/writes inner field directly. */
-    private final Map<String, CmsType> directWrappers = new LinkedHashMap<>();
-    private final Map<String, Field> directFields = new LinkedHashMap<>();
     /** SEQUENCE OF fields — fieldName → element wrapper type. */
     private final Map<String, Class<? extends CmsType>> sequenceFields = new LinkedHashMap<>();
 
@@ -333,7 +330,7 @@ public abstract class CmsSequence extends CmsType {
                 throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
             }
         }
-        // Ensure OPTIONAL presence keys exist in innerCache (for CmsEqualUtil)
+        // Ensure OPTIONAL presence keys exist in innerCache
         for (String opt : optionalFields) {
             innerCache.putIfAbsent(presKey(opt), false);
         }
@@ -379,6 +376,8 @@ public abstract class CmsSequence extends CmsType {
                         CmsType wrapper = e.getValue().getDeclaredConstructor().newInstance();
                         if (innerElem instanceof InnerBase) {
                             wrapper.inner = (InnerBase) innerElem;
+                            if (wrapper instanceof CmsChoice)
+                                ((CmsChoice) wrapper).rebindChoices();
                         }
                         wrapper.syncFromInner();
                         list.add(wrapper);

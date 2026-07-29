@@ -14,8 +14,6 @@ import java.util.*;
  *   <li>wrapper creation and inner binding</li>
  *   <li>{@link #syncToInner()} / {@link #syncFromInner()} dispatch</li>
  * </ul>
- *
- * <p>The currently selected variant is stored in {@link #innerCache} under key {@code "choice"}.
  */
 public abstract class CmsChoice extends CmsType {
 
@@ -78,6 +76,8 @@ public abstract class CmsChoice extends CmsType {
 
     private final Map<Integer, VariantInfo> variantByIndex = new LinkedHashMap<>();
     private final Map<String, VariantInfo> variantByName = new LinkedHashMap<>();
+    /** Locally tracked variant index, for @Choice-managed variants and manual ones (e.g. ARRAY/STRUCTURE). */
+    protected int selectedChoiceIndex = -1;
 
     protected CmsChoice(InnerBase inner) {
         super(inner);
@@ -200,13 +200,16 @@ public abstract class CmsChoice extends CmsType {
 
     /** Get the current variant index. -1 means no variant selected. */
     public int choice() {
-        Object v = innerCache.get("choice");
-        return v instanceof Integer ? (Integer) v : -1;
+        return selectedChoiceIndex;
     }
 
     /** Select a variant by index. */
     public CmsChoice choice(int v) {
-        innerCache.put("choice", v);
+        selectedChoiceIndex = v;
+        VariantInfo vi = variantByIndex.get(v);
+        if (vi != null) {
+            innerSetChoice(vi.name);
+        }
         return this;
     }
 
@@ -217,8 +220,12 @@ public abstract class CmsChoice extends CmsType {
         VariantInfo vi = variantByIndex.get(ch);
         if (vi == null) return;
 
-        // Clear previous variant data from innerCache (keep "choice")
-        innerCache.keySet().removeIf(k -> !"choice".equals(k));
+        // Clear all non-selected Inner* fields to null so switching variants
+        // doesn't leave stale data in the Inner* tree.
+        for (VariantInfo v : variantByIndex.values()) {
+            if (v == vi || v.innerF == null) continue;
+            try { v.innerF.set(inner, null); } catch (Exception ignored) {}
+        }
 
         try {
             innerSetChoice(vi.name);
@@ -246,20 +253,26 @@ public abstract class CmsChoice extends CmsType {
             throw new RuntimeException("syncToInner failed for variant " + vi.name, e);
         }
         super.syncToInner();
-        storeVariantInCache(vi);
+        // Ensure unselected Inner* variant fields are initialized (not null)
+        // so that Inner*.equals() works.
+        for (VariantInfo v : variantByIndex.values()) {
+            if (v == vi || v.innerF == null) continue;
+            try {
+                if (v.innerF.get(inner) == null) {
+                    v.innerF.set(inner, v.innerF.getType().getDeclaredConstructor().newInstance());
+                }
+            } catch (Exception ignored) {}
+        }
     }
 
     @Override
     public void syncFromInner() {
         String ch = innerGetChoice();
-        if (ch == null) { innerCache.put("choice", -1); return; }
+        if (ch == null) return;
         VariantInfo vi = variantByName.get(ch);
-        if (vi == null) { innerCache.put("choice", -1); return; }
+        if (vi == null) return;
+        selectedChoiceIndex = vi.index;
 
-        // Clear previous variant data from innerCache (keep "choice")
-        innerCache.keySet().removeIf(k -> !"choice".equals(k));
-
-        innerCache.put("choice", vi.index);
         try {
             switch (vi.sync) {
                 case SCALAR:
@@ -283,39 +296,6 @@ public abstract class CmsChoice extends CmsType {
             }
         } catch (Exception e) {
             throw new RuntimeException("syncFromInner failed for variant " + vi.name, e);
-        }
-        storeVariantInCache(vi);
-    }
-
-    /**
-     * Store the selected variant's field value in innerCache under the field name.
-     *
-     * <ul>
-     *   <li>CmsType wrappers → store wrapper.innerCache (for recursive comparison)</li>
-     *   <li>InnerBase types (DefaultInner*) → unwrap .value field</li>
-     *   <li>Others → store as-is (byte[], List, etc.)</li>
-     * </ul>
-     */
-    private void storeVariantInCache(VariantInfo vi) {
-        if (vi == null || vi.field == null) return;
-        try {
-            Object val = vi.field.get(this);
-            String key = vi.field.getName();
-            if (val instanceof CmsType) {
-                innerCache.put(key, ((CmsType) val).innerCache);
-            } else if (val instanceof InnerBase) {
-                // DefaultInner* types — store the inner .value directly
-                try {
-                    Field vf = val.getClass().getField("value");
-                    innerCache.put(key, vf.get(val));
-                } catch (NoSuchFieldException e) {
-                    innerCache.put(key, val); // fallback: store as-is
-                }
-            } else {
-                innerCache.put(key, val);
-            }
-        } catch (Exception e) {
-            // skip if field cannot be read
         }
     }
 

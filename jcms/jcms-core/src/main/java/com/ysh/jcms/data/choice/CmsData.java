@@ -231,10 +231,11 @@ public class CmsData extends CmsChoice {
 
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if ("array".equals(ch) || "structure".equals(ch)) {
+            selectedChoiceIndex = "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE;
             // Clear previous variant data from innerCache (keep "choice")
             innerCache.keySet().removeIf(k -> !"choice".equals(k));
 
-            innerCache.put("choice", "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE);
+            innerCache.put("choice", selectedChoiceIndex);
             List<InnerData> src = "array".equals(ch) ? i.array : i.structure;
             alt_sequence.clear();
             if (src != null) {
