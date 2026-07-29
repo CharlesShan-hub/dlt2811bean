@@ -31,6 +31,8 @@ public class CmsAssociateRequest extends CmsSequence {
     }
     public CmsAssociateRequest authenticationParameter(CmsAuthenticationParameter v) {
         this.authenticationParameter = v;
+        bindWrapper("authenticationParameter", v);
+        setPresent("authenticationParameter", true);
         return this;
     }
 }

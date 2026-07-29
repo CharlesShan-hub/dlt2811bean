@@ -114,12 +114,20 @@ public abstract class CmsSequence extends CmsType {
     public void rebindWrappers() {
         for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
             try {
-                Field innerField = inner.getClass().getField(entry.getKey());
+                String name = entry.getKey();
+                Field innerField = inner.getClass().getField(name);
                 CmsType wrapper = entry.getValue();
                 if (InnerBase.class.isAssignableFrom(innerField.getType())) {
                     wrapper.inner = (InnerBase) innerField.get(inner);
                     if (wrapper instanceof CmsChoice)
                         ((CmsChoice) wrapper).rebindChoices();
+                    // Recursively rebind sub-wrappers of CmsSequence wrappers
+                    // (e.g. CmsAuthenticationParameter → signatureCertificate/signedTime/signedValue)
+                    if (wrapper instanceof CmsSequence) {
+                        CmsSequence seq = (CmsSequence) wrapper;
+                        seq.rebindWrappers();
+                        seq.ensureInnerCacheComplete();
+                    }
                     wrapper.syncFromInner();
                 }
             } catch (Exception e) {
@@ -234,6 +242,11 @@ public abstract class CmsSequence extends CmsType {
      * auto-injected wrapper.  Updates injectedWrappers and shares innerCache
      * so that sync and equality checks see the new wrapper's data.
      *
+     * <p>Also rebinds {@code wrapper.inner} to the parent Inner*'s field so that
+     * {@code syncToInner()} writes data into the right place.  Without this, a
+     * wrapper created externally (e.g. {@code new CmsUtcTime()}) has its own
+     * independent inner that is disconnected from the parent's Inner* tree.
+     *
      * <p>Call from subclass setters that replace (not just mutate) a wrapper:
      * <pre>{@code
      * public MySeq authenticationParameter(CmsAuthenticationParameter v) {
@@ -246,12 +259,39 @@ public abstract class CmsSequence extends CmsType {
     protected void bindWrapper(String fieldName, CmsType wrapper) {
         injectedWrappers.put(fieldName, wrapper);
         innerCache.put(fieldName, wrapper.innerCache);
+        // Rebind wrapper.inner to the parent Inner*'s field so that
+        // syncToInner() pushes data to the right Inner* object.
+        try {
+            Field innerField = inner.getClass().getField(fieldName);
+            if (InnerBase.class.isAssignableFrom(innerField.getType())) {
+                wrapper.inner = (InnerBase) innerField.get(inner);
+                if (wrapper instanceof CmsChoice)
+                    ((CmsChoice) wrapper).rebindChoices();
+                if (wrapper instanceof CmsSequence) {
+                    CmsSequence seq = (CmsSequence) wrapper;
+                    seq.rebindWrappers();
+                    // Populate injectedWrappers from @CmsField annotations — needed when
+                    // wrapper was created with InnerEmpty (e.g. CmsAuthenticationParameter())
+                    // so injectFields found no matching Inner* fields.
+                    seq.ensureInnerCacheComplete();
+                }
+                // Push wrapper's current data → new inner (so it's picked up by encode)
+                wrapper.syncToInner();
+            }
+        } catch (NoSuchFieldException e) {
+            // Inner* doesn't have this field — skip silently
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to rebind inner for " + fieldName, e);
+        }
     }
 
     // ── automatic sync ───────────────────────────────────────────
 
     @Override
     public void syncToInner() {
+        // Detect field-assigned wrapper replacements BEFORE syncing, so that
+        // the NEW wrapper's data is pushed to inner instead of the old one's.
+        detectWrapperReplacements();
         // push cached wrappers → inner (skip non-presented optional fields)
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
             if (optionalFields.contains(e.getKey()) && !Boolean.TRUE.equals(innerCache.get(presKey(e.getKey())))) {
@@ -358,6 +398,54 @@ public abstract class CmsSequence extends CmsType {
     }
 
     /**
+     * Scan public @CmsField wrappers and update injectedWrappers/innerCache
+     * when the field has been replaced by direct assignment (e.g.
+     * {@code p.signedTime = new CmsUtcTime()}).  Also rebinds the new
+     * wrapper's {@code inner} to the correct Inner* field so that
+     * subsequent {@code syncToInner()} pushes data into the right place.
+     */
+    private void detectWrapperReplacements() {
+        for (Field f : getClass().getFields()) {
+            if (Modifier.isStatic(f.getModifiers())) continue;
+            CmsField ann = f.getAnnotation(CmsField.class);
+            if (ann == null) continue;
+            if (!CmsType.class.isAssignableFrom(f.getType())) continue;
+            String name = f.getName();
+            try {
+                Object val = f.get(this);
+                if (!(val instanceof CmsType)) continue;
+                CmsType existing = injectedWrappers.get(name);
+                if (existing == val) continue; // not replaced
+
+                // Register the new wrapper in injectedWrappers + innerCache
+                CmsType wrapper = (CmsType) val;
+                innerCache.put(name, wrapper.innerCache);
+                injectedWrappers.put(name, wrapper);
+
+                // Rebind the new wrapper's inner to the parent's Inner* field
+                // (otherwise syncToInner writes to wrapper's own independent inner)
+                try {
+                    Field innerField = inner.getClass().getField(name);
+                    if (InnerBase.class.isAssignableFrom(innerField.getType())) {
+                        wrapper.inner = (InnerBase) innerField.get(inner);
+                        if (wrapper instanceof CmsChoice)
+                            ((CmsChoice) wrapper).rebindChoices();
+                        if (wrapper instanceof CmsSequence) {
+                            CmsSequence seq = (CmsSequence) wrapper;
+                            seq.rebindWrappers();
+                            seq.ensureInnerCacheComplete();
+                        }
+                    }
+                } catch (NoSuchFieldException e) {
+                    // Inner* doesn't have this field — new wrapper keeps its own inner
+                }
+            } catch (Exception e) {
+                // skip fields that fail reflection
+            }
+        }
+    }
+
+    /**
      * Scan @CmsField-annotated fields and ensure they are present in innerCache.
      * This handles:
      * <ul>
@@ -365,24 +453,17 @@ public abstract class CmsSequence extends CmsType {
      *   <li>@CmsField wrappers on InnerEmpty subclasses — injectFields skipped them</li>
      * </ul>
      */
-    private void ensureInnerCacheComplete() {
+    protected void ensureInnerCacheComplete() {
+        detectWrapperReplacements();
         for (Field f : getClass().getFields()) {
             if (Modifier.isStatic(f.getModifiers())) continue;
             CmsField ann = f.getAnnotation(CmsField.class);
             if (ann == null) continue;
             String name = f.getName();
-            if (innerCache.containsKey(name)) continue; // already present
             try {
+                if (innerCache.containsKey(name)) continue; // already present
                 if (ann.sequenceOf()) {
                     innerCache.put(name, f.get(this));
-                } else if (CmsType.class.isAssignableFrom(f.getType())
-                        && !injectedWrappers.containsKey(name)) {
-                    // InnerEmpty or no-match @CmsField: share wrapper's innerCache
-                    Object val = f.get(this);
-                    if (val instanceof CmsType) {
-                        innerCache.put(name, ((CmsType) val).innerCache);
-                        injectedWrappers.put(name, (CmsType) val);
-                    }
                 }
             } catch (Exception e) {
                 // skip fields that fail reflection

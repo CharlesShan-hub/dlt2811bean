@@ -30,23 +30,6 @@ public class CmsEqualUtil {
 
         // 1. Compare innerCache maps (CmsScalar values, CmsSequence @CmsField wrappers)
         if (!compareValue(a.innerCache, b.innerCache)) {
-            System.err.println("=== CmsEqualUtil DEBUG " + a.getClass().getSimpleName() + " ===");
-            System.err.println("a.innerCache: " + a.innerCache);
-            System.err.println("b.innerCache: " + b.innerCache);
-            for (String k : a.innerCache.keySet()) {
-                if (isPresenceKey(k)) continue;
-                if (!b.innerCache.containsKey(k)) {
-                    System.err.println("  key only in a: " + k);
-                } else if (!compareValue(a.innerCache.get(k), b.innerCache.get(k))) {
-                    System.err.println("  diff key: " + k + " a=" + a.innerCache.get(k) + " b=" + b.innerCache.get(k));
-                }
-            }
-            for (String k : b.innerCache.keySet()) {
-                if (isPresenceKey(k)) continue;
-                if (!a.innerCache.containsKey(k)) {
-                    System.err.println("  key only in b: " + k);
-                }
-            }
             return false;
         }
 
@@ -85,13 +68,7 @@ public class CmsEqualUtil {
             return compareLists((List<Object>) va, (List<Object>) vb);
         }
         if (va instanceof byte[]) {
-            boolean eq = Arrays.equals((byte[]) va, (byte[]) vb);
-            if (!eq) {
-                byte[] ba = (byte[])va, bb = (byte[])vb;
-                System.err.println("  byte[] diff: len a=" + ba.length + " b=" + bb.length
-                    + " a=" + java.util.Arrays.toString(ba) + " b=" + java.util.Arrays.toString(bb));
-            }
-            return eq;
+            return Arrays.equals((byte[]) va, (byte[]) vb);
         }
         if (va instanceof CmsType) {
             return equal((CmsType) va, (CmsType) vb);
