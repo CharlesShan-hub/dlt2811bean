@@ -2,9 +2,9 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.string.CmsUint8Array;
-import com.ysh.jcms.svc.rpc.CmsGetRpcMethodDefinitionError;
-import com.ysh.jcms.svc.rpc.CmsGetRpcMethodDefinitionRequest;
-import com.ysh.jcms.svc.rpc.CmsGetRpcMethodDefinitionResponse;
+import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionError;
+import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
+import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;

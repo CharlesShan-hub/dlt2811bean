@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
-import com.ysh.jcms.svc.report.CmsSetBrcbValuesRequest;
-import com.ysh.jcms.svc.report.CmsSetBrcbEntry;
+import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
+import com.ysh.jcms.pdu.report.CmsSetBrcbEntry;
 
 public class SetBrcbValuesDao {
     private String ref;

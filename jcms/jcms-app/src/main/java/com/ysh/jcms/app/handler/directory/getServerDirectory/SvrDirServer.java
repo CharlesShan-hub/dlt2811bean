@@ -2,12 +2,12 @@ package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryError;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryRequest;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryResponse;
-import com.ysh.jcms.svc.directory.CmsObjectClass;
+import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
+import com.ysh.jcms.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;

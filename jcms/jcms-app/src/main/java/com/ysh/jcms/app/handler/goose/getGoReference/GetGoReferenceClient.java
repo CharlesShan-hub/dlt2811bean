@@ -2,9 +2,9 @@ package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.svc.goose.CmsGetGoReferenceError;
-import com.ysh.jcms.svc.goose.CmsGetGoReferenceRequest;
-import com.ysh.jcms.svc.goose.CmsGetGoReferenceResponse;
+import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
+import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
+import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

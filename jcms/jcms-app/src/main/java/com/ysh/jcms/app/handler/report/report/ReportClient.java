@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.report;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.report.CmsReport;
+import com.ysh.jcms.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

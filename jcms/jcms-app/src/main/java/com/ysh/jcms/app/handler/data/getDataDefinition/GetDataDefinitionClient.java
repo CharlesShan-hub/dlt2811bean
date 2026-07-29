@@ -1,11 +1,11 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.data.CmsDataDefResultEntry;
-import com.ysh.jcms.svc.data.CmsDataRefEntry;
-import com.ysh.jcms.svc.data.CmsGetDataDefinitionError;
-import com.ysh.jcms.svc.data.CmsGetDataDefinitionRequest;
-import com.ysh.jcms.svc.data.CmsGetDataDefinitionResponse;
+import com.ysh.jcms.pdu.data.CmsDataDefResultEntry;
+import com.ysh.jcms.pdu.data.CmsDataRefEntry;
+import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
+import com.ysh.jcms.pdu.data.CmsGetDataDefinitionRequest;
+import com.ysh.jcms.pdu.data.CmsGetDataDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryError;
-import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryRequest;
-import com.ysh.jcms.svc.directory.CmsGetLogicalNodeDirectoryResponse;
-import com.ysh.jcms.svc.other.CmsReferenceChoice;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
+import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

@@ -1,7 +1,12 @@
 package com.ysh.jcms.data.choice;
 
-import com.ysh.jcms.data.common.*;
+import com.ysh.jcms.data.bitarray.CmsQuality;
+
 import java.math.BigInteger;
+
+import com.ysh.jcms.data.enumerate.CmsDbpos;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.enumerate.CmsTcmd;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

@@ -2,10 +2,10 @@ package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.connection.CmsReleaseError;
-import com.ysh.jcms.svc.connection.CmsReleaseRequest;
-import com.ysh.jcms.svc.connection.CmsReleaseResponse;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.connection.CmsReleaseError;
+import com.ysh.jcms.pdu.connection.CmsReleaseRequest;
+import com.ysh.jcms.pdu.connection.CmsReleaseResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

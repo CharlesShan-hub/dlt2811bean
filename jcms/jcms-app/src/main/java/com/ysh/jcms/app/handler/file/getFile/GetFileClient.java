@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.file.CmsGetFileError;
-import com.ysh.jcms.svc.file.CmsGetFileRequest;
-import com.ysh.jcms.svc.file.CmsGetFileResponse;
+import com.ysh.jcms.pdu.file.CmsGetFileError;
+import com.ysh.jcms.pdu.file.CmsGetFileRequest;
+import com.ysh.jcms.pdu.file.CmsGetFileResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import org.slf4j.Logger;

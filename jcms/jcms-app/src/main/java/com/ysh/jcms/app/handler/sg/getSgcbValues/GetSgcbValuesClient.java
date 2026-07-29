@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.block.CmsSgcb;
-import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.svc.sg.CmsGetSgcbValuesError;
-import com.ysh.jcms.svc.sg.CmsGetSgcbValuesRequest;
-import com.ysh.jcms.svc.sg.CmsGetSgcbValuesResponse;
-import com.ysh.jcms.svc.sg.CmsSgcbValueChoice;
+import com.ysh.jcms.data.sequence.block.CmsSgcb;
+import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
+import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesRequest;
+import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesResponse;
+import com.ysh.jcms.pdu.sg.CmsSgcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

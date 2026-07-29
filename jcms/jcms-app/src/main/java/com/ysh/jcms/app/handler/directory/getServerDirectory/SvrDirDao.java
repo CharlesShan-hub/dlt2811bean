@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
-import com.ysh.jcms.svc.directory.CmsObjectClass;
+import com.ysh.jcms.data.enumerate.CmsObjectClass;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

@@ -1,11 +1,12 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.connection.CmsAssociateError;
-import com.ysh.jcms.svc.connection.CmsAssociateRequest;
-import com.ysh.jcms.svc.connection.CmsAssociateResponse;
-import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+import com.ysh.jcms.pdu.connection.CmsAssociateError;
+import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
+import com.ysh.jcms.pdu.connection.CmsAssociateResponse;
+import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.security.*;
@@ -81,7 +82,7 @@ public class AssociateClient extends BaseClientHandler {
 
         byte[] signatureValue = GmSignature.sign(cm.getPrivateKey(), signedData);
 
-        return new CmsAuthenticationParameter().cert(certBytes).signedTime(new com.ysh.jcms.data.time.CmsUtcTime().now())
+        return new CmsAuthenticationParameter().cert(certBytes).signedTime(new CmsUtcTime().now())
                 .sigVal(signatureValue);
     }
 

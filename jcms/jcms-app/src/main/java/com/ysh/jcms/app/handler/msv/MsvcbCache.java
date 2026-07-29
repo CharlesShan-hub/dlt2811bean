@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.msv;
 
-import com.ysh.jcms.data.block.CmsMsvcb;
+import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

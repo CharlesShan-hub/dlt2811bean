@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberError;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberRequest;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberResponse;
-import com.ysh.jcms.svc.goose.CmsGoRefFcEntry;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
+import com.ysh.jcms.pdu.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

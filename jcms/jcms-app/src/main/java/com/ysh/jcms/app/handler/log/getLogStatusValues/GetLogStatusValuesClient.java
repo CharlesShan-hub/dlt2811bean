@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesError;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesRequest;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesResponse;
+import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -46,9 +46,9 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
 
         List<LogStatusEntry> entries = new ArrayList<>();
         for (int i = 0; i < resp.log.count; i++) {
-            com.ysh.jcms.svc.log.CmsLogStatusValueChoice ch = resp.log.items.get(i);
+            com.ysh.jcms.pdu.log.CmsLogStatusValueChoice ch = resp.log.items.get(i);
             if (ch.choice.value() == 1) {
-                com.ysh.jcms.svc.log.CmsLogStatusValue val = ch.altValue;
+                com.ysh.jcms.pdu.log.CmsLogStatusValue val = ch.altValue;
                 entries.add(new LogStatusEntry("oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value()
                         + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()));
             } else {

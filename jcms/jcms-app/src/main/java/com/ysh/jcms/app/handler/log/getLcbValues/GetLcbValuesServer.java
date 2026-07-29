@@ -2,12 +2,14 @@ package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.block.CmsLcb;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.log.CmsGetLcbValuesError;
-import com.ysh.jcms.svc.log.CmsGetLcbValuesRequest;
-import com.ysh.jcms.svc.log.CmsGetLcbValuesResponse;
-import com.ysh.jcms.svc.log.CmsLcbValueChoice;
+import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
+import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.data.sequence.block.CmsLcb;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
+import com.ysh.jcms.pdu.log.CmsGetLcbValuesRequest;
+import com.ysh.jcms.pdu.log.CmsGetLcbValuesResponse;
+import com.ysh.jcms.pdu.log.CmsLcbValueChoice;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -93,7 +95,7 @@ public class GetLcbValuesServer extends BaseServerHandler {
         if (lc.optFields() != null) {
             try {
                 long v = Long.parseLong(lc.optFields());
-                com.ysh.jcms.data.block.CmsLcbOptFlds f = new com.ysh.jcms.data.block.CmsLcbOptFlds().value(v != 0);
+                CmsLcbOptFlds f = new CmsLcbOptFlds().value(v != 0);
                 lcb.optFlds_present(true).optFlds(f);
             } catch (NumberFormatException ignored) {
             }
@@ -101,7 +103,7 @@ public class GetLcbValuesServer extends BaseServerHandler {
         if (lc.trgOps() != null) {
             // TriggerConditions requires explicit field-by-field setup from SCL
             // For now, set integrity only if trgOps is present in SCL
-            lcb.trgOps(new com.ysh.jcms.data.block.CmsTriggerConditions().integrity(true));
+            lcb.trgOps(new CmsTriggerConditions().integrity(true));
         }
         return lcb;
     }

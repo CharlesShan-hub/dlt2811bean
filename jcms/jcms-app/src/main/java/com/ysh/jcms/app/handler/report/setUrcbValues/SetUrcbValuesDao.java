@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
-import com.ysh.jcms.svc.report.CmsSetUrcbValuesRequest;
-import com.ysh.jcms.svc.report.CmsSetUrcbEntry;
+import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
+import com.ysh.jcms.pdu.report.CmsSetUrcbEntry;
 
 public class SetUrcbValuesDao {
     private String ref;

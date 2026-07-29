@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.rpc;
 
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.svc.rpc.CmsRpcMethodEntry;
+import com.ysh.jcms.pdu.rpc.CmsRpcMethodEntry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

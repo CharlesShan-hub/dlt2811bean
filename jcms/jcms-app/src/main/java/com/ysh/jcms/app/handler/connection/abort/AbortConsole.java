@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.connection.abort;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.svc.connection.CmsAbortReason;
+import com.ysh.jcms.data.enumerate.CmsAbortReason;
 
 import java.util.Arrays;
 import java.util.List;

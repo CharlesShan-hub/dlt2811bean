@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.node.ContentManager;
+import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -52,7 +53,7 @@ public class AllDataValuesConsole implements CommandHandler {
 
         String fcStr = args.get("fc");
         if (fcStr != null && !fcStr.isEmpty() && !"XX".equalsIgnoreCase(fcStr)) {
-            dao.fc(com.ysh.jcms.data.fc.CmsFC.fromString(fcStr));
+            dao.fc(CmsFC.fromString(fcStr));
         }
 
         String after = args.get("after");

@@ -4,7 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.svc.directory.CmsAcsiClass;
+import com.ysh.jcms.data.enumerate.CmsAcsiClass;
 
 import java.util.*;
 

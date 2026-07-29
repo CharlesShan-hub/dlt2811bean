@@ -5,7 +5,7 @@ import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
-import com.ysh.jcms.svc.connection.CmsAbortReason;
+import com.ysh.jcms.data.enumerate.CmsAbortReason;
 import com.ysh.jcms.utils.transport.session.SessionState;
 import com.ysh.jcms.utils.transport.session.Session;
 import org.junit.Test;

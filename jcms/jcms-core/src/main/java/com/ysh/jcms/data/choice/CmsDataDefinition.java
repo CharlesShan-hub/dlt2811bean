@@ -1,8 +1,10 @@
 package com.ysh.jcms.data.choice;
 
-import com.ysh.jcms.core.CmsChoice;
+import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionArray;
+import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.*;
-import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsInt32;
 import java.util.ArrayList;
 import java.util.List;

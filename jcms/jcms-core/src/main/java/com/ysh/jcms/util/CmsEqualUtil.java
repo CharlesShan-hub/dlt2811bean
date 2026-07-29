@@ -1,6 +1,6 @@
 package com.ysh.jcms.util;
 
-import com.ysh.jcms.core.CmsType;
+import com.ysh.jcms.data.core.CmsType;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

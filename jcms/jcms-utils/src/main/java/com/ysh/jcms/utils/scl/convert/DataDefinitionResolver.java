@@ -2,8 +2,8 @@ package com.ysh.jcms.utils.scl.convert;
 
 import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.choice.CmsDataDefinitionStructElem;
-import com.ysh.jcms.data.fc.CmsFC;
+import com.ysh.jcms.data.sequence.choice.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.model.template.SclSDO;

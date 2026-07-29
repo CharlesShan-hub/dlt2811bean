@@ -2,12 +2,12 @@ package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesError;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesRequest;
-import com.ysh.jcms.svc.log.CmsGetLogStatusValuesResponse;
-import com.ysh.jcms.svc.log.CmsLogStatusValue;
-import com.ysh.jcms.svc.log.CmsLogStatusValueChoice;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
+import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
+import com.ysh.jcms.pdu.log.CmsLogStatusValue;
+import com.ysh.jcms.pdu.log.CmsLogStatusValueChoice;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.log.LogStorage;
 import com.ysh.jcms.utils.transport.ServiceName;

@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.log.CmsQueryLogAfterError;
-import com.ysh.jcms.svc.log.CmsQueryLogAfterRequest;
-import com.ysh.jcms.svc.log.CmsQueryLogAfterResponse;
+import com.ysh.jcms.pdu.log.CmsQueryLogAfterError;
+import com.ysh.jcms.pdu.log.CmsQueryLogAfterRequest;
+import com.ysh.jcms.pdu.log.CmsQueryLogAfterResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;

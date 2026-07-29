@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.commandTermination;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.svc.control.CmsCommandTermination;
+import com.ysh.jcms.pdu.control.CmsCommandTermination;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

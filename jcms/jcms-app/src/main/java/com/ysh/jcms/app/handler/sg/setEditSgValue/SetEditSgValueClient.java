@@ -2,10 +2,10 @@ package com.ysh.jcms.app.handler.sg.setEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.svc.sg.CmsSetEditSgValueError;
-import com.ysh.jcms.svc.sg.CmsSetEditSgValueRequest;
-import com.ysh.jcms.svc.sg.CmsSetEditSgValueResponse;
-import com.ysh.jcms.svc.sg.CmsSgRefValueEntry;
+import com.ysh.jcms.pdu.sg.CmsSetEditSgValueError;
+import com.ysh.jcms.pdu.sg.CmsSetEditSgValueRequest;
+import com.ysh.jcms.pdu.sg.CmsSetEditSgValueResponse;
+import com.ysh.jcms.pdu.sg.CmsSgRefValueEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

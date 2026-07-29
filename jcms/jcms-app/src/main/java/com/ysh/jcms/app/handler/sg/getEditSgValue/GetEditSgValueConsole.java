@@ -5,7 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.util.CmsFormatUtil;
-import com.ysh.jcms.data.fc.CmsFC;
+import com.ysh.jcms.data.scalar.CmsFC;
 
 import java.util.Arrays;
 import java.util.List;

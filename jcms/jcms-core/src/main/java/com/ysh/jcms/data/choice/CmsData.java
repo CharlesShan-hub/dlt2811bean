@@ -1,11 +1,16 @@
 package com.ysh.jcms.data.choice;
 
-import com.ysh.jcms.core.CmsChoice;
+import com.ysh.jcms.data.bitarray.CmsCheck;
+import com.ysh.jcms.data.bitarray.CmsQuality;
+import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.*;
-import com.ysh.jcms.data.common.*;
-import com.ysh.jcms.data.control.*;
+import com.ysh.jcms.data.enumerate.CmsDbpos;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.enumerate.CmsTcmd;
 import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.time.*;
+import com.ysh.jcms.data.sequence.time.CmsBinaryTime;
+import com.ysh.jcms.data.sequence.time.CmsUtcTime;
+
 import java.util.ArrayList;
 import java.util.List;
 

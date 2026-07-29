@@ -2,10 +2,10 @@ package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.log.CmsLogDataEntry;
-import com.ysh.jcms.svc.log.CmsQueryLogByTimeError;
-import com.ysh.jcms.svc.log.CmsQueryLogByTimeRequest;
-import com.ysh.jcms.svc.log.CmsQueryLogByTimeResponse;
+import com.ysh.jcms.pdu.log.CmsLogDataEntry;
+import com.ysh.jcms.pdu.log.CmsQueryLogByTimeError;
+import com.ysh.jcms.pdu.log.CmsQueryLogByTimeRequest;
+import com.ysh.jcms.pdu.log.CmsQueryLogByTimeResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

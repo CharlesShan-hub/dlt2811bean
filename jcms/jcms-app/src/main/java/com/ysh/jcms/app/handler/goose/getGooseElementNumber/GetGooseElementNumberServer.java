@@ -2,9 +2,9 @@ package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberError;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberRequest;
-import com.ysh.jcms.svc.goose.CmsGetGooseElementNumberResponse;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
+import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

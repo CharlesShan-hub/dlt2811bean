@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.negotiate.CmsNegotiateError;
-import com.ysh.jcms.svc.negotiate.CmsNegotiateRequest;
-import com.ysh.jcms.svc.negotiate.CmsNegotiateResponse;
+import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
+import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
+import com.ysh.jcms.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.ClientSession;

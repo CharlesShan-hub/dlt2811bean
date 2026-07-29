@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
-import com.ysh.jcms.data.block.CmsLcbOptFlds;
-import com.ysh.jcms.data.block.CmsTriggerConditions;
-import com.ysh.jcms.svc.log.CmsSetLcbValuesRequest;
-import com.ysh.jcms.svc.log.CmsSetLcbEntry;
+import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
+import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
+import com.ysh.jcms.pdu.log.CmsSetLcbEntry;
 
 public class SetLcbValuesDao {
     private String ref;

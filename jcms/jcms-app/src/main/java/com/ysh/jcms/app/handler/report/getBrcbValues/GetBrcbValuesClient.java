@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.block.CmsBrcb;
-import com.ysh.jcms.data.common.CmsObjectReference;
-import com.ysh.jcms.svc.report.CmsGetBrcbValuesError;
-import com.ysh.jcms.svc.report.CmsGetBrcbValuesRequest;
-import com.ysh.jcms.svc.report.CmsGetBrcbValuesResponse;
-import com.ysh.jcms.svc.report.CmsRcbValueChoice;
+import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.data.sequence.common.CmsObjectReference;
+import com.ysh.jcms.pdu.report.CmsGetBrcbValuesError;
+import com.ysh.jcms.pdu.report.CmsGetBrcbValuesRequest;
+import com.ysh.jcms.pdu.report.CmsGetBrcbValuesResponse;
+import com.ysh.jcms.pdu.report.CmsRcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.core.CmsScalar;
+import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt64U;
 import java.math.BigInteger;
 

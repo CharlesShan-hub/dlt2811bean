@@ -3,10 +3,11 @@ package com.ysh.jcms.app.handler.directory.getAllDataValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.svc.directory.CmsGetAllDataValuesError;
-import com.ysh.jcms.svc.directory.CmsGetAllDataValuesRequest;
-import com.ysh.jcms.svc.directory.CmsGetAllDataValuesResponse;
-import com.ysh.jcms.svc.other.CmsReferenceChoice;
+import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
+import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
+import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesRequest;
+import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesResponse;
+import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -61,7 +62,7 @@ public class AllDataValuesClient extends BaseClientHandler {
         final int choiceType;
         final String valueString;
 
-        CmsDataValueEntryWrap(com.ysh.jcms.svc.directory.CmsDataValueEntry e) {
+        CmsDataValueEntryWrap(CmsDataValueEntry e) {
             this.reference = new String(e.reference.value());
             int ct = e.value.choice.value();
             this.choiceType = ct;

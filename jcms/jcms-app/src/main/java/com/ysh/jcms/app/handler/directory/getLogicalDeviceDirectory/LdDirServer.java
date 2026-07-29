@@ -2,11 +2,11 @@ package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.data.common.CmsSubReference;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryRequest;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryResponse;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.common.CmsSubReference;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;

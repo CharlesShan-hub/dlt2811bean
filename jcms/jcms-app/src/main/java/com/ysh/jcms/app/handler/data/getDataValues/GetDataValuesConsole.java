@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -48,7 +49,7 @@ public class GetDataValuesConsole implements CommandHandler {
         String[] refs = refsStr.trim().split("\\s+");
         GetDataValuesDao dao = new GetDataValuesDao();
         if (fcStr != null && !fcStr.isEmpty() && !"XX".equalsIgnoreCase(fcStr)) {
-            int fcCode = com.ysh.jcms.data.fc.CmsFC.fromString(fcStr);
+            int fcCode = CmsFC.fromString(fcStr);
             for (String ref : refs) {
                 if (!ref.isEmpty())
                     dao.addRef(ref, fcCode);

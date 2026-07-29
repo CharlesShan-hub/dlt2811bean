@@ -2,11 +2,11 @@ package com.ysh.jcms.app.handler.control.operate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.control.CmsCheck;
-import com.ysh.jcms.data.control.CmsOriginator;
-import com.ysh.jcms.svc.control.CmsOperateError;
-import com.ysh.jcms.svc.control.CmsOperateRequest;
-import com.ysh.jcms.svc.control.CmsOperateResponse;
+import com.ysh.jcms.data.bitarray.CmsCheck;
+import com.ysh.jcms.data.sequence.control.CmsOriginator;
+import com.ysh.jcms.pdu.control.CmsOperateError;
+import com.ysh.jcms.pdu.control.CmsOperateRequest;
+import com.ysh.jcms.pdu.control.CmsOperateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;

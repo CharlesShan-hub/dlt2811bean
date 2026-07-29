@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.report.report;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.svc.report.CmsReport;
+import com.ysh.jcms.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

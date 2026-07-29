@@ -1,9 +1,9 @@
 package com.ysh.jcms.utils.scl.convert;
 
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsDbpos;
-import com.ysh.jcms.data.common.CmsTcmd;
-import com.ysh.jcms.data.control.CmsCheck;
+import com.ysh.jcms.data.enumerate.CmsDbpos;
+import com.ysh.jcms.data.enumerate.CmsTcmd;
+import com.ysh.jcms.data.bitarray.CmsCheck;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.string.CmsBitString;
 import com.ysh.jcms.data.string.CmsUint8Array;

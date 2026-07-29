@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+
 /**
  * Unchecked exception carrying a service error code for automatic error
  * response generation in {@link BaseServerHandler#handleRequest}.
@@ -26,7 +28,7 @@ public class ServiceException extends RuntimeException {
 
     /**
      * Service error code (e.g.
-     * {@link com.ysh.jcms.data.common.CmsServiceError#INSTANCE_NOT_AVAILABLE}).
+     * {@link CmsServiceError#INSTANCE_NOT_AVAILABLE}).
      */
     public int serviceError() {
         return serviceError;

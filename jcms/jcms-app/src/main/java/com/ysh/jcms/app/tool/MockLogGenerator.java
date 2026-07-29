@@ -1,8 +1,9 @@
 package com.ysh.jcms.app.tool;
 
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.svc.log.CmsLogDataEntry;
-import com.ysh.jcms.svc.log.CmsLogEntry;
+import com.ysh.jcms.data.scalar.CmsFC;
+import com.ysh.jcms.pdu.log.CmsLogDataEntry;
+import com.ysh.jcms.pdu.log.CmsLogEntry;
 import com.ysh.jcms.utils.log.LogStorage;
 
 import java.nio.charset.StandardCharsets;
@@ -57,7 +58,7 @@ public class MockLogGenerator {
             for (String ref : DATASET_REFS) {
                 CmsLogDataEntry de = new CmsLogDataEntry();
                 de.reference.value(ref.getBytes(StandardCharsets.UTF_8));
-                de.fc.value(com.ysh.jcms.data.fc.CmsFC.ST);
+                de.fc.value(CmsFC.ST);
 
                 CmsData data = new CmsData().choice(CmsData.CHOICE_INT32);
                 int offset;

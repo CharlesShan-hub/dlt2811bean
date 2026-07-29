@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.goose;
 
-import com.ysh.jcms.data.block.CmsGoCb;
+import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

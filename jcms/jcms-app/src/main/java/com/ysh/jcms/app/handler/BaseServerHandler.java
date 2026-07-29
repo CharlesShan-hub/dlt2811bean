@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.node.InnerServer;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;

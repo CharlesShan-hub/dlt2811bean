@@ -2,12 +2,12 @@ package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.log.CmsSetLcbValuesError;
-import com.ysh.jcms.svc.log.CmsSetLcbValuesRequest;
-import com.ysh.jcms.svc.log.CmsSetLcbValuesResponse;
-import com.ysh.jcms.svc.log.CmsSetLcbEntry;
-import com.ysh.jcms.svc.log.CmsSetLcbResult;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.log.CmsSetLcbValuesError;
+import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
+import com.ysh.jcms.pdu.log.CmsSetLcbValuesResponse;
+import com.ysh.jcms.pdu.log.CmsSetLcbEntry;
+import com.ysh.jcms.pdu.log.CmsSetLcbResult;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;

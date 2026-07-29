@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
-import com.ysh.jcms.svc.goose.CmsSetGoCbEntry;
-import com.ysh.jcms.svc.goose.CmsSetGoCbValuesRequest;
+import com.ysh.jcms.pdu.goose.CmsSetGoCbEntry;
+import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesRequest;
 
 public class SetGoCbValuesDao {
     private String ref;

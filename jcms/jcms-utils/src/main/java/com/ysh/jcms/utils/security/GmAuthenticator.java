@@ -1,7 +1,7 @@
 package com.ysh.jcms.utils.security;
 
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.connection.CmsAuthenticationParameter;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.security.PublicKey;

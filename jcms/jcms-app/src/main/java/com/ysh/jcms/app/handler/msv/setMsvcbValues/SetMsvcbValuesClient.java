@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.msv.CmsSetMsvcbEntry;
-import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesError;
-import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesRequest;
-import com.ysh.jcms.svc.msv.CmsSetMsvcbValuesResponse;
+import com.ysh.jcms.pdu.msv.CmsSetMsvcbEntry;
+import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
+import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesRequest;
+import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;

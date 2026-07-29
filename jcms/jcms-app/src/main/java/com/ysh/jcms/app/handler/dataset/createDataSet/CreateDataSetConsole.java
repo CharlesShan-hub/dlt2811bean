@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.data.scalar.CmsFC;
 
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +59,7 @@ public class CreateDataSetConsole implements CommandHandler {
             }
             String ref = token.substring(0, commaIdx);
             String fcStr = token.substring(commaIdx + 1);
-            int fcCode = com.ysh.jcms.data.fc.CmsFC.fromString(fcStr);
+            int fcCode = CmsFC.fromString(fcStr);
             dao.addMember(ref, fcCode);
         }
 

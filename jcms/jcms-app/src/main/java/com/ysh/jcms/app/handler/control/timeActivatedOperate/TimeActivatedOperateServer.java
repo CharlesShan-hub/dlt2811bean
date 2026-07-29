@@ -2,10 +2,10 @@ package com.ysh.jcms.app.handler.control.timeActivatedOperate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.common.CmsServiceError;
-import com.ysh.jcms.svc.control.CmsTimeActivatedOperateError;
-import com.ysh.jcms.svc.control.CmsTimeActivatedOperateRequest;
-import com.ysh.jcms.svc.control.CmsTimeActivatedOperateResponse;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateError;
+import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateRequest;
+import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;

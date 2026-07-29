@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryError;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryRequest;
-import com.ysh.jcms.svc.directory.CmsGetServerDirectoryResponse;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
+import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

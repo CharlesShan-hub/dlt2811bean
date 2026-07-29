@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.connection.CmsAbort;
+import com.ysh.jcms.pdu.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

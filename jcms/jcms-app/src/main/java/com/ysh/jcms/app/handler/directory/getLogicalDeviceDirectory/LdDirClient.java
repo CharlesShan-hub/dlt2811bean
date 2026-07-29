@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryError;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryRequest;
-import com.ysh.jcms.svc.directory.CmsGetLogicalDeviceDirectoryResponse;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
