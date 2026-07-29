@@ -10,10 +10,11 @@ import java.lang.reflect.Field;
  * <p>Subclasses read/write {@code innerCache["value"]} only; the
  * sync to/from {@code inner.value} happens automatically:
  * <ul>
- *   <li>{@link #syncToInner()} — before encode, pushes cache → inner
+ *   <li>{@link #innerSet(Object)} — immediately pushes cache → inner
  *   <li>{@link #syncFromInner()} — after decode, pulls inner → cache
  * </ul>
- * So subclasses never need to touch the {@code inner} field directly.
+ * So {@code innerCache["value"]} and {@code inner.value} are always
+ * in sync — no delayed sync step needed.
  */
 public abstract class CmsScalar extends CmsType {
 
@@ -44,9 +45,10 @@ public abstract class CmsScalar extends CmsType {
         return innerCache.get("value");
     }
 
-    /** Write the cached value (auto-synced to inner at encode). */
+    /** Write the cached value and immediately sync to inner. */
     protected void innerSet(Object v) {
         innerCache.put("value", v);
+        syncToInnerValue();
     }
 
     // ── automatic sync ─────────────────────────────────────────────
@@ -98,7 +100,7 @@ public abstract class CmsScalar extends CmsType {
 
     @Override
     public void syncToInner() {
-        syncToInnerValue();
+        // No-op: innerSet() already pushed cache → inner immediately.
         super.syncToInner();
     }
 

@@ -14,14 +14,15 @@ public class CmsGetAllDataValuesError extends CmsServiceError {
         super(new InnerGetAllDataValuesErrorPDU());
     }
 
+    public CmsGetAllDataValuesError(int v) {
+        this();
+        value(v);
+    }
+
     @Override
     public CmsGetAllDataValuesError value(int v) {
         super.value(v);
         return this;
     }
 
-    @Override
-    public int value() {
-        return super.value();
-    }
 }

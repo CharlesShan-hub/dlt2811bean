@@ -14,14 +14,15 @@ public class CmsGetLogicalNodeDirectoryError extends CmsServiceError {
         super(new InnerGetLogicalNodeDirectoryErrorPDU());
     }
 
+    public CmsGetLogicalNodeDirectoryError(int v) {
+        this();
+        value(v);
+    }
+
     @Override
     public CmsGetLogicalNodeDirectoryError value(int v) {
         super.value(v);
         return this;
     }
 
-    @Override
-    public int value() {
-        return super.value();
-    }
 }

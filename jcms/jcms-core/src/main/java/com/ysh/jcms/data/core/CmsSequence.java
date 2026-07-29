@@ -156,6 +156,12 @@ public abstract class CmsSequence extends CmsType {
     /** Mark an optional field as present/absent. */
     public void setPresent(String innerFieldName, boolean v) {
         innerCache.put(presKey(innerFieldName), v);
+        // Immediately push to inner._set so it's always in sync.
+        Set<String> s = innerSetField();
+        if (s != null) {
+            if (v) s.add(innerFieldName);
+            else s.remove(innerFieldName);
+        }
     }
 
     /** Check if an optional field is present. */

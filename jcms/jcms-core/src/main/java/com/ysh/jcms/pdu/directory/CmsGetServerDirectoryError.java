@@ -14,14 +14,15 @@ public class CmsGetServerDirectoryError extends CmsServiceError {
         super(new InnerGetServerDirectoryErrorPDU());
     }
 
+    public CmsGetServerDirectoryError(int v) {
+        this();
+        value(v);
+    }
+
     @Override
     public CmsGetServerDirectoryError value(int v) {
         super.value(v);
         return this;
     }
 
-    @Override
-    public int value() {
-        return super.value();
-    }
 }

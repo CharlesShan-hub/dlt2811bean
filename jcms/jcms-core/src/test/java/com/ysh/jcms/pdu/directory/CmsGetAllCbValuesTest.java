@@ -80,7 +80,7 @@ public class CmsGetAllCbValuesTest {
 
     @Test
     public void error_roundup() {
-        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError().value(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
+        CmsGetAllCbValuesError a = new CmsGetAllCbValuesError(CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
         byte[] encoded = a.encode();
 
         CmsGetAllCbValuesError b = new CmsGetAllCbValuesError();

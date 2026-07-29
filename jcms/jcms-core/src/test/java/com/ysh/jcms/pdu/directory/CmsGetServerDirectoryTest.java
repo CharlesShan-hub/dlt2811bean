@@ -47,9 +47,8 @@ public class CmsGetServerDirectoryTest {
 
     @Test
     public void error_roundup() {
-        CmsGetServerDirectoryError a = new CmsGetServerDirectoryError().value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        CmsGetServerDirectoryError a = new CmsGetServerDirectoryError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
         byte[] encoded = a.encode();
-
         CmsGetServerDirectoryError b = new CmsGetServerDirectoryError();
         b.decode(encoded);
         assertEquals(a, b);

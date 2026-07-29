@@ -14,6 +14,11 @@ public class CmsGetAllCbValuesError extends CmsServiceError {
         super(new InnerGetAllCBValuesErrorPDU());
     }
 
+    public CmsGetAllCbValuesError(int v) {
+        this();
+        value(v);
+    }
+
     @Override
     public CmsGetAllCbValuesError value(int v) {
         super.value(v);

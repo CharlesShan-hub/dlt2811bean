@@ -48,7 +48,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
 
     @Test
     public void error_roundup() {
-        CmsGetLogicalDeviceDirectoryError a = new CmsGetLogicalDeviceDirectoryError().value(CmsServiceError.INSTANCE_IN_USE);
+        CmsGetLogicalDeviceDirectoryError a = new CmsGetLogicalDeviceDirectoryError(CmsServiceError.INSTANCE_IN_USE);
         byte[] encoded = a.encode();
 
         CmsGetLogicalDeviceDirectoryError b = new CmsGetLogicalDeviceDirectoryError();

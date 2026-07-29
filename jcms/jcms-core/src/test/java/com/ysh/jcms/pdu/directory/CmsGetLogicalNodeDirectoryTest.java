@@ -52,7 +52,7 @@ public class CmsGetLogicalNodeDirectoryTest {
 
     @Test
     public void error_roundup() {
-        CmsGetLogicalNodeDirectoryError a = new CmsGetLogicalNodeDirectoryError().value(CmsServiceError.ACCESS_VIOLATION);
+        CmsGetLogicalNodeDirectoryError a = new CmsGetLogicalNodeDirectoryError(CmsServiceError.ACCESS_VIOLATION);
         byte[] encoded = a.encode();
 
         CmsGetLogicalNodeDirectoryError b = new CmsGetLogicalNodeDirectoryError();

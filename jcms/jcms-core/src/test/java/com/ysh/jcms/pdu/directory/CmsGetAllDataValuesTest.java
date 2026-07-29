@@ -52,7 +52,7 @@ public class CmsGetAllDataValuesTest {
 
     @Test
     public void error_roundup() {
-        CmsGetAllDataValuesError a = new CmsGetAllDataValuesError().value(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        CmsGetAllDataValuesError a = new CmsGetAllDataValuesError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         byte[] encoded = a.encode();
 
         CmsGetAllDataValuesError b = new CmsGetAllDataValuesError();

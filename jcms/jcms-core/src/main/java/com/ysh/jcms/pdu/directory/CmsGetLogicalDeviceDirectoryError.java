@@ -14,14 +14,15 @@ public class CmsGetLogicalDeviceDirectoryError extends CmsServiceError {
         super(new InnerGetLogicalDeviceDirectoryErrorPDU());
     }
 
+    public CmsGetLogicalDeviceDirectoryError(int v) {
+        this();
+        value(v);
+    }
+
     @Override
     public CmsGetLogicalDeviceDirectoryError value(int v) {
         super.value(v);
         return this;
     }
 
-    @Override
-    public int value() {
-        return super.value();
-    }
 }

@@ -36,7 +36,7 @@ public class CmsGetAllDataDefinitionTest {
 
     @Test
     public void error_roundup() {
-        CmsGetAllDataDefinitionError a = new CmsGetAllDataDefinitionError().value(CmsServiceError.TYPE_CONFLICT);
+        CmsGetAllDataDefinitionError a = new CmsGetAllDataDefinitionError(CmsServiceError.TYPE_CONFLICT);
         byte[] encoded = a.encode();
 
         CmsGetAllDataDefinitionError b = new CmsGetAllDataDefinitionError();
