@@ -1,10 +1,10 @@
 package com.ysh.jcms.data.sequence.connection;
 
-import com.ysh.jcms.data.core.CmsField;
-import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.data.InnerAssociateRequestPDUAuthenticationParameter;
 import com.ysh.jcms.data.InnerBase;
-import com.ysh.jcms.data.InnerEmpty;
+import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsOctetString;
+import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.sequence.time.CmsUtcTime;
 
 /**
@@ -13,7 +13,7 @@ import com.ysh.jcms.data.sequence.time.CmsUtcTime;
  * STRING } — 8.2.1
  *
  * Used by CmsAssociateRequest and CmsAssociateResponse.
- * Pass matching Inner*AuthenticationParameter to constructor for auto-binding.
+ * Uses {@link InnerAssociateRequestPDUAuthenticationParameter} as the backing Inner*.
  */
 public class CmsAuthenticationParameter extends CmsSequence {
 
@@ -21,17 +21,32 @@ public class CmsAuthenticationParameter extends CmsSequence {
     @CmsField public CmsUtcTime signedTime;
     @CmsField public CmsOctetString signedValue;
 
-    /** Default constructor — no inner binding (InnerEmpty). */
     public CmsAuthenticationParameter() {
-        super(new InnerEmpty());
-        this.signatureCertificate = new CmsOctetString();
-        this.signedTime = new CmsUtcTime();
-        this.signedValue = new CmsOctetString();
-        ensureInnerCacheComplete(); // detect wrapper replacements so injectedWrappers is populated
+        super(new InnerAssociateRequestPDUAuthenticationParameter());
     }
 
-    /** Constructor with specific Inner*AuthenticationParameter. */
     public CmsAuthenticationParameter(InnerBase inner) {
         super(inner);
+    }
+
+    public CmsAuthenticationParameter signatureCertificate(byte[] v) {
+        this.signatureCertificate.value(v);
+        return this;
+    }
+
+    public CmsAuthenticationParameter signedTime(CmsUtcTime v) {
+        this.signedTime = v;
+        bindWrapper("signedTime", v);
+        return this;
+    }
+
+    public CmsAuthenticationParameter signedTimeSeconds(long epochSeconds) {
+        this.signedTime.secondsSinceEpoch(epochSeconds);
+        return this;
+    }
+
+    public CmsAuthenticationParameter signedValue(byte[] v) {
+        this.signedValue.value(v);
+        return this;
     }
 }
