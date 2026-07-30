@@ -7,7 +7,7 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryResponse;
-import com.ysh.jcms.pdu.data.CmsSubRefEntry;
+import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;

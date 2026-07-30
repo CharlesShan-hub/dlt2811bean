@@ -5,7 +5,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.scalar.CmsSubReference;
-import com.ysh.jcms.data.core.CmsString;
+import com.ysh.jcms.data.scalar.CmsString;
 
 /**
  * DataDefinitionEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference,

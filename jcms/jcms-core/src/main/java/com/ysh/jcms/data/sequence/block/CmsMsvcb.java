@@ -8,7 +8,7 @@ import com.ysh.jcms.data.enumerate.CmsSmpMod;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
-import com.ysh.jcms.data.core.CmsString;
+import com.ysh.jcms.data.scalar.CmsString;
 
 public class CmsMsvcb extends CmsSequence {
     @CmsField public CmsBoolean svEna;

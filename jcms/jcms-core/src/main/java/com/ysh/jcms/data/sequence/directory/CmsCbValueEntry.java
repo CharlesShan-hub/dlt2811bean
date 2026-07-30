@@ -5,8 +5,7 @@ import com.ysh.jcms.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsSubReference;
-
-/**
+/*
  * CBValueEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference, value [1]
  * IMPLICIT CBValue } — 8.3.6
  *

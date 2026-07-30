@@ -36,6 +36,14 @@ public class CmsCbValueChoice extends CmsChoice {
 
     public CmsCbValueChoice choice(int v) { super.choice(v); return this; }
 
+    /* ─── Fluent setters (set choice + value in one call) ─── */
+    public CmsCbValueChoice altBrcb(CmsBrcb v) { choice(BRCB); this.altBrcb.value(v); return this; }
+    public CmsCbValueChoice altUrcb(CmsUrcb v) { choice(URCB); this.altUrcb.value(v); return this; }
+    public CmsCbValueChoice altLcb(CmsLcb v) { choice(LCB); this.altLcb.value(v); return this; }
+    public CmsCbValueChoice altSgecb(CmsSgcb v) { choice(SGECB); this.altSgecb.value(v); return this; }
+    public CmsCbValueChoice altGocb(CmsGoCb v) { choice(GOCB); this.altGocb.value(v); return this; }
+    public CmsCbValueChoice altMsvcb(CmsMsvcb v) { choice(MSVCB); this.altMsvcb.value(v); return this; }
+
     /** Copy choice selection and value from another CmsCbValueChoice (fluent). */
     public CmsCbValueChoice value(CmsCbValueChoice v) {
         int ch = v.choice();

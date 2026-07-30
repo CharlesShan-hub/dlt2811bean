@@ -1,6 +1,7 @@
-package com.ysh.jcms.data.core;
+package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.data.DefaultInnerVisibleString;
+import com.ysh.jcms.data.core.CmsScalar;
 
 /**
  * Generic VisibleString wrapper, backed by DefaultInnerVisibleString.

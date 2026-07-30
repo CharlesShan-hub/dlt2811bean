@@ -24,9 +24,9 @@ public class CmsControlTest {
     @Test
     public void select_with_value_roundup() {
         CmsSelectWithValueRequest a = new CmsSelectWithValueRequest()
-            .reference("ref2".getBytes());
-        a.ctlVal.alt_boolean(true);
-        a.origin(new CmsOriginator().orCat(CmsOrCat.NOT_SUPPORTED).orIdent("origin1".getBytes()))
+            .reference("ref2".getBytes())
+            .ctlVal(new CmsData().alt_boolean(true))
+            .origin(new CmsOriginator().orCat(CmsOrCat.NOT_SUPPORTED).orIdent("origin1".getBytes()))
             .ctlNum(5)
             .t(new CmsUtcTime()
                 .secondsSinceEpoch(1000000L)
@@ -44,9 +44,9 @@ public class CmsControlTest {
     @Test
     public void operate_roundup() {
         CmsOperateRequest a = new CmsOperateRequest()
-            .reference("ref3".getBytes());
-        a.ctlVal.alt_int32(42);
-        a.origin(new CmsOriginator().orCat(CmsOrCat.NOT_SUPPORTED).orIdent("op".getBytes()))
+            .reference("ref3".getBytes())
+            .ctlVal(new CmsData().alt_int32(42))
+            .origin(new CmsOriginator().orCat(CmsOrCat.NOT_SUPPORTED).orIdent("op".getBytes()))
             .ctlNum(1)
             .t(new CmsUtcTime()
                 .secondsSinceEpoch(2000000L)

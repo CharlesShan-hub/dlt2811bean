@@ -10,9 +10,8 @@ public class CmsGetAllDataDefinitionTest {
 
     @Test
     public void request_roundup_without_optional() {
-        CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest();
-        a.reference.choice(CmsReferenceChoice.LD_NAME);
-        a.reference.altLdName("ld1");
+        CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest()
+            .reference(new CmsReferenceChoice().altLdName("ld1"));
         byte[] encoded = a.encode();
 
         CmsGetAllDataDefinitionRequest b = new CmsGetAllDataDefinitionRequest();
@@ -22,11 +21,10 @@ public class CmsGetAllDataDefinitionTest {
 
     @Test
     public void request_roundup_with_all_optional() {
-        CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest();
-        a.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-        a.reference.altLnReference("lnRef");
-        a.fc(CmsFC.ST);
-        a.referenceAfter("after");
+        CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest()
+            .reference(new CmsReferenceChoice().altLnReference("lnRef"))
+            .fc(CmsFC.ST)
+            .referenceAfter("after");
         byte[] encoded = a.encode();
 
         CmsGetAllDataDefinitionRequest b = new CmsGetAllDataDefinitionRequest();

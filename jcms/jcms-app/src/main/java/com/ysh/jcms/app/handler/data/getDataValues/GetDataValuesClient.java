@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.pdu.data.CmsDataRefEntry;
+import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesResponse;

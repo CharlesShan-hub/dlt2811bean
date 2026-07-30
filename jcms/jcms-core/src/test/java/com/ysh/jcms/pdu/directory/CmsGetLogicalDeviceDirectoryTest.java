@@ -20,7 +20,7 @@ public class CmsGetLogicalDeviceDirectoryTest {
     @Test
     public void request_roundup_with_ld_name() {
         CmsGetLogicalDeviceDirectoryRequest a = new CmsGetLogicalDeviceDirectoryRequest()
-                .ldName("ld1");
+            .ldName("ld1");
         byte[] encoded = a.encode();
 
         CmsGetLogicalDeviceDirectoryRequest b = new CmsGetLogicalDeviceDirectoryRequest();
@@ -31,13 +31,9 @@ public class CmsGetLogicalDeviceDirectoryTest {
     @Test
     public void response_roundup_with_array() {
         CmsGetLogicalDeviceDirectoryResponse a = new CmsGetLogicalDeviceDirectoryResponse();
-        /* SEQUENCE OF SubReference — 3 个元素 */
-        CmsSubReference ln1 = new CmsSubReference("ln1");
-        CmsSubReference ln2 = new CmsSubReference("ln2");
-        CmsSubReference ln3 = new CmsSubReference("ln3");
-        a.lnReference.add(ln1);
-        a.lnReference.add(ln2);
-        a.lnReference.add(ln3);
+        a.lnReference.add(new CmsSubReference("ln1"));
+        a.lnReference.add(new CmsSubReference("ln2"));
+        a.lnReference.add(new CmsSubReference("ln3"));
         a.moreFollows(false);
         byte[] encoded = a.encode();
 

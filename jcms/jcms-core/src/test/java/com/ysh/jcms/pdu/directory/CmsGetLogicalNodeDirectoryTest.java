@@ -11,10 +11,9 @@ public class CmsGetLogicalNodeDirectoryTest {
 
     @Test
     public void request_roundup_with_ld_name() {
-        CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest();
-        a.reference.choice(CmsReferenceChoice.LD_NAME);
-        a.reference.altLdName("ld1");
-        a.acsiClass(CmsAcsiClass.DATA_OBJECT);
+        CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest()
+            .reference(new CmsReferenceChoice().altLdName("ld1"))
+            .acsiClass(CmsAcsiClass.DATA_OBJECT);
         byte[] encoded = a.encode();
 
         CmsGetLogicalNodeDirectoryRequest b = new CmsGetLogicalNodeDirectoryRequest();
@@ -24,11 +23,10 @@ public class CmsGetLogicalNodeDirectoryTest {
 
     @Test
     public void request_roundup_with_ln_reference() {
-        CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest();
-        a.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-        a.reference.altLnReference("lnRef");
-        a.acsiClass(CmsAcsiClass.DATA_SET);
-        a.referenceAfter("afterRef");
+        CmsGetLogicalNodeDirectoryRequest a = new CmsGetLogicalNodeDirectoryRequest()
+            .reference(new CmsReferenceChoice().altLnReference("lnRef"))
+            .acsiClass(CmsAcsiClass.DATA_SET)
+            .referenceAfter("afterRef");
         byte[] encoded = a.encode();
 
         CmsGetLogicalNodeDirectoryRequest b = new CmsGetLogicalNodeDirectoryRequest();
@@ -39,7 +37,6 @@ public class CmsGetLogicalNodeDirectoryTest {
     @Test
     public void response_roundup_with_array() {
         CmsGetLogicalNodeDirectoryResponse a = new CmsGetLogicalNodeDirectoryResponse();
-        /* SEQUENCE OF SubReference — 2 个元素 */
         a.reference.add(new CmsSubReference("fc"));
         a.reference.add(new CmsSubReference("mx"));
         a.moreFollows(false);

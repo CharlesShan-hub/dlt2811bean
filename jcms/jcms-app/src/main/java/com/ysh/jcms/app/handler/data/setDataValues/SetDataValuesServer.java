@@ -4,7 +4,7 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.pdu.data.CmsDataRefValueEntry;
+import com.ysh.jcms.data.sequence.data.CmsDataRefValueEntry;
 import com.ysh.jcms.pdu.data.CmsSetDataValuesError;
 import com.ysh.jcms.pdu.data.CmsSetDataValuesRequest;
 import com.ysh.jcms.pdu.data.CmsSetDataValuesResponse;

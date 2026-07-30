@@ -4,7 +4,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerFileEntry;
 import com.ysh.jcms.data.scalar.CmsInt32U;
-import com.ysh.jcms.data.core.CmsString;
+import com.ysh.jcms.data.scalar.CmsString;
 
 /**
  * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum } —

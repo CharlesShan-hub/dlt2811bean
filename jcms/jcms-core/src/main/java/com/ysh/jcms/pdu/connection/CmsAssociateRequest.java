@@ -3,7 +3,7 @@ package com.ysh.jcms.pdu.connection;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerAssociateRequestPDU;
-import com.ysh.jcms.data.core.CmsString;
+import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 
 /**

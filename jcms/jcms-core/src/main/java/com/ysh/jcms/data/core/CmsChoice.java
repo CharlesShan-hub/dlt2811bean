@@ -247,7 +247,9 @@ public abstract class CmsChoice extends CmsType {
     @Override
     public void syncToInner() {
         int ch = choice();
-        if (ch < 0) return;
+        if (ch < 0) throw new IllegalStateException(
+            "CHOICE variant not selected — call one of the alt*() setters before encode " +
+            "(class=" + getClass().getSimpleName() + ")");
         VariantInfo vi = variantByIndex.get(ch);
         if (vi == null) return;
 
