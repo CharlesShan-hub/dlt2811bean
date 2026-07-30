@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class DefaultInnerUtf8String extends InnerBase {
     public String value;
-    public DefaultInnerUtf8String() { this.value = ""; }
+    public DefaultInnerUtf8String() { this.value = "x"; }
     public DefaultInnerUtf8String(String value) { this.value = value; }
         @JsonValue
     public String toJsonValue() { return this.value; }

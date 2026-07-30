@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class DefaultInnerVisibleString extends InnerBase {
     public String value;
-    public DefaultInnerVisibleString() { this.value = ""; }
+    public DefaultInnerVisibleString() { this.value = "x"; }
     public DefaultInnerVisibleString(String value) { this.value = value; }
         @JsonValue
     public String toJsonValue() { return this.value; }

@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class DefaultInnerOctetString extends InnerBase {
     public byte[] value;
-    public DefaultInnerOctetString() { this.value = new byte[0]; }
+    public DefaultInnerOctetString() { this.value = new byte[]{ 1 }; }
     public DefaultInnerOctetString(byte[] value) { this.value = value; }
         @JsonValue
     public String toJsonValue() { return InnerBase.hex(this.value); }
