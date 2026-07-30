@@ -77,8 +77,10 @@ public abstract class CmsSequence extends CmsType {
                 // If the Inner* field is an InnerBase subtype, share the reference
                 if (InnerBase.class.isAssignableFrom(innerField.getType())) {
                     wrapper.inner = (InnerBase) innerField.get(inner);
-                    if (wrapper instanceof CmsChoice)
+                    if (wrapper instanceof CmsChoice) {
                         ((CmsChoice) wrapper).rebindChoices();
+                        ((CmsChoice) wrapper).rebindChoiceWrappers();
+                    }
                     // CmsScalar subclasses cache the value in their constructor
                     // but the Inner* field may have a different default (e.g.
                     // new byte[6] vs new byte[0]), so re-sync after rebinding.

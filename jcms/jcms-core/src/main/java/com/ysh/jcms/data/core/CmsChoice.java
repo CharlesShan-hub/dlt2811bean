@@ -109,6 +109,37 @@ public abstract class CmsChoice extends CmsType {
         }
     }
 
+    /**
+     * Rebind all @Choice CmsType wrappers' {@code inner} references to the
+     * current Inner* variant fields.  Called after the parent CmsSequence's
+     * {@code injectFields()} replaces {@code this.inner} with a different
+     * Inner* instance (e.g. the PDU's InnerData instead of the wrapper's own).
+     */
+    public void rebindChoiceWrappers() {
+        for (VariantInfo vi : variantByIndex.values()) {
+            if (vi.innerF == null || vi.field == null) continue;
+            if (!CmsType.class.isAssignableFrom(vi.field.getType())) continue;
+            try {
+                CmsType w = (CmsType) vi.field.get(this);
+                if (w == null) continue;
+                Object innerVal = vi.innerF.get(inner);
+                // Create the Inner* field if it's null (fresh PDU inner)
+                if (innerVal == null && InnerBase.class.isAssignableFrom(vi.innerF.getType())) {
+                    innerVal = vi.innerF.getType().getDeclaredConstructor().newInstance();
+                    vi.innerF.set(inner, innerVal);
+                }
+                if (innerVal instanceof InnerBase) {
+                    w.inner = (InnerBase) innerVal;
+                    if (w instanceof CmsChoice)
+                        ((CmsChoice) w).rebindChoices();
+                    if (w instanceof CmsSequence)
+                        ((CmsSequence) w).rebindWrappers();
+                    w.syncFromInner();
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private void injectChoices() {
         for (Field f : getClass().getFields()) {
