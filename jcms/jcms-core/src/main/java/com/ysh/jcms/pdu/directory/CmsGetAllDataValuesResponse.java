@@ -18,6 +18,7 @@ import java.util.List;
  */
 public class CmsGetAllDataValuesResponse extends CmsSequence {
 
+    @CmsField(sequenceOf = true, elementType = CmsDataValueEntry.class)
     public List<CmsDataValueEntry> data; /* SEQUENCE OF DataValueEntry */
 
     @CmsField

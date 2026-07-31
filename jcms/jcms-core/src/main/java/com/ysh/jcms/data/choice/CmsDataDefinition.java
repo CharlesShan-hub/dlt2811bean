@@ -132,41 +132,40 @@ public class CmsDataDefinition extends CmsChoice {
     public void syncToInner() {
         int ch = choice();
         if (ch < 0) return;
-        InnerDataDefinition i = (InnerDataDefinition) inner;
 
         // Handle structure manually — original creates new container each sync
         if (ch == CHOICE_STRUCTURE) {
-            i._choice = "structure";
+            inner._v.put("_choice", "structure");
             InnerDataDefinitionStructure innerStruct = new InnerDataDefinitionStructure();
-            List<InnerAnonymousDataDefinitionStructure> list = new ArrayList<>();
+            List<InnerBase> list = new ArrayList<>();
             for (CmsDataDefinitionStructElem elem : alt_structure) {
                 elem.syncToInner();
-                list.add((InnerAnonymousDataDefinitionStructure) elem.inner);
+                list.add(elem.inner);
             }
-            innerStruct.value = list;
-            i.structure = innerStruct;
+            innerStruct._v.put("value", list);
+            inner._v.put("structure", innerStruct._v);
             return;
         }
 
         // Handle string length variants — CmsInt32 → Integer
         if (ch == CHOICE_BIT_STRING) {
-            i._choice = "bit-string";
-            i.bit_string = alt_bit_string_len.value();
+            inner._v.put("_choice", "bit-string");
+            inner._v.put("bit-string", alt_bit_string_len.value());
             return;
         }
         if (ch == CHOICE_OCTET_STRING) {
-            i._choice = "octet-string";
-            i.octet_string = alt_octet_string_len.value();
+            inner._v.put("_choice", "octet-string");
+            inner._v.put("octet-string", alt_octet_string_len.value());
             return;
         }
         if (ch == CHOICE_VISIBLE_STRING) {
-            i._choice = "visible-string";
-            i.visible_string = alt_visible_string_len.value();
+            inner._v.put("_choice", "visible-string");
+            inner._v.put("visible-string", alt_visible_string_len.value());
             return;
         }
         if (ch == CHOICE_UNICODE_STRING) {
-            i._choice = "unicode-string";
-            i.unicode_string = alt_unicode_string_len.value();
+            inner._v.put("_choice", "unicode-string");
+            inner._v.put("unicode-string", alt_unicode_string_len.value());
             return;
         }
 
@@ -176,20 +175,28 @@ public class CmsDataDefinition extends CmsChoice {
 
     @Override
     public void syncFromInner() {
-        InnerDataDefinition i = (InnerDataDefinition) inner;
-        String ch = i._choice;
-        if (ch == null) return;
+        Object chObj = inner._v.get("_choice");
+        if (!(chObj instanceof String)) return;
+        String ch = (String) chObj;
 
         // Handle structure manually
         if ("structure".equals(ch)) {
             selectedChoiceIndex = CHOICE_STRUCTURE;
             alt_structure.clear();
-            if (i.structure != null && i.structure.value != null) {
-                for (InnerAnonymousDataDefinitionStructure elem : i.structure.value) {
-                    CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
-                    c.inner = elem;
-                    c.syncFromInner();
-                    alt_structure.add(c);
+            Object structObj = inner._v.get("structure");
+            if (structObj instanceof java.util.LinkedHashMap) {
+                @SuppressWarnings("unchecked")
+                java.util.LinkedHashMap<String, Object> structM = (java.util.LinkedHashMap<String, Object>) structObj;
+                Object valObj = structM.get("value");
+                if (valObj instanceof List) {
+                    @SuppressWarnings("unchecked")
+                    List<InnerBase> src = (List<InnerBase>) valObj;
+                    for (InnerBase elem : src) {
+                        CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
+                        c.inner = elem;
+                        c.syncFromInner();
+                        alt_structure.add(c);
+                    }
                 }
             }
             return;
@@ -198,22 +205,26 @@ public class CmsDataDefinition extends CmsChoice {
         // Handle string length variants
         if ("bit-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_BIT_STRING;
-            alt_bit_string_len.value(i.bit_string);
+            Object v = inner._v.get("bit-string");
+            alt_bit_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("octet-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_OCTET_STRING;
-            alt_octet_string_len.value(i.octet_string);
+            Object v = inner._v.get("octet-string");
+            alt_octet_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("visible-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_VISIBLE_STRING;
-            alt_visible_string_len.value(i.visible_string);
+            Object v = inner._v.get("visible-string");
+            alt_visible_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
         if ("unicode-string".equals(ch)) {
             selectedChoiceIndex = CHOICE_UNICODE_STRING;
-            alt_unicode_string_len.value(i.unicode_string);
+            Object v = inner._v.get("unicode-string");
+            alt_unicode_string_len.value(v instanceof Number ? ((Number) v).intValue() : 0);
             return;
         }
 

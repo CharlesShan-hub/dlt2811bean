@@ -40,7 +40,7 @@ public class CmsAssociateRequestTest {
                                     .leap_seconds_known(true)
                                     .clock_failure(true)))
                         .signedValue(new byte[]{0x33, 0x44}));
-        System.out.println("before encode: packed=" + a.authenticationParameter.signedTime.timeQuality.packed());
+        System.out.println("before encode: packed=" + a.authenticationParameter.signedTime.timeQuality.value());
         System.out.println("before encode: a.inner=" + a.inner);
         System.out.println("before encode: secondsSinceEpoch.value()=" + a.authenticationParameter.signedTime.secondsSinceEpoch.value());
         byte[] encoded = a.encode();
@@ -53,7 +53,7 @@ public class CmsAssociateRequestTest {
         System.out.println(b.authenticationParameter.signedTime.timeQuality.clock_failure());
         System.out.println(b.authenticationParameter.signedTime.timeQuality.leap_seconds_known());
         System.out.println(b.authenticationParameter.signedTime.timeQuality.clock_not_synchronized());
-        System.out.println(b.authenticationParameter.signedTime.timeQuality.packed());
+        System.out.println(b.authenticationParameter.signedTime.timeQuality.value());
         System.out.println(b.authenticationParameter.signedTime.timeQuality.inner);
         System.out.println(b.inner);
     }

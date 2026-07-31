@@ -28,7 +28,7 @@ public class CmsMsvcb extends CmsSequence {
     public CmsMsvcb confRev(long v) { this.confRev.value(v); return this; }
     public CmsMsvcb smpMod(int v) { this.smpMod.value(v); setPresent("smpMod", true); return this; }
     public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
-    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds.packed(v); return this; }
+    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds.value(v); return this; }
     public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress.value(v); setPresent("dstAddress", true); return this; }
 
     /** Copy all field values from another CmsMsvcb (fluent). */

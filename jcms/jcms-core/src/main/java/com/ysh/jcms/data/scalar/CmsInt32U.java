@@ -22,8 +22,9 @@ public class CmsInt32U extends CmsScalar {
 
     /** Get unsigned int value as long (always 0..4294967295). */
     public long value() {
-        Integer v = (Integer) innerGet();
-        return v != null ? (v & 0xFFFFFFFFL) : 0L;
+        Object v = innerGet();
+        if (v instanceof Number) return ((Number) v).longValue() & 0xFFFFFFFFL;
+        return 0L;
     }
     public CmsInt32U value(long v) {
         if (v < 0 || v > MAX_VALUE)

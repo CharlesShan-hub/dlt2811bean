@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.enumerate;
 
-import com.ysh.jcms.data.core.CmsEnum;
 import com.ysh.jcms.data.InnerTcmd;
+import com.ysh.jcms.data.core.CmsEnum;
 
 /**
  * Tcmd ::= BIT STRING (SIZE(2)) — 7.3.7

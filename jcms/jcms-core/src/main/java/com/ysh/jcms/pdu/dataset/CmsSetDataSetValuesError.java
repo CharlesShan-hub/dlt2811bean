@@ -1,5 +1,6 @@
 package com.ysh.jcms.pdu.dataset;
 
+import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerServiceError;
 import com.ysh.jcms.data.InnerSetDataSetValuesErrorPDU;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -27,10 +28,11 @@ public class CmsSetDataSetValuesError extends CmsSequence {
 
     @Override
     public void syncToInner() {
-        InnerSetDataSetValuesErrorPDU inner = (InnerSetDataSetValuesErrorPDU) this.inner;
-        inner.result.clear();
+        @SuppressWarnings("unchecked")
+        List<InnerBase> innerList = (List<InnerBase>) inner._v.get("result");
+        innerList.clear();
         for (Integer v : result) {
-            inner.result.add(new InnerServiceError(v));
+            innerList.add(new InnerServiceError(v));
         }
         super.syncToInner();
     }
@@ -38,10 +40,12 @@ public class CmsSetDataSetValuesError extends CmsSequence {
     @Override
     public void syncFromInner() {
         super.syncFromInner();
-        InnerSetDataSetValuesErrorPDU inner = (InnerSetDataSetValuesErrorPDU) this.inner;
+        @SuppressWarnings("unchecked")
+        List<InnerBase> innerList = (List<InnerBase>) inner._v.get("result");
         result = new ArrayList<>();
-        for (InnerServiceError e : inner.result) {
-            result.add(e.value);
+        for (InnerBase e : innerList) {
+            Object val = e.getValue();
+            result.add(val instanceof Integer ? (Integer) val : (int) val);
         }
     }
 }

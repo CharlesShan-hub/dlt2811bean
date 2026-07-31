@@ -20,6 +20,7 @@ import java.util.List;
  */
 public class CmsGetDataDirectoryResponse extends CmsSequence {
 
+    @CmsField(sequenceOf = true, elementType = CmsSubRefEntry.class)
     public List<CmsSubRefEntry> dataAttribute; /* SEQUENCE OF SubRefEntry */
 
     @CmsField

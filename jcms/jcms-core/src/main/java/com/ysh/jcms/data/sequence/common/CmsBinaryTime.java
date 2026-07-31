@@ -1,11 +1,10 @@
 package com.ysh.jcms.data.sequence.common;
 
 import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.data.DefaultInnerOctetString;
+import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerBinaryTime;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 /**
@@ -36,38 +35,32 @@ public class CmsBinaryTime extends CmsType {
 
     @Override
     public void syncToInner() {
-        DefaultInnerOctetString dos = valueField();
-        dos.value = ByteBuffer.allocate(6)
+        inner._v.put("_", ByteBuffer.allocate(6)
             .putInt((int) msOfDay.value())
             .putShort((short) daysSince1984.value())
-            .array();
+            .array());
     }
 
     @Override
     public void syncFromInner() {
-        DefaultInnerOctetString dos = valueField();
-        if (dos.value == null || dos.value.length < 6) {
+        Object raw = inner._v.get("_");
+        byte[] bytes;
+        if (raw instanceof byte[]) {
+            bytes = (byte[]) raw;
+        } else if (raw instanceof String) {
+            bytes = InnerBase.unhex((String) raw);
+        } else {
             msOfDay.value(0L);
             daysSince1984.value(0);
             return;
         }
-        ByteBuffer bb = ByteBuffer.wrap(dos.value);
+        if (bytes.length < 6) {
+            msOfDay.value(0L);
+            daysSince1984.value(0);
+            return;
+        }
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
         msOfDay.value(bb.getInt() & 0xFFFFFFFFL);
         daysSince1984.value(bb.getShort() & 0xFFFF);
-    }
-
-    /** Access inner.value field reflectively, works for InnerBinaryTime and subtypes like InnerEntryTime. */
-    private DefaultInnerOctetString valueField() {
-        try {
-            Field f = inner.getClass().getField("value");
-            DefaultInnerOctetString v = (DefaultInnerOctetString) f.get(inner);
-            if (v == null) {
-                v = new DefaultInnerOctetString();
-                f.set(inner, v);
-            }
-            return v;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }

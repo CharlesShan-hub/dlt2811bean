@@ -30,10 +30,10 @@ public class CmsUrcb extends CmsSequence {
     public CmsUrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
     public CmsUrcb datSet(String v) { this.datSet.value(v); return this; }
     public CmsUrcb confRev(long v) { this.confRev.value(v); return this; }
-    public CmsUrcb optFlds(CmsRcbOptFlds v) { this.optFlds.packed(v); return this; }
+    public CmsUrcb optFlds(CmsRcbOptFlds v) { this.optFlds.value(v); return this; }
     public CmsUrcb bufTm(long v) { this.bufTm.value(v); return this; }
     public CmsUrcb sqNum(int v) { this.sqNum.value(v); return this; }
-    public CmsUrcb trgOps(CmsTriggerConditions v) { this.trgOps.packed(v); return this; }
+    public CmsUrcb trgOps(CmsTriggerConditions v) { this.trgOps.value(v); return this; }
     public CmsUrcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsUrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsUrcb resv(boolean v) { this.resv.value(v); return this; }

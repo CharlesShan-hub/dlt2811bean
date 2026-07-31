@@ -4,11 +4,10 @@ import com.ysh.jcms.data.bitarray.CmsTimeQuality;
 import com.ysh.jcms.util.CmsBytesUtil;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.DefaultInnerOctetString;
-import com.ysh.jcms.data.InnerTimeQuality;
+import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerUtcTime;
 import com.ysh.jcms.data.scalar.CmsInt24U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
-import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 
 /**
@@ -47,44 +46,43 @@ public class CmsUtcTime extends CmsType {
     @Override
     public void syncToInner() {
         timeQuality.syncToInner();
-        int tqValue = ((InnerTimeQuality) timeQuality.inner).value;
+        Object tqObj = timeQuality.inner._v.get("_");
+        int tqValue = tqObj instanceof Number ? ((Number) tqObj).intValue() : 0;
 
         ByteBuffer buf = ByteBuffer.allocate(8);
         CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
         CmsBytesUtil.putInt24(buf, fractionOfSecond.value());
         buf.put((byte) tqValue);
-        innerValueBuf(buf.array());
+        inner._v.put("_", buf.array());
     }
 
     @Override
     public void syncFromInner() {
-        ByteBuffer buf = ByteBuffer.wrap(innerValueBuf());
+        Object raw = inner._v.get("_");
+        byte[] bytes;
+        if (raw instanceof byte[]) {
+            bytes = (byte[]) raw;
+        } else if (raw instanceof DefaultInnerOctetString) {
+            bytes = ((DefaultInnerOctetString) raw).value;
+        } else if (raw instanceof String) {
+            bytes = InnerBase.unhex((String) raw);
+        } else {
+            secondsSinceEpoch.value(0L);
+            fractionOfSecond.value(0);
+            return;
+        }
+        if (bytes.length < 8) {
+            secondsSinceEpoch.value(0L);
+            fractionOfSecond.value(0);
+            return;
+        }
+        ByteBuffer buf = ByteBuffer.wrap(bytes);
         secondsSinceEpoch.value(CmsBytesUtil.getInt32u(buf));
         fractionOfSecond.value(CmsBytesUtil.getInt24(buf));
 
         int tqValue = buf.get() & 0xFF;
-        ((InnerTimeQuality) timeQuality.inner).value = tqValue;
+        timeQuality.inner._v.put("_", tqValue);
         timeQuality.syncFromInner();
-    }
-
-    /** Access inner.value (DefaultInnerOctetString) reflectively — works for InnerUtcTime and subtypes like InnerTimeStamp. */
-    private DefaultInnerOctetString innerValue() {
-        try {
-            Field f = inner.getClass().getField("value");
-            DefaultInnerOctetString v = (DefaultInnerOctetString) f.get(inner);
-            if (v == null) { v = new DefaultInnerOctetString(); f.set(inner, v); }
-            return v;
-        } catch (Exception e) { throw new RuntimeException(e); }
-    }
-
-    private byte[] innerValueBuf() {
-        DefaultInnerOctetString v = innerValue();
-        if (v.value == null || v.value.length < 8) v.value = new byte[8];
-        return v.value;
-    }
-
-    private void innerValueBuf(byte[] buf) {
-        innerValue().value = buf;
     }
 
     public CmsUtcTime value(CmsUtcTime v) {

@@ -23,6 +23,7 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
     @CmsField(optional = true)
     public CmsObjectReference referenceAfter; /* OPTIONAL */
 
+    @CmsField(sequenceOf = true, elementType = CmsData.class)
     public List<CmsData> value; /* SEQUENCE OF Data */
 
     public CmsSetDataSetValuesRequest() {

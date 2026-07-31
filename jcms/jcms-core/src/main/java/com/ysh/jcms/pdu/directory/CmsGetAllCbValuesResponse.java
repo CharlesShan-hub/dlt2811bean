@@ -19,6 +19,7 @@ import java.util.List;
  */
 public class CmsGetAllCbValuesResponse extends CmsSequence {
 
+    @CmsField(sequenceOf = true, elementType = CmsCbValueEntry.class)
     public List<CmsCbValueEntry> cbValue; /* SEQUENCE OF CBValueEntry */
 
     @CmsField

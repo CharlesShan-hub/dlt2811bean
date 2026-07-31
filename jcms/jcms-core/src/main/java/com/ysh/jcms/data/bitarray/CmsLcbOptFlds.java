@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Getter @Setter @Accessors(chain = true, fluent = true)
 public class CmsLcbOptFlds extends CmsBits {
 
-    @Bit(0) public boolean value;
+    @Bit(0) public boolean bit0;
 
     public CmsLcbOptFlds() {
         super(new InnerLcbOptFlds());

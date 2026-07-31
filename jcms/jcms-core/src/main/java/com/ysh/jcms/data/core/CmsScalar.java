@@ -6,8 +6,9 @@ import com.ysh.jcms.data.InnerEmpty;
 /**
  * Base class for scalar types whose Inner* stores a single value in {@code _v}.
  *
- * <p>Reads via {@code inner.getValue()} and writes via {@code inner.setValue()},
- * both provided by the auto-generated Inner* classes. No reflection needed.
+ * <p>Reads/writes go straight to {@code inner._v["_"]}, so the auto-generated
+ * Lombok getters/setters on Inner* (e.g. the {@code value} field of
+ * DefaultInner*) are never involved.
  *
  * <p>The no-arg constructor creates a placeholder backed by {@link InnerEmpty}.
  */
@@ -22,10 +23,12 @@ public abstract class CmsScalar extends CmsType {
     }
 
     protected Object innerGet() {
-        return inner.getValue();
+        // Read directly from _v — the DefaultInner* subclasses have Lombok-generated
+        // getValue() (e.g. returning the `value` field), which would bypass _v.
+        return inner._v.get("_");
     }
 
     protected void innerSet(Object v) {
-        inner.setValue(v);
+        inner._v.put("_", v);
     }
 }

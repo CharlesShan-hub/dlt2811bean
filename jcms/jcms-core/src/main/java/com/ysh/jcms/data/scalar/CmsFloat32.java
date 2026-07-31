@@ -1,6 +1,7 @@
 package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.data.core.CmsScalar;
+import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerFloat32;
 import java.nio.ByteBuffer;
 
@@ -19,7 +20,15 @@ public class CmsFloat32 extends CmsScalar {
     }
 
     public float value() {
-        byte[] b = (byte[]) innerGet();
+        Object v = innerGet();
+        byte[] b;
+        if (v instanceof byte[]) {
+            b = (byte[]) v;
+        } else if (v instanceof String) {
+            b = InnerBase.unhex((String) v);
+        } else {
+            return 0f;
+        }
         return bytesToFloat(b);
     }
     public CmsFloat32 value(float v) {

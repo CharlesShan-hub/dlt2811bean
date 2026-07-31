@@ -1,6 +1,7 @@
 package com.ysh.jcms.pdu.data;
 
 import com.ysh.jcms.data.*;
+import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.sequence.data.CmsDataRefValueEntry;
 
@@ -18,6 +19,7 @@ import java.util.List;
  */
 public class CmsSetDataValuesRequest extends CmsSequence {
 
+    @CmsField(sequenceOf = true, elementType = CmsDataRefValueEntry.class)
     public List<CmsDataRefValueEntry> data; /* SEQUENCE OF DataRefValueEntry */
 
     public CmsSetDataValuesRequest() {

@@ -11,7 +11,7 @@ public class DefaultInnerOctetString extends InnerBase {
     public DefaultInnerOctetString() { this.value = new byte[]{ 1 }; }
     public DefaultInnerOctetString(byte[] value) { this.value = value; }
         @JsonValue
-    public String toJsonValue() { return InnerBase.hex(this.value); }
+    public Object toJsonValue() { Object v = _v.get("_"); if (v instanceof byte[]) return InnerBase.hex((byte[]) v); return v != null ? v : InnerBase.hex(this.value); }
     @JsonCreator
     public static DefaultInnerOctetString fromJson(String hex) { return new DefaultInnerOctetString(InnerBase.unhex(hex)); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerOctetString has no standalone ASN.1 definition"); }

@@ -2,7 +2,7 @@ package com.ysh.jcms.data.sequence.directory;
 
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.InnerEmpty;
+import com.ysh.jcms.data.InnerAnonymousGetAllDataValuesResponsePDUData;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 
@@ -11,7 +11,6 @@ import com.ysh.jcms.data.scalar.CmsSubReference;
  * IMPLICIT Data } — 8.3.4
  *
  * Used by GetAllDataValues response (SEQUENCE OF DataValueEntry).
- * Inner binding is handled by the parent PDU's manual sync.
  */
 public class CmsDataValueEntry extends CmsSequence {
 
@@ -19,9 +18,7 @@ public class CmsDataValueEntry extends CmsSequence {
     @CmsField public CmsData value;
 
     public CmsDataValueEntry() {
-        super(new InnerEmpty());
-        this.reference = new CmsSubReference();
-        this.value = new CmsData();
+        super(new InnerAnonymousGetAllDataValuesResponsePDUData());
     }
 
     public CmsDataValueEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }

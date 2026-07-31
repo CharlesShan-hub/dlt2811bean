@@ -11,7 +11,7 @@ public class DefaultInnerVisibleString extends InnerBase {
     public DefaultInnerVisibleString() { this.value = "x"; }
     public DefaultInnerVisibleString(String value) { this.value = value; }
         @JsonValue
-    public String toJsonValue() { return this.value; }
+    public Object toJsonValue() { Object v = _v.get("_"); return v != null ? v : this.value; }
     @JsonCreator
     public static DefaultInnerVisibleString fromJson(String v) { return new DefaultInnerVisibleString(v); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerVisibleString has no standalone ASN.1 definition"); }

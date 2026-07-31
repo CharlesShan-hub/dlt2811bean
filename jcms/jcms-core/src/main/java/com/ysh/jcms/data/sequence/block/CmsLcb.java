@@ -23,10 +23,10 @@ public class CmsLcb extends CmsSequence {
 
     public CmsLcb logEna(boolean v) { this.logEna.value(v); return this; }
     public CmsLcb datSet(String v) { this.datSet.value(v); return this; }
-    public CmsLcb trgOps(CmsTriggerConditions v) { this.trgOps.packed(v); return this; }
+    public CmsLcb trgOps(CmsTriggerConditions v) { this.trgOps.value(v); return this; }
     public CmsLcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsLcb logRef(String v) { this.logRef.value(v); return this; }
-    public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds.packed(v); setPresent("optFlds", true); return this; }
+    public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds.value(v); setPresent("optFlds", true); return this; }
     public CmsLcb bufTm(long v) { this.bufTm.value(v); setPresent("bufTm", true); return this; }
 
     /** Copy all field values from another CmsLcb (fluent). */

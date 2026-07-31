@@ -35,10 +35,10 @@ public class CmsBrcb extends CmsSequence {
     public CmsBrcb rptEna(boolean v) { this.rptEna.value(v); return this; }
     public CmsBrcb datSet(String v) { this.datSet.value(v); return this; }
     public CmsBrcb confRev(long v) { this.confRev.value(v); return this; }
-    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds.packed(v); return this; }
+    public CmsBrcb optFlds(CmsRcbOptFlds v) { this.optFlds.value(v); return this; }
     public CmsBrcb bufTm(long v) { this.bufTm.value(v); return this; }
     public CmsBrcb sqNum(int v) { this.sqNum.value(v); return this; }
-    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps.packed(v); return this; }
+    public CmsBrcb trgOps(CmsTriggerConditions v) { this.trgOps.value(v); return this; }
     public CmsBrcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsBrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }

@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class CmsGetDataSetDirectoryResponse extends CmsSequence {
 
+    @CmsField(sequenceOf = true, elementType = CmsDataRefFcEntry.class)
     public List<CmsDataRefFcEntry> memberData; /* SEQUENCE OF DataRefFcEntry */
 
     @CmsField

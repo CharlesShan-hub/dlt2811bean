@@ -80,11 +80,12 @@ public class CmsFC extends CmsScalar {
 
     @Override
     public void syncToInner() {
-        ((InnerFunctionalConstraint) inner).value.value = CODES[val];
+        inner._v.put("_", CODES[val]);
     }
 
     @Override
     public void syncFromInner() {
-        this.val = fromString(((InnerFunctionalConstraint) inner).value.value);
+        Object v = inner._v.get("_");
+        this.val = fromString(v instanceof String ? (String) v : "");
     }
 }

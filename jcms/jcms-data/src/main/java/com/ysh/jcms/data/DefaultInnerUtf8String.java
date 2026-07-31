@@ -11,7 +11,7 @@ public class DefaultInnerUtf8String extends InnerBase {
     public DefaultInnerUtf8String() { this.value = "x"; }
     public DefaultInnerUtf8String(String value) { this.value = value; }
         @JsonValue
-    public String toJsonValue() { return this.value; }
+    public Object toJsonValue() { Object v = _v.get("_"); return v != null ? v : this.value; }
     @JsonCreator
     public static DefaultInnerUtf8String fromJson(String v) { return new DefaultInnerUtf8String(v); }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerUtf8String has no standalone ASN.1 definition"); }

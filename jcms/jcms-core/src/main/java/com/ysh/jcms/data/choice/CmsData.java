@@ -245,22 +245,44 @@ public class CmsData extends CmsChoice {
         return this;
     }
 
+    /** Convert JER choice map {@code {"variant": value}} to InnerData {@code _v} form. */
+    private static java.util.LinkedHashMap<String, Object> normalizeChoiceMap(
+            java.util.LinkedHashMap<String, Object> m) {
+        java.util.LinkedHashMap<String, Object> out = new java.util.LinkedHashMap<>();
+        for (java.util.Map.Entry<String, Object> e : m.entrySet()) {
+            if (e.getKey().startsWith("_")) {
+                out.put(e.getKey(), e.getValue());
+                continue;
+            }
+            out.put("_choice", e.getKey());
+            Object val = e.getValue();
+            if (val instanceof java.util.LinkedHashMap) {
+                out.put(e.getKey(), val);
+            } else {
+                java.util.LinkedHashMap<String, Object> w = new java.util.LinkedHashMap<>();
+                w.put("_", val);
+                out.put(e.getKey(), w);
+            }
+            break;
+        }
+        return out;
+    }
+
     @Override
     public void syncToInner() {
         int ch = choice();
         if (ch < 0) return;
-        InnerData i = (InnerData) inner;
 
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if (ch == CHOICE_ARRAY || ch == CHOICE_STRUCTURE) {
-            i._choice = (ch == CHOICE_ARRAY) ? "array" : "structure";
-            List<InnerData> list = new ArrayList<>();
+            String name = ch == CHOICE_ARRAY ? "array" : "structure";
+            inner._v.put("_choice", name);
+            List<InnerBase> list = new ArrayList<>();
             for (CmsData elem : alt_sequence) {
                 elem.syncToInner();
-                list.add((InnerData) elem.inner);
+                list.add(elem.inner);
             }
-            if (ch == CHOICE_ARRAY) i.array = list;
-            else i.structure = list;
+            inner._v.put(name, list);
             return;
         }
 
@@ -270,19 +292,35 @@ public class CmsData extends CmsChoice {
 
     @Override
     public void syncFromInner() {
-        InnerData i = (InnerData) inner;
-        String ch = i._choice;
-        if (ch == null) return;
+        Object ch = inner._v.get("_choice");
+        if (!(ch instanceof String)) {
+            normalizeVariant();
+            ch = inner._v.get("_choice");
+            if (!(ch instanceof String)) return;
+        }
 
         // Handle ARRAY/STRUCTURE (share alt_sequence, manual)
         if ("array".equals(ch) || "structure".equals(ch)) {
             selectedChoiceIndex = "array".equals(ch) ? CHOICE_ARRAY : CHOICE_STRUCTURE;
-            List<InnerData> src = "array".equals(ch) ? i.array : i.structure;
+            Object raw = inner._v.get(ch);
+            if (raw instanceof java.util.LinkedHashMap) {
+                // InnerData.setArray wraps the list as {"_": [...]}
+                raw = ((java.util.LinkedHashMap<?, ?>) raw).get("_");
+            }
+            @SuppressWarnings("unchecked")
+            List<Object> src = (List<Object>) raw;
             alt_sequence.clear();
             if (src != null) {
-                for (InnerData elem : src) {
+                for (Object elem : src) {
                     CmsData c = new CmsData();
-                    c.inner = elem;
+                    if (elem instanceof InnerBase) {
+                        c.inner = (InnerBase) elem;
+                    } else if (elem instanceof java.util.LinkedHashMap) {
+                        // Jackson-deserialized element: {"variant": value} → normalize to _v form
+                        c.inner._v = normalizeChoiceMap((java.util.LinkedHashMap<String, Object>) elem);
+                    } else {
+                        continue;
+                    }
                     c.syncFromInner();
                     alt_sequence.add(c);
                 }

@@ -1,7 +1,7 @@
 package com.ysh.jcms.data.enumerate;
 
-import com.ysh.jcms.data.core.CmsEnum;
 import com.ysh.jcms.data.InnerDbpos;
+import com.ysh.jcms.data.core.CmsEnum;
 
 /**
  * Dbpos ::= BIT STRING (SIZE(2)) — 7.3.5

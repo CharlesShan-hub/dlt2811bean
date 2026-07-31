@@ -27,6 +27,7 @@ public class CmsCreateDataSetRequest extends CmsSequence {
     @CmsField(optional = true)
     public CmsObjectReference referenceAfter; /* OPTIONAL */
 
+    @CmsField(sequenceOf = true, elementType = CmsDataRefFcEntry.class)
     public List<CmsDataRefFcEntry> memberData; /* SEQUENCE OF DataRefFcEntry */
 
     public CmsCreateDataSetRequest() {
@@ -51,6 +52,4 @@ public class CmsCreateDataSetRequest extends CmsSequence {
         this.memberData = v;
         return this;
     }
-
-
 }

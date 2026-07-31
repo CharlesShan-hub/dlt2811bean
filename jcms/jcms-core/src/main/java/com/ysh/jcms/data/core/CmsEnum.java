@@ -7,10 +7,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Base for INTEGER enumeration types whose Inner* has a {@code value} field.
+ * Base for INTEGER / BIT STRING enumeration types whose Inner* stores a value in {@code _v}.
  *
  * <p>CmsEnum provides {@link #value()} / {@link #value(int)} with optional range
  * validation via {@link ValueRange}. Subclasses just declare named constants.
+ *
+ * <p>For BIT STRING types (e.g. Dbpos, Tcmd) the hex ↔ int conversion is handled
+ * automatically — the bit size is derived from {@link ValueRange#max()}.
  *
  * <pre>{@code
  * &#64;ValueRange(min = 0, max = 12)
@@ -37,11 +40,22 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         super(inner);
     }
 
-    /** Get the current integer value. */
+    /** Minimum bits needed to represent values 0..max. */
+    private static int bitsForMax(int max) {
+        return 32 - Integer.numberOfLeadingZeros(max);
+    }
+
+    /** Get the current integer value. Handles both INTEGER and BIT STRING hex storage. */
     @SuppressWarnings("unchecked")
     public int value() {
-        Integer v = (Integer) innerGet();
-        return v != null ? v : 0;
+        Object v = innerGet();
+        if (v instanceof String) {
+            ValueRange range = getClass().getAnnotation(ValueRange.class);
+            int bits = bitsForMax(range != null ? range.max() : 0);
+            return InnerBase.parseBitStringHex((String) v, bits);
+        }
+        if (v instanceof Number) return ((Number) v).intValue();
+        return 0;
     }
 
     /** Set value with range validation from {@link ValueRange} if present. */
@@ -50,7 +64,14 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         if (range != null && (v < range.min() || v > range.max()))
             throw new IllegalArgumentException(
                 getClass().getSimpleName() + " out of range [" + range.min() + "," + range.max() + "]: " + v);
-        innerSet(v);
+        // BIT STRING types store hex strings, INTEGER types store integers directly
+        Object current = innerGet();
+        if (current instanceof String) {
+            int bits = bitsForMax(range != null ? range.max() : 0);
+            innerSet(InnerBase.bitStringHex(v, bits));
+        } else {
+            innerSet(v);
+        }
         return (T) this;
     }
 }

@@ -97,6 +97,10 @@ public abstract class CmsSequence extends CmsType {
             Object sub = inner._v.get(name);
             if (sub instanceof LinkedHashMap) {
                 wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
+            } else if (sub != null && (wrapper instanceof CmsScalar || wrapper instanceof CmsBits)) {
+                // Jackson stores scalar / BIT STRING values directly (e.g. "cbRef1", "0000");
+                // wrap into _v so innerGet()/readPacked() can see them.
+                wrapper.inner._v.put("_", sub);
             }
             if (wrapper instanceof CmsChoice) {
                 ((CmsChoice) wrapper).rebindChoices();
@@ -114,13 +118,21 @@ public abstract class CmsSequence extends CmsType {
                 List<CmsType> list = new ArrayList<>();
                 if (innerList != null) {
                     for (Object innerElem : innerList) {
+                        CmsType wrapper = e.getValue().getDeclaredConstructor().newInstance();
                         if (innerElem instanceof InnerBase) {
-                            CmsType wrapper = e.getValue().getDeclaredConstructor().newInstance();
                             wrapper.inner._v = ((InnerBase) innerElem)._v;
-                            if (wrapper instanceof CmsChoice)
-                                ((CmsChoice) wrapper).rebindChoices();
-                            list.add(wrapper);
+                        } else if (innerElem instanceof LinkedHashMap) {
+                            // Jackson-deserialized raw map — share it as wrapper's _v
+                            wrapper.inner._v = (LinkedHashMap<String, Object>) innerElem;
+                        } else {
+                            continue;
                         }
+                        if (wrapper instanceof CmsChoice)
+                            ((CmsChoice) wrapper).rebindChoices();
+                        if (wrapper instanceof CmsSequence)
+                            ((CmsSequence) wrapper).rebindWrappers();
+                        wrapper.syncFromInner();
+                        list.add(wrapper);
                     }
                 }
                 f.set(this, list);
@@ -227,9 +239,16 @@ public abstract class CmsSequence extends CmsType {
         detectWrapperReplacements();
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
             if (optionalFields.contains(e.getKey()) && !isPresent(e.getKey())) {
+                // Optional field not marked present — remove stale default from _v
+                inner._v.remove(e.getKey());
                 continue;
             }
-            e.getValue().syncToInner();
+            CmsType w = e.getValue();
+            w.syncToInner();
+            if (w instanceof CmsScalar) {
+                // Use toJsonValue() so special scalars (e.g. unsigned Int32U) serialize correctly
+                inner._v.put(e.getKey(), ((CmsScalar) w).inner.toJsonValue());
+            }
         }
         // Sync SEQUENCE OF fields → inner._v
         for (Map.Entry<String, Class<? extends CmsType>> e : sequenceFields.entrySet()) {
@@ -250,10 +269,20 @@ public abstract class CmsSequence extends CmsType {
         }
     }
 
+    @Override
+    public byte[] encode() {
+        syncToInner();
+        return inner.encode();
+    }
+
     /** Empty hook kept for subclass compatibility (data flows through shared _v). */
     @Override
     public void syncFromInner() {
         detectWrapperReplacements();
+        // Populate Java fields that don't share _v (e.g. CmsBits bit fields)
+        for (CmsType wrapper : injectedWrappers.values()) {
+            wrapper.syncFromInner();
+        }
     }
 
     /**
@@ -300,6 +329,7 @@ public abstract class CmsSequence extends CmsType {
     public void decode(byte[] data) {
         super.decode(data);
         rebindWrappers();
+        syncFromInner();
     }
 
     @Override

@@ -7,6 +7,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Base class for BIT STRING types.
@@ -38,11 +39,18 @@ public abstract class CmsBits extends CmsType {
         return max > 0 ? max : 1;
     }
 
-    /** Read packed value from _v (hex string → int). */
+    /** Read packed value from _v. Supports hex string or JER form {"value": "HEX", "length": N}. */
     private int readPacked() {
         Object v = inner._v.get("_");
         if (v instanceof String) {
             return InnerBase.parseBitStringHex((String) v, bitCount());
+        }
+        if (v instanceof Map) {
+            // JER form: {"value": "AABB", "length": 16} (rasn output)
+            Object hex = ((Map<?, ?>) v).get("value");
+            if (hex instanceof String) {
+                return InnerBase.parseBitStringHex((String) hex, bitCount());
+            }
         }
         return 0;
     }
@@ -65,7 +73,18 @@ public abstract class CmsBits extends CmsType {
     }
 
     public CmsBits value(CmsBits v) {
-        value(v.value());
+        // Copy the @Bit Java fields (they are the source of truth; _v only holds the
+        // encoded form). Copying v.value() would lose fields set via fluent setters
+        // (e.g. .sequence_number(true)) that were never packed into _v.
+        for (Field f : getClass().getFields()) {
+            Bit bit = f.getAnnotation(Bit.class);
+            if (bit == null) continue;
+            try {
+                f.set(this, f.get(v));
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to copy bit field " + f.getName(), e);
+            }
+        }
         return this;
     }
 
@@ -93,5 +112,29 @@ public abstract class CmsBits extends CmsType {
             }
         }
         writePacked(packed);
+    }
+
+    /** Populate @Bit Java fields from the packed value in {@code _v}. */
+    @Override
+    public void syncFromInner() {
+        int packed = readPacked();
+        for (Field f : getClass().getFields()) {
+            Bit bit = f.getAnnotation(Bit.class);
+            if (bit == null) continue;
+            try {
+                int pos = bit.value();
+                int len = bit.length();
+                Class<?> type = f.getType();
+                if (len == 1 && (type == boolean.class || type == Boolean.class)) {
+                    f.setBoolean(this, (packed & (1 << pos)) != 0);
+                } else if (len == 1 && CmsBoolean.class.isAssignableFrom(type)) {
+                    ((CmsBoolean) f.get(this)).value((packed & (1 << pos)) != 0);
+                } else if (type == int.class || type == Integer.class) {
+                    f.setInt(this, (packed >> pos) & mask(len));
+                }
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to sync from inner", e);
+            }
+        }
     }
 }

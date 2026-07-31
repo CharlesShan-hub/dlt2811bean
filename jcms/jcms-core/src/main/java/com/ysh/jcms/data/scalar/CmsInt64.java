@@ -19,8 +19,7 @@ public class CmsInt64 extends CmsScalar {
     }
     public CmsInt64(long value) {
         this();
-        ((InnerInt64) inner).value = value;
-        innerSet(((InnerInt64) inner).value);
+        innerSet(value);
     }
     public CmsInt64(BigInteger value) {
         this();
