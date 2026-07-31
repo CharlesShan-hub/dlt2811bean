@@ -1,0 +1,98 @@
+package com.ysh.jcms.pdu.goose;
+
+import com.ysh.jcms.data.InnerSendGOOSEMessagePDU;
+import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.core.CmsField;
+import com.ysh.jcms.data.core.CmsSequence;
+import com.ysh.jcms.data.scalar.CmsBoolean;
+import com.ysh.jcms.data.scalar.CmsInt32U;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.data.sequence.common.CmsUtcTime;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * SendGOOSEMessage-PDU ::= SEQUENCE {
+ *     goID        [0] IMPLICIT VisibleString (SIZE (0..129)),
+ *     datSet      [1] IMPLICIT ObjectReference OPTIONAL,
+ *     goRef       [2] IMPLICIT ObjectReference OPTIONAL,
+ *     t           [3] IMPLICIT TimeStamp,
+ *     stNum       [4] IMPLICIT Int32U,
+ *     sqNum       [5] IMPLICIT Int32U,
+ *     simulation  [6] IMPLICIT Boolean,
+ *     confRev     [7] IMPLICIT Int32U,
+ *     ndsCom      [8] IMPLICIT Boolean,
+ *     data        [9] IMPLICIT SEQUENCE OF Data
+ * } — 8.9.1
+ *
+ * <p>Unconfirmed service — no Response or Error PDU.
+ */
+public class CmsSendGooseMessage extends CmsSequence {
+
+    @CmsField
+    public CmsString goId;
+
+    @CmsField(optional = true)
+    public CmsObjectReference datSet;
+
+    @CmsField(optional = true)
+    public CmsObjectReference goRef;
+
+    @CmsField
+    public CmsUtcTime t;
+
+    @CmsField
+    public CmsInt32U stNum;
+
+    @CmsField
+    public CmsInt32U sqNum;
+
+    @CmsField
+    public CmsBoolean simulation;
+
+    @CmsField
+    public CmsInt32U confRev;
+
+    @CmsField
+    public CmsBoolean ndsCom;
+
+    @CmsField(sequenceOf = true, elementType = CmsData.class)
+    public List<CmsData> data; /* SEQUENCE OF Data */
+
+    public CmsSendGooseMessage() {
+        super(new InnerSendGOOSEMessagePDU());
+        this.data = new ArrayList<>();
+    }
+
+    public CmsSendGooseMessage goId(String v) { this.goId.value(v); return this; }
+    public CmsSendGooseMessage goId(byte[] v) { return goId(new String(v)); }
+    public CmsSendGooseMessage datSet(String v) {
+        if (v != null) {
+            this.datSet.value(v);
+            setPresent("datSet", true);
+        } else {
+            setPresent("datSet", false);
+        }
+        return this;
+    }
+    public CmsSendGooseMessage datSet(byte[] v) { return datSet(v != null ? new String(v) : null); }
+    public CmsSendGooseMessage goRef(String v) {
+        if (v != null) {
+            this.goRef.value(v);
+            setPresent("goRef", true);
+        } else {
+            setPresent("goRef", false);
+        }
+        return this;
+    }
+    public CmsSendGooseMessage goRef(byte[] v) { return goRef(v != null ? new String(v) : null); }
+    public CmsSendGooseMessage t(CmsUtcTime v) { this.t.value(v); return this; }
+    public CmsSendGooseMessage stNum(long v) { this.stNum.value(v); return this; }
+    public CmsSendGooseMessage sqNum(long v) { this.sqNum.value(v); return this; }
+    public CmsSendGooseMessage simulation(boolean v) { this.simulation.value(v); return this; }
+    public CmsSendGooseMessage confRev(long v) { this.confRev.value(v); return this; }
+    public CmsSendGooseMessage ndsCom(boolean v) { this.ndsCom.value(v); return this; }
+    public CmsSendGooseMessage data(List<CmsData> v) { this.data = v; return this; }
+}

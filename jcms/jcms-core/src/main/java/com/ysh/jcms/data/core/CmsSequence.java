@@ -174,6 +174,10 @@ public abstract class CmsSequence extends CmsType {
                         } else if (innerElem instanceof LinkedHashMap) {
                             // Jackson-deserialized raw map — share it as wrapper's _v
                             wrapper.inner._v = (LinkedHashMap<String, Object>) innerElem;
+                        } else if (innerElem != null && wrapper instanceof CmsScalar) {
+                            // Raw scalar element (SEQUENCE OF Int16U/ObjectReference:
+                            // JER [1,2,3] / ["LD1"]) — wrap into the scalar _v
+                            V.setVal(wrapper.inner._v, innerElem);
                         } else {
                             continue;
                         }
@@ -304,6 +308,12 @@ public abstract class CmsSequence extends CmsType {
                 // stores the decoded hex string directly), so write it back explicitly
                 // — otherwise a decode→modify→encode cycle silently loses updates.
                 inner._v.put(e.getKey(), V.getVal(w.inner._v));
+            } else {
+                // Non-scalar wrapper (CmsSequence/CmsChoice/CmsUtcTime/...): JER form
+                // is the _v map itself. Re-assert the alias so OPTIONAL fields that
+                // were not pre-seeded in the Inner constructor still reach parent _v
+                // on encode (no-op when already shared).
+                inner._v.put(e.getKey(), w.inner._v);
             }
         }
         // Sync SEQUENCE OF fields → inner._v
