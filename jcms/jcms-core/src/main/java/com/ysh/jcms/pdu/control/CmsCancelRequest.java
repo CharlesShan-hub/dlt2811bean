@@ -44,20 +44,4 @@ public class CmsCancelRequest extends CmsSequence {
     public CmsCancelRequest ctlNum(int v) { this.ctlNum.value(v); return this; }
     public CmsCancelRequest t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsCancelRequest test(boolean v) { this.test.value(v); return this; }
-
-    public CmsCancelRequest value(CmsCancelRequest v) {
-        reference(v.reference.value());
-        ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) {
-            this.operTm.value(v.operTm);
-            setPresent("operTm", true);
-        } else {
-            setPresent("operTm", false);
-        }
-        origin(v.origin);
-        ctlNum(v.ctlNum.value());
-        t(v.t);
-        test(v.test.value());
-        return this;
-    }
 }

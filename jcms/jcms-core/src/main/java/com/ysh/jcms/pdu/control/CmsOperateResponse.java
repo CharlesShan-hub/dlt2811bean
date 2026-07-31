@@ -16,8 +16,4 @@ public class CmsOperateResponse extends CmsSequence {
 
     public CmsOperateResponse reference(byte[] v) { this.reference.value(new String(v)); return this; }
     public CmsOperateResponse reference(String v) { this.reference.value(v); return this; }
-
-    public CmsOperateResponse value(CmsOperateResponse v) {
-        return reference(v.reference.value());
-    }
 }

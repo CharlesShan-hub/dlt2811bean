@@ -37,15 +37,4 @@ public class CmsOperateRequest extends CmsSequence {
     public CmsOperateRequest t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsOperateRequest test(boolean v) { this.test.value(v); return this; }
     public CmsOperateRequest check(CmsCheck v) { this.check.value(v); return this; }
-
-    public CmsOperateRequest value(CmsOperateRequest v) {
-        reference(v.reference.value());
-        ctlVal(v.ctlVal);
-        origin(v.origin);
-        ctlNum(v.ctlNum.value());
-        t(v.t);
-        test(v.test.value());
-        check(v.check);
-        return this;
-    }
 }

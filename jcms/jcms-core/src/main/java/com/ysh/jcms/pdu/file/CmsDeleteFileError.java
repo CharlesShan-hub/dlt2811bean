@@ -1,0 +1,32 @@
+package com.ysh.jcms.pdu.file;
+
+import com.ysh.jcms.data.InnerDeleteFileErrorPDU;
+import com.ysh.jcms.data.enumerate.CmsServiceError;
+
+/**
+ * DeleteFile-ErrorPDU ::= ServiceError — 8.12.3
+ *
+ * <p>Type alias, not a SEQUENCE.
+ */
+public class CmsDeleteFileError extends CmsServiceError {
+
+    public CmsDeleteFileError() {
+        super(new InnerDeleteFileErrorPDU());
+    }
+
+    public CmsDeleteFileError(int v) {
+        this();
+        value(v);
+    }
+
+    @Override
+    public CmsDeleteFileError value(int v) {
+        super.value(v);
+        return this;
+    }
+
+    @Override
+    public int value() {
+        return super.value();
+    }
+}

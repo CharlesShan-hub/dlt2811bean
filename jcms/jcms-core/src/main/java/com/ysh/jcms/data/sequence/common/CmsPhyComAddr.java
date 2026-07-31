@@ -5,7 +5,7 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerPhyComAddr;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt8U;
-import com.ysh.jcms.data.core.CmsOctetString;
+import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
  * PhyComAddr ::= SEQUENCE { addr, priority, vid, appid } — 7.3.12

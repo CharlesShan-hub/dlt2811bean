@@ -57,27 +57,4 @@ public class CmsCommandTermination extends CmsSequence {
         setPresent("addCause", true);
         return this;
     }
-
-    public CmsCommandTermination value(CmsCommandTermination v) {
-        reference(v.reference.value());
-        ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) {
-            this.operTm.value(v.operTm);
-            setPresent("operTm", true);
-        } else {
-            setPresent("operTm", false);
-        }
-        origin(v.origin);
-        ctlNum(v.ctlNum.value());
-        t(v.t);
-        test(v.test.value());
-        check(v.check);
-        if (v.isPresent("addCause")) {
-            this.addCause.value(v.addCause.value());
-            setPresent("addCause", true);
-        } else {
-            setPresent("addCause", false);
-        }
-        return this;
-    }
 }

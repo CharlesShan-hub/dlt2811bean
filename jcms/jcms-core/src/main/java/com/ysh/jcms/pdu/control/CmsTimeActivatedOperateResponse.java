@@ -33,16 +33,4 @@ public class CmsTimeActivatedOperateResponse extends CmsSequence {
     public CmsTimeActivatedOperateResponse t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsTimeActivatedOperateResponse test(boolean v) { this.test.value(v); return this; }
     public CmsTimeActivatedOperateResponse check(CmsCheck v) { this.check.value(v); return this; }
-
-    public CmsTimeActivatedOperateResponse value(CmsTimeActivatedOperateResponse v) {
-        reference(v.reference.value());
-        ctlVal(v.ctlVal);
-        operTm(v.operTm);
-        origin(v.origin);
-        ctlNum(v.ctlNum.value());
-        t(v.t);
-        test(v.test.value());
-        check(v.check);
-        return this;
-    }
 }

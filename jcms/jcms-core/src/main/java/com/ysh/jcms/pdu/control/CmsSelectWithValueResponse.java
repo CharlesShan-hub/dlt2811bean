@@ -41,21 +41,4 @@ public class CmsSelectWithValueResponse extends CmsSequence {
     public CmsSelectWithValueResponse t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsSelectWithValueResponse test(boolean v) { this.test.value(v); return this; }
     public CmsSelectWithValueResponse check(CmsCheck v) { this.check.value(v); return this; }
-
-    public CmsSelectWithValueResponse value(CmsSelectWithValueResponse v) {
-        reference(v.reference.value());
-        ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) {
-            this.operTm.value(v.operTm);
-            setPresent("operTm", true);
-        } else {
-            setPresent("operTm", false);
-        }
-        origin(v.origin);
-        ctlNum(v.ctlNum.value());
-        t(v.t);
-        test(v.test.value());
-        check(v.check);
-        return this;
-    }
 }

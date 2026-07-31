@@ -16,8 +16,4 @@ public class CmsSelectResponse extends CmsSequence {
 
     public CmsSelectResponse reference(byte[] v) { this.reference.value(new String(v)); return this; }
     public CmsSelectResponse reference(String v) { this.reference.value(v); return this; }
-
-    public CmsSelectResponse value(CmsSelectResponse v) {
-        return reference(v.reference.value());
-    }
 }

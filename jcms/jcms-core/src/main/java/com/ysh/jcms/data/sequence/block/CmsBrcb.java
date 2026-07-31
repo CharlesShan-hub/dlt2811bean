@@ -8,7 +8,7 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.scalar.CmsEntryId;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
-import com.ysh.jcms.data.core.CmsOctetString;
+import com.ysh.jcms.data.scalar.CmsOctetString;
 import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 

@@ -1,6 +1,6 @@
 package com.ysh.jcms.data.scalar;
 
-import com.ysh.jcms.data.core.CmsOctetString;
+import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
  * AssociationId ::= OCTET STRING (SIZE(0..64)) — 8.2.1 typedef

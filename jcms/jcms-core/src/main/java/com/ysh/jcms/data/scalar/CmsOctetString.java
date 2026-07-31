@@ -1,6 +1,7 @@
-package com.ysh.jcms.data.core;
+package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.data.DefaultInnerOctetString;
+import com.ysh.jcms.data.core.CmsScalar;
 
 /**
  * Generic OCTET STRING wrapper, backed by DefaultInnerOctetString.

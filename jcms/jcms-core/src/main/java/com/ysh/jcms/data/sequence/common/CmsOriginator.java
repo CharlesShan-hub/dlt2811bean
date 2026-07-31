@@ -4,7 +4,7 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerOriginator;
 import com.ysh.jcms.data.enumerate.CmsOrCat;
-import com.ysh.jcms.data.core.CmsOctetString;
+import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
  * Originator ::= SEQUENCE { orCat [0] INTEGER (0..8), orIdent [1] OCTET STRING (SIZE(0..64)) } — 7.5.2
