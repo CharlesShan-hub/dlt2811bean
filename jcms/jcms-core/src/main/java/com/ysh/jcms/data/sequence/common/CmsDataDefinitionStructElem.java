@@ -31,5 +31,18 @@ public class CmsDataDefinitionStructElem extends CmsSequence {
     }
     public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type.value(v); return this; }
 
+    /** Copy all field values from another CmsDataDefinitionStructElem (fluent). */
+    public CmsDataDefinitionStructElem value(CmsDataDefinitionStructElem v) {
+        name(v.name.value());
+        if (v.isPresent("fc")) {
+            this.fc.value(v.fc.value());
+            setPresent("fc", true);
+        } else {
+            setPresent("fc", false);
+        }
+        type(v.type);
+        return this;
+    }
+
     public boolean hasFc() { return isPresent("fc"); }
 }

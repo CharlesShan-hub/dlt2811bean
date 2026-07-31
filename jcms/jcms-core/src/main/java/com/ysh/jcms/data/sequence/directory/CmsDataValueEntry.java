@@ -24,4 +24,11 @@ public class CmsDataValueEntry extends CmsSequence {
     public CmsDataValueEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
     public CmsDataValueEntry reference(String v) { this.reference.value(v); return this; }
     public CmsDataValueEntry value(CmsData v) { this.value.value(v); return this; }
+
+    /** Copy all field values from another CmsDataValueEntry (fluent). */
+    public CmsDataValueEntry value(CmsDataValueEntry v) {
+        reference(v.reference.value());
+        value(v.value);
+        return this;
+    }
 }

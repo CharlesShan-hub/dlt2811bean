@@ -39,4 +39,17 @@ public class CmsDataDefinitionEntry extends CmsSequence {
         return this;
     }
     public CmsDataDefinitionEntry definition(CmsDataDefinition v) { this.definition.value(v); return this; }
+
+    /** Copy all field values from another CmsDataDefinitionEntry (fluent). */
+    public CmsDataDefinitionEntry value(CmsDataDefinitionEntry v) {
+        reference(v.reference.value());
+        if (v.isPresent("cdcType")) {
+            this.cdcType.value(v.cdcType.value());
+            setPresent("cdcType", true);
+        } else {
+            setPresent("cdcType", false);
+        }
+        definition(v.definition);
+        return this;
+    }
 }

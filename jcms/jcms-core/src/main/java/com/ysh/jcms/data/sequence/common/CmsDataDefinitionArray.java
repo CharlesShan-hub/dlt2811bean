@@ -21,4 +21,11 @@ public class CmsDataDefinitionArray extends CmsSequence {
 
     public CmsDataDefinitionArray numberOfElement(int v) { this.numberOfElement.value(v); return this; }
     public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType.value(v); return this; }
+
+    /** Copy all field values from another CmsDataDefinitionArray (fluent). */
+    public CmsDataDefinitionArray value(CmsDataDefinitionArray v) {
+        numberOfElement(v.numberOfElement.value());
+        elementType(v.elementType);
+        return this;
+    }
 }
