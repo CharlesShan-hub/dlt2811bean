@@ -1,5 +1,6 @@
 package com.ysh.jcms.data.core;
 
+import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
 
 import java.lang.reflect.Field;
@@ -384,19 +385,14 @@ public abstract class CmsChoice extends CmsType {
         if (!(sub instanceof LinkedHashMap)) return;
         InnerBase val = (InnerBase) vi.field.get(this);
         if (val != null) {
-            val._v = (LinkedHashMap<String, Object>) sub;
-            // Bridge back to the direct `value` field for DefaultInner* types
-            Object raw = ((LinkedHashMap<String, Object>) sub).get("_");
-            if (raw != null) {
-                try {
-                    java.lang.reflect.Field valueField = val.getClass().getField("value");
-                    if (raw instanceof String && valueField.getType() == byte[].class) {
-                        valueField.set(val, InnerBase.unhex((String) raw));
-                    } else {
-                        valueField.set(val, raw);
-                    }
-                } catch (Exception ignored) {}
+            LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>) sub;
+            // OCTET STRING: JER hex string → byte[]
+            if (val instanceof DefaultInnerOctetString) {
+                Object raw = m.get("_");
+                if (raw instanceof String) m.put("_", InnerBase.unhex((String) raw));
             }
+            // DefaultInner* stores everything in _v, so sharing the map is enough
+            val._v = m;
         }
     }
 

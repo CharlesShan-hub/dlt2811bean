@@ -3,17 +3,34 @@
 package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.Data;
 
-@Data
 public class DefaultInnerUtf8String extends InnerBase {
-    public String value;
-    public DefaultInnerUtf8String() { this.value = "x"; }
-    public DefaultInnerUtf8String(String value) { this.value = value; }
-        @JsonValue
-    public Object toJsonValue() { Object v = _v.get("_"); return v != null ? v : this.value; }
+    public DefaultInnerUtf8String() { _v.put("_", "x"); }
+    public DefaultInnerUtf8String(String value) { _v.put("_", value); }
+    @JsonValue
+    public Object toJsonValue() { return _v.get("_"); }
+    @SuppressWarnings("unchecked")
     @JsonCreator
-    public static DefaultInnerUtf8String fromJson(String v) { return new DefaultInnerUtf8String(v); }
+    public static DefaultInnerUtf8String fromJson(Object v) {
+        if (v instanceof java.util.Map) {
+            Object s = ((java.util.Map<String, Object>) v).get("value");
+            return new DefaultInnerUtf8String(s instanceof String ? (String) s : "x");
+        }
+        return new DefaultInnerUtf8String(v instanceof String ? (String) v : "x");
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultInnerUtf8String)) return false;
+        Object a = _v.get("_");
+        Object b = ((DefaultInnerUtf8String) o)._v.get("_");
+        return a == null ? b == null : a.equals(b);
+    }
+    @Override
+    public int hashCode() {
+        Object v = _v.get("_");
+        return v == null ? 0 : v.hashCode();
+    }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerUtf8String has no standalone ASN.1 definition"); }
     public static DefaultInnerUtf8String decode(byte[] data) { return new DefaultInnerUtf8String(); }
 }

@@ -136,7 +136,7 @@ public class CmsDataTest {
         byte[] encoded = a.encode();
         CmsData b = new CmsData();
         b.decode(encoded);
-        assertArrayEquals(a.alt_octet_string.value, b.alt_octet_string.value);
+        assertArrayEquals((byte[]) a.alt_octet_string._v.get("_"), (byte[]) b.alt_octet_string._v.get("_"));
     }
 
     @Test

@@ -63,7 +63,16 @@ public class CmsUtcTime extends CmsType {
         if (raw instanceof byte[]) {
             bytes = (byte[]) raw;
         } else if (raw instanceof DefaultInnerOctetString) {
-            bytes = ((DefaultInnerOctetString) raw).value;
+            Object v = ((DefaultInnerOctetString) raw)._v.get("_");
+            if (v instanceof byte[]) {
+                bytes = (byte[]) v;
+            } else if (v instanceof String) {
+                bytes = InnerBase.unhex((String) v);
+            } else {
+                secondsSinceEpoch.value(0L);
+                fractionOfSecond.value(0);
+                return;
+            }
         } else if (raw instanceof String) {
             bytes = InnerBase.unhex((String) raw);
         } else {

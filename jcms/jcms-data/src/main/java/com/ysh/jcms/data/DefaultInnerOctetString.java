@@ -3,17 +3,36 @@
 package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.Data;
 
-@Data
 public class DefaultInnerOctetString extends InnerBase {
-    public byte[] value;
-    public DefaultInnerOctetString() { this.value = new byte[]{ 1 }; }
-    public DefaultInnerOctetString(byte[] value) { this.value = value; }
-        @JsonValue
-    public Object toJsonValue() { Object v = _v.get("_"); if (v instanceof byte[]) return InnerBase.hex((byte[]) v); return v != null ? v : InnerBase.hex(this.value); }
+    public DefaultInnerOctetString() { _v.put("_", new byte[]{ 1 }); }
+    public DefaultInnerOctetString(byte[] value) { _v.put("_", value); }
+    @JsonValue
+    public Object toJsonValue() { Object v = _v.get("_"); if (v instanceof byte[]) return InnerBase.hex((byte[]) v); return v != null ? v : ""; }
+    @SuppressWarnings("unchecked")
     @JsonCreator
-    public static DefaultInnerOctetString fromJson(String hex) { return new DefaultInnerOctetString(InnerBase.unhex(hex)); }
+    public static DefaultInnerOctetString fromJson(Object v) {
+        if (v instanceof java.util.Map) {
+            Object hex = ((java.util.Map<String, Object>) v).get("value");
+            if (hex instanceof String) return new DefaultInnerOctetString(InnerBase.unhex((String) hex));
+            return new DefaultInnerOctetString();
+        }
+        return new DefaultInnerOctetString(v instanceof String ? InnerBase.unhex((String) v) : new byte[0]);
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultInnerOctetString)) return false;
+        Object a = _v.get("_");
+        Object b = ((DefaultInnerOctetString) o)._v.get("_");
+        if (a instanceof byte[] && b instanceof byte[]) return java.util.Arrays.equals((byte[]) a, (byte[]) b);
+        return a == null ? b == null : a.equals(b);
+    }
+    @Override
+    public int hashCode() {
+        Object v = _v.get("_");
+        return v instanceof byte[] ? java.util.Arrays.hashCode((byte[]) v) : (v == null ? 0 : v.hashCode());
+    }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerOctetString has no standalone ASN.1 definition"); }
     public static DefaultInnerOctetString decode(byte[] data) { return new DefaultInnerOctetString(); }
 }

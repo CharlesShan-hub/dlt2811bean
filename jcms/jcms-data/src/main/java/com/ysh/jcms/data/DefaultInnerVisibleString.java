@@ -3,17 +3,34 @@
 package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.Data;
 
-@Data
 public class DefaultInnerVisibleString extends InnerBase {
-    public String value;
-    public DefaultInnerVisibleString() { this.value = "x"; }
-    public DefaultInnerVisibleString(String value) { this.value = value; }
-        @JsonValue
-    public Object toJsonValue() { Object v = _v.get("_"); return v != null ? v : this.value; }
+    public DefaultInnerVisibleString() { _v.put("_", "x"); }
+    public DefaultInnerVisibleString(String value) { _v.put("_", value); }
+    @JsonValue
+    public Object toJsonValue() { return _v.get("_"); }
+    @SuppressWarnings("unchecked")
     @JsonCreator
-    public static DefaultInnerVisibleString fromJson(String v) { return new DefaultInnerVisibleString(v); }
+    public static DefaultInnerVisibleString fromJson(Object v) {
+        if (v instanceof java.util.Map) {
+            Object s = ((java.util.Map<String, Object>) v).get("value");
+            return new DefaultInnerVisibleString(s instanceof String ? (String) s : "x");
+        }
+        return new DefaultInnerVisibleString(v instanceof String ? (String) v : "x");
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DefaultInnerVisibleString)) return false;
+        Object a = _v.get("_");
+        Object b = ((DefaultInnerVisibleString) o)._v.get("_");
+        return a == null ? b == null : a.equals(b);
+    }
+    @Override
+    public int hashCode() {
+        Object v = _v.get("_");
+        return v == null ? 0 : v.hashCode();
+    }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerVisibleString has no standalone ASN.1 definition"); }
     public static DefaultInnerVisibleString decode(byte[] data) { return new DefaultInnerVisibleString(); }
 }
