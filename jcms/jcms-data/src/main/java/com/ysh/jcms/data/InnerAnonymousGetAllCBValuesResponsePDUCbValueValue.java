@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -14,8 +13,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValue extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerAnonymousGetAllCBValuesResponsePDUCbValueValue() {
@@ -82,26 +79,5 @@ public class InnerAnonymousGetAllCBValuesResponsePDUCbValueValue extends InnerBa
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InnerAnonymousGetAllCBValuesResponsePDUCbValueValue that = (InnerAnonymousGetAllCBValuesResponsePDUCbValueValue) o;
-        String _c = (String) _v.get("_choice");
-        String _tc = (String) that._v.get("_choice");
-        if (!java.util.Objects.equals(_c, _tc)) return false;
-        if (_c == null) return false;
-        if ("brcb".equals(_c)) return java.util.Objects.equals(_v.get("brcb"), that._v.get("brcb"));
-        if ("urcb".equals(_c)) return java.util.Objects.equals(_v.get("urcb"), that._v.get("urcb"));
-        if ("lcb".equals(_c)) return java.util.Objects.equals(_v.get("lcb"), that._v.get("lcb"));
-        if ("sgcb".equals(_c)) return java.util.Objects.equals(_v.get("sgcb"), that._v.get("sgcb"));
-        if ("gocb".equals(_c)) return java.util.Objects.equals(_v.get("gocb"), that._v.get("gocb"));
-        if ("msvcb".equals(_c)) return java.util.Objects.equals(_v.get("msvcb"), that._v.get("msvcb"));
-        return false;
-    }
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(_v.get("_choice"));
     }
 }

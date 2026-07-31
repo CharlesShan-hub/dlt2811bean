@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * Int32  ::= INTEGER (-2147483648..2147483647)
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerInt32 extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerInt32() { _v.put("_", 1); }
@@ -32,7 +29,9 @@ public class InnerInt32 extends InnerBase {
         try {
             String json = InnerNative.decode("Int32", DEFAULT_ENCODING, data);
             InnerInt32 r = new InnerInt32();
-            r._v.put("_", MAPPER.readTree(json).asInt());
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asInt());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

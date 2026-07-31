@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * GetDataDirectory-ErrorPDU ::= ServiceError
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGetDataDirectoryErrorPDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGetDataDirectoryErrorPDU() { _v.put("_", 1); }
@@ -32,7 +29,9 @@ public class InnerGetDataDirectoryErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetDataDirectoryErrorPDU", DEFAULT_ENCODING, data);
             InnerGetDataDirectoryErrorPDU r = new InnerGetDataDirectoryErrorPDU();
-            r._v.put("_", MAPPER.readTree(json).asInt());
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asInt());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

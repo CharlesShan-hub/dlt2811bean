@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -14,12 +13,9 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerAnonymousGetDataDefinitionResponsePDUData extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerAnonymousGetDataDefinitionResponsePDUData() {
-        _v.put("cdcType", new DefaultInnerVisibleString("x"));
         _v.put("definition", new InnerDataDefinition()._v);
     }
     @JsonAnySetter

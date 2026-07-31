@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * Quality ::= BIT STRING (SIZE(13))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerQuality extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerQuality() { _v.put("_", "0000"); }
@@ -42,7 +39,9 @@ public class InnerQuality extends InnerBase {
         try {
             String json = InnerNative.decode("Quality", DEFAULT_ENCODING, data);
             InnerQuality r = new InnerQuality();
-            r._v.put("_", InnerBase.parseBitStringHex(MAPPER.readTree(json).asText(), 13));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asText());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * EntryTime ::= BinaryTime
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerEntryTime extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerEntryTime() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1 }); }
@@ -39,7 +36,9 @@ public class InnerEntryTime extends InnerBase {
         try {
             String json = InnerNative.decode("EntryTime", DEFAULT_ENCODING, data);
             InnerEntryTime r = new InnerEntryTime();
-            r._v.put("_", MAPPER.readValue(json.trim(), DefaultInnerOctetString.class));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", MAPPER.readValue(_node.toString(), DefaultInnerOctetString.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -24,20 +23,16 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerCommandTerminationRequestPDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerCommandTerminationRequestPDU() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("ctlVal", new InnerData()._v);
-        _v.put("operTm", new InnerTimeStamp()._v);
         _v.put("origin", new InnerOriginator()._v);
         _v.put("ctlNum", new InnerInt8U()._v);
         _v.put("t", new InnerTimeStamp()._v);
         _v.put("test", new InnerBoolean()._v);
         _v.put("check", new InnerCheck()._v);
-        _v.put("addCause", new InnerAddCause()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

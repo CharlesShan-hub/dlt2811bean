@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -20,8 +19,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerSGCB extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerSGCB() {
@@ -29,7 +26,6 @@ public class InnerSGCB extends InnerBase {
         _v.put("actSG", new InnerInt8U()._v);
         _v.put("editSG", new InnerInt8U()._v);
         _v.put("tActEdt", new InnerTimeStamp()._v);
-        _v.put("resvTms", new InnerInt16U()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

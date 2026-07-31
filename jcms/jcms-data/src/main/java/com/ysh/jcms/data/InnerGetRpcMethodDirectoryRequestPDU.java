@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -17,13 +16,9 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGetRpcMethodDirectoryRequestPDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGetRpcMethodDirectoryRequestPDU() {
-        _v.put("interface", new DefaultInnerVisibleString("x"));
-        _v.put("referenceAfter", new DefaultInnerVisibleString("x"));
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

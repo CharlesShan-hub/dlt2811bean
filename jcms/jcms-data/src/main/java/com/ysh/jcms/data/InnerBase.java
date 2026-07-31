@@ -21,12 +21,12 @@ public abstract class InnerBase {
     /** Decode APER bytes into a new instance of this type. */
     public static InnerBase decode(byte[] data) { throw new UnsupportedOperationException("Use concrete subclass decode()"); }
 
-    /** Convert byte array to lowercase hex string. */
+    /** Convert byte array to uppercase hex string (matches Rust JER output). */
     public static String hex(byte[] bytes) {
         if (bytes == null) return "";
         StringBuilder sb = new StringBuilder(bytes.length * 2);
         for (byte b : bytes) {
-            sb.append(String.format("%02x", b & 0xFF));
+            sb.append(String.format("%02X", b & 0xFF));
         }
         return sb.toString();
     }
@@ -52,6 +52,19 @@ public abstract class InnerBase {
         } catch (Exception e) {
             return getClass().getSimpleName() + "{...}";
         }
+    }
+
+    /** Structural equality: both sides normalized via toJson() before comparison. */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return java.util.Objects.equals(toJson(toJsonValue()), toJson(((InnerBase) o).toJsonValue()));
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hashCode(toJson(toJsonValue()));
     }
 
     /** Create an ObjectMapper configured for JER-compatible serialization. */
@@ -162,6 +175,11 @@ public abstract class InnerBase {
             // Recursively process toJsonValue() result so that Map branch strips _-prefixed keys
             return toJson(((InnerBase) val).toJsonValue());
         }
+        // byte[] -> hex string: canonical form never holds raw arrays (identity
+        // equals/hashCode would break structural equality)
+        if (val instanceof byte[]) {
+            return hex((byte[]) val);
+        }
         if (val instanceof java.util.Map) {
             java.util.Map<String, Object> m = (java.util.Map<String, Object>) val;
             // CHOICE map: {"_choice": "variant", "variant": value} -> {"variant": value}
@@ -195,6 +213,21 @@ public abstract class InnerBase {
                 result.add(toJson(item));
             }
             return result;
+        }
+        if (val instanceof Integer || val instanceof Long || val instanceof Short || val instanceof Byte) {
+            return ((Number) val).longValue();
+        }
+        if (val instanceof Float || val instanceof Double) {
+            return ((Number) val).doubleValue();
+        }
+        if (val instanceof String) {
+            // Hex-shaped strings ("0102AB", "0A0B0C0D") → uppercase canonical form.
+            // Rust JER emits uppercase hex; Java-generated defaults were lowercase.
+            String s = (String) val;
+            if (!s.isEmpty() && s.chars().allMatch(c -> Character.digit(c, 16) >= 0)) {
+                return s.toUpperCase();
+            }
+            return s;
         }
         return val;
     }

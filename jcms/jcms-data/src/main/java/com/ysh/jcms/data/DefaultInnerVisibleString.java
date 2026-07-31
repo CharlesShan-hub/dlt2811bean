@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 public class DefaultInnerVisibleString extends InnerBase {
     public DefaultInnerVisibleString() { _v.put("_", "x"); }
     public DefaultInnerVisibleString(String value) { _v.put("_", value); }
-    @JsonValue
+        @JsonValue
     public Object toJsonValue() { return _v.get("_"); }
     @SuppressWarnings("unchecked")
     @JsonCreator
@@ -17,19 +17,6 @@ public class DefaultInnerVisibleString extends InnerBase {
             return new DefaultInnerVisibleString(s instanceof String ? (String) s : "x");
         }
         return new DefaultInnerVisibleString(v instanceof String ? (String) v : "x");
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DefaultInnerVisibleString)) return false;
-        Object a = _v.get("_");
-        Object b = ((DefaultInnerVisibleString) o)._v.get("_");
-        return a == null ? b == null : a.equals(b);
-    }
-    @Override
-    public int hashCode() {
-        Object v = _v.get("_");
-        return v == null ? 0 : v.hashCode();
     }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerVisibleString has no standalone ASN.1 definition"); }
     public static DefaultInnerVisibleString decode(byte[] data) { return new DefaultInnerVisibleString(); }

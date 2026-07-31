@@ -86,6 +86,11 @@ public class CmsFC extends CmsScalar {
     @Override
     public void syncFromInner() {
         Object v = inner._v.get("_");
-        this.val = fromString(v instanceof String ? (String) v : "");
+        String s = v instanceof String ? ((String) v).trim() : "";
+        if (s.isEmpty()) {
+            val = XX;
+            return;
+        }
+        this.val = fromString(s);
     }
 }

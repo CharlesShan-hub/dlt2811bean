@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -14,18 +13,9 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerAnonymousSetMSVCBValuesErrorPDUResult extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerAnonymousSetMSVCBValuesErrorPDUResult() {
-        _v.put("error", new InnerServiceError()._v);
-        _v.put("svEna", new InnerServiceError()._v);
-        _v.put("msvID", new InnerServiceError()._v);
-        _v.put("datSet", new InnerServiceError()._v);
-        _v.put("smpMod", new InnerServiceError()._v);
-        _v.put("smpRate", new InnerServiceError()._v);
-        _v.put("optFlds", new InnerServiceError()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -14,8 +13,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReference extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerAnonymousGetRpcMethodDefinitionResponsePDUReference() {
@@ -62,22 +59,5 @@ public class InnerAnonymousGetRpcMethodDefinitionResponsePDUReference extends In
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InnerAnonymousGetRpcMethodDefinitionResponsePDUReference that = (InnerAnonymousGetRpcMethodDefinitionResponsePDUReference) o;
-        String _c = (String) _v.get("_choice");
-        String _tc = (String) that._v.get("_choice");
-        if (!java.util.Objects.equals(_c, _tc)) return false;
-        if (_c == null) return false;
-        if ("error".equals(_c)) return java.util.Objects.equals(_v.get("error"), that._v.get("error"));
-        if ("method".equals(_c)) return java.util.Objects.equals(_v.get("method"), that._v.get("method"));
-        return false;
-    }
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(_v.get("_choice"));
     }
 }

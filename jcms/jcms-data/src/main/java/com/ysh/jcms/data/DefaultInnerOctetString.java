@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 public class DefaultInnerOctetString extends InnerBase {
     public DefaultInnerOctetString() { _v.put("_", new byte[]{ 1 }); }
     public DefaultInnerOctetString(byte[] value) { _v.put("_", value); }
-    @JsonValue
+        @JsonValue
     public Object toJsonValue() { Object v = _v.get("_"); if (v instanceof byte[]) return InnerBase.hex((byte[]) v); return v != null ? v : ""; }
     @SuppressWarnings("unchecked")
     @JsonCreator
@@ -18,20 +18,6 @@ public class DefaultInnerOctetString extends InnerBase {
             return new DefaultInnerOctetString();
         }
         return new DefaultInnerOctetString(v instanceof String ? InnerBase.unhex((String) v) : new byte[0]);
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DefaultInnerOctetString)) return false;
-        Object a = _v.get("_");
-        Object b = ((DefaultInnerOctetString) o)._v.get("_");
-        if (a instanceof byte[] && b instanceof byte[]) return java.util.Arrays.equals((byte[]) a, (byte[]) b);
-        return a == null ? b == null : a.equals(b);
-    }
-    @Override
-    public int hashCode() {
-        Object v = _v.get("_");
-        return v instanceof byte[] ? java.util.Arrays.hashCode((byte[]) v) : (v == null ? 0 : v.hashCode());
     }
     public byte[] encode() { throw new UnsupportedOperationException("DefaultInnerOctetString has no standalone ASN.1 definition"); }
     public static DefaultInnerOctetString decode(byte[] data) { return new DefaultInnerOctetString(); }

@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * Float32 ::= OCTET STRING (SIZE (4))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerFloat32 extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerFloat32() { _v.put("_", new byte[] { 1, 1, 1, 1 }); }
@@ -39,7 +36,9 @@ public class InnerFloat32 extends InnerBase {
         try {
             String json = InnerNative.decode("Float32", DEFAULT_ENCODING, data);
             InnerFloat32 r = new InnerFloat32();
-            r._v.put("_", MAPPER.readValue(json.trim(), DefaultInnerOctetString.class));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asText().isEmpty() ? new byte[0] : InnerBase.unhex(_node.asText()));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

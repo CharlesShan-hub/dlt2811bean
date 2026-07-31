@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * LcbOptFlds ::= BIT STRING (SIZE(1))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerLcbOptFlds extends InnerBase {
     public static final int REFRESH_TIME = 0;
     public static final int RESERVED = 1;
@@ -47,7 +44,9 @@ public class InnerLcbOptFlds extends InnerBase {
         try {
             String json = InnerNative.decode("LcbOptFlds", DEFAULT_ENCODING, data);
             InnerLcbOptFlds r = new InnerLcbOptFlds();
-            r._v.put("_", InnerBase.parseBitStringHex(MAPPER.readTree(json).asText(), 1));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asText());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

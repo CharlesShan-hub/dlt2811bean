@@ -5,18 +5,15 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * SetURCBValues-ResponsePDU ::= NULL
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerSetURCBValuesResponsePDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
-    public InnerSetURCBValuesResponsePDU() { _v.put("_", new Object()); }
+    public InnerSetURCBValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSetURCBValuesResponsePDU fromJson(String v) { InnerSetURCBValuesResponsePDU r = new InnerSetURCBValuesResponsePDU(); r._v.put("_", v); return r; }
     public InnerSetURCBValuesResponsePDU(Object v) { this(); _v.put("_", v); }
@@ -32,6 +29,8 @@ public class InnerSetURCBValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("SetURCBValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerSetURCBValuesResponsePDU r = new InnerSetURCBValuesResponsePDU();
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;
         } catch (Exception e) {

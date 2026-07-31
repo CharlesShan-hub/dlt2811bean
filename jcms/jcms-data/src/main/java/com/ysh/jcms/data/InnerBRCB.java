@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -30,8 +29,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerBRCB extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerBRCB() {
@@ -48,8 +45,6 @@ public class InnerBRCB extends InnerBase {
         _v.put("purgeBuf", new InnerBoolean()._v);
         _v.put("entryID", new InnerEntryID()._v);
         _v.put("timeOfEntry", new InnerEntryTime()._v);
-        _v.put("resvTms", new InnerInt16()._v);
-        _v.put("owner", new DefaultInnerOctetString(new byte[]{ 1 }));
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

@@ -5,18 +5,15 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * SelectActiveSG-ResponsePDU ::= NULL
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerSelectActiveSGResponsePDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
-    public InnerSelectActiveSGResponsePDU() { _v.put("_", new Object()); }
+    public InnerSelectActiveSGResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSelectActiveSGResponsePDU fromJson(String v) { InnerSelectActiveSGResponsePDU r = new InnerSelectActiveSGResponsePDU(); r._v.put("_", v); return r; }
     public InnerSelectActiveSGResponsePDU(Object v) { this(); _v.put("_", v); }
@@ -32,6 +29,8 @@ public class InnerSelectActiveSGResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("SelectActiveSGResponsePDU", DEFAULT_ENCODING, data);
             InnerSelectActiveSGResponsePDU r = new InnerSelectActiveSGResponsePDU();
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;
         } catch (Exception e) {

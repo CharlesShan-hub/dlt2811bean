@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -18,8 +17,6 @@ import lombok.Data;
  * } (SIZE(5))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerMsvcbOptFlds extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerMsvcbOptFlds() { _v.put("_", "00"); }
@@ -48,7 +45,9 @@ public class InnerMsvcbOptFlds extends InnerBase {
         try {
             String json = InnerNative.decode("MsvcbOptFlds", DEFAULT_ENCODING, data);
             InnerMsvcbOptFlds r = new InnerMsvcbOptFlds();
-            r._v.put("_", InnerBase.parseBitStringHex(MAPPER.readTree(json).asText(), 5));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asText());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

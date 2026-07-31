@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * GetFileAttributeValues-ResponsePDU ::= FileEntry
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGetFileAttributeValuesResponsePDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGetFileAttributeValuesResponsePDU() { _v.put("_", new InnerFileEntry()); }
@@ -40,7 +37,9 @@ public class InnerGetFileAttributeValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetFileAttributeValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerGetFileAttributeValuesResponsePDU r = new InnerGetFileAttributeValuesResponsePDU();
-            r._v.put("_", MAPPER.readValue(json.trim(), InnerFileEntry.class));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", MAPPER.readValue(_node.toString(), InnerFileEntry.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * FunctionalConstraint ::= VisibleString (SIZE (2))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerFunctionalConstraint extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerFunctionalConstraint() { _v.put("_", "xx"); }
@@ -39,7 +36,9 @@ public class InnerFunctionalConstraint extends InnerBase {
         try {
             String json = InnerNative.decode("FunctionalConstraint", DEFAULT_ENCODING, data);
             InnerFunctionalConstraint r = new InnerFunctionalConstraint();
-            r._v.put("_", MAPPER.readValue(json.trim(), DefaultInnerVisibleString.class));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", MAPPER.readValue(_node.toString(), DefaultInnerVisibleString.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * SubReference ::= VisibleString (SIZE(0..129))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerSubReference extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerSubReference() { _v.put("_", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"); }
@@ -39,7 +36,9 @@ public class InnerSubReference extends InnerBase {
         try {
             String json = InnerNative.decode("SubReference", DEFAULT_ENCODING, data);
             InnerSubReference r = new InnerSubReference();
-            r._v.put("_", MAPPER.readValue(json.trim(), DefaultInnerVisibleString.class));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", MAPPER.readValue(_node.toString(), DefaultInnerVisibleString.class));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

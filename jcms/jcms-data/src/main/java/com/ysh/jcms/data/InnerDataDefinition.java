@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -46,8 +45,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerDataDefinition extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerDataDefinition() {
@@ -204,44 +201,5 @@ public class InnerDataDefinition extends InnerBase {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        InnerDataDefinition that = (InnerDataDefinition) o;
-        String _c = (String) _v.get("_choice");
-        String _tc = (String) that._v.get("_choice");
-        if (!java.util.Objects.equals(_c, _tc)) return false;
-        if (_c == null) return false;
-        if ("error".equals(_c)) return java.util.Objects.equals(_v.get("error"), that._v.get("error"));
-        if ("array".equals(_c)) return java.util.Objects.equals(_v.get("array"), that._v.get("array"));
-        if ("structure".equals(_c)) return java.util.Objects.equals(_v.get("structure"), that._v.get("structure"));
-        if ("Boolean".equals(_c)) return java.util.Objects.equals(_v.get("Boolean"), that._v.get("Boolean"));
-        if ("int8".equals(_c)) return java.util.Objects.equals(_v.get("int8"), that._v.get("int8"));
-        if ("int16".equals(_c)) return java.util.Objects.equals(_v.get("int16"), that._v.get("int16"));
-        if ("int32".equals(_c)) return java.util.Objects.equals(_v.get("int32"), that._v.get("int32"));
-        if ("int64".equals(_c)) return java.util.Objects.equals(_v.get("int64"), that._v.get("int64"));
-        if ("int8u".equals(_c)) return java.util.Objects.equals(_v.get("int8u"), that._v.get("int8u"));
-        if ("int16u".equals(_c)) return java.util.Objects.equals(_v.get("int16u"), that._v.get("int16u"));
-        if ("int32u".equals(_c)) return java.util.Objects.equals(_v.get("int32u"), that._v.get("int32u"));
-        if ("int64u".equals(_c)) return java.util.Objects.equals(_v.get("int64u"), that._v.get("int64u"));
-        if ("float32".equals(_c)) return java.util.Objects.equals(_v.get("float32"), that._v.get("float32"));
-        if ("float64".equals(_c)) return java.util.Objects.equals(_v.get("float64"), that._v.get("float64"));
-        if ("bit-string".equals(_c)) return java.util.Objects.equals(_v.get("bit-string"), that._v.get("bit-string"));
-        if ("octet-string".equals(_c)) return java.util.Objects.equals(_v.get("octet-string"), that._v.get("octet-string"));
-        if ("visible-string".equals(_c)) return java.util.Objects.equals(_v.get("visible-string"), that._v.get("visible-string"));
-        if ("unicode-string".equals(_c)) return java.util.Objects.equals(_v.get("unicode-string"), that._v.get("unicode-string"));
-        if ("utc-time".equals(_c)) return java.util.Objects.equals(_v.get("utc-time"), that._v.get("utc-time"));
-        if ("binary-time".equals(_c)) return java.util.Objects.equals(_v.get("binary-time"), that._v.get("binary-time"));
-        if ("quality".equals(_c)) return java.util.Objects.equals(_v.get("quality"), that._v.get("quality"));
-        if ("dbpos".equals(_c)) return java.util.Objects.equals(_v.get("dbpos"), that._v.get("dbpos"));
-        if ("tcmd".equals(_c)) return java.util.Objects.equals(_v.get("tcmd"), that._v.get("tcmd"));
-        if ("check".equals(_c)) return java.util.Objects.equals(_v.get("check"), that._v.get("check"));
-        return false;
-    }
-    @Override
-    public int hashCode() {
-        return java.util.Objects.hash(_v.get("_choice"));
     }
 }

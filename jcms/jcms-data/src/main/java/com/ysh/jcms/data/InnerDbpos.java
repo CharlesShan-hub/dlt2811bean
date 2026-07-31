@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * Dbpos ::= BIT STRING (SIZE(2))
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerDbpos extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerDbpos() { _v.put("_", "00"); }
@@ -42,7 +39,9 @@ public class InnerDbpos extends InnerBase {
         try {
             String json = InnerNative.decode("Dbpos", DEFAULT_ENCODING, data);
             InnerDbpos r = new InnerDbpos();
-            r._v.put("_", InnerBase.parseBitStringHex(MAPPER.readTree(json).asText(), 2));
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asText());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

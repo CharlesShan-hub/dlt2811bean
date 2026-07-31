@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * Int64  ::= INTEGER (-9223372036854775808..9223372036854775807)
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerInt64 extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerInt64() { _v.put("_", 1L); }
@@ -32,7 +29,9 @@ public class InnerInt64 extends InnerBase {
         try {
             String json = InnerNative.decode("Int64", DEFAULT_ENCODING, data);
             InnerInt64 r = new InnerInt64();
-            r._v.put("_", MAPPER.readTree(json).asInt());
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asLong());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

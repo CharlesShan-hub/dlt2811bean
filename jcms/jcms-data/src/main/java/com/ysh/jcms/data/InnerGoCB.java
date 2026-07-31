@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -21,8 +20,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGoCB extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGoCB() {
@@ -31,7 +28,6 @@ public class InnerGoCB extends InnerBase {
         _v.put("datSet", new InnerObjectReference()._v);
         _v.put("confRev", new InnerInt32U()._v);
         _v.put("ndsCom", new InnerBoolean()._v);
-        _v.put("dstAddress", new InnerPhyComAddr()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

@@ -483,7 +483,7 @@ public abstract class CmsChoice extends CmsType {
             // BIT STRING in JER: {"value": "UPPER-HEX", "length": BIT-COUNT} (rasn format)
             byte[] bytes = (byte[]) val;
             java.util.LinkedHashMap<String, Object> sub = new java.util.LinkedHashMap<>();
-            sub.put("value", InnerBase.hex(bytes).toUpperCase());
+            sub.put("value", InnerBase.hex(bytes));
             sub.put("length", bytes.length * 8);
             inner._v.put(vi.name, sub);
         } else {

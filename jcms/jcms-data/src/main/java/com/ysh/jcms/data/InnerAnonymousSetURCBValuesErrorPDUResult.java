@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -14,21 +13,9 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerAnonymousSetURCBValuesErrorPDUResult extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerAnonymousSetURCBValuesErrorPDUResult() {
-        _v.put("error", new InnerServiceError()._v);
-        _v.put("rptID", new InnerServiceError()._v);
-        _v.put("rptEna", new InnerServiceError()._v);
-        _v.put("datSet", new InnerServiceError()._v);
-        _v.put("optFlds", new InnerServiceError()._v);
-        _v.put("bufTm", new InnerServiceError()._v);
-        _v.put("trgOps", new InnerServiceError()._v);
-        _v.put("intgPd", new InnerServiceError()._v);
-        _v.put("gi", new InnerServiceError()._v);
-        _v.put("resv", new InnerServiceError()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

@@ -5,18 +5,15 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * ConfirmEditSGValues-ResponsePDU ::= NULL
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerConfirmEditSGValuesResponsePDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
-    public InnerConfirmEditSGValuesResponsePDU() { _v.put("_", new Object()); }
+    public InnerConfirmEditSGValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerConfirmEditSGValuesResponsePDU fromJson(String v) { InnerConfirmEditSGValuesResponsePDU r = new InnerConfirmEditSGValuesResponsePDU(); r._v.put("_", v); return r; }
     public InnerConfirmEditSGValuesResponsePDU(Object v) { this(); _v.put("_", v); }
@@ -32,6 +29,8 @@ public class InnerConfirmEditSGValuesResponsePDU extends InnerBase {
         try {
             String json = InnerNative.decode("ConfirmEditSGValuesResponsePDU", DEFAULT_ENCODING, data);
             InnerConfirmEditSGValuesResponsePDU r = new InnerConfirmEditSGValuesResponsePDU();
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
             r._v.put("_", null);
             return r;
         } catch (Exception e) {

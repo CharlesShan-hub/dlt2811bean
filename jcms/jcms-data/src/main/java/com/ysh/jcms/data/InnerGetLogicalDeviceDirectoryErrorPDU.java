@@ -5,15 +5,12 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
  * GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError
  * }</pre>
  */
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGetLogicalDeviceDirectoryErrorPDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGetLogicalDeviceDirectoryErrorPDU() { _v.put("_", 1); }
@@ -32,7 +29,9 @@ public class InnerGetLogicalDeviceDirectoryErrorPDU extends InnerBase {
         try {
             String json = InnerNative.decode("GetLogicalDeviceDirectoryErrorPDU", DEFAULT_ENCODING, data);
             InnerGetLogicalDeviceDirectoryErrorPDU r = new InnerGetLogicalDeviceDirectoryErrorPDU();
-            r._v.put("_", MAPPER.readTree(json).asInt());
+            com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", _node.asInt());
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

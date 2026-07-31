@@ -5,10 +5,7 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerGetGOOSEElementNumberRequestPDUMemberData extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerGetGOOSEElementNumberRequestPDUMemberData() { _v.put("_", new java.util.ArrayList<>()); }
@@ -36,7 +33,8 @@ public class InnerGetGOOSEElementNumberRequestPDUMemberData extends InnerBase {
             String json = InnerNative.decode("GetGOOSEElementNumberRequestPDUMemberData", DEFAULT_ENCODING, data);
             InnerGetGOOSEElementNumberRequestPDUMemberData r = new InnerGetGOOSEElementNumberRequestPDUMemberData();
             com.fasterxml.jackson.databind.JsonNode _node = MAPPER.readTree(json);
-            r._v.put("_", MAPPER.convertValue(_node.isArray() ? _node : _node.elements().next(), new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousGetGOOSEElementNumberRequestPDUMemberData>>() {}));
+            if (_node.isObject() && _node.has("value")) _node = _node.get("value");
+            r._v.put("_", MAPPER.convertValue(_node, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousGetGOOSEElementNumberRequestPDUMemberData>>() {}));
             return r;
         } catch (Exception e) {
             throw new RuntimeException(e);

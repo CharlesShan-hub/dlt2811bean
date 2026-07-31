@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -22,8 +21,6 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerLCB extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerLCB() {
@@ -32,8 +29,6 @@ public class InnerLCB extends InnerBase {
         _v.put("trgOps", new InnerTriggerConditions()._v);
         _v.put("intgPd", new InnerInt32U()._v);
         _v.put("logRef", new InnerObjectReference()._v);
-        _v.put("optFlds", new InnerLcbOptFlds()._v);
-        _v.put("bufTm", new InnerInt32U()._v);
     }
     @JsonAnySetter
     public void setField(String key, Object value) {

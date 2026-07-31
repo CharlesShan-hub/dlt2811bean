@@ -5,7 +5,6 @@ package com.ysh.jcms.data;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
-import lombok.Data;
 
 /**
  * <pre>{@code
@@ -34,19 +33,11 @@ import lombok.Data;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Data
-@lombok.experimental.Accessors(chain = true, fluent = true)
 public class InnerReportPDU extends InnerBase {
     private static final ObjectMapper MAPPER = InnerBase.createMapper();
     public InnerReportPDU() {
         _v.put("rptID", new DefaultInnerVisibleString("x"));
         _v.put("optFlds", new InnerRcbOptFlds()._v);
-        _v.put("sqNum", new InnerInt16U()._v);
-        _v.put("subSeqNum", new InnerInt16U()._v);
-        _v.put("moreSegmentsFollow", new InnerBoolean()._v);
-        _v.put("dataSet", new InnerObjectReference()._v);
-        _v.put("bufOvfl", new InnerBoolean()._v);
-        _v.put("confRev", new InnerInt32U()._v);
         _v.put("entry", new InnerReportPDUEntry()._v);
     }
     @JsonAnySetter

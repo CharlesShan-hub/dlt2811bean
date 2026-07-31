@@ -101,6 +101,10 @@ public abstract class CmsSequence extends CmsType {
                 // Jackson stores scalar / BIT STRING values directly (e.g. "cbRef1", "0000");
                 // wrap into _v so innerGet()/readPacked() can see them.
                 wrapper.inner._v.put("_", sub);
+            } else if (sub == null && optionalFields.contains(name)) {
+                // Optional field absent after decode — drop stale constructor defaults
+                // so a later re-encode doesn't serialize them.
+                wrapper.inner._v.clear();
             }
             if (wrapper instanceof CmsChoice) {
                 ((CmsChoice) wrapper).rebindChoices();
