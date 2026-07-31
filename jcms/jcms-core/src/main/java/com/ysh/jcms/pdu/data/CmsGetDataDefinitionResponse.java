@@ -40,27 +40,5 @@ public class CmsGetDataDefinitionResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetDataDefinitionResponsePDU inner = (InnerGetDataDefinitionResponsePDU) this.inner;
-        inner.data.value.clear();
-        for (CmsDataDefResultEntry entry : data) {
-            entry.syncToInner();
-            inner.data.value.add((InnerAnonymousGetDataDefinitionResponsePDUData) entry.inner);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetDataDefinitionResponsePDU inner = (InnerGetDataDefinitionResponsePDU) this.inner;
-        data = new ArrayList<>();
-        for (InnerAnonymousGetDataDefinitionResponsePDUData innerEntry : inner.data.value) {
-            CmsDataDefResultEntry entry = new CmsDataDefResultEntry();
-            entry.inner = innerEntry;
-            entry.rebindWrappers();
-            data.add(entry);
-        }
-    }
 }

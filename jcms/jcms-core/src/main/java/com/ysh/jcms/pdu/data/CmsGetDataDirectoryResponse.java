@@ -40,44 +40,5 @@ public class CmsGetDataDirectoryResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetDataDirectoryResponsePDU inner = (InnerGetDataDirectoryResponsePDU) this.inner;
-        inner.dataAttribute.value.clear();
-        for (CmsSubRefEntry entry : dataAttribute) {
-            InnerAnonymousGetDataDirectoryResponsePDUDataAttribute innerEntry =
-                new InnerAnonymousGetDataDirectoryResponsePDUDataAttribute();
-            // reference
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerSubReference) entry.reference.inner;
-            // fc (optional)
-            if (entry.isPresent("fc")) {
-                entry.fc.syncToInner();
-                innerEntry.fc = (InnerFunctionalConstraint) entry.fc.inner;
-                innerEntry._set.add("fc");
-            }
-            inner.dataAttribute.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetDataDirectoryResponsePDU inner = (InnerGetDataDirectoryResponsePDU) this.inner;
-        dataAttribute = new ArrayList<>();
-        for (InnerAnonymousGetDataDirectoryResponsePDUDataAttribute innerEntry : inner.dataAttribute.value) {
-            CmsSubRefEntry entry = new CmsSubRefEntry();
-            // reference
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            // fc (optional)
-            if (innerEntry._set.contains("fc")) {
-                entry.fc.inner = innerEntry.fc;
-                entry.fc.syncFromInner();
-                entry.setPresent("fc", true);
-            }
-            dataAttribute.add(entry);
-        }
-    }
 }

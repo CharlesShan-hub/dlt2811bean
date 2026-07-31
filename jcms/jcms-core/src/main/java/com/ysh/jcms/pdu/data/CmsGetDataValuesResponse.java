@@ -36,27 +36,5 @@ public class CmsGetDataValuesResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetDataValuesResponsePDU inner = (InnerGetDataValuesResponsePDU) this.inner;
-        inner.value.clear();
-        for (CmsData elem : value) {
-            elem.syncToInner();
-            inner.value.add((InnerData) elem.inner);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetDataValuesResponsePDU inner = (InnerGetDataValuesResponsePDU) this.inner;
-        value = new ArrayList<>();
-        for (InnerData innerElem : inner.value) {
-            CmsData c = new CmsData();
-            c.inner = innerElem;
-            c.syncFromInner();
-            value.add(c);
-        }
-    }
 }

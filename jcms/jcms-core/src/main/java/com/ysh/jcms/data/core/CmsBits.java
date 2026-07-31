@@ -10,7 +10,9 @@ import java.lang.reflect.Field;
 
 /**
  * Base class for BIT STRING types.
- * Subclasses declare fields annotated with {@link Bit}.
+ *
+ * <p>The packed value is stored in {@code inner._v} as a hex string (JER format).
+ * Subclasses declare fields annotated with {@link Bit} for individual bit positions.
  */
 public abstract class CmsBits extends CmsType {
 
@@ -21,65 +23,49 @@ public abstract class CmsBits extends CmsType {
         int length() default 1;
     }
 
-    private final Field innerValueField;
-
     protected CmsBits(InnerBase inner) {
         super(inner);
-        this.innerValueField = findInnerValueField(inner);
     }
 
-    private static Field findInnerValueField(InnerBase inner) {
-        try {
-            return inner.getClass().getField("value");
-        } catch (NoSuchFieldException e) {
-            return null;
+    /** Calculate total bit width from @Bit annotations. */
+    private int bitCount() {
+        int max = 0;
+        for (Field f : getClass().getFields()) {
+            Bit bit = f.getAnnotation(Bit.class);
+            if (bit == null) continue;
+            max = Math.max(max, bit.value() + bit.length());
         }
+        return max > 0 ? max : 1;
     }
 
+    /** Read packed value from _v (hex string → int). */
     private int readPacked() {
-        if (innerValueField == null) return 0;
-        try {
-            Object val = innerValueField.get(inner);
-            if (val instanceof Integer) return (Integer) val;
-            return innerValueField.getInt(inner);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to read packed value", e);
+        Object v = inner._v.get("_");
+        if (v instanceof String) {
+            return InnerBase.parseBitStringHex((String) v, bitCount());
         }
+        return 0;
     }
 
+    /** Write packed value to _v (int → hex string). */
     private void writePacked(int v) {
-        if (innerValueField == null) return;
-        try {
-            if (innerValueField.getType() == Integer.class) {
-                innerValueField.set(inner, v);
-            } else {
-                innerValueField.setInt(inner, v);
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to write packed value", e);
-        }
+        inner._v.put("_", InnerBase.bitStringHex(v, bitCount()));
     }
 
     private static int mask(int len) {
         return len >= 32 ? -1 : (1 << len) - 1;
     }
 
-    public int packed() {
+    public int value() {
         return readPacked();
     }
 
-    public void packed(int v) {
+    public void value(int v) {
         writePacked(v);
-        syncFromInner();
-    }
-
-    public void packed(CmsBits v) {
-        v.syncToInner();
-        packed(v.packed());
     }
 
     public CmsBits value(CmsBits v) {
-        packed(v);
+        value(v.value());
         return this;
     }
 
@@ -99,39 +85,13 @@ public abstract class CmsBits extends CmsType {
                 } else if (len == 1 && CmsBoolean.class.isAssignableFrom(type)) {
                     if (((CmsBoolean) f.get(this)).value()) packed |= (1 << pos);
                 } else if (type == int.class || type == Integer.class) {
-                    int v = f.getInt(this);
-                    packed |= (v & mask(len)) << pos;
+                    int val = f.getInt(this);
+                    packed |= (val & mask(len)) << pos;
                 }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to sync to inner", e);
             }
         }
         writePacked(packed);
-        super.syncToInner();
-    }
-
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        int packed = readPacked();
-        for (Field f : getClass().getFields()) {
-            Bit bit = f.getAnnotation(Bit.class);
-            if (bit == null) continue;
-            try {
-                int pos = bit.value();
-                int len = bit.length();
-                Class<?> type = f.getType();
-
-                if (len == 1 && (type == boolean.class || type == Boolean.class)) {
-                    f.setBoolean(this, ((packed >> pos) & 1) != 0);
-                } else if (len == 1 && CmsBoolean.class.isAssignableFrom(type)) {
-                    ((CmsBoolean) f.get(this)).value(((packed >> pos) & 1) != 0);
-                } else if (type == int.class || type == Integer.class) {
-                    f.setInt(this, (packed >> pos) & mask(len));
-                }
-            } catch (Exception e) {
-                throw new RuntimeException("Failed to sync from inner", e);
-            }
-        }
     }
 }

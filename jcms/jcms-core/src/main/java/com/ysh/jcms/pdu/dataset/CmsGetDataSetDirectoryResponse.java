@@ -41,34 +41,5 @@ public class CmsGetDataSetDirectoryResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetDataSetDirectoryResponsePDU inner = (InnerGetDataSetDirectoryResponsePDU) this.inner;
-        inner.memberData.value.clear();
-        for (CmsDataRefFcEntry entry : memberData) {
-            InnerAnonymousGetDataSetDirectoryResponsePDUMemberData innerEntry =
-                new InnerAnonymousGetDataSetDirectoryResponsePDUMemberData();
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerObjectReference) entry.reference.inner;
-            entry.fc.syncToInner();
-            innerEntry.fc = (InnerFunctionalConstraint) entry.fc.inner;
-            inner.memberData.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetDataSetDirectoryResponsePDU inner = (InnerGetDataSetDirectoryResponsePDU) this.inner;
-        memberData = new ArrayList<>();
-        for (InnerAnonymousGetDataSetDirectoryResponsePDUMemberData innerEntry : inner.memberData.value) {
-            CmsDataRefFcEntry entry = new CmsDataRefFcEntry();
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            entry.fc.inner = innerEntry.fc;
-            entry.fc.syncFromInner();
-            memberData.add(entry);
-        }
-    }
 }

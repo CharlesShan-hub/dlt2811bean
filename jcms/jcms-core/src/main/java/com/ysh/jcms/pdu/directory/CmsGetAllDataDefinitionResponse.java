@@ -38,43 +38,5 @@ public class CmsGetAllDataDefinitionResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetAllDataDefinitionResponsePDU inner = (InnerGetAllDataDefinitionResponsePDU) this.inner;
-        inner.data.value.clear();
-        for (CmsDataDefinitionEntry entry : data) {
-            InnerAnonymousGetAllDataDefinitionResponsePDUData innerEntry = new InnerAnonymousGetAllDataDefinitionResponsePDUData();
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerSubReference) entry.reference.inner;
-            if (entry.isPresent("cdcType")) {
-                entry.cdcType.syncToInner();
-                innerEntry.cdcType = (com.ysh.jcms.data.DefaultInnerVisibleString) entry.cdcType.inner;
-            }
-            entry.definition.syncToInner();
-            innerEntry.definition = (com.ysh.jcms.data.InnerDataDefinition) entry.definition.inner;
-            inner.data.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetAllDataDefinitionResponsePDU inner = (InnerGetAllDataDefinitionResponsePDU) this.inner;
-        data = new ArrayList<>();
-        for (InnerAnonymousGetAllDataDefinitionResponsePDUData innerEntry : inner.data.value) {
-            CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry();
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            boolean cdcTypePresent = innerEntry._set != null && innerEntry._set.contains("cdcType");
-            entry.setPresent("cdcType", cdcTypePresent);
-            if (cdcTypePresent) {
-                entry.cdcType.value(innerEntry.cdcType.value);
-            }
-            entry.definition.inner = innerEntry.definition;
-            entry.definition.rebindChoices();
-            entry.definition.syncFromInner();
-            data.add(entry);
-        }
-    }
 }

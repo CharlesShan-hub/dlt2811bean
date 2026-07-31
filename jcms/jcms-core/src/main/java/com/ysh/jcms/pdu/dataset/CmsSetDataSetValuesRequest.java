@@ -48,27 +48,5 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerSetDataSetValuesRequestPDU inner = (InnerSetDataSetValuesRequestPDU) this.inner;
-        inner.value.clear();
-        for (CmsData elem : value) {
-            elem.syncToInner();
-            inner.value.add((InnerData) elem.inner);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerSetDataSetValuesRequestPDU inner = (InnerSetDataSetValuesRequestPDU) this.inner;
-        value = new ArrayList<>();
-        for (InnerData innerElem : inner.value) {
-            CmsData c = new CmsData();
-            c.inner = innerElem;
-            c.syncFromInner();
-            value.add(c);
-        }
-    }
 }

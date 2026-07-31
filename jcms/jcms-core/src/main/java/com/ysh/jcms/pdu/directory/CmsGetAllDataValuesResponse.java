@@ -38,34 +38,5 @@ public class CmsGetAllDataValuesResponse extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetAllDataValuesResponsePDU inner = (InnerGetAllDataValuesResponsePDU) this.inner;
-        inner.data.value.clear();
-        for (CmsDataValueEntry entry : data) {
-            InnerAnonymousGetAllDataValuesResponsePDUData innerEntry = new InnerAnonymousGetAllDataValuesResponsePDUData();
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerSubReference) entry.reference.inner;
-            entry.value.syncToInner();
-            innerEntry.value = (com.ysh.jcms.data.InnerData) entry.value.inner;
-            inner.data.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetAllDataValuesResponsePDU inner = (InnerGetAllDataValuesResponsePDU) this.inner;
-        data = new ArrayList<>();
-        for (InnerAnonymousGetAllDataValuesResponsePDUData innerEntry : inner.data.value) {
-            CmsDataValueEntry entry = new CmsDataValueEntry();
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            entry.value.inner = innerEntry.value;
-            entry.value.rebindChoices();
-            entry.value.syncFromInner();
-            data.add(entry);
-        }
-    }
 }

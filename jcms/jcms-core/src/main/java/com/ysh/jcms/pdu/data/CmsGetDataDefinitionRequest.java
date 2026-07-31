@@ -29,43 +29,5 @@ public class CmsGetDataDefinitionRequest extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerGetDataDefinitionRequestPDU inner = (InnerGetDataDefinitionRequestPDU) this.inner;
-        inner.data.value.clear();
-        for (CmsDataRefEntry entry : data) {
-            InnerAnonymousGetDataDefinitionRequestPDUData innerEntry = new InnerAnonymousGetDataDefinitionRequestPDUData();
-            // reference
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerObjectReference) entry.reference.inner;
-            // fc (optional)
-            if (entry.isPresent("fc")) {
-                entry.fc.syncToInner();
-                innerEntry.fc = (InnerFunctionalConstraint) entry.fc.inner;
-                innerEntry._set.add("fc");
-            }
-            inner.data.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerGetDataDefinitionRequestPDU inner = (InnerGetDataDefinitionRequestPDU) this.inner;
-        data = new ArrayList<>();
-        for (InnerAnonymousGetDataDefinitionRequestPDUData innerEntry : inner.data.value) {
-            CmsDataRefEntry entry = new CmsDataRefEntry();
-            // reference
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            // fc (optional)
-            if (innerEntry._set.contains("fc")) {
-                entry.fc.inner = innerEntry.fc;
-                entry.fc.syncFromInner();
-                entry.setPresent("fc", true);
-            }
-            data.add(entry);
-        }
-    }
 }

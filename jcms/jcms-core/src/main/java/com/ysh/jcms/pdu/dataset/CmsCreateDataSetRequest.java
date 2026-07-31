@@ -52,34 +52,5 @@ public class CmsCreateDataSetRequest extends CmsSequence {
         return this;
     }
 
-    @Override
-    public void syncToInner() {
-        InnerCreateDataSetRequestPDU inner = (InnerCreateDataSetRequestPDU) this.inner;
-        inner.memberData.value.clear();
-        for (CmsDataRefFcEntry entry : memberData) {
-            InnerAnonymousCreateDataSetRequestPDUMemberData innerEntry =
-                new InnerAnonymousCreateDataSetRequestPDUMemberData();
-            entry.reference.syncToInner();
-            innerEntry.reference = (InnerObjectReference) entry.reference.inner;
-            entry.fc.syncToInner();
-            innerEntry.fc = (InnerFunctionalConstraint) entry.fc.inner;
-            inner.memberData.value.add(innerEntry);
-        }
-        super.syncToInner();
-    }
 
-    @Override
-    public void syncFromInner() {
-        super.syncFromInner();
-        InnerCreateDataSetRequestPDU inner = (InnerCreateDataSetRequestPDU) this.inner;
-        memberData = new ArrayList<>();
-        for (InnerAnonymousCreateDataSetRequestPDUMemberData innerEntry : inner.memberData.value) {
-            CmsDataRefFcEntry entry = new CmsDataRefFcEntry();
-            entry.reference.inner = innerEntry.reference;
-            entry.reference.syncFromInner();
-            entry.fc.inner = innerEntry.fc;
-            entry.fc.syncFromInner();
-            memberData.add(entry);
-        }
-    }
 }

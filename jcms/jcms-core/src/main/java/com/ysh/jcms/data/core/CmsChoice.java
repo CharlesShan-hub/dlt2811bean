@@ -8,12 +8,10 @@ import java.lang.reflect.ParameterizedType;
 import java.util.*;
 
 /**
- * Base class for CHOICE types. Automates:
- * <ul>
- *   <li>variant index ↔ {@code _choice} string mapping via {@link CmsChoice @CmsChoice}</li>
- *   <li>wrapper creation and inner binding</li>
- *   <li>{@link #syncToInner()} / {@link #syncFromInner()} dispatch</li>
- * </ul>
+ * Base class for CHOICE types.
+ *
+ * <p>The variant selection is stored in {@code inner._v} as {@code {"_choice": "name", "name": value}}.
+ * Wrappers share the {@code _v} sub-map with the selected variant, eliminating explicit data sync.
  */
 public abstract class CmsChoice extends CmsType {
 
@@ -22,12 +20,12 @@ public abstract class CmsChoice extends CmsType {
     public @interface Choice {
         /** Variant index (matches {@code CHOICE_XXX} constant). */
         int index();
-        /** {@code _choice} string value in the Inner* class. */
+        /** {@code _choice} string value. */
         String name();
         /**
          * Inner field name — defaults to the field name with {@code alt_} prefix stripped.
          * Override when the Inner field name differs (e.g. Cms field {@code alt_boolean}
-         * but Inner field is {@code Boolean}).
+         * but Inner key is {@code Boolean}).
          */
         String innerField() default "";
         /** Sync mode. {@link Sync#AUTO} detects from field type. */
@@ -41,11 +39,11 @@ public abstract class CmsChoice extends CmsType {
         SCALAR,
         /** Delegate syncToInner/syncFromInner to wrapper. */
         WRAPPER,
-        /** Share inner reference directly (for DefaultInner* types). */
+        /** InnerBase field (e.g. DefaultInner* types) — share _v directly. */
         INNER,
-        /** SEQUENCE OF with inner wrapper type (e.g. InnerDataSequence.value list). */
+        /** SEQUENCE OF with inner wrapper type. */
         LIST,
-        /** Direct List field: inner has a plain List<InnerType> field (no wrapper). */
+        /** Direct List field: inner has a plain list. */
         ARRAY,
         /** Direct value assignment for byte[], String, etc. */
         RAW,
@@ -59,24 +57,22 @@ public abstract class CmsChoice extends CmsType {
         final String innerField;
         final Sync sync;
         final Field field;         // alt_* field on this CmsChoice subclass
-        Field innerF;              // corresponding field on Inner* class (nullable)
         final boolean isScalar;    // field type extends CmsScalar
 
         VariantInfo(int index, String name, String innerField, Sync sync,
-                    Field field, Field innerF, boolean isScalar) {
+                    Field field, boolean isScalar) {
             this.index = index;
             this.name = name;
             this.innerField = innerField;
             this.sync = sync;
             this.field = field;
-            this.innerF = innerF;
             this.isScalar = isScalar;
         }
     }
 
     private final Map<Integer, VariantInfo> variantByIndex = new LinkedHashMap<>();
     private final Map<String, VariantInfo> variantByName = new LinkedHashMap<>();
-    /** Locally tracked variant index, for @Choice-managed variants and manual ones (e.g. ARRAY/STRUCTURE). */
+    /** Locally tracked variant index. */
     protected int selectedChoiceIndex = -1;
 
     protected CmsChoice(InnerBase inner) {
@@ -89,53 +85,29 @@ public abstract class CmsChoice extends CmsType {
      * after {@code super(inner)} for variants that only store a {@code _choice} string.
      */
     protected final void registerNullChoice(int index, String name) {
-        VariantInfo vi = new VariantInfo(index, name, null, null, null, null, false);
+        VariantInfo vi = new VariantInfo(index, name, null, null, null, false);
         variantByIndex.put(index, vi);
         variantByName.put(name, vi);
     }
 
     /**
-     * Re-resolve variant Inner* field references after {@code inner} is
-     * replaced by a parent CmsSequence's {@code @CmsField} injection.
+     * Rebind wrapper _v references after {@code inner} is replaced.
+     * Shares the variant's {@code _v} sub-map with each wrapper.
      */
     public void rebindChoices() {
         for (VariantInfo vi : variantByIndex.values()) {
-            if (vi.field == null) continue;
-            try {
-                vi.innerF = inner.getClass().getField(vi.innerField);
-            } catch (NoSuchFieldException e) {
-                vi.innerF = null;
-            }
-        }
-    }
-
-    /**
-     * Rebind all @Choice CmsType wrappers' {@code inner} references to the
-     * current Inner* variant fields.  Called after the parent CmsSequence's
-     * {@code injectFields()} replaces {@code this.inner} with a different
-     * Inner* instance (e.g. the PDU's InnerData instead of the wrapper's own).
-     */
-    public void rebindChoiceWrappers() {
-        for (VariantInfo vi : variantByIndex.values()) {
-            if (vi.innerF == null || vi.field == null) continue;
-            if (!CmsType.class.isAssignableFrom(vi.field.getType())) continue;
+            if (vi.field == null || !CmsType.class.isAssignableFrom(vi.field.getType())) continue;
             try {
                 CmsType w = (CmsType) vi.field.get(this);
                 if (w == null) continue;
-                Object innerVal = vi.innerF.get(inner);
-                // Create the Inner* field if it's null (fresh PDU inner)
-                if (innerVal == null && InnerBase.class.isAssignableFrom(vi.innerF.getType())) {
-                    innerVal = vi.innerF.getType().getDeclaredConstructor().newInstance();
-                    vi.innerF.set(inner, innerVal);
+                Object sub = inner._v.get(vi.innerField);
+                if (sub instanceof LinkedHashMap) {
+                    w.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
-                if (innerVal instanceof InnerBase) {
-                    w.inner = (InnerBase) innerVal;
-                    if (w instanceof CmsChoice)
-                        ((CmsChoice) w).rebindChoices();
-                    if (w instanceof CmsSequence)
-                        ((CmsSequence) w).rebindWrappers();
-                    w.syncFromInner();
-                }
+                if (w instanceof CmsChoice)
+                    ((CmsChoice) w).rebindChoices();
+                if (w instanceof CmsSequence)
+                    ((CmsSequence) w).rebindWrappers();
             } catch (Exception ignored) {}
         }
     }
@@ -148,25 +120,17 @@ public abstract class CmsChoice extends CmsType {
             if (ann == null) continue;
 
             String innerFn = ann.innerField().isEmpty() ? stripAlt(f.getName()) : ann.innerField();
-            Field innerF = null;
-            try {
-                innerF = inner.getClass().getField(innerFn);
-            } catch (NoSuchFieldException ignored) {}
 
             boolean isScalar = CmsScalar.class.isAssignableFrom(f.getType());
             boolean isList = List.class.isAssignableFrom(f.getType());
-            boolean isInner = InnerBase.class.isAssignableFrom(f.getType());
             boolean isCmsType = CmsType.class.isAssignableFrom(f.getType());
+            boolean isInner = InnerBase.class.isAssignableFrom(f.getType());
             boolean isRaw = !isCmsType && !isList && !isInner;
 
             Sync sync = ann.sync();
             if (sync == Sync.AUTO) {
                 if (isScalar) sync = Sync.SCALAR;
-                else if (isList) {
-                    // Check if inner field is a wrapper type (has .value) or plain List
-                    sync = (innerF != null && hasListValueField(innerF))
-                        ? Sync.LIST : Sync.ARRAY;
-                }
+                else if (isList) sync = Sync.ARRAY;
                 else if (isInner) sync = Sync.INNER;
                 else if (isCmsType) sync = Sync.WRAPPER;
                 else sync = Sync.RAW;
@@ -174,54 +138,40 @@ public abstract class CmsChoice extends CmsType {
 
             // Create wrapper instance if it's a CmsType, or keep raw value
             if (isCmsType) {
-                createCmsTypeWrapper(f, innerF);
+                createCmsTypeWrapper(f, innerFn);
+            } else if (isInner) {
+                try {
+                    InnerBase val = (InnerBase) f.getType().getDeclaredConstructor().newInstance();
+                    Object sub = inner._v.get(innerFn);
+                    if (sub instanceof LinkedHashMap) {
+                        val._v = (LinkedHashMap<String, Object>) sub;
+                    }
+                    f.set(this, val);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to init inner field " + f.getName(), e);
+                }
             } else if (isList) {
                 try {
                     f.set(this, new ArrayList<>());
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to init list field " + f.getName(), e);
                 }
-            } else if (isInner) {
-                try {
-                    if (innerF != null) {
-                        Object innerVal = innerF.get(inner);
-                        if (innerVal != null) {
-                            f.set(this, innerVal);
-                        }
-                    }
-                } catch (Exception e) {
-                    throw new RuntimeException("Failed to bind inner field " + f.getName(), e);
-                }
             }
             // RAW fields (byte[], String) are left uninitialized
 
-            VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, innerF, isScalar);
+            VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar);
             variantByIndex.put(ann.index(), vi);
             variantByName.put(ann.name(), vi);
         }
     }
 
-    private boolean hasListValueField(Field innerF) {
-        try {
-            Class<?> innerType = innerF.getType();
-            // Check if the inner field's type has a "value" field (SEQUENCE OF wrapper)
-            innerType.getField("value");
-            return true;
-        } catch (NoSuchFieldException e) {
-            return false;
-        }
-    }
-
-    private void createCmsTypeWrapper(Field f, Field innerF) {
+    private void createCmsTypeWrapper(Field f, String innerField) {
         try {
             CmsType wrapper = (CmsType) f.getType().getDeclaredConstructor().newInstance();
-            if (innerF != null && InnerBase.class.isAssignableFrom(innerF.getType())) {
-                Object innerVal = innerF.get(inner);
-                if (innerVal == null) {
-                    innerVal = innerF.getType().getDeclaredConstructor().newInstance();
-                    innerF.set(inner, innerVal);
-                }
-                wrapper.inner = (InnerBase) innerVal;
+            // Share _v sub-map with the variant's entry
+            Object sub = inner._v.get(innerField);
+            if (sub instanceof LinkedHashMap) {
+                wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
             }
             f.set(this, wrapper);
         } catch (Exception e) {
@@ -239,7 +189,7 @@ public abstract class CmsChoice extends CmsType {
         selectedChoiceIndex = v;
         VariantInfo vi = variantByIndex.get(v);
         if (vi != null) {
-            innerSetChoice(vi.name);
+            inner._v.put("_choice", vi.name);
         }
         return this;
     }
@@ -253,15 +203,14 @@ public abstract class CmsChoice extends CmsType {
         VariantInfo vi = variantByIndex.get(ch);
         if (vi == null) return;
 
-        // Clear all non-selected Inner* fields to null so switching variants
-        // doesn't leave stale data in the Inner* tree.
+        // Clear all non-selected variant values from _v
         for (VariantInfo v : variantByIndex.values()) {
-            if (v == vi || v.innerF == null) continue;
-            try { v.innerF.set(inner, null); } catch (Exception ignored) {}
+            if (v == vi || v.innerField == null) continue;
+            inner._v.remove(v.innerField);
         }
 
+        inner._v.put("_choice", vi.name);
         try {
-            innerSetChoice(vi.name);
             switch (vi.sync) {
                 case SCALAR:
                     syncScalarToInner(vi);
@@ -285,23 +234,12 @@ public abstract class CmsChoice extends CmsType {
         } catch (Exception e) {
             throw new RuntimeException("syncToInner failed for variant " + vi.name, e);
         }
-        super.syncToInner();
-        // Ensure unselected Inner* variant fields are initialized (not null)
-        // so that Inner*.equals() works.
-        for (VariantInfo v : variantByIndex.values()) {
-            if (v == vi || v.innerF == null) continue;
-            try {
-                if (v.innerF.get(inner) == null) {
-                    v.innerF.set(inner, v.innerF.getType().getDeclaredConstructor().newInstance());
-                }
-            } catch (Exception ignored) {}
-        }
     }
 
     @Override
     public void syncFromInner() {
-        String ch = innerGetChoice();
-        if (ch == null) return;
+        Object ch = inner._v.get("_choice");
+        if (!(ch instanceof String)) return;
         VariantInfo vi = variantByName.get(ch);
         if (vi == null) return;
         selectedChoiceIndex = vi.index;
@@ -332,21 +270,7 @@ public abstract class CmsChoice extends CmsType {
         }
     }
 
-    // ── sync helpers ─────────────────────────────────────────────────
-
-    private void innerSetChoice(String name) {
-        try {
-            Field cf = inner.getClass().getField("_choice");
-            cf.set(inner, name);
-        } catch (Exception ignored) {}
-    }
-
-    private String innerGetChoice() {
-        try {
-            Field cf = inner.getClass().getField("_choice");
-            return (String) cf.get(inner);
-        } catch (Exception e) { return null; }
-    }
+    // ── sync helpers (all via _v, no reflection on Inner* fields) ────
 
     @SuppressWarnings("unchecked")
     private void syncScalarToInner(VariantInfo vi) throws Exception {
@@ -355,50 +279,53 @@ public abstract class CmsChoice extends CmsType {
         wrapper.syncToInner();
     }
 
+    @SuppressWarnings("unchecked")
     private void syncScalarFromInner(VariantInfo vi) throws Exception {
         CmsScalar wrapper = (CmsScalar) vi.field.get(this);
-        if (wrapper == null || vi.innerF == null) return;
-        Object innerVal = vi.innerF.get(inner);
-        if (innerVal instanceof InnerBase) {
-            wrapper.inner = (InnerBase) innerVal;
+        if (wrapper == null) return;
+        Object sub = inner._v.get(vi.innerField);
+        if (sub instanceof LinkedHashMap) {
+            wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
         }
         wrapper.syncFromInner();
     }
 
+    @SuppressWarnings("unchecked")
     private void syncWrapperToInner(VariantInfo vi) throws Exception {
         CmsType wrapper = (CmsType) vi.field.get(this);
         if (wrapper == null) return;
         wrapper.syncToInner();
-        if (vi.innerF != null) {
-            vi.innerF.set(inner, wrapper.inner);
-        }
     }
 
+    @SuppressWarnings("unchecked")
     private void syncWrapperFromInner(VariantInfo vi) throws Exception {
         CmsType wrapper = (CmsType) vi.field.get(this);
-        if (wrapper == null || vi.innerF == null) return;
-        Object innerVal = vi.innerF.get(inner);
-        if (innerVal instanceof InnerBase) {
-            wrapper.inner = (InnerBase) innerVal;
+        if (wrapper == null) return;
+        Object sub = inner._v.get(vi.innerField);
+        if (sub instanceof LinkedHashMap) {
+            wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
         }
+        if (wrapper instanceof CmsChoice)
+            ((CmsChoice) wrapper).rebindChoices();
+        if (wrapper instanceof CmsSequence)
+            ((CmsSequence) wrapper).rebindWrappers();
         wrapper.syncFromInner();
     }
 
     @SuppressWarnings("unchecked")
     private void syncInnerToInner(VariantInfo vi) throws Exception {
-        Object val = vi.field.get(this);
-        if (val instanceof InnerBase && vi.innerF != null) {
-            vi.innerF.set(inner, val);
-        }
+        InnerBase val = (InnerBase) vi.field.get(this);
+        if (val == null) return;
+        inner._v.put(vi.innerField, val._v);
     }
 
     @SuppressWarnings("unchecked")
     private void syncInnerFromInner(VariantInfo vi) throws Exception {
-        if (vi.innerF == null) return;
-        Object innerVal = vi.innerF.get(inner);
-        Class<?> valType = vi.field.getType();
-        if (innerVal != null && valType.isAssignableFrom(innerVal.getClass())) {
-            vi.field.set(this, innerVal);
+        Object sub = inner._v.get(vi.innerField);
+        if (!(sub instanceof LinkedHashMap)) return;
+        InnerBase val = (InnerBase) vi.field.get(this);
+        if (val != null) {
+            val._v = (LinkedHashMap<String, Object>) sub;
         }
     }
 
@@ -406,39 +333,27 @@ public abstract class CmsChoice extends CmsType {
     private void syncListToInner(VariantInfo vi) throws Exception {
         List<CmsType> list = (List<CmsType>) vi.field.get(this);
         if (list == null) return;
-        if (vi.innerF == null) return;
-        Object innerContainer = vi.innerF.get(inner);
-        if (innerContainer == null) return;
-        Field valueF = innerContainer.getClass().getField("value");
-        List<Object> innerList = (List<Object>) valueF.get(innerContainer);
-        if (innerList == null) {
-            innerList = new ArrayList<>();
-            valueF.set(innerContainer, innerList);
-        }
-        innerList.clear();
+        List<InnerBase> innerList = new ArrayList<>();
         for (CmsType elem : list) {
             elem.syncToInner();
             innerList.add(elem.inner);
         }
+        inner._v.put(vi.innerField, innerList);
     }
 
     @SuppressWarnings("unchecked")
     private void syncListFromInner(VariantInfo vi) throws Exception {
-        if (vi.innerF == null) return;
-        Object innerContainer = vi.innerF.get(inner);
-        if (innerContainer == null) return;
-        Field valueF = innerContainer.getClass().getField("value");
-        List<Object> innerList = (List<Object>) valueF.get(innerContainer);
+        List<Object> innerList = (List<Object>) inner._v.get(vi.innerField);
         if (innerList == null) return;
+
+        Class<? extends CmsType> elemClass = inferListElemClass(vi);
+        if (elemClass == null) return;
 
         List<CmsType> list = (List<CmsType>) vi.field.get(this);
         if (list == null) {
             list = new ArrayList<>();
             vi.field.set(this, list);
         }
-        Class<? extends CmsType> elemClass = inferListElemClass(vi);
-        if (elemClass == null) return;
-
         list.clear();
         for (Object innerElem : innerList) {
             if (!(innerElem instanceof InnerBase)) continue;
@@ -452,19 +367,18 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncArrayToInner(VariantInfo vi) throws Exception {
         List<CmsType> list = (List<CmsType>) vi.field.get(this);
-        if (list == null || vi.innerF == null) return;
-        List<Object> innerList = new ArrayList<>();
+        if (list == null) return;
+        List<InnerBase> innerList = new ArrayList<>();
         for (CmsType elem : list) {
             elem.syncToInner();
             innerList.add(elem.inner);
         }
-        vi.innerF.set(inner, innerList);
+        inner._v.put(vi.innerField, innerList);
     }
 
     @SuppressWarnings("unchecked")
     private void syncArrayFromInner(VariantInfo vi) throws Exception {
-        if (vi.innerF == null) return;
-        List<Object> innerList = (List<Object>) vi.innerF.get(inner);
+        List<Object> innerList = (List<Object>) inner._v.get(vi.innerField);
         if (innerList == null) return;
 
         Class<? extends CmsType> elemClass = inferListElemClass(vi);
@@ -498,15 +412,12 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncRawToInner(VariantInfo vi) throws Exception {
         Object val = vi.field.get(this);
-        if (vi.innerF != null) {
-            vi.innerF.set(inner, val);
-        }
+        inner._v.put(vi.innerField, val);
     }
 
     @SuppressWarnings("unchecked")
     private void syncRawFromInner(VariantInfo vi) throws Exception {
-        if (vi.innerF == null) return;
-        Object val = vi.innerF.get(inner);
+        Object val = inner._v.get(vi.innerField);
         if (val != null) {
             vi.field.set(this, val);
         }
