@@ -34,13 +34,15 @@ public abstract class CmsSequence extends CmsType {
     /** One annotated {@code @CmsField}. Field refs are class-level and shareable. */
     private static final class CmsFieldInfo {
         final Field field;
+        final String innerName;      // _v key; defaults to the Java field name
         final boolean optional;
         final boolean sequenceOf;
         final Class<? extends CmsType> elementType;
 
-        CmsFieldInfo(Field field, boolean optional, boolean sequenceOf,
+        CmsFieldInfo(Field field, String innerName, boolean optional, boolean sequenceOf,
                      Class<? extends CmsType> elementType) {
             this.field = field;
+            this.innerName = innerName;
             this.optional = optional;
             this.sequenceOf = sequenceOf;
             this.elementType = elementType;
@@ -63,7 +65,9 @@ public abstract class CmsSequence extends CmsType {
                 if (Modifier.isStatic(f.getModifiers())) continue;
                 CmsField ann = f.getAnnotation(CmsField.class);
                 if (ann == null) continue;
-                CmsFieldInfo info = new CmsFieldInfo(f, ann.optional(), ann.sequenceOf(), ann.elementType());
+                CmsFieldInfo info = new CmsFieldInfo(
+                        f, ann.inner().isEmpty() ? f.getName() : ann.inner(),
+                        ann.optional(), ann.sequenceOf(), ann.elementType());
                 fields.add(info);
                 byName.put(f.getName(), info);
                 if (ann.sequenceOf()) sequenceOf.put(f.getName(), info);
@@ -118,7 +122,7 @@ public abstract class CmsSequence extends CmsType {
             try {
                 CmsType wrapper = ((Class<? extends CmsType>) f.getType()).getDeclaredConstructor().newInstance();
                 // Share _v sub-map: wrapper._v points to parent's field entry
-                Object sub = inner._v.get(fieldName);
+                Object sub = inner._v.get(info.innerName);
                 if (sub instanceof LinkedHashMap) {
                     wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
@@ -140,7 +144,9 @@ public abstract class CmsSequence extends CmsType {
         for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
             String name = entry.getKey();
             CmsType wrapper = entry.getValue();
-            Object sub = inner._v.get(name);
+            CmsFieldInfo info = meta.byName.get(name);
+            String innerKey = info != null ? info.innerName : name;
+            Object sub = inner._v.get(innerKey);
             if (sub instanceof LinkedHashMap) {
                 wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
             } else if (sub != null && (wrapper instanceof CmsScalar || wrapper instanceof CmsBits)) {
@@ -164,7 +170,7 @@ public abstract class CmsSequence extends CmsType {
             try {
                 Field f = e.getValue().field;
                 @SuppressWarnings("unchecked")
-                List<Object> innerList = (List<Object>) inner._v.get(e.getKey());
+                List<Object> innerList = (List<Object>) inner._v.get(e.getValue().innerName);
                 List<CmsType> list = new ArrayList<>();
                 if (innerList != null) {
                     for (Object innerElem : innerList) {
@@ -256,7 +262,8 @@ public abstract class CmsSequence extends CmsType {
         // Create on-demand and share _v
         try {
             T wrapper = wrapperType.getDeclaredConstructor().newInstance();
-            Object sub = inner._v.get(fieldName);
+            CmsFieldInfo info = SEQ_META.get(getClass()).byName.get(fieldName);
+            Object sub = inner._v.get(info != null ? info.innerName : fieldName);
             if (sub instanceof LinkedHashMap) {
                 wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
             }
@@ -273,7 +280,8 @@ public abstract class CmsSequence extends CmsType {
      */
     protected void bindWrapper(String fieldName, CmsType wrapper) {
         injectedWrappers.put(fieldName, wrapper);
-        Object sub = inner._v.get(fieldName);
+        CmsFieldInfo info = SEQ_META.get(getClass()).byName.get(fieldName);
+        Object sub = inner._v.get(info != null ? info.innerName : fieldName);
         if (sub instanceof LinkedHashMap) {
             wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
         }
@@ -292,28 +300,30 @@ public abstract class CmsSequence extends CmsType {
         SequenceMeta meta = SEQ_META.get(getClass());
         detectWrapperReplacements();
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
+            CmsFieldInfo info = meta.byName.get(e.getKey());
+            String innerKey = info != null ? info.innerName : e.getKey();
             if (meta.optional.contains(e.getKey()) && !isPresent(e.getKey())) {
                 // Optional field not marked present — remove stale default from _v
-                inner._v.remove(e.getKey());
+                inner._v.remove(innerKey);
                 continue;
             }
             CmsType w = e.getValue();
             w.syncToInner();
             if (w instanceof CmsScalar) {
                 // Use toJsonValue() so special scalars (e.g. unsigned Int32U) serialize correctly
-                inner._v.put(e.getKey(), ((CmsScalar) w).inner.toJsonValue());
+                inner._v.put(innerKey, ((CmsScalar) w).inner.toJsonValue());
             } else if (w instanceof CmsBits) {
                 // BIT STRING: JER form is a bare hex string. Unlike CmsScalar, the
                 // wrapper _v is NOT shared with parent after decode (rebindWrappers
                 // stores the decoded hex string directly), so write it back explicitly
                 // — otherwise a decode→modify→encode cycle silently loses updates.
-                inner._v.put(e.getKey(), V.getVal(w.inner._v));
+                inner._v.put(innerKey, V.getVal(w.inner._v));
             } else {
                 // Non-scalar wrapper (CmsSequence/CmsChoice/CmsUtcTime/...): JER form
                 // is the _v map itself. Re-assert the alias so OPTIONAL fields that
                 // were not pre-seeded in the Inner constructor still reach parent _v
                 // on encode (no-op when already shared).
-                inner._v.put(e.getKey(), w.inner._v);
+                inner._v.put(innerKey, w.inner._v);
             }
         }
         // Sync SEQUENCE OF fields → inner._v
@@ -328,7 +338,7 @@ public abstract class CmsSequence extends CmsType {
                     elem.syncToInner();
                     innerList.add(elem.inner);
                 }
-                inner._v.put(e.getKey(), innerList);
+                inner._v.put(e.getValue().innerName, innerList);
             } catch (Exception ex) {
                 throw new RuntimeException("Failed to sync sequence field " + e.getKey(), ex);
             }
@@ -369,7 +379,7 @@ public abstract class CmsSequence extends CmsType {
                 // Register new wrapper and share _v
                 CmsType wrapper = (CmsType) val;
                 injectedWrappers.put(name, wrapper);
-                Object sub = inner._v.get(name);
+                Object sub = inner._v.get(info.innerName);
                 if (sub instanceof LinkedHashMap) {
                     wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
                 }
