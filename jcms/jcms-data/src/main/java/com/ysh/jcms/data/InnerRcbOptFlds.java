@@ -33,7 +33,7 @@ public class InnerRcbOptFlds extends InnerBase {
     public static final int ENTRYID = 7;
     public static final int CONF_REVISION = 8;
     public static final int SEGMENTATION = 9;
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerRcbOptFlds() { _v.put("_", "0000"); }
     public InnerRcbOptFlds(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 10)); }
     @JsonValue

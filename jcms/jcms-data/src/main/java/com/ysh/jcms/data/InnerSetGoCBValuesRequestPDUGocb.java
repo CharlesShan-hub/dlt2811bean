@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetGoCBValuesRequestPDUGocb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetGoCBValuesRequestPDUGocb() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerSetGoCBValuesRequestPDUGocb fromJson(Object v) { InnerSetGoCBValuesRequestPDUGocb r = new InnerSetGoCBValuesRequestPDUGocb(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetGoCBValuesRequestPDUGocb>>() {})); return r; }

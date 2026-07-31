@@ -43,8 +43,20 @@ public class CmsBrcb extends CmsSequence {
     public CmsBrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsBrcb purgeBuf(boolean v) { this.purgeBuf.value(v); return this; }
     public CmsBrcb entryID(byte[] v) { this.entryID.value(v); return this; }
-    public CmsBrcb resvTms(int v) { this.resvTms.value(v); setPresent("resvTms", true); return this; }
-    public CmsBrcb owner(byte[] v) { this.owner.value(v); setPresent("owner", true); return this; }
+    public CmsBrcb resvTms(int v) {
+        this.resvTms.value(v);
+        setPresent("resvTms", true);
+        return this;
+    }
+    public CmsBrcb owner(byte[] v) {
+        if (v != null) {
+            this.owner.value(v);
+            setPresent("owner", true);
+        } else {
+            setPresent("owner", false);
+        }
+        return this;
+    }
 
     /** Copy all field values from another CmsBrcb (fluent). */
     public CmsBrcb value(CmsBrcb v) {
@@ -60,8 +72,18 @@ public class CmsBrcb extends CmsSequence {
         gi(v.gi.value());
         purgeBuf(v.purgeBuf.value());
         entryID(v.entryID.value());
-        if (v.isPresent("resvTms")) this.resvTms.value(v.resvTms.value());
-        if (v.isPresent("owner")) this.owner.value(v.owner.value());
+        if (v.isPresent("resvTms")) {
+            this.resvTms.value(v.resvTms.value());
+            setPresent("resvTms", true);
+        } else {
+            setPresent("resvTms", false);
+        }
+        if (v.isPresent("owner")) {
+            this.owner.value(v.owner.value());
+            setPresent("owner", true);
+        } else {
+            setPresent("owner", false);
+        }
         return this;
     }
 }

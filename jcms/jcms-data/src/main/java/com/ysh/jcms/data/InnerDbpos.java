@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerDbpos extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDbpos() { _v.put("_", "00"); }
     public InnerDbpos(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 2)); }
     @JsonValue

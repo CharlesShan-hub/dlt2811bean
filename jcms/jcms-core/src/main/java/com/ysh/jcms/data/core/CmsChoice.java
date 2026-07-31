@@ -8,6 +8,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Base class for CHOICE types.
@@ -16,6 +18,8 @@ import java.util.*;
  * Wrappers share the {@code _v} sub-map with the selected variant, eliminating explicit data sync.
  */
 public abstract class CmsChoice extends CmsType {
+
+    private static final Logger LOG = Logger.getLogger(CmsChoice.class.getName());
 
     @java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
     @java.lang.annotation.Target(java.lang.annotation.ElementType.FIELD)
@@ -72,6 +76,52 @@ public abstract class CmsChoice extends CmsType {
         }
     }
 
+    /**
+     * Per-class metadata built from {@code @Choice} annotations — variant
+     * descriptions only (Field refs are class-level). Wrapper instances stay
+     * per-object. NULL variants registered via {@link #registerNullChoice}
+     * at construction time are still instance-level.
+     */
+    private static final ClassValue<ChoiceMeta> CHOICE_META = new ClassValue<ChoiceMeta>() {
+        @Override
+        protected ChoiceMeta computeValue(Class<?> type) {
+            Map<Integer, VariantInfo> byIndex = new LinkedHashMap<>();
+            Map<String, VariantInfo> byName = new LinkedHashMap<>();
+            for (Field f : type.getFields()) {
+                if (Modifier.isStatic(f.getModifiers())) continue;
+                Choice ann = f.getAnnotation(Choice.class);
+                if (ann == null) continue;
+
+                String innerFn = ann.innerField().isEmpty() ? stripAlt(f.getName()) : ann.innerField();
+                boolean isScalar = CmsScalar.class.isAssignableFrom(f.getType());
+
+                Sync sync = ann.sync();
+                if (sync == Sync.AUTO) {
+                    if (isScalar) sync = Sync.SCALAR;
+                    else if (List.class.isAssignableFrom(f.getType())) sync = Sync.ARRAY;
+                    else if (InnerBase.class.isAssignableFrom(f.getType())) sync = Sync.INNER;
+                    else if (CmsType.class.isAssignableFrom(f.getType())) sync = Sync.WRAPPER;
+                    else sync = Sync.RAW;
+                }
+
+                VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar);
+                byIndex.put(ann.index(), vi);
+                byName.put(ann.name(), vi);
+            }
+            return new ChoiceMeta(byIndex, byName);
+        }
+    };
+
+    private static final class ChoiceMeta {
+        final Map<Integer, VariantInfo> byIndex;
+        final Map<String, VariantInfo> byName;
+
+        ChoiceMeta(Map<Integer, VariantInfo> byIndex, Map<String, VariantInfo> byName) {
+            this.byIndex = byIndex;
+            this.byName = byName;
+        }
+    }
+
     private final Map<Integer, VariantInfo> variantByIndex = new LinkedHashMap<>();
     private final Map<String, VariantInfo> variantByName = new LinkedHashMap<>();
     /** Locally tracked variant index. */
@@ -110,41 +160,27 @@ public abstract class CmsChoice extends CmsType {
                     ((CmsChoice) w).rebindChoices();
                 if (w instanceof CmsSequence)
                     ((CmsSequence) w).rebindWrappers();
-            } catch (Exception ignored) {}
+            } catch (Exception e) {
+                LOG.log(Level.WARNING,
+                        "rebindChoices failed for variant " + vi.name + " in " + getClass().getSimpleName(), e);
+            }
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void injectChoices() {
-        for (Field f : getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            Choice ann = f.getAnnotation(Choice.class);
-            if (ann == null) continue;
+        // Variant descriptions come from the per-class cache (no reflection scan);
+        // only per-object work remains: creating wrapper instances + setting fields.
+        for (VariantInfo vi : CHOICE_META.get(getClass()).byIndex.values()) {
+            Field f = vi.field;
+            if (f == null) continue;
+            Class<?> ft = f.getType();
 
-            String innerFn = ann.innerField().isEmpty() ? stripAlt(f.getName()) : ann.innerField();
-
-            boolean isScalar = CmsScalar.class.isAssignableFrom(f.getType());
-            boolean isList = List.class.isAssignableFrom(f.getType());
-            boolean isCmsType = CmsType.class.isAssignableFrom(f.getType());
-            boolean isInner = InnerBase.class.isAssignableFrom(f.getType());
-            boolean isRaw = !isCmsType && !isList && !isInner;
-
-            Sync sync = ann.sync();
-            if (sync == Sync.AUTO) {
-                if (isScalar) sync = Sync.SCALAR;
-                else if (isList) sync = Sync.ARRAY;
-                else if (isInner) sync = Sync.INNER;
-                else if (isCmsType) sync = Sync.WRAPPER;
-                else sync = Sync.RAW;
-            }
-
-            // Create wrapper instance if it's a CmsType, or keep raw value
-            if (isCmsType) {
-                createCmsTypeWrapper(f, ann.name());
-            } else if (isInner) {
+            if (CmsType.class.isAssignableFrom(ft)) {
+                createCmsTypeWrapper(f, vi.name);
+            } else if (InnerBase.class.isAssignableFrom(ft)) {
                 try {
                     InnerBase val = (InnerBase) f.getType().getDeclaredConstructor().newInstance();
-                    Object sub = inner._v.get(ann.name());
+                    Object sub = inner._v.get(vi.name);
                     if (sub instanceof LinkedHashMap) {
                         val._v = (LinkedHashMap<String, Object>) sub;
                     }
@@ -152,7 +188,7 @@ public abstract class CmsChoice extends CmsType {
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to init inner field " + f.getName(), e);
                 }
-            } else if (isList) {
+            } else if (List.class.isAssignableFrom(ft)) {
                 try {
                     f.set(this, new ArrayList<>());
                 } catch (Exception e) {
@@ -161,9 +197,8 @@ public abstract class CmsChoice extends CmsType {
             }
             // RAW fields (byte[], String) are left uninitialized
 
-            VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar);
-            variantByIndex.put(ann.index(), vi);
-            variantByName.put(ann.name(), vi);
+            variantByIndex.put(vi.index, vi);
+            variantByName.put(vi.name, vi);
         }
     }
 
@@ -196,14 +231,26 @@ public abstract class CmsChoice extends CmsType {
                 if (old != vi) inner._v.remove(old.name);
             }
             V.setChoice(inner._v, vi.name);
-            // Share the wrapper's _v with parent so writes go to the right place
-            if (vi.field != null && CmsType.class.isAssignableFrom(vi.field.getType())) {
+            // Share the wrapper's _v with parent so writes go to the right place.
+            // Both CmsType and InnerBase (DefaultInner*) variants keep the shared-_v
+            // invariant: the entry in parent _v aliases the variant's own _v map.
+            if (vi.field != null) {
                 try {
-                    CmsType w = (CmsType) vi.field.get(this);
-                    if (w != null) {
-                        inner._v.put(vi.name, w.inner._v);
+                    if (CmsType.class.isAssignableFrom(vi.field.getType())) {
+                        CmsType w = (CmsType) vi.field.get(this);
+                        if (w != null) {
+                            inner._v.put(vi.name, w.inner._v);
+                        }
+                    } else if (InnerBase.class.isAssignableFrom(vi.field.getType())) {
+                        InnerBase val = (InnerBase) vi.field.get(this);
+                        if (val != null) {
+                            inner._v.put(vi.name, val._v);
+                        }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception e) {
+                    LOG.log(Level.WARNING,
+                            "choice(" + v + ") failed to seed variant " + vi.name + " in " + getClass().getSimpleName(), e);
+                }
             }
         }
         return this;
@@ -370,12 +417,11 @@ public abstract class CmsChoice extends CmsType {
     private void syncInnerToInner(VariantInfo vi) throws Exception {
         InnerBase val = (InnerBase) vi.field.get(this);
         if (val == null) return;
-        // DefaultInner* types store data in a direct `value` field with empty _v;
-        // serialize via toJsonValue() so the payload lands in _v for encoding.
-        Object jsonVal = val.toJsonValue();
-        java.util.LinkedHashMap<String, Object> sub = new java.util.LinkedHashMap<>();
-        sub.put("_", jsonVal);
-        inner._v.put(vi.name, sub);
+        // DefaultInner* types store their payload in val._v, which choice(int)
+        // already aliased into parent _v. Just (re-)assert the alias so the
+        // shared-_v invariant holds; byte[] stays in the map and JER hex is
+        // produced by InnerBase's byte[] serializer at the JSON boundary.
+        inner._v.put(vi.name, val._v);
     }
 
     @SuppressWarnings("unchecked")
@@ -387,8 +433,8 @@ public abstract class CmsChoice extends CmsType {
             LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>) sub;
             // OCTET STRING: JER hex string → byte[]
             if (val instanceof DefaultInnerOctetString) {
-                Object raw = m.get("_");
-                if (raw instanceof String) m.put("_", InnerBase.unhex((String) raw));
+                Object raw = V.getVal(m);
+                if (raw instanceof String) V.setVal(m, InnerBase.unhex((String) raw));
             }
             // DefaultInner* stores everything in _v, so sharing the map is enough
             val._v = m;

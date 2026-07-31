@@ -6,6 +6,7 @@ import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerUtcTime;
+import com.ysh.jcms.data.V;
 import com.ysh.jcms.data.scalar.CmsInt24U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
@@ -46,24 +47,24 @@ public class CmsUtcTime extends CmsType {
     @Override
     public void syncToInner() {
         timeQuality.syncToInner();
-        Object tqObj = timeQuality.inner._v.get("_");
+        Object tqObj = V.getVal(timeQuality.inner._v);
         int tqValue = tqObj instanceof Number ? ((Number) tqObj).intValue() : 0;
 
         ByteBuffer buf = ByteBuffer.allocate(8);
         CmsBytesUtil.putInt32u(buf, secondsSinceEpoch.value());
         CmsBytesUtil.putInt24(buf, fractionOfSecond.value());
         buf.put((byte) tqValue);
-        inner._v.put("_", buf.array());
+        V.setVal(inner._v, buf.array());
     }
 
     @Override
     public void syncFromInner() {
-        Object raw = inner._v.get("_");
+        Object raw = V.getVal(inner._v);
         byte[] bytes;
         if (raw instanceof byte[]) {
             bytes = (byte[]) raw;
         } else if (raw instanceof DefaultInnerOctetString) {
-            Object v = ((DefaultInnerOctetString) raw)._v.get("_");
+            Object v = V.getVal(((DefaultInnerOctetString) raw)._v);
             if (v instanceof byte[]) {
                 bytes = (byte[]) v;
             } else if (v instanceof String) {
@@ -90,7 +91,7 @@ public class CmsUtcTime extends CmsType {
         fractionOfSecond.value(CmsBytesUtil.getInt24(buf));
 
         int tqValue = buf.get() & 0xFF;
-        timeQuality.inner._v.put("_", tqValue);
+        V.setVal(timeQuality.inner._v, tqValue);
         timeQuality.syncFromInner();
     }
 

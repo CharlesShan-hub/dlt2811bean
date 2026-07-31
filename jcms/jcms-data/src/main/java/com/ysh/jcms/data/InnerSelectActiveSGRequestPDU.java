@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSelectActiveSGRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectActiveSGRequestPDU() {
         _v.put("sgcbReference", new InnerObjectReference()._v);
         _v.put("settingGroupNumber", new InnerInt8U()._v);

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetGoCbValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGoCbValuesResponsePDU() {
         _v.put("gocb", new InnerGetGoCbValuesResponsePDUGocb()._v);
         _v.put("moreFollows", new InnerBoolean()._v);

@@ -26,7 +26,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerServiceError extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerServiceError() { _v.put("_", 1); }
     @JsonCreator
     public static InnerServiceError fromJson(int v) { InnerServiceError r = new InnerServiceError(); r._v.put("_", v); return r; }

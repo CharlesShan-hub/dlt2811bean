@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerGetDataSetDirectoryResponsePDUMemberData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetDataSetDirectoryResponsePDUMemberData() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerGetDataSetDirectoryResponsePDUMemberData fromJson(Object v) { InnerGetDataSetDirectoryResponsePDUMemberData r = new InnerGetDataSetDirectoryResponsePDUMemberData(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousGetDataSetDirectoryResponsePDUMemberData>>() {})); return r; }

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetMSVCBValuesRequestPDUMsvcb extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetMSVCBValuesRequestPDUMsvcb() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerSetMSVCBValuesRequestPDUMsvcb fromJson(Object v) { InnerSetMSVCBValuesRequestPDUMsvcb r = new InnerSetMSVCBValuesRequestPDUMsvcb(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetMSVCBValuesRequestPDUMsvcb>>() {})); return r; }

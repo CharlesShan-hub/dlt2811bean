@@ -26,8 +26,20 @@ public class CmsLcb extends CmsSequence {
     public CmsLcb trgOps(CmsTriggerConditions v) { this.trgOps.value(v); return this; }
     public CmsLcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsLcb logRef(String v) { this.logRef.value(v); return this; }
-    public CmsLcb optFlds(CmsLcbOptFlds v) { this.optFlds.value(v); setPresent("optFlds", true); return this; }
-    public CmsLcb bufTm(long v) { this.bufTm.value(v); setPresent("bufTm", true); return this; }
+    public CmsLcb optFlds(CmsLcbOptFlds v) {
+        if (v != null) {
+            this.optFlds.value(v);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        return this;
+    }
+    public CmsLcb bufTm(long v) {
+        this.bufTm.value(v);
+        setPresent("bufTm", true);
+        return this;
+    }
 
     /** Copy all field values from another CmsLcb (fluent). */
     public CmsLcb value(CmsLcb v) {
@@ -36,8 +48,18 @@ public class CmsLcb extends CmsSequence {
         trgOps(v.trgOps);
         intgPd(v.intgPd.value());
         logRef(v.logRef.value());
-        if (v.isPresent("optFlds")) this.optFlds.value(v.optFlds);
-        if (v.isPresent("bufTm")) this.bufTm.value(v.bufTm.value());
+        if (v.isPresent("optFlds")) {
+            this.optFlds.value(v.optFlds);
+            setPresent("optFlds", true);
+        } else {
+            setPresent("optFlds", false);
+        }
+        if (v.isPresent("bufTm")) {
+            this.bufTm.value(v.bufTm.value());
+            setPresent("bufTm", true);
+        } else {
+            setPresent("bufTm", false);
+        }
         return this;
     }
 }

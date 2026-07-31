@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSetLCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetLCBValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSetLCBValuesResponsePDU fromJson(String v) { InnerSetLCBValuesResponsePDU r = new InnerSetLCBValuesResponsePDU(); r._v.put("_", v); return r; }

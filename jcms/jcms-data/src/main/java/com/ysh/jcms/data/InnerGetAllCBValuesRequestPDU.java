@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetAllCBValuesRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllCBValuesRequestPDU() {
         _v.put("reference", new InnerGetAllCBValuesRequestPDUReference()._v);
         _v.put("acsiClass", new InnerACSIClass()._v);

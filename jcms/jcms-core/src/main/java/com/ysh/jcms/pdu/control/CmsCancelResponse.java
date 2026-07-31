@@ -32,8 +32,12 @@ public class CmsCancelResponse extends CmsSequence {
     public CmsCancelResponse reference(String v) { this.reference.value(v); return this; }
     public CmsCancelResponse ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsCancelResponse operTm(CmsUtcTime v) {
-        if (v != null) { this.operTm.value(v); setPresent("operTm", true); }
-        else { setPresent("operTm", false); }
+        if (v != null) {
+            this.operTm.value(v);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         return this;
     }
     public CmsCancelResponse origin(CmsOriginator v) { this.origin.value(v); return this; }
@@ -44,7 +48,12 @@ public class CmsCancelResponse extends CmsSequence {
     public CmsCancelResponse value(CmsCancelResponse v) {
         reference(v.reference.value());
         ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) { this.operTm.value(v.operTm); setPresent("operTm", true); } else { setPresent("operTm", false); }
+        if (v.isPresent("operTm")) {
+            this.operTm.value(v.operTm);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         origin(v.origin);
         ctlNum(v.ctlNum.value());
         t(v.t);

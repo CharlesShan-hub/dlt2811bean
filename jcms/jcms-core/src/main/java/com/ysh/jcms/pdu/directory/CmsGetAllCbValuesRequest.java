@@ -33,15 +33,21 @@ public class CmsGetAllCbValuesRequest extends CmsSequence {
         return this;
     }
     public CmsGetAllCbValuesRequest referenceAfter(byte[] v) {
-        setPresent("referenceAfter", v != null && v.length > 0);
-        if (v != null)
+        if (v != null && v.length > 0) {
             this.referenceAfter.value(new String(v));
+            setPresent("referenceAfter", true);
+        } else {
+            setPresent("referenceAfter", false);
+        }
         return this;
     }
     public CmsGetAllCbValuesRequest referenceAfter(String v) {
-        setPresent("referenceAfter", v != null);
-        if (v != null)
+        if (v != null) {
             this.referenceAfter.value(v);
+            setPresent("referenceAfter", true);
+        } else {
+            setPresent("referenceAfter", false);
+        }
         return this;
     }
 }

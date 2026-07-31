@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerBinaryTime extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerBinaryTime() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerBinaryTime fromJson(String v) { InnerBinaryTime r = new InnerBinaryTime(); r._v.put("_", v); return r; }

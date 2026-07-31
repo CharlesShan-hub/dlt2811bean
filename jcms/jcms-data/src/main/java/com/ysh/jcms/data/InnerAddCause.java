@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerAddCause extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAddCause() { _v.put("_", 1); }
     @JsonCreator
     public static InnerAddCause fromJson(int v) { InnerAddCause r = new InnerAddCause(); r._v.put("_", v); return r; }

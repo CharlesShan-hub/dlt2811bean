@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetAllCBValuesResponsePDUCbValue extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetAllCBValuesResponsePDUCbValue() {
         _v.put("reference", new InnerSubReference()._v);
         _v.put("value", new InnerAnonymousGetAllCBValuesResponsePDUCbValueValue()._v);

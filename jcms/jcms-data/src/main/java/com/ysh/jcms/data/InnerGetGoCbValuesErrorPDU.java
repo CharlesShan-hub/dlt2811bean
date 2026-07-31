@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerGetGoCbValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGoCbValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerGetGoCbValuesErrorPDU fromJson(int v) { InnerGetGoCbValuesErrorPDU r = new InnerGetGoCbValuesErrorPDU(); r._v.put("_", v); return r; }

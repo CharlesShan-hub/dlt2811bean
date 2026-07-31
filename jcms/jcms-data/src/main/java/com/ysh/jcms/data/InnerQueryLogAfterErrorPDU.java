@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerQueryLogAfterErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerQueryLogAfterErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerQueryLogAfterErrorPDU fromJson(int v) { InnerQueryLogAfterErrorPDU r = new InnerQueryLogAfterErrorPDU(); r._v.put("_", v); return r; }

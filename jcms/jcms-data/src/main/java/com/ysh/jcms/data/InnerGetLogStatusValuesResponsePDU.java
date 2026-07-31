@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetLogStatusValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetLogStatusValuesResponsePDU() {
         _v.put("log", new InnerGetLogStatusValuesResponsePDULog()._v);
         _v.put("moreFollows", new InnerBoolean()._v);

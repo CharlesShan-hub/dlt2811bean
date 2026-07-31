@@ -2,6 +2,7 @@ package com.ysh.jcms.data.scalar;
 
 import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerFunctionalConstraint;
+import com.ysh.jcms.data.V;
 
 /**
  * FunctionalConstraint ::= VisibleString (SIZE(2)) — 7.4
@@ -80,12 +81,12 @@ public class CmsFC extends CmsScalar {
 
     @Override
     public void syncToInner() {
-        inner._v.put("_", CODES[val]);
+        V.setVal(inner._v, CODES[val]);
     }
 
     @Override
     public void syncFromInner() {
-        Object v = inner._v.get("_");
+        Object v = V.getVal(inner._v);
         String s = v instanceof String ? ((String) v).trim() : "";
         if (s.isEmpty()) {
             val = XX;

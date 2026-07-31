@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerLogEntry extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerLogEntry() {
         _v.put("timeOfEntry", new InnerEntryTime()._v);
         _v.put("entryID", new InnerEntryID()._v);

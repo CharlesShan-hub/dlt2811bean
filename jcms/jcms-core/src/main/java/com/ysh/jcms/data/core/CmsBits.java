@@ -1,12 +1,15 @@
 package com.ysh.jcms.data.core;
 
 import com.ysh.jcms.data.InnerBase;
+import com.ysh.jcms.data.V;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,24 +27,44 @@ public abstract class CmsBits extends CmsType {
         int length() default 1;
     }
 
+    /** Per-class metadata: @Bit fields and total bit width, built once per class. */
+    private static final ClassValue<BitsMeta> BITS_META = new ClassValue<BitsMeta>() {
+        @Override
+        protected BitsMeta computeValue(Class<?> type) {
+            List<Field> fields = new ArrayList<>();
+            int max = 0;
+            for (Field f : type.getFields()) {
+                Bit bit = f.getAnnotation(Bit.class);
+                if (bit == null) continue;
+                fields.add(f);
+                max = Math.max(max, bit.value() + bit.length());
+            }
+            return new BitsMeta(fields, max > 0 ? max : 1);
+        }
+    };
+
+    private static final class BitsMeta {
+        final List<Field> bitFields;
+        final int bitCount;
+
+        BitsMeta(List<Field> bitFields, int bitCount) {
+            this.bitFields = bitFields;
+            this.bitCount = bitCount;
+        }
+    }
+
     protected CmsBits(InnerBase inner) {
         super(inner);
     }
 
-    /** Calculate total bit width from @Bit annotations. */
+    /** Total bit width from @Bit annotations (cached per class). */
     private int bitCount() {
-        int max = 0;
-        for (Field f : getClass().getFields()) {
-            Bit bit = f.getAnnotation(Bit.class);
-            if (bit == null) continue;
-            max = Math.max(max, bit.value() + bit.length());
-        }
-        return max > 0 ? max : 1;
+        return BITS_META.get(getClass()).bitCount;
     }
 
     /** Read packed value from _v. Supports hex string or JER form {"value": "HEX", "length": N}. */
     private int readPacked() {
-        Object v = inner._v.get("_");
+        Object v = V.getVal(inner._v);
         if (v instanceof String) {
             return InnerBase.parseBitStringHex((String) v, bitCount());
         }
@@ -57,7 +80,7 @@ public abstract class CmsBits extends CmsType {
 
     /** Write packed value to _v (int → hex string). */
     private void writePacked(int v) {
-        inner._v.put("_", InnerBase.bitStringHex(v, bitCount()));
+        V.setVal(inner._v, InnerBase.bitStringHex(v, bitCount()));
     }
 
     private static int mask(int len) {
@@ -76,9 +99,7 @@ public abstract class CmsBits extends CmsType {
         // Copy the @Bit Java fields (they are the source of truth; _v only holds the
         // encoded form). Copying v.value() would lose fields set via fluent setters
         // (e.g. .sequence_number(true)) that were never packed into _v.
-        for (Field f : getClass().getFields()) {
-            Bit bit = f.getAnnotation(Bit.class);
-            if (bit == null) continue;
+        for (Field f : BITS_META.get(getClass()).bitFields) {
             try {
                 f.set(this, f.get(v));
             } catch (Exception e) {
@@ -91,10 +112,9 @@ public abstract class CmsBits extends CmsType {
     @Override
     public void syncToInner() {
         int packed = 0;
-        for (Field f : getClass().getFields()) {
-            Bit bit = f.getAnnotation(Bit.class);
-            if (bit == null) continue;
+        for (Field f : BITS_META.get(getClass()).bitFields) {
             try {
+                Bit bit = f.getAnnotation(Bit.class);
                 int pos = bit.value();
                 int len = bit.length();
                 Class<?> type = f.getType();
@@ -118,10 +138,9 @@ public abstract class CmsBits extends CmsType {
     @Override
     public void syncFromInner() {
         int packed = readPacked();
-        for (Field f : getClass().getFields()) {
-            Bit bit = f.getAnnotation(Bit.class);
-            if (bit == null) continue;
+        for (Field f : BITS_META.get(getClass()).bitFields) {
             try {
+                Bit bit = f.getAnnotation(Bit.class);
                 int pos = bit.value();
                 int len = bit.length();
                 Class<?> type = f.getType();

@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerFloat64 extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerFloat64() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerFloat64 fromJson(String v) { InnerFloat64 r = new InnerFloat64(); r._v.put("_", v); return r; }

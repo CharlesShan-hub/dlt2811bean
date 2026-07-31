@@ -53,7 +53,12 @@ public class CmsTimeActivatedOperateTermination extends CmsSequence {
         t(v.t);
         test(v.test.value());
         check(v.check);
-        if (v.isPresent("addCause")) { this.addCause.value(v.addCause.value()); setPresent("addCause", true); } else { setPresent("addCause", false); }
+        if (v.isPresent("addCause")) {
+            this.addCause.value(v.addCause.value());
+            setPresent("addCause", true);
+        } else {
+            setPresent("addCause", false);
+        }
         return this;
     }
 }

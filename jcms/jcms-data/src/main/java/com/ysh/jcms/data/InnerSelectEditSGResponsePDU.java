@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSelectEditSGResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectEditSGResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSelectEditSGResponsePDU fromJson(String v) { InnerSelectEditSGResponsePDU r = new InnerSelectEditSGResponsePDU(); r._v.put("_", v); return r; }

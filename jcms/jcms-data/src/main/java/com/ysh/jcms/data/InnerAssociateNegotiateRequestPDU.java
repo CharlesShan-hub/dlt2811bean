@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAssociateNegotiateRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAssociateNegotiateRequestPDU() {
         _v.put("apduSize", new InnerInt16U()._v);
         _v.put("asduSize", new InnerInt32U()._v);

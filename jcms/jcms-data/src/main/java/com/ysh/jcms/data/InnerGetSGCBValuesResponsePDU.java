@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetSGCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetSGCBValuesResponsePDU() {
         _v.put("sgscb", new InnerGetSGCBValuesResponsePDUSgscb()._v);
         _v.put("moreFollows", new InnerBoolean()._v);

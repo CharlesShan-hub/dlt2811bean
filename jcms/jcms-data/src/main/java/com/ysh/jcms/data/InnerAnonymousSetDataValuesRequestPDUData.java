@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousSetDataValuesRequestPDUData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousSetDataValuesRequestPDUData() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("value", new InnerData()._v);

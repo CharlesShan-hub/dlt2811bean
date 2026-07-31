@@ -27,7 +27,7 @@ public class InnerReasonCode extends InnerBase {
     public static final int INTEGRITY = 4;
     public static final int GENERAL_INTERROGATION = 5;
     public static final int APPLICATION_TRIGGER = 6;
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReasonCode() { _v.put("_", "00"); }
     public InnerReasonCode(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 7)); }
     @JsonValue

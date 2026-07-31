@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerGetAllCBValuesResponsePDUCbValue extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetAllCBValuesResponsePDUCbValue() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerGetAllCBValuesResponsePDUCbValue fromJson(Object v) { InnerGetAllCBValuesResponsePDUCbValue r = new InnerGetAllCBValuesResponsePDUCbValue(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousGetAllCBValuesResponsePDUCbValue>>() {})); return r; }

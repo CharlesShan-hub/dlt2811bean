@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetGoReferenceResponsePDUMemberData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetGoReferenceResponsePDUMemberData() {
         _v.put("reference", new InnerObjectReference()._v);
         _v.put("fc", new InnerFunctionalConstraint()._v);

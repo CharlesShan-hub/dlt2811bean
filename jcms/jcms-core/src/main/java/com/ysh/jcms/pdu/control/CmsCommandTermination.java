@@ -39,8 +39,12 @@ public class CmsCommandTermination extends CmsSequence {
     public CmsCommandTermination reference(String v) { this.reference.value(v); return this; }
     public CmsCommandTermination ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsCommandTermination operTm(CmsUtcTime v) {
-        if (v != null) { this.operTm.value(v); setPresent("operTm", true); }
-        else { setPresent("operTm", false); }
+        if (v != null) {
+            this.operTm.value(v);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         return this;
     }
     public CmsCommandTermination origin(CmsOriginator v) { this.origin.value(v); return this; }
@@ -48,18 +52,32 @@ public class CmsCommandTermination extends CmsSequence {
     public CmsCommandTermination t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsCommandTermination test(boolean v) { this.test.value(v); return this; }
     public CmsCommandTermination check(CmsCheck v) { this.check.value(v); return this; }
-    public CmsCommandTermination addCause(int v) { this.addCause.value(v); return this; }
+    public CmsCommandTermination addCause(int v) {
+        this.addCause.value(v);
+        setPresent("addCause", true);
+        return this;
+    }
 
     public CmsCommandTermination value(CmsCommandTermination v) {
         reference(v.reference.value());
         ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) { this.operTm.value(v.operTm); setPresent("operTm", true); } else { setPresent("operTm", false); }
+        if (v.isPresent("operTm")) {
+            this.operTm.value(v.operTm);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         origin(v.origin);
         ctlNum(v.ctlNum.value());
         t(v.t);
         test(v.test.value());
         check(v.check);
-        if (v.isPresent("addCause")) { this.addCause.value(v.addCause.value()); setPresent("addCause", true); } else { setPresent("addCause", false); }
+        if (v.isPresent("addCause")) {
+            this.addCause.value(v.addCause.value());
+            setPresent("addCause", true);
+        } else {
+            setPresent("addCause", false);
+        }
         return this;
     }
 }

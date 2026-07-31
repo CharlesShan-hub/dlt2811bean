@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetLCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetLCBValuesResponsePDU() {
         _v.put("lcb", new InnerGetLCBValuesResponsePDULcb()._v);
         _v.put("moreFollows", new InnerBoolean()._v);

@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerOriginator extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerOriginator() {
         _v.put("orCat", 1);
         _v.put("orIdent", new DefaultInnerOctetString(new byte[]{ 1 }));

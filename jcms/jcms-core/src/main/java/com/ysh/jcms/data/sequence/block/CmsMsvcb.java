@@ -26,10 +26,22 @@ public class CmsMsvcb extends CmsSequence {
     public CmsMsvcb msvID(String v) { this.msvID.value(v); return this; }
     public CmsMsvcb datSet(String v) { this.datSet.value(v); return this; }
     public CmsMsvcb confRev(long v) { this.confRev.value(v); return this; }
-    public CmsMsvcb smpMod(int v) { this.smpMod.value(v); setPresent("smpMod", true); return this; }
+    public CmsMsvcb smpMod(int v) {
+        this.smpMod.value(v);
+        setPresent("smpMod", true);
+        return this;
+    }
     public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
     public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds.value(v); return this; }
-    public CmsMsvcb dstAddress(CmsPhyComAddr v) { this.dstAddress.value(v); setPresent("dstAddress", true); return this; }
+    public CmsMsvcb dstAddress(CmsPhyComAddr v) {
+        if (v != null) {
+            this.dstAddress.value(v);
+            setPresent("dstAddress", true);
+        } else {
+            setPresent("dstAddress", false);
+        }
+        return this;
+    }
 
     /** Copy all field values from another CmsMsvcb (fluent). */
     public CmsMsvcb value(CmsMsvcb v) {
@@ -37,10 +49,20 @@ public class CmsMsvcb extends CmsSequence {
         msvID(v.msvID.value());
         datSet(v.datSet.value());
         confRev(v.confRev.value());
-        if (v.isPresent("smpMod")) this.smpMod.value(v.smpMod.value());
+        if (v.isPresent("smpMod")) {
+            this.smpMod.value(v.smpMod.value());
+            setPresent("smpMod", true);
+        } else {
+            setPresent("smpMod", false);
+        }
         smpRate(v.smpRate.value());
         optFlds(v.optFlds);
-        if (v.isPresent("dstAddress")) this.dstAddress.value(v.dstAddress);
+        if (v.isPresent("dstAddress")) {
+            this.dstAddress.value(v.dstAddress);
+            setPresent("dstAddress", true);
+        } else {
+            setPresent("dstAddress", false);
+        }
         return this;
     }
 }

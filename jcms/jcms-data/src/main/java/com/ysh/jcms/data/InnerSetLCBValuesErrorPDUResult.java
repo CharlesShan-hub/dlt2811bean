@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerSetLCBValuesErrorPDUResult extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetLCBValuesErrorPDUResult() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerSetLCBValuesErrorPDUResult fromJson(Object v) { InnerSetLCBValuesErrorPDUResult r = new InnerSetLCBValuesErrorPDUResult(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousSetLCBValuesErrorPDUResult>>() {})); return r; }

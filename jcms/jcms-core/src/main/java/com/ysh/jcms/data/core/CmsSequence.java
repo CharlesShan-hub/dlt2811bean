@@ -30,10 +30,63 @@ import java.util.*;
 public abstract class CmsSequence extends CmsType {
 
     private final Map<String, CmsType> injectedWrappers = new LinkedHashMap<>();
-    /** Field names annotated with {@code @CmsField(optional = true)}. */
-    private final Set<String> optionalFields = new HashSet<>();
-    /** SEQUENCE OF fields — fieldName → element wrapper type. */
-    private final Map<String, Class<? extends CmsType>> sequenceFields = new LinkedHashMap<>();
+
+    /** One annotated {@code @CmsField}. Field refs are class-level and shareable. */
+    private static final class CmsFieldInfo {
+        final Field field;
+        final boolean optional;
+        final boolean sequenceOf;
+        final Class<? extends CmsType> elementType;
+
+        CmsFieldInfo(Field field, boolean optional, boolean sequenceOf,
+                     Class<? extends CmsType> elementType) {
+            this.field = field;
+            this.optional = optional;
+            this.sequenceOf = sequenceOf;
+            this.elementType = elementType;
+        }
+    }
+
+    /**
+     * Per-class metadata built from {@code @CmsField} annotations — field
+     * descriptions only; wrapper instances stay per-object in
+     * {@link #injectedWrappers}.
+     */
+    private static final ClassValue<SequenceMeta> SEQ_META = new ClassValue<SequenceMeta>() {
+        @Override
+        protected SequenceMeta computeValue(Class<?> type) {
+            List<CmsFieldInfo> fields = new ArrayList<>();
+            Map<String, CmsFieldInfo> byName = new LinkedHashMap<>();
+            Map<String, CmsFieldInfo> sequenceOf = new LinkedHashMap<>();
+            Set<String> optional = new HashSet<>();
+            for (Field f : type.getFields()) {
+                if (Modifier.isStatic(f.getModifiers())) continue;
+                CmsField ann = f.getAnnotation(CmsField.class);
+                if (ann == null) continue;
+                CmsFieldInfo info = new CmsFieldInfo(f, ann.optional(), ann.sequenceOf(), ann.elementType());
+                fields.add(info);
+                byName.put(f.getName(), info);
+                if (ann.sequenceOf()) sequenceOf.put(f.getName(), info);
+                if (ann.optional()) optional.add(f.getName());
+            }
+            return new SequenceMeta(fields, byName, sequenceOf, optional);
+        }
+    };
+
+    private static final class SequenceMeta {
+        final List<CmsFieldInfo> fields;                 // declaration order
+        final Map<String, CmsFieldInfo> byName;
+        final Map<String, CmsFieldInfo> sequenceOf;      // fieldName → info
+        final Set<String> optional;                      // OPTIONAL field names
+
+        SequenceMeta(List<CmsFieldInfo> fields, Map<String, CmsFieldInfo> byName,
+                     Map<String, CmsFieldInfo> sequenceOf, Set<String> optional) {
+            this.fields = fields;
+            this.byName = byName;
+            this.sequenceOf = sequenceOf;
+            this.optional = optional;
+        }
+    }
 
     protected CmsSequence() {}
 
@@ -46,19 +99,14 @@ public abstract class CmsSequence extends CmsType {
     // ── @CmsField injection ──────────────────────────────────────────
 
     private void injectFields() {
-        for (Field f : getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            CmsField ann = f.getAnnotation(CmsField.class);
-            if (ann == null) continue;
-
+        for (CmsFieldInfo info : SEQ_META.get(getClass()).fields) {
+            Field f = info.field;
             String fieldName = f.getName();
 
             // SEQUENCE OF field
-            if (ann.sequenceOf()) {
+            if (info.sequenceOf) {
                 try {
                     f.set(this, new ArrayList<>());
-                    sequenceFields.put(fieldName, ann.elementType());
-                    if (ann.optional()) optionalFields.add(fieldName);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to init sequence field " + fieldName, e);
                 }
@@ -80,10 +128,6 @@ public abstract class CmsSequence extends CmsType {
                 }
                 f.set(this, wrapper);
                 injectedWrappers.put(fieldName, wrapper);
-
-                if (ann.optional()) {
-                    optionalFields.add(fieldName);
-                }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to inject @CmsField " + fieldName, e);
             }
@@ -92,6 +136,7 @@ public abstract class CmsSequence extends CmsType {
 
     /** Rebind wrapper _v after decode creates a new Inner*. */
     public void rebindWrappers() {
+        SequenceMeta meta = SEQ_META.get(getClass());
         for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
             String name = entry.getKey();
             CmsType wrapper = entry.getValue();
@@ -101,8 +146,8 @@ public abstract class CmsSequence extends CmsType {
             } else if (sub != null && (wrapper instanceof CmsScalar || wrapper instanceof CmsBits)) {
                 // Jackson stores scalar / BIT STRING values directly (e.g. "cbRef1", "0000");
                 // wrap into _v so innerGet()/readPacked() can see them.
-                wrapper.inner._v.put("_", sub);
-            } else if (sub == null && optionalFields.contains(name)) {
+                V.setVal(wrapper.inner._v, sub);
+            } else if (sub == null && meta.optional.contains(name)) {
                 // Optional field absent after decode — drop stale constructor defaults
                 // so a later re-encode doesn't serialize them.
                 wrapper.inner._v.clear();
@@ -115,15 +160,15 @@ public abstract class CmsSequence extends CmsType {
             }
         }
         // Rebuild SEQUENCE OF wrappers from inner._v
-        for (Map.Entry<String, Class<? extends CmsType>> e : sequenceFields.entrySet()) {
+        for (Map.Entry<String, CmsFieldInfo> e : meta.sequenceOf.entrySet()) {
             try {
-                Field f = getClass().getField(e.getKey());
+                Field f = e.getValue().field;
                 @SuppressWarnings("unchecked")
                 List<Object> innerList = (List<Object>) inner._v.get(e.getKey());
                 List<CmsType> list = new ArrayList<>();
                 if (innerList != null) {
                     for (Object innerElem : innerList) {
-                        CmsType wrapper = e.getValue().getDeclaredConstructor().newInstance();
+                        CmsType wrapper = e.getValue().elementType.getDeclaredConstructor().newInstance();
                         if (innerElem instanceof InnerBase) {
                             wrapper.inner._v = ((InnerBase) innerElem)._v;
                         } else if (innerElem instanceof LinkedHashMap) {
@@ -240,9 +285,10 @@ public abstract class CmsSequence extends CmsType {
 
     @Override
     public void syncToInner() {
+        SequenceMeta meta = SEQ_META.get(getClass());
         detectWrapperReplacements();
         for (Map.Entry<String, CmsType> e : injectedWrappers.entrySet()) {
-            if (optionalFields.contains(e.getKey()) && !isPresent(e.getKey())) {
+            if (meta.optional.contains(e.getKey()) && !isPresent(e.getKey())) {
                 // Optional field not marked present — remove stale default from _v
                 inner._v.remove(e.getKey());
                 continue;
@@ -252,12 +298,18 @@ public abstract class CmsSequence extends CmsType {
             if (w instanceof CmsScalar) {
                 // Use toJsonValue() so special scalars (e.g. unsigned Int32U) serialize correctly
                 inner._v.put(e.getKey(), ((CmsScalar) w).inner.toJsonValue());
+            } else if (w instanceof CmsBits) {
+                // BIT STRING: JER form is a bare hex string. Unlike CmsScalar, the
+                // wrapper _v is NOT shared with parent after decode (rebindWrappers
+                // stores the decoded hex string directly), so write it back explicitly
+                // — otherwise a decode→modify→encode cycle silently loses updates.
+                inner._v.put(e.getKey(), V.getVal(w.inner._v));
             }
         }
         // Sync SEQUENCE OF fields → inner._v
-        for (Map.Entry<String, Class<? extends CmsType>> e : sequenceFields.entrySet()) {
+        for (Map.Entry<String, CmsFieldInfo> e : meta.sequenceOf.entrySet()) {
             try {
-                Field f = getClass().getField(e.getKey());
+                Field f = e.getValue().field;
                 @SuppressWarnings("unchecked")
                 List<CmsType> list = (List<CmsType>) f.get(this);
                 if (list == null) continue;
@@ -294,10 +346,9 @@ public abstract class CmsSequence extends CmsType {
      * {@code p.signedTime = new CmsUtcTime()}) and rebind.
      */
     private void detectWrapperReplacements() {
-        for (Field f : getClass().getFields()) {
-            if (Modifier.isStatic(f.getModifiers())) continue;
-            CmsField ann = f.getAnnotation(CmsField.class);
-            if (ann == null) continue;
+        for (CmsFieldInfo info : SEQ_META.get(getClass()).fields) {
+            if (info.sequenceOf) continue;   // List field, not a CmsType wrapper
+            Field f = info.field;
             if (!CmsType.class.isAssignableFrom(f.getType())) continue;
             String name = f.getName();
             try {

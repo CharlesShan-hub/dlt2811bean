@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerQuality extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerQuality() { _v.put("_", "0000"); }
     public InnerQuality(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 13)); }
     @JsonValue

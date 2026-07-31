@@ -37,7 +37,15 @@ public class CmsUrcb extends CmsSequence {
     public CmsUrcb intgPd(long v) { this.intgPd.value(v); return this; }
     public CmsUrcb gi(boolean v) { this.gi.value(v); return this; }
     public CmsUrcb resv(boolean v) { this.resv.value(v); return this; }
-    public CmsUrcb owner(byte[] v) { this.owner.value(v); setPresent("owner", true); return this; }
+    public CmsUrcb owner(byte[] v) {
+        if (v != null) {
+            this.owner.value(v);
+            setPresent("owner", true);
+        } else {
+            setPresent("owner", false);
+        }
+        return this;
+    }
 
     /** Copy all field values from another CmsUrcb (fluent). */
     public CmsUrcb value(CmsUrcb v) {
@@ -52,7 +60,12 @@ public class CmsUrcb extends CmsSequence {
         intgPd(v.intgPd.value());
         gi(v.gi.value());
         resv(v.resv.value());
-        if (v.isPresent("owner")) this.owner.value(v.owner.value());
+        if (v.isPresent("owner")) {
+            this.owner.value(v.owner.value());
+            setPresent("owner", true);
+        } else {
+            setPresent("owner", false);
+        }
         return this;
     }
 }

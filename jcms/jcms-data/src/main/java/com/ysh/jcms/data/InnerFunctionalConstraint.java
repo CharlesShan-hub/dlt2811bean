@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerFunctionalConstraint extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerFunctionalConstraint() { _v.put("_", "xx"); }
     @JsonCreator
     public static InnerFunctionalConstraint fromJson(String v) { InnerFunctionalConstraint r = new InnerFunctionalConstraint(); r._v.put("_", v); return r; }

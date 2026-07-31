@@ -28,8 +28,12 @@ public class CmsSelectWithValueRequest extends CmsSequence {
     public CmsSelectWithValueRequest reference(String v) { this.reference.value(v); return this; }
     public CmsSelectWithValueRequest ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsSelectWithValueRequest operTm(CmsUtcTime v) {
-        if (v != null) { this.operTm.value(v); setPresent("operTm", true); }
-        else { setPresent("operTm", false); }
+        if (v != null) {
+            this.operTm.value(v);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         return this;
     }
     public CmsSelectWithValueRequest origin(CmsOriginator v) { this.origin.value(v); return this; }
@@ -41,7 +45,12 @@ public class CmsSelectWithValueRequest extends CmsSequence {
     public CmsSelectWithValueRequest value(CmsSelectWithValueRequest v) {
         reference(v.reference.value());
         ctlVal(v.ctlVal);
-        if (v.isPresent("operTm")) { this.operTm.value(v.operTm); setPresent("operTm", true); } else { setPresent("operTm", false); }
+        if (v.isPresent("operTm")) {
+            this.operTm.value(v.operTm);
+            setPresent("operTm", true);
+        } else {
+            setPresent("operTm", false);
+        }
         origin(v.origin);
         ctlNum(v.ctlNum.value());
         t(v.t);

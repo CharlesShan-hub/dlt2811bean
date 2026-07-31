@@ -25,7 +25,7 @@ public class InnerTriggerConditions extends InnerBase {
     public static final int DATA_UPDATE = 3;
     public static final int INTEGRITY = 4;
     public static final int GENERAL_INTERROGATION = 5;
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTriggerConditions() { _v.put("_", "00"); }
     public InnerTriggerConditions(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 6)); }
     @JsonValue

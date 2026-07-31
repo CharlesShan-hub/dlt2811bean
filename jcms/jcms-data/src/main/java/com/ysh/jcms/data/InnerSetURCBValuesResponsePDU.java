@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSetURCBValuesResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetURCBValuesResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerSetURCBValuesResponsePDU fromJson(String v) { InnerSetURCBValuesResponsePDU r = new InnerSetURCBValuesResponsePDU(); r._v.put("_", v); return r; }

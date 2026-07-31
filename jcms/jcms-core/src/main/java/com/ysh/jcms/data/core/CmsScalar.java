@@ -7,9 +7,8 @@ import com.ysh.jcms.data.V;
 /**
  * Base class for scalar types whose Inner* stores a single value in {@code _v}.
  *
- * <p>Reads/writes go straight to {@code inner._v["_"]}, so the auto-generated
- * Lombok getters/setters on Inner* (e.g. the {@code value} field of
- * DefaultInner*) are never involved.
+ * <p>Reads/writes go straight to {@code inner._v["_"]}; the value never lives
+ * in a dedicated Inner* getter/field.
  *
  * <p>The no-arg constructor creates a placeholder backed by {@link InnerEmpty}.
  */

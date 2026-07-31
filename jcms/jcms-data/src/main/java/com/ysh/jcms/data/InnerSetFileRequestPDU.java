@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetFileRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetFileRequestPDU() {
         _v.put("filename", new DefaultInnerVisibleString("x"));
         _v.put("startPosition", new InnerInt32U()._v);

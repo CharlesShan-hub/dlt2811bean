@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetDataDirectoryResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetDataDirectoryResponsePDU() {
         _v.put("dataAttribute", new InnerGetDataDirectoryResponsePDUDataAttribute()._v);
         _v.put("moreFollows", new InnerBoolean()._v);

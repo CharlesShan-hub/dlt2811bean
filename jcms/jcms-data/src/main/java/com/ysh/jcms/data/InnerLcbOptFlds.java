@@ -17,7 +17,7 @@ public class InnerLcbOptFlds extends InnerBase {
     public static final int SAMPLE_RATE = 2;
     public static final int DATA_SET_NAME = 3;
     public static final int SECURITY = 4;
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerLcbOptFlds() { _v.put("_", "00"); }
     public InnerLcbOptFlds(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 1)); }
     @JsonValue

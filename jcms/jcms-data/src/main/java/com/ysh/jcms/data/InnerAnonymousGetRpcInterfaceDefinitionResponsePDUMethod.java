@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod() {
         _v.put("name", new DefaultInnerVisibleString("x"));
         _v.put("version", new InnerInt32U()._v);

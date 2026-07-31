@@ -30,7 +30,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerBRCB extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerBRCB() {
         _v.put("rptID", new DefaultInnerVisibleString("x"));
         _v.put("rptEna", new InnerBoolean()._v);

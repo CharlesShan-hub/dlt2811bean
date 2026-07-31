@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerDataDefinitionArray extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDataDefinitionArray() {
         _v.put("numberOfElement", new InnerInt32()._v);
         _v.put("elementType", new InnerDataDefinition()._v);

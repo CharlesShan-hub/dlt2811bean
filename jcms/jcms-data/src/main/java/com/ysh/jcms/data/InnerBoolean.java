@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerBoolean extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerBoolean() { _v.put("_", 1); }
     @JsonCreator
     public static InnerBoolean fromJson(int v) { InnerBoolean r = new InnerBoolean(); r._v.put("_", v); return r; }

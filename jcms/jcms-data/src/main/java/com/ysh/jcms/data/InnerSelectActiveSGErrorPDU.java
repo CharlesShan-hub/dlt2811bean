@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSelectActiveSGErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSelectActiveSGErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerSelectActiveSGErrorPDU fromJson(int v) { InnerSelectActiveSGErrorPDU r = new InnerSelectActiveSGErrorPDU(); r._v.put("_", v); return r; }

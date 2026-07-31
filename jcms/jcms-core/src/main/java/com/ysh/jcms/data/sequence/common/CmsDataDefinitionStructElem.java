@@ -24,7 +24,11 @@ public class CmsDataDefinitionStructElem extends CmsSequence {
     }
 
     public CmsDataDefinitionStructElem name(String v) { this.name.value(v); return this; }
-    public CmsDataDefinitionStructElem fc(int v) { this.fc.value(v); setPresent("fc", true); return this; }
+    public CmsDataDefinitionStructElem fc(int v) {
+        this.fc.value(v);
+        setPresent("fc", true);
+        return this;
+    }
     public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type.value(v); return this; }
 
     public boolean hasFc() { return isPresent("fc"); }

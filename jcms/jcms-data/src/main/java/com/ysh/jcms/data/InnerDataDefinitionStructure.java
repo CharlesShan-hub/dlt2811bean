@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerDataDefinitionStructure extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDataDefinitionStructure() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerDataDefinitionStructure fromJson(Object v) { InnerDataDefinitionStructure r = new InnerDataDefinitionStructure(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousDataDefinitionStructure>>() {})); return r; }

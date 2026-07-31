@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerCreateDataSetResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerCreateDataSetResponsePDU() { _v.put("_", null); }
     @JsonCreator
     public static InnerCreateDataSetResponsePDU fromJson(String v) { InnerCreateDataSetResponsePDU r = new InnerCreateDataSetResponsePDU(); r._v.put("_", v); return r; }

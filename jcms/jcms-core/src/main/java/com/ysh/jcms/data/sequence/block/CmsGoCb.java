@@ -24,8 +24,12 @@ public class CmsGoCb extends CmsSequence {
     public CmsGoCb confRev(long v) { this.confRev.value(v); return this; }
     public CmsGoCb ndsCom(boolean v) { this.ndsCom.value(v); return this; }
     public CmsGoCb dstAddress(CmsPhyComAddr v) {
-        this.dstAddress.value(v);
-        setPresent("dstAddress", true);
+        if (v != null) {
+            this.dstAddress.value(v);
+            setPresent("dstAddress", true);
+        } else {
+            setPresent("dstAddress", false);
+        }
         return this;
     }
 
@@ -36,7 +40,12 @@ public class CmsGoCb extends CmsSequence {
         datSet(v.datSet.value());
         confRev(v.confRev.value());
         ndsCom(v.ndsCom.value());
-        if (v.isPresent("dstAddress")) this.dstAddress.value(v.dstAddress);
+        if (v.isPresent("dstAddress")) {
+            this.dstAddress.value(v.dstAddress);
+            setPresent("dstAddress", true);
+        } else {
+            setPresent("dstAddress", false);
+        }
         return this;
     }
 }

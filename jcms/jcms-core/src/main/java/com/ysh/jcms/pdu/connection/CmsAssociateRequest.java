@@ -25,9 +25,12 @@ public class CmsAssociateRequest extends CmsSequence {
     }
 
     public CmsAssociateRequest serverAccessPointReference(String v) {
-        setPresent("serverAccessPointReference", v != null);
-        if (v != null)
+        if (v != null) {
             this.serverAccessPointReference.value(v);
+            setPresent("serverAccessPointReference", true);
+        } else {
+            setPresent("serverAccessPointReference", false);
+        }
         return this;
     }
     public CmsAssociateRequest authenticationParameter(CmsAuthenticationParameter v) {

@@ -26,7 +26,17 @@ public class CmsDataDefinitionEntry extends CmsSequence {
 
     public CmsDataDefinitionEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
     public CmsDataDefinitionEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataDefinitionEntry cdcType(byte[] v) { this.cdcType.value(new String(v)); setPresent("cdcType", true); return this; }
-    public CmsDataDefinitionEntry cdcType(String v) { this.cdcType.value(v); setPresent("cdcType", true); return this; }
+    public CmsDataDefinitionEntry cdcType(byte[] v) {
+        return cdcType(v != null ? new String(v) : null);
+    }
+    public CmsDataDefinitionEntry cdcType(String v) {
+        if (v != null) {
+            this.cdcType.value(v);
+            setPresent("cdcType", true);
+        } else {
+            setPresent("cdcType", false);
+        }
+        return this;
+    }
     public CmsDataDefinitionEntry definition(CmsDataDefinition v) { this.definition.value(v); return this; }
 }

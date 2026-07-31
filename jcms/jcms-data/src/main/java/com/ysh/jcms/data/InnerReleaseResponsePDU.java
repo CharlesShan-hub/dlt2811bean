@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerReleaseResponsePDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReleaseResponsePDU() {
         _v.put("associationId", new DefaultInnerOctetString(new byte[]{ 1 }));
         _v.put("serviceError", new InnerServiceError()._v);

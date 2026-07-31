@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerMSVCB extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerMSVCB() {
         _v.put("svEna", new InnerBoolean()._v);
         _v.put("msvID", new DefaultInnerVisibleString("x"));

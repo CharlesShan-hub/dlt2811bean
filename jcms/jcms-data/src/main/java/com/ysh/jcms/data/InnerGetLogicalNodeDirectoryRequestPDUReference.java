@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetLogicalNodeDirectoryRequestPDUReference extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetLogicalNodeDirectoryRequestPDUReference() {
         _v.put("_choice", "ldName");
         _v.put("ldName", new InnerObjectName()._v);

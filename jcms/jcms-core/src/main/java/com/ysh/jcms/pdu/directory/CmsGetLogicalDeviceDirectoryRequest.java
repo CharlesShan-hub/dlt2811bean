@@ -27,18 +27,24 @@ public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
         return ldName(v != null ? new String(v) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest ldName(String v) {
-        setPresent("ldName", v != null);
-        if (v != null)
+        if (v != null) {
             this.ldName.value(v);
+            setPresent("ldName", true);
+        } else {
+            setPresent("ldName", false);
+        }
         return this;
     }
     public CmsGetLogicalDeviceDirectoryRequest referenceAfter(byte[] v) {
         return referenceAfter(v != null ? new String(v) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest referenceAfter(String v) {
-        setPresent("referenceAfter", v != null);
-        if (v != null)
+        if (v != null) {
             this.referenceAfter.value(v);
+            setPresent("referenceAfter", true);
+        } else {
+            setPresent("referenceAfter", false);
+        }
         return this;
     }
 }

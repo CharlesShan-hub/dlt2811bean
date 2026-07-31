@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerRpcCallRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerRpcCallRequestPDU() {
         _v.put("method", new DefaultInnerVisibleString("x"));
         _v.put("req", new InnerRpcCallRequestPDUReq()._v);

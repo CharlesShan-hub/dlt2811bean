@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerAssociateResponsePDUAuthenticationParameter extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerAssociateResponsePDUAuthenticationParameter() {
         _v.put("signatureCertificate", new DefaultInnerOctetString(new byte[]{ 1 }));
         _v.put("signedTime", new InnerUtcTime()._v);

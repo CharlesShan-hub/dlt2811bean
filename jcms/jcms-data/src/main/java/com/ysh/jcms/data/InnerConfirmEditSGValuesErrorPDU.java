@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerConfirmEditSGValuesErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerConfirmEditSGValuesErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerConfirmEditSGValuesErrorPDU fromJson(int v) { InnerConfirmEditSGValuesErrorPDU r = new InnerConfirmEditSGValuesErrorPDU(); r._v.put("_", v); return r; }

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerGetGOOSEElementNumberRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGOOSEElementNumberRequestPDU() {
         _v.put("gocbReference", new InnerObjectReference()._v);
         _v.put("memberData", new InnerGetGOOSEElementNumberRequestPDUMemberData()._v);

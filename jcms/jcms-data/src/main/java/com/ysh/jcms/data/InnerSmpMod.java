@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerSmpMod extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSmpMod() { _v.put("_", 1); }
     @JsonCreator
     public static InnerSmpMod fromJson(int v) { InnerSmpMod r = new InnerSmpMod(); r._v.put("_", v); return r; }

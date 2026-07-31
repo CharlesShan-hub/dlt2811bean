@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerReportPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReportPDU() {
         _v.put("rptID", new DefaultInnerVisibleString("x"));
         _v.put("optFlds", new InnerRcbOptFlds()._v);

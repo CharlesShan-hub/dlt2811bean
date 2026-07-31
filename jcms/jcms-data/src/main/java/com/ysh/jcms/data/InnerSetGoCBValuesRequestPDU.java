@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerSetGoCBValuesRequestPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerSetGoCBValuesRequestPDU() {
         _v.put("gocb", new InnerSetGoCBValuesRequestPDUGocb()._v);
     }

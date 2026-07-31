@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class InnerPhyComAddr extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerPhyComAddr() {
         _v.put("addr", new DefaultInnerOctetString(new byte[] { 1, 1, 1, 1, 1, 1 }));
         _v.put("priority", new InnerInt8U()._v);

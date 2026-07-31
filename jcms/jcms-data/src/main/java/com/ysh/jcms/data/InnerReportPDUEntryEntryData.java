@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerReportPDUEntryEntryData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerReportPDUEntryEntryData() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerReportPDUEntryEntryData fromJson(Object v) { InnerReportPDUEntryEntryData r = new InnerReportPDUEntryEntryData(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousReportPDUEntryEntryData>>() {})); return r; }

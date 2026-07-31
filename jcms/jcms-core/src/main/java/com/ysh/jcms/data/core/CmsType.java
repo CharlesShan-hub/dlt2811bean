@@ -23,6 +23,18 @@ public abstract class CmsType {
     /** The Inner* instance backing this wrapper. */
     public InnerBase inner;
 
+    /** Static decode(byte[]) method per Inner class — cached (reflection lookup on every decode is wasteful). */
+    private static final ClassValue<java.lang.reflect.Method> DECODE_METHOD = new ClassValue<java.lang.reflect.Method>() {
+        @Override
+        protected java.lang.reflect.Method computeValue(Class<?> type) {
+            try {
+                return type.getMethod("decode", byte[].class);
+            } catch (Exception e) {
+                throw new IllegalStateException("No static decode(byte[]) on " + type.getName(), e);
+            }
+        }
+    };
+
     /** Creates a container type backed by {@link InnerEmpty}. */
     protected CmsType() {
         this(new InnerEmpty());
@@ -49,7 +61,7 @@ public abstract class CmsType {
      */
     public void decode(byte[] data) {
         try {
-            java.lang.reflect.Method m = inner.getClass().getMethod("decode", byte[].class);
+            java.lang.reflect.Method m = DECODE_METHOD.get(inner.getClass());
             inner = (InnerBase) m.invoke(null, (Object) data);
         } catch (Exception e) {
             throw new RuntimeException(e);

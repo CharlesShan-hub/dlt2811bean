@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerInt32 extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerInt32() { _v.put("_", 1); }
     @JsonCreator
     public static InnerInt32 fromJson(int v) { InnerInt32 r = new InnerInt32(); r._v.put("_", v); return r; }

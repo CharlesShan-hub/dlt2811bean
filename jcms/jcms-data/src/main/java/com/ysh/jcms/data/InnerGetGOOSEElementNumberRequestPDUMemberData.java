@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 
 public class InnerGetGOOSEElementNumberRequestPDUMemberData extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerGetGOOSEElementNumberRequestPDUMemberData() { _v.put("_", new java.util.ArrayList<>()); }
     @JsonCreator
     public static InnerGetGOOSEElementNumberRequestPDUMemberData fromJson(Object v) { InnerGetGOOSEElementNumberRequestPDUMemberData r = new InnerGetGOOSEElementNumberRequestPDUMemberData(); r._v.put("_", MAPPER.convertValue(v, new com.fasterxml.jackson.core.type.TypeReference<java.util.List<InnerAnonymousGetGOOSEElementNumberRequestPDUMemberData>>() {})); return r; }

@@ -158,11 +158,11 @@ public class CmsData extends CmsChoice {
     /** Select bit-string + set value. */
     public CmsData alt_bit_string(byte[] v) { choice(CHOICE_BIT_STRING); this.alt_bit_string = v; return this; }
     /** Select octet-string + set value. */
-    public CmsData alt_octet_string(byte[] v) { choice(CHOICE_OCTET_STRING); this.alt_octet_string._v.put("_", v); return this; }
+    public CmsData alt_octet_string(byte[] v) { choice(CHOICE_OCTET_STRING); V.setVal(this.alt_octet_string._v, v); return this; }
     /** Select visible-string + set value. */
-    public CmsData alt_visible_string(String v) { choice(CHOICE_VISIBLE_STRING); this.alt_visible_string._v.put("_", v); return this; }
+    public CmsData alt_visible_string(String v) { choice(CHOICE_VISIBLE_STRING); V.setVal(this.alt_visible_string._v, v); return this; }
     /** Select unicode-string + set value. */
-    public CmsData alt_unicode_string(String v) { choice(CHOICE_UNICODE_STRING); this.alt_unicode_string._v.put("_", v); return this; }
+    public CmsData alt_unicode_string(String v) { choice(CHOICE_UNICODE_STRING); V.setVal(this.alt_unicode_string._v, v); return this; }
     /** Select dbpos + set value. */
     public CmsData alt_dbpos(int v) { choice(CHOICE_DBPOS); this.alt_dbpos.value(v); return this; }
     /** Select tcmd + set value. */
@@ -195,9 +195,9 @@ public class CmsData extends CmsChoice {
             case CHOICE_FLOAT32:         alt_float32.value((Float) val); break;
             case CHOICE_FLOAT64:         alt_float64.value((Double) val); break;
             case CHOICE_BIT_STRING:      alt_bit_string = (byte[]) val; break;
-            case CHOICE_OCTET_STRING:    alt_octet_string._v.put("_", (byte[]) val); break;
-            case CHOICE_VISIBLE_STRING:  alt_visible_string._v.put("_", (String) val); break;
-            case CHOICE_UNICODE_STRING:  alt_unicode_string._v.put("_", (String) val); break;
+            case CHOICE_OCTET_STRING:    V.setVal(alt_octet_string._v, (byte[]) val); break;
+            case CHOICE_VISIBLE_STRING:  V.setVal(alt_visible_string._v, (String) val); break;
+            case CHOICE_UNICODE_STRING:  V.setVal(alt_unicode_string._v, (String) val); break;
             case CHOICE_DBPOS:           alt_dbpos.value((Integer) val); break;
             case CHOICE_TCMD:            alt_tcmd.value((Integer) val); break;
             // CHOICE_UTC_TIME through CHOICE_CHECK use value(CmsType) instead
@@ -224,12 +224,12 @@ public class CmsData extends CmsChoice {
             case CHOICE_FLOAT64:         alt_float64(v.alt_float64.value()); break;
             case CHOICE_BIT_STRING:      this.alt_bit_string = v.alt_bit_string.clone(); break;
             case CHOICE_OCTET_STRING: {
-                Object src = v.alt_octet_string._v.get("_");
-                this.alt_octet_string._v.put("_", src instanceof byte[] ? ((byte[]) src).clone() : src);
+                Object src = V.getVal(v.alt_octet_string._v);
+                V.setVal(this.alt_octet_string._v, src instanceof byte[] ? ((byte[]) src).clone() : src);
                 break;
             }
-            case CHOICE_VISIBLE_STRING:  this.alt_visible_string._v.put("_", v.alt_visible_string._v.get("_")); break;
-            case CHOICE_UNICODE_STRING:  this.alt_unicode_string._v.put("_", v.alt_unicode_string._v.get("_")); break;
+            case CHOICE_VISIBLE_STRING:  V.setVal(this.alt_visible_string._v, V.getVal(v.alt_visible_string._v)); break;
+            case CHOICE_UNICODE_STRING:  V.setVal(this.alt_unicode_string._v, V.getVal(v.alt_unicode_string._v)); break;
             case CHOICE_UTC_TIME:        this.alt_utc_time.value(v.alt_utc_time); break;
             case CHOICE_BINARY_TIME:     this.alt_binary_time.value(v.alt_binary_time); break;
             case CHOICE_QUALITY:         this.alt_quality.value(v.alt_quality); break;
@@ -264,7 +264,7 @@ public class CmsData extends CmsChoice {
                 out.put(e.getKey(), val);
             } else {
                 java.util.LinkedHashMap<String, Object> w = new java.util.LinkedHashMap<>();
-                w.put("_", val);
+                V.setVal(w, val);
                 out.put(e.getKey(), w);
             }
             break;
@@ -309,7 +309,7 @@ public class CmsData extends CmsChoice {
             Object raw = inner._v.get(ch);
             if (raw instanceof java.util.LinkedHashMap) {
                 // InnerData.setArray wraps the list as {"_": [...]}
-                raw = ((java.util.LinkedHashMap<?, ?>) raw).get("_");
+                raw = V.getVal((java.util.Map<String, Object>) raw);
             }
             @SuppressWarnings("unchecked")
             List<Object> src = (List<Object>) raw;

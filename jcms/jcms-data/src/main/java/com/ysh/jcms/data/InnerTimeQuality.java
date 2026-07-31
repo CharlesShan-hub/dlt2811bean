@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerTimeQuality extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTimeQuality() { _v.put("_", "00"); }
     public InnerTimeQuality(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 8)); }
     @JsonValue

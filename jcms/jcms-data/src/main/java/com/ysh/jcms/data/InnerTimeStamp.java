@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerTimeStamp extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerTimeStamp() { _v.put("_", new byte[] { 1, 1, 1, 1, 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerTimeStamp fromJson(String v) { InnerTimeStamp r = new InnerTimeStamp(); r._v.put("_", v); return r; }

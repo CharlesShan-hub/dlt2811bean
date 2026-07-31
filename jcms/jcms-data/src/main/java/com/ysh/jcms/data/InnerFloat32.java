@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerFloat32 extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerFloat32() { _v.put("_", new byte[] { 1, 1, 1, 1 }); }
     @JsonCreator
     public static InnerFloat32 fromJson(String v) { InnerFloat32 r = new InnerFloat32(); r._v.put("_", v); return r; }

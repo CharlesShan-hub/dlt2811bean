@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
  * }</pre>
  */
 public class InnerDeleteFileErrorPDU extends InnerBase {
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerDeleteFileErrorPDU() { _v.put("_", 1); }
     @JsonCreator
     public static InnerDeleteFileErrorPDU fromJson(int v) { InnerDeleteFileErrorPDU r = new InnerDeleteFileErrorPDU(); r._v.put("_", v); return r; }

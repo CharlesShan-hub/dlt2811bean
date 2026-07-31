@@ -31,9 +31,12 @@ public class CmsGetDataSetDirectoryRequest extends CmsSequence {
         return referenceAfter(v != null ? new String(v) : null);
     }
     public CmsGetDataSetDirectoryRequest referenceAfter(String v) {
-        setPresent("referenceAfter", v != null);
-        if (v != null)
+        if (v != null) {
             this.referenceAfter.value(v);
+            setPresent("referenceAfter", true);
+        } else {
+            setPresent("referenceAfter", false);
+        }
         return this;
     }
 }

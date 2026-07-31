@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.*;
 public class InnerCheck extends InnerBase {
     public static final int SYNCHECK = 0;
     public static final int INTERLOCK_CHECK = 1;
-    private static final ObjectMapper MAPPER = InnerBase.createMapper();
+    private static final ObjectMapper MAPPER = InnerBase.MAPPER;
     public InnerCheck() { _v.put("_", "00"); }
     public InnerCheck(int v) { this(); _v.put("_", InnerBase.bitStringHex(v, 2)); }
     @JsonValue

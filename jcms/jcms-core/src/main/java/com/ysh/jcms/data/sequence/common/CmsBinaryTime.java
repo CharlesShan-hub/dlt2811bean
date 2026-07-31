@@ -3,6 +3,7 @@ package com.ysh.jcms.data.sequence.common;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerBinaryTime;
+import com.ysh.jcms.data.V;
 import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
@@ -35,7 +36,7 @@ public class CmsBinaryTime extends CmsType {
 
     @Override
     public void syncToInner() {
-        inner._v.put("_", ByteBuffer.allocate(6)
+        V.setVal(inner._v, ByteBuffer.allocate(6)
             .putInt((int) msOfDay.value())
             .putShort((short) daysSince1984.value())
             .array());
@@ -43,7 +44,7 @@ public class CmsBinaryTime extends CmsType {
 
     @Override
     public void syncFromInner() {
-        Object raw = inner._v.get("_");
+        Object raw = V.getVal(inner._v);
         byte[] bytes;
         if (raw instanceof byte[]) {
             bytes = (byte[]) raw;
