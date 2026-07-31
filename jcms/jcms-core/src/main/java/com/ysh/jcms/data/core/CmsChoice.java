@@ -2,6 +2,7 @@ package com.ysh.jcms.data.core;
 
 import com.ysh.jcms.data.DefaultInnerOctetString;
 import com.ysh.jcms.data.InnerBase;
+import com.ysh.jcms.data.V;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -194,7 +195,7 @@ public abstract class CmsChoice extends CmsType {
             for (VariantInfo old : variantByIndex.values()) {
                 if (old != vi) inner._v.remove(old.name);
             }
-            inner._v.put("_choice", vi.name);
+            V.setChoice(inner._v, vi.name);
             // Share the wrapper's _v with parent so writes go to the right place
             if (vi.field != null && CmsType.class.isAssignableFrom(vi.field.getType())) {
                 try {
@@ -265,11 +266,11 @@ public abstract class CmsChoice extends CmsType {
 
     @Override
     public void syncFromInner() {
-        Object ch = inner._v.get("_choice");
-        if (!(ch instanceof String)) {
+        String ch = V.choice(inner._v);
+        if (ch == null) {
             normalizeVariant();
-            ch = inner._v.get("_choice");
-            if (!(ch instanceof String)) return;
+            ch = V.choice(inner._v);
+            if (ch == null) return;
         }
         VariantInfo vi = variantByName.get(ch);
         if (vi == null) return;
@@ -308,11 +309,9 @@ public abstract class CmsChoice extends CmsType {
     protected final void normalizeVariant() {
         for (java.util.Map.Entry<String, Object> e : new ArrayList<>(inner._v.entrySet())) {
             if (e.getKey().startsWith("_")) continue;
-            inner._v.put("_choice", e.getKey());
+            V.setChoice(inner._v, e.getKey());
             if (!(e.getValue() instanceof LinkedHashMap)) {
-                LinkedHashMap<String, Object> w = new LinkedHashMap<>();
-                w.put("_", e.getValue());
-                inner._v.put(e.getKey(), w);
+                inner._v.put(e.getKey(), V.wrapScalar(e.getValue()));
             }
             break;
         }
@@ -337,7 +336,7 @@ public abstract class CmsChoice extends CmsType {
         if (sub instanceof LinkedHashMap) {
             wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
         } else if (sub != null) {
-            wrapper.inner._v.put("_", sub);
+            V.setVal(wrapper.inner._v, sub);
         }
         wrapper.syncFromInner();
     }
@@ -358,7 +357,7 @@ public abstract class CmsChoice extends CmsType {
             wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
         } else if (sub != null && (wrapper instanceof CmsScalar || wrapper instanceof CmsBits)) {
             // Scalar / BIT STRING values stored directly (e.g. "0000"); wrap into _v
-            wrapper.inner._v.put("_", sub);
+            V.setVal(wrapper.inner._v, sub);
         }
         if (wrapper instanceof CmsChoice)
             ((CmsChoice) wrapper).rebindChoices();

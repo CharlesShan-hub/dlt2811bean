@@ -2,6 +2,7 @@ package com.ysh.jcms.data.core;
 
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
+import com.ysh.jcms.data.V;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -150,38 +151,37 @@ public abstract class CmsSequence extends CmsType {
 
     /** Mark an optional field as present. Stores in {@code _v} under "_present_<name>". */
     public void setPresent(String fieldName, boolean v) {
-        if (v) inner._v.put("_present_" + fieldName, Boolean.TRUE);
-        else inner._v.remove("_present_" + fieldName);
+        V.setPresent(inner._v, fieldName, v);
     }
 
     /** Check if an optional field is present. */
     public boolean isPresent(String fieldName) {
-        return inner._v.containsKey("_present_" + fieldName);
+        return V.isPresent(inner._v, fieldName);
     }
 
     // ── field access — direct to _v ──────────────────────────────────
 
     protected int getInt(String fieldName) {
-        Object v = inner._v.get(fieldName);
+        Object v = V.field(inner._v, fieldName);
         return v instanceof Number ? ((Number) v).intValue() : 0;
     }
 
     protected void setInt(String fieldName, int v) {
-        inner._v.put(fieldName, v);
+        V.setField(inner._v, fieldName, v);
     }
 
     protected String getString(String fieldName) {
-        Object v = inner._v.get(fieldName);
+        Object v = V.field(inner._v, fieldName);
         return v instanceof String ? (String) v : null;
     }
 
     protected void setString(String fieldName, String v) {
-        inner._v.put(fieldName, v);
+        V.setField(inner._v, fieldName, v);
     }
 
     @SuppressWarnings("unchecked")
     protected byte[] getBytes(String fieldName) {
-        Object v = inner._v.get(fieldName);
+        Object v = V.field(inner._v, fieldName);
         if (v instanceof byte[]) return (byte[]) v;
         if (v instanceof List) {
             // JER hex format: decode hex string list to bytes
@@ -194,7 +194,7 @@ public abstract class CmsSequence extends CmsType {
     }
 
     protected void setBytes(String fieldName, byte[] v) {
-        inner._v.put(fieldName, v);
+        V.setField(inner._v, fieldName, v);
     }
 
     // ── CmsType wrapper access ──────────────────────────────────────

@@ -2,6 +2,7 @@ package com.ysh.jcms.data.core;
 
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerEmpty;
+import com.ysh.jcms.data.V;
 
 /**
  * Base class for scalar types whose Inner* stores a single value in {@code _v}.
@@ -25,10 +26,10 @@ public abstract class CmsScalar extends CmsType {
     protected Object innerGet() {
         // Read directly from _v — the DefaultInner* subclasses have Lombok-generated
         // getValue() (e.g. returning the `value` field), which would bypass _v.
-        return inner._v.get("_");
+        return V.getVal(inner._v);
     }
 
     protected void innerSet(Object v) {
-        inner._v.put("_", v);
+        V.setVal(inner._v, v);
     }
 }

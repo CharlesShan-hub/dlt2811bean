@@ -149,7 +149,7 @@ public abstract class InnerBase {
             return out;
         }
         if (_v.size() == 1 && _v.containsKey("_")) {
-            return toJson(_v.get("_"));
+            return toJson(V.getVal(_v));
         }
         // Recursively process _v content to unwrap nested scalar wrappers {"_": value}.
         // This handles the case where _v stores raw Maps like {"_": 0} (from InnerInt32U()._v).
@@ -192,8 +192,8 @@ public abstract class InnerBase {
                 return out;
             }
             // Scalar wrapper: {"_": value} -> value
-            if (m.size() == 1 && m.containsKey("_")) {
-                return toJson(m.get("_"));
+            if (V.isScalarWrapper(m)) {
+                return toJson(V.getVal(m));
             }
             // Regular map — recursively process values, skip nulls and metadata
             java.util.LinkedHashMap<String, Object> result = new java.util.LinkedHashMap<>();
