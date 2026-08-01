@@ -32,7 +32,7 @@ import java.util.List;
 public class CmsSendGooseMessage extends CmsSequence {
 
     @CmsField
-    public CmsString goId;
+    public CmsString goID;
 
     @CmsField(optional = true)
     public CmsObjectReference datSet;
@@ -66,8 +66,8 @@ public class CmsSendGooseMessage extends CmsSequence {
         this.data = new ArrayList<>();
     }
 
-    public CmsSendGooseMessage goId(String v) { this.goId.value(v); return this; }
-    public CmsSendGooseMessage goId(byte[] v) { return goId(new String(v)); }
+    public CmsSendGooseMessage goID(String v) { this.goID.value(v); return this; }
+    public CmsSendGooseMessage goID(byte[] v) { return goID(new String(v)); }
     public CmsSendGooseMessage datSet(String v) {
         if (v != null) {
             this.datSet.value(v);

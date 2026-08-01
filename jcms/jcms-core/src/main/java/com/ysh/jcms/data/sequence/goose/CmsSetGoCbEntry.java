@@ -26,7 +26,7 @@ public class CmsSetGoCbEntry extends CmsSequence {
     public CmsBoolean goEna;
 
     @CmsField(optional = true)
-    public CmsString goId;
+    public CmsString goID;
 
     @CmsField(optional = true)
     public CmsObjectReference datSet;
@@ -35,7 +35,7 @@ public class CmsSetGoCbEntry extends CmsSequence {
         super(new InnerEmpty());
         this.reference = new CmsObjectReference();
         this.goEna = new CmsBoolean();
-        this.goId = new CmsString();
+        this.goID = new CmsString();
         this.datSet = new CmsObjectReference();
     }
 
@@ -46,16 +46,16 @@ public class CmsSetGoCbEntry extends CmsSequence {
         setPresent("goEna", true);
         return this;
     }
-    public CmsSetGoCbEntry goId(String v) {
+    public CmsSetGoCbEntry goID(String v) {
         if (v != null) {
-            this.goId.value(v);
-            setPresent("goId", true);
+            this.goID.value(v);
+            setPresent("goID", true);
         } else {
-            setPresent("goId", false);
+            setPresent("goID", false);
         }
         return this;
     }
-    public CmsSetGoCbEntry goId(byte[] v) { return goId(v != null ? new String(v) : null); }
+    public CmsSetGoCbEntry goID(byte[] v) { return goID(v != null ? new String(v) : null); }
     public CmsSetGoCbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -71,8 +71,8 @@ public class CmsSetGoCbEntry extends CmsSequence {
         reference(v.reference.value());
         if (v.isPresent("goEna")) { this.goEna.value(v.goEna.value()); setPresent("goEna", true); }
         else { setPresent("goEna", false); }
-        if (v.isPresent("goId")) { this.goId.value(v.goId.value()); setPresent("goId", true); }
-        else { setPresent("goId", false); }
+        if (v.isPresent("goID")) { this.goID.value(v.goID.value()); setPresent("goID", true); }
+        else { setPresent("goID", false); }
         if (v.isPresent("datSet")) { this.datSet.value(v.datSet.value()); setPresent("datSet", true); }
         else { setPresent("datSet", false); }
         return this;

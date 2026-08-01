@@ -47,8 +47,8 @@ public class CmsDataDefinition extends CmsChoice {
     @Choice(index = 0, name = "error", sync = Sync.WRAPPER)
     public CmsServiceError alt_error;
 
-    /* [1] — WRAPPER */
-    @Choice(index = 1, name = "array", sync = Sync.WRAPPER)
+    /* [1] array — manual (no @Choice: eager creation would recurse via
+       CmsDataDefinitionArray.elementType → new CmsDataDefinition()) */
     public CmsDataDefinitionArray alt_array;
 
     /* [2] structure — SEQUENCE OF DataDefinitionStructElem (manual, creates new container each sync) */
@@ -83,7 +83,7 @@ public class CmsDataDefinition extends CmsChoice {
         registerNullChoice(23, "check");
 
         this.alt_error = new CmsServiceError();
-        this.alt_array = new CmsDataDefinitionArray();
+        this.alt_array = null; /* lazily created on CHOICE_ARRAY (see syncToInner) */
         this.alt_structure = new ArrayList<>();
         this.alt_bit_string_len = new CmsInt32();
         this.alt_octet_string_len = new CmsInt32();
@@ -133,6 +133,16 @@ public class CmsDataDefinition extends CmsChoice {
         int ch = choice();
         if (ch < 0) return;
 
+        // Handle array manually — alt_array is created lazily to break the
+        // ctor recursion CmsDataDefinition ↔ CmsDataDefinitionArray
+        if (ch == CHOICE_ARRAY) {
+            if (alt_array == null) alt_array = new CmsDataDefinitionArray();
+            alt_array.syncToInner();
+            inner._v.put("_choice", "array");
+            inner._v.put("array", alt_array.inner._v);
+            return;
+        }
+
         // Handle structure manually — original creates new container each sync
         if (ch == CHOICE_STRUCTURE) {
             inner._v.put("_choice", "structure");
@@ -178,6 +188,18 @@ public class CmsDataDefinition extends CmsChoice {
         Object chObj = inner._v.get("_choice");
         if (!(chObj instanceof String)) return;
         String ch = (String) chObj;
+
+        // Handle array manually
+        if ("array".equals(ch)) {
+            selectedChoiceIndex = CHOICE_ARRAY;
+            Object sub = inner._v.get("array");
+            if (sub instanceof java.util.LinkedHashMap) {
+                alt_array = new CmsDataDefinitionArray();
+                alt_array.inner._v = (java.util.LinkedHashMap<String, Object>) sub;
+                alt_array.syncFromInner();
+            }
+            return;
+        }
 
         // Handle structure manually
         if ("structure".equals(ch)) {

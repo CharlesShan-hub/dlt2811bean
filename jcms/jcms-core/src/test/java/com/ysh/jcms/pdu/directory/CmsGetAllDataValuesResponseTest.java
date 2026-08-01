@@ -1,41 +1,21 @@
 package com.ysh.jcms.pdu.directory;
 
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
+import java.util.Arrays;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class CmsGetAllDataValuesTest {
-
+public class CmsGetAllDataValuesResponseTest {
     @Test
-    public void request_roundup_with_fc() {
-        CmsGetAllDataValuesRequest a = new CmsGetAllDataValuesRequest()
-            .reference(new CmsReferenceChoice().altLnReference("lnRef"))
-            .fc(CmsFC.MX);
-        byte[] encoded = a.encode();
-
-        CmsGetAllDataValuesRequest b = new CmsGetAllDataValuesRequest();
-        b.decode(encoded);
-        assertEquals(a, b);
-    }
-
-    @Test
-    public void response_roundup_with_array() {
-        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse();
-        CmsDataValueEntry entry1 = new CmsDataValueEntry()
-            .reference("ref1");
+    public void roundupWithArray() {
+        CmsDataValueEntry entry1 = new CmsDataValueEntry().reference("ref1");
         entry1.value.alt_boolean(true);
-
-        CmsDataValueEntry entry2 = new CmsDataValueEntry()
-            .reference("ref2");
+        CmsDataValueEntry entry2 = new CmsDataValueEntry().reference("ref2");
         entry2.value.alt_int32(12345);
-
-        a.data.add(entry1);
-        a.data.add(entry2);
-        a.moreFollows(true);
+        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse()
+            .data(Arrays.asList(entry1, entry2))
+            .moreFollows(true);
         byte[] encoded = a.encode();
 
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();
@@ -44,17 +24,7 @@ public class CmsGetAllDataValuesTest {
     }
 
     @Test
-    public void error_roundup() {
-        CmsGetAllDataValuesError a = new CmsGetAllDataValuesError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        byte[] encoded = a.encode();
-
-        CmsGetAllDataValuesError b = new CmsGetAllDataValuesError();
-        b.decode(encoded);
-        assertEquals(a, b);
-    }
-
-    @Test
-    public void response_nested_array_roundup() {
+    public void nestedArrayRoundup() {
         CmsData inner = new CmsData().choice(CmsData.CHOICE_ARRAY);
         inner.alt_sequence.add(new CmsData().alt_int32(1));
         inner.alt_sequence.add(new CmsData().alt_int32(2));
@@ -63,9 +33,9 @@ public class CmsGetAllDataValuesTest {
         outer.alt_sequence.add(new CmsData().alt_boolean(true));
         outer.alt_sequence.add(inner);
 
-        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse();
-        a.data.add(new CmsDataValueEntry().reference("nestedRef").value(outer));
-        a.moreFollows(false);
+        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse()
+            .data(Arrays.asList(new CmsDataValueEntry().reference("nestedRef").value(outer)))
+            .moreFollows(false);
 
         byte[] encoded = a.encode();
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();
@@ -88,12 +58,12 @@ public class CmsGetAllDataValuesTest {
     }
 
     @Test
-    public void response_single_data() {
-        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse();
-        a.data.add(new CmsDataValueEntry()
-            .reference("r")
-            .value(new CmsData().alt_boolean(true)));
-        a.moreFollows(false);
+    public void singleData() {
+        CmsGetAllDataValuesResponse a = new CmsGetAllDataValuesResponse()
+            .data(Arrays.asList(new CmsDataValueEntry()
+                .reference("r")
+                .value(new CmsData().alt_boolean(true))))
+            .moreFollows(false);
 
         byte[] encoded = a.encode();
         CmsGetAllDataValuesResponse b = new CmsGetAllDataValuesResponse();

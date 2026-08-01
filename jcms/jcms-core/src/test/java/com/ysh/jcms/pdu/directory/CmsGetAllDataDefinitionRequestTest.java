@@ -1,15 +1,13 @@
 package com.ysh.jcms.pdu.directory;
 
-import com.ysh.jcms.data.enumerate.CmsServiceError;
-import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
+import com.ysh.jcms.data.scalar.CmsFC;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class CmsGetAllDataDefinitionTest {
-
+public class CmsGetAllDataDefinitionRequestTest {
     @Test
-    public void request_roundup_without_optional() {
+    public void withoutOptional() {
         CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest()
             .reference(new CmsReferenceChoice().altLdName("ld1"));
         byte[] encoded = a.encode();
@@ -20,7 +18,7 @@ public class CmsGetAllDataDefinitionTest {
     }
 
     @Test
-    public void request_roundup_with_all_optional() {
+    public void withAllOptional() {
         CmsGetAllDataDefinitionRequest a = new CmsGetAllDataDefinitionRequest()
             .reference(new CmsReferenceChoice().altLnReference("lnRef"))
             .fc(CmsFC.ST)
@@ -28,16 +26,6 @@ public class CmsGetAllDataDefinitionTest {
         byte[] encoded = a.encode();
 
         CmsGetAllDataDefinitionRequest b = new CmsGetAllDataDefinitionRequest();
-        b.decode(encoded);
-        assertEquals(a, b);
-    }
-
-    @Test
-    public void error_roundup() {
-        CmsGetAllDataDefinitionError a = new CmsGetAllDataDefinitionError(CmsServiceError.TYPE_CONFLICT);
-        byte[] encoded = a.encode();
-
-        CmsGetAllDataDefinitionError b = new CmsGetAllDataDefinitionError();
         b.decode(encoded);
         assertEquals(a, b);
     }

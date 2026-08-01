@@ -41,11 +41,14 @@ public class CmsSetDataSetValuesError extends CmsSequence {
     public void syncFromInner() {
         super.syncFromInner();
         @SuppressWarnings("unchecked")
-        List<InnerBase> innerList = (List<InnerBase>) inner._v.get("result");
+        List<Object> innerList = (List<Object>) inner._v.get("result");
         result = new ArrayList<>();
-        for (InnerBase e : innerList) {
-            Object val = e.getValue();
-            result.add(val instanceof Integer ? (Integer) val : (int) val);
+        if (innerList != null) {
+            for (Object e : innerList) {
+                // After encode: InnerServiceError wrappers; after decode: raw Integers
+                Object val = e instanceof InnerBase ? ((InnerBase) e).getValue() : e;
+                result.add(val instanceof Integer ? (Integer) val : (int) val);
+            }
         }
     }
 }
