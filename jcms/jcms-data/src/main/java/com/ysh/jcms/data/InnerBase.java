@@ -120,7 +120,7 @@ public abstract class InnerBase {
         // Output bytes LSB-first — matches Rust JER byte ordering
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j < bytes; j++) {
-            sb.append(HEX_BYTES_LOWER[(result >> (j * 8)) & 0xFF]);
+            sb.append(HEX_BYTES_UPPER[(result >> (j * 8)) & 0xFF]);
         }
         return sb.toString();
     }
@@ -235,13 +235,11 @@ public abstract class InnerBase {
             return ((Number) val).doubleValue();
         }
         if (val instanceof String) {
-            // Hex-shaped strings ("0102AB", "0A0B0C0D") → uppercase canonical form.
-            // Rust JER emits uppercase hex; Java-generated defaults were lowercase.
-            String s = (String) val;
-            if (!s.isEmpty() && s.chars().allMatch(c -> Character.digit(c, 16) >= 0)) {
-                return s.toUpperCase();
-            }
-            return s;
+            // Return as-is: do NOT uppercase hex-shaped strings. Uppercasing here
+            // would silently rewrite user-supplied string values (e.g. a VisibleString
+            // "abc123") on every encode. BIT STRING hex case is already normalized by
+            // bitStringHex() emitting uppercase (matching Rust JER).
+            return val;
         }
         return val;
     }
