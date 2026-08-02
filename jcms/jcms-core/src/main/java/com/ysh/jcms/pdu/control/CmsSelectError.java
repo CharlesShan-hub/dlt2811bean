@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerSelectErrorPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -14,7 +16,7 @@ public class CmsSelectError extends CmsSequence {
 
     public CmsSelectError() { super(new InnerSelectErrorPDU()); }
 
-    public CmsSelectError reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsSelectError reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsSelectError reference(String v) { this.reference.value(v); return this; }
 
     public CmsSelectError value(CmsSelectError v) {

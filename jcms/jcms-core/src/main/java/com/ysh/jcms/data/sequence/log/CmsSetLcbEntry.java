@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.log;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousSetLCBValuesRequestPDULcb;
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
@@ -34,7 +36,7 @@ public class CmsSetLcbEntry extends CmsSequence {
 
     public CmsSetLcbEntry() { super(new InnerAnonymousSetLCBValuesRequestPDULcb()); }
 
-    public CmsSetLcbEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsSetLcbEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsSetLcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetLcbEntry logEna(boolean v) {
         this.logEna.value(v);
@@ -50,7 +52,7 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetLcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v) : null); }
+    public CmsSetLcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSetLcbEntry trgOps(CmsTriggerConditions v) {
         if (v != null) {
             this.trgOps.value(v);
@@ -74,7 +76,7 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetLcbEntry logRef(byte[] v) { return logRef(v != null ? new String(v) : null); }
+    public CmsSetLcbEntry logRef(byte[] v) { return logRef(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSetLcbEntry optFlds(CmsLcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

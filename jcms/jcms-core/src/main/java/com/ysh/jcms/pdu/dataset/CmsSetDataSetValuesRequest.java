@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.dataset;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
@@ -34,9 +36,9 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
     }
 
     public CmsSetDataSetValuesRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsSetDataSetValuesRequest datasetReference(byte[] v) { return datasetReference(new String(v)); }
+    public CmsSetDataSetValuesRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
     public CmsSetDataSetValuesRequest referenceAfter(byte[] v) {
-        return referenceAfter(v != null ? new String(v) : null);
+        return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
     public CmsSetDataSetValuesRequest referenceAfter(String v) {
         if (v != null) {

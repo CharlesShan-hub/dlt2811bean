@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.report;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousReportPDUEntryEntryData;
 import com.ysh.jcms.data.bitarray.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
@@ -39,7 +41,7 @@ public class CmsReportDataEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsReportDataEntry reference(byte[] v) { return reference(v != null ? new String(v) : null); }
+    public CmsReportDataEntry reference(byte[] v) { return reference(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsReportDataEntry fc(int v) {
         this.fc.value(v);
         setPresent("fc", true);

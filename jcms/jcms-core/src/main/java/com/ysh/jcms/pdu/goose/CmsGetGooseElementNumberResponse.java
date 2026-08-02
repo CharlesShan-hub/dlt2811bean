@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.goose;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetGOOSEElementNumberResponsePDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -38,9 +40,9 @@ public class CmsGetGooseElementNumberResponse extends CmsSequence {
     }
 
     public CmsGetGooseElementNumberResponse gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGooseElementNumberResponse gocbReference(byte[] v) { return gocbReference(new String(v)); }
+    public CmsGetGooseElementNumberResponse gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
     public CmsGetGooseElementNumberResponse confRev(long v) { this.confRev.value(v); return this; }
     public CmsGetGooseElementNumberResponse datSet(String v) { this.datSet.value(v); return this; }
-    public CmsGetGooseElementNumberResponse datSet(byte[] v) { return datSet(new String(v)); }
+    public CmsGetGooseElementNumberResponse datSet(byte[] v) { return datSet(new String(v, StandardCharsets.UTF_8)); }
     public CmsGetGooseElementNumberResponse memberOffset(List<CmsInt16U> v) { this.memberOffset = v; return this; }
 }

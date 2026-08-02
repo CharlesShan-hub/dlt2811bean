@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.goose;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerEmpty;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -29,7 +31,7 @@ public class CmsGoRefFcEntry extends CmsSequence {
     }
 
     public CmsGoRefFcEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsGoRefFcEntry reference(byte[] v) { return reference(new String(v)); }
+    public CmsGoRefFcEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
     public CmsGoRefFcEntry fc(int v) { this.fc.value(v); return this; }
 
     public CmsGoRefFcEntry value(CmsGoRefFcEntry v) {

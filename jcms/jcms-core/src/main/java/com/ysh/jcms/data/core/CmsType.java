@@ -64,7 +64,8 @@ public abstract class CmsType {
             java.lang.reflect.Method m = DECODE_METHOD.get(inner.getClass());
             inner = (InnerBase) m.invoke(null, (Object) data);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("decode failed for " + inner.getClass().getSimpleName()
+                    + (data != null ? ", dataLen=" + data.length : ""), e);
         }
     }
 

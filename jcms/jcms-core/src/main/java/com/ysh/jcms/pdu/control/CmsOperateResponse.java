@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerOperateResponsePDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -14,6 +16,6 @@ public class CmsOperateResponse extends CmsSequence {
 
     public CmsOperateResponse() { super(new InnerOperateResponsePDU()); }
 
-    public CmsOperateResponse reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsOperateResponse reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsOperateResponse reference(String v) { this.reference.value(v); return this; }
 }

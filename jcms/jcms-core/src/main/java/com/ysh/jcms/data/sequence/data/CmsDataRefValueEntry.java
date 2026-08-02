@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.data;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -35,7 +37,7 @@ public class CmsDataRefValueEntry extends CmsSequence {
     }
 
     public CmsDataRefValueEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataRefValueEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsDataRefValueEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsDataRefValueEntry fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

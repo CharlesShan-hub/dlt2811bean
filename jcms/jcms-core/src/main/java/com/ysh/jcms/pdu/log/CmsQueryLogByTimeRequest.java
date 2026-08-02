@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.log;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerQueryLogByTimeRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -24,7 +26,7 @@ public class CmsQueryLogByTimeRequest extends CmsSequence {
 
     public CmsQueryLogByTimeRequest() { super(new InnerQueryLogByTimeRequestPDU()); }
 
-    public CmsQueryLogByTimeRequest logReference(byte[] v) { this.logReference.value(new String(v)); return this; }
+    public CmsQueryLogByTimeRequest logReference(byte[] v) { this.logReference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsQueryLogByTimeRequest logReference(String v) { this.logReference.value(v); return this; }
     public CmsQueryLogByTimeRequest startTime(CmsBinaryTime v) {
         if (v != null) {

@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.goose;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerEmpty;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -40,7 +42,7 @@ public class CmsSetGoCbEntry extends CmsSequence {
     }
 
     public CmsSetGoCbEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSetGoCbEntry reference(byte[] v) { return reference(new String(v)); }
+    public CmsSetGoCbEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
     public CmsSetGoCbEntry goEna(boolean v) {
         this.goEna.value(v);
         setPresent("goEna", true);
@@ -55,7 +57,7 @@ public class CmsSetGoCbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetGoCbEntry goID(byte[] v) { return goID(v != null ? new String(v) : null); }
+    public CmsSetGoCbEntry goID(byte[] v) { return goID(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSetGoCbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -65,7 +67,7 @@ public class CmsSetGoCbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetGoCbEntry datSet(byte[] v) { return datSet(v != null ? new String(v) : null); }
+    public CmsSetGoCbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
 
     public CmsSetGoCbEntry value(CmsSetGoCbEntry v) {
         reference(v.reference.value());

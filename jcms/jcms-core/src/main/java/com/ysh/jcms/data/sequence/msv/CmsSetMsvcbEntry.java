@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.msv;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousSetMSVCBValuesRequestPDUMsvcb;
 import com.ysh.jcms.data.bitarray.CmsMsvcbOptFlds;
 import com.ysh.jcms.data.core.CmsField;
@@ -34,7 +36,7 @@ public class CmsSetMsvcbEntry extends CmsSequence {
     public CmsSetMsvcbEntry() { super(new InnerAnonymousSetMSVCBValuesRequestPDUMsvcb()); }
 
     public CmsSetMsvcbEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSetMsvcbEntry reference(byte[] v) { return reference(new String(v)); }
+    public CmsSetMsvcbEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
     public CmsSetMsvcbEntry svEna(boolean v) {
         this.svEna.value(v);
         setPresent("svEna", true);

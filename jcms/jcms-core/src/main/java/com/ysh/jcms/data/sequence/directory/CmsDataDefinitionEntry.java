@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.directory;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousGetAllDataDefinitionResponsePDUData;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -24,10 +26,10 @@ public class CmsDataDefinitionEntry extends CmsSequence {
         super(new InnerAnonymousGetAllDataDefinitionResponsePDUData());
     }
 
-    public CmsDataDefinitionEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsDataDefinitionEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsDataDefinitionEntry reference(String v) { this.reference.value(v); return this; }
     public CmsDataDefinitionEntry cdcType(byte[] v) {
-        return cdcType(v != null ? new String(v) : null);
+        return cdcType(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
     public CmsDataDefinitionEntry cdcType(String v) {
         if (v != null) {

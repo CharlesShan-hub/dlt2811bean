@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.report;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerReportPDU;
 import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
 import com.ysh.jcms.data.core.CmsField;
@@ -41,7 +43,7 @@ public class CmsReport extends CmsSequence {
     }
 
     public CmsReport rptID(String v) { this.rptID.value(v); return this; }
-    public CmsReport rptID(byte[] v) { return rptID(new String(v)); }
+    public CmsReport rptID(byte[] v) { return rptID(new String(v, StandardCharsets.UTF_8)); }
     public CmsReport optFlds(CmsRcbOptFlds v) { this.optFlds.value(v); return this; }
     public CmsReport sqNum(int v) { this.sqNum.value(v); setPresent("sqNum", true); return this; }
     public CmsReport subSeqNum(int v) { this.subSeqNum.value(v); setPresent("subSeqNum", true); return this; }
@@ -59,7 +61,7 @@ public class CmsReport extends CmsSequence {
         }
         return this;
     }
-    public CmsReport dataSet(byte[] v) { return dataSet(v != null ? new String(v) : null); }
+    public CmsReport dataSet(byte[] v) { return dataSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsReport bufOvfl(boolean v) {
         this.bufOvfl.value(v);
         setPresent("bufOvfl", true);

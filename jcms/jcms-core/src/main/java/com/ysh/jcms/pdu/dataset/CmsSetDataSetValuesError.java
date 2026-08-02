@@ -28,12 +28,14 @@ public class CmsSetDataSetValuesError extends CmsSequence {
 
     @Override
     public void syncToInner() {
-        @SuppressWarnings("unchecked")
-        List<InnerBase> innerList = (List<InnerBase>) inner._v.get("result");
-        innerList.clear();
+        // Rebuild the list instead of mutating whatever _v holds (after decode it
+        // is a raw List<Integer>; mutating it with InnerServiceError would corrupt
+        // the element types for any later List<Integer> consumer).
+        List<InnerBase> innerList = new ArrayList<>();
         for (Integer v : result) {
             innerList.add(new InnerServiceError(v));
         }
+        inner._v.put("result", innerList);
         super.syncToInner();
     }
 

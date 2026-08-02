@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.negotiate;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAssociateNegotiateResponsePDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -35,5 +37,5 @@ public class CmsNegotiateResponse extends CmsSequence {
     public CmsNegotiateResponse asduSize(long v) { this.asduSize.value(v); return this; }
     public CmsNegotiateResponse protocolVersion(long v) { this.protocolVersion.value(v); return this; }
     public CmsNegotiateResponse modelVersion(String v) { this.modelVersion.value(v); return this; }
-    public CmsNegotiateResponse modelVersion(byte[] v) { return modelVersion(new String(v)); }
+    public CmsNegotiateResponse modelVersion(byte[] v) { return modelVersion(new String(v, StandardCharsets.UTF_8)); }
 }

@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerCommandTerminationRequestPDU;
 import com.ysh.jcms.data.bitarray.CmsCheck;
 import com.ysh.jcms.data.choice.CmsData;
@@ -35,7 +37,7 @@ public class CmsCommandTermination extends CmsSequence {
 
     public CmsCommandTermination() { super(new InnerCommandTerminationRequestPDU()); }
 
-    public CmsCommandTermination reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsCommandTermination reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsCommandTermination reference(String v) { this.reference.value(v); return this; }
     public CmsCommandTermination ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsCommandTermination operTm(CmsUtcTime v) {

@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.rpc;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetRpcInterfaceDirectoryRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -26,5 +28,5 @@ public class CmsGetRpcInterfaceDirectoryRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsGetRpcInterfaceDirectoryRequest referenceAfter(byte[] v) { return referenceAfter(v != null ? new String(v) : null); }
+    public CmsGetRpcInterfaceDirectoryRequest referenceAfter(byte[] v) { return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
 }

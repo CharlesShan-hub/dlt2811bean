@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.goose;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerSendGOOSEMessagePDU;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
@@ -67,7 +69,7 @@ public class CmsSendGooseMessage extends CmsSequence {
     }
 
     public CmsSendGooseMessage goID(String v) { this.goID.value(v); return this; }
-    public CmsSendGooseMessage goID(byte[] v) { return goID(new String(v)); }
+    public CmsSendGooseMessage goID(byte[] v) { return goID(new String(v, StandardCharsets.UTF_8)); }
     public CmsSendGooseMessage datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -77,7 +79,7 @@ public class CmsSendGooseMessage extends CmsSequence {
         }
         return this;
     }
-    public CmsSendGooseMessage datSet(byte[] v) { return datSet(v != null ? new String(v) : null); }
+    public CmsSendGooseMessage datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSendGooseMessage goRef(String v) {
         if (v != null) {
             this.goRef.value(v);
@@ -87,7 +89,7 @@ public class CmsSendGooseMessage extends CmsSequence {
         }
         return this;
     }
-    public CmsSendGooseMessage goRef(byte[] v) { return goRef(v != null ? new String(v) : null); }
+    public CmsSendGooseMessage goRef(byte[] v) { return goRef(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSendGooseMessage t(CmsUtcTime v) { this.t.value(v); return this; }
     public CmsSendGooseMessage stNum(long v) { this.stNum.value(v); return this; }
     public CmsSendGooseMessage sqNum(long v) { this.sqNum.value(v); return this; }

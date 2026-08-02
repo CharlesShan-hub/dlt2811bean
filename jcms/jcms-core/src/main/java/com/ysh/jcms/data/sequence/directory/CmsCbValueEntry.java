@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.directory;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousGetAllCBValuesResponsePDUCbValue;
 import com.ysh.jcms.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.data.core.CmsField;
@@ -21,7 +23,7 @@ public class CmsCbValueEntry extends CmsSequence {
         super(new InnerAnonymousGetAllCBValuesResponsePDUCbValue());
     }
 
-    public CmsCbValueEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsCbValueEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsCbValueEntry reference(String v) { this.reference.value(v); return this; }
     public CmsCbValueEntry value(CmsCbValueChoice v) { this.value.value(v); return this; }
 

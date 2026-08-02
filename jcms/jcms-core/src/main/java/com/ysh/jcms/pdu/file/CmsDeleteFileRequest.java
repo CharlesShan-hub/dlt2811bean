@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.file;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerDeleteFileRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -20,5 +22,5 @@ public class CmsDeleteFileRequest extends CmsSequence {
     }
 
     public CmsDeleteFileRequest filename(String v) { this.filename.value(v); return this; }
-    public CmsDeleteFileRequest filename(byte[] v) { return filename(new String(v)); }
+    public CmsDeleteFileRequest filename(byte[] v) { return filename(new String(v, StandardCharsets.UTF_8)); }
 }

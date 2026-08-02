@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.rpc;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerRpcCallRequestPDU;
 import com.ysh.jcms.data.choice.CmsRpcCallReqChoice;
 import com.ysh.jcms.data.core.CmsField;
@@ -23,6 +25,6 @@ public class CmsRpcCallRequest extends CmsSequence {
     public CmsRpcCallRequest() { super(new InnerRpcCallRequestPDU()); }
 
     public CmsRpcCallRequest method(String v) { this.method.value(v); return this; }
-    public CmsRpcCallRequest method(byte[] v) { return method(new String(v)); }
+    public CmsRpcCallRequest method(byte[] v) { return method(new String(v, StandardCharsets.UTF_8)); }
     public CmsRpcCallRequest req(CmsRpcCallReqChoice v) { this.req.value(v); return this; }
 }

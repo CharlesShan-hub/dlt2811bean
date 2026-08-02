@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.file;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetFileAttributeValuesRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -20,5 +22,5 @@ public class CmsGetFileAttributeValuesRequest extends CmsSequence {
     }
 
     public CmsGetFileAttributeValuesRequest filename(String v) { this.filename.value(v); return this; }
-    public CmsGetFileAttributeValuesRequest filename(byte[] v) { return filename(new String(v)); }
+    public CmsGetFileAttributeValuesRequest filename(byte[] v) { return filename(new String(v, StandardCharsets.UTF_8)); }
 }

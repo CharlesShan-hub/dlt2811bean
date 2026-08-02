@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.directory;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetLogicalDeviceDirectoryRequestPDU;
@@ -24,7 +26,7 @@ public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
     }
 
     public CmsGetLogicalDeviceDirectoryRequest ldName(byte[] v) {
-        return ldName(v != null ? new String(v) : null);
+        return ldName(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest ldName(String v) {
         if (v != null) {
@@ -36,7 +38,7 @@ public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
         return this;
     }
     public CmsGetLogicalDeviceDirectoryRequest referenceAfter(byte[] v) {
-        return referenceAfter(v != null ? new String(v) : null);
+        return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
     public CmsGetLogicalDeviceDirectoryRequest referenceAfter(String v) {
         if (v != null) {

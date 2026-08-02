@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.file;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetFileDirectoryRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -24,7 +26,7 @@ public class CmsGetFileDirectoryRequest extends CmsSequence {
     public CmsGetFileDirectoryRequest() { super(new InnerGetFileDirectoryRequestPDU()); }
 
     public CmsGetFileDirectoryRequest pathName(String v) { this.pathName.value(v); return this; }
-    public CmsGetFileDirectoryRequest pathName(byte[] v) { return pathName(new String(v)); }
+    public CmsGetFileDirectoryRequest pathName(byte[] v) { return pathName(new String(v, StandardCharsets.UTF_8)); }
     public CmsGetFileDirectoryRequest startTime(CmsUtcTime v) {
         if (v != null) {
             this.startTime.value(v);
@@ -52,5 +54,5 @@ public class CmsGetFileDirectoryRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsGetFileDirectoryRequest fileAfter(byte[] v) { return fileAfter(v != null ? new String(v) : null); }
+    public CmsGetFileDirectoryRequest fileAfter(byte[] v) { return fileAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
 }

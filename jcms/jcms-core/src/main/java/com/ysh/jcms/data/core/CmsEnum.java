@@ -40,6 +40,14 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
         super(inner);
     }
 
+    /** Per-class {@link ValueRange} annotation, cached (avoids reflection on every access). */
+    private static final ClassValue<ValueRange> VALUE_RANGE = new ClassValue<ValueRange>() {
+        @Override
+        protected ValueRange computeValue(Class<?> type) {
+            return type.getAnnotation(ValueRange.class);
+        }
+    };
+
     /** Minimum bits needed to represent values 0..max. */
     private static int bitsForMax(int max) {
         return 32 - Integer.numberOfLeadingZeros(max);
@@ -50,7 +58,7 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
     public int value() {
         Object v = innerGet();
         if (v instanceof String) {
-            ValueRange range = getClass().getAnnotation(ValueRange.class);
+            ValueRange range = VALUE_RANGE.get(getClass());
             int bits = bitsForMax(range != null ? range.max() : 0);
             return InnerBase.parseBitStringHex((String) v, bits);
         }
@@ -60,7 +68,7 @@ public abstract class CmsEnum<T extends CmsEnum<T>> extends CmsScalar {
 
     /** Set value with range validation from {@link ValueRange} if present. */
     public T value(int v) {
-        ValueRange range = getClass().getAnnotation(ValueRange.class);
+        ValueRange range = VALUE_RANGE.get(getClass());
         if (range != null && (v < range.min() || v > range.max()))
             throw new IllegalArgumentException(
                 getClass().getSimpleName() + " out of range [" + range.min() + "," + range.max() + "]: " + v);

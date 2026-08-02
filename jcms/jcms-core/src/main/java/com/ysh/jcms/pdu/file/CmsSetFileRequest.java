@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.file;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerSetFileRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -36,7 +38,7 @@ public class CmsSetFileRequest extends CmsSequence {
     }
 
     public CmsSetFileRequest filename(String v) { this.filename.value(v); return this; }
-    public CmsSetFileRequest filename(byte[] v) { return filename(new String(v)); }
+    public CmsSetFileRequest filename(byte[] v) { return filename(new String(v, StandardCharsets.UTF_8)); }
     public CmsSetFileRequest startPosition(long v) { this.startPosition.value(v); return this; }
     public CmsSetFileRequest fileData(byte[] v) { this.fileData.value(v); return this; }
     public CmsSetFileRequest endOfFile(boolean v) { this.endOfFile.value(v); return this; }

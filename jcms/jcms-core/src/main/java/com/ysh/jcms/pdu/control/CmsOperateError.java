@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerOperateErrorPDU;
 import com.ysh.jcms.data.bitarray.CmsCheck;
 import com.ysh.jcms.data.choice.CmsData;
@@ -31,7 +33,7 @@ public class CmsOperateError extends CmsSequence {
 
     public CmsOperateError() { super(new InnerOperateErrorPDU()); }
 
-    public CmsOperateError reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsOperateError reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsOperateError reference(String v) { this.reference.value(v); return this; }
     public CmsOperateError ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsOperateError origin(CmsOriginator v) { this.origin.value(v); return this; }

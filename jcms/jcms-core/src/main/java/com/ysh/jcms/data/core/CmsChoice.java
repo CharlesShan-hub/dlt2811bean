@@ -300,7 +300,7 @@ public abstract class CmsChoice extends CmsType {
                     syncListToInner(vi);
                     break;
                 case ARRAY:
-                    syncArrayToInner(vi);
+                    syncListToInner(vi);
                     break;
                 case RAW:
                     syncRawToInner(vi);
@@ -338,7 +338,7 @@ public abstract class CmsChoice extends CmsType {
                     syncListFromInner(vi);
                     break;
                 case ARRAY:
-                    syncArrayFromInner(vi);
+                    syncListFromInner(vi);
                     break;
                 case RAW:
                     syncRawFromInner(vi);
@@ -455,41 +455,6 @@ public abstract class CmsChoice extends CmsType {
 
     @SuppressWarnings("unchecked")
     private void syncListFromInner(VariantInfo vi) throws Exception {
-        List<Object> innerList = (List<Object>) inner._v.get(vi.name);
-        if (innerList == null) return;
-
-        Class<? extends CmsType> elemClass = inferListElemClass(vi);
-        if (elemClass == null) return;
-
-        List<CmsType> list = (List<CmsType>) vi.field.get(this);
-        if (list == null) {
-            list = new ArrayList<>();
-            vi.field.set(this, list);
-        }
-        list.clear();
-        for (Object innerElem : innerList) {
-            if (!(innerElem instanceof InnerBase)) continue;
-            CmsType elem = elemClass.getDeclaredConstructor().newInstance();
-            elem.inner = (InnerBase) innerElem;
-            elem.syncFromInner();
-            list.add(elem);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    private void syncArrayToInner(VariantInfo vi) throws Exception {
-        List<CmsType> list = (List<CmsType>) vi.field.get(this);
-        if (list == null) return;
-        List<InnerBase> innerList = new ArrayList<>();
-        for (CmsType elem : list) {
-            elem.syncToInner();
-            innerList.add(elem.inner);
-        }
-        inner._v.put(vi.name, innerList);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void syncArrayFromInner(VariantInfo vi) throws Exception {
         List<Object> innerList = (List<Object>) inner._v.get(vi.name);
         if (innerList == null) return;
 

@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerTimeActivatedOperateErrorPDU;
 import com.ysh.jcms.data.bitarray.CmsCheck;
 import com.ysh.jcms.data.choice.CmsData;
@@ -26,7 +28,7 @@ public class CmsTimeActivatedOperateError extends CmsSequence {
 
     public CmsTimeActivatedOperateError() { super(new InnerTimeActivatedOperateErrorPDU()); }
 
-    public CmsTimeActivatedOperateError reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsTimeActivatedOperateError reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsTimeActivatedOperateError reference(String v) { this.reference.value(v); return this; }
     public CmsTimeActivatedOperateError ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsTimeActivatedOperateError operTm(CmsUtcTime v) { this.operTm.value(v); return this; }

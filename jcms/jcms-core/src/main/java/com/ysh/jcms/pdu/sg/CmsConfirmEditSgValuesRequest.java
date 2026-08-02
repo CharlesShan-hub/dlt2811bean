@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.sg;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerConfirmEditSGValuesRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -18,5 +20,5 @@ public class CmsConfirmEditSgValuesRequest extends CmsSequence {
     public CmsConfirmEditSgValuesRequest() { super(new InnerConfirmEditSGValuesRequestPDU()); }
 
     public CmsConfirmEditSgValuesRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
-    public CmsConfirmEditSgValuesRequest sgcbReference(byte[] v) { return sgcbReference(new String(v)); }
+    public CmsConfirmEditSgValuesRequest sgcbReference(byte[] v) { return sgcbReference(new String(v, StandardCharsets.UTF_8)); }
 }

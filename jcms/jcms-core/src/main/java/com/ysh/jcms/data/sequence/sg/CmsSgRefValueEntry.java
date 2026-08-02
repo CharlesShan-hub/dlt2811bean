@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.sg;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousSetEditSGValueRequestPDUData;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
@@ -20,7 +22,7 @@ public class CmsSgRefValueEntry extends CmsSequence {
     }
 
     public CmsSgRefValueEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSgRefValueEntry reference(byte[] v) { return reference(new String(v)); }
+    public CmsSgRefValueEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
     public CmsSgRefValueEntry value(CmsData v) { this.value.value(v); return this; }
 
     /** Copy all field values from another CmsSgRefValueEntry (fluent). */

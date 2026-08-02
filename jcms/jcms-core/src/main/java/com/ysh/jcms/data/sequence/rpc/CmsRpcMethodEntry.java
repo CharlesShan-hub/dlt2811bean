@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.rpc;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.core.CmsField;
@@ -28,7 +30,7 @@ public class CmsRpcMethodEntry extends CmsSequence {
     public CmsRpcMethodEntry() { super(new InnerAnonymousGetRpcInterfaceDefinitionResponsePDUMethod()); }
 
     public CmsRpcMethodEntry name(String v) { this.name.value(v); return this; }
-    public CmsRpcMethodEntry name(byte[] v) { return name(new String(v)); }
+    public CmsRpcMethodEntry name(byte[] v) { return name(new String(v, StandardCharsets.UTF_8)); }
     public CmsRpcMethodEntry version(long v) { this.version.value(v); return this; }
     public CmsRpcMethodEntry timeout(long v) { this.timeout.value(v); return this; }
     public CmsRpcMethodEntry request(CmsDataDefinition v) { this.request.value(v); return this; }

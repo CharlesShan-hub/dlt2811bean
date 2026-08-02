@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.report;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousSetBRCBValuesRequestPDUBrcb;
 import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
@@ -47,7 +49,7 @@ public class CmsSetBrcbEntry extends CmsSequence {
         super(new InnerAnonymousSetBRCBValuesRequestPDUBrcb());
     }
 
-    public CmsSetBrcbEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsSetBrcbEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsSetBrcbEntry reference(String v) { this.reference.value(v); return this; }
     public CmsSetBrcbEntry rptID(String v) {
         if (v != null) {
@@ -58,7 +60,7 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetBrcbEntry rptID(byte[] v) { return rptID(v != null ? new String(v) : null); }
+    public CmsSetBrcbEntry rptID(byte[] v) { return rptID(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSetBrcbEntry rptEna(boolean v) {
         this.rptEna.value(v);
         setPresent("rptEna", true);
@@ -73,7 +75,7 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetBrcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v) : null); }
+    public CmsSetBrcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
     public CmsSetBrcbEntry optFlds(CmsRcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

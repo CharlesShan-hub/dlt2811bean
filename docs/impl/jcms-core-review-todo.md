@@ -29,13 +29,18 @@
   4. 静态块加固：重复服务码（0x00 除外）抛 `IllegalStateException` 防回归。
 - **验证**：`mvn test -pl jcms-core` 全量通过 ✅
 
-### [ ] 2. InnerBase.toJson 将纯 hex 字符串大写化（编码值失真）
+### [x] 2. InnerBase.toJson 将纯 hex 字符串大写化（编码值失真）— ✅ 已完成 2026-08-01
 
-- **文件**：`jcms/jcms-data/src/main/java/com/ysh/jcms/data/InnerBase.java`
-- **位置**：L237-L245（String 分支）
-- **问题**：非空且全由 hex 字符组成的字符串（如 `"abc123"`、`"cafe"`）被 `toUpperCase()`，encode 路径（`MAPPER.writeValueAsString(InnerBase.toJson(_v))`）会改写用户设置的值。
-- **方案**：String 分支原样返回；仅对 `byte[]` 做 hex 规范化。若 equals 规范化仍需要统一大小写，仅在 equals/hashCode 专用路径处理。
-- **验证**：对 `CmsData().alt_visible_string("abc123")` 做 encode→decode 往返，值保持 `abc123`；新增回归测试。
+- **文件**：`csasn1/src/generator/java/templates/Base.java.txt`（生成源头，jcms-data 由 csasn1 生成）
+- **依据**：`assets/standard-2811.md`
+- **问题**：`toJson` 对全 hex 字符的字符串（如 `"abc123"`）执行 `toUpperCase()`，encode 路径会改写用户设置的字符串值。
+- **修复（A 组模板）**：
+  1. **A1** `toJson` String 分支改为原样返回（不再大写化）；
+  2. **A2** `bitStringHex` LOWER→UPPER（与 Rust JER 一致，保证 BIT STRING 往返 equals 不因大小写失败），并删除 `HEX_BYTES_LOWER`/`HEX_DIGITS_LOWER` 死代码；
+  3. **A4** `unhex` 单遍解析跳过 `0x`/`0X` 前缀（原 `replace` 每次分配 2 个临时串）；
+  4. **A6（已回退）** test_struct.rs 加 decode/assert 往返断言 → 默认构造 SEQUENCE 违反 ASN.1 约束（空 SEQUENCE OF、空定长串），159 个测试 decode 失败，已回退并加注释说明。
+- **未做**：A3 equals/hashCode 缓存（`_v` 可变，失效难控，风险>收益）；A5 encode 上收基类（重构风险中高，收益小）。
+- **验证**：`--prefix Inner` 生成到临时目录，`mvn test` **367 tests, 0 errors** ✅（用户需重跑 `just gen-jcms-data` 让改动生效）
 
 ## 🟠 中优先级
 
@@ -47,60 +52,55 @@
 - **方案**：惰性缓存规范化 JSON 串（`_v` 可变，在 syncToInner/decode/rebind 后置 null 失效）；`hashCode` 缓存 int 而非每次序列化。
 - **验证**：现有 300+ 测试全绿，性能可感知提升（可加微基准）。
 
-### [ ] 4. PDU byte[] setter 用平台默认字符集
+### [x] 4. PDU byte[] setter 用平台默认字符集 — ✅ 已完成 2026-08-01
 
-- **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/pdu/` 下多个 PDU（如 `report/CmsReport.java` L44/L62、`data/CmsGetDataDirectoryRequest.java` L29-L31、`data/sequence/data/CmsDataRefEntry.java` 等）
+- **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/pdu/` 下多个 PDU
 - **问题**：`new String(byte[])` 依赖平台默认字符集，跨平台行为不一致。
-- **方案**：统一 `new String(v, StandardCharsets.UTF_8)`（及对应 `getBytes(StandardCharsets.UTF_8)`）。可写脚本批量替换，注意 ASN.1 VisibleString 为 8-bit 字符，UTF-8 兼容。
-- **验证**：`mvn test -pl jcms-core`。
+- **修复**：批量替换 92 处 `new String(byte[])` → `new String(v, StandardCharsets.UTF_8)`（含三元形式），并补齐 `import java.nio.charset.StandardCharsets;`。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
-### [ ] 5. CmsChoice syncList*/syncArray* 四方法重复
+### [x] 5. CmsChoice syncList*/syncArray* 四方法重复 — ✅ 已完成 2026-08-01
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsChoice.java`
-- **位置**：L444-L454 vs L480-L489（syncToInner）；L457-L477 vs L492-L512（syncFromInner）
 - **问题**：两对方法逐行相同，纯重复。
-- **方案**：合并为单一实现，`Sync.LIST` 与 `Sync.ARRAY` 复用同一方法。
-- **验证**：`mvn test -pl jcms-core`（重点覆盖含 LIST/ARRAY 变体的 CHOICE，如 CmsData）。
+- **修复**：删除 `syncArrayToInner`/`syncArrayFromInner`，`Sync.ARRAY` 与 `Sync.LIST` 复用 `syncListToInner`/`syncListFromInner`。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
 ## 🟡 低优先级
 
-### [ ] 6. CmsFormatUtil.bytesToHex 逐字节 String.format
+### [x] 6. CmsFormatUtil.bytesToHex 逐字节 String.format — ✅ 已完成 2026-08-01（随 #8 一并删除）
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/util/CmsFormatUtil.java`
-- **位置**：L152-L157
-- **问题**：每字节 `String.format("%02x")` 创建 Formatter，性能差。
-- **方案**：复用 `InnerBase.hex()`（256 项查表，大写），或本地查表。
+- **修复**：`bytesToHex` 与整棵树渲染功能（toString/toJson/collectFields/scalarToJson 等）均无调用者，已全部删除，`CmsFormatUtil` 精简为仅保留 `escapeJson`（jcms-app 唯一使用的方法）。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
-### [ ] 7. CmsEnum.value()/value(int) 每次反射查 ValueRange
+### [x] 7. CmsEnum.value()/value(int) 每次反射查 ValueRange — ✅ 已完成 2026-08-01
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsEnum.java`
-- **位置**：L53、L63
-- **问题**：每次取值都 `getClass().getAnnotation(ValueRange.class)`。
-- **方案**：ClassValue 缓存 `ValueRange`，或在子类构造时固化 min/max。
+- **修复**：`ClassValue<ValueRange> VALUE_RANGE` 缓存，`value()`/`value(int)` 改用 `VALUE_RANGE.get(getClass())`。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
-### [ ] 8. CmsFormatUtil 失效/残留代码
+### [x] 8. CmsFormatUtil 失效/残留代码 — ✅ 已完成 2026-08-01
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/util/CmsFormatUtil.java`
-- **位置**：L26-L28（`toString(CmsType)` 纯委托）；L129-L137（`scalarToJson` 反射 `getField("value")`，Inner\* 只有 `_v`，恒输出 null）；L120（`"innerCache"` 过时字段名）
-- **方案**：删除 `toString` 委托与死方法；`scalarToJson` 改用 `V.getVal(type.inner._v)`；`collectFields` 移除 `innerCache` 检查。
+- **修复**：grep 确认 jcms-app 仅使用 `escapeJson`；`toString(CmsType)` 纯委托、`scalarToJson` 反射 "value" 恒 null、`collectFields` "innerCache" 残留等全部删除，类精简为仅 `escapeJson`。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
-### [ ] 9. CmsType.decode() 异常无上下文
+### [x] 9. CmsType.decode() 异常无上下文 — ✅ 已完成 2026-08-01
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/data/core/CmsType.java`
-- **位置**：L62-L69
-- **问题**：反射失败只抛 `RuntimeException(e)`，无类名/数据信息，排障困难。
-- **方案**：包装时附带 `inner.getClass().getSimpleName()` 与数据长度（`data != null ? data.length : -1`）。
+- **修复**：包装时附带 `inner.getClass().getSimpleName()` 与 `dataLen`。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
 ---
 
 ## 📌 已排查（验证器判定非缺陷，可选加固）
 
-### [ ] 10. CmsSetDataValuesError / CmsSetDataSetValuesError 的 syncToInner 类型污染
+### [x] 10. CmsSetDataValuesError / CmsSetDataSetValuesError 的 syncToInner 类型污染 — ✅ 已完成 2026-08-01
 
 - **文件**：`jcms/jcms-core/src/main/java/com/ysh/jcms/pdu/data/CmsSetDataValuesError.java`、`jcms/jcms-core/src/main/java/com/ysh/jcms/pdu/dataset/CmsSetDataSetValuesError.java`
-- **位置**：两文件 syncToInner()
-- **说明**：`inner._v.get("result")` 强转 `List<InnerBase>` 后 clear+add，decode 后该列表运行时是 `ArrayList<Integer>`，泛型擦除使 add 不抛 CCE、encode 经 toJson 可正常工作，但列表元素类型被污染，未来按 `List<Integer>` 读取会抛 CCE。
-- **方案（可选）**：syncToInner 改为重建列表（`inner._v.put("result", new ArrayList<>(...))`），与 syncFromInner 的 `List<Object>` 防御对齐。
+- **修复**：`syncToInner` 改为重建列表（`inner._v.put("result", newList)`），不再对 decode 后的 raw `List<Integer>` 做 clear+add 污染元素类型。
+- **验证**：`mvn test -pl jcms-core` BUILD SUCCESS ✅
 
 ---
 

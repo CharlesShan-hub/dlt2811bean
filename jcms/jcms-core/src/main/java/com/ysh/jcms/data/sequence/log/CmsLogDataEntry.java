@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.log;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerAnonymousLogEntryEntryData;
 import com.ysh.jcms.data.bitarray.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
@@ -27,7 +29,7 @@ public class CmsLogDataEntry extends CmsSequence {
 
     public CmsLogDataEntry() { super(new InnerAnonymousLogEntryEntryData()); }
 
-    public CmsLogDataEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsLogDataEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsLogDataEntry reference(String v) { this.reference.value(v); return this; }
     public CmsLogDataEntry fc(int v) { this.fc.value(v); return this; }
     public CmsLogDataEntry value(CmsData v) { this.value.value(v); return this; }

@@ -1,5 +1,7 @@
 package com.ysh.jcms.data.sequence.dataset;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsFC;
@@ -25,7 +27,7 @@ public class CmsDataRefFcEntry extends CmsSequence {
     }
 
     public CmsDataRefFcEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataRefFcEntry reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsDataRefFcEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsDataRefFcEntry fc(int v) { this.fc.value(v); return this; }
 
     public CmsDataRefFcEntry value(CmsDataRefFcEntry v) {

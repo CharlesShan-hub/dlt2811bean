@@ -35,28 +35,33 @@ public abstract class InnerBase {
     }
 
     private static final char[] HEX_DIGITS_UPPER = "0123456789ABCDEF".toCharArray();
-    private static final char[] HEX_DIGITS_LOWER = "0123456789abcdef".toCharArray();
     private static final String[] HEX_BYTES_UPPER = new String[256];
-    private static final String[] HEX_BYTES_LOWER = new String[256];
     static {
         for (int i = 0; i < 256; i++) {
             HEX_BYTES_UPPER[i] = "" + HEX_DIGITS_UPPER[(i >> 4) & 0xF] + HEX_DIGITS_UPPER[i & 0xF];
-            HEX_BYTES_LOWER[i] = "" + HEX_DIGITS_LOWER[(i >> 4) & 0xF] + HEX_DIGITS_LOWER[i & 0xF];
         }
     }
 
     /** Convert hex string to byte array. Handles both "4048F5C3" and "0x400x48..." formats. */
     public static byte[] unhex(String hex) {
         if (hex == null || hex.isEmpty()) return new byte[0];
-        // Strip 0x prefixes (rasn JER uses {:02X?} format which emits "0x40" per byte)
-        hex = hex.replace("0x", "").replace("0X", "");
+        // Single pass: skip "0x"/"0X" byte prefixes (rasn JER uses {:02X?} format
+        // which emits "0x40" per byte) without allocating intermediate strings.
         int len = hex.length();
         byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(hex.charAt(i), 16) << 4)
-                                 + Character.digit(hex.charAt(i + 1), 16));
+        int out = 0;
+        int i = 0;
+        while (i + 1 < len) {
+            char hi = hex.charAt(i);
+            char lo = hex.charAt(i + 1);
+            if (hi == '0' && (lo == 'x' || lo == 'X')) {
+                i += 2;
+                continue;
+            }
+            data[out++] = (byte) ((Character.digit(hi, 16) << 4) + Character.digit(lo, 16));
+            i += 2;
         }
-        return data;
+        return out == data.length ? data : java.util.Arrays.copyOf(data, out);
     }
 
     @Override
@@ -117,7 +122,9 @@ public abstract class InnerBase {
                 result |= (1 << (bytePos * 8 + bitPos));
             }
         }
-        // Output bytes LSB-first — matches Rust JER byte ordering
+        // Output bytes LSB-first — matches Rust JER byte ordering.
+        // Uppercase to match Rust JER output, so encode→decode equality holds
+        // without case normalization in toJson().
         StringBuilder sb = new StringBuilder();
         for (int j = 0; j < bytes; j++) {
             sb.append(HEX_BYTES_UPPER[(result >> (j * 8)) & 0xFF]);

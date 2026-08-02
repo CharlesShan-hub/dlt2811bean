@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.goose;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetGoReferenceRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -29,6 +31,6 @@ public class CmsGetGoReferenceRequest extends CmsSequence {
     }
 
     public CmsGetGoReferenceRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGoReferenceRequest gocbReference(byte[] v) { return gocbReference(new String(v)); }
+    public CmsGetGoReferenceRequest gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
     public CmsGetGoReferenceRequest memberOfs(List<CmsInt16U> v) { this.memberOfs = v; return this; }
 }

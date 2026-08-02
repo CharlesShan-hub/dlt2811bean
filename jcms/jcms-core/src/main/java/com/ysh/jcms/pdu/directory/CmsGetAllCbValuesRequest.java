@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.directory;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.InnerGetAllCBValuesRequestPDU;
@@ -34,7 +36,7 @@ public class CmsGetAllCbValuesRequest extends CmsSequence {
     }
     public CmsGetAllCbValuesRequest referenceAfter(byte[] v) {
         if (v != null && v.length > 0) {
-            this.referenceAfter.value(new String(v));
+            this.referenceAfter.value(new String(v, StandardCharsets.UTF_8));
             setPresent("referenceAfter", true);
         } else {
             setPresent("referenceAfter", false);

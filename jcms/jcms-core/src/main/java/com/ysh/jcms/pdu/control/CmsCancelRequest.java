@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.control;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerCancelRequestPDU;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
@@ -28,7 +30,7 @@ public class CmsCancelRequest extends CmsSequence {
 
     public CmsCancelRequest() { super(new InnerCancelRequestPDU()); }
 
-    public CmsCancelRequest reference(byte[] v) { this.reference.value(new String(v)); return this; }
+    public CmsCancelRequest reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
     public CmsCancelRequest reference(String v) { this.reference.value(v); return this; }
     public CmsCancelRequest ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
     public CmsCancelRequest operTm(CmsUtcTime v) {

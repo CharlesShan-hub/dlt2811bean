@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.sg;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerSelectActiveSGRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -23,6 +25,6 @@ public class CmsSelectActiveSgRequest extends CmsSequence {
     public CmsSelectActiveSgRequest() { super(new InnerSelectActiveSGRequestPDU()); }
 
     public CmsSelectActiveSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
-    public CmsSelectActiveSgRequest sgcbReference(byte[] v) { return sgcbReference(new String(v)); }
+    public CmsSelectActiveSgRequest sgcbReference(byte[] v) { return sgcbReference(new String(v, StandardCharsets.UTF_8)); }
     public CmsSelectActiveSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
 }

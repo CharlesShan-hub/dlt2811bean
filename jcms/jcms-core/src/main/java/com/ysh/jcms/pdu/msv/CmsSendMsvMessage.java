@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.msv;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerSendMSVMessagePDU;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
@@ -51,7 +53,7 @@ public class CmsSendMsvMessage extends CmsSequence {
     }
 
     public CmsSendMsvMessage msvID(String v) { this.msvID.value(v); return this; }
-    public CmsSendMsvMessage msvID(byte[] v) { return msvID(new String(v)); }
+    public CmsSendMsvMessage msvID(byte[] v) { return msvID(new String(v, StandardCharsets.UTF_8)); }
     public CmsSendMsvMessage datSet(String v) {
         if (v != null) {
             this.datSet.value(v);

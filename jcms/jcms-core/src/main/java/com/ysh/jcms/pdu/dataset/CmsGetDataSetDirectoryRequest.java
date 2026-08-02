@@ -1,5 +1,7 @@
 package com.ysh.jcms.pdu.dataset;
 
+import java.nio.charset.StandardCharsets;
+
 import com.ysh.jcms.data.InnerGetDataSetDirectoryRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
@@ -26,9 +28,9 @@ public class CmsGetDataSetDirectoryRequest extends CmsSequence {
     }
 
     public CmsGetDataSetDirectoryRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsGetDataSetDirectoryRequest datasetReference(byte[] v) { return datasetReference(new String(v)); }
+    public CmsGetDataSetDirectoryRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
     public CmsGetDataSetDirectoryRequest referenceAfter(byte[] v) {
-        return referenceAfter(v != null ? new String(v) : null);
+        return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
     public CmsGetDataSetDirectoryRequest referenceAfter(String v) {
         if (v != null) {
