@@ -18,17 +18,7 @@ public class Frame {
     private final byte[] asduBytes;
     private final int reqId;
 
-    public Frame(FrameHeader header, byte[] asduBytes) {
-        this(header, asduBytes, extractReqId(asduBytes));
-    }
-
     public int getWireSize() {
-        return 2 + FrameHeader.HEADER_SIZE + asduBytes.length;
-    }
-
-    private static int extractReqId(byte[] asdu) {
-        if (asdu == null || asdu.length < 2)
-            return 0;
-        return ((asdu[0] & 0xFF) << 8) | (asdu[1] & 0xFF);
+        return 2 + FrameHeader.HEADER_SIZE + 2 + asduBytes.length; // FL + APCH + ReqID + Data
     }
 }

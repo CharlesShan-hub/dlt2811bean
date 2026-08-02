@@ -13,14 +13,11 @@ import java.io.IOException;
 public class SetDataSetValuesClient extends BaseClientHandler {
 
     public void execute(SetDataSetValuesDao dao) throws Exception {
-        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
-                .refAfter(dao.referenceAfter());
+        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(dao.datasetReference())
+                .referenceAfter(dao.referenceAfter());
 
         for (String val : dao.values()) {
-            CmsData data = new CmsData();
-            data.choice(CmsData.CHOICE_VISIBLE_STRING);
-            data.alt_visible_string.value(val);
-            req.value.add(data);
+            req.value.add(new CmsData().alt_visible_string(val));
         }
 
         send(ServiceName.SET_DATA_SET_VALUES, req);
@@ -30,10 +27,10 @@ public class SetDataSetValuesClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsSetDataSetValuesError err = decodeErr(frame, new CmsSetDataSetValuesError());
         StringBuilder sb = new StringBuilder("SetDataSetValues partially failed: ");
-        for (int i = 0; i < err.result.count; i++) {
+        for (int i = 0; i < err.result.size(); i++) {
             if (i > 0)
                 sb.append(", ");
-            sb.append("[").append(i).append("]=").append(err.result.items.get(i).value());
+            sb.append("[").append(i).append("]=").append(err.result.get(i));
         }
         throw new IOException(sb.toString());
     }

@@ -14,7 +14,7 @@ import java.io.IOException;
 public class SetDataValuesClient extends BaseClientHandler {
 
     public void execute(SetDataValuesDao dao) throws Exception {
-        CmsSetDataValuesRequest req = new CmsSetDataValuesRequest().reqId(nextReqId());
+        CmsSetDataValuesRequest req = new CmsSetDataValuesRequest();
 
         for (SetDataValuesDao.Entry src : dao.entries()) {
             CmsDataRefValueEntry entry = new CmsDataRefValueEntry().reference(src.reference());
@@ -36,10 +36,10 @@ public class SetDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSetDataValuesError err = decodeErr(frame, new CmsSetDataValuesError());
-        int errorCount = err.result.count;
+        int errorCount = err.result.size();
         StringBuilder sb = new StringBuilder("SetDataValues rejected:");
         for (int i = 0; i < errorCount; i++) {
-            sb.append(" [").append(i).append("] error=").append(err.result.items.get(i).value());
+            sb.append(" [").append(i).append("] error=").append(err.result.get(i));
         }
         throw new IOException(sb.toString());
     }
@@ -52,16 +52,13 @@ public class SetDataValuesClient extends BaseClientHandler {
 
     /**
      * Set CmsData fields in-place with a string value. Modifies the existing
-     * CmsData rather than creating a new one, because JNA native pointers are fixed
-     * at construction time.
+     * CmsData rather than creating a new one.
      */
     private static void fillCmsData(CmsData data, String value) {
         if (containsNonAscii(value)) {
-            data.choice(CmsData.CHOICE_UNICODE_STRING);
-            data.alt_unicode_string.value(value);
+            data.alt_unicode_string(value);
         } else {
-            data.choice(CmsData.CHOICE_VISIBLE_STRING);
-            data.alt_visible_string.value(value);
+            data.alt_visible_string(value);
         }
     }
 

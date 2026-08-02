@@ -15,13 +15,12 @@ import java.util.Map;
 public class SelectWithValueClient extends BaseClientHandler {
 
     public void execute(String ref, Map<String, String> args) throws Exception {
-        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reqId(nextReqId()).reference(ref);
+        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reference(ref);
 
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();
-            ctlVal.choice.value(CmsData.CHOICE_BOOLEAN);
-            ctlVal.alt_boolean.value(Boolean.parseBoolean(valueStr));
+            ctlVal.alt_boolean(Boolean.parseBoolean(valueStr));
             req.ctlVal(ctlVal);
         }
 

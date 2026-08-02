@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.pdu.report.CmsSetBrcbResult;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesResponse;
@@ -20,10 +21,12 @@ public class SetBrcbValuesClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsSetBrcbValuesError err = decodeErr(frame, new CmsSetBrcbValuesError());
         StringBuilder sb = new StringBuilder("SetBRCBValues rejected:");
-        for (int i = 0; i < err.result.count; i++) {
-            if (err.result.items.get(i).errorPresent.value()) {
-                sb.append(" entry[").append(i).append("] error=").append(err.result.items.get(i).error.value());
+        int i = 0;
+        for (CmsSetBrcbResult r : err.result) {
+            if (r.isPresent("error")) {
+                sb.append(" entry[").append(i).append("] error=").append(r.error.value());
             }
+            i++;
         }
         throw new IOException(sb.toString());
     }

@@ -12,7 +12,7 @@ import java.io.IOException;
 public class DeleteFileClient extends BaseClientHandler {
 
     public void execute(DeleteFileDao dao) throws Exception {
-        CmsDeleteFileRequest req = new CmsDeleteFileRequest().reqId(nextReqId()).filename(dao.fileName());
+        CmsDeleteFileRequest req = new CmsDeleteFileRequest().filename(dao.fileName());
 
         send(ServiceName.DELETE_FILE, req);
     }
@@ -20,7 +20,7 @@ public class DeleteFileClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsDeleteFileError err = decodeErr(frame, new CmsDeleteFileError());
-        throw new IOException("DeleteFile rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("DeleteFile rejected: " + err.value());
     }
 
     @Override

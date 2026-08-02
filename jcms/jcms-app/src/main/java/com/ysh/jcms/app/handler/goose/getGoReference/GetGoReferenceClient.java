@@ -2,6 +2,7 @@ package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.scalar.CmsInt16U;
+import com.ysh.jcms.data.sequence.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
@@ -42,7 +43,7 @@ public class GetGoReferenceClient extends BaseClientHandler {
     }
 
     public void execute(GetGoReferenceDao dao) throws Exception {
-        CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().reqId(nextReqId()).gocbReference(dao.gocbReference());
+        CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().gocbReference(dao.gocbReference());
         for (int offset : dao.memberOffsets()) {
             req.memberOfs.add(new CmsInt16U(offset));
         }
@@ -52,7 +53,7 @@ public class GetGoReferenceClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetGoReferenceError err = decodeErr(frame, new CmsGetGoReferenceError());
-        throw new IOException("GetGoReference rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetGoReference rejected: " + err.value());
     }
 
     @Override
@@ -60,13 +61,12 @@ public class GetGoReferenceClient extends BaseClientHandler {
         CmsGetGoReferenceResponse resp = decodeResp(frame, new CmsGetGoReferenceResponse());
 
         List<MemberDataEntry> members = new ArrayList<>();
-        for (int i = 0; i < resp.memberData.count; i++) {
-            String ref = new String(resp.memberData.items.get(i).reference.value(), java.nio.charset.StandardCharsets.UTF_8);
-            int fc = resp.memberData.items.get(i).fc.value();
+        for (CmsGoRefFcEntry entry : resp.memberData) {
+            String ref = entry.reference.value();
+            int fc = entry.fc.value();
             members.add(new MemberDataEntry(ref, fc));
         }
 
-        lastResult = new GoRefResult(new String(resp.gocbReference.value(), java.nio.charset.StandardCharsets.UTF_8), resp.confRev.value(),
-                new String(resp.datSet.value(), java.nio.charset.StandardCharsets.UTF_8), members);
+        lastResult = new GoRefResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), members);
     }
 }

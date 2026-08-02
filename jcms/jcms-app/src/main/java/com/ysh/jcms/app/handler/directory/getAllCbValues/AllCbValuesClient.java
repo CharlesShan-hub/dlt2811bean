@@ -33,7 +33,7 @@ public class AllCbValuesClient extends BaseClientHandler {
     }
 
     public void execute(AllCbValuesDao dao) throws Exception {
-        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().reqId(nextReqId()).refAfter(dao.referenceAfter());
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -51,7 +51,7 @@ public class AllCbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllCbValuesError err = decodeErr(frame, new CmsGetAllCbValuesError());
-        throw new IOException("GetAllCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetAllCBValues rejected: " + err.value());
     }
 
     @Override
@@ -59,12 +59,11 @@ public class AllCbValuesClient extends BaseClientHandler {
         CmsGetAllCbValuesResponse resp = decodeResp(frame, new CmsGetAllCbValuesResponse());
 
         List<CbEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.cbValue.count; i++) {
-            CmsCbValueEntry src = resp.cbValue.items.get(i);
-            String ref = new String(src.reference.value(), java.nio.charset.StandardCharsets.UTF_8);
+        for (CmsCbValueEntry src : resp.cbValue) {
+            String ref = src.reference.value();
             if (ref.isEmpty())
                 continue; // skip empty entries
-            entries.add(new CbEntry(ref, src.value.choice.value()));
+            entries.add(new CbEntry(ref, src.value.choice()));
         }
         this.lastEntries = entries;
         log.info("GetAllCBValues succeeded: {} entries", entries.size());

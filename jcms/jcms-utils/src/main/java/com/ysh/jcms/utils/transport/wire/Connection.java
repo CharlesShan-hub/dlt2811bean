@@ -72,7 +72,7 @@ public class Connection {
     }
 
     /**
-     * Read a single frame from the wire. Format: [FL:2][FrameHeader:4][ASDU:FL-4]
+     * Read a single frame from the wire. Format: [FL:2][APCH:4][ReqID:2][Data:FL-6]
      */
     private Frame readFrame() throws IOException {
         int fl = dis.readUnsignedShort();

@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SelectActiveSgClient extends BaseClientHandler {
 
     public void execute(SelectActiveSgDao dao) throws Exception {
-        CmsSelectActiveSgRequest req = new CmsSelectActiveSgRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference())
+        CmsSelectActiveSgRequest req = new CmsSelectActiveSgRequest().sgcbReference(dao.sgcbReference())
                 .settingGroupNumber(dao.settingGroupNumber());
 
         send(ServiceName.SELECT_ACTIVE_SG, req);
@@ -21,7 +21,7 @@ public class SelectActiveSgClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSelectActiveSgError err = decodeErr(frame, new CmsSelectActiveSgError());
-        throw new IOException("SelectActiveSG rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("SelectActiveSG rejected: " + err.value());
     }
 
     @Override

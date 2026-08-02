@@ -66,7 +66,7 @@ public abstract class BaseClientHandler extends BaseHandler {
             throw new IOException("BaseClientHandler node not set");
         trace(">>> " + sc + " (one-way)");
         node.getClient().getConnection()
-                .send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, reqIdFromBytes(pduBytes)));
+                .send(new Frame(new FrameHeader().serviceCode(sc).resp(false).err(false), pduBytes, nextReqId()));
         onSuccess(null);
     }
 

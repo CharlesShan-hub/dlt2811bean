@@ -41,6 +41,6 @@ public class SelectEditSgServer extends BaseServerHandler {
 
         SgSessionState.getState(session.getSessionId()).setEditSG(sgNum);
         log.info("SelectEditSG: set editSG={} for session={}", sgNum, session.getSessionId());
-        return ok(new CmsSelectEditSgResponse().reqId(reqId), reqId);
+        return ok(new CmsSelectEditSgResponse(), reqId);
     }
 }

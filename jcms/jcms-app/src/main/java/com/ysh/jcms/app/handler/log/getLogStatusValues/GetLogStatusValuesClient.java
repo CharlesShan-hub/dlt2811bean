@@ -1,7 +1,9 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
@@ -27,7 +29,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetLogStatusValuesDao dao) throws Exception {
-        CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest().reqId(nextReqId());
+        CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest();
         for (String ref : dao.refs()) {
             req.logReference.add(new CmsObjectReference(ref));
         }
@@ -37,7 +39,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogStatusValuesError err = decodeErr(frame, new CmsGetLogStatusValuesError());
-        throw new IOException("GetLogStatusValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetLogStatusValues rejected: " + err.value());
     }
 
     @Override
@@ -45,10 +47,9 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
         CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.log.count; i++) {
-            com.ysh.jcms.pdu.log.CmsLogStatusValueChoice ch = resp.log.items.get(i);
-            if (ch.choice.value() == 1) {
-                com.ysh.jcms.pdu.log.CmsLogStatusValue val = ch.altValue;
+        for (CmsLogStatusValueChoice ch : resp.log) {
+            if (ch.choice() == CmsLogStatusValueChoice.VALUE) {
+                CmsLogStatusValue val = ch.altValue;
                 entries.add(new LogStatusEntry("oldEntrTm=" + val.oldEntrTm.msOfDay.value() + "/" + val.oldEntrTm.daysSince1984.value()
                         + " newEntrTm=" + val.newEntrTm.msOfDay.value() + "/" + val.newEntrTm.daysSince1984.value()));
             } else {

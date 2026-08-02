@@ -16,14 +16,13 @@ import java.util.Map;
 public class TimeActivatedOperateClient extends BaseClientHandler {
 
     public void execute(String ref, long operTmEpochSeconds, Map<String, String> args) throws Exception {
-        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reqId(nextReqId()).reference(ref)
+        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reference(ref)
                 .operTm(new CmsUtcTime().secondsSinceEpoch(operTmEpochSeconds));
 
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();
-            ctlVal.choice.value(CmsData.CHOICE_BOOLEAN);
-            ctlVal.alt_boolean.value(Boolean.parseBoolean(valueStr));
+            ctlVal.alt_boolean(Boolean.parseBoolean(valueStr));
             req.ctlVal(ctlVal);
         }
 

@@ -27,12 +27,13 @@ public class AssociateClient extends BaseClientHandler {
 
     public void execute(AssociateClientDao dao) throws Exception {
         this.currentSapRef = dao.sapRef();
-        CmsAssociateRequest req = new CmsAssociateRequest().reqId(nextReqId()).sapRef(dao.sapRef())
-                .sapRefPresent(dao.sapRef() != null && !dao.sapRef().isEmpty());
+        CmsAssociateRequest req = new CmsAssociateRequest();
+        if (dao.sapRef() != null && !dao.sapRef().isEmpty()) {
+            req.serverAccessPointReference(dao.sapRef());
+        }
 
         if (dao.secure()) {
-            req.authParam(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
-            req.authParamPresent(true);
+            req.authenticationParameter(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
         }
 
         send(ServiceName.ASSOCIATE, req);
@@ -42,7 +43,7 @@ public class AssociateClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsAssociateError err = decodeErr(frame, new CmsAssociateError());
         node.getClient().getSession().setState(SessionState.DISCONNECTED);
-        throw new IOException("Association rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("Association rejected: error=" + err.value());
     }
 
     @Override
@@ -52,20 +53,20 @@ public class AssociateClient extends BaseClientHandler {
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
             node.getClient().getSession().setState(SessionState.DISCONNECTED);
-            throw new IOException("Association rejected: " + new CmsServiceError(serviceError).constantName() + " (" + serviceError + ")");
+            throw new IOException("Association rejected: serviceError=" + serviceError);
         }
 
         // 验证服务端返回的认证参数（标准 B.3.2 双向认证）
-        if (resp.authParamPresent.value() && resp.authParam.cert.len > 0) {
+        if (resp.isPresent("authenticationParameter") && resp.authenticationParameter.signatureCertificate.value().length > 0) {
             try {
-                validateServerAuthParam(resp.authParam);
+                validateServerAuthParam(resp.authenticationParameter);
             } catch (Exception e) {
                 node.getClient().getSession().setState(SessionState.DISCONNECTED);
                 throw new IOException("Server authentication failed: " + e.getMessage(), e);
             }
         }
 
-        node.getClient().getSession().setAssociationId(resp.assocId.value());
+        node.getClient().getSession().setAssociationId(resp.associationId.value());
         node.getClient().getSession().setState(SessionState.ASSOCIATED);
         log.info("Association established: session={}", node.getClient().getSession().getSessionId());
     }
@@ -82,8 +83,8 @@ public class AssociateClient extends BaseClientHandler {
 
         byte[] signatureValue = GmSignature.sign(cm.getPrivateKey(), signedData);
 
-        return new CmsAuthenticationParameter().cert(certBytes).signedTime(new CmsUtcTime().now())
-                .sigVal(signatureValue);
+        return new CmsAuthenticationParameter().signatureCertificate(certBytes).signedTime(new CmsUtcTime().now())
+                .signedValue(signatureValue);
     }
 
     /**
@@ -91,7 +92,7 @@ public class AssociateClient extends BaseClientHandler {
      */
     private void validateServerAuthParam(CmsAuthenticationParameter authParam) throws Exception {
         // 1. 解析服务端证书
-        byte[] certBytes = authParam.cert.value();
+        byte[] certBytes = authParam.signatureCertificate.value();
         X509Certificate serverCert = GmCertificateParser.parseX509(certBytes);
 
         // 2. 验证证书有效性
@@ -120,7 +121,7 @@ public class AssociateClient extends BaseClientHandler {
         }
 
         // 5. 验签
-        byte[] signatureValue = authParam.sigVal.value();
+        byte[] signatureValue = authParam.signedValue.value();
         if (signatureValue != null && signatureValue.length > 0 && authParam.signedTime != null) {
             // 构建被签名数据：sapRef + time（和服务器端一致）
             String sapRef = currentSapRef != null ? currentSapRef : "";

@@ -14,11 +14,11 @@ import java.io.IOException;
 public class ReleaseClient extends BaseClientHandler {
 
     public void execute() throws Exception {
-        CmsReleaseRequest req = new CmsReleaseRequest().reqId(nextReqId());
+        CmsReleaseRequest req = new CmsReleaseRequest();
 
         byte[] assocId = node.getClient().getSession().getAssociationId();
         if (assocId != null && assocId.length > 0) {
-            req.assocId(assocId);
+            req.associationId(assocId);
         }
 
         send(ServiceName.RELEASE, req);
@@ -27,7 +27,7 @@ public class ReleaseClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsReleaseError err = decodeErr(frame, new CmsReleaseError());
-        throw new IOException("Release rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("Release rejected: " + err.value());
     }
 
     @Override
@@ -36,7 +36,7 @@ public class ReleaseClient extends BaseClientHandler {
 
         int serviceError = resp.serviceError.value();
         if (serviceError != CmsServiceError.NO_ERROR) {
-            throw new IOException("Release rejected: " + new CmsServiceError(serviceError).constantName() + " (" + serviceError + ")");
+            throw new IOException("Release rejected: serviceError=" + serviceError);
         }
 
         node.getClient().getSession().clear();

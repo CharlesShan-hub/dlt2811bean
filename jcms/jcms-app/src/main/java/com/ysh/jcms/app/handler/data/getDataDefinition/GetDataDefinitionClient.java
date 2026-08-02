@@ -10,7 +10,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,12 +32,11 @@ public class GetDataDefinitionClient extends BaseClientHandler {
     }
 
     public void execute(GetDataDefinitionDao dao) throws Exception {
-        CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest().reqId(nextReqId());
+        CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest();
 
         for (GetDataDefinitionDao.DataRef ref : dao.dataRefs()) {
             CmsDataRefEntry entry = new CmsDataRefEntry().reference(ref.reference());
             if (ref.fc() != null) {
-                entry.fcPresent(true);
                 entry.fc(ref.fc());
             }
             req.data.add(entry);
@@ -50,7 +48,7 @@ public class GetDataDefinitionClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataDefinitionError err = decodeErr(frame, new CmsGetDataDefinitionError());
-        throw new IOException("GetDataDefinition rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetDataDefinition rejected: " + err.value());
     }
 
     @Override
@@ -58,12 +56,11 @@ public class GetDataDefinitionClient extends BaseClientHandler {
         CmsGetDataDefinitionResponse resp = decodeResp(frame, new CmsGetDataDefinitionResponse());
 
         List<DefEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.data.count; i++) {
-            CmsDataDefResultEntry src = resp.data.items.get(i);
-            int choice = src.definition.choice.value();
+        for (CmsDataDefResultEntry src : resp.data) {
+            int choice = src.definition.choice();
             if (choice == 0)
                 continue;
-            String cdc = src.cdcTypePresent.value() ? new String(src.cdcType.value(), StandardCharsets.UTF_8) : "";
+            String cdc = src.isPresent("cdcType") ? src.cdcType.value() : "";
             entries.add(new DefEntry(cdc, choice));
         }
         this.lastEntries = entries;

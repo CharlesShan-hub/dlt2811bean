@@ -57,12 +57,11 @@ public class AssociateServer extends BaseServerHandler {
     @Override
     protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsAssociateRequest req = (CmsAssociateRequest) rawReq;
-        log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
+        String sapRef = req.isPresent("serverAccessPointReference") ? req.serverAccessPointReference.value() : null;
+        log.info("Associate request from {}: reqId={}, sapRef={}", session.getSessionId(), reqId, sapRef);
 
         if (session.isAssociated())
             return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
-
-        String sapRef = req.isPresent("serverAccessPointReference") ? req.serverAccessPointReference.value() : null;
 
         // 未指定访问点时选默认
         if (sapRef == null) {

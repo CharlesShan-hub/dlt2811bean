@@ -39,7 +39,7 @@ public class GetGoCbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetGoCbValuesError err = decodeErr(frame, new CmsGetGoCbValuesError());
-        throw new IOException("GetGoCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetGoCBValues rejected: " + err.value());
     }
 
     @Override

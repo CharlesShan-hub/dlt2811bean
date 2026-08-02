@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryResponse;
@@ -30,8 +31,8 @@ public class GetDataDirectoryClient extends BaseClientHandler {
     }
 
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().reqId(nextReqId()).dataReference(dao.dataReference())
-                .refAfter(dao.referenceAfter());
+        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().dataReference(dao.dataReference())
+                .referenceAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_DIRECTORY, req);
     }
@@ -39,7 +40,7 @@ public class GetDataDirectoryClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataDirectoryError err = decodeErr(frame, new CmsGetDataDirectoryError());
-        throw new IOException("GetDataDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetDataDirectory rejected: " + err.value());
     }
 
     @Override
@@ -47,8 +48,8 @@ public class GetDataDirectoryClient extends BaseClientHandler {
         CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();
-        for (String name : resp.dataAttributes()) {
-            entries.add(new DirEntry(name, null));
+        for (CmsSubRefEntry e : resp.dataAttribute) {
+            entries.add(new DirEntry(e.reference.value(), null));
         }
         this.lastEntries = entries;
         log.info("GetDataDirectory succeeded: {} entries", entries.size());

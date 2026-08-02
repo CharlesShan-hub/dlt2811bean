@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
@@ -30,8 +31,8 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
     }
 
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
-                .refAfter(dao.referenceAfter());
+        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().datasetReference(dao.datasetReference())
+                .referenceAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_SET_DIRECTORY, req);
     }
@@ -39,7 +40,7 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataSetDirectoryError err = decodeErr(frame, new CmsGetDataSetDirectoryError());
-        throw new IOException("GetDataSetDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetDataSetDirectory rejected: " + err.value());
     }
 
     @Override
@@ -47,8 +48,8 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
         CmsGetDataSetDirectoryResponse resp = decodeResp(frame, new CmsGetDataSetDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();
-        for (String ref : resp.memberRefs()) {
-            entries.add(new DirEntry(ref, null));
+        for (CmsDataRefFcEntry e : resp.memberData) {
+            entries.add(new DirEntry(e.reference.value(), null));
         }
         this.lastEntries = entries;
         log.info("GetDataSetDirectory succeeded: {} entries", entries.size());

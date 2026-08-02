@@ -15,7 +15,7 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 public class AbortClient extends BaseClientHandler {
 
     public void execute(AbortClientDao dao) throws Exception {
-        CmsAbort req = new CmsAbort().reqId(0).reason(dao.reason());
+        CmsAbort req = new CmsAbort().reason(dao.reason());
 
         sendOneWay(ServiceName.ABORT, req);
     }

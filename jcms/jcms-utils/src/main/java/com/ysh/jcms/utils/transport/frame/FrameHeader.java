@@ -6,7 +6,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * FrameHeader — 4-byte protocol control header.
+ * FrameHeader — 4-byte APCH control header.
  *
  * <pre>
  * CC byte:

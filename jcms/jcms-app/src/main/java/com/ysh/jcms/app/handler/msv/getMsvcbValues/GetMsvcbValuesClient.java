@@ -13,7 +13,7 @@ import java.util.List;
 public class GetMsvcbValuesClient extends BaseClientHandler {
 
     public void execute(List<String> refs) throws Exception {
-        CmsGetMsvcbValuesRequest req = new CmsGetMsvcbValuesRequest().reqId(nextReqId());
+        CmsGetMsvcbValuesRequest req = new CmsGetMsvcbValuesRequest();
         for (String ref : refs) {
             CmsObjectReference objRef = new CmsObjectReference();
             objRef.value(ref);

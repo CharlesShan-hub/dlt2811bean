@@ -50,7 +50,7 @@ public class SetUrcbValuesDao {
         return ref;
     }
 
-    CmsSetUrcbValuesRequest toRequest(int reqId) {
+    CmsSetUrcbValuesRequest toRequest() {
         CmsSetUrcbValuesRequest req = new CmsSetUrcbValuesRequest();
         CmsSetUrcbEntry entry = new CmsSetUrcbEntry().reference(ref != null ? ref : "");
 

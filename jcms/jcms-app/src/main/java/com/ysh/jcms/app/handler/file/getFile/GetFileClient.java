@@ -33,7 +33,7 @@ public class GetFileClient extends BaseClientHandler {
         long totalBytes = 0;
 
         while (true) {
-            CmsGetFileRequest req = new CmsGetFileRequest().reqId(nextReqId()).filename(remoteFile).startPosition(position);
+            CmsGetFileRequest req = new CmsGetFileRequest().filename(remoteFile).startPosition(position);
 
             Frame frame = send(ServiceName.GET_FILE, req);
 
@@ -76,6 +76,6 @@ public class GetFileClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileError err = decodeFrame(frame, new CmsGetFileError());
-        throw new IOException("GetFile rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetFile rejected: " + err.value());
     }
 }

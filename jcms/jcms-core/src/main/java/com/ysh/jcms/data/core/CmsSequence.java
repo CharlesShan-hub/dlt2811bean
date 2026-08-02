@@ -146,6 +146,12 @@ public abstract class CmsSequence extends CmsType {
     /** Rebind wrapper _v after decode creates a new Inner*. */
     public void rebindWrappers() {
         SequenceMeta meta = SEQ_META.get(getClass());
+        // Rebuild OPTIONAL presence markers: a decoded frame only contains the
+        // fields that were actually present, so presence == field in inner._v.
+        for (String name : meta.optional) {
+            CmsFieldInfo info = meta.byName.get(name);
+            V.setPresent(inner._v, name, inner._v.containsKey(info != null ? info.innerName : name));
+        }
         for (Map.Entry<String, CmsType> entry : injectedWrappers.entrySet()) {
             String name = entry.getKey();
             CmsType wrapper = entry.getValue();
@@ -154,9 +160,10 @@ public abstract class CmsSequence extends CmsType {
             Object sub = inner._v.get(innerKey);
             if (sub instanceof LinkedHashMap) {
                 wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
-            } else if (sub != null && (wrapper instanceof CmsScalar || wrapper instanceof CmsBits)) {
-                // Jackson stores scalar / BIT STRING values directly (e.g. "cbRef1", "0000");
-                // wrap into _v so innerGet()/readPacked() can see them.
+            } else if (sub != null && !(wrapper instanceof CmsSequence) && !(wrapper instanceof CmsChoice)) {
+                // Leaf wrapper (CmsScalar, CmsBits, CmsUtcTime, ...): Jackson stores
+                // the decoded JER value directly (e.g. hex string for UtcTime); wrap
+                // into _v so innerGet()/syncFromInner() can read it.
                 V.setVal(wrapper.inner._v, sub);
             } else if (sub == null && meta.optional.contains(name)) {
                 // Optional field absent after decode — drop stale constructor defaults

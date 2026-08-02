@@ -17,8 +17,8 @@ public class LnDirClient extends BaseClientHandler {
 
     public void execute(LnDirDao dao) throws Exception {
         this.acsiClass = dao.acsiClass();
-        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().reqId(nextReqId()).acsiClass(dao.acsiClass())
-                .refAfter(dao.referenceAfter());
+        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(dao.acsiClass())
+                .referenceAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
             req.reference.choice(CmsReferenceChoice.LD_NAME);
@@ -35,7 +35,7 @@ public class LnDirClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsGetLogicalNodeDirectoryError err = decodeErr(frame, new CmsGetLogicalNodeDirectoryError());
         throw new IOException(
-                "GetLogicalNodeDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+                "GetLogicalNodeDirectory rejected: " + err.value());
     }
 
     @Override

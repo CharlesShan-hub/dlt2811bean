@@ -36,8 +36,8 @@ public class GetDataSetValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().reqId(nextReqId()).datasetReference(dao.datasetReference())
-                .refAfter(dao.referenceAfter());
+        CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().datasetReference(dao.datasetReference())
+                .referenceAfter(dao.referenceAfter());
 
         send(ServiceName.GET_DATA_SET_VALUES, req);
     }
@@ -45,7 +45,7 @@ public class GetDataSetValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataSetValuesError err = decodeErr(frame, new CmsGetDataSetValuesError());
-        throw new IOException("GetDataSetValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetDataSetValues rejected: " + err.value());
     }
 
     @Override
@@ -53,9 +53,8 @@ public class GetDataSetValuesClient extends BaseClientHandler {
         CmsGetDataSetValuesResponse resp = decodeResp(frame, new CmsGetDataSetValuesResponse());
 
         List<DataSetValue> entries = new ArrayList<>();
-        for (int i = 0; i < resp.value.count; i++) {
-            CmsData src = resp.value.items.get(i);
-            int ct = src.choice.value();
+        for (CmsData src : resp.value) {
+            int ct = src.choice();
             if (ct == 0)
                 continue;
             String val = extractValue(src, ct);
@@ -90,13 +89,13 @@ public class GetDataSetValuesClient extends BaseClientHandler {
             case CmsData.CHOICE_FLOAT64 :
                 return Double.toString(d.alt_float64.value());
             case CmsData.CHOICE_VISIBLE_STRING :
-                return new String(d.alt_visible_string.value(), StandardCharsets.UTF_8);
+                return (String) d.alt_visible_string.toJsonValue();
             case CmsData.CHOICE_UNICODE_STRING :
-                return new String(d.alt_unicode_string.value(), StandardCharsets.UTF_8);
+                return (String) d.alt_unicode_string.toJsonValue();
             case CmsData.CHOICE_OCTET_STRING :
-                return new String(d.alt_octet_string.value(), StandardCharsets.UTF_8);
+                return (String) d.alt_octet_string.toJsonValue();
             case CmsData.CHOICE_BIT_STRING :
-                return new String(d.alt_bit_string.value(), StandardCharsets.UTF_8);
+                return new String(d.alt_bit_string, StandardCharsets.UTF_8);
             default :
                 return "(choice=" + ct + ")";
         }

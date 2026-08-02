@@ -12,7 +12,7 @@ import java.io.IOException;
 public class DeleteDataSetClient extends BaseClientHandler {
 
     public void execute(DeleteDataSetDao dao) throws Exception {
-        CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest().reqId(nextReqId()).datasetReference(dao.datasetReference());
+        CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest().datasetReference(dao.datasetReference());
 
         send(ServiceName.DELETE_DATA_SET, req);
     }
@@ -20,7 +20,7 @@ public class DeleteDataSetClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsDeleteDataSetError err = decodeErr(frame, new CmsDeleteDataSetError());
-        throw new IOException("DeleteDataSet rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("DeleteDataSet rejected: " + err.value());
     }
 
     @Override

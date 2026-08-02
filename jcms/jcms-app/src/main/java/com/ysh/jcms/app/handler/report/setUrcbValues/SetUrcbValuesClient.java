@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.pdu.report.CmsSetUrcbResult;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesResponse;
@@ -12,7 +13,7 @@ import java.io.IOException;
 public class SetUrcbValuesClient extends BaseClientHandler {
 
     public void execute(SetUrcbValuesDao dao) throws Exception {
-        CmsSetUrcbValuesRequest req = dao.toRequest(nextReqId());
+        CmsSetUrcbValuesRequest req = dao.toRequest();
         send(ServiceName.SET_URCB_VALUES, req);
     }
 
@@ -20,10 +21,12 @@ public class SetUrcbValuesClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsSetUrcbValuesError err = decodeErr(frame, new CmsSetUrcbValuesError());
         StringBuilder sb = new StringBuilder("SetURCBValues rejected:");
-        for (int i = 0; i < err.result.count; i++) {
-            if (err.result.items.get(i).errorPresent.value()) {
-                sb.append(" entry[").append(i).append("] error=").append(err.result.items.get(i).error.value());
+        int i = 0;
+        for (CmsSetUrcbResult r : err.result) {
+            if (r.isPresent("error")) {
+                sb.append(" entry[").append(i).append("] error=").append(r.error.value());
             }
+            i++;
         }
         throw new IOException(sb.toString());
     }

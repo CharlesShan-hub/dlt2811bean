@@ -10,26 +10,31 @@ import java.util.List;
  * FrameCodec — stateless frame encoding, decoding, and splitting.
  *
  * <p>
- * Wire format:
+ * Wire format (APDU = APCH + ASDU, ASDU = ReqID + Data, ReqID little-endian):
  *
  * <pre>
- * [FL:2][FrameHeader:4][ASDU:FL-4]
+ * [FL:2][APCH:4][ReqID:2][Data:FL-6]
  * </pre>
  */
 public class FrameCodec {
+
+    private static final int REQID_SIZE = 2;
 
     private FrameCodec() {
     }
 
     public static byte[] encode(Frame frame) throws IOException {
-        int fl = FrameHeader.HEADER_SIZE + frame.asduBytes().length;
+        int fl = FrameHeader.HEADER_SIZE + REQID_SIZE + frame.asduBytes().length;
         frame.header().frameLength(fl);
         byte[] hdr = frame.header().encode();
+        int reqId = frame.reqId();
 
-        ByteArrayOutputStream bos = new ByteArrayOutputStream(2 + hdr.length + frame.asduBytes().length);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream(2 + hdr.length + REQID_SIZE + frame.asduBytes().length);
         bos.write((fl >> 8) & 0xFF);
         bos.write(fl & 0xFF);
         bos.write(hdr);
+        bos.write(reqId & 0xFF); // ReqID low byte first
+        bos.write((reqId >> 8) & 0xFF);
         bos.write(frame.asduBytes());
         return bos.toByteArray();
     }
@@ -41,12 +46,14 @@ public class FrameCodec {
         int fl = ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
         FrameHeader header = FrameHeader.decode(data, offset + 2);
         int asduOff = offset + 2 + FrameHeader.HEADER_SIZE;
-        int asduLen = fl - FrameHeader.HEADER_SIZE;
+        int asduLen = fl - FrameHeader.HEADER_SIZE; // includes ReqID
 
-        if (asduLen < 0 || asduOff + asduLen > data.length) {
+        if (asduLen < REQID_SIZE || asduOff + asduLen > data.length) {
             throw new IllegalArgumentException("Invalid frame: fl=" + fl + ", dataLen=" + data.length);
         }
-        return new Frame(header, Arrays.copyOfRange(data, asduOff, asduOff + asduLen));
+        int reqId = (data[asduOff] & 0xFF) | ((data[asduOff + 1] & 0xFF) << 8);
+        byte[] asdu = Arrays.copyOfRange(data, asduOff + REQID_SIZE, asduOff + asduLen);
+        return new Frame(header, asdu, reqId);
     }
 
     public static List<Frame> split(Frame frame, int maxPayloadSize) {

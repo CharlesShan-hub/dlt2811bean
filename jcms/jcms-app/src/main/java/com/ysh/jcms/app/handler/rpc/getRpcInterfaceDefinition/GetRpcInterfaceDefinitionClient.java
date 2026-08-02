@@ -10,9 +10,9 @@ import java.io.IOException;
 
 public class GetRpcInterfaceDefinitionClient extends BaseClientHandler {
     public void execute(String iface, String after) throws Exception {
-        CmsGetRpcInterfaceDefinitionRequest req = new CmsGetRpcInterfaceDefinitionRequest().reqId(nextReqId()).interfaceName(iface);
+        CmsGetRpcInterfaceDefinitionRequest req = new CmsGetRpcInterfaceDefinitionRequest().interfaceName(iface);
         if (after != null && !after.isEmpty())
-            req.refAfter(after);
+            req.referenceAfter(after);
         send(ServiceName.GET_RPC_INTERFACE_DEFINITION, req);
     }
     @Override

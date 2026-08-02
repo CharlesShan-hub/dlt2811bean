@@ -33,12 +33,11 @@ public class GetDataValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetDataValuesDao dao) throws Exception {
-        CmsGetDataValuesRequest req = new CmsGetDataValuesRequest().reqId(nextReqId());
+        CmsGetDataValuesRequest req = new CmsGetDataValuesRequest();
 
         for (GetDataValuesDao.DataRef ref : dao.dataRefs()) {
             CmsDataRefEntry entry = new CmsDataRefEntry().reference(ref.reference());
             if (ref.fc() != null) {
-                entry.fcPresent(true);
                 entry.fc(ref.fc());
             }
             req.data.add(entry);
@@ -50,7 +49,7 @@ public class GetDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetDataValuesError err = decodeErr(frame, new CmsGetDataValuesError());
-        throw new IOException("GetDataValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetDataValues rejected: " + err.value());
     }
 
     @Override
@@ -58,16 +57,15 @@ public class GetDataValuesClient extends BaseClientHandler {
         CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
 
         List<DataValue> values = new ArrayList<>();
-        for (int i = 0; i < resp.value.count; i++) {
-            CmsData d = resp.value.items.get(i);
-            values.add(new DataValue(d.choice.value(), extractValue(d)));
+        for (CmsData d : resp.value) {
+            values.add(new DataValue(d.choice(), extractValue(d)));
         }
         this.lastValues = values;
         log.info("GetDataValues succeeded: {} values", values.size());
     }
 
     private static String extractValue(CmsData d) {
-        int ct = d.choice.value();
+        int ct = d.choice();
         switch (ct) {
             case CmsData.CHOICE_BOOLEAN :
                 return Boolean.toString(d.alt_boolean.value());
@@ -92,22 +90,15 @@ public class GetDataValuesClient extends BaseClientHandler {
             case CmsData.CHOICE_FLOAT64 :
                 return Double.toString(d.alt_float64.value());
             case CmsData.CHOICE_VISIBLE_STRING :
-                return new String(d.alt_visible_string.value(), StandardCharsets.UTF_8);
+                return (String) d.alt_visible_string.toJsonValue();
             case CmsData.CHOICE_UNICODE_STRING :
-                return new String(d.alt_unicode_string.value(), StandardCharsets.UTF_8);
+                return (String) d.alt_unicode_string.toJsonValue();
             case CmsData.CHOICE_OCTET_STRING :
-                return bytesToHex(d.alt_octet_string.value());
+                return (String) d.alt_octet_string.toJsonValue();
             case CmsData.CHOICE_BIT_STRING :
-                return new String(d.alt_bit_string.value(), StandardCharsets.UTF_8);
+                return new String(d.alt_bit_string, StandardCharsets.UTF_8);
             default :
                 return "(choice=" + ct + ")";
         }
-    }
-
-    private static String bytesToHex(byte[] bytes) {
-        StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (byte b : bytes)
-            sb.append(String.format("%02X", b & 0xFF));
-        return sb.toString();
     }
 }

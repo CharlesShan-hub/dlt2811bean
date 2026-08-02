@@ -9,7 +9,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class GetFileDirectoryClient extends BaseClientHandler {
     }
 
     public void execute(GetFileDirectoryDao dao) throws Exception {
-        CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest().reqId(nextReqId());
+        CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest();
 
         if (dao.pathName() != null && !dao.pathName().isEmpty()) {
             req.pathName(dao.pathName());
@@ -59,7 +58,7 @@ public class GetFileDirectoryClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileDirectoryError err = decodeErr(frame, new CmsGetFileDirectoryError());
-        throw new IOException("GetFileDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetFileDirectory rejected: " + err.value());
     }
 
     @Override
@@ -67,11 +66,10 @@ public class GetFileDirectoryClient extends BaseClientHandler {
         CmsGetFileDirectoryResponse resp = decodeResp(frame, new CmsGetFileDirectoryResponse());
 
         List<FileEntryResult> entries = new ArrayList<>();
-        for (int i = 0; i < resp.fileEntry.count; i++) {
-            CmsFileEntry fe = resp.fileEntry.items.get(i);
+        for (CmsFileEntry fe : resp.fileEntry) {
             long epochSeconds = fe.lastModified.secondsSinceEpoch.value();
             int fractionMicros = fe.lastModified.fractionOfSecond.value();
-            entries.add(new FileEntryResult(new String(fe.fileName.value(), StandardCharsets.UTF_8), fe.fileSize.value(),
+            entries.add(new FileEntryResult(fe.fileName.value(), fe.fileSize.value(),
                     epochSeconds * 1000 + fractionMicros / 1000, fe.checkSum.value()));
         }
 

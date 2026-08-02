@@ -12,7 +12,7 @@ import java.io.IOException;
 public class SelectEditSgClient extends BaseClientHandler {
 
     public void execute(SelectEditSgDao dao) throws Exception {
-        CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference())
+        CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().sgcbReference(dao.sgcbReference())
                 .settingGroupNumber(dao.settingGroupNumber());
 
         send(ServiceName.SELECT_EDIT_SG, req);
@@ -21,7 +21,7 @@ public class SelectEditSgClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsSelectEditSgError err = decodeErr(frame, new CmsSelectEditSgError());
-        throw new IOException("SelectEditSG rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("SelectEditSG rejected: " + err.value());
     }
 
     @Override

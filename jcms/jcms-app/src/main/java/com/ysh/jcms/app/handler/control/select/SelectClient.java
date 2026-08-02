@@ -11,7 +11,7 @@ import java.io.IOException;
 public class SelectClient extends BaseClientHandler {
 
     public void execute(String ref) throws Exception {
-        CmsSelectRequest req = new CmsSelectRequest().reqId(nextReqId()).reference(ref);
+        CmsSelectRequest req = new CmsSelectRequest().reference(ref);
         send(ServiceName.SELECT, req);
     }
 

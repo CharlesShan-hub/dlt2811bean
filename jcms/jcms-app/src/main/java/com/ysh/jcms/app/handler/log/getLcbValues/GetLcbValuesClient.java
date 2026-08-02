@@ -39,7 +39,7 @@ public class GetLcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLcbValuesError err = decodeErr(frame, new CmsGetLcbValuesError());
-        throw new IOException("GetLCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetLCBValues rejected: " + err.value());
     }
 
     @Override

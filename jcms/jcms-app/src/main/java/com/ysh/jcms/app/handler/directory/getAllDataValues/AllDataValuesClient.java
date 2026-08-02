@@ -7,7 +7,6 @@ import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesResponse;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -18,14 +17,12 @@ import java.util.List;
 public class AllDataValuesClient extends BaseClientHandler {
 
     public void execute(AllDataValuesDao dao) throws Exception {
-        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().reqId(nextReqId()).refAfter(dao.referenceAfter());
+        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().referenceAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
-            req.reference.choice(CmsReferenceChoice.LD_NAME);
-            req.reference.altLdName.value(dao.ldName());
+            req.reference.altLdName(dao.ldName());
         } else if (dao.lnReference() != null) {
-            req.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-            req.reference.altLnReference.value(dao.lnReference());
+            req.reference.altLnReference(dao.lnReference());
         }
 
         if (dao.fc() != null) {
@@ -38,7 +35,7 @@ public class AllDataValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetAllDataValuesError err = decodeErr(frame, new CmsGetAllDataValuesError());
-        throw new IOException("GetAllDataValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetAllDataValues rejected: " + err.value());
     }
 
     @Override
@@ -46,8 +43,8 @@ public class AllDataValuesClient extends BaseClientHandler {
         CmsGetAllDataValuesResponse resp = decodeResp(frame, new CmsGetAllDataValuesResponse());
 
         List<ContentManager.AllDataEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.data.count; i++) {
-            CmsDataValueEntryWrap entry = new CmsDataValueEntryWrap(resp.data.items.get(i));
+        for (CmsDataValueEntry e : resp.data) {
+            CmsDataValueEntryWrap entry = new CmsDataValueEntryWrap(e);
             if (entry.choiceType == 0)
                 continue; // skip error/empty entries
             entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
@@ -63,8 +60,8 @@ public class AllDataValuesClient extends BaseClientHandler {
         final String valueString;
 
         CmsDataValueEntryWrap(CmsDataValueEntry e) {
-            this.reference = new String(e.reference.value());
-            int ct = e.value.choice.value();
+            this.reference = e.reference.value();
+            int ct = e.value.choice();
             this.choiceType = ct;
             this.valueString = extractValue(e.value, ct);
         }
@@ -94,13 +91,13 @@ public class AllDataValuesClient extends BaseClientHandler {
                 case CmsData.CHOICE_FLOAT64 :
                     return Double.toString(d.alt_float64.value());
                 case CmsData.CHOICE_VISIBLE_STRING :
-                    return new String(d.alt_visible_string.value(), java.nio.charset.StandardCharsets.UTF_8);
+                    return (String) d.alt_visible_string.toJsonValue();
                 case CmsData.CHOICE_UNICODE_STRING :
-                    return new String(d.alt_unicode_string.value(), java.nio.charset.StandardCharsets.UTF_8);
+                    return (String) d.alt_unicode_string.toJsonValue();
                 case CmsData.CHOICE_OCTET_STRING :
-                    return new String(d.alt_octet_string.value(), java.nio.charset.StandardCharsets.UTF_8);
+                    return (String) d.alt_octet_string.toJsonValue();
                 case CmsData.CHOICE_BIT_STRING :
-                    return new String(d.alt_bit_string.value(), java.nio.charset.StandardCharsets.UTF_8);
+                    return new String(d.alt_bit_string, java.nio.charset.StandardCharsets.UTF_8);
                 default :
                     return "(choice=" + ct + ")";
             }

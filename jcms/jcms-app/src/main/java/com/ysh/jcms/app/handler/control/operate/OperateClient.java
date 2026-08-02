@@ -15,14 +15,13 @@ import java.util.Map;
 public class OperateClient extends BaseClientHandler {
 
     public void execute(String ref, Map<String, String> args) throws Exception {
-        CmsOperateRequest req = new CmsOperateRequest().reqId(nextReqId()).reference(ref);
+        CmsOperateRequest req = new CmsOperateRequest().reference(ref);
 
         // ctlVal — optional, from --value flag (boolean for SPC)
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();
-            ctlVal.choice.value(CmsData.CHOICE_BOOLEAN);
-            ctlVal.alt_boolean.value(Boolean.parseBoolean(valueStr));
+            ctlVal.alt_boolean(Boolean.parseBoolean(valueStr));
             req.ctlVal(ctlVal);
         }
 
