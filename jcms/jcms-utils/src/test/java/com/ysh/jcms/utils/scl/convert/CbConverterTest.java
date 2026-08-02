@@ -29,7 +29,7 @@ public class CbConverterTest {
         assertNotNull(rc);
 
         CmsCbValueChoice result = CbConverter.brcbFrom(rc);
-        assertEquals(CmsCbValueChoice.BRCB, result.choice.value());
+        assertEquals(CmsCbValueChoice.BRCB, result.choice());
         assertNotNull(result.altBrcb);
     }
 
@@ -41,7 +41,7 @@ public class CbConverterTest {
         assertNotNull(rc);
 
         CmsCbValueChoice result = CbConverter.urcbFrom(rc);
-        assertEquals(CmsCbValueChoice.URCB, result.choice.value());
+        assertEquals(CmsCbValueChoice.URCB, result.choice());
     }
 
     @Test
@@ -52,7 +52,7 @@ public class CbConverterTest {
         assertNotNull(gse);
 
         CmsCbValueChoice result = CbConverter.gocbFrom(gse);
-        assertEquals(CmsCbValueChoice.GOCB, result.choice.value());
+        assertEquals(CmsCbValueChoice.GOCB, result.choice());
     }
 
     @Test
@@ -63,7 +63,7 @@ public class CbConverterTest {
         assertNotNull(lc);
 
         CmsCbValueChoice result = CbConverter.lcbFrom(lc);
-        assertEquals(CmsCbValueChoice.LCB, result.choice.value());
+        assertEquals(CmsCbValueChoice.LCB, result.choice());
     }
 
     @Test
@@ -74,7 +74,7 @@ public class CbConverterTest {
         assertNotNull(sv);
 
         CmsCbValueChoice result = CbConverter.msvcbFrom(sv);
-        assertEquals(CmsCbValueChoice.MSVCB, result.choice.value());
+        assertEquals(CmsCbValueChoice.MSVCB, result.choice());
         assertEquals(4800, result.altMsvcb.smpRate.value());
     }
 }

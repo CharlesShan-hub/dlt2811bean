@@ -1,8 +1,8 @@
 package com.ysh.jcms.utils.log;
 
 import com.ysh.jcms.data.bitarray.CmsReasonCode;
-import com.ysh.jcms.pdu.log.CmsLogDataEntry;
-import com.ysh.jcms.pdu.log.CmsLogEntry;
+import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
+import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -194,7 +194,7 @@ public class LogStorage {
         dos.writeInt(days);
 
         // entryId (固定 8 字节)
-        byte[] eid = entry.entryId.value();
+        byte[] eid = entry.entryID.value();
         if (eid == null)
             eid = new byte[8];
         byte[] eidPadded = new byte[8];
@@ -202,10 +202,10 @@ public class LogStorage {
         dos.write(eidPadded);
 
         // data entries
-        int numData = entry.entryData.items.size();
+        int numData = entry.entryData.size();
         dos.writeInt(numData);
         for (int i = 0; i < numData; i++) {
-            CmsLogDataEntry de = entry.entryData.items.get(i);
+            CmsLogDataEntry de = entry.entryData.get(i);
             writeDataEntry(dos, de);
         }
 
@@ -228,7 +228,7 @@ public class LogStorage {
 
     private void writeDataEntry(DataOutputStream dos, CmsLogDataEntry de) throws IOException {
         // reference
-        byte[] refBytes = de.reference.value();
+        byte[] refBytes = de.reference.value().getBytes(StandardCharsets.UTF_8);
         if (refBytes == null)
             refBytes = new byte[0];
         dos.writeShort(refBytes.length);
@@ -252,12 +252,12 @@ public class LogStorage {
     }
 
     private static void writeReasonCode(DataOutputStream dos, CmsReasonCode rc) throws IOException {
-        dos.writeBoolean(rc.data_change.value());
-        dos.writeBoolean(rc.quality_change.value());
-        dos.writeBoolean(rc.data_update.value());
-        dos.writeBoolean(rc.integrity.value());
-        dos.writeBoolean(rc.general_interrogation.value());
-        dos.writeBoolean(rc.application_trigger.value());
+        dos.writeBoolean(rc.data_change());
+        dos.writeBoolean(rc.quality_change());
+        dos.writeBoolean(rc.data_update());
+        dos.writeBoolean(rc.integrity());
+        dos.writeBoolean(rc.general_interrogation());
+        dos.writeBoolean(rc.application_trigger());
     }
 
     private CmsLogEntry readEntry(DataInputStream in, long timeMsOfDay, int timeDaysSince, byte[] entryIdBytes, int numDataEntries)
@@ -266,7 +266,7 @@ public class LogStorage {
 
         entry.timeOfEntry.msOfDay.value(timeMsOfDay);
         entry.timeOfEntry.daysSince1984.value(timeDaysSince);
-        entry.entryId.value(entryIdBytes);
+        entry.entryID.value(entryIdBytes);
 
         for (int i = 0; i < numDataEntries; i++) {
             CmsLogDataEntry de = readDataEntry(in);
@@ -274,7 +274,6 @@ public class LogStorage {
                 entry.entryData.add(de);
             }
         }
-        entry.entryData.count = entry.entryData.items.size();
         return entry;
     }
 
@@ -285,7 +284,7 @@ public class LogStorage {
         int refLen = in.readShort() & 0xFFFF;
         byte[] refBytes = new byte[refLen];
         in.readFully(refBytes);
-        de.reference.value(refBytes);
+        de.reference(refBytes);
 
         // fc
         de.fc.value(in.readByte() & 0xFF);
@@ -307,12 +306,12 @@ public class LogStorage {
     }
 
     private static void readReasonCode(DataInputStream in, CmsReasonCode rc) throws IOException {
-        rc.data_change.value(in.readBoolean());
-        rc.quality_change.value(in.readBoolean());
-        rc.data_update.value(in.readBoolean());
-        rc.integrity.value(in.readBoolean());
-        rc.general_interrogation.value(in.readBoolean());
-        rc.application_trigger.value(in.readBoolean());
+        rc.data_change(in.readBoolean());
+        rc.quality_change(in.readBoolean());
+        rc.data_update(in.readBoolean());
+        rc.integrity(in.readBoolean());
+        rc.general_interrogation(in.readBoolean());
+        rc.application_trigger(in.readBoolean());
     }
 
     private void skipDataEntries(DataInputStream in, int num) throws IOException {

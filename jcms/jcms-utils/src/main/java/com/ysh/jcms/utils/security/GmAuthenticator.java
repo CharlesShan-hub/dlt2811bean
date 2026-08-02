@@ -79,13 +79,13 @@ public class GmAuthenticator {
      */
     public Optional<CmsServiceError> validate(CmsAuthenticationParameter authParam, byte[] signedData) {
         // 1. Check if authentication parameter exists
-        if (authParam == null || authParam.cert == null) {
+        if (authParam == null || authParam.signatureCertificate == null) {
             log.warn("Authentication parameter or certificate is missing");
             return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
         }
 
         // 2. Get certificate
-        byte[] certBytes = authParam.cert.value();
+        byte[] certBytes = authParam.signatureCertificate.value();
         X509Certificate clientCert;
         try {
             clientCert = GmCertificateParser.parseX509(certBytes);
@@ -129,7 +129,7 @@ public class GmAuthenticator {
         }
 
         // 6. Verify signature
-        byte[] signatureValue = authParam.sigVal.value();
+        byte[] signatureValue = authParam.signedValue.value();
         PublicKey publicKey = clientCert.getPublicKey();
 
         if (!GmSignature.verify(publicKey, signedData, signatureValue)) {
@@ -157,7 +157,7 @@ public class GmAuthenticator {
             return Optional.of(new CmsServiceError(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE));
         }
 
-        byte[] signatureValue = authParam.sigVal.value();
+        byte[] signatureValue = authParam.signedValue.value();
         if (GmSignature.verify(publicKey, signedData, signatureValue)) {
             return Optional.empty();
         }

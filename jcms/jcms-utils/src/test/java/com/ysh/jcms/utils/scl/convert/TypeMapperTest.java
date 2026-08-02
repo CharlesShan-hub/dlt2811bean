@@ -1,7 +1,6 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.data.scalar.*;
-import com.ysh.jcms.data.string.CmsUint8Array;
+import com.ysh.jcms.data.choice.CmsData;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,33 +9,33 @@ public class TypeMapperTest {
 
     @Test
     public void testBoolean() {
-        assertTrue(((CmsBoolean) TypeMapper.createTypedValue("BOOLEAN", "true")).value());
-        assertFalse(((CmsBoolean) TypeMapper.createTypedValue("BOOLEAN", "false")).value());
+        assertTrue(TypeMapper.createTypedValue("BOOLEAN", "true").alt_boolean.value());
+        assertFalse(TypeMapper.createTypedValue("BOOLEAN", "false").alt_boolean.value());
     }
 
     @Test
     public void testInt32() {
-        assertEquals(42, ((CmsInt32) TypeMapper.createTypedValue("INT32", "42")).value());
+        assertEquals(42, TypeMapper.createTypedValue("INT32", "42").alt_int32.value());
     }
 
     @Test
     public void testFloat32() {
-        assertEquals(3.14f, ((CmsFloat32) TypeMapper.createTypedValue("FLOAT32", "3.14")).value(), 0.001f);
+        assertEquals(3.14f, TypeMapper.createTypedValue("FLOAT32", "3.14").alt_float32.value(), 0.001f);
     }
 
     @Test
     public void testEnum() {
-        assertEquals(2, ((CmsInt32) TypeMapper.createTypedValue("Enum", "2")).value());
+        assertEquals(2, TypeMapper.createTypedValue("Enum", "2").alt_int32.value());
     }
 
     @Test
     public void testFallback() {
-        assertTrue(TypeMapper.createTypedValue("UNKNOWN", "hello") instanceof CmsUint8Array);
+        assertEquals(CmsData.CHOICE_OCTET_STRING, TypeMapper.createTypedValue("UNKNOWN", "hello").choice());
     }
 
     @Test
     public void testNull() {
-        assertTrue(TypeMapper.createTypedValue(null, "hello") instanceof CmsUint8Array);
-        assertTrue(TypeMapper.createTypedValue("INT32", null) instanceof CmsUint8Array);
+        assertEquals(CmsData.CHOICE_VISIBLE_STRING, TypeMapper.createTypedValue(null, "hello").choice());
+        assertEquals(CmsData.CHOICE_VISIBLE_STRING, TypeMapper.createTypedValue("INT32", null).choice());
     }
 }

@@ -11,7 +11,7 @@ public class DataConverterTest {
     public void testBooleanTrue() {
         DataValueEntry dv = new DataValueEntry("ref", "true", "BOOLEAN");
         CmsData data = DataConverter.toCmsData(dv);
-        assertEquals(CmsData.CHOICE_BOOLEAN, data.choice.value());
+        assertEquals(CmsData.CHOICE_BOOLEAN, data.choice());
         assertTrue(data.alt_boolean.value());
     }
 
@@ -19,7 +19,7 @@ public class DataConverterTest {
     public void testInt32() {
         DataValueEntry dv = new DataValueEntry("ref", "42", "INT32");
         CmsData data = DataConverter.toCmsData(dv);
-        assertEquals(CmsData.CHOICE_INT32, data.choice.value());
+        assertEquals(CmsData.CHOICE_INT32, data.choice());
         assertEquals(42, data.alt_int32.value());
     }
 
@@ -27,7 +27,7 @@ public class DataConverterTest {
     public void testFloat32() {
         DataValueEntry dv = new DataValueEntry("ref", "3.14", "FLOAT32");
         CmsData data = DataConverter.toCmsData(dv);
-        assertEquals(CmsData.CHOICE_FLOAT32, data.choice.value());
+        assertEquals(CmsData.CHOICE_FLOAT32, data.choice());
         assertEquals(3.14f, data.alt_float32.value(), 0.001f);
     }
 
@@ -35,7 +35,7 @@ public class DataConverterTest {
     public void testEnumAsInt32() {
         DataValueEntry dv = new DataValueEntry("ref", "5", "Enum");
         CmsData data = DataConverter.toCmsData(dv);
-        assertEquals(CmsData.CHOICE_INT32, data.choice.value());
+        assertEquals(CmsData.CHOICE_INT32, data.choice());
         assertEquals(5, data.alt_int32.value());
     }
 
@@ -43,19 +43,19 @@ public class DataConverterTest {
     public void testFallbackVisibleString() {
         DataValueEntry dv = new DataValueEntry("ref", "hello", "UNKNOWN");
         CmsData data = DataConverter.toCmsData(dv);
-        assertEquals(CmsData.CHOICE_VISIBLE_STRING, data.choice.value());
+        assertEquals(CmsData.CHOICE_VISIBLE_STRING, data.choice());
     }
 
     @Test
     public void testAutoDetectBoolean() {
         CmsData data = DataConverter.autoDetect("true");
-        assertEquals(CmsData.CHOICE_BOOLEAN, data.choice.value());
+        assertEquals(CmsData.CHOICE_BOOLEAN, data.choice());
         assertTrue(data.alt_boolean.value());
     }
 
     @Test
     public void testAutoDetectInt8() {
         CmsData data = DataConverter.autoDetect("42");
-        assertEquals(CmsData.CHOICE_INT8, data.choice.value()); // 42 fits in byte
+        assertEquals(CmsData.CHOICE_INT8, data.choice()); // 42 fits in byte
     }
 }

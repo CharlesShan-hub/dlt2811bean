@@ -28,7 +28,7 @@ public class DataDefinitionResolverTest {
         DataDefinitionEntry entry = DataDefinitionResolver.resolve(nav);
         assertNotNull(entry);
         // stVal bType=INT32 → choice=SEL_INT32=6
-        assertEquals(6, entry.definition().choice.value());
+        assertEquals(6, entry.definition().choice());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class DataDefinitionResolverTest {
         DataDefinitionEntry entry = DataDefinitionResolver.resolve(nav);
         assertNotNull(entry);
         // offset bType=FLOAT32 → choice=12
-        assertEquals(CmsDataTypeMap.SEL_FLOAT32, entry.definition().choice.value());
+        assertEquals(CmsDataTypeMap.SEL_FLOAT32, entry.definition().choice());
     }
 
     @Test
@@ -47,20 +47,20 @@ public class DataDefinitionResolverTest {
         Navigator nav = Navigator.go(doc, "E1Q1SB1/C1/LPHD1.Proxy");
         DataDefinitionEntry entry = DataDefinitionResolver.resolve(nav);
         assertNotNull(entry);
-        assertEquals(CmsDataTypeMap.SEL_STRUCTURE, entry.definition().choice.value());
+        assertEquals(CmsDataTypeMap.SEL_STRUCTURE, entry.definition().choice());
         assertEquals("SPS", entry.cdcType());
-        assertTrue(entry.definition().alt_structure.items.size() > 0);
+        assertTrue(entry.definition().alt_structure.size() > 0);
     }
 
     @Test
     public void testToDataDefinitionBitString() {
-        int choice = DataDefinitionResolver.toDataDefinition("BIT_STRING").choice.value();
+        int choice = DataDefinitionResolver.toDataDefinition("BIT_STRING").choice();
         assertEquals(CmsDataTypeMap.SEL_BIT_STRING, choice);
     }
 
     @Test
     public void testToDataDefinitionVisibleString() {
-        int choice = DataDefinitionResolver.toDataDefinition("VisString255").choice.value();
+        int choice = DataDefinitionResolver.toDataDefinition("VisString255").choice();
         assertEquals(CmsDataTypeMap.SEL_VISIBLE_STRING, choice);
     }
 }

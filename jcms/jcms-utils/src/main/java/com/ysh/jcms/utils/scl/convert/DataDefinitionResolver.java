@@ -1,6 +1,5 @@
 package com.ysh.jcms.utils.scl.convert;
 
-import com.ysh.jcms.core.CmsArray;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.scalar.CmsFC;
@@ -12,6 +11,9 @@ import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.navigate.TypeChain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 数据定义解析器。
@@ -143,7 +145,7 @@ public final class DataDefinitionResolver {
         if (doType == null)
             return null;
 
-        CmsArray<CmsDataDefinitionStructElem> arr = new CmsArray<>();
+        List<CmsDataDefinitionStructElem> arr = new ArrayList<>();
         for (SclDA da : doType.das()) {
             arr.add(new CmsDataDefinitionStructElem().name(da.name()).fc(da.fc() != null ? CmsFC.fromCode(da.fc()) : 0)
                     .type(toDataDefinition(da.bType())));
