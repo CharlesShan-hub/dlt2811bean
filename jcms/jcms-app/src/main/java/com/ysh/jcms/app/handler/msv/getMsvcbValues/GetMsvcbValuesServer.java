@@ -2,13 +2,14 @@ package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.msv.MsvcbCache;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.choice.CmsMsvcbValueChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesRequest;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
-import com.ysh.jcms.pdu.msv.CmsMsvcbValueChoice;
 import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -35,29 +36,27 @@ public class GetMsvcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) rawReq;
-        log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
+        log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
 
-        CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse().reqId(reqId);
+        CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse();
 
-        for (int i = 0; i < req.reference.count; i++) {
-            String ref = str(req.reference.items.get(i));
-            CmsMsvcbValueChoice choice = new CmsMsvcbValueChoice();
+        for (CmsObjectReference refObj : req.reference) {
+            String ref = str(refObj);
+            CmsMsvcbValueChoice choice;
             CmsMsvcb msvcb = resolveMsvcb(ied, ref);
             if (msvcb != null) {
-                choice.choice(CmsMsvcbValueChoice.VALUE);
-                choice.altValue = msvcb;
+                choice = new CmsMsvcbValueChoice().altValue(msvcb);
             } else {
-                choice.choice(CmsMsvcbValueChoice.ERROR);
-                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                choice = new CmsMsvcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             resp.msvcb.add(choice);
         }
         resp.moreFollows(false);
-        log.info("GetMSVCBValues: returning {} entries", resp.msvcb.items.size());
+        log.info("GetMSVCBValues: returning {} entries", resp.msvcb.size());
         return ok(resp, reqId);
     }
 

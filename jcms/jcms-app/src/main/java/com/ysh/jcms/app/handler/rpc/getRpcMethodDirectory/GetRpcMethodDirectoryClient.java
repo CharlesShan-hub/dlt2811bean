@@ -10,11 +10,11 @@ import java.io.IOException;
 
 public class GetRpcMethodDirectoryClient extends BaseClientHandler {
     public void execute(String iface, String after) throws Exception {
-        CmsGetRpcMethodDirectoryRequest req = new CmsGetRpcMethodDirectoryRequest().reqId(nextReqId());
+        CmsGetRpcMethodDirectoryRequest req = new CmsGetRpcMethodDirectoryRequest();
         if (iface != null && !iface.isEmpty())
             req.interfaceName(iface);
         if (after != null && !after.isEmpty())
-            req.refAfter(after);
+            req.referenceAfter(after);
         send(ServiceName.GET_RPC_METHOD_DIRECTORY, req);
     }
     @Override

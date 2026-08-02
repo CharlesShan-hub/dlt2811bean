@@ -13,7 +13,7 @@ import java.io.IOException;
 public class NegotiateClient extends BaseClientHandler {
 
     public void execute(NegotiateClientDao dao) throws Exception {
-        CmsNegotiateRequest req = new CmsNegotiateRequest().reqId(nextReqId()).apduSize(dao.apduSize()).asduSize(dao.asduSize())
+        CmsNegotiateRequest req = new CmsNegotiateRequest().apduSize(dao.apduSize()).asduSize(dao.asduSize())
                 .protocolVersion(dao.protocolVersion());
 
         send(ServiceName.ASSOCIATE_NEGOTIATE, req);
@@ -22,7 +22,7 @@ public class NegotiateClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsNegotiateError err = decodeErr(frame, new CmsNegotiateError());
-        throw new IOException("Negotiate rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("Negotiate rejected: " + err.value());
     }
 
     @Override
@@ -43,6 +43,6 @@ public class NegotiateClient extends BaseClientHandler {
         session.getConnection().setPeerAsduSize((int) resp.asduSize.value());
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
-                resp.asduSize.value(), resp.protocolVersion.value(), new String(resp.modelVersion.value()));
+                resp.asduSize.value(), resp.protocolVersion.value(), resp.modelVersion.value());
     }
 }

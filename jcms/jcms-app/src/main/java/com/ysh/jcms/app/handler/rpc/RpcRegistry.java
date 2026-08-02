@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.rpc;
 
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.pdu.rpc.CmsRpcMethodEntry;
+import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodEntry;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -75,8 +75,8 @@ public class RpcRegistry {
     private static CmsDataDefinition buildVersionDataDef() {
         // VisibleString definition (choice=16) with max length 64
         CmsDataDefinition def = new CmsDataDefinition();
-        def.choice.value(16); // visible-string
-        def.alt_visible_string_len.value(64);
+        def.choice(16); // visible-string
+        def.alt_visible_string_len(64);
         return def;
     }
 

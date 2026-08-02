@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.pdu.log.CmsLogEntry;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogAfterError;
 import com.ysh.jcms.pdu.log.CmsQueryLogAfterRequest;
 import com.ysh.jcms.pdu.log.CmsQueryLogAfterResponse;
@@ -32,7 +32,7 @@ public class QueryLogAfterServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsQueryLogAfterRequest req = (CmsQueryLogAfterRequest) rawReq;
         String logRef = str(req.logReference);
 
@@ -40,13 +40,13 @@ public class QueryLogAfterServer extends BaseServerHandler {
 
         String entryId = new String(req.entry.value(), StandardCharsets.UTF_8).trim();
         Long startTime = null;
-        if (req.startTimePresent.value()) {
+        if (req.isPresent("startTime")) {
             startTime = (long) req.startTime.daysSince1984.value() * 86400000L + req.startTime.msOfDay.value();
         }
 
         List<CmsLogEntry> entries = logStorage.queryAfter(logRef, entryId, startTime, pageSize());
 
-        CmsQueryLogAfterResponse resp = new CmsQueryLogAfterResponse().reqId(reqId);
+        CmsQueryLogAfterResponse resp = new CmsQueryLogAfterResponse();
         for (CmsLogEntry e : entries) {
             resp.logEntry.add(e);
         }

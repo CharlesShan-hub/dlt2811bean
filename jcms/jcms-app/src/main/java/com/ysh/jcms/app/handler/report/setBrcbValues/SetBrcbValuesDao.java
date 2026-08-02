@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
+import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
-import com.ysh.jcms.pdu.report.CmsSetBrcbEntry;
 
 public class SetBrcbValuesDao {
     private String ref;
@@ -56,37 +56,25 @@ public class SetBrcbValuesDao {
     }
 
     CmsSetBrcbValuesRequest toRequest(int reqId) {
-        CmsSetBrcbValuesRequest req = new CmsSetBrcbValuesRequest().reqId(reqId);
+        CmsSetBrcbValuesRequest req = new CmsSetBrcbValuesRequest();
         CmsSetBrcbEntry entry = new CmsSetBrcbEntry().reference(ref != null ? ref : "");
 
         if (rptId != null)
-            entry.rptId(rptId);
-        if (rptEna != null) {
-            entry.rptEnaPresent(true);
+            entry.rptID(rptId);
+        if (rptEna != null)
             entry.rptEna(rptEna);
-        }
         if (datSet != null)
             entry.datSet(datSet);
-        if (bufTm != null) {
-            entry.bufTmPresent(true);
+        if (bufTm != null)
             entry.bufTm(bufTm);
-        }
-        if (intgPd != null) {
-            entry.intgPdPresent(true);
+        if (intgPd != null)
             entry.intgPd(intgPd);
-        }
-        if (gi != null) {
-            entry.giPresent(true);
+        if (gi != null)
             entry.gi(gi);
-        }
-        if (purgeBuf != null) {
-            entry.purgeBufPresent(true);
+        if (purgeBuf != null)
             entry.purgeBuf(purgeBuf);
-        }
-        if (resvTms != null) {
-            entry.resvTmsPresent(true);
+        if (resvTms != null)
             entry.resvTms(resvTms);
-        }
 
         req.brcb.add(entry);
         return req;

@@ -3,13 +3,13 @@ package com.ysh.jcms.app.handler.sg.getEditSgValue;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
-import com.ysh.jcms.pdu.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
 import com.ysh.jcms.utils.scl.convert.DataValueResolver;
@@ -29,17 +29,17 @@ public class GetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetEditSgValueRequest req = (CmsGetEditSgValueRequest) rawReq;
-        log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
+        log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SgcState state = SgSessionState.getState(session.getSessionId());
         SclDocument doc = requireScl(session, reqId);
 
-        CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse().reqId(reqId);
+        CmsGetEditSgValueResponse resp = new CmsGetEditSgValueResponse();
 
-        for (int i = 0; i < req.data.count; i++) {
-            CmsSgRefFcEntry entry = req.data.items.get(i);
+        for (int i = 0; i < req.data.size(); i++) {
+            CmsSgRefFcEntry entry = req.data.get(i);
             String ref = str(entry.reference);
             if (ref == null)
                 continue;
@@ -64,14 +64,11 @@ public class GetEditSgValueServer extends BaseServerHandler {
             if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                 resp.value.add(DataConverter.toCmsData(dv));
             } else {
-                CmsData err = new CmsData();
-                err.choice(CmsData.CHOICE_VISIBLE_STRING);
-                err.alt_visible_string.value("(unavailable)");
-                resp.value.add(err);
+                resp.value.add(new CmsData().alt_visible_string("(unavailable)"));
             }
         }
         resp.moreFollows(false);
-        log.info("GetEditSGValue: returning {} values", resp.value.count);
+        log.info("GetEditSGValue: returning {} values", resp.value.size());
         return ok(resp, reqId);
     }
 }

@@ -3,8 +3,9 @@ package com.ysh.jcms.app.handler.report.report;
 import com.ysh.jcms.data.bitarray.CmsRcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsReasonCode;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
+import com.ysh.jcms.data.sequence.report.CmsReportDataEntry;
 import com.ysh.jcms.pdu.report.CmsReport;
-import com.ysh.jcms.pdu.report.CmsReportDataEntry;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataConverter;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
@@ -180,11 +181,9 @@ public class ReportEngine {
         report.optFlds = new CmsRcbOptFlds();
 
         // DatSet
-        report.dataSetPresent(true);
         report.dataSet(rc.datSet());
 
         // sqNum
-        report.sqNumPresent(true);
         report.sqNum(rcb.nextSqNum());
 
         // entry timeOfEntry
@@ -194,8 +193,7 @@ public class ReportEngine {
         long msOfDay = now.toEpochMilli() % 86400000L;
         int daysSince1984 = (int) java.time.temporal.ChronoUnit.DAYS.between(epoch, date);
 
-        report.entry.timeOfEntryPresent(true);
-        report.entry.timeOfEntry.msOfDay(msOfDay).daysSince1984(daysSince1984);
+        report.entry.timeOfEntry(new CmsBinaryTime().msOfDay(msOfDay).daysSince1984(daysSince1984));
 
         // Pre-allocate entryData array
         int totalFcdas = dataSet.fcDas().size();
@@ -207,7 +205,6 @@ public class ReportEngine {
 
             // reference
             String fcdaRef = fcda.buildFcdaRef();
-            entryData.refPresent(true);
             entryData.reference(fcdaRef);
 
             // id (1-based)
@@ -226,8 +223,7 @@ public class ReportEngine {
             } else {
                 reason.integrity(true);
             }
-            entryData.reasonPresent(true);
-            entryData.reason = reason;
+            entryData.reason(reason);
 
             report.entry.entryData.add(entryData);
         }

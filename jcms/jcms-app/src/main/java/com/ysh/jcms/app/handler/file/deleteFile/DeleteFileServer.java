@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsDeleteFileError;
 import com.ysh.jcms.pdu.file.CmsDeleteFileRequest;
@@ -26,7 +26,7 @@ public class DeleteFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsDeleteFileRequest req = (CmsDeleteFileRequest) rawReq;
         String fileName = str(req.filename);
         log.info("DeleteFile from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
@@ -43,7 +43,7 @@ public class DeleteFileServer extends BaseServerHandler {
         try {
             Files.delete(filePath);
             log.info("DeleteFile: deleted '{}'", fileName);
-            return ok(new CmsDeleteFileResponse().reqId(reqId), reqId);
+            return ok(new CmsDeleteFileResponse(), reqId);
         } catch (Exception e) {
             log.error("DeleteFile: failed to delete '{}'", fileName, e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
@@ -34,24 +34,24 @@ public class AllDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllDataValuesRequest req = (CmsGetAllDataValuesRequest) rawReq;
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
         log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
 
         String ldName = null, lnReference = null;
-        if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME)
-            ldName = str(req.reference.altLdName);
-        else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE)
+        if (req.reference.choice() == CmsReferenceChoice.LD_NAME)
+            ldName = req.reference.altLdName.value();
+        else if (req.reference.choice() == CmsReferenceChoice.LN_REFERENCE)
             lnReference = str(req.reference.altLnReference);
 
         List<SclLN> lns = resolveLns(doc, ldName, lnReference);
         if (lns == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String fcFilter = fcCode(req.fcPresent.value() ? req.fc.value() : -1);
+        String fcFilter = fcCode(req.isPresent("fc") ? req.fc.value() : -1);
 
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
 
@@ -81,7 +81,7 @@ public class AllDataValuesServer extends BaseServerHandler {
             }
         }
 
-        CmsGetAllDataValuesResponse resp = new CmsGetAllDataValuesResponse().reqId(reqId);
+        CmsGetAllDataValuesResponse resp = new CmsGetAllDataValuesResponse();
         for (CmsDataValueEntry e : entries)
             resp.data.add(e);
         resp.moreFollows(entries.size() >= ps);

@@ -1,13 +1,13 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.log.CmsSetLcbEntry;
+import com.ysh.jcms.data.sequence.log.CmsSetLcbResult;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesError;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesResponse;
-import com.ysh.jcms.pdu.log.CmsSetLcbEntry;
-import com.ysh.jcms.pdu.log.CmsSetLcbResult;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -18,7 +18,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,15 +30,15 @@ public class SetLcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetLcbValuesRequest req = (CmsSetLcbValuesRequest) rawReq;
 
-        log.info("SetLCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.lcb.count);
+        log.info("SetLCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.lcb.size());
 
         // 8.8.3.2.c) Empty sequence → Response+
-        if (req.lcb.count == 0) {
+        if (req.lcb.size() == 0) {
             try {
-                return buildSuccess(new CmsSetLcbValuesResponse().reqId(reqId).encode(), reqId);
+                return buildSuccess(new CmsSetLcbValuesResponse().encode(), reqId);
             } catch (Exception e) {
                 log.error("Failed to encode SetLCBValuesResponse", e);
                 return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -51,9 +50,9 @@ public class SetLcbValuesServer extends BaseServerHandler {
         List<CmsSetLcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;
 
-        for (int i = 0; i < req.lcb.count; i++) {
-            CmsSetLcbEntry entry = req.lcb.items.get(i);
-            String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
+        for (int i = 0; i < req.lcb.size(); i++) {
+            CmsSetLcbEntry entry = req.lcb.get(i);
+            String ref = entry.reference.value();
 
             CmsSetLcbResult result = processEntry(ied, entry, ref);
             results.add(result);
@@ -64,7 +63,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
 
         if (hasAnyError) {
-            CmsSetLcbValuesError errResp = new CmsSetLcbValuesError().reqId(reqId);
+            CmsSetLcbValuesError errResp = new CmsSetLcbValuesError();
             for (CmsSetLcbResult r : results) {
                 errResp.result.add(r);
             }
@@ -78,7 +77,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
 
         try {
-            return buildSuccess(new CmsSetLcbValuesResponse().reqId(reqId).encode(), reqId);
+            return buildSuccess(new CmsSetLcbValuesResponse().encode(), reqId);
         } catch (Exception e) {
             log.error("Failed to encode SetLCBValuesResponse", e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -86,21 +85,21 @@ public class SetLcbValuesServer extends BaseServerHandler {
     }
 
     private boolean hasEntryError(CmsSetLcbResult r) {
-        if (r.errorPresent.value())
+        if (r.isPresent("error"))
             return true;
-        if (r.logEnaErrPresent.value())
+        if (r.isPresent("logEna"))
             return true;
-        if (r.datSetErrPresent.value())
+        if (r.isPresent("datSet"))
             return true;
-        if (r.trgOpsErrPresent.value())
+        if (r.isPresent("trgOps"))
             return true;
-        if (r.intgPdErrPresent.value())
+        if (r.isPresent("intgPd"))
             return true;
-        if (r.logRefErrPresent.value())
+        if (r.isPresent("logRef"))
             return true;
-        if (r.optFldsErrPresent.value())
+        if (r.isPresent("optFlds"))
             return true;
-        if (r.bufTmErrPresent.value())
+        if (r.isPresent("bufTm"))
             return true;
         return false;
     }
@@ -113,7 +112,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
             log.warn("SetLCBValues: invalid ref format {}", ref);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
@@ -125,7 +124,7 @@ public class SetLcbValuesServer extends BaseServerHandler {
         SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null) {
             log.warn("SetLCBValues: cannot find LN {} in LD {}", lnName, ldName);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
@@ -139,27 +138,27 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
         if (lc == null) {
             log.warn("SetLCBValues: cannot find LC {} in LN {}", cbName, lnName);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
         // 8.8.3.2.b) logEna ordering:
         // - logEna=false: set logEna FIRST, then others
         // - logEna=true: set others FIRST, then logEna
-        boolean hasLogEna = entry.logEnaPresent.value();
+        boolean hasLogEna = entry.isPresent("logEna");
         boolean logEnaVal = hasLogEna && entry.logEna.value();
 
         if (hasLogEna && !logEnaVal) {
             // logEna=false → set logEna first
             lc.logEna("false");
-            result.logEnaErrPresent(false);
+            result.setPresent("logEna", false);
             setOtherLcbFields(result, entry, lc);
         } else if (hasLogEna && logEnaVal) {
             // logEna=true → set others first, then logEna
             setOtherLcbFields(result, entry, lc);
             if (!hasEntryError(result)) {
                 lc.logEna("true");
-                result.logEnaErrPresent(false);
+                result.setPresent("logEna", false);
             }
         } else {
             // No logEna in entry
@@ -172,43 +171,43 @@ public class SetLcbValuesServer extends BaseServerHandler {
 
     private void setOtherLcbFields(CmsSetLcbResult result, CmsSetLcbEntry entry, SclLogControl lc) {
         // datSet
-        if (entry.datSetPresent.value()) {
-            byte[] val = entry.datSet.value();
-            if (val != null && val.length > 0) {
-                lc.datSet(new String(val, StandardCharsets.UTF_8));
-                result.datSetErrPresent(false);
+        if (entry.isPresent("datSet")) {
+            String val = entry.datSet.value();
+            if (val != null && val.length() > 0) {
+                lc.datSet(val);
+                result.setPresent("datSet", false);
             } else {
-                result.datSetErrPresent(true).datSetErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                result.datSet(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
         // trgOps
-        if (entry.trgOpsPresent.value()) {
-            lc.trgOps(entry.trgOps.data_change.value() + "," + entry.trgOps.quality_change.value() + "," + entry.trgOps.data_update.value()
-                    + "," + entry.trgOps.integrity.value());
-            result.trgOpsErrPresent(false);
+        if (entry.isPresent("trgOps")) {
+            lc.trgOps(entry.trgOps.data_change() + "," + entry.trgOps.quality_change() + "," + entry.trgOps.data_update()
+                    + "," + entry.trgOps.integrity());
+            result.setPresent("trgOps", false);
         }
         // intgPd
-        if (entry.intgPdPresent.value()) {
+        if (entry.isPresent("intgPd")) {
             lc.intgPd(String.valueOf(entry.intgPd.value()));
-            result.intgPdErrPresent(false);
+            result.setPresent("intgPd", false);
         }
         // logRef
-        if (entry.logRefPresent.value()) {
-            byte[] val = entry.logRef.value();
-            if (val != null && val.length > 0) {
-                lc.logName(new String(val, StandardCharsets.UTF_8));
-                result.logRefErrPresent(false);
+        if (entry.isPresent("logRef")) {
+            String val = entry.logRef.value();
+            if (val != null && val.length() > 0) {
+                lc.logName(val);
+                result.setPresent("logRef", false);
             } else {
-                result.logRefErrPresent(true).logRefErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                result.logRef(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
         // optFlds
-        if (entry.optFldsPresent.value()) {
-            result.optFldsErrPresent(false);
+        if (entry.isPresent("optFlds")) {
+            result.setPresent("optFlds", false);
         }
         // bufTm
-        if (entry.bufTmPresent.value()) {
-            result.bufTmErrPresent(false);
+        if (entry.isPresent("bufTm")) {
+            result.setPresent("bufTm", false);
         }
     }
 

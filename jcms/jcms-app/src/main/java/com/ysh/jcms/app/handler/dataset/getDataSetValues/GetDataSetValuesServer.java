@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesRequest;
@@ -30,7 +30,7 @@ public class GetDataSetValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataSetValuesRequest req = (CmsGetDataSetValuesRequest) rawReq;
         log.info("GetDataSetValues from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -60,9 +60,9 @@ public class GetDataSetValuesServer extends BaseServerHandler {
         if (dataSet == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
-        CmsGetDataSetValuesResponse resp = new CmsGetDataSetValuesResponse().reqId(reqId);
+        CmsGetDataSetValuesResponse resp = new CmsGetDataSetValuesResponse();
         int ps = pageSize(), count = 0;
 
         for (SclFCDA fcda : dataSet.fcDas()) {

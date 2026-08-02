@@ -2,12 +2,12 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionRequest;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionResponse;
-import com.ysh.jcms.pdu.rpc.CmsRpcMethodEntry;
+import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -20,7 +20,7 @@ public class GetRpcInterfaceDefinitionServer extends BaseServerHandler {
         super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class, CmsGetRpcInterfaceDefinitionError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetRpcInterfaceDefinitionRequest req = (CmsGetRpcInterfaceDefinitionRequest) rawReq;
         String iface = str(req.interfaceName);
         if (iface == null)
@@ -31,14 +31,14 @@ public class GetRpcInterfaceDefinitionServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         log.info("GetRpcInterfaceDefinition from {}: interface={}", session.getSessionId(), iface);
-        CmsGetRpcInterfaceDefinitionResponse resp = new CmsGetRpcInterfaceDefinitionResponse().reqId(reqId);
+        CmsGetRpcInterfaceDefinitionResponse resp = new CmsGetRpcInterfaceDefinitionResponse();
         for (String methodName : def.methods.keySet()) {
             CmsRpcMethodEntry entry = RpcRegistry.buildMethodEntry(iface, methodName);
             if (entry != null)
                 resp.method.add(entry);
         }
         resp.moreFollows(false);
-        log.info("GetRpcInterfaceDefinition: returning {} method(s)", resp.method.count);
+        log.info("GetRpcInterfaceDefinition: returning {} method(s)", resp.method.size());
         return ok(resp, reqId);
     }
 }

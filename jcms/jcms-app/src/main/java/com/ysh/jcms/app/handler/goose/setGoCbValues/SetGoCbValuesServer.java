@@ -3,9 +3,9 @@ package com.ysh.jcms.app.handler.goose.setGoCbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.goose.GoCbCache;
 import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesServer;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
-import com.ysh.jcms.pdu.goose.CmsSetGoCbEntry;
+import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesError;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesRequest;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesResponse;
@@ -32,14 +32,14 @@ public class SetGoCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetGoCbValuesRequest req = (CmsSetGoCbValuesRequest) rawReq;
-        log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.count);
+        log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.size());
 
         SclIED ied = getSclIed(session);
 
-        for (int i = 0; i < req.gocb.count; i++) {
-            CmsSetGoCbEntry entry = req.gocb.items.get(i);
+        for (int i = 0; i < req.gocb.size(); i++) {
+            CmsSetGoCbEntry entry = req.gocb.get(i);
             String ref = str(entry.reference);
             log.debug("SetGoCBValues: processing entry[{}] ref={}", i, ref);
 
@@ -55,15 +55,15 @@ public class SetGoCbValuesServer extends BaseServerHandler {
             }
 
             // Apply optional fields from the request
-            if (entry.goEnaPresent.value()) {
+            if (entry.isPresent("goEna")) {
                 baseline.goEna(entry.goEna.value());
                 log.debug("SetGoCBValues:   goEna={}", entry.goEna.value());
             }
-            if (entry.goIdPresent.value()) {
-                baseline.goID(entry.goId.value());
-                log.debug("SetGoCBValues:   goID={}", str(entry.goId));
+            if (entry.isPresent("goID")) {
+                baseline.goID(entry.goID.value());
+                log.debug("SetGoCBValues:   goID={}", str(entry.goID));
             }
-            if (entry.datSetPresent.value()) {
+            if (entry.isPresent("datSet")) {
                 baseline.datSet(entry.datSet.value());
                 log.debug("SetGoCBValues:   datSet={}", str(entry.datSet));
             }
@@ -73,8 +73,8 @@ public class SetGoCbValuesServer extends BaseServerHandler {
             log.info("SetGoCBValues: updated '{}' in cache", ref);
         }
 
-        CmsSetGoCbValuesResponse resp = new CmsSetGoCbValuesResponse().reqId(reqId);
-        log.info("SetGoCBValues: acknowledged {} entries", req.gocb.count);
+        CmsSetGoCbValuesResponse resp = new CmsSetGoCbValuesResponse();
+        log.info("SetGoCBValues: acknowledged {} entries", req.gocb.size());
         return ok(resp, reqId);
     }
 }

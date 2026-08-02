@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.select;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.control.ControlCache;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.control.CmsSelectError;
 import com.ysh.jcms.pdu.control.CmsSelectRequest;
@@ -28,11 +28,11 @@ public class SelectServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsTypeOld decoded) {
+    protected void prepareDecode(CmsType decoded) {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSelectRequest req = (CmsSelectRequest) rawReq;
         String ref = str(req.reference);
         String sid = session.getSessionId();
@@ -48,7 +48,7 @@ public class SelectServer extends BaseServerHandler {
 
         if (ControlCache.select(ref, sid)) {
             log.info("Select: locked '{}' for session {}", ref, sid);
-            return ok(new CmsSelectResponse().reqId(reqId).reference(ref), reqId);
+            return ok(new CmsSelectResponse().reference(ref), reqId);
         } else {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_LOCKED_BY_OTHER_CLIENT);
         }

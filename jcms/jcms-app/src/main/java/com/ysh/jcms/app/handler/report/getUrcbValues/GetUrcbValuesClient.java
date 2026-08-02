@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.data.choice.CmsUrcbValueChoice;
+import com.ysh.jcms.data.sequence.block.CmsUrcb;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesResponse;
-import com.ysh.jcms.pdu.report.CmsRcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -29,7 +29,7 @@ public class GetUrcbValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetUrcbValuesDao dao) throws Exception {
-        CmsGetUrcbValuesRequest req = new CmsGetUrcbValuesRequest().reqId(nextReqId());
+        CmsGetUrcbValuesRequest req = new CmsGetUrcbValuesRequest();
         for (String ref : dao.refs()) {
             req.reference.add(new CmsObjectReference(ref));
         }
@@ -39,7 +39,7 @@ public class GetUrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetUrcbValuesError err = decodeErr(frame, new CmsGetUrcbValuesError());
-        throw new IOException("GetURCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetURCBValues rejected: " + err.value());
     }
 
     @Override
@@ -47,14 +47,13 @@ public class GetUrcbValuesClient extends BaseClientHandler {
         CmsGetUrcbValuesResponse resp = decodeResp(frame, new CmsGetUrcbValuesResponse());
 
         List<UrcbEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.urcb.count; i++) {
-            CmsRcbValueChoice choice = resp.urcb.items.get(i);
-            if (choice.choice.value() == CmsRcbValueChoice.VALUE) {
-                CmsBrcb b = choice.altValue;
+        for (CmsUrcbValueChoice choice : resp.urcb) {
+            if (choice.choice() == CmsUrcbValueChoice.VALUE) {
+                CmsUrcb b = choice.altValue;
                 StringBuilder sb = new StringBuilder();
-                sb.append("rptID=").append(new String(b.rptID.value(), java.nio.charset.StandardCharsets.UTF_8));
+                sb.append("rptID=").append(b.rptID.value());
                 sb.append(" rptEna=").append(b.rptEna.value());
-                sb.append(" datSet=").append(new String(b.datSet.value(), java.nio.charset.StandardCharsets.UTF_8));
+                sb.append(" datSet=").append(b.datSet.value());
                 sb.append(" confRev=").append(b.confRev.value());
                 sb.append(" bufTm=").append(b.bufTm.value());
                 sb.append(" sqNum=").append(b.sqNum.value());

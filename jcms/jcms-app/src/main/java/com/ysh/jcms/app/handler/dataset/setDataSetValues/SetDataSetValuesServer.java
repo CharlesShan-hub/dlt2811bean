@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesError;
@@ -30,9 +30,9 @@ public class SetDataSetValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetDataSetValuesRequest req = (CmsSetDataSetValuesRequest) rawReq;
-        log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.count);
+        log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.size());
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
@@ -60,7 +60,7 @@ public class SetDataSetValuesServer extends BaseServerHandler {
         if (dataSet == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         int successCount = 0, valueIdx = 0;
         for (SclFCDA fcda : dataSet.fcDas()) {
@@ -70,10 +70,10 @@ public class SetDataSetValuesServer extends BaseServerHandler {
                 }
                 continue;
             }
-            if (valueIdx >= req.value.count)
+            if (valueIdx >= req.value.size())
                 break;
 
-            String valueStr = extractValue(req.value.items.get(valueIdx++));
+            String valueStr = extractValue(req.value.get(valueIdx++));
             if (valueStr == null)
                 continue;
 
@@ -84,16 +84,16 @@ public class SetDataSetValuesServer extends BaseServerHandler {
             }
         }
 
-        if (successCount == req.value.count) {
+        if (successCount == req.value.size()) {
             log.info("SetDataSetValues: all {} values set successfully", successCount);
-            return ok(new CmsSetDataSetValuesResponse().reqId(reqId), reqId);
+            return ok(new CmsSetDataSetValuesResponse(), reqId);
         }
-        log.warn("SetDataSetValues: {}/{} succeeded", successCount, req.value.count);
+        log.warn("SetDataSetValues: {}/{} succeeded", successCount, req.value.size());
         return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
     }
 
     private static String extractValue(CmsData d) {
-        int ct = d.choice.value();
+        int ct = d.choice();
         switch (ct) {
             case CmsData.CHOICE_BOOLEAN :
                 return Boolean.toString(d.alt_boolean.value());
@@ -116,9 +116,9 @@ public class SetDataSetValuesServer extends BaseServerHandler {
             case CmsData.CHOICE_FLOAT64 :
                 return Double.toString(d.alt_float64.value());
             case CmsData.CHOICE_VISIBLE_STRING :
-                return str(d.alt_visible_string.value());
+                return (String) d.alt_visible_string.toJsonValue();
             case CmsData.CHOICE_UNICODE_STRING :
-                return str(d.alt_unicode_string.value());
+                return (String) d.alt_unicode_string.toJsonValue();
             default :
                 return null;
         }

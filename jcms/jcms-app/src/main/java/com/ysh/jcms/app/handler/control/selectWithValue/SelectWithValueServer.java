@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.selectWithValue;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.control.ControlCache;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueError;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueRequest;
@@ -28,11 +28,11 @@ public class SelectWithValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsTypeOld decoded) {
+    protected void prepareDecode(CmsType decoded) {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSelectWithValueRequest req = (CmsSelectWithValueRequest) rawReq;
         String ref = str(req.reference);
         String sid = session.getSessionId();
@@ -48,8 +48,10 @@ public class SelectWithValueServer extends BaseServerHandler {
 
         if (ControlCache.select(ref, sid)) {
             log.info("SelectWithValue: locked '{}' for session {}", ref, sid);
-            CmsSelectWithValueResponse resp = new CmsSelectWithValueResponse().reqId(reqId).reference(ref).ctlVal(req.ctlVal)
-                    .operTmPresent(req.operTmPresent.value()).operTm(req.operTm).origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
+            CmsSelectWithValueResponse resp = new CmsSelectWithValueResponse()
+                    .reference(ref).ctlVal(req.ctlVal)
+                    .operTm(req.isPresent("operTm") ? req.operTm : null)
+                    .origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
                     .test(req.test.value()).check(req.check);
             return ok(resp, reqId);
         } else {

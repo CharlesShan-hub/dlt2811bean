@@ -8,7 +8,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 
 public class GetFileAttributeValuesClient extends BaseClientHandler {
 
@@ -31,7 +30,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetFileAttributeValuesDao dao) throws Exception {
-        CmsGetFileAttributeValuesRequest req = new CmsGetFileAttributeValuesRequest().reqId(nextReqId()).filename(dao.fileName());
+        CmsGetFileAttributeValuesRequest req = new CmsGetFileAttributeValuesRequest().filename(dao.fileName());
 
         send(ServiceName.GET_FILE_ATTRIBUTE_VALUES, req);
     }
@@ -40,16 +39,16 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
     protected void onError(Frame frame) throws IOException {
         CmsGetFileAttributeValuesError err = decodeErr(frame, new CmsGetFileAttributeValuesError());
         throw new IOException(
-                "GetFileAttributeValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+                "GetFileAttributeValues rejected: " + err.value());
     }
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetFileAttributeValuesResponse resp = decodeResp(frame, new CmsGetFileAttributeValuesResponse());
 
-        long epochSeconds = resp.fileEntry.lastModified.secondsSinceEpoch.value();
-        int fractionMicros = resp.fileEntry.lastModified.fractionOfSecond.value();
-        lastResult = new FileAttrResult(new String(resp.fileEntry.fileName.value(), StandardCharsets.UTF_8),
-                resp.fileEntry.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000, resp.fileEntry.checkSum.value());
+        long epochSeconds = resp.lastModified.secondsSinceEpoch.value();
+        int fractionMicros = resp.lastModified.fractionOfSecond.value();
+        lastResult = new FileAttrResult(resp.fileName.value(),
+                resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000, resp.checkSum.value());
     }
 }

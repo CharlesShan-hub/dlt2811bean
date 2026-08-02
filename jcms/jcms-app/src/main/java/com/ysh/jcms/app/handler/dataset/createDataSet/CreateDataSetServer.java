@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetResponse;
-import com.ysh.jcms.pdu.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -28,9 +28,9 @@ public class CreateDataSetServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
-        log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.count);
+        log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.size());
 
         SclIED ied = requireIed(session, reqId);
 
@@ -55,7 +55,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         if (ln == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
         boolean isPersistent = CmsConfigLoader.load().getProtocol().getDataset().isSetDataSetPersistent();
 
         SclDataSet dataSet;
@@ -71,8 +71,7 @@ public class CreateDataSetServer extends BaseServerHandler {
         }
 
         int added = 0, failed = 0;
-        for (int i = 0; i < req.memberData.count; i++) {
-            CmsDataRefFcEntry src = req.memberData.items.get(i);
+        for (CmsDataRefFcEntry src : req.memberData) {
             String memberRef = str(src.reference);
             if (memberRef == null) {
                 failed++;
@@ -96,7 +95,7 @@ public class CreateDataSetServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         log.info("CreateDataSet: '{}' -> {} members ({} failed, dynamic={})", ref, dataSet.fcDas().size(), failed, dataSet.dynamic());
-        return ok(new CmsCreateDataSetResponse().reqId(reqId), reqId);
+        return ok(new CmsCreateDataSetResponse(), reqId);
     }
 
     private static SclFCDA parseRefToFcda(SclIED ied, String ref) {

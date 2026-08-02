@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
@@ -34,7 +34,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetFileDirectoryRequest req = (CmsGetFileDirectoryRequest) rawReq;
         log.info("GetFileDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -89,7 +89,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
             files = files.subList(0, pageSize);
         }
 
-        CmsGetFileDirectoryResponse resp = new CmsGetFileDirectoryResponse().reqId(reqId).moreFollows(moreFollows);
+        CmsGetFileDirectoryResponse resp = new CmsGetFileDirectoryResponse().moreFollows(moreFollows);
 
         for (Path f : files) {
             try {
@@ -109,7 +109,7 @@ public class GetFileDirectoryServer extends BaseServerHandler {
             }
         }
 
-        log.info("GetFileDirectory: returning {} entries (moreFollows={})", resp.fileEntry.count, moreFollows);
+        log.info("GetFileDirectory: returning {} entries (moreFollows={})", resp.fileEntry.size(), moreFollows);
         return ok(resp, reqId);
     }
 

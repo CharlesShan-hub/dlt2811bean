@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.deleteDataSet;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetRequest;
@@ -25,7 +25,7 @@ public class DeleteDataSetServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsDeleteDataSetRequest req = (CmsDeleteDataSetRequest) rawReq;
         log.info("DeleteDataSet from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -58,7 +58,7 @@ public class DeleteDataSetServer extends BaseServerHandler {
 
         ln.dataSets().remove(ds);
         log.info("DeleteDataSet: removed '{}'", ref);
-        return ok(new CmsDeleteDataSetResponse().reqId(reqId), reqId);
+        return ok(new CmsDeleteDataSetResponse(), reqId);
     }
 
     private static SclLDevice findLd(SclIED ied, String ldName) {

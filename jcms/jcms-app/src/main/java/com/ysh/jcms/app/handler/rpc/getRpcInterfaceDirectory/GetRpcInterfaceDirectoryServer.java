@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.data.string.CmsUint8Array;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryRequest;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
@@ -19,16 +19,14 @@ public class GetRpcInterfaceDirectoryServer extends BaseServerHandler {
         super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectoryRequest.class, CmsGetRpcInterfaceDirectoryError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         log.info("GetRpcInterfaceDirectory from {}", session.getSessionId());
-        CmsGetRpcInterfaceDirectoryResponse resp = new CmsGetRpcInterfaceDirectoryResponse().reqId(reqId);
+        CmsGetRpcInterfaceDirectoryResponse resp = new CmsGetRpcInterfaceDirectoryResponse();
         for (String name : RpcRegistry.getInterfaceNames()) {
-            CmsUint8Array ref = new CmsUint8Array();
-            ref.value(name);
-            resp.reference.add(ref);
+            resp.reference.add(new CmsString(name));
         }
         resp.moreFollows(false);
-        log.info("GetRpcInterfaceDirectory: returning {} interface(s)", resp.reference.count);
+        log.info("GetRpcInterfaceDirectory: returning {} interface(s)", resp.reference.size());
         return ok(resp, reqId);
     }
 }

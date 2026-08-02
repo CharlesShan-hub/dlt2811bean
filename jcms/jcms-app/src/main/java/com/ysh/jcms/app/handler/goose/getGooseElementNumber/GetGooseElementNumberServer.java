@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
@@ -27,17 +27,17 @@ public class GetGooseElementNumberServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetGooseElementNumberRequest req = (CmsGetGooseElementNumberRequest) rawReq;
         String gocbRef = str(req.gocbReference);
         log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.getSessionId(), reqId, gocbRef,
-                req.memberData.count);
+                req.memberData.size());
 
         // Return the GoCB reference and confRev.
         // Full member offset resolution would require traversing the SCL data model
         // to find each (reference, fc) pair's index in the dataset.
 
-        CmsGetGooseElementNumberResponse resp = new CmsGetGooseElementNumberResponse().reqId(reqId).gocbReference(str(req.gocbReference))
+        CmsGetGooseElementNumberResponse resp = new CmsGetGooseElementNumberResponse().gocbReference(str(req.gocbReference))
                 .confRev(0);
 
         // memberOffset is left empty — dataset resolution not yet implemented

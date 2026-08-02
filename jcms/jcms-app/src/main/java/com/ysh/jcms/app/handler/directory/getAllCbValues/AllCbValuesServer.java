@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
 import com.ysh.jcms.data.choice.CmsCbValueChoice;
@@ -25,7 +25,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,12 +35,10 @@ public class AllCbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllCbValuesRequest req = (CmsGetAllCbValuesRequest) rawReq;
         int acsiClass = req.acsiClass.value();
-        String refAfter = req.refAfterPresent.value() && req.refAfter.len > 0
-                ? new String(req.refAfter.value(), StandardCharsets.UTF_8)
-                : null;
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
@@ -49,12 +46,10 @@ public class AllCbValuesServer extends BaseServerHandler {
 
         String ldName = null;
         String lnReference = null;
-        if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = req.reference.altLdName.len > 0 ? new String(req.reference.altLdName.value(), StandardCharsets.UTF_8) : null;
-        } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
-            lnReference = req.reference.altLnReference.len > 0
-                    ? new String(req.reference.altLnReference.value(), StandardCharsets.UTF_8)
-                    : null;
+        if (req.reference.choice() == CmsReferenceChoice.LD_NAME) {
+            ldName = req.reference.altLdName.value();
+        } else if (req.reference.choice() == CmsReferenceChoice.LN_REFERENCE) {
+            lnReference = req.reference.altLnReference.value();
         }
 
         List<SclLN> lns = resolveLns(doc, ldName, lnReference);
@@ -92,7 +87,7 @@ public class AllCbValuesServer extends BaseServerHandler {
             }
         }
 
-        CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse().reqId(reqId);
+        CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse();
         for (CmsCbValueEntry e : entries) {
             resp.cbValue.add(e);
         }

@@ -1,13 +1,13 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
-import com.ysh.jcms.pdu.log.CmsLogStatusValue;
-import com.ysh.jcms.pdu.log.CmsLogStatusValueChoice;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.log.LogStorage;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -31,24 +31,22 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) rawReq;
 
-        log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.count);
+        log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.size());
 
-        CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse().reqId(reqId);
+        CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse();
 
-        for (int i = 0; i < req.logReference.count; i++) {
-            String logRef = str(req.logReference.items.get(i).value());
+        for (int i = 0; i < req.logReference.size(); i++) {
+            String logRef = str(req.logReference.get(i));
             LogStorage.LogStatus status = logStorage.getStatus(logRef);
 
             CmsLogStatusValueChoice choice = new CmsLogStatusValueChoice();
             if (status == LogStorage.LogStatus.EMPTY || (status.newestTimeMsOfDay == 0 && status.newestTimeDays == 0)) {
                 // 无日志，返回 ServiceError=0（表示无状态）
-                choice.choice(CmsLogStatusValueChoice.ERROR);
-                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                choice.altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             } else {
-                choice.choice(CmsLogStatusValueChoice.VALUE);
                 CmsLogStatusValue val = new CmsLogStatusValue();
                 val.oldEntrTm.msOfDay.value(status.oldestTimeMsOfDay);
                 val.oldEntrTm.daysSince1984.value(status.oldestTimeDays);
@@ -56,13 +54,13 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
                 val.newEntrTm.msOfDay.value(status.newestTimeMsOfDay);
                 val.newEntrTm.daysSince1984.value(status.newestTimeDays);
                 val.newEntr.value(status.newestEntryId);
-                choice.altValue = val;
+                choice.altValue(val);
             }
             resp.log.add(choice);
         }
         resp.moreFollows(false);
 
-        log.info("GetLogStatusValues: returning {} entries", resp.log.items.size());
+        log.info("GetLogStatusValues: returning {} entries", resp.log.size());
         return ok(resp, reqId);
     }
 }

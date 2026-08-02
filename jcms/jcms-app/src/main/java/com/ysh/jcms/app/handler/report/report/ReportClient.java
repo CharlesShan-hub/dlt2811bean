@@ -6,8 +6,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
-
 /**
  * ReportClient — 客户端接收服务端推送的 REPORT 帧。
  */
@@ -21,15 +19,15 @@ public class ReportClient extends BaseClientHandler {
             report.decode(frame.asduBytes());
 
             StringBuilder sb = new StringBuilder();
-            String rptID = report.rptID != null ? new String(report.rptID.value(), StandardCharsets.UTF_8) : "(null)";
+            String rptID = report.rptID != null ? report.rptID.value() : "(null)";
             sb.append("\n  Report Received: rptID=").append(rptID);
-            if (report.sqNumPresent.value()) {
+            if (report.isPresent("sqNum")) {
                 sb.append(" sqNum=").append(report.sqNum.value());
             }
-            if (report.dataSetPresent.value()) {
-                sb.append(" dataSet=").append(new String(report.dataSet.value(), StandardCharsets.UTF_8));
+            if (report.isPresent("dataSet")) {
+                sb.append(" dataSet=").append(report.dataSet.value());
             }
-            sb.append(" entries=").append(report.entry.entryData.count);
+            sb.append(" entries=").append(report.entry.entryData.size());
 
             String output = sb.toString();
             log.info("Report received: {}", output);

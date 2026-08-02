@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
@@ -22,18 +22,18 @@ public class SvrDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
-        log.info("GetServerDirectory from {}: reqId={}, objectClass={}", session.getSessionId(), reqId, req.objectClass.value());
+        log.info("GetServerDirectory from {}: reqId={}, objectClass={}", session.getSessionId(), reqId, req.getObjectClass());
 
-        if (req.objectClass.value() != CmsObjectClass.LOGICAL_DEVICE)
+        if (req.getObjectClass() != CmsObjectClass.LOGICAL_DEVICE)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         SclDocument doc = requireScl(session, reqId);
 
-        List<String> ldNames = after(doc.ldNames(), opt(req.refAfterPresent, req.refAfter), reqId);
+        List<String> ldNames = after(doc.ldNames(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 
-        CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse().reqId(reqId);
+        CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
         for (String name : ldNames)
             resp.reference.add(new CmsObjectReference(name));
         resp.moreFollows(false);

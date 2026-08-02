@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.setFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsSetFileError;
 import com.ysh.jcms.pdu.file.CmsSetFileRequest;
@@ -27,7 +27,7 @@ public class SetFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetFileRequest req = (CmsSetFileRequest) rawReq;
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
@@ -53,7 +53,7 @@ public class SetFileServer extends BaseServerHandler {
             } catch (Exception e) {
                 log.warn("SetFile: failed to delete aborted file '{}'", fileName, e);
             }
-            return ok(new CmsSetFileResponse().reqId(reqId), reqId);
+            return ok(new CmsSetFileResponse(), reqId);
         }
 
         try {
@@ -74,7 +74,7 @@ public class SetFileServer extends BaseServerHandler {
                 log.info("SetFile: completed upload of '{}'", fileName);
             }
 
-            return ok(new CmsSetFileResponse().reqId(reqId), reqId);
+            return ok(new CmsSetFileResponse(), reqId);
         } catch (Exception e) {
             log.error("SetFile: failed to write '{}'", fileName, e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);

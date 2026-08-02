@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
@@ -27,16 +27,16 @@ public class GetGoReferenceServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetGoReferenceRequest req = (CmsGetGoReferenceRequest) rawReq;
         String gocbRef = str(req.gocbReference);
-        log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.count);
+        log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.size());
 
         // For now, return a basic response with the GoCB reference and confRev.
         // Full dataset member resolution would require traversing the SCL data model
         // to map each offset to its (reference, fc) pair.
 
-        CmsGetGoReferenceResponse resp = new CmsGetGoReferenceResponse().reqId(reqId).gocbReference(str(req.gocbReference)).confRev(0);
+        CmsGetGoReferenceResponse resp = new CmsGetGoReferenceResponse().gocbReference(gocbRef).confRev(0);
 
         // memberData is left empty — dataset resolution not yet implemented
         log.info("GetGoReference: returning gocbRef={} (dataset resolution TBD)", gocbRef);

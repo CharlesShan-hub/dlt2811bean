@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
@@ -55,7 +55,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataDirectoryRequest req = (CmsGetDataDirectoryRequest) rawReq;
         log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -66,7 +66,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         // Parse reference
         SclRef parsed = SclRefParser.parse(ref);
@@ -103,7 +103,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Build paged response
-        CmsGetDataDirectoryResponse resp = new CmsGetDataDirectoryResponse().reqId(reqId);
+        CmsGetDataDirectoryResponse resp = new CmsGetDataDirectoryResponse();
         int ps = pageSize();
         int count = 0;
         for (int i = startIdx; i < allEntries.size() && count < ps; i++) {

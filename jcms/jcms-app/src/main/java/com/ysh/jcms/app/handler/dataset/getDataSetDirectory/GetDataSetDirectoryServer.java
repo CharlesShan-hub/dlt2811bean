@@ -1,10 +1,10 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
-import com.ysh.jcms.pdu.dataset.CmsDataRefFcEntry;
+import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
@@ -28,7 +28,7 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataSetDirectoryRequest req = (CmsGetDataSetDirectoryRequest) rawReq;
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -57,9 +57,9 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
         if (dataSet == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
-        CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse().reqId(reqId);
+        CmsGetDataSetDirectoryResponse resp = new CmsGetDataSetDirectoryResponse();
         int ps = pageSize(), count = 0;
 
         for (SclFCDA fcda : dataSet.fcDas()) {

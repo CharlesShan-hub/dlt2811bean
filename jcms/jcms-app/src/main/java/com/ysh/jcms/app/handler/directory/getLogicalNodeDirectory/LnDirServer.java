@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
@@ -38,11 +38,11 @@ public class LnDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         long t0 = System.currentTimeMillis();
         CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
         int acsiClass = req.acsiClass.value();
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
@@ -52,9 +52,9 @@ public class LnDirServer extends BaseServerHandler {
 
         String ldName = null;
         String lnReference = null;
-        if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = str(req.reference.altLdName);
-        } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
+        if (req.reference.choice() == CmsReferenceChoice.LD_NAME) {
+            ldName = req.reference.altLdName.value();
+        } else if (req.reference.choice() == CmsReferenceChoice.LN_REFERENCE) {
             lnReference = str(req.reference.altLnReference);
         }
 
@@ -71,7 +71,7 @@ public class LnDirServer extends BaseServerHandler {
 
         log.info("TIMING: collected {} names in {}ms", names.size(), System.currentTimeMillis() - t0);
 
-        CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse().reqId(reqId);
+        CmsGetLogicalNodeDirectoryResponse resp = new CmsGetLogicalNodeDirectoryResponse();
 
         int pageSize = pageSize();
         boolean more = names.size() > pageSize;

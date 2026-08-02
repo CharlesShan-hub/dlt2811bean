@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.pdu.connection.CmsReleaseRequest;
@@ -21,7 +21,7 @@ public class ReleaseServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsReleaseRequest req = (CmsReleaseRequest) rawReq;
         log.info("Release request from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -29,7 +29,7 @@ public class ReleaseServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE);
         }
 
-        byte[] respBytes = new CmsReleaseResponse().reqId(reqId).serviceError(CmsServiceError.NO_ERROR).encode();
+        byte[] respBytes = new CmsReleaseResponse().serviceError(CmsServiceError.NO_ERROR).encode();
 
         session.clear();
         session.setState(SessionState.CONNECTED);

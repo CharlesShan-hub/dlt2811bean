@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.sg.selectActiveSg;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.sg.CmsSelectActiveSgError;
 import com.ysh.jcms.pdu.sg.CmsSelectActiveSgRequest;
@@ -23,7 +23,7 @@ public class SelectActiveSgServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSelectActiveSgRequest req = (CmsSelectActiveSgRequest) rawReq;
         String ref = str(req.sgcbReference);
         int sgNum = req.settingGroupNumber.value() & 0xFF;
@@ -41,6 +41,6 @@ public class SelectActiveSgServer extends BaseServerHandler {
 
         SgSessionState.getState(session.getSessionId()).setActSG(sgNum);
         log.info("SelectActiveSG: set actSG={} for session={}", sgNum, session.getSessionId());
-        return ok(new CmsSelectActiveSgResponse().reqId(reqId), reqId);
+        return ok(new CmsSelectActiveSgResponse(), reqId);
     }
 }

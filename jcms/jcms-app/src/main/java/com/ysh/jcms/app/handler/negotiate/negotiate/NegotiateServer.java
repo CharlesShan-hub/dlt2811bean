@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
@@ -19,7 +19,7 @@ public class NegotiateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsNegotiateRequest req = (CmsNegotiateRequest) rawReq;
         CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
 
@@ -43,8 +43,8 @@ public class NegotiateServer extends BaseServerHandler {
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", negotiatedApduSize,
                 config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
 
-        return buildSuccess(new CmsNegotiateResponse().reqId(reqId).apduSize(negotiatedApduSize).asduSize(config.getAsduSize())
+        return buildSuccess(new CmsNegotiateResponse().apduSize(negotiatedApduSize).asduSize(config.getAsduSize())
                 .protocolVersion(config.getProtocolVersion())
-                .modelVersion(config.getModelVersion().getBytes(java.nio.charset.StandardCharsets.UTF_8)).encode(), reqId);
+                .modelVersion(config.getModelVersion()).encode(), reqId);
     }
 }

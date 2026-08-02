@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.data.CmsDataRefValueEntry;
 import com.ysh.jcms.pdu.data.CmsSetDataValuesError;
@@ -23,22 +23,21 @@ public class SetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsTypeOld decoded) {
+    protected void prepareDecode(CmsType decoded) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) decoded;
         req.data.add(new CmsDataRefValueEntry());
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) rawReq;
-        log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.count);
+        log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
 
         int successCount = 0;
-        for (int i = 0; i < req.data.count; i++) {
-            CmsDataRefValueEntry entry = req.data.items.get(i);
+        for (CmsDataRefValueEntry entry : req.data) {
             String ref = str(entry.reference);
             if (ref == null)
                 continue;
@@ -55,12 +54,12 @@ public class SetDataValuesServer extends BaseServerHandler {
                 successCount++;
             }
         }
-        log.info("SetDataValues: {}/{} entries set successfully", successCount, req.data.count);
-        if (successCount < req.data.count) {
-            CmsSetDataValuesError err = new CmsSetDataValuesError().reqId(reqId);
-            for (int i = 0; i < req.data.count; i++) {
+        log.info("SetDataValues: {}/{} entries set successfully", successCount, req.data.size());
+        if (successCount < req.data.size()) {
+            CmsSetDataValuesError err = new CmsSetDataValuesError();
+            for (int i = 0; i < req.data.size(); i++) {
                 int code = i < successCount ? CmsServiceError.NO_ERROR : CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT;
-                err.result.add(new CmsServiceError(code));
+                err.result.add(code);
             }
             try {
                 return buildError(err.encode(), reqId);
@@ -68,12 +67,11 @@ public class SetDataValuesServer extends BaseServerHandler {
                 return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
             }
         }
-        return ok(new CmsSetDataValuesResponse().reqId(reqId), reqId);
+        return ok(new CmsSetDataValuesResponse(), reqId);
     }
 
     private static String extractValue(CmsData data) {
-        int ct = data.choice.value();
-        switch (ct) {
+        switch (data.choice()) {
             case CmsData.CHOICE_BOOLEAN :
                 return Boolean.toString(data.alt_boolean.value());
             case CmsData.CHOICE_INT8 :
@@ -97,11 +95,11 @@ public class SetDataValuesServer extends BaseServerHandler {
             case CmsData.CHOICE_FLOAT64 :
                 return Double.toString(data.alt_float64.value());
             case CmsData.CHOICE_VISIBLE_STRING :
-                return str(data.alt_visible_string.value());
+                return (String) data.alt_visible_string.toJsonValue();
             case CmsData.CHOICE_UNICODE_STRING :
-                return str(data.alt_unicode_string.value());
+                return (String) data.alt_unicode_string.toJsonValue();
             case CmsData.CHOICE_OCTET_STRING :
-                return str(data.alt_octet_string.value());
+                return str(com.ysh.jcms.data.InnerBase.unhex((String) data.alt_octet_string.toJsonValue()));
             default :
                 return null;
         }

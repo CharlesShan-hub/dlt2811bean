@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.node.InnerServer;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
@@ -55,14 +55,14 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsAssociateRequest req = (CmsAssociateRequest) rawReq;
         log.info("Associate request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (session.isAssociated())
             return onDecodeError(reqId, CmsServiceError.INSTANCE_IN_USE);
 
-        String sapRef = opt(req.sapRefPresent, req.sapRef);
+        String sapRef = req.isPresent("serverAccessPointReference") ? req.serverAccessPointReference.value() : null;
 
         // 未指定访问点时选默认
         if (sapRef == null) {
@@ -74,7 +74,7 @@ public class AssociateServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        if (req.authParamPresent.value() && req.authParam.cert.len > 0) {
+        if (req.isPresent("authenticationParameter") && req.authenticationParameter.signatureCertificate.value().length > 0) {
             ensureSecurityInitialized();
             int authError = validateAuthParam(req, sapRef);
             if (authError != CmsServiceError.NO_ERROR)
@@ -82,22 +82,20 @@ public class AssociateServer extends BaseServerHandler {
         }
 
         byte[] assocId = AssociationIdGenerator.generate();
-        CmsAssociateResponse resp = new CmsAssociateResponse().reqId(reqId).assocId(assocId).serviceError(CmsServiceError.NO_ERROR);
+        CmsAssociateResponse resp = new CmsAssociateResponse().associationId(assocId).serviceError(CmsServiceError.NO_ERROR);
 
         // 返回服务端证书 + 签名（标准 B.3.2 要求双向认证）
         if (serverCertificateBytes != null && serverPrivateKey != null && sapRef != null) {
             try {
                 byte[] signedData = buildServerSignedData(sapRef);
                 byte[] signature = GmSignature.sign(serverPrivateKey, signedData);
-                resp.authParam(
-                        new CmsAuthenticationParameter().cert(serverCertificateBytes).signedTime(new CmsUtcTime().now()).sigVal(signature));
-                resp.authParamPresent(true);
+                resp.authenticationParameter(
+                        new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes).signedTime(new CmsUtcTime().now()).signedValue(signature));
             } catch (Exception e) {
                 log.warn("Failed to sign server auth param", e);
             }
         } else if (serverCertificateBytes != null) {
-            resp.authParam(new CmsAuthenticationParameter().cert(serverCertificateBytes));
-            resp.authParamPresent(true);
+            resp.authenticationParameter(new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes));
         }
 
         byte[] respBytes = resp.encode();
@@ -154,12 +152,12 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     private int validateAuthParam(CmsAssociateRequest req, String sapRef) {
-        if (!req.authParamPresent.value() || req.authParam.cert.len == 0)
+        if (!req.isPresent("authenticationParameter") || req.authenticationParameter.signatureCertificate.value().length == 0)
             return CmsServiceError.ACCESS_NOT_ALLOWED_IN_CURRENT_STATE;
 
         if (authenticator != null) {
             byte[] signedData = prepareSignedData(sapRef, req);
-            Optional<CmsServiceError> authError = authenticator.validate(req.authParam, signedData);
+            Optional<CmsServiceError> authError = authenticator.validate(req.authenticationParameter, signedData);
             if (authError.isPresent())
                 return authError.get().value();
         }
@@ -168,8 +166,8 @@ public class AssociateServer extends BaseServerHandler {
 
     private byte[] prepareSignedData(String sapRef, CmsAssociateRequest req) {
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
-        if (req.authParamPresent.value() && req.authParam.signedTime != null) {
-            byte[] timeBytes = String.valueOf(req.authParam.signedTime.secondsSinceEpoch.value()).getBytes(StandardCharsets.UTF_8);
+        if (req.isPresent("authenticationParameter") && req.authenticationParameter.signedTime != null) {
+            byte[] timeBytes = String.valueOf(req.authenticationParameter.signedTime.secondsSinceEpoch.value()).getBytes(StandardCharsets.UTF_8);
             byte[] result = new byte[sapBytes.length + timeBytes.length];
             System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
             System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);

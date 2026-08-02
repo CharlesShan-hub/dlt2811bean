@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.data.CmsDataDefResultEntry;
 import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
@@ -27,24 +27,25 @@ public class GetDataDefinitionServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataDefinitionRequest req = (CmsGetDataDefinitionRequest) rawReq;
-        log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
+        log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
 
-        CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse().reqId(reqId);
+        CmsGetDataDefinitionResponse resp = new CmsGetDataDefinitionResponse();
 
         int ps = pageSize();
-        log.info(">>>> ps={} resp.data.count={} req.data.count={}", ps, resp.data.count, req.data.count);
-        for (int i = 0; i < req.data.count && resp.data.count < ps; i++) {
-            CmsDataRefEntry refEntry = req.data.items.get(i);
+        log.info(">>>> ps={} resp.data.size={} req.data.size={}", ps, resp.data.size(), req.data.size());
+        for (CmsDataRefEntry refEntry : req.data) {
+            if (resp.data.size() >= ps)
+                break;
             String ref = str(refEntry.reference);
             if (ref == null)
                 continue;
 
-            String fcCode = fcCode(refEntry.fcPresent.value() ? refEntry.fc.value() : -1);
+            String fcCode = fcCode(refEntry.isPresent("fc") ? refEntry.fc.value() : -1);
 
             Navigator nav = Navigator.go(doc, ied, ref);
             if (!nav.isValid()) {
@@ -63,7 +64,7 @@ public class GetDataDefinitionServer extends BaseServerHandler {
             }
         }
         resp.moreFollows(false);
-        log.info("GetDataDefinition: returning {} definitions", resp.data.items.size());
+        log.info("GetDataDefinition: returning {} definitions", resp.data.size());
         return ok(resp, reqId);
     }
 }

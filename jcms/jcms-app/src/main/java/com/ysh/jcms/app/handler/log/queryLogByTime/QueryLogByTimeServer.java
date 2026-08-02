@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
-import com.ysh.jcms.pdu.log.CmsLogEntry;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeRequest;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeResponse;
@@ -31,28 +31,28 @@ public class QueryLogByTimeServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsQueryLogByTimeRequest req = (CmsQueryLogByTimeRequest) rawReq;
         String logRef = str(req.logReference);
 
         log.info("QueryLogByTime from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);
 
         Long startTime = null;
-        if (req.startTimePresent.value()) {
+        if (req.isPresent("startTime")) {
             startTime = (long) req.startTime.daysSince1984.value() * 86400000L + req.startTime.msOfDay.value();
         }
         Long stopTime = null;
-        if (req.stopTimePresent.value()) {
+        if (req.isPresent("stopTime")) {
             stopTime = (long) req.stopTime.daysSince1984.value() * 86400000L + req.stopTime.msOfDay.value();
         }
         String entryAfter = null;
-        if (req.entryAfterPresent.value()) {
+        if (req.isPresent("entryAfter")) {
             entryAfter = str(req.entryAfter.value());
         }
 
         List<CmsLogEntry> entries = logStorage.queryByTime(logRef, startTime, stopTime, entryAfter, pageSize());
 
-        CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse().reqId(reqId);
+        CmsQueryLogByTimeResponse resp = new CmsQueryLogByTimeResponse();
         for (CmsLogEntry e : entries) {
             resp.logEntry.add(e);
         }

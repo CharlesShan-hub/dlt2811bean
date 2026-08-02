@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.operate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.control.ControlCache;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.control.CmsOperateError;
 import com.ysh.jcms.pdu.control.CmsOperateRequest;
@@ -29,11 +29,11 @@ public class OperateServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsTypeOld decoded) {
+    protected void prepareDecode(CmsType decoded) {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsOperateRequest req = (CmsOperateRequest) rawReq;
         String ref = str(req.reference);
         String sid = session.getSessionId();
@@ -49,6 +49,6 @@ public class OperateServer extends BaseServerHandler {
         ControlCache.release(ref, sid);
         log.info("Operate: executed '{}' for session {}, lock released", ref, sid);
 
-        return ok(new CmsOperateResponse().reqId(reqId).reference(ref), reqId);
+        return ok(new CmsOperateResponse().reference(ref), reqId);
     }
 }

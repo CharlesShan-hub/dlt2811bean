@@ -1,15 +1,15 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.scalar.CmsInt16U;
+import com.ysh.jcms.data.sequence.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
-import com.ysh.jcms.pdu.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +43,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
     }
 
     public void execute(GetGooseElementNumberDao dao) throws Exception {
-        CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().reqId(nextReqId()).gocbReference(dao.gocbReference());
+        CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().gocbReference(dao.gocbReference());
         for (MemberSpec spec : dao.members()) {
             CmsGoRefFcEntry entry = new CmsGoRefFcEntry().reference(spec.reference).fc(spec.fc);
             req.memberData.add(entry);
@@ -54,7 +54,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetGooseElementNumberError err = decodeErr(frame, new CmsGetGooseElementNumberError());
-        throw new IOException("GetGOOSEElementNumber rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetGOOSEElementNumber rejected: " + err.value());
     }
 
     @Override
@@ -62,11 +62,11 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
         CmsGetGooseElementNumberResponse resp = decodeResp(frame, new CmsGetGooseElementNumberResponse());
 
         List<Integer> offsets = new ArrayList<>();
-        for (int i = 0; i < resp.memberOffset.count; i++) {
-            offsets.add(resp.memberOffset.items.get(i).value());
+        for (CmsInt16U off : resp.memberOffset) {
+            offsets.add(off.value());
         }
 
-        lastResult = new ElementNumberResult(new String(resp.gocbReference.value(), StandardCharsets.UTF_8), resp.confRev.value(),
-                new String(resp.datSet.value(), StandardCharsets.UTF_8), offsets);
+        lastResult = new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(),
+                resp.datSet.value(), offsets);
     }
 }

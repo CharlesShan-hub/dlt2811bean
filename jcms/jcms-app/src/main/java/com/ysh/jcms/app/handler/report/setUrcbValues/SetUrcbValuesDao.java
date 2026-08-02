@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
+import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
-import com.ysh.jcms.pdu.report.CmsSetUrcbEntry;
 
 public class SetUrcbValuesDao {
     private String ref;
@@ -51,33 +51,23 @@ public class SetUrcbValuesDao {
     }
 
     CmsSetUrcbValuesRequest toRequest(int reqId) {
-        CmsSetUrcbValuesRequest req = new CmsSetUrcbValuesRequest().reqId(reqId);
+        CmsSetUrcbValuesRequest req = new CmsSetUrcbValuesRequest();
         CmsSetUrcbEntry entry = new CmsSetUrcbEntry().reference(ref != null ? ref : "");
 
         if (rptId != null)
-            entry.rptId(rptId);
-        if (rptEna != null) {
-            entry.rptEnaPresent(true);
+            entry.rptID(rptId);
+        if (rptEna != null)
             entry.rptEna(rptEna);
-        }
         if (datSet != null)
             entry.datSet(datSet);
-        if (bufTm != null) {
-            entry.bufTmPresent(true);
+        if (bufTm != null)
             entry.bufTm(bufTm);
-        }
-        if (intgPd != null) {
-            entry.intgPdPresent(true);
+        if (intgPd != null)
             entry.intgPd(intgPd);
-        }
-        if (gi != null) {
-            entry.giPresent(true);
+        if (gi != null)
             entry.gi(gi);
-        }
-        if (resv != null) {
-            entry.resvPresent(true);
+        if (resv != null)
             entry.resv(resv);
-        }
 
         req.urcb.add(entry);
         return req;

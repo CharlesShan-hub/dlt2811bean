@@ -3,9 +3,9 @@ package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.msv.MsvcbCache;
 import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesServer;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
-import com.ysh.jcms.pdu.msv.CmsSetMsvcbEntry;
+import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesRequest;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesResponse;
@@ -32,16 +32,17 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) rawReq;
-        log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.count);
+        log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.size());
 
         SclIED ied = getSclIed(session);
 
-        for (int i = 0; i < req.msvcb.count; i++) {
-            CmsSetMsvcbEntry entry = req.msvcb.items.get(i);
+        int idx = 0;
+        for (CmsSetMsvcbEntry entry : req.msvcb) {
             String ref = str(entry.reference);
-            log.debug("SetMSVCBValues: processing entry[{}] ref={}", i, ref);
+            log.debug("SetMSVCBValues: processing entry[{}] ref={}", idx, ref);
+            idx++;
 
             // Get baseline from cache or SCL
             CmsMsvcb baseline = MsvcbCache.get(ref);
@@ -55,28 +56,27 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
             }
 
             // Apply optional fields from the request
-            if (entry.svEnaPresent.value()) {
+            if (entry.isPresent("svEna")) {
                 baseline.svEna(entry.svEna.value());
                 log.debug("SetMSVCBValues:   svEna={}", entry.svEna.value());
             }
-            if (entry.msvIdPresent.value()) {
-                baseline.msvID(entry.msvId.value());
-                log.debug("SetMSVCBValues:   msvID={}", str(entry.msvId));
+            if (entry.isPresent("msvID")) {
+                baseline.msvID(entry.msvID.value());
+                log.debug("SetMSVCBValues:   msvID={}", entry.msvID.value());
             }
-            if (entry.datSetPresent.value()) {
+            if (entry.isPresent("datSet")) {
                 baseline.datSet(entry.datSet.value());
-                log.debug("SetMSVCBValues:   datSet={}", str(entry.datSet));
+                log.debug("SetMSVCBValues:   datSet={}", entry.datSet.value());
             }
-            if (entry.smpModPresent.value()) {
-                baseline.smpMod_present(true);
+            if (entry.isPresent("smpMod")) {
                 baseline.smpMod(entry.smpMod.value());
                 log.debug("SetMSVCBValues:   smpMod={}", entry.smpMod.value());
             }
-            if (entry.smpRatePresent.value()) {
+            if (entry.isPresent("smpRate")) {
                 baseline.smpRate(entry.smpRate.value());
                 log.debug("SetMSVCBValues:   smpRate={}", entry.smpRate.value());
             }
-            if (entry.optFldsPresent.value()) {
+            if (entry.isPresent("optFlds")) {
                 baseline.optFlds(entry.optFlds);
                 log.debug("SetMSVCBValues:   optFlds updated");
             }
@@ -86,8 +86,8 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
             log.info("SetMSVCBValues: updated '{}' in cache", ref);
         }
 
-        CmsSetMsvcbValuesResponse resp = new CmsSetMsvcbValuesResponse().reqId(reqId);
-        log.info("SetMSVCBValues: acknowledged {} entries", req.msvcb.count);
+        CmsSetMsvcbValuesResponse resp = new CmsSetMsvcbValuesResponse();
+        log.info("SetMSVCBValues: acknowledged {} entries", req.msvcb.size());
         return ok(resp, reqId);
     }
 }

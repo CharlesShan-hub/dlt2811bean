@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.control.cancel;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.control.ControlCache;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.control.CmsCancelError;
 import com.ysh.jcms.pdu.control.CmsCancelRequest;
@@ -28,11 +28,11 @@ public class CancelServer extends BaseServerHandler {
     }
 
     @Override
-    protected void prepareDecode(CmsTypeOld decoded) {
+    protected void prepareDecode(CmsType decoded) {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsCancelRequest req = (CmsCancelRequest) rawReq;
         String ref = str(req.reference);
         String sid = session.getSessionId();
@@ -44,8 +44,8 @@ public class CancelServer extends BaseServerHandler {
 
         if (ControlCache.release(ref, sid)) {
             log.info("Cancel: released lock '{}' for session {}", ref, sid);
-            CmsCancelResponse resp = new CmsCancelResponse().reqId(reqId).reference(ref).ctlVal(req.ctlVal)
-                    .operTmPresent(req.operTmPresent.value()).operTm(req.operTm).origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
+            CmsCancelResponse resp = new CmsCancelResponse().reference(ref).ctlVal(req.ctlVal)
+                    .operTm(req.isPresent("operTm") ? req.operTm : null).origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
                     .test(req.test.value());
             return ok(resp, reqId);
         } else {

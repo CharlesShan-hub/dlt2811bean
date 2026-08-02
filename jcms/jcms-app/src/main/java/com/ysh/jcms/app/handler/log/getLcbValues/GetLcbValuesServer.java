@@ -1,15 +1,16 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.data.choice.CmsLcbValueChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsLcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesResponse;
-import com.ysh.jcms.pdu.log.CmsLcbValueChoice;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -29,29 +30,27 @@ public class GetLcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLcbValuesRequest req = (CmsGetLcbValuesRequest) rawReq;
-        log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
+        log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
 
-        CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse().reqId(reqId);
+        CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse();
 
-        for (int i = 0; i < req.reference.count; i++) {
-            String ref = str(req.reference.items.get(i));
-            CmsLcbValueChoice choice = new CmsLcbValueChoice();
+        for (CmsObjectReference refObj : req.reference) {
+            String ref = str(refObj);
+            CmsLcbValueChoice choice;
             CmsLcb lcb = resolveLcb(ied, ref);
             if (lcb != null) {
-                choice.choice(CmsLcbValueChoice.VALUE);
-                choice.altValue = lcb;
+                choice = new CmsLcbValueChoice().altValue(lcb);
             } else {
-                choice.choice(CmsLcbValueChoice.ERROR);
-                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                choice = new CmsLcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             resp.lcb.add(choice);
         }
         resp.moreFollows(false);
-        log.info("GetLCBValues: returning {} entries", resp.lcb.items.size());
+        log.info("GetLCBValues: returning {} entries", resp.lcb.size());
         return ok(resp, reqId);
     }
 
@@ -95,8 +94,8 @@ public class GetLcbValuesServer extends BaseServerHandler {
         if (lc.optFields() != null) {
             try {
                 long v = Long.parseLong(lc.optFields());
-                CmsLcbOptFlds f = new CmsLcbOptFlds().value(v != 0);
-                lcb.optFlds_present(true).optFlds(f);
+                CmsLcbOptFlds f = new CmsLcbOptFlds().bit0(v != 0);
+                lcb.optFlds(f);
             } catch (NumberFormatException ignored) {
             }
         }

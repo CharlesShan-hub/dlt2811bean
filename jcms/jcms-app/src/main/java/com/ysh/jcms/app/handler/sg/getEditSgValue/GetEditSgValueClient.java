@@ -5,12 +5,11 @@ import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
-import com.ysh.jcms.pdu.sg.CmsSgRefFcEntry;
+import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class GetEditSgValueClient extends BaseClientHandler {
     }
 
     public void execute(GetEditSgValueDao dao) throws Exception {
-        CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest().reqId(nextReqId());
+        CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest();
         for (GetEditSgValueDao.RefFcPair pair : dao.refs()) {
             req.data.add(new CmsSgRefFcEntry().reference(pair.reference()).fc(pair.fc()));
         }
@@ -41,7 +40,7 @@ public class GetEditSgValueClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetEditSgValueError err = decodeErr(frame, new CmsGetEditSgValueError());
-        throw new IOException("GetEditSGValue rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetEditSGValue rejected: " + err.value());
     }
 
     @Override
@@ -49,16 +48,15 @@ public class GetEditSgValueClient extends BaseClientHandler {
         CmsGetEditSgValueResponse resp = decodeResp(frame, new CmsGetEditSgValueResponse());
 
         List<ValueEntry> values = new ArrayList<>();
-        for (int i = 0; i < resp.value.count; i++) {
-            CmsData data = resp.value.items.get(i);
-            values.add(new ValueEntry(data.choice.value(), describeValue(data)));
+        for (CmsData data : resp.value) {
+            values.add(new ValueEntry(data.choice(), describeValue(data)));
         }
         this.lastValues = values;
         log.info("GetEditSGValue succeeded: {} values", values.size());
     }
 
     private static String describeValue(CmsData data) {
-        int choice = data.choice.value();
+        int choice = data.choice();
         try {
             switch (choice) {
                 case CmsData.CHOICE_BOOLEAN :
@@ -68,7 +66,7 @@ public class GetEditSgValueClient extends BaseClientHandler {
                 case CmsData.CHOICE_FLOAT32 :
                     return String.valueOf(data.alt_float32.value());
                 case CmsData.CHOICE_VISIBLE_STRING :
-                    return new String(data.alt_visible_string.value(), StandardCharsets.UTF_8);
+                    return (String) data.alt_visible_string.toJsonValue();
                 default :
                     return "choice=" + choice;
             }

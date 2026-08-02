@@ -1,6 +1,6 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
-import com.ysh.jcms.pdu.goose.CmsSetGoCbEntry;
+import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesRequest;
 
 public class SetGoCbValuesDao {
@@ -31,15 +31,14 @@ public class SetGoCbValuesDao {
     }
 
     CmsSetGoCbValuesRequest toRequest(int reqId) {
-        CmsSetGoCbValuesRequest req = new CmsSetGoCbValuesRequest().reqId(reqId);
+        CmsSetGoCbValuesRequest req = new CmsSetGoCbValuesRequest();
         CmsSetGoCbEntry entry = new CmsSetGoCbEntry().reference(ref != null ? ref : "");
 
         if (goEna != null) {
-            entry.goEnaPresent(true);
             entry.goEna(goEna);
         }
         if (goID != null)
-            entry.goId(goID);
+            entry.goID(goID);
         if (datSet != null)
             entry.datSet(datSet);
 

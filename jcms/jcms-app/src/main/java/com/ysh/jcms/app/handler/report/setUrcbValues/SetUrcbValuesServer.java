@@ -2,13 +2,13 @@ package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesResponse;
-import com.ysh.jcms.pdu.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbResult;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
@@ -21,7 +21,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,15 +33,15 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) rawReq;
 
-        log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.count);
+        log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.size());
 
         // 8.7.5.2.c) Empty sequence → Response+
-        if (req.urcb.count == 0) {
+        if (req.urcb.size() == 0) {
             try {
-                return buildSuccess(new CmsSetUrcbValuesResponse().reqId(reqId).encode(), reqId);
+                return buildSuccess(new CmsSetUrcbValuesResponse().encode(), reqId);
             } catch (Exception e) {
                 log.error("Failed to encode SetURCBValuesResponse", e);
                 return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -54,9 +53,8 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         List<CmsSetUrcbResult> results = new ArrayList<>();
         boolean hasAnyError = false;
 
-        for (int i = 0; i < req.urcb.count; i++) {
-            CmsSetUrcbEntry entry = req.urcb.items.get(i);
-            String ref = new String(entry.reference.value(), StandardCharsets.UTF_8);
+        for (CmsSetUrcbEntry entry : req.urcb) {
+            String ref = entry.reference.value();
 
             CmsSetUrcbResult result = processEntry(ied, entry, ref, session);
             results.add(result);
@@ -68,7 +66,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
 
         // 8.7.5.2.d) All succeed → Response+, any failure → Response- with results
         if (hasAnyError) {
-            CmsSetUrcbValuesError errResp = new CmsSetUrcbValuesError().reqId(reqId);
+            CmsSetUrcbValuesError errResp = new CmsSetUrcbValuesError();
             for (CmsSetUrcbResult r : results) {
                 errResp.result.add(r);
             }
@@ -82,7 +80,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         }
 
         try {
-            return buildSuccess(new CmsSetUrcbValuesResponse().reqId(reqId).encode(), reqId);
+            return buildSuccess(new CmsSetUrcbValuesResponse().encode(), reqId);
         } catch (Exception e) {
             log.error("Failed to encode SetURCBValuesResponse", e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
@@ -90,25 +88,25 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     private boolean hasEntryError(CmsSetUrcbResult r) {
-        if (r.errorPresent.value())
+        if (r.isPresent("error"))
             return true;
-        if (r.rptIdErrPresent.value())
+        if (r.isPresent("rptID"))
             return true;
-        if (r.rptEnaErrPresent.value())
+        if (r.isPresent("rptEna"))
             return true;
-        if (r.datSetErrPresent.value())
+        if (r.isPresent("datSet"))
             return true;
-        if (r.optFldsErrPresent.value())
+        if (r.isPresent("optFlds"))
             return true;
-        if (r.bufTmErrPresent.value())
+        if (r.isPresent("bufTm"))
             return true;
-        if (r.trgOpsErrPresent.value())
+        if (r.isPresent("trgOps"))
             return true;
-        if (r.intgPdErrPresent.value())
+        if (r.isPresent("intgPd"))
             return true;
-        if (r.giErrPresent.value())
+        if (r.isPresent("gi"))
             return true;
-        if (r.resvErrPresent.value())
+        if (r.isPresent("resv"))
             return true;
         return false;
     }
@@ -120,7 +118,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
             log.warn("SetURCBValues: invalid ref format {}", ref);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
@@ -131,7 +129,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null) {
             log.warn("SetURCBValues: cannot find LN {} in LD {}", lnName, ldName);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
@@ -144,25 +142,25 @@ public class SetUrcbValuesServer extends BaseServerHandler {
         }
         if (rc == null) {
             log.warn("SetURCBValues: cannot find unbuffered RC {} in LN {}", cbName, lnName);
-            result.errorPresent(true).error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
         CmsBrcb rtState = RcbStateManager.getOrCreate(ref);
 
         // 8.7.5.2.b) rptEna ordering
-        boolean hasRptEna = entry.rptEnaPresent.value();
+        boolean hasRptEna = entry.isPresent("rptEna");
         boolean rptEnaVal = hasRptEna && entry.rptEna.value();
 
         if (hasRptEna && !rptEnaVal) {
             rtState.rptEna(false);
-            result.rptEnaErrPresent(false);
+            result.setPresent("rptEna", false);
             setOtherUrcbFields(result, entry, rtState);
         } else if (hasRptEna && rptEnaVal) {
             setOtherUrcbFields(result, entry, rtState);
             if (!hasEntryError(result)) {
                 rtState.rptEna(true);
-                result.rptEnaErrPresent(false);
+                result.setPresent("rptEna", false);
             }
         } else {
             setOtherUrcbFields(result, entry, rtState);
@@ -177,7 +175,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
                 if (hasRptEna) {
                     if (rptEnaVal) {
                         engine.subscribe(ref, session);
-                        if (entry.intgPdPresent.value() && entry.intgPd.value() > 0) {
+                        if (entry.isPresent("intgPd") && entry.intgPd.value() > 0) {
                             engine.startIntegrityTimer(ref, entry.intgPd.value());
                         }
                     } else {
@@ -185,7 +183,7 @@ public class SetUrcbValuesServer extends BaseServerHandler {
                         engine.stopIntegrityTimer(ref);
                     }
                 }
-                if (entry.giPresent.value() && entry.gi.value()) {
+                if (entry.isPresent("gi") && entry.gi.value()) {
                     engine.triggerGi(ref);
                 }
             }
@@ -195,47 +193,51 @@ public class SetUrcbValuesServer extends BaseServerHandler {
     }
 
     private void setOtherUrcbFields(CmsSetUrcbResult result, CmsSetUrcbEntry entry, CmsBrcb rtState) {
-        if (entry.rptIdPresent.value()) {
-            byte[] val = entry.rptId.value();
-            if (val != null && val.length > 0) {
+        if (entry.isPresent("rptID")) {
+            String val = entry.rptID.value();
+            if (val != null && !val.isEmpty()) {
                 rtState.rptID(val);
-                result.rptIdErrPresent(false);
+                result.setPresent("rptID", false);
             } else {
-                result.rptIdErrPresent(true).rptIdErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                result.rptID(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
-        if (entry.datSetPresent.value()) {
-            byte[] val = entry.datSet.value();
-            if (val != null && val.length > 0) {
+        if (entry.isPresent("datSet")) {
+            String val = entry.datSet.value();
+            if (val != null && !val.isEmpty()) {
                 rtState.datSet(val);
-                result.datSetErrPresent(false);
+                result.setPresent("datSet", false);
             } else {
-                result.datSetErrPresent(true).datSetErr(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+                result.datSet(CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
             }
         }
-        if (entry.optFldsPresent.value()) {
-            rtState.optFlds = entry.optFlds;
-            result.optFldsErrPresent(false);
+        if (entry.isPresent("optFlds")) {
+            rtState.optFlds(entry.optFlds);
+            result.setPresent("optFlds", false);
         }
-        if (entry.bufTmPresent.value()) {
+        if (entry.isPresent("bufTm")) {
             rtState.bufTm(entry.bufTm.value());
-            result.bufTmErrPresent(false);
+            result.setPresent("bufTm", false);
         }
-        if (entry.trgOpsPresent.value()) {
-            rtState.trgOps = entry.trgOps;
-            result.trgOpsErrPresent(false);
+        if (entry.isPresent("trgOps")) {
+            rtState.trgOps(entry.trgOps);
+            result.setPresent("trgOps", false);
         }
-        if (entry.intgPdPresent.value()) {
+        if (entry.isPresent("intgPd")) {
             rtState.intgPd(entry.intgPd.value());
-            result.intgPdErrPresent(false);
+            result.setPresent("intgPd", false);
         }
-        if (entry.giPresent.value()) {
+        if (entry.isPresent("gi")) {
             rtState.gi(entry.gi.value());
-            result.giErrPresent(false);
+            result.setPresent("gi", false);
         }
-        if (entry.resvPresent.value()) {
-            rtState.resvTms_present(entry.resv.value());
-            result.resvErrPresent(false);
+        if (entry.isPresent("resv")) {
+            if (entry.resv.value()) {
+                rtState.resvTms(0);
+            } else {
+                rtState.setPresent("resvTms", false);
+            }
+            result.setPresent("resv", false);
         }
     }
 

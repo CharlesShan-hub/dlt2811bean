@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ConfirmEditSgValuesClient extends BaseClientHandler {
 
     public void execute(ConfirmEditSgValuesDao dao) throws Exception {
-        CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest().reqId(nextReqId()).sgcbReference(dao.sgcbReference());
+        CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest().sgcbReference(dao.sgcbReference());
 
         send(ServiceName.CONFIRM_EDIT_SG_VALUES, req);
     }
@@ -20,7 +20,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsConfirmEditSgValuesError err = decodeErr(frame, new CmsConfirmEditSgValuesError());
-        throw new IOException("ConfirmEditSGValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("ConfirmEditSGValues rejected: " + err.value());
     }
 
     @Override

@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.rpc.rpcCall;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallRequest;
@@ -34,7 +34,7 @@ public class RpcCallServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsRpcCallRequest req = (CmsRpcCallRequest) rawReq;
         String method = str(req.method);
         if (method == null)
@@ -55,11 +55,9 @@ public class RpcCallServer extends BaseServerHandler {
         log.info("RpcCall from {}: method='{}' -> '{}'", session.getSessionId(), method, result);
 
         // Build response with visible-string data
-        CmsData rspData = new CmsData();
-        rspData.choice.value(CmsData.CHOICE_VISIBLE_STRING);
-        rspData.alt_visible_string.value(result);
+        CmsData rspData = new CmsData().alt_visible_string(result);
 
-        CmsRpcCallResponse resp = new CmsRpcCallResponse().reqId(reqId).rspData(rspData);
+        CmsRpcCallResponse resp = new CmsRpcCallResponse().rspData(rspData);
         return ok(resp, reqId);
     }
 }

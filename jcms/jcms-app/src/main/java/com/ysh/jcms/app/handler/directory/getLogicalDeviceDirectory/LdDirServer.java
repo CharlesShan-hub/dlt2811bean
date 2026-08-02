@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
@@ -25,9 +25,9 @@ public class LdDirServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetLogicalDeviceDirectoryRequest req = (CmsGetLogicalDeviceDirectoryRequest) rawReq;
-        String ldName = opt(req.ldNamePresent, req.ldName);
+        String ldName = req.isPresent("ldName") ? req.ldName.value() : null;
         log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}", session.getSessionId(), reqId, ldName);
 
         SclDocument doc = requireScl(session, reqId);
@@ -43,9 +43,9 @@ public class LdDirServer extends BaseServerHandler {
             lnNames = getAllLnNames(doc);
         }
 
-        lnNames = after(lnNames, opt(req.refAfterPresent, req.refAfter), reqId);
+        lnNames = after(lnNames, req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 
-        CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse().reqId(reqId);
+        CmsGetLogicalDeviceDirectoryResponse resp = new CmsGetLogicalDeviceDirectoryResponse();
         for (String name : lnNames)
             resp.lnReference.add(new CmsSubReference(name));
         resp.moreFollows(false);

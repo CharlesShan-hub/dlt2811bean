@@ -2,8 +2,8 @@ package com.ysh.jcms.app.tool;
 
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsFC;
-import com.ysh.jcms.pdu.log.CmsLogDataEntry;
-import com.ysh.jcms.pdu.log.CmsLogEntry;
+import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
+import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.utils.log.LogStorage;
 
 import java.nio.charset.StandardCharsets;
@@ -52,12 +52,12 @@ public class MockLogGenerator {
             entry.timeOfEntry.msOfDay.value(msOfDay);
             entry.timeOfEntry.daysSince1984.value(days);
 
-            String entryId = String.format("%06d", i);
-            entry.entryId.value(entryId.getBytes(StandardCharsets.UTF_8));
+            String entryId = String.format("%08d", i);
+            entry.entryID.value(entryId.getBytes(StandardCharsets.UTF_8));
 
             for (String ref : DATASET_REFS) {
                 CmsLogDataEntry de = new CmsLogDataEntry();
-                de.reference.value(ref.getBytes(StandardCharsets.UTF_8));
+                de.reference.value(ref);
                 de.fc.value(CmsFC.ST);
 
                 CmsData data = new CmsData().choice(CmsData.CHOICE_INT32);
@@ -69,15 +69,15 @@ public class MockLogGenerator {
                 } else {
                     offset = 3;
                 }
-                data.alt_int32.value(i * 10 + offset);
+                data.alt_int32(i * 10 + offset);
                 de.value = data;
 
-                de.reason.data_change.value(true);
-                de.reason.quality_change.value(false);
-                de.reason.data_update.value(false);
-                de.reason.integrity.value(false);
-                de.reason.general_interrogation.value(false);
-                de.reason.application_trigger.value(false);
+                de.reason.data_change(true);
+                de.reason.quality_change(false);
+                de.reason.data_update(false);
+                de.reason.integrity(false);
+                de.reason.general_interrogation(false);
+                de.reason.application_trigger(false);
 
                 entry.entryData.add(de);
             }
@@ -85,13 +85,13 @@ public class MockLogGenerator {
             System.out.println("  entry[" + i + "] before append:");
             System.out.println(entry);
             System.out.println("  entry[" + i + "] entryData[0] value:");
-            System.out.println(entry.entryData.items.get(0).value);
+            System.out.println(entry.entryData.get(0).value);
 
             storage.append(LOG_REF, entry);
 
             LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(entryEpochMs), ZoneId.systemDefault());
             System.out.printf("  [%s] entryId=%s  %d data entries%n", dt.toString().replace("T", " "), entryId,
-                    entry.entryData.items.size());
+                    entry.entryData.size());
         }
 
         System.out.println();

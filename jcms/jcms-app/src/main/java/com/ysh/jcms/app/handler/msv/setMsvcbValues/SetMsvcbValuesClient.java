@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.pdu.msv.CmsSetMsvcbEntry;
+import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesRequest;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesResponse;
@@ -14,13 +14,13 @@ public class SetMsvcbValuesClient extends BaseClientHandler {
     public void execute(String ref, String svEna, String msvId, String datSet) throws Exception {
         CmsSetMsvcbEntry entry = new CmsSetMsvcbEntry().reference(ref);
         if (svEna != null && !svEna.isEmpty())
-            entry.svEnaPresent(true).svEna(Boolean.parseBoolean(svEna));
+            entry.svEna(Boolean.parseBoolean(svEna));
         if (msvId != null && !msvId.isEmpty())
-            entry.msvId(msvId);
+            entry.msvID(msvId);
         if (datSet != null && !datSet.isEmpty())
             entry.datSet(datSet);
 
-        CmsSetMsvcbValuesRequest req = new CmsSetMsvcbValuesRequest().reqId(nextReqId());
+        CmsSetMsvcbValuesRequest req = new CmsSetMsvcbValuesRequest();
         req.msvcb.add(entry);
         send(ServiceName.SET_MSVCB_VALUES, req);
     }

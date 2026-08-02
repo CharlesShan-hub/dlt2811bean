@@ -1,9 +1,9 @@
 package com.ysh.jcms.app.handler.rpc.rpcCall;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.choice.CmsRpcCallReqChoice;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallRequest;
-import com.ysh.jcms.pdu.rpc.CmsRpcCallReqChoice;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class RpcCallClient extends BaseClientHandler {
     public void execute(String method) throws Exception {
-        CmsRpcCallRequest req = new CmsRpcCallRequest().reqId(nextReqId()).method(method);
+        CmsRpcCallRequest req = new CmsRpcCallRequest().method(method);
         req.req(new CmsRpcCallReqChoice());
         send(ServiceName.RPC_CALL, req);
     }

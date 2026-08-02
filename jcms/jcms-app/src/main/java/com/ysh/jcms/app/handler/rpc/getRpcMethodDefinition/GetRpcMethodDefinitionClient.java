@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.string.CmsUint8Array;
+import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
@@ -12,11 +12,9 @@ import java.util.List;
 
 public class GetRpcMethodDefinitionClient extends BaseClientHandler {
     public void execute(List<String> refs) throws Exception {
-        CmsGetRpcMethodDefinitionRequest req = new CmsGetRpcMethodDefinitionRequest().reqId(nextReqId());
+        CmsGetRpcMethodDefinitionRequest req = new CmsGetRpcMethodDefinitionRequest();
         for (String ref : refs) {
-            CmsUint8Array r = new CmsUint8Array();
-            r.value(ref);
-            req.reference.add(r);
+            req.reference.add(new CmsString(ref));
         }
         send(ServiceName.GET_RPC_METHOD_DEFINITION, req);
     }

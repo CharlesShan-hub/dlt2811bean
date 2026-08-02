@@ -1,13 +1,14 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.choice.CmsUrcbValueChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.data.sequence.block.CmsUrcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesResponse;
-import com.ysh.jcms.pdu.report.CmsRcbValueChoice;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -28,33 +29,31 @@ public class GetUrcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) rawReq;
-        log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.count);
+        log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
 
-        CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse().reqId(reqId);
+        CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse();
 
-        for (int i = 0; i < req.reference.count; i++) {
-            String ref = str(req.reference.items.get(i));
-            CmsRcbValueChoice choice = new CmsRcbValueChoice();
-            CmsBrcb urcb = resolveUrcb(ied, ref);
+        for (int i = 0; i < req.reference.size(); i++) {
+            String ref = str(req.reference.get(i));
+            CmsUrcbValueChoice choice = new CmsUrcbValueChoice();
+            CmsUrcb urcb = resolveUrcb(ied, ref);
             if (urcb != null) {
-                choice.choice(CmsRcbValueChoice.VALUE);
-                choice.altValue = urcb;
+                choice.altValue(urcb);
             } else {
-                choice.choice(CmsRcbValueChoice.ERROR);
-                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                choice.altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
             resp.urcb.add(choice);
         }
         resp.moreFollows(false);
-        log.info("GetURCBValues: returning {} entries", resp.urcb.items.size());
+        log.info("GetURCBValues: returning {} entries", resp.urcb.size());
         return ok(resp, reqId);
     }
 
-    static CmsBrcb resolveUrcb(SclIED ied, String ref) {
+    static CmsUrcb resolveUrcb(SclIED ied, String ref) {
         int slashIdx = ref.indexOf('/');
         int dotIdx = ref.indexOf('.');
         if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
@@ -79,7 +78,7 @@ public class GetUrcbValuesServer extends BaseServerHandler {
             return null;
 
         // Build from SCL defaults
-        CmsBrcb urcb = new CmsBrcb();
+        CmsUrcb urcb = new CmsUrcb();
 
         if (rc.rptID() != null)
             urcb.rptID(rc.rptID());
@@ -106,22 +105,20 @@ public class GetUrcbValuesServer extends BaseServerHandler {
         urcb.rptEna(false);
         urcb.sqNum(0);
         urcb.gi(false);
-        urcb.entryID(new byte[0]);
-        urcb.resvTms_present(false);
-        urcb.owner_present(false);
+        urcb.setPresent("owner", false);
 
         // Overlay runtime state if present
         CmsBrcb runtime = RcbStateManager.get(ref);
         if (runtime != null) {
-            if (runtime.rptID != null && runtime.rptID.len > 0) {
+            if (runtime.rptID.value() != null && !runtime.rptID.value().isEmpty()) {
                 urcb.rptID(runtime.rptID.value());
             }
             urcb.rptEna(runtime.rptEna.value());
-            if (runtime.datSet != null && runtime.datSet.len > 0) {
+            if (runtime.datSet.value() != null && !runtime.datSet.value().isEmpty()) {
                 urcb.datSet(runtime.datSet.value());
             }
             if (runtime.optFlds != null) {
-                urcb.optFlds = runtime.optFlds;
+                urcb.optFlds(runtime.optFlds);
             }
             if (runtime.bufTm != null) {
                 urcb.bufTm(runtime.bufTm.value());
@@ -130,25 +127,14 @@ public class GetUrcbValuesServer extends BaseServerHandler {
                 urcb.sqNum(runtime.sqNum.value());
             }
             if (runtime.trgOps != null) {
-                urcb.trgOps = runtime.trgOps;
+                urcb.trgOps(runtime.trgOps);
             }
             if (runtime.intgPd != null) {
                 urcb.intgPd(runtime.intgPd.value());
             }
             urcb.gi(runtime.gi.value());
-            if (runtime.entryID != null && runtime.entryID.len > 0) {
-                urcb.entryID(runtime.entryID.value());
-            }
-            if (runtime.timeOfEntry != null) {
-                urcb.timeOfEntry = runtime.timeOfEntry;
-            }
-            if (runtime.resvTms_present != null && runtime.resvTms_present.value()) {
-                urcb.resvTms_present(true);
-                urcb.resvTms(runtime.resvTms.value());
-            }
-            if (runtime.owner_present != null && runtime.owner_present.value()) {
-                urcb.owner_present(true);
-                if (runtime.owner != null && runtime.owner.len > 0) {
+            if (runtime.isPresent("owner")) {
+                if (runtime.owner.value() != null && runtime.owner.value().length > 0) {
                     urcb.owner(runtime.owner.value());
                 }
             }

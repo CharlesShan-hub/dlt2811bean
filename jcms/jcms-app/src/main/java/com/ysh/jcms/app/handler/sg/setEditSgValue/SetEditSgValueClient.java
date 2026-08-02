@@ -5,7 +5,7 @@ import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.sg.CmsSetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsSetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsSetEditSgValueResponse;
-import com.ysh.jcms.pdu.sg.CmsSgRefValueEntry;
+import com.ysh.jcms.data.sequence.sg.CmsSgRefValueEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 

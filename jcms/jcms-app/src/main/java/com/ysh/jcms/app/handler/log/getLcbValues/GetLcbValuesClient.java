@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.block.CmsLcb;
+import com.ysh.jcms.data.choice.CmsLcbValueChoice;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
+import com.ysh.jcms.data.sequence.block.CmsLcb;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesResponse;
-import com.ysh.jcms.pdu.log.CmsLcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -29,7 +29,7 @@ public class GetLcbValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetLcbValuesDao dao) throws Exception {
-        CmsGetLcbValuesRequest req = new CmsGetLcbValuesRequest().reqId(nextReqId());
+        CmsGetLcbValuesRequest req = new CmsGetLcbValuesRequest();
         for (String ref : dao.refs()) {
             req.reference.add(new CmsObjectReference(ref));
         }
@@ -47,18 +47,17 @@ public class GetLcbValuesClient extends BaseClientHandler {
         CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.lcb.count; i++) {
-            CmsLcbValueChoice choice = resp.lcb.items.get(i);
-            if (choice.choice.value() == CmsLcbValueChoice.VALUE) {
+        for (CmsLcbValueChoice choice : resp.lcb) {
+            if (choice.choice() == CmsLcbValueChoice.VALUE) {
                 CmsLcb b = choice.altValue;
                 StringBuilder sb = new StringBuilder();
                 sb.append("logEna=").append(b.logEna.value());
-                sb.append(" datSet=").append(new String(b.datSet.value(), java.nio.charset.StandardCharsets.UTF_8));
+                sb.append(" datSet=").append(b.datSet.value());
                 sb.append(" intgPd=").append(b.intgPd.value());
-                sb.append(" logRef=").append(new String(b.logRef.value(), java.nio.charset.StandardCharsets.UTF_8));
-                sb.append(" trgOps=dc:").append(b.trgOps.data_change.value()).append(",qc:").append(b.trgOps.quality_change.value())
-                        .append(",du:").append(b.trgOps.data_update.value()).append(",integrity:").append(b.trgOps.integrity.value())
-                        .append(",gi:").append(b.trgOps.general_interrogation.value());
+                sb.append(" logRef=").append(b.logRef.value());
+                sb.append(" trgOps=dc:").append(b.trgOps.data_change()).append(",qc:").append(b.trgOps.quality_change())
+                        .append(",du:").append(b.trgOps.data_update()).append(",integrity:").append(b.trgOps.integrity())
+                        .append(",gi:").append(b.trgOps.general_interrogation());
                 entries.add(new LcbEntry(sb.toString()));
             } else {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));

@@ -2,8 +2,8 @@ package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
-import com.ysh.jcms.pdu.log.CmsSetLcbEntry;
 
 public class SetLcbValuesDao {
     private String ref;
@@ -53,32 +53,27 @@ public class SetLcbValuesDao {
     }
 
     CmsSetLcbValuesRequest toRequest(int reqId) {
-        CmsSetLcbValuesRequest req = new CmsSetLcbValuesRequest().reqId(reqId);
+        CmsSetLcbValuesRequest req = new CmsSetLcbValuesRequest();
         CmsSetLcbEntry entry = new CmsSetLcbEntry().reference(ref != null ? ref : "");
 
         if (logEna != null) {
-            entry.logEnaPresent(true);
             entry.logEna(logEna);
         }
         if (datSet != null)
             entry.datSet(datSet);
         if (trgOps != null) {
-            entry.trgOpsPresent(true);
             entry.trgOps(new CmsTriggerConditions().integrity((trgOps & 1) != 0).data_change((trgOps & 2) != 0)
                     .quality_change((trgOps & 4) != 0).data_update((trgOps & 8) != 0).general_interrogation((trgOps & 16) != 0));
         }
         if (intgPd != null) {
-            entry.intgPdPresent(true);
             entry.intgPd(intgPd);
         }
         if (logRef != null)
             entry.logRef(logRef);
         if (optFlds != null) {
-            entry.optFldsPresent(true);
-            entry.optFlds(new CmsLcbOptFlds().value((optFlds & 1) != 0));
+            entry.optFlds(new CmsLcbOptFlds().bit0((optFlds & 1) != 0));
         }
         if (bufTm != null) {
-            entry.bufTmPresent(true);
             entry.bufTm(bufTm);
         }
 

@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsGetFileError;
 import com.ysh.jcms.pdu.file.CmsGetFileRequest;
@@ -29,7 +29,7 @@ public class GetFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetFileRequest req = (CmsGetFileRequest) rawReq;
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
@@ -43,7 +43,7 @@ public class GetFileServer extends BaseServerHandler {
         // startPosition == 0 means abort
         if (startPosition == 0) {
             log.info("GetFile: client aborted download of '{}'", fileName);
-            return ok(new CmsGetFileResponse().reqId(reqId).fileData(new byte[0]).endOfFile(true), reqId);
+            return ok(new CmsGetFileResponse().fileData(new byte[0]).endOfFile(true), reqId);
         }
 
         String root = CmsConfigLoader.load().getProtocol().getFile().getRootPath();
@@ -60,7 +60,7 @@ public class GetFileServer extends BaseServerHandler {
             int offset = (int) (startPosition - 1);
             if (offset >= allData.length) {
                 // Beyond end of file — return empty with endOfFile
-                return ok(new CmsGetFileResponse().reqId(reqId).fileData(new byte[0]).endOfFile(true), reqId);
+                return ok(new CmsGetFileResponse().fileData(new byte[0]).endOfFile(true), reqId);
             }
 
             int remaining = allData.length - offset;
@@ -70,7 +70,7 @@ public class GetFileServer extends BaseServerHandler {
             boolean endOfFile = (offset + chunkLen >= allData.length);
 
             log.info("GetFile: returning {} bytes (offset={}, eof={})", chunkLen, offset, endOfFile);
-            return ok(new CmsGetFileResponse().reqId(reqId).fileData(chunk).endOfFile(endOfFile), reqId);
+            return ok(new CmsGetFileResponse().fileData(chunk).endOfFile(endOfFile), reqId);
         } catch (Exception e) {
             log.error("GetFile: failed to read '{}'", fileName, e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);

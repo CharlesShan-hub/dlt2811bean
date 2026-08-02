@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.choice.CmsRcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesResponse;
-import com.ysh.jcms.pdu.report.CmsRcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -29,7 +29,7 @@ public class GetBrcbValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetBrcbValuesDao dao) throws Exception {
-        CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest().reqId(nextReqId());
+        CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest();
         for (String ref : dao.refs()) {
             req.reference.add(new CmsObjectReference(ref));
         }
@@ -39,7 +39,7 @@ public class GetBrcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetBrcbValuesError err = decodeErr(frame, new CmsGetBrcbValuesError());
-        throw new IOException("GetBRCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetBRCBValues rejected: " + err.value());
     }
 
     @Override
@@ -47,14 +47,14 @@ public class GetBrcbValuesClient extends BaseClientHandler {
         CmsGetBrcbValuesResponse resp = decodeResp(frame, new CmsGetBrcbValuesResponse());
 
         List<BrcbEntry> entries = new ArrayList<>();
-        for (int i = 0; i < resp.brcb.count; i++) {
-            CmsRcbValueChoice choice = resp.brcb.items.get(i);
-            if (choice.choice.value() == CmsRcbValueChoice.VALUE) {
+        for (int i = 0; i < resp.brcb.size(); i++) {
+            CmsRcbValueChoice choice = resp.brcb.get(i);
+            if (choice.choice() == CmsRcbValueChoice.VALUE) {
                 CmsBrcb b = choice.altValue;
                 StringBuilder sb = new StringBuilder();
-                sb.append("rptID=").append(new String(b.rptID.value(), java.nio.charset.StandardCharsets.UTF_8));
+                sb.append("rptID=").append(b.rptID.value());
                 sb.append(" rptEna=").append(b.rptEna.value());
-                sb.append(" datSet=").append(new String(b.datSet.value(), java.nio.charset.StandardCharsets.UTF_8));
+                sb.append(" datSet=").append(b.datSet.value());
                 sb.append(" confRev=").append(b.confRev.value());
                 sb.append(" bufTm=").append(b.bufTm.value());
                 sb.append(" sqNum=").append(b.sqNum.value());

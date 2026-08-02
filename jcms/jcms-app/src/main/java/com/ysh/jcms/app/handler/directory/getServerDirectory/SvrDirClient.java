@@ -13,15 +13,15 @@ import java.util.List;
 public class SvrDirClient extends BaseClientHandler {
 
     public void execute(SvrDirDao dao) throws Exception {
-        CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest().reqId(nextReqId()).objectClass(dao.objectClass())
-                .refAfter(dao.referenceAfter());
+        CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest().objectClass(dao.objectClass())
+                .referenceAfter(dao.referenceAfter());
         send(ServiceName.GET_SERVER_DIRECTORY, req);
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetServerDirectoryError err = decodeErr(frame, new CmsGetServerDirectoryError());
-        throw new IOException("GetServerDirectory rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetServerDirectory rejected: " + err.value());
     }
 
     @Override

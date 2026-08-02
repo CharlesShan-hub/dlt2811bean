@@ -3,13 +3,14 @@ package com.ysh.jcms.app.handler.sg.getSgcbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.choice.CmsSgcbValueChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesResponse;
-import com.ysh.jcms.pdu.sg.CmsSgcbValueChoice;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -27,30 +28,28 @@ public class GetSgcbValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetSgcbValuesRequest req = (CmsGetSgcbValuesRequest) rawReq;
-        log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.count);
+        log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.size());
 
-        CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse().reqId(reqId);
+        CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
 
         CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().getProtocol().getSetting();
         int numOfSG = setting.getNumOfSG();
         boolean sgEnabled = setting.isSgDefaultEnabled();
 
-        for (int i = 0; i < req.sgcbReference.count; i++) {
-            String ref = str(req.sgcbReference.items.get(i));
-            CmsSgcbValueChoice choice = new CmsSgcbValueChoice();
+        for (CmsObjectReference refObj : req.sgcbReference) {
+            String ref = str(refObj);
+            CmsSgcbValueChoice choice;
             if (!sgEnabled) {
-                choice.choice(CmsSgcbValueChoice.ERROR);
-                choice.altError.value(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+                choice = new CmsSgcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             } else {
-                choice.choice(CmsSgcbValueChoice.VALUE);
-                choice.altValue = buildSgcb(ref, session, numOfSG);
+                choice = new CmsSgcbValueChoice().altValue(buildSgcb(ref, session, numOfSG));
             }
             resp.sgscb.add(choice);
         }
         resp.moreFollows(false);
-        log.info("GetSGCBValues: returning {} entries", resp.sgscb.count);
+        log.info("GetSGCBValues: returning {} entries", resp.sgscb.size());
         return ok(resp, reqId);
     }
 
@@ -58,7 +57,7 @@ public class GetSgcbValuesServer extends BaseServerHandler {
         SgcState state = SgSessionState.getState(session.getSessionId());
         CmsSgcb sgcb = new CmsSgcb().numOfSG(numOfSG).actSG(state.getActSG()).editSG(state.getEditSG());
         sgcb.tActEdt.now();
-        sgcb.resvTms_present(false);
+        sgcb.setPresent("resvTms", false);
         return sgcb;
     }
 }

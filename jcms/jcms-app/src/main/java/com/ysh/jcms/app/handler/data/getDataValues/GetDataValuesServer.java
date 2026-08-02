@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsData;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
@@ -24,32 +24,28 @@ public class GetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetDataValuesRequest req = (CmsGetDataValuesRequest) rawReq;
-        log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.count);
+        log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SclIED ied = requireIed(session, reqId);
 
-        CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse().reqId(reqId);
+        CmsGetDataValuesResponse resp = new CmsGetDataValuesResponse();
 
         try {
-            for (int i = 0; i < req.data.count; i++) {
-                CmsDataRefEntry refEntry = req.data.items.get(i);
+            for (CmsDataRefEntry refEntry : req.data) {
                 String ref = str(refEntry.reference);
                 if (ref == null)
                     continue;
 
-                String fcCode = fcCode(refEntry.fcPresent.value() ? refEntry.fc.value() : -1);
+                String fcCode = fcCode(refEntry.isPresent("fc") ? refEntry.fc.value() : -1);
 
                 Navigator nav = Navigator.go(getSclDocument(session), ied, ref);
                 DataValueEntry dv = DataValueResolver.resolve(nav, fcCode);
                 if (dv != null && dv.val() != null && !dv.val().isEmpty()) {
                     resp.value.add(DataConverter.toCmsData(dv));
                 } else {
-                    CmsData err = new CmsData();
-                    err.choice(CmsData.CHOICE_VISIBLE_STRING);
-                    err.alt_visible_string.value("(unavailable)");
-                    resp.value.add(err);
+                    resp.value.add(new CmsData().alt_visible_string("(unavailable)"));
                 }
             }
         } catch (Exception e) {
@@ -58,7 +54,7 @@ public class GetDataValuesServer extends BaseServerHandler {
         }
 
         resp.moreFollows(false);
-        log.info("GetDataValues: returning {} values", resp.value.items.size());
+        log.info("GetDataValues: returning {} values", resp.value.size());
         return ok(resp, reqId);
     }
 }

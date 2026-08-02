@@ -2,7 +2,10 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.choice.CmsRpcMethodDefChoice;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.data.scalar.CmsString;
+import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodDef;
 import com.ysh.jcms.pdu.rpc.*;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -16,23 +19,19 @@ public class GetRpcMethodDefinitionServer extends BaseServerHandler {
         super(ServiceName.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinitionRequest.class, CmsGetRpcMethodDefinitionError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetRpcMethodDefinitionRequest req = (CmsGetRpcMethodDefinitionRequest) rawReq;
-        log.info("GetRpcMethodDefinition from {}: {} refs", session.getSessionId(), req.reference.count);
-        CmsGetRpcMethodDefinitionResponse resp = new CmsGetRpcMethodDefinitionResponse().reqId(reqId);
-        for (int i = 0; i < req.reference.count; i++) {
-            String ref = str(req.reference.items.get(i));
+        log.info("GetRpcMethodDefinition from {}: {} refs", session.getSessionId(), req.reference.size());
+        CmsGetRpcMethodDefinitionResponse resp = new CmsGetRpcMethodDefinitionResponse();
+        for (CmsString refObj : req.reference) {
+            String ref = refObj.value();
             RpcRegistry.MethodDef def = RpcRegistry.getMethodByRef(ref);
-            CmsRpcMethodDefChoice choice = new CmsRpcMethodDefChoice();
+            CmsRpcMethodDefChoice choice;
             if (def != null) {
-                choice.choice(CmsRpcMethodDefChoice.METHOD);
-                choice.altMethod.timeout.value(def.timeout);
-                choice.altMethod.version.value(def.version);
-                choice.altMethod.request = def.requestDef;
-                choice.altMethod.response = def.responseDef;
+                choice = new CmsRpcMethodDefChoice().altMethod(new CmsRpcMethodDef().version(def.version)
+                        .timeout(def.timeout).request(def.requestDef).response(def.responseDef));
             } else {
-                choice.choice(CmsRpcMethodDefChoice.ERROR);
-                choice.altError.value(12); // TYPE_CONFLICT
+                choice = new CmsRpcMethodDefChoice().altError(12); // TYPE_CONFLICT
             }
             resp.reference.add(choice);
         }

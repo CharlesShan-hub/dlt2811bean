@@ -1,17 +1,16 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsArray;
-import com.ysh.jcms.core.CmsTypeOld;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
-import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.choice.CmsReferenceChoice;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
+import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionResponse;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -33,36 +32,36 @@ import java.util.List;
 
 public class AllDataDefServer extends BaseServerHandler {
 
-    private static final int SEL_STRUCTURE = 2;
-    private static final int SEL_BOOLEAN = 3;
-    private static final int SEL_INT8 = 4;
-    private static final int SEL_INT16 = 5;
-    private static final int SEL_INT32 = 6;
-    private static final int SEL_INT64 = 7;
-    private static final int SEL_INT8U = 8;
-    private static final int SEL_INT16U = 9;
-    private static final int SEL_INT32U = 10;
-    private static final int SEL_INT64U = 11;
-    private static final int SEL_FLOAT32 = 12;
-    private static final int SEL_FLOAT64 = 13;
-    private static final int SEL_BIT_STRING = 14;
-    private static final int SEL_VISIBLE_STRING = 16;
-    private static final int SEL_UNICODE_STRING = 17;
-    private static final int SEL_QUALITY = 18;
-    private static final int SEL_UTC_TIME = 19;
-    private static final int SEL_BINARY_TIME = 20;
-    private static final int SEL_DBPOS = 21;
-    private static final int SEL_TCMD = 22;
-    private static final int SEL_CHECK = 23;
+    private static final int SEL_STRUCTURE = CmsDataDefinition.CHOICE_STRUCTURE;
+    private static final int SEL_BOOLEAN = CmsDataDefinition.CHOICE_BOOLEAN;
+    private static final int SEL_INT8 = CmsDataDefinition.CHOICE_INT8;
+    private static final int SEL_INT16 = CmsDataDefinition.CHOICE_INT16;
+    private static final int SEL_INT32 = CmsDataDefinition.CHOICE_INT32;
+    private static final int SEL_INT64 = CmsDataDefinition.CHOICE_INT64;
+    private static final int SEL_INT8U = CmsDataDefinition.CHOICE_INT8U;
+    private static final int SEL_INT16U = CmsDataDefinition.CHOICE_INT16U;
+    private static final int SEL_INT32U = CmsDataDefinition.CHOICE_INT32U;
+    private static final int SEL_INT64U = CmsDataDefinition.CHOICE_INT64U;
+    private static final int SEL_FLOAT32 = CmsDataDefinition.CHOICE_FLOAT32;
+    private static final int SEL_FLOAT64 = CmsDataDefinition.CHOICE_FLOAT64;
+    private static final int SEL_BIT_STRING = CmsDataDefinition.CHOICE_BIT_STRING;
+    private static final int SEL_VISIBLE_STRING = CmsDataDefinition.CHOICE_VISIBLE_STRING;
+    private static final int SEL_UNICODE_STRING = CmsDataDefinition.CHOICE_UNICODE_STRING;
+    private static final int SEL_QUALITY = CmsDataDefinition.CHOICE_QUALITY;
+    private static final int SEL_UTC_TIME = CmsDataDefinition.CHOICE_UTC_TIME;
+    private static final int SEL_BINARY_TIME = CmsDataDefinition.CHOICE_BINARY_TIME;
+    private static final int SEL_DBPOS = CmsDataDefinition.CHOICE_DBPOS;
+    private static final int SEL_TCMD = CmsDataDefinition.CHOICE_TCMD;
+    private static final int SEL_CHECK = CmsDataDefinition.CHOICE_CHECK;
 
     public AllDataDefServer() {
         super(ServiceName.GET_ALL_DATA_DEFINITION, CmsGetAllDataDefinitionRequest.class, CmsGetAllDataDefinitionError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetAllDataDefinitionRequest req = (CmsGetAllDataDefinitionRequest) rawReq;
-        String refAfter = opt(req.refAfterPresent, req.refAfter);
+        String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
 
@@ -71,9 +70,9 @@ public class AllDataDefServer extends BaseServerHandler {
 
         String ldName = null;
         String lnReference = null;
-        if (req.reference.choice.value() == CmsReferenceChoice.LD_NAME) {
-            ldName = str(req.reference.altLdName);
-        } else if (req.reference.choice.value() == CmsReferenceChoice.LN_REFERENCE) {
+        if (req.reference.choice() == CmsReferenceChoice.LD_NAME) {
+            ldName = req.reference.altLdName.value();
+        } else if (req.reference.choice() == CmsReferenceChoice.LN_REFERENCE) {
             lnReference = str(req.reference.altLnReference);
         }
 
@@ -83,7 +82,7 @@ public class AllDataDefServer extends BaseServerHandler {
         }
 
         // Resolve fc filter from request
-        String fcFilter = fcCode(req.fcPresent.value() ? req.fc.value() : -1);
+        String fcFilter = fcCode(req.isPresent("fc") ? req.fc.value() : -1);
 
         // Collect DO definitions
         List<CmsDataDefinitionEntry> entries = new ArrayList<>();
@@ -141,7 +140,7 @@ public class AllDataDefServer extends BaseServerHandler {
             }
         }
 
-        CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse().reqId(reqId);
+        CmsGetAllDataDefinitionResponse resp = new CmsGetAllDataDefinitionResponse();
         for (CmsDataDefinitionEntry e : entries) {
             resp.data.add(e);
         }
@@ -200,7 +199,7 @@ public class AllDataDefServer extends BaseServerHandler {
         if (doType == null)
             return null;
 
-        CmsArray<CmsDataDefinitionStructElem> arr = new CmsArray<>();
+        List<CmsDataDefinitionStructElem> arr = new ArrayList<>();
         for (SclDA da : doType.das()) {
             String bType = da.bType();
             if (bType == null)

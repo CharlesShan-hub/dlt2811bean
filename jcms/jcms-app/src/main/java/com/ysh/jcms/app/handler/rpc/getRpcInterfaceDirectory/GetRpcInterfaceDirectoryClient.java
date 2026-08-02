@@ -10,9 +10,9 @@ import java.io.IOException;
 
 public class GetRpcInterfaceDirectoryClient extends BaseClientHandler {
     public void execute(String after) throws Exception {
-        CmsGetRpcInterfaceDirectoryRequest req = new CmsGetRpcInterfaceDirectoryRequest().reqId(nextReqId());
+        CmsGetRpcInterfaceDirectoryRequest req = new CmsGetRpcInterfaceDirectoryRequest();
         if (after != null && !after.isEmpty())
-            req.refAfter(after);
+            req.referenceAfter(after);
         send(ServiceName.GET_RPC_INTERFACE_DIRECTORY, req);
     }
     @Override

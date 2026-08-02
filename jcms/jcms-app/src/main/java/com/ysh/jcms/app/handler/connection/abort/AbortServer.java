@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.connection.CmsAbort;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -18,7 +18,7 @@ public class AbortServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsAbort req = (CmsAbort) rawReq;
         log.warn("Abort received: session={}, reason={}", session.getSessionId(), req.reason.value());
 

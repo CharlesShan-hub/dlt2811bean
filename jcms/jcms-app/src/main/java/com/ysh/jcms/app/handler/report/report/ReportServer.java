@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler.report.report;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.core.CmsTypeOld;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -18,10 +18,10 @@ public class ReportServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsTypeOld rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsReport report = (CmsReport) rawReq;
-        log.info("REPORT received from {}: rptID={}, entryData={}", session.getSessionId(), str(report.rptID.value()),
-                report.entry.entryData.count);
+        log.info("REPORT received from {}: rptID={}, entryData={}", session.getSessionId(), str(report.rptID),
+                report.entry.entryData.size());
         return null;
     }
 }

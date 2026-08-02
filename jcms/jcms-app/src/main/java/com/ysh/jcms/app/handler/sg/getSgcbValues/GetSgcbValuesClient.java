@@ -1,12 +1,12 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.choice.CmsSgcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesResponse;
-import com.ysh.jcms.pdu.sg.CmsSgcbValueChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -37,7 +37,7 @@ public class GetSgcbValuesClient extends BaseClientHandler {
     }
 
     public void execute(GetSgcbValuesDao dao) throws Exception {
-        CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest().reqId(nextReqId());
+        CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest();
 
         for (String ref : dao.references()) {
             CmsObjectReference objRef = new CmsObjectReference(ref);
@@ -50,7 +50,7 @@ public class GetSgcbValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetSgcbValuesError err = decodeErr(frame, new CmsGetSgcbValuesError());
-        throw new IOException("GetSGCBValues rejected: " + err.serviceError.constantName() + " (" + err.serviceError.value() + ")");
+        throw new IOException("GetSGCBValues rejected: " + err.value());
     }
 
     @Override
@@ -58,9 +58,9 @@ public class GetSgcbValuesClient extends BaseClientHandler {
         CmsGetSgcbValuesResponse resp = decodeResp(frame, new CmsGetSgcbValuesResponse());
 
         List<SgcbResult> results = new ArrayList<>();
-        for (int i = 0; i < resp.sgscb.count; i++) {
-            CmsSgcbValueChoice choice = resp.sgscb.items.get(i);
-            if (choice.choice.value() == CmsSgcbValueChoice.VALUE) {
+        for (int i = 0; i < resp.sgscb.size(); i++) {
+            CmsSgcbValueChoice choice = resp.sgscb.get(i);
+            if (choice.choice() == CmsSgcbValueChoice.VALUE) {
                 CmsSgcb sgcb = choice.altValue;
                 results.add(new SgcbResult(true, sgcb.numOfSG.value(), sgcb.actSG.value(), sgcb.editSG.value()));
             } else {
