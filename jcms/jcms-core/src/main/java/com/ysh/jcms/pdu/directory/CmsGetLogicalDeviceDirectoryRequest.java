@@ -16,10 +16,10 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
 
     @CmsField(optional = true)
-    public CmsObjectName ldName; /* OPTIONAL */
+    public CmsObjectName ldName;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetLogicalDeviceDirectoryRequest() {
         super(new InnerGetLogicalDeviceDirectoryRequestPDU());

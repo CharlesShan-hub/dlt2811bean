@@ -23,7 +23,7 @@ public class CmsGetAllCbValuesRequest extends CmsSequence {
     public CmsAcsiClass acsiClass;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetAllCbValuesRequest() {
         super(new InnerGetAllCBValuesRequestPDU());

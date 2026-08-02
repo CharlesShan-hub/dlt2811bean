@@ -23,7 +23,7 @@ public class CmsGetLogicalNodeDirectoryRequest extends CmsSequence {
     public CmsAcsiClass acsiClass;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetLogicalNodeDirectoryRequest() {
         super(new InnerGetLogicalNodeDirectoryRequestPDU());

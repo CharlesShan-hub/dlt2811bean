@@ -94,7 +94,7 @@ public enum CmsServiceInfo {
             "Retrieve log status information (oldest/newest entries)"),
 
     // ==================== 8.9 GOOSE services ====================
-    // 未确认服务（SendGOOSEMessage / GetGoReference / GetGOOSEElementNumber）标准表1未分配服务码，0x00 占位
+    // Unconfirmed services (SendGOOSEMessage / GetGoReference / GetGOOSEElementNumber) have no code in standard Table 1; 0x00 placeholder
     SEND_GOOSE_MESSAGE("send-goose", "8.9.1", 0x00, "Send GOOSE Message", "发送GOOSE报文",
             "Unconfirmed GOOSE message from server"),
     GET_GO_REFERENCE("get-go-ref", "8.9.2", 0x00, "Get Go Reference", "读GOOSE引用",
@@ -107,7 +107,7 @@ public enum CmsServiceInfo {
             "Modify GoCB (GOOSE Control Block) attributes"),
 
     // ==================== 8.10 Sampled Value services ====================
-    // 未确认服务 SendMSVMessage 标准表1未分配服务码，0x00 占位
+    // Unconfirmed service SendMSVMessage has no code in standard Table 1; 0x00 placeholder
     SEND_MSV_MESSAGE("send-msv", "8.10.1", 0x00, "Send MSV Message", "发送采样值报文",
             "Unconfirmed multicast sampled value message from server"),
     GET_MSVCB_VALUES("get-msvcb-values", "8.10.2", 0x69, "Get MSVCB Values", "读采样值控制块",
@@ -164,7 +164,7 @@ public enum CmsServiceInfo {
     static {
         for (CmsServiceInfo s : values()) {
             BY_NAME.put(s.cliName, s);
-            if (s.serviceCode == 0) continue; // 表1未分配服务码（未确认服务），不参与按码查询
+            if (s.serviceCode == 0) continue; // no code in standard Table 1 (unconfirmed services); skip by-code lookup
             CmsServiceInfo prev = BY_CODE.put(s.serviceCode, s);
             if (prev != null) {
                 throw new IllegalStateException("Duplicate service code 0x"

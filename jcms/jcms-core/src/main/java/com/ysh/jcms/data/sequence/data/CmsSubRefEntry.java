@@ -22,7 +22,7 @@ public class CmsSubRefEntry extends CmsSequence {
     public CmsSubReference reference;
 
     @CmsField(optional = true)
-    public CmsFC fc; /* OPTIONAL */
+    public CmsFC fc;
 
     public CmsSubRefEntry() {
         super(new com.ysh.jcms.data.InnerEmpty());

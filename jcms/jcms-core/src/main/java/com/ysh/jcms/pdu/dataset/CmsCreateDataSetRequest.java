@@ -2,7 +2,7 @@ package com.ysh.jcms.pdu.dataset;
 
 import java.nio.charset.StandardCharsets;
 
-import com.ysh.jcms.data.*;
+import com.ysh.jcms.data.InnerCreateDataSetRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsFC;
@@ -27,7 +27,7 @@ public class CmsCreateDataSetRequest extends CmsSequence {
     public CmsObjectReference datasetReference;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     @CmsField(sequenceOf = true, elementType = CmsDataRefFcEntry.class)
     public List<CmsDataRefFcEntry> memberData; /* SEQUENCE OF DataRefFcEntry */

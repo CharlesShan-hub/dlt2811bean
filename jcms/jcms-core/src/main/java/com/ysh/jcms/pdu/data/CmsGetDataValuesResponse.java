@@ -1,6 +1,6 @@
 package com.ysh.jcms.pdu.data;
 
-import com.ysh.jcms.data.*;
+import com.ysh.jcms.data.InnerGetDataValuesResponsePDU;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;

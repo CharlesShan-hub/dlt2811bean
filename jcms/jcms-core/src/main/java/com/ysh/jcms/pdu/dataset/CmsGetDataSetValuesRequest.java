@@ -19,7 +19,7 @@ public class CmsGetDataSetValuesRequest extends CmsSequence {
     public CmsObjectReference datasetReference;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetDataSetValuesRequest() {
         super(new InnerGetDataSetValuesRequestPDU());

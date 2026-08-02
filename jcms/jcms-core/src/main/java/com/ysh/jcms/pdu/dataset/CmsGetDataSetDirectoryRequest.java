@@ -19,7 +19,7 @@ public class CmsGetDataSetDirectoryRequest extends CmsSequence {
     public CmsObjectReference datasetReference;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetDataSetDirectoryRequest() {
         super(new InnerGetDataSetDirectoryRequestPDU());

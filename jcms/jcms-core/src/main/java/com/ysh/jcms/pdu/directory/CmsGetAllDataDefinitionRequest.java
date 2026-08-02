@@ -20,10 +20,10 @@ public class CmsGetAllDataDefinitionRequest extends CmsSequence {
     public CmsReferenceChoice reference;
 
     @CmsField(optional = true)
-    public CmsFC fc; /* OPTIONAL */
+    public CmsFC fc;
 
     @CmsField(optional = true)
-    public CmsObjectReference referenceAfter; /* OPTIONAL */
+    public CmsObjectReference referenceAfter;
 
     public CmsGetAllDataDefinitionRequest() {
         super(new InnerGetAllDataDefinitionRequestPDU());

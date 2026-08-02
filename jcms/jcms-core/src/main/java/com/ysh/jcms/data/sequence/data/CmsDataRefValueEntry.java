@@ -24,7 +24,7 @@ public class CmsDataRefValueEntry extends CmsSequence {
     public CmsObjectReference reference;
 
     @CmsField(optional = true)
-    public CmsFC fc; /* OPTIONAL */
+    public CmsFC fc;
 
     @CmsField
     public CmsData value;

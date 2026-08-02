@@ -3,9 +3,10 @@ package com.ysh.jcms.info;
 /**
  * Functional Constraint (FC) — IEC 61850-7-4 §5.4
  *
- * DL/T 2811 等同采用 IEC 61850，FC 值固定不变，不可扩展。
+ * DL/T 2811 adopts IEC 61850; FC values are fixed and not extensible.
  *
- * 每个 FC 定义了数据属性的语义类别、允许的操作以及初始值行为。
+ * Each FC defines the semantic category, permitted operations, and initial-value
+ * behavior of a data attribute.
  */
 public enum FunctionalConstraint {
 
@@ -90,39 +91,39 @@ public enum FunctionalConstraint {
         this.initialValueZh = initialValueZh;
     }
 
-    /** FC 语义说明（英文） */
+    /** Semantic description (English). */
     public String semantic() {
         return semantic;
     }
-    /** FC 语义说明（中文） */
+    /** Semantic description (Chinese). */
     public String semanticZh() {
         return semanticZh;
     }
 
-    /** 允许的服务/操作（英文） */
+    /** Permitted services/operations (English). */
     public String servicesAllowed() {
         return servicesAllowed;
     }
-    /** 允许的服务/操作（中文） */
+    /** Permitted services/operations (Chinese). */
     public String servicesAllowedZh() {
         return servicesAllowedZh;
     }
 
-    /** 初始值 / 存储行为（英文） */
+    /** Initial value / storage behavior (English). */
     public String initialValue() {
         return initialValue;
     }
-    /** 初始值 / 存储行为（中文） */
+    /** Initial value / storage behavior (Chinese). */
     public String initialValueZh() {
         return initialValueZh;
     }
 
-    /** 通过 2 字符 FC code 查找，如 "ST", "MX" */
+    /** Look up by 2-char FC code, e.g. "ST", "MX". */
     public static FunctionalConstraint fromCode(String code) {
         return valueOf(code);
     }
 
-    /** 返回 "ST" / "MX" 等 2 字符码 */
+    /** Return the 2-char code, e.g. "ST" / "MX". */
     public String code() {
         return name();
     }
