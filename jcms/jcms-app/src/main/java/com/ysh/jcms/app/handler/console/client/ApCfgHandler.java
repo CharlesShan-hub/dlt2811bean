@@ -4,11 +4,9 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.app.node.SclManager;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
-import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.reader.SclReader;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.ArrayList;
@@ -90,19 +88,18 @@ public class ApCfgHandler implements CommandHandler {
             String scl = CmsConfigLoader.load().getServer().getResolvedSclFile();
             if (scl != null && !scl.isEmpty()) {
                 ConsolePrinter.info("SCL: " + scl);
-                // 解析 SCD，拼出 IED/AP 完整引用列表
-                SclManager sm = console.getSclManager();
-                sm.load(scl);
-                if (sm.isLoaded() && sm.getDocument() != null) {
+                // 轻量扫描 SCD，拼出 IED/AP 完整引用列表
+                try {
+                    Map<String, List<String>> apsByIed = SclReader.scanAccessPoints(java.nio.file.Paths.get(scl));
                     List<String> refs = new ArrayList<>();
-                    for (SclIED ied : sm.getDocument().ieds()) {
-                        for (SclAccessPoint ap : ied.accessPoints()) {
-                            refs.add(ied.name() + "/" + ap.name());
+                    for (Map.Entry<String, List<String>> e : apsByIed.entrySet()) {
+                        for (String ap : e.getValue()) {
+                            refs.add(e.getKey() + "/" + ap);
                         }
                     }
                     ConsolePrinter.listItems(refs, s -> s);
-                } else {
-                    ConsolePrinter.error("SCL 解析失败: " + scl);
+                } catch (Exception e) {
+                    ConsolePrinter.error("SCL 解析失败: " + scl + " - " + e.getMessage());
                 }
             } else {
                 ConsolePrinter.info("SCL: （未配置 server.sclFiles）");

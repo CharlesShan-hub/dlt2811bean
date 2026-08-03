@@ -29,7 +29,7 @@ const activeView = ref('dashboard')
 const connected = ref(false)
 
 const navItems = [
-  { id: 'dashboard', label: '仪表盘', icon: '◉' },
+  { id: 'dashboard', label: '连接管理', icon: '🔌' },
   { id: 'terminal', label: '终端', icon: '⊢' },
   { id: 'server-dir', label: '目录树', icon: '⊞' },
   { id: 'data', label: '数据浏览', icon: '☰' },

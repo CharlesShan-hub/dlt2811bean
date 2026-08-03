@@ -13,6 +13,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static javax.xml.stream.XMLStreamConstants.*;
 
@@ -110,6 +114,61 @@ public class SclReader {
             } else if (event == END_ELEMENT) {
                 break;
             }
+        }
+    }
+
+    // ======================== 轻量扫描（AccessPoint 目录） ========================
+
+    /**
+     * 轻量扫描 SCL 文件中的 IED → AccessPoint 名，不构建完整模型。
+     * <p>
+     * 只读取 IED / AccessPoint 元素的 name 属性，跳过其余所有内容， 因此即使是几百个 IED、几十 MB 的 SCD
+     * 也能秒级完成，不会因完整 模型解析（LNodeType/DO/DA/模板等）而卡住。
+     *
+     * @param path
+     *            SCL 文件路径
+     * @return 有序的 IED 名 → AccessPoint 名列表
+     */
+    public static Map<String, List<String>> scanAccessPoints(Path path) throws SclParseException {
+        try (InputStream is = new FileInputStream(path.toFile())) {
+            return scanAccessPoints(is);
+        } catch (IOException e) {
+            throw new SclParseException("Failed to read SCL file: " + path, e);
+        }
+    }
+
+    public static Map<String, List<String>> scanAccessPoints(InputStream inputStream) throws SclParseException {
+        Map<String, List<String>> result = new LinkedHashMap<>();
+        try {
+            XMLInputFactory factory = XMLInputFactory.newInstance();
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+
+            XMLStreamReader reader = factory.createXMLStreamReader(inputStream);
+            String currentIed = null;
+            while (reader.hasNext()) {
+                int event = reader.next();
+                if (event == START_ELEMENT) {
+                    String localName = reader.getLocalName();
+                    if ("IED".equals(localName)) {
+                        currentIed = reader.getAttributeValue(null, "name");
+                        if (currentIed != null) {
+                            result.put(currentIed, new ArrayList<>());
+                        }
+                    } else if ("AccessPoint".equals(localName) && currentIed != null) {
+                        String ap = reader.getAttributeValue(null, "name");
+                        if (ap != null) {
+                            result.get(currentIed).add(ap);
+                        }
+                    }
+                } else if (event == END_ELEMENT && "IED".equals(reader.getLocalName())) {
+                    currentIed = null;
+                }
+            }
+            reader.close();
+            return result;
+        } catch (XMLStreamException e) {
+            throw new SclParseException("Failed to scan SCL XML for access points", e);
         }
     }
 

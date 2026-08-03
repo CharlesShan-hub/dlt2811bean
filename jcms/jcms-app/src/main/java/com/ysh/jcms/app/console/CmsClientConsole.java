@@ -229,6 +229,7 @@ public class CmsClientConsole extends CmsConsole {
         register(new DisconnectHandler());
         register(new ApDirHandler());
         register(new ApCfgHandler());
+        register(new NegCfgHandler());
         register(new SvrDirConsole());
         register(new LdDirConsole());
         register(new LnDirConsole());
