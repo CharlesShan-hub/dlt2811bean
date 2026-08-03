@@ -5,6 +5,7 @@ import negotiate from './negotiate.js'
 import associate from './associate.js'
 import release from './release.js'
 import abort from './abort.js'
+import test from './test.js'
 
 export const CMD_DEFS = {
   connect,
@@ -13,6 +14,7 @@ export const CMD_DEFS = {
   associate,
   release,
   abort,
+  test,
 }
 
 /** 命令 id 列表（保持注册表顺序）。 */

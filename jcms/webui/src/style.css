@@ -17,6 +17,8 @@
   --yellow: #e5b955;
   --sidebar-width: 220px;
   --topbar-height: 48px;
+  /* 编程等宽字体栈（命令/终端/代码均使用） */
+  --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
 * {

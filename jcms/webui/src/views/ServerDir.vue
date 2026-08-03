@@ -354,7 +354,7 @@ function cancelEdit() {
   margin-bottom: 20px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border);
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .data-section {
@@ -373,7 +373,7 @@ function cancelEdit() {
 .data-table {
   width: 100%;
   border-collapse: collapse;
-  font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
 }
 
@@ -468,7 +468,7 @@ function cancelEdit() {
 }
 
 .detail-raw {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
   color: var(--text-secondary);
   white-space: pre-wrap;

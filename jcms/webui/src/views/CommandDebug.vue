@@ -327,7 +327,8 @@ async function runCmd(cmdLine) {
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 10px 12px;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   color: var(--accent);
 }
 
@@ -372,7 +373,8 @@ async function runCmd(cmdLine) {
 }
 
 .hist-line {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   color: var(--accent);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -382,7 +384,8 @@ async function runCmd(cmdLine) {
 .hist-out {
   margin: 0;
   padding: 10px;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   line-height: 1.7;
   color: var(--text-secondary);
   white-space: pre-wrap;
