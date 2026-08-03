@@ -9,8 +9,14 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GoRefFcEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1]
- * IMPLICIT FunctionalConstraint } — 8.9.2
+ * <pre>
+ * {@code
+ * GoRefFcEntry ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     fc              [1] IMPLICIT FunctionalConstraint
+ * } — 8.9.2
+ * }
+ * </pre>
  *
  * <p>
  * Used by GetGoReference response, GetGOOSEElementNumber request.

@@ -8,10 +8,24 @@ import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 
-/*
- * CBValueEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference, value [1]
- * IMPLICIT CBValue } — 8.3.6
+/**
+ * <pre>
+ * {@code
+ * CBValueEntry ::= SEQUENCE {
+ *     reference     [0] IMPLICIT SubReference,
+ *     value         [1] IMPLICIT CHOICE {
+ *         brcb        [0] IMPLICIT BRCB,
+ *         urcb        [1] IMPLICIT URCB,
+ *         lcb         [2] IMPLICIT LCB,
+ *         sgecb       [3] IMPLICIT SGECB,
+ *         gocb        [4] IMPLICIT GOCB,
+ *         msvcb       [5] IMPLICIT MSVCB
+ *     }
+ * } — 8.3.6
+ * }
+ * </pre>
  *
+ * <p>
  * Used by GetAllCBValues response (SEQUENCE OF CBValueEntry).
  * Backed by {@link InnerAnonymousGetAllCBValuesResponsePDUCbValue}.
  */

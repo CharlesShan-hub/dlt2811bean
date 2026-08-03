@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * Select-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference } —
- * 8.11.1
+ * <pre>
+ * {@code
+ * Select-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference
+ * } — 8.11.1
+ * }
+ * </pre>
  */
 public class CmsSelectRequest extends CmsSequence {
 

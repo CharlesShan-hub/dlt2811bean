@@ -11,9 +11,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetDataSetValues-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
- * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL, value
- * [2] IMPLICIT SEQUENCE OF Data } — 8.5.2
+ * <pre>
+ * {@code
+ * SetDataSetValues-RequestPDU ::= SEQUENCE {
+ *     datasetReference    [0] IMPLICIT ObjectReference,
+ *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL,
+ *     value               [2] IMPLICIT SEQUENCE OF Data
+ * } — 8.5.2
+ * }
+ * </pre>
  */
 public class CmsSetDataSetValuesRequest extends CmsSequence {
 

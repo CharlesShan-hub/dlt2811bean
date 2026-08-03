@@ -6,11 +6,19 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
- * SetMSVCBValues-ErrorPDU result entry ::= SEQUENCE { error [0] IMPLICIT
- * ServiceError OPTIONAL, svEna [1] IMPLICIT ServiceError OPTIONAL, msvID [2]
- * IMPLICIT ServiceError OPTIONAL, datSet [3] IMPLICIT ServiceError OPTIONAL,
- * smpMod [5] IMPLICIT ServiceError OPTIONAL, smpRate [6] IMPLICIT ServiceError
- * OPTIONAL, optFlds [7] IMPLICIT ServiceError OPTIONAL } — 8.10.3
+ * <pre>
+ * {@code
+ * SetMSVCBValues-ErrorPDU result entry ::= SEQUENCE {
+ *     error           [0] IMPLICIT ServiceError OPTIONAL,
+ *     svEna           [1] IMPLICIT ServiceError OPTIONAL,
+ *     msvID           [2] IMPLICIT ServiceError OPTIONAL,
+ *     datSet          [3] IMPLICIT ServiceError OPTIONAL,
+ *     smpMod          [5] IMPLICIT ServiceError OPTIONAL,
+ *     smpRate         [6] IMPLICIT ServiceError OPTIONAL,
+ *     optFlds         [7] IMPLICIT ServiceError OPTIONAL
+ * } — 8.10.3
+ * }
+ * </pre>
  */
 public class CmsSetMsvcbResult extends CmsSequence {
 

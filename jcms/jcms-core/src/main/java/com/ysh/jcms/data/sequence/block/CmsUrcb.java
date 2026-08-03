@@ -10,6 +10,26 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsOctetString;
 import com.ysh.jcms.data.scalar.CmsString;
 
+/**
+ * <pre>
+ * {@code
+ * URCB ::= SEQUENCE {
+ *     rptID           [1] IMPLICIT VisibleString129,
+ *     rptEna          [2] IMPLICIT BOOLEAN,
+ *     datSet          [3] IMPLICIT ObjectReference,
+ *     confRev         [4] IMPLICIT INT32U,
+ *     optFlds         [5] IMPLICIT RCBOptFlds,
+ *     bufTm           [6] IMPLICIT INT32U,
+ *     sqNum           [7] IMPLICIT INT16U,
+ *     trgOps          [8] IMPLICIT TriggerConditions,
+ *     intgPd          [9] IMPLICIT INT32U,
+ *     gi              [10] IMPLICIT BOOLEAN,
+ *     resv            [14] IMPLICIT BOOLEAN,
+ *     owner           [15] IMPLICIT OCTET STRING (SIZE (0..64)) OPTIONAL
+ * } — 8.7.4
+ * }
+ * </pre>
+ */
 public class CmsUrcb extends CmsSequence {
     @CmsField
     public CmsString rptID;

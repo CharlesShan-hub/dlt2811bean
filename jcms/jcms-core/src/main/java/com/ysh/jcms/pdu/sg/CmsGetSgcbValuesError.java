@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetSGCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetSGCBValues-ErrorPDU ::= ServiceError — 8.6.6
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

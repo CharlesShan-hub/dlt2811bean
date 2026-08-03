@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoCbValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
- * ObjectReference } — 8.9.4
+ * <pre>
+ * {@code
+ * GetGoCbValues-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT SEQUENCE OF ObjectReference
+ * } — 8.9.4
+ * }
+ * </pre>
  */
 public class CmsGetGoCbValuesRequest extends CmsSequence {
 

@@ -9,8 +9,14 @@ import com.ysh.jcms.data.scalar.CmsInt8U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SelectEditSG-RequestPDU ::= SEQUENCE { sgcbReference [0] IMPLICIT
- * ObjectReference, settingGroupNumber [1] IMPLICIT Int8U } — 8.6.2
+ * <pre>
+ * {@code
+ * SelectEditSG-RequestPDU ::= SEQUENCE {
+ *     sgcbReference       [0] IMPLICIT ObjectReference,
+ *     settingGroupNumber  [1] IMPLICIT INT8U
+ * } — 8.6.2
+ * }
+ * </pre>
  */
 public class CmsSelectEditSgRequest extends CmsSequence {
 

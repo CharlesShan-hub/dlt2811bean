@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetRpcInterfaceDefinitionErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetRpcInterfaceDefinition-ErrorPDU ::= ServiceError — 8.13.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

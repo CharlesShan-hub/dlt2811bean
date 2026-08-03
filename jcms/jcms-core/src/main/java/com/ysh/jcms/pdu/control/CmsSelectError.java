@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * Select-ErrorPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference } —
- * 8.11.1
+ * <pre>
+ * {@code
+ * Select-ErrorPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference
+ * } — 8.11.1
+ * }
+ * </pre>
  */
 public class CmsSelectError extends CmsSequence {
 

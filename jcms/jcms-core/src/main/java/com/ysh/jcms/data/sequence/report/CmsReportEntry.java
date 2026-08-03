@@ -10,9 +10,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ReportEntry ::= SEQUENCE { timeOfEntry [0] IMPLICIT EntryTime OPTIONAL,
- * entryID [1] IMPLICIT EntryID OPTIONAL, entryData [2] IMPLICIT SEQUENCE OF
- * ReportDataEntry } — 8.7.1 (inline within ReportPDU)
+ * <pre>
+ * {@code
+ * ReportEntry ::= SEQUENCE {
+ *     timeOfEntry     [0] IMPLICIT EntryTime OPTIONAL,
+ *     entryID         [1] IMPLICIT EntryID OPTIONAL,
+ *     entryData       [2] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference OPTIONAL,
+ *         fc          [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *         id          [2] IMPLICIT INT16U,
+ *         value       [3] IMPLICIT Data,
+ *         reason      [4] IMPLICIT ReasonCode OPTIONAL
+ *     }
+ * } — 8.7.1 (inline within ReportPDU)
+ * }
+ * </pre>
  */
 public class CmsReportEntry extends CmsSequence {
 

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetLCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetLCBValues-ErrorPDU ::= ServiceError — 8.8.2
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetBRCBValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
- * ObjectReference } — 8.7.2
+ * <pre>
+ * {@code
+ * GetBRCBValues-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT SEQUENCE OF ObjectReference
+ * } — 8.7.2
+ * }
+ * </pre>
  */
 public class CmsGetBrcbValuesRequest extends CmsSequence {
 

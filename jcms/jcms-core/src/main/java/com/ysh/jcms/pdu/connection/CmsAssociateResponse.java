@@ -8,9 +8,19 @@ import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.data.scalar.CmsAssociationId;
 
 /**
- * Associate-ResponsePDU ::= SEQUENCE { associationId [0] IMPLICIT OCTET STRING
- * (SIZE (0..64)), serviceError [1] IMPLICIT ServiceError,
- * authenticationParameter [2] IMPLICIT SEQUENCE { ... } OPTIONAL } — 8.2.1
+ * <pre>
+ * {@code
+ * Associate-ResponsePDU ::= SEQUENCE {
+ *     associationId           [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *     serviceError            [1] IMPLICIT ServiceError,
+ *     authenticationParameter [2] IMPLICIT SEQUENCE {
+ *         signatureCertificate [0] IMPLICIT OCTET STRING,
+ *         signedTime           [1] IMPLICIT UtcTime,
+ *         signedValue          [2] IMPLICIT OCTET STRING
+ *     } OPTIONAL
+ * } — 8.2.1
+ * }
+ * </pre>
  */
 public class CmsAssociateResponse extends CmsSequence {
 

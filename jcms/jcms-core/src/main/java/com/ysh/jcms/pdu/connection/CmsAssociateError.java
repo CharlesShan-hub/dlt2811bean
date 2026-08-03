@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerAssociateErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * Associate-ErrorPDU ::= ServiceError — 8.2.1
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE. Encoding as a plain ServiceError (INTEGER) is

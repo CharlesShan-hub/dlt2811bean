@@ -10,9 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetURCBValues-ResponsePDU ::= SEQUENCE { urcb [0] IMPLICIT SEQUENCE OF CHOICE
- * { error [0] IMPLICIT ServiceError, value [1] IMPLICIT URCB }, moreFollows [1]
- * IMPLICIT Boolean DEFAULT 1 } — 8.7.4
+ * <pre>
+ * {@code
+ * GetURCBValues-ResponsePDU ::= SEQUENCE {
+ *     urcb            [0] IMPLICIT SEQUENCE OF CHOICE {
+ *         error       [0] IMPLICIT ServiceError,
+ *         value       [1] IMPLICIT URCB
+ *     },
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.7.4
+ * }
+ * </pre>
  */
 public class CmsGetUrcbValuesResponse extends CmsSequence {
 

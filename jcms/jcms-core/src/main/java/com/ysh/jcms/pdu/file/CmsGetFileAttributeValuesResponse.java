@@ -4,7 +4,11 @@ import com.ysh.jcms.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
+ * <pre>
+ * {@code
  * GetFileAttributeValues-ResponsePDU ::= FileEntry — 8.12.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias of FileEntry — same ASN.1 type, same PER encoding. Extends

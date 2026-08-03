@@ -10,9 +10,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LogEntry ::= SEQUENCE { timeOfEntry [0] IMPLICIT EntryTime, entryID [1]
- * IMPLICIT EntryID, entryData [2] IMPLICIT SEQUENCE OF SEQUENCE { reference,
- * fc, value, reason } } — 8.8.1
+ * <pre>
+ * {@code
+ * LogEntry ::= SEQUENCE {
+ *     timeOfEntry     [0] IMPLICIT EntryTime,
+ *     entryID         [1] IMPLICIT EntryID,
+ *     entryData       [2] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         fc          [1] IMPLICIT FunctionalConstraint,
+ *         value       [2] IMPLICIT Data,
+ *         reason      [3] IMPLICIT ReasonCode
+ *     }
+ * } — 8.8.1
+ * }
+ * </pre>
  */
 public class CmsLogEntry extends CmsSequence {
 

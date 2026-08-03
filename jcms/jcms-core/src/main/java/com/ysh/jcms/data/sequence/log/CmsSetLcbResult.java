@@ -6,12 +6,20 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
- * (inline SEQUENCE within SetLCBValues-ErrorPDU result) ::= SEQUENCE { error
- * [0] IMPLICIT ServiceError OPTIONAL, logEna [1] IMPLICIT ServiceError
- * OPTIONAL, datSet [2] IMPLICIT ServiceError OPTIONAL, trgOps [3] IMPLICIT
- * ServiceError OPTIONAL, intgPd [4] IMPLICIT ServiceError OPTIONAL, logRef [5]
- * IMPLICIT ServiceError OPTIONAL, optFlds [6] IMPLICIT ServiceError OPTIONAL,
- * bufTm [7] IMPLICIT ServiceError OPTIONAL } — 8.8.3
+ * <pre>
+ * {@code
+ * (inline SEQUENCE within SetLCBValues-ErrorPDU result) ::= SEQUENCE {
+ *     error           [0] IMPLICIT ServiceError OPTIONAL,
+ *     logEna          [1] IMPLICIT ServiceError OPTIONAL,
+ *     datSet          [2] IMPLICIT ServiceError OPTIONAL,
+ *     trgOps          [3] IMPLICIT ServiceError OPTIONAL,
+ *     intgPd          [4] IMPLICIT ServiceError OPTIONAL,
+ *     logRef          [5] IMPLICIT ServiceError OPTIONAL,
+ *     optFlds         [6] IMPLICIT ServiceError OPTIONAL,
+ *     bufTm           [7] IMPLICIT ServiceError OPTIONAL
+ * } — 8.8.3
+ * }
+ * </pre>
  *
  * <p>
  * Element of SetLCBValues-ErrorPDU result.

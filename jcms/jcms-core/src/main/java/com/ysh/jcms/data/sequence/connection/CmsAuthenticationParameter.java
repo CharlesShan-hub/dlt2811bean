@@ -8,10 +8,17 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
- * AuthenticationParameter ::= SEQUENCE { signatureCertificate [0] IMPLICIT
- * OCTET STRING, signedTime [1] IMPLICIT UtcTime, signedValue [2] IMPLICIT OCTET
- * STRING } — 8.2.1
+ * <pre>
+ * {@code
+ * AuthenticationParameter ::= SEQUENCE {
+ *     signatureCertificate    [0] IMPLICIT OCTET STRING,
+ *     signedTime              [1] IMPLICIT UtcTime,
+ *     signedValue             [2] IMPLICIT OCTET STRING
+ * } — 8.2.1
+ * }
+ * </pre>
  *
+ * <p>
  * Used by CmsAssociateRequest and CmsAssociateResponse. Uses
  * {@link InnerAssociateRequestPDUAuthenticationParameter} as the backing
  * Inner*.

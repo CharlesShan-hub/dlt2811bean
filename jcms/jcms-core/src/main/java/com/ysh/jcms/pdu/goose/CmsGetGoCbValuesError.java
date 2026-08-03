@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetGoCbValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetGoCbValues-ErrorPDU ::= ServiceError — 8.9.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

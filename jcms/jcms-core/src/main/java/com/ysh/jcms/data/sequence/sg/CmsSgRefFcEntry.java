@@ -9,8 +9,17 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SGRefFcEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1]
- * IMPLICIT FunctionalConstraint } — used by GetEditSGValue-RequestPDU.
+ * <pre>
+ * {@code
+ * SGRefFcEntry ::= SEQUENCE {
+ *     reference   [0] IMPLICIT ObjectReference,
+ *     fc          [1] IMPLICIT FunctionalConstraint
+ * }
+ * }
+ * </pre>
+ *
+ * <p>
+ * used by GetEditSGValue-RequestPDU.
  */
 public class CmsSgRefFcEntry extends CmsSequence {
 

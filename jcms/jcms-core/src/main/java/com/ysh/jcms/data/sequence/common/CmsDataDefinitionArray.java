@@ -7,8 +7,14 @@ import com.ysh.jcms.data.InnerDataDefinitionArray;
 import com.ysh.jcms.data.scalar.CmsInt32;
 
 /**
- * DataDefinitionArray ::= SEQUENCE { numberOfElement Int32, elementType
- * DataDefinition } — 7.7
+ * <pre>
+ * {@code
+ * DataDefinitionArray ::= SEQUENCE {
+ *     numberOfElement  [1] IMPLICIT Int32,
+ *     elementType      [2] DataDefinition
+ * } — 7.8
+ * }
+ * </pre>
  */
 public class CmsDataDefinitionArray extends CmsSequence {
 

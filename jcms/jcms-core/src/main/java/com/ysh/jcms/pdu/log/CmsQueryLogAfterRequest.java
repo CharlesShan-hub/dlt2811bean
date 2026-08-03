@@ -10,9 +10,15 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 
 /**
- * QueryLogAfter-RequestPDU ::= SEQUENCE { logReference [0] IMPLICIT
- * ObjectReference, startTime [1] IMPLICIT EntryTime OPTIONAL, entry [2]
- * IMPLICIT EntryID } — 8.8.5
+ * <pre>
+ * {@code
+ * QueryLogAfter-RequestPDU ::= SEQUENCE {
+ *     logReference    [0] IMPLICIT ObjectReference,
+ *     startTime       [1] IMPLICIT EntryTime OPTIONAL,
+ *     entry           [2] IMPLICIT EntryID
+ * } — 8.8.5
+ * }
+ * </pre>
  */
 public class CmsQueryLogAfterRequest extends CmsSequence {
 

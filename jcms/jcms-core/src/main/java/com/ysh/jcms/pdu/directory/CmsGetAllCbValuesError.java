@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetAllCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetAllCBValues-ErrorPDU ::= ServiceError — 8.3.6
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

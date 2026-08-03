@@ -8,6 +8,21 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
+/**
+ * <pre>
+ * {@code
+ * LCB ::= SEQUENCE {
+ *     logEna          [1] IMPLICIT BOOLEAN,
+ *     datSet          [2] IMPLICIT ObjectReference,
+ *     trgOps          [3] IMPLICIT TriggerConditions,
+ *     intgPd          [4] IMPLICIT INT32U,
+ *     logRef          [5] IMPLICIT ObjectReference,
+ *     optFlds         [6] IMPLICIT LCBOptFlds OPTIONAL,
+ *     bufTm           [7] IMPLICIT INT32U OPTIONAL
+ * } — 8.8.2
+ * }
+ * </pre>
+ */
 public class CmsLcb extends CmsSequence {
     @CmsField
     public CmsBoolean logEna;

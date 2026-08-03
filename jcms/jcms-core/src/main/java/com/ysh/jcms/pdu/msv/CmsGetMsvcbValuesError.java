@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetMSVCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetMSVCBValues-ErrorPDU ::= ServiceError — 8.10.2
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

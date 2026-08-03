@@ -12,10 +12,17 @@ import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * ReportDataEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference
- * OPTIONAL, fc [1] IMPLICIT FunctionalConstraint OPTIONAL, id [2] IMPLICIT
- * Int16U, value [3] IMPLICIT Data, reason [4] IMPLICIT ReasonCode OPTIONAL } —
- * 8.7.1 (inline within ReportPDU entryData)
+ * <pre>
+ * {@code
+ * ReportDataEntry ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference OPTIONAL,
+ *     fc              [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *     id              [2] IMPLICIT INT16U,
+ *     value           [3] IMPLICIT Data,
+ *     reason          [4] IMPLICIT ReasonCode OPTIONAL
+ * } — 8.7.1 (inline within ReportPDU entryData)
+ * }
+ * </pre>
  */
 public class CmsReportDataEntry extends CmsSequence {
 

@@ -10,9 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetAllDataValues-ResponsePDU ::= SEQUENCE { reqId Int16U, data [0] IMPLICIT
- * SEQUENCE OF DataValueEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE } —
- * 8.3.4
+ * <pre>
+ * {@code
+ * GetAllDataValues-ResponsePDU ::= SEQUENCE {
+ *     data             [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference     [0] IMPLICIT SubReference,
+ *         value         [1] IMPLICIT Data
+ *     },
+ *     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.4
+ * }
+ * </pre>
  */
 public class CmsGetAllDataValuesResponse extends CmsSequence {
 

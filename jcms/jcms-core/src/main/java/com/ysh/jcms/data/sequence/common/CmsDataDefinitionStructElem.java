@@ -8,8 +8,16 @@ import com.ysh.jcms.data.scalar.CmsObjectName;
 import com.ysh.jcms.data.scalar.CmsFC;
 
 /**
- * DataDefinitionStructElem ::= SEQUENCE { name ObjectName, fc
- * FunctionalConstraint OPTIONAL, type DataDefinition } — 7.7
+ * <pre>
+ * {@code
+ * DataDefinitionStructElem ::= SEQUENCE {
+ *     name             [0] IMPLICIT ObjectName,
+ *     fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *     type             [2] DataDefinition
+ * } — 7.8
+ * }
+ * </pre>
+ *
  * <p>
  * Wraps {@link InnerAnonymousDataDefinitionStructure}.
  */

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetLogicalNodeDirectoryErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

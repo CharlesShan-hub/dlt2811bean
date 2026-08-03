@@ -8,9 +8,14 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GetDataSetDirectory-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
- * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL } —
- * 8.5.5
+ * <pre>
+ * {@code
+ * GetDataSetDirectory-RequestPDU ::= SEQUENCE {
+ *     datasetReference    [0] IMPLICIT ObjectReference,
+ *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.5.5
+ * }
+ * </pre>
  */
 public class CmsGetDataSetDirectoryRequest extends CmsSequence {
 

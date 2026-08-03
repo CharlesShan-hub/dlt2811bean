@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetGOOSEElementNumberErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetGOOSEElementNumber-ErrorPDU ::= ServiceError — 8.9.3
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

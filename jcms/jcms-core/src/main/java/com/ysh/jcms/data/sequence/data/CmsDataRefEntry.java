@@ -8,12 +8,14 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline type within GetDataValues-RequestPDU / GetDataDefinition-RequestPDU
- * ::= SEQUENCE {)<br>
+ * <pre>
  * {@code
+ * SEQUENCE {
  *     reference     [0] IMPLICIT ObjectReference,
  *     fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
+ * } — SEQUENCE OF element — inline within GetDataValues-RequestPDU / GetDataDefinition-RequestPDU
  * }
+ * </pre>
  *
  * <p>
  * Used by GetDataValues Request, GetDataDefinition Request.

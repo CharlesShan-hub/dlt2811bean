@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetLogStatusValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetLogStatusValues-ErrorPDU ::= ServiceError — 8.8.6
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetFileErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetFile-ErrorPDU ::= ServiceError — 8.12.1
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

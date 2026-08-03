@@ -8,6 +8,20 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
 import com.ysh.jcms.data.scalar.CmsString;
 
+/**
+ * <pre>
+ * {@code
+ * GoCB ::= SEQUENCE {
+ *     goEna           [1] IMPLICIT BOOLEAN,
+ *     goID            [2] IMPLICIT VisibleString129,
+ *     datSet          [3] IMPLICIT ObjectReference,
+ *     confRev         [4] IMPLICIT INT32U,
+ *     ndsCom          [5] IMPLICIT BOOLEAN,
+ *     dstAddress      [6] IMPLICIT PHYCOMADDR OPTIONAL
+ * } — 8.9.4
+ * }
+ * </pre>
+ */
 public class CmsGoCb extends CmsSequence {
     @CmsField
     public CmsBoolean goEna;

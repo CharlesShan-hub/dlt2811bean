@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSelectActiveSGResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SelectActiveSG-ResponsePDU ::= NULL — 8.6.1
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

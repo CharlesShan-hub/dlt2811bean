@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerAssociateNegotiateErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * AssociateNegotiate-ErrorPDU ::= ServiceError — 8.15
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

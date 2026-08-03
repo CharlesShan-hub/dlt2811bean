@@ -12,9 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGOOSEElementNumber-RequestPDU ::= SEQUENCE { gocbReference [0] IMPLICIT
- * ObjectReference, memberData [1] IMPLICIT SEQUENCE OF SEQUENCE { reference [0]
- * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.9.3
+ * <pre>
+ * {@code
+ * GetGOOSEElementNumber-RequestPDU ::= SEQUENCE {
+ *     gocbReference   [0] IMPLICIT ObjectReference,
+ *     memberData      [1] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         fc          [1] IMPLICIT FunctionalConstraint
+ *     }
+ * } — 8.9.3
+ * }
+ * </pre>
  */
 public class CmsGetGooseElementNumberRequest extends CmsSequence {
 

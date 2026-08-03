@@ -9,8 +9,17 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * RpcCall-RequestPDU ::= SEQUENCE { method [0] IMPLICIT VisibleString, req [1]
- * IMPLICIT RpcCallReqChoice } — 8.13.6
+ * <pre>
+ * {@code
+ * RpcCall-RequestPDU ::= SEQUENCE {
+ *     method          [0] IMPLICIT VisibleString,
+ *     req             [1] IMPLICIT CHOICE {
+ *         reqData     [0] IMPLICIT Data,
+ *         callID      [1] IMPLICIT OCTET STRING
+ *     }
+ * } — 8.13.6
+ * }
+ * </pre>
  */
 public class CmsRpcCallRequest extends CmsSequence {
 

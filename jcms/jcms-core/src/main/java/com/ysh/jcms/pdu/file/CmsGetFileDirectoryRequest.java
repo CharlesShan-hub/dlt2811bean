@@ -9,10 +9,16 @@ import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
- * GetFileDirectory-RequestPDU ::= SEQUENCE { pathName [0] IMPLICIT
- * VisibleString (SIZE (0..255)), startTime [1] IMPLICIT TimeStamp OPTIONAL,
- * stopTime [2] IMPLICIT TimeStamp OPTIONAL, fileAfter [3] IMPLICIT
- * VisibleString (SIZE (0..255)) OPTIONAL } — 8.12.5
+ * <pre>
+ * {@code
+ * GetFileDirectory-RequestPDU ::= SEQUENCE {
+ *     pathName        [0] IMPLICIT VisibleString255,
+ *     startTime       [1] IMPLICIT TimeStamp OPTIONAL,
+ *     stopTime        [2] IMPLICIT TimeStamp OPTIONAL,
+ *     fileAfter       [3] IMPLICIT VisibleString255 OPTIONAL
+ * } — 8.12.5
+ * }
+ * </pre>
  */
 public class CmsGetFileDirectoryRequest extends CmsSequence {
 

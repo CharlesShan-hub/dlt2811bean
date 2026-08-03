@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetDataValuesResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetDataValues-ResponsePDU ::= NULL — 8.4.2
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

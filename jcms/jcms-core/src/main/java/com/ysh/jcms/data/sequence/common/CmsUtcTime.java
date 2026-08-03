@@ -12,7 +12,11 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
 
 /**
+ * <pre>
+ * {@code
  * UtcTime ::= OCTET STRING (SIZE(8)) — 7.2.1
+ * }
+ * </pre>
  */
 public class CmsUtcTime extends CmsType {
 

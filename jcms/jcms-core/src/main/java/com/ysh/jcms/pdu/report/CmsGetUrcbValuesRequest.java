@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetURCBValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
- * ObjectReference } — 8.7.4
+ * <pre>
+ * {@code
+ * GetURCBValues-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT SEQUENCE OF ObjectReference
+ * } — 8.7.4
+ * }
+ * </pre>
  */
 public class CmsGetUrcbValuesRequest extends CmsSequence {
 

@@ -13,6 +13,22 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
+/**
+ * <pre>
+ * {@code
+ * TimeActivatedOperate-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     ctlVal          [1] IMPLICIT Data,
+ *     operTm          [2] IMPLICIT TimeStamp,
+ *     origin          [3] IMPLICIT Originator,
+ *     ctlNum          [4] IMPLICIT INT8U,
+ *     t               [5] IMPLICIT TimeStamp,
+ *     test            [6] IMPLICIT BOOLEAN,
+ *     check           [7] IMPLICIT Check
+ * } — 8.11.6
+ * }
+ * </pre>
+ */
 public class CmsTimeActivatedOperateRequest extends CmsSequence {
 
     @CmsField

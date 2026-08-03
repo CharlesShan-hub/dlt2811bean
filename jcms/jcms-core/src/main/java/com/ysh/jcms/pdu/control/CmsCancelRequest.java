@@ -13,10 +13,19 @@ import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
- * Cancel-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference,
- * ctlVal [1] IMPLICIT Data, operTm [2] IMPLICIT TimeStamp OPTIONAL, origin [3]
- * IMPLICIT Originator, ctlNum [4] IMPLICIT Int8U, t [5] IMPLICIT TimeStamp,
- * test [6] IMPLICIT Boolean } — 8.11.4
+ * <pre>
+ * {@code
+ * Cancel-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     ctlVal          [1] IMPLICIT Data,
+ *     operTm          [2] IMPLICIT TimeStamp OPTIONAL,
+ *     origin          [3] IMPLICIT Originator,
+ *     ctlNum          [4] IMPLICIT INT8U,
+ *     t               [5] IMPLICIT TimeStamp,
+ *     test            [6] IMPLICIT BOOLEAN
+ * } — 8.11.4
+ * }
+ * </pre>
  */
 public class CmsCancelRequest extends CmsSequence {
 

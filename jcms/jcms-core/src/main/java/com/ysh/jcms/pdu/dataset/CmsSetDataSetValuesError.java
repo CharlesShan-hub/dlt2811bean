@@ -8,8 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetDataSetValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
- * ServiceError } — 8.5.2
+ * <pre>
+ * {@code
+ * SetDataSetValues-ErrorPDU ::= SEQUENCE {
+ *     result              [0] IMPLICIT SEQUENCE OF ServiceError
+ * } — 8.5.2
+ * }
+ * </pre>
  */
 public class CmsSetDataSetValuesError extends CmsSequence {
 

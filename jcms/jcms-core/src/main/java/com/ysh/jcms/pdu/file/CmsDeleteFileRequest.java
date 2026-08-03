@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * DeleteFile-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT VisibleString
- * (SIZE (0..255)) } — 8.12.3
+ * <pre>
+ * {@code
+ * DeleteFile-RequestPDU ::= SEQUENCE {
+ *     filename        [0] IMPLICIT VisibleString255
+ * } — 8.12.3
+ * }
+ * </pre>
  */
 public class CmsDeleteFileRequest extends CmsSequence {
 

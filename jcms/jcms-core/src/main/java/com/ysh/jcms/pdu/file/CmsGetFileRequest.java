@@ -9,8 +9,14 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * GetFile-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT VisibleString (SIZE
- * (0..255)), startPosition [1] IMPLICIT Int32U } — 8.12.1
+ * <pre>
+ * {@code
+ * GetFile-RequestPDU ::= SEQUENCE {
+ *     filename        [0] IMPLICIT VisibleString255,
+ *     startPosition   [1] IMPLICIT INT32U
+ * } — 8.12.1
+ * }
+ * </pre>
  */
 public class CmsGetFileRequest extends CmsSequence {
 

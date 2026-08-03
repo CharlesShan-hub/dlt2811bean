@@ -13,13 +13,22 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetURCBEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, rptID [1]
- * IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL, rptEna [2] IMPLICIT Boolean
- * OPTIONAL, datSet [3] IMPLICIT ObjectReference OPTIONAL, optFlds [5] IMPLICIT
- * RcbOptFlds OPTIONAL, bufTm [6] IMPLICIT Int32U OPTIONAL, trgOps [8] IMPLICIT
- * TriggerConditions OPTIONAL, intgPd [9] IMPLICIT Int32U OPTIONAL, gi [10]
- * IMPLICIT Boolean OPTIONAL, resv [13] IMPLICIT Boolean OPTIONAL } — 8.7.5
- * (inline within SetURCBValues-RequestPDU)
+ * <pre>
+ * {@code
+ * SetURCBEntry ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     rptID           [1] IMPLICIT VisibleString129 OPTIONAL,
+ *     rptEna          [2] IMPLICIT BOOLEAN OPTIONAL,
+ *     datSet          [3] IMPLICIT ObjectReference OPTIONAL,
+ *     optFlds         [5] IMPLICIT RCBOptFlds OPTIONAL,
+ *     bufTm           [6] IMPLICIT INT32U OPTIONAL,
+ *     trgOps          [8] IMPLICIT TriggerConditions OPTIONAL,
+ *     intgPd          [9] IMPLICIT INT32U OPTIONAL,
+ *     gi              [10] IMPLICIT BOOLEAN OPTIONAL,
+ *     resv            [13] IMPLICIT BOOLEAN OPTIONAL
+ * } — 8.7.5 (inline within SetURCBValues-RequestPDU)
+ * }
+ * </pre>
  */
 public class CmsSetUrcbEntry extends CmsSequence {
 

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerConfirmEditSGValuesResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * ConfirmEditSGValues-ResponsePDU ::= NULL — 8.6.4
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

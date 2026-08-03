@@ -6,14 +6,24 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
- * SetBRCBResult ::= SEQUENCE { error [0] IMPLICIT ServiceError OPTIONAL, rptID
- * [1] IMPLICIT ServiceError OPTIONAL, rptEna [2] IMPLICIT ServiceError
- * OPTIONAL, datSet [3] IMPLICIT ServiceError OPTIONAL, optFlds [5] IMPLICIT
- * ServiceError OPTIONAL, bufTm [6] IMPLICIT ServiceError OPTIONAL, trgOps [8]
- * IMPLICIT ServiceError OPTIONAL, intgPd [9] IMPLICIT ServiceError OPTIONAL, gi
- * [10] IMPLICIT ServiceError OPTIONAL, purgeBuf [11] IMPLICIT ServiceError
- * OPTIONAL, entryID [12] IMPLICIT ServiceError OPTIONAL, resvTms [14] IMPLICIT
- * ServiceError OPTIONAL } — 8.7.3 (inline within SetBRCBValues-ErrorPDU)
+ * <pre>
+ * {@code
+ * SetBRCBResult ::= SEQUENCE {
+ *     error       [0] IMPLICIT ServiceError OPTIONAL,
+ *     rptID       [1] IMPLICIT ServiceError OPTIONAL,
+ *     rptEna      [2] IMPLICIT ServiceError OPTIONAL,
+ *     datSet      [3] IMPLICIT ServiceError OPTIONAL,
+ *     optFlds     [5] IMPLICIT ServiceError OPTIONAL,
+ *     bufTm       [6] IMPLICIT ServiceError OPTIONAL,
+ *     trgOps      [8] IMPLICIT ServiceError OPTIONAL,
+ *     intgPd      [9] IMPLICIT ServiceError OPTIONAL,
+ *     gi          [10] IMPLICIT ServiceError OPTIONAL,
+ *     purgeBuf    [11] IMPLICIT ServiceError OPTIONAL,
+ *     entryID     [12] IMPLICIT ServiceError OPTIONAL,
+ *     resvTms     [14] IMPLICIT ServiceError OPTIONAL
+ * } — 8.7.3 (inline within SetBRCBValues-ErrorPDU)
+ * }
+ * </pre>
  */
 public class CmsSetBrcbResult extends CmsSequence {
 

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetGoReferenceErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetGoReference-ErrorPDU ::= ServiceError — 8.9.2
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

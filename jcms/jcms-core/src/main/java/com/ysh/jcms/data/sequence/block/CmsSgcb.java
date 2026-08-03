@@ -6,7 +6,19 @@ import com.ysh.jcms.data.*;
 import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
-/** SGCB ::= SEQUENCE { numOfSG, actSG, editSG, tActEdt, resvTms } — 8.7.2 */
+/**
+ * <pre>
+ * {@code
+ * SGCB ::= SEQUENCE {
+ *     numOfSG       [1] IMPLICIT INT8U,
+ *     actSG         [2] IMPLICIT INT8U,
+ *     editSG        [3] IMPLICIT INT8U,
+ *     tActEdt       [4] IMPLICIT TimeStamp,
+ *     resvTms       [5] IMPLICIT INT16U OPTIONAL
+ * } — 8.6.6
+ * }
+ * </pre>
+ */
 public class CmsSgcb extends CmsSequence {
     @CmsField
     public CmsInt8U numOfSG;

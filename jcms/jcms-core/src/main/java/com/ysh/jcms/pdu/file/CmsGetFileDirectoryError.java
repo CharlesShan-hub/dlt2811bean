@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetFileDirectoryErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetFileDirectory-ErrorPDU ::= ServiceError — 8.12.5
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

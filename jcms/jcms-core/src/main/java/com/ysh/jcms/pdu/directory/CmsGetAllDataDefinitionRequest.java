@@ -10,9 +10,18 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 
 /**
- * GetAllDataDefinition-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0]
- * IMPLICIT ReferenceChoice, fc [1] IMPLICIT FunctionalConstraint OPTIONAL,
- * referenceAfter [2] IMPLICIT ObjectReference OPTIONAL } — 8.3.5
+ * <pre>
+ * {@code
+ * GetAllDataDefinition-RequestPDU ::= SEQUENCE {
+ *     reference        [0] IMPLICIT CHOICE {
+ *         ldName         [0] IMPLICIT ObjectName,
+ *         lnReference    [1] IMPLICIT ObjectReference
+ *     },
+ *     fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *     referenceAfter   [2] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.3.5
+ * }
+ * </pre>
  */
 public class CmsGetAllDataDefinitionRequest extends CmsSequence {
 

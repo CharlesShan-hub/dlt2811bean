@@ -7,8 +7,15 @@ import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 
 /**
- * AssociateNegotiate-RequestPDU ::= SEQUENCE { apduSize [0] IMPLICIT Int16U,
- * asduSize [1] IMPLICIT Int32U, protocolVersion [2] IMPLICIT Int32U } — 8.15
+ * <pre>
+ * {@code
+ * AssociateNegotiate-RequestPDU ::= SEQUENCE {
+ *     apduSize        [0] IMPLICIT INT16U,
+ *     asduSize        [1] IMPLICIT INT32U,
+ *     protocolVersion [2] IMPLICIT INT32U
+ * } — 8.15
+ * }
+ * </pre>
  */
 public class CmsNegotiateRequest extends CmsSequence {
 

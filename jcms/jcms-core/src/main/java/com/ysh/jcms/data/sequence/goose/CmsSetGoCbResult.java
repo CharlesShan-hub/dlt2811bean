@@ -6,9 +6,16 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
- * SetGoCBResult ::= SEQUENCE { error [0] IMPLICIT ServiceError OPTIONAL, goEna
- * [1] IMPLICIT ServiceError OPTIONAL, goID [2] IMPLICIT ServiceError OPTIONAL,
- * datSet [3] IMPLICIT ServiceError OPTIONAL } — 8.9.5
+ * <pre>
+ * {@code
+ * SetGoCBResult ::= SEQUENCE {
+ *     error           [0] IMPLICIT ServiceError OPTIONAL,
+ *     goEna           [1] IMPLICIT ServiceError OPTIONAL,
+ *     goID            [2] IMPLICIT ServiceError OPTIONAL,
+ *     datSet          [3] IMPLICIT ServiceError OPTIONAL
+ * } — 8.9.5
+ * }
+ * </pre>
  *
  * <p>
  * Used by SetGoCBValues error.

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerCreateDataSetErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * CreateDataSet-ErrorPDU ::= ServiceError — 8.5.3
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

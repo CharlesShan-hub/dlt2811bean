@@ -10,10 +10,21 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * RpcMethodEntry (inline within GetRpcInterfaceDefinition-ResponsePDU
- * {@code method} SEQUENCE OF) ::= SEQUENCE { name [0] IMPLICIT VisibleString,
- * version [1] IMPLICIT Int32U, timeout [2] IMPLICIT Int32U, request [3]
- * IMPLICIT DataDefinition, response [4] IMPLICIT DataDefinition } — 8.13.4
+ * <pre>
+ * {@code
+ * RpcMethodEntry ::= SEQUENCE {
+ *     name        [0] IMPLICIT VisibleString,
+ *     version     [1] IMPLICIT INT32U,
+ *     timeout     [2] IMPLICIT INT32U,
+ *     request     [3] IMPLICIT DataDefinition,
+ *     response    [4] IMPLICIT DataDefinition
+ * } — 8.13.4
+ * }
+ * </pre>
+ *
+ * <p>
+ * SEQUENCE OF element — inline within GetRpcInterfaceDefinition-ResponsePDU
+ * {@code method}.
  */
 public class CmsRpcMethodEntry extends CmsSequence {
 

@@ -10,9 +10,16 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * AssociateNegotiate-ResponsePDU ::= SEQUENCE { apduSize [0] IMPLICIT Int16U,
- * asduSize [1] IMPLICIT Int32U, protocolVersion [2] IMPLICIT Int32U,
- * modelVersion [3] IMPLICIT VisibleString } — 8.15
+ * <pre>
+ * {@code
+ * AssociateNegotiate-ResponsePDU ::= SEQUENCE {
+ *     apduSize        [0] IMPLICIT INT16U,
+ *     asduSize        [1] IMPLICIT INT32U,
+ *     protocolVersion [2] IMPLICIT INT32U,
+ *     modelVersion    [3] IMPLICIT VisibleString
+ * } — 8.15
+ * }
+ * </pre>
  */
 public class CmsNegotiateResponse extends CmsSequence {
 

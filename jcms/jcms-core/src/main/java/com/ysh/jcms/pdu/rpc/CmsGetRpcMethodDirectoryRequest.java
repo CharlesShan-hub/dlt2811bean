@@ -8,9 +8,14 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * GetRpcMethodDirectory-RequestPDU ::= SEQUENCE { interface [0] IMPLICIT
- * VisibleString OPTIONAL, referenceAfter [1] IMPLICIT VisibleString OPTIONAL }
- * — 8.13.3
+ * <pre>
+ * {@code
+ * GetRpcMethodDirectory-RequestPDU ::= SEQUENCE {
+ *     interface       [0] IMPLICIT VisibleString OPTIONAL,
+ *     referenceAfter  [1] IMPLICIT VisibleString OPTIONAL
+ * } — 8.13.3
+ * }
+ * </pre>
  */
 public class CmsGetRpcMethodDirectoryRequest extends CmsSequence {
 

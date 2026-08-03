@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetEditSGValueErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetEditSGValue-ErrorPDU ::= ServiceError — 8.6.5
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

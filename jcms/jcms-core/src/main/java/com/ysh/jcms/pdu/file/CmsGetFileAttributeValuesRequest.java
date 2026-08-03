@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * GetFileAttributeValues-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT
- * VisibleString (SIZE (0..255)) } — 8.12.4
+ * <pre>
+ * {@code
+ * GetFileAttributeValues-RequestPDU ::= SEQUENCE {
+ *     filename        [0] IMPLICIT VisibleString255
+ * } — 8.12.4
+ * }
+ * </pre>
  */
 public class CmsGetFileAttributeValuesRequest extends CmsSequence {
 

@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetBRCBValuesResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetBRCBValues-ResponsePDU ::= NULL — 8.7.3
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

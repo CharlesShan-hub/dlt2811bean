@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetEditSGValueResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetEditSGValue-ResponsePDU ::= NULL — 8.6.3
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

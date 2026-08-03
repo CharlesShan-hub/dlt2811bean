@@ -10,9 +10,18 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 
 /**
- * GetAllCBValues-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0] IMPLICIT
- * ReferenceChoice, acsiClass [1] IMPLICIT ACSIClass, referenceAfter [2]
- * IMPLICIT ObjectReference OPTIONAL } — 8.3.6
+ * <pre>
+ * {@code
+ * GetAllCBValues-RequestPDU ::= SEQUENCE {
+ *     reference        [0] IMPLICIT CHOICE {
+ *         ldName         [0] IMPLICIT ObjectName,
+ *         lnReference    [1] IMPLICIT ObjectReference
+ *     },
+ *     acsiClass        [1] IMPLICIT ACSIClass,
+ *     referenceAfter   [2] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.3.6
+ * }
+ * </pre>
  */
 public class CmsGetAllCbValuesRequest extends CmsSequence {
 

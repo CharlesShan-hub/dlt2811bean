@@ -7,8 +7,14 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsAssociationId;
 
 /**
- * Release-ResponsePDU ::= SEQUENCE { associationId [0] IMPLICIT OCTET STRING
- * (SIZE (0..64)), serviceError [1] IMPLICIT ServiceError } — 8.2.2
+ * <pre>
+ * {@code
+ * Release-ResponsePDU ::= SEQUENCE {
+ *     associationId [0] IMPLICIT OCTET STRING (SIZE (0..64)),
+ *     serviceError  [1] IMPLICIT ServiceError
+ * } — 8.2.2
+ * }
+ * </pre>
  */
 public class CmsReleaseResponse extends CmsSequence {
 

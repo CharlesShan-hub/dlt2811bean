@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerDeleteFileErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * DeleteFile-ErrorPDU ::= ServiceError — 8.12.3
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

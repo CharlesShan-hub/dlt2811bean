@@ -7,11 +7,14 @@ import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * (inline type within GetDataDefinition-ResponsePDU ::= SEQUENCE {)<br>
+ * <pre>
  * {@code
+ * SEQUENCE {
  *     cdcType       [0] IMPLICIT VisibleString OPTIONAL,
  *     definition    [1] IMPLICIT DataDefinition
+ * } — SEQUENCE OF element — inline within GetDataDefinition-ResponsePDU
  * }
+ * </pre>
  *
  * <p>
  * Used by GetDataDefinition Response (SEQUENCE OF DataDefResultEntry).

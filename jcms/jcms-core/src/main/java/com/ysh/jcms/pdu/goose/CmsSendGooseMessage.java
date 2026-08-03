@@ -16,12 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SendGOOSEMessage-PDU ::= SEQUENCE { goID [0] IMPLICIT VisibleString (SIZE
- * (0..129)), datSet [1] IMPLICIT ObjectReference OPTIONAL, goRef [2] IMPLICIT
- * ObjectReference OPTIONAL, t [3] IMPLICIT TimeStamp, stNum [4] IMPLICIT
- * Int32U, sqNum [5] IMPLICIT Int32U, simulation [6] IMPLICIT Boolean, confRev
- * [7] IMPLICIT Int32U, ndsCom [8] IMPLICIT Boolean, data [9] IMPLICIT SEQUENCE
- * OF Data } — 8.9.1
+ * <pre>
+ * {@code
+ * SendGOOSEMessage-PDU ::= SEQUENCE {
+ *     goID            [0] IMPLICIT VisibleString129,
+ *     datSet          [1] IMPLICIT ObjectReference OPTIONAL,
+ *     goRef           [2] IMPLICIT ObjectReference OPTIONAL,
+ *     t               [3] IMPLICIT TimeStamp,
+ *     stNum           [4] IMPLICIT INT32U,
+ *     sqNum           [5] IMPLICIT INT32U,
+ *     simulation      [6] IMPLICIT BOOLEAN,
+ *     confRev         [7] IMPLICIT INT32U,
+ *     ndsCom          [8] IMPLICIT BOOLEAN,
+ *     data            [9] IMPLICIT SEQUENCE OF Data
+ * } — 8.9.1
+ * }
+ * </pre>
  *
  * <p>
  * Unconfirmed service — no Response or Error PDU.

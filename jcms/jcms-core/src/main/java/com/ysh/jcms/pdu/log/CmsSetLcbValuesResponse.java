@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetLCBValuesResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetLCBValues-ResponsePDU ::= NULL — 8.8.3
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

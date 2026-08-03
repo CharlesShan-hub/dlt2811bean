@@ -7,8 +7,14 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
- * RpcCall-ResponsePDU ::= SEQUENCE { rspData [0] IMPLICIT Data, nextCallID [1]
- * IMPLICIT OCTET STRING OPTIONAL } — 8.13.6
+ * <pre>
+ * {@code
+ * RpcCall-ResponsePDU ::= SEQUENCE {
+ *     rspData         [0] IMPLICIT Data,
+ *     nextCallID      [1] IMPLICIT OCTET STRING OPTIONAL
+ * } — 8.13.6
+ * }
+ * </pre>
  */
 public class CmsRpcCallResponse extends CmsSequence {
 

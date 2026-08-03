@@ -14,13 +14,31 @@ import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.report.CmsReportEntry;
 
 /**
- * ReportPDU ::= SEQUENCE { rptID [0] IMPLICIT VisibleString (SIZE (0..129)),
- * optFlds [1] IMPLICIT RcbOptFlds, sqNum [2] IMPLICIT Int16U OPTIONAL,
- * subSeqNum [3] IMPLICIT Int16U OPTIONAL, moreSegmentsFollow [4] IMPLICIT
- * Boolean OPTIONAL, dataSet [5] IMPLICIT ObjectReference OPTIONAL, bufOvfl [6]
- * IMPLICIT Boolean OPTIONAL, confRev [7] IMPLICIT Int32U OPTIONAL, entry [8]
- * IMPLICIT ReportEntry } — 8.7.1 (unconfirmed service 0x35 — no Response or
- * Error PDU)
+ * <pre>
+ * {@code
+ * ReportPDU ::= SEQUENCE {
+ *     rptID           [0] IMPLICIT VisibleString129,
+ *     optFlds         [1] IMPLICIT RCBOptFlds,
+ *     sqNum           [2] IMPLICIT INT16U OPTIONAL,
+ *     subSeqNum       [3] IMPLICIT INT16U OPTIONAL,
+ *     moreSegmentsFollow [4] IMPLICIT BOOLEAN OPTIONAL,
+ *     dataSet         [5] IMPLICIT ObjectReference OPTIONAL,
+ *     bufOvfl         [6] IMPLICIT BOOLEAN OPTIONAL,
+ *     confRev         [7] IMPLICIT INT32U OPTIONAL,
+ *     entry           [8] IMPLICIT SEQUENCE {
+ *         timeOfEntry     [0] IMPLICIT EntryTime OPTIONAL,
+ *         entryID         [1] IMPLICIT EntryID OPTIONAL,
+ *         entryData       [2] IMPLICIT SEQUENCE OF SEQUENCE {
+ *             reference   [0] IMPLICIT ObjectReference OPTIONAL,
+ *             fc          [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *             id          [2] IMPLICIT INT16U,
+ *             value       [3] IMPLICIT Data,
+ *             reason      [4] IMPLICIT ReasonCode OPTIONAL
+ *         }
+ *     }
+ * } — 8.7.1 (unconfirmed service 0x35 — no Response or Error PDU)
+ * }
+ * </pre>
  */
 public class CmsReport extends CmsSequence {
 

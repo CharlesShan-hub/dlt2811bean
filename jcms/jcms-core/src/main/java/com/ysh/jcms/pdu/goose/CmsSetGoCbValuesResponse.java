@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetGoCBValuesResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetGoCBValues-ResponsePDU ::= NULL — 8.9.5
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

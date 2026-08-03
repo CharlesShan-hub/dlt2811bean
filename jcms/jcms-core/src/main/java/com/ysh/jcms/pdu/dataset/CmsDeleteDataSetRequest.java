@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * DeleteDataSet-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
- * ObjectReference } — 8.5.4
+ * <pre>
+ * {@code
+ * DeleteDataSet-RequestPDU ::= SEQUENCE {
+ *     datasetReference    [0] IMPLICIT ObjectReference
+ * } — 8.5.4
+ * }
+ * </pre>
  */
 public class CmsDeleteDataSetRequest extends CmsSequence {
 

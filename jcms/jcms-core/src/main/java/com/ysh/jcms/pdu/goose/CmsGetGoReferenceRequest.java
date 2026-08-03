@@ -12,8 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoReference-RequestPDU ::= SEQUENCE { gocbReference [0] IMPLICIT
- * ObjectReference, memberOfs [1] IMPLICIT SEQUENCE OF Int16U } — 8.9.2
+ * <pre>
+ * {@code
+ * GetGoReference-RequestPDU ::= SEQUENCE {
+ *     gocbReference   [0] IMPLICIT ObjectReference,
+ *     memberOfs       [1] IMPLICIT SEQUENCE OF INT16U
+ * } — 8.9.2
+ * }
+ * </pre>
  */
 public class CmsGetGoReferenceRequest extends CmsSequence {
 

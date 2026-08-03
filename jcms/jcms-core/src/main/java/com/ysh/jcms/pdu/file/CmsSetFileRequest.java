@@ -11,9 +11,16 @@ import com.ysh.jcms.data.scalar.CmsOctetString;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetFile-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT VisibleString (SIZE
- * (0..255)), startPosition [1] IMPLICIT Int32U, fileData [2] IMPLICIT OCTET
- * STRING, endOfFile [3] IMPLICIT Boolean DEFAULT 0 } — 8.12.2
+ * <pre>
+ * {@code
+ * SetFile-RequestPDU ::= SEQUENCE {
+ *     filename        [0] IMPLICIT VisibleString255,
+ *     startPosition   [1] IMPLICIT INT32U,
+ *     fileData        [2] IMPLICIT OCTET STRING,
+ *     endOfFile       [3] IMPLICIT BOOLEAN DEFAULT FALSE
+ * } — 8.12.2
+ * }
+ * </pre>
  */
 public class CmsSetFileRequest extends CmsSequence {
 

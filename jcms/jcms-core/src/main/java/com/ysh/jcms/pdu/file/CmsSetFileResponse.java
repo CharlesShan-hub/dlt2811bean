@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSetFileResponsePDU;
 import com.ysh.jcms.data.core.CmsSequence;
 
 /**
+ * <pre>
+ * {@code
  * SetFile-ResponsePDU ::= NULL — 8.12.2
+ * }
+ * </pre>
  *
  * <p>
  * Response has no payload.

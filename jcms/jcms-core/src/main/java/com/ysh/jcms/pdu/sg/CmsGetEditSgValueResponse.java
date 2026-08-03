@@ -10,8 +10,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetEditSGValue-ResponsePDU ::= SEQUENCE { value [0] IMPLICIT SEQUENCE OF
- * Data, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.6.5
+ * <pre>
+ * {@code
+ * GetEditSGValue-ResponsePDU ::= SEQUENCE {
+ *     value           [0] IMPLICIT SEQUENCE OF Data,
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.6.5
+ * }
+ * </pre>
  */
 public class CmsGetEditSgValueResponse extends CmsSequence {
 

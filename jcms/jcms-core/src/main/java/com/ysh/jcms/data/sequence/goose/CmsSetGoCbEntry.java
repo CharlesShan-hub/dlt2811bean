@@ -10,9 +10,16 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetGoCBEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, goEna [1]
- * IMPLICIT Boolean OPTIONAL, goID [2] IMPLICIT VisibleString (SIZE (0..129))
- * OPTIONAL, datSet [3] IMPLICIT ObjectReference OPTIONAL } — 8.9.5
+ * <pre>
+ * {@code
+ * SetGoCBEntry ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     goEna           [1] IMPLICIT BOOLEAN OPTIONAL,
+ *     goID            [2] IMPLICIT VisibleString129 OPTIONAL,
+ *     datSet          [3] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.9.5
+ * }
+ * </pre>
  *
  * <p>
  * Used by SetGoCBValues request.

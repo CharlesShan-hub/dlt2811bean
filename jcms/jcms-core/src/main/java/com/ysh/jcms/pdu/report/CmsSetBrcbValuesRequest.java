@@ -9,8 +9,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetBRCBValues-RequestPDU ::= SEQUENCE { brcb [0] IMPLICIT SEQUENCE OF
- * SetBRCBEntry } — 8.7.3
+ * <pre>
+ * {@code
+ * SetBRCBValues-RequestPDU ::= SEQUENCE {
+ *     brcb            [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         rptID       [1] IMPLICIT VisibleString129 OPTIONAL,
+ *         rptEna      [2] IMPLICIT BOOLEAN OPTIONAL,
+ *         datSet      [3] IMPLICIT ObjectReference OPTIONAL,
+ *         optFlds     [5] IMPLICIT RCBOptFlds OPTIONAL,
+ *         bufTm       [6] IMPLICIT INT32U OPTIONAL,
+ *         trgOps      [8] IMPLICIT TriggerConditions OPTIONAL,
+ *         intgPd      [9] IMPLICIT INT32U OPTIONAL,
+ *         gi          [10] IMPLICIT BOOLEAN OPTIONAL,
+ *         purgeBuf    [11] IMPLICIT BOOLEAN OPTIONAL,
+ *         entryID     [12] IMPLICIT EntryID OPTIONAL,
+ *         resvTms     [13] IMPLICIT INT16 OPTIONAL
+ *     }
+ * } — 8.7.3
+ * }
+ * </pre>
  */
 public class CmsSetBrcbValuesRequest extends CmsSequence {
 

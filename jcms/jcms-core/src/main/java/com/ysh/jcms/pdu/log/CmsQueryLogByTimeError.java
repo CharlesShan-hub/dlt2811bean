@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerQueryLogByTimeErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * QueryLogByTime-ErrorPDU ::= ServiceError — 8.8.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

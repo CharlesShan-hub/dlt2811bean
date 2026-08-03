@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetURCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetURCBValues-ErrorPDU ::= ServiceError — 8.7.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

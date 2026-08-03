@@ -13,9 +13,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGOOSEElementNumber-ResponsePDU ::= SEQUENCE { gocbReference [0] IMPLICIT
- * ObjectReference, confRev [1] IMPLICIT Int32U, datSet [2] IMPLICIT
- * ObjectReference, memberOffset [3] IMPLICIT SEQUENCE OF Int16U } — 8.9.3
+ * <pre>
+ * {@code
+ * GetGOOSEElementNumber-ResponsePDU ::= SEQUENCE {
+ *     gocbReference   [0] IMPLICIT ObjectReference,
+ *     confRev         [1] IMPLICIT INT32U,
+ *     datSet          [2] IMPLICIT ObjectReference,
+ *     memberOffset    [3] IMPLICIT SEQUENCE OF INT16U
+ * } — 8.9.3
+ * }
+ * </pre>
  */
 public class CmsGetGooseElementNumberResponse extends CmsSequence {
 

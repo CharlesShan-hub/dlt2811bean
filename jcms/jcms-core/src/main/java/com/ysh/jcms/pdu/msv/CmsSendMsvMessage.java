@@ -19,13 +19,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SendMSVMessage-PDU ::= SEQUENCE { msvID [0] IMPLICIT VisibleString (SIZE
- * (0..129)), datSet [1] IMPLICIT ObjectReference OPTIONAL, smpCnt [2] IMPLICIT
- * Int16U, confRev [3] IMPLICIT Int32U, refTm [4] IMPLICIT TimeStamp OPTIONAL,
- * smpSynch [5] IMPLICIT Int8U, smpRate [6] IMPLICIT Int16U OPTIONAL, simulation
- * [7] IMPLICIT Boolean, sample [8] IMPLICIT SEQUENCE OF Data, smpMod [9]
- * IMPLICIT SmpMod OPTIONAL } — 8.10.1
+ * <pre>
+ * {@code
+ * SendMSVMessage-PDU ::= SEQUENCE {
+ *     msvID           [0] IMPLICIT VisibleString129,
+ *     datSet          [1] IMPLICIT ObjectReference OPTIONAL,
+ *     smpCnt          [2] IMPLICIT INT16U,
+ *     confRev         [3] IMPLICIT INT32U,
+ *     refTm           [4] IMPLICIT TimeStamp OPTIONAL,
+ *     smpSynch        [5] IMPLICIT INT8U,
+ *     smpRate         [6] IMPLICIT INT16U OPTIONAL,
+ *     simulation      [7] IMPLICIT BOOLEAN,
+ *     sample          [8] IMPLICIT SEQUENCE OF Data,
+ *     smpMod          [9] IMPLICIT SmpMod OPTIONAL
+ * } — 8.10.1
+ * }
+ * </pre>
  *
+ * <p>
  * Unconfirmed service — no Response or Error PDU.
  */
 public class CmsSendMsvMessage extends CmsSequence {

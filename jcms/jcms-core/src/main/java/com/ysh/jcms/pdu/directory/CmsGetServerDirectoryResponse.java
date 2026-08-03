@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetServerDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, reference [0]
- * IMPLICIT SEQUENCE OF ObjectReference, moreFollows [1] IMPLICIT BOOLEAN
- * DEFAULT TRUE } — 8.3.1
+ * <pre>
+ * {@code
+ * GetServerDirectory-ResponsePDU ::= SEQUENCE {
+ *     reference        [0] IMPLICIT SEQUENCE OF ObjectReference,
+ *     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.1
+ * }
+ * </pre>
  */
 public class CmsGetServerDirectoryResponse extends CmsSequence {
 

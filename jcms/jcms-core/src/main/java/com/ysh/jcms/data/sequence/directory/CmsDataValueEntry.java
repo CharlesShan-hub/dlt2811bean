@@ -9,9 +9,16 @@ import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 
 /**
- * DataValueEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference, value [1]
- * IMPLICIT Data } — 8.3.4
+ * <pre>
+ * {@code
+ * DataValueEntry ::= SEQUENCE {
+ *     reference     [0] IMPLICIT SubReference,
+ *     value         [1] IMPLICIT Data
+ * } — 8.3.4
+ * }
+ * </pre>
  *
+ * <p>
  * Used by GetAllDataValues response (SEQUENCE OF DataValueEntry).
  */
 public class CmsDataValueEntry extends CmsSequence {

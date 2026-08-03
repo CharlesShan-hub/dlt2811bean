@@ -7,10 +7,16 @@ import com.ysh.jcms.data.scalar.CmsEntryId;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 
 /**
- * (inline SEQUENCE within GetLogStatusValues-ResponsePDU log value) ::=
- * SEQUENCE { oldEntrTm [0] IMPLICIT EntryTime, newEntrTm [1] IMPLICIT
- * EntryTime, oldEntr [2] IMPLICIT EntryID, newEntr [3] IMPLICIT EntryID } —
- * 8.8.6
+ * <pre>
+ * {@code
+ * (inline SEQUENCE within GetLogStatusValues-ResponsePDU log value) ::= SEQUENCE {
+ *     oldEntrTm       [0] IMPLICIT EntryTime,
+ *     newEntrTm       [1] IMPLICIT EntryTime,
+ *     oldEntr         [2] IMPLICIT EntryID,
+ *     newEntr         [3] IMPLICIT EntryID
+ * } — 8.8.6
+ * }
+ * </pre>
  */
 public class CmsLogStatusValue extends CmsSequence {
 

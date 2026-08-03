@@ -9,12 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetMSVCBValues-RequestPDU ::= SEQUENCE { msvcb [0] IMPLICIT SEQUENCE OF
- * SEQUENCE { reference [0] IMPLICIT ObjectReference, svEna [1] IMPLICIT Boolean
- * OPTIONAL, msvID [2] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL, datSet
- * [3] IMPLICIT ObjectReference OPTIONAL, smpMod [5] IMPLICIT SmpMod OPTIONAL,
- * smpRate [6] IMPLICIT Int16U OPTIONAL, optFlds [7] IMPLICIT MsvcbOptFlds
- * OPTIONAL } } — 8.10.3
+ * <pre>
+ * {@code
+ * SetMSVCBValues-RequestPDU ::= SEQUENCE {
+ *     msvcb           [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         svEna       [1] IMPLICIT BOOLEAN OPTIONAL,
+ *         msvID       [2] IMPLICIT VisibleString129 OPTIONAL,
+ *         datSet      [3] IMPLICIT ObjectReference OPTIONAL,
+ *         smpMod      [5] IMPLICIT SmpMod OPTIONAL,
+ *         smpRate     [6] IMPLICIT INT16U OPTIONAL,
+ *         optFlds     [7] IMPLICIT MSVCBOptFlds OPTIONAL
+ *     }
+ * } — 8.10.3
+ * }
+ * </pre>
  */
 public class CmsSetMsvcbValuesRequest extends CmsSequence {
 

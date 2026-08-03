@@ -13,10 +13,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoReference-ResponsePDU ::= SEQUENCE { gocbReference [0] IMPLICIT
- * ObjectReference, confRev [1] IMPLICIT Int32U, datSet [2] IMPLICIT
- * ObjectReference, memberData [3] IMPLICIT SEQUENCE OF SEQUENCE { reference [0]
- * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.9.2
+ * <pre>
+ * {@code
+ * GetGoReference-ResponsePDU ::= SEQUENCE {
+ *     gocbReference   [0] IMPLICIT ObjectReference,
+ *     confRev         [1] IMPLICIT INT32U,
+ *     datSet          [2] IMPLICIT ObjectReference,
+ *     memberData      [3] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         fc          [1] IMPLICIT FunctionalConstraint
+ *     }
+ * } — 8.9.2
+ * }
+ * </pre>
  */
 public class CmsGetGoReferenceResponse extends CmsSequence {
 

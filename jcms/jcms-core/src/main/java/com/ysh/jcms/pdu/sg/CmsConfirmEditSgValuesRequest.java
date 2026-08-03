@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * ConfirmEditSGValues-RequestPDU ::= SEQUENCE { sgcbReference [0] IMPLICIT
- * ObjectReference } — 8.6.4
+ * <pre>
+ * {@code
+ * ConfirmEditSGValues-RequestPDU ::= SEQUENCE {
+ *     sgcbReference       [0] IMPLICIT ObjectReference
+ * } — 8.6.4
+ * }
+ * </pre>
  */
 public class CmsConfirmEditSgValuesRequest extends CmsSequence {
 

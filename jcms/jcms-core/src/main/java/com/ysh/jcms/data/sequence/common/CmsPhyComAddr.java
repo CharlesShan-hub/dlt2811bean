@@ -8,7 +8,16 @@ import com.ysh.jcms.data.scalar.CmsInt8U;
 import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
- * PhyComAddr ::= SEQUENCE { addr, priority, vid, appid } — 7.3.12
+ * <pre>
+ * {@code
+ * PhyComAddr ::= SEQUENCE {
+ *     addr        [0] IMPLICIT OCTET STRING (SIZE(6)),
+ *     priority    [1] IMPLICIT Int8U,
+ *     vid         [2] IMPLICIT Int16U,
+ *     appid       [3] IMPLICIT Int16U
+ * } — 7.3.12
+ * }
+ * </pre>
  */
 public class CmsPhyComAddr extends CmsSequence {
     @CmsField

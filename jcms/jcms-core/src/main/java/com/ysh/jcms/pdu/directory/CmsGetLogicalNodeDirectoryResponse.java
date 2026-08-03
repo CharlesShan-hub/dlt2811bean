@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U, reference
- * [0] IMPLICIT SEQUENCE OF SubReference, moreFollows [1] IMPLICIT BOOLEAN
- * DEFAULT TRUE } — 8.3.3
+ * <pre>
+ * {@code
+ * GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT SEQUENCE OF SubReference,
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.3
+ * }
+ * </pre>
  */
 public class CmsGetLogicalNodeDirectoryResponse extends CmsSequence {
 

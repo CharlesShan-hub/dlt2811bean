@@ -7,10 +7,20 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsInt32U;
 
 /**
- * RpcMethodDef (inline within GetRpcMethodDefinition-ResponsePDU {@code method}
- * variant) ::= SEQUENCE { version [0] IMPLICIT Int32U, timeout [1] IMPLICIT
- * Int32U, request [2] IMPLICIT DataDefinition, response [3] IMPLICIT
- * DataDefinition } — 8.13.5
+ * <pre>
+ * {@code
+ * RpcMethodDef ::= SEQUENCE {
+ *     version     [0] IMPLICIT INT32U,
+ *     timeout     [1] IMPLICIT INT32U,
+ *     request     [2] IMPLICIT DataDefinition,
+ *     response    [3] IMPLICIT DataDefinition
+ * } — 8.13.5
+ * }
+ * </pre>
+ *
+ * <p>
+ * inline within GetRpcMethodDefinition-ResponsePDU {@code method} variant
+ * (SEQUENCE OF CHOICE element).
  */
 public class CmsRpcMethodDef extends CmsSequence {
 

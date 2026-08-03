@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerGetBRCBValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * GetBRCBValues-ErrorPDU ::= ServiceError — 8.7.2
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

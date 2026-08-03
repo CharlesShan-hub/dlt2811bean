@@ -9,8 +9,17 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SGRefValueEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, value
- * [2] IMPLICIT Data } — used by SetEditSGValue-RequestPDU.
+ * <pre>
+ * {@code
+ * SGRefValueEntry ::= SEQUENCE {
+ *     reference   [0] IMPLICIT ObjectReference,
+ *     value       [2] IMPLICIT Data
+ * }
+ * }
+ * </pre>
+ *
+ * <p>
+ * used by SetEditSGValue-RequestPDU.
  */
 public class CmsSgRefValueEntry extends CmsSequence {
 

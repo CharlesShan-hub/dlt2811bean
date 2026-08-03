@@ -9,10 +9,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetGoCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
- * SEQUENCE { error [0] IMPLICIT ServiceError OPTIONAL, goEna [1] IMPLICIT
- * ServiceError OPTIONAL, goID [2] IMPLICIT ServiceError OPTIONAL, datSet [3]
- * IMPLICIT ServiceError OPTIONAL } } — 8.9.5
+ * <pre>
+ * {@code
+ * SetGoCBValues-ErrorPDU ::= SEQUENCE {
+ *     result          [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         error       [0] IMPLICIT ServiceError OPTIONAL,
+ *         goEna       [1] IMPLICIT ServiceError OPTIONAL,
+ *         goID        [2] IMPLICIT ServiceError OPTIONAL,
+ *         datSet      [3] IMPLICIT ServiceError OPTIONAL
+ *     }
+ * } — 8.9.5
+ * }
+ * </pre>
  */
 public class CmsSetGoCbValuesError extends CmsSequence {
 

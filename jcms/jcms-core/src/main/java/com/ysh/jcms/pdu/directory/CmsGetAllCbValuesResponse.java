@@ -10,9 +10,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetAllCBValues-ResponsePDU ::= SEQUENCE { reqId Int16U, cbValue [0] IMPLICIT
- * SEQUENCE OF CBValueEntry, moreFollows [1] IMPLICIT BOOLEAN DEFAULT TRUE } —
- * 8.3.6
+ * <pre>
+ * {@code
+ * GetAllCBValues-ResponsePDU ::= SEQUENCE {
+ *     cbValue          [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference     [0] IMPLICIT SubReference,
+ *         value         [1] IMPLICIT CHOICE {
+ *             brcb        [0] IMPLICIT BRCB,
+ *             urcb        [1] IMPLICIT URCB,
+ *             lcb         [2] IMPLICIT LCB,
+ *             sgecb       [3] IMPLICIT SGECB,
+ *             gocb        [4] IMPLICIT GOCB,
+ *             msvcb       [5] IMPLICIT MSVCB
+ *         }
+ *     },
+ *     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.6
+ * }
+ * </pre>
  */
 public class CmsGetAllCbValuesResponse extends CmsSequence {
 

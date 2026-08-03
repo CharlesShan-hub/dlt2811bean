@@ -11,9 +11,16 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline SEQUENCE within LogEntry.entryData) ::= SEQUENCE { reference [0]
- * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint, value [2]
- * IMPLICIT Data, reason [3] IMPLICIT ReasonCode } — 8.8.1
+ * <pre>
+ * {@code
+ * (inline SEQUENCE within LogEntry.entryData) ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     fc              [1] IMPLICIT FunctionalConstraint,
+ *     value           [2] IMPLICIT Data,
+ *     reason          [3] IMPLICIT ReasonCode
+ * } — 8.8.1
+ * }
+ * </pre>
  *
  * <p>
  * Element of {@link CmsLogEntry#entryData}.

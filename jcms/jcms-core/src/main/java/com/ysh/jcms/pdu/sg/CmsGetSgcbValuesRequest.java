@@ -9,8 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetSGCBValues-RequestPDU ::= SEQUENCE { sgcbReference [0] IMPLICIT SEQUENCE
- * OF ObjectReference } — 8.6.6
+ * <pre>
+ * {@code
+ * GetSGCBValues-RequestPDU ::= SEQUENCE {
+ *     sgcbReference  [0] IMPLICIT SEQUENCE OF ObjectReference
+ * } — 8.6.6
+ * }
+ * </pre>
  */
 public class CmsGetSgcbValuesRequest extends CmsSequence {
 

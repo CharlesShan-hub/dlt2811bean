@@ -12,12 +12,20 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline SEQUENCE within SetLCBValues-RequestPDU lcb) ::= SEQUENCE { reference
- * [0] IMPLICIT ObjectReference, logEna [1] IMPLICIT Boolean OPTIONAL, datSet
- * [2] IMPLICIT ObjectReference OPTIONAL, trgOps [3] IMPLICIT TriggerConditions
- * OPTIONAL, intgPd [4] IMPLICIT Int32U OPTIONAL, logRef [5] IMPLICIT
- * ObjectReference OPTIONAL, optFlds [6] IMPLICIT LcbOptFlds OPTIONAL, bufTm [7]
- * IMPLICIT Int32U OPTIONAL } — 8.8.3
+ * <pre>
+ * {@code
+ * (inline SEQUENCE within SetLCBValues-RequestPDU lcb) ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     logEna          [1] IMPLICIT BOOLEAN OPTIONAL,
+ *     datSet          [2] IMPLICIT ObjectReference OPTIONAL,
+ *     trgOps          [3] IMPLICIT TriggerConditions OPTIONAL,
+ *     intgPd          [4] IMPLICIT INT32U OPTIONAL,
+ *     logRef          [5] IMPLICIT ObjectReference OPTIONAL,
+ *     optFlds         [6] IMPLICIT LCBOptFlds OPTIONAL,
+ *     bufTm           [7] IMPLICIT INT32U OPTIONAL
+ * } — 8.8.3
+ * }
+ * </pre>
  */
 public class CmsSetLcbEntry extends CmsSequence {
 

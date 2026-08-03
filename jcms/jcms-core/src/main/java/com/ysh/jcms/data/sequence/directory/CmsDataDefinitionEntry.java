@@ -10,10 +10,17 @@ import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * DataDefinitionEntry ::= SEQUENCE { reference [0] IMPLICIT SubReference,
- * cdcType [1] IMPLICIT VisibleString OPTIONAL, definition [2] IMPLICIT
- * DataDefinition } — 8.3.5
+ * <pre>
+ * {@code
+ * DataDefinitionEntry ::= SEQUENCE {
+ *     reference     [0] IMPLICIT SubReference,
+ *     cdcType       [1] IMPLICIT VisibleString OPTIONAL,
+ *     definition    [2] IMPLICIT DataDefinition
+ * } — 8.3.5
+ * }
+ * </pre>
  *
+ * <p>
  * Backed by {@link InnerAnonymousGetAllDataDefinitionResponsePDUData}.
  */
 public class CmsDataDefinitionEntry extends CmsSequence {

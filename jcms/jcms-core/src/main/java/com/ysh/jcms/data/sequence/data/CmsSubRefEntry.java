@@ -8,11 +8,14 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 
 /**
- * (inline type within GetDataDirectory-ResponsePDU ::= SEQUENCE {)<br>
+ * <pre>
  * {@code
+ * SEQUENCE {
  *     reference     [0] IMPLICIT SubReference,
  *     fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
+ * } — SEQUENCE OF element — inline within GetDataDirectory-ResponsePDU
  * }
+ * </pre>
  *
  * <p>
  * Used by GetDataDirectory Response (SEQUENCE OF SubRefEntry).

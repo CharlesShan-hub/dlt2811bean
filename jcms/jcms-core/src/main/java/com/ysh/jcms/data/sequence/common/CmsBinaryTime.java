@@ -9,7 +9,11 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import java.nio.ByteBuffer;
 
 /**
+ * <pre>
+ * {@code
  * BinaryTime ::= OCTET STRING (SIZE(6)) — 7.2.2
+ * }
+ * </pre>
  */
 public class CmsBinaryTime extends CmsType {
 

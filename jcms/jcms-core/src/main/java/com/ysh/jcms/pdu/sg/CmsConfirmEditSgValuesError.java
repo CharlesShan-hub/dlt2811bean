@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerConfirmEditSGValuesErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * ConfirmEditSGValues-ErrorPDU ::= ServiceError — 8.6.4
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

@@ -11,10 +11,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CreateDataSet-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
- * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL,
- * memberData [2] IMPLICIT SEQUENCE OF SEQUENCE { reference [0] IMPLICIT
- * ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.5.3
+ * <pre>
+ * {@code
+ * CreateDataSet-RequestPDU ::= SEQUENCE {
+ *     datasetReference    [0] IMPLICIT ObjectReference,
+ *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL,
+ *     memberData          [2] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference       [0] IMPLICIT ObjectReference,
+ *         fc              [1] IMPLICIT FunctionalConstraint
+ *     }
+ * } — 8.5.3
+ * }
+ * </pre>
  */
 public class CmsCreateDataSetRequest extends CmsSequence {
 

@@ -10,6 +10,22 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
 import com.ysh.jcms.data.scalar.CmsString;
 
+/**
+ * <pre>
+ * {@code
+ * MSVCB ::= SEQUENCE {
+ *     svEna           [1] IMPLICIT BOOLEAN,
+ *     msvID           [2] IMPLICIT VisibleString129,
+ *     datSet          [3] IMPLICIT ObjectReference,
+ *     confRev         [4] IMPLICIT INT32U,
+ *     smpMod          [5] IMPLICIT SmpMod OPTIONAL,
+ *     smpRate         [6] IMPLICIT INT16U,
+ *     optFlds         [7] IMPLICIT MSVCBOptFlds,
+ *     dstAddress      [8] IMPLICIT PHYCOMADDR OPTIONAL
+ * } — 8.10.2
+ * }
+ * </pre>
+ */
 public class CmsMsvcb extends CmsSequence {
     @CmsField
     public CmsBoolean svEna;

@@ -14,10 +14,19 @@ import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
- * Operate-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference,
- * ctlVal [1] IMPLICIT Data, origin [3] IMPLICIT Originator, ctlNum [4] IMPLICIT
- * Int8U, t [5] IMPLICIT TimeStamp, test [6] IMPLICIT Boolean, check [7]
- * IMPLICIT Check } — 8.11.3
+ * <pre>
+ * {@code
+ * Operate-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference,
+ *     ctlVal          [1] IMPLICIT Data,
+ *     origin          [3] IMPLICIT Originator,
+ *     ctlNum          [4] IMPLICIT INT8U,
+ *     t               [5] IMPLICIT TimeStamp,
+ *     test            [6] IMPLICIT BOOLEAN,
+ *     check           [7] IMPLICIT Check
+ * } — 8.11.3
+ * }
+ * </pre>
  */
 public class CmsOperateRequest extends CmsSequence {
 

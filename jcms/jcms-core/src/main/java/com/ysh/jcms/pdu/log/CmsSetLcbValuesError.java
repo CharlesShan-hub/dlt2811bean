@@ -9,8 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetLCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF SEQUENCE
- * { error, logEna, datSet, trgOps, intgPd, logRef, optFlds, bufTm } } — 8.8.3
+ * <pre>
+ * {@code
+ * SetLCBValues-ErrorPDU ::= SEQUENCE {
+ *     result          [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         error       [0] IMPLICIT ServiceError OPTIONAL,
+ *         logEna      [1] IMPLICIT ServiceError OPTIONAL,
+ *         datSet      [2] IMPLICIT ServiceError OPTIONAL,
+ *         trgOps      [3] IMPLICIT ServiceError OPTIONAL,
+ *         intgPd      [4] IMPLICIT ServiceError OPTIONAL,
+ *         logRef      [5] IMPLICIT ServiceError OPTIONAL,
+ *         optFlds     [6] IMPLICIT ServiceError OPTIONAL,
+ *         bufTm       [7] IMPLICIT ServiceError OPTIONAL
+ *     }
+ * } — 8.8.3
+ * }
+ * </pre>
  */
 public class CmsSetLcbValuesError extends CmsSequence {
 

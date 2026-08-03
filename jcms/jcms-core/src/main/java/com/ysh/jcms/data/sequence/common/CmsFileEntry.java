@@ -7,8 +7,17 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * FileEntry ::= SEQUENCE { fileName, fileSize, lastModified, checkSum } —
- * 7.3.10
+ * <pre>
+ * {@code
+ * FileEntry ::= SEQUENCE {
+ *     fileName       [0] IMPLICIT VisibleString129,
+ *     fileSize       [1] IMPLICIT INT32U,
+ *     lastModified   [2] IMPLICIT UtcTime,
+ *     checkSum       [3] IMPLICIT INT32U
+ * } — 7.3.10
+ * }
+ * </pre>
+ *
  * <p>
  * Wraps {@link InnerFileEntry} for PER encode/decode via Rust.
  */

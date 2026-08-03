@@ -10,9 +10,18 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 
 /**
- * GetLogicalNodeDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, reference [0]
- * IMPLICIT ReferenceChoice, acsiClass [1] IMPLICIT ACSIClass, referenceAfter
- * [2] IMPLICIT ObjectReference OPTIONAL } — 8.3.3
+ * <pre>
+ * {@code
+ * GetLogicalNodeDirectory-RequestPDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT CHOICE {
+ *         ldName        [0] IMPLICIT ObjectName,
+ *         lnReference   [1] IMPLICIT ObjectReference
+ *     },
+ *     acsiClass       [1] IMPLICIT ACSIClass,
+ *     referenceAfter  [2] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.3.3
+ * }
+ * </pre>
  */
 public class CmsGetLogicalNodeDirectoryRequest extends CmsSequence {
 

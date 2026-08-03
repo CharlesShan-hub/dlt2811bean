@@ -8,8 +8,13 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * Operate-ResponsePDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference } —
- * 8.11.3
+ * <pre>
+ * {@code
+ * Operate-ResponsePDU ::= SEQUENCE {
+ *     reference       [0] IMPLICIT ObjectReference
+ * } — 8.11.3
+ * }
+ * </pre>
  */
 public class CmsOperateResponse extends CmsSequence {
 

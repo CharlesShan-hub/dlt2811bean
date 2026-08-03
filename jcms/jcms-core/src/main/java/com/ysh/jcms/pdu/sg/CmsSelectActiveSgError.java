@@ -4,7 +4,11 @@ import com.ysh.jcms.data.InnerSelectActiveSGErrorPDU;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
+ * <pre>
+ * {@code
  * SelectActiveSG-ErrorPDU ::= ServiceError — 8.6.1
+ * }
+ * </pre>
  *
  * <p>
  * Type alias, not a SEQUENCE.

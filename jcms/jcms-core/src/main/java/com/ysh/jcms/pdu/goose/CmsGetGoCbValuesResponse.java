@@ -10,9 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoCbValues-ResponsePDU ::= SEQUENCE { gocb [0] IMPLICIT SEQUENCE OF CHOICE
- * { error [0] IMPLICIT ServiceError, value [1] IMPLICIT GoCB }, moreFollows [1]
- * IMPLICIT Boolean DEFAULT 1 } — 8.9.4
+ * <pre>
+ * {@code
+ * GetGoCbValues-ResponsePDU ::= SEQUENCE {
+ *     gocb            [0] IMPLICIT SEQUENCE OF CHOICE {
+ *         error       [0] IMPLICIT ServiceError,
+ *         value       [1] IMPLICIT GoCB
+ *     },
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.9.4
+ * }
+ * </pre>
  */
 public class CmsGetGoCbValuesResponse extends CmsSequence {
 

@@ -9,9 +9,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetLCBValues-RequestPDU ::= SEQUENCE { lcb [0] IMPLICIT SEQUENCE OF SEQUENCE
- * { reference, logEna, datSet, trgOps, intgPd, logRef, optFlds, bufTm } } —
- * 8.8.3
+ * <pre>
+ * {@code
+ * SetLCBValues-RequestPDU ::= SEQUENCE {
+ *     lcb             [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference   [0] IMPLICIT ObjectReference,
+ *         logEna      [1] IMPLICIT BOOLEAN OPTIONAL,
+ *         datSet      [2] IMPLICIT ObjectReference OPTIONAL,
+ *         trgOps      [3] IMPLICIT TriggerConditions OPTIONAL,
+ *         intgPd      [4] IMPLICIT INT32U OPTIONAL,
+ *         logRef      [5] IMPLICIT ObjectReference OPTIONAL,
+ *         optFlds     [6] IMPLICIT LCBOptFlds OPTIONAL,
+ *         bufTm       [7] IMPLICIT INT32U OPTIONAL
+ *     }
+ * } — 8.8.3
+ * }
+ * </pre>
  */
 public class CmsSetLcbValuesRequest extends CmsSequence {
 

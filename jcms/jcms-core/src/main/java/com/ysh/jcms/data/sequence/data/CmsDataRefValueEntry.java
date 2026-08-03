@@ -9,12 +9,15 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline type within SetDataValues-RequestPDU ::= SEQUENCE {)<br>
+ * <pre>
  * {@code
+ * SEQUENCE {
  *     reference     [0] IMPLICIT ObjectReference,
  *     fc            [1] IMPLICIT FunctionalConstraint OPTIONAL,
  *     value         [2] IMPLICIT Data
+ * } — SEQUENCE OF element — inline within SetDataValues-RequestPDU
  * }
+ * </pre>
  *
  * <p>
  * Used by SetDataValues Request.

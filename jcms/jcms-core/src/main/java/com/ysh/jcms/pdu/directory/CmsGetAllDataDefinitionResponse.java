@@ -10,9 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetAllDataDefinition-ResponsePDU ::= SEQUENCE { reqId Int16U, data [0]
- * IMPLICIT SEQUENCE OF DataDefinitionEntry, moreFollows [1] IMPLICIT BOOLEAN
- * DEFAULT TRUE } — 8.3.5
+ * <pre>
+ * {@code
+ * GetAllDataDefinition-ResponsePDU ::= SEQUENCE {
+ *     data             [0] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         reference     [0] IMPLICIT SubReference,
+ *         cdcType       [1] IMPLICIT VisibleString OPTIONAL,
+ *         definition    [2] IMPLICIT DataDefinition
+ *     },
+ *     moreFollows      [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.5
+ * }
+ * </pre>
  */
 public class CmsGetAllDataDefinitionResponse extends CmsSequence {
 

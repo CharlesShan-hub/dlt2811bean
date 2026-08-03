@@ -9,9 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLogicalDeviceDirectory-ResponsePDU ::= SEQUENCE { reqId Int16U,
- * lnReference [0] IMPLICIT SEQUENCE OF SubReference, moreFollows [1] IMPLICIT
- * BOOLEAN DEFAULT TRUE } — 8.3.2
+ * <pre>
+ * {@code
+ * GetLogicalDeviceDirectory-ResponsePDU ::= SEQUENCE {
+ *     lnReference       [0] IMPLICIT SEQUENCE OF SubReference,
+ *     moreFollows       [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.3.2
+ * }
+ * </pre>
  */
 public class CmsGetLogicalDeviceDirectoryResponse extends CmsSequence {
 

@@ -9,9 +9,14 @@ import com.ysh.jcms.data.scalar.CmsObjectName;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GetLogicalDeviceDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, ldName [0]
- * IMPLICIT ObjectName OPTIONAL, referenceAfter [1] IMPLICIT ObjectReference
- * OPTIONAL } — 8.3.2
+ * <pre>
+ * {@code
+ * GetLogicalDeviceDirectory-RequestPDU ::= SEQUENCE {
+ *     ldName            [0] IMPLICIT ObjectName OPTIONAL,
+ *     referenceAfter    [1] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.3.2
+ * }
+ * </pre>
  */
 public class CmsGetLogicalDeviceDirectoryRequest extends CmsSequence {
 

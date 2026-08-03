@@ -7,8 +7,14 @@ import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.scalar.CmsOctetString;
 
 /**
- * GetFile-ResponsePDU ::= SEQUENCE { fileData [0] IMPLICIT OCTET STRING,
- * endOfFile [1] IMPLICIT Boolean DEFAULT 0 } — 8.12.1
+ * <pre>
+ * {@code
+ * GetFile-ResponsePDU ::= SEQUENCE {
+ *     fileData        [0] IMPLICIT OCTET STRING,
+ *     endOfFile       [1] IMPLICIT BOOLEAN DEFAULT FALSE
+ * } — 8.12.1
+ * }
+ * </pre>
  */
 public class CmsGetFileResponse extends CmsSequence {
 

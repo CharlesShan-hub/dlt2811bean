@@ -10,8 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLCBValues-ResponsePDU ::= SEQUENCE { lcb [0] IMPLICIT SEQUENCE OF
- * LCBValue, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.8.2
+ * <pre>
+ * {@code
+ * GetLCBValues-ResponsePDU ::= SEQUENCE {
+ *     lcb             [0] IMPLICIT SEQUENCE OF CHOICE {
+ *         error       [0] IMPLICIT ServiceError,
+ *         value       [1] IMPLICIT LCB
+ *     },
+ *     moreFollows     [1] IMPLICIT BOOLEAN DEFAULT TRUE
+ * } — 8.8.2
+ * }
+ * </pre>
  */
 public class CmsGetLcbValuesResponse extends CmsSequence {
 

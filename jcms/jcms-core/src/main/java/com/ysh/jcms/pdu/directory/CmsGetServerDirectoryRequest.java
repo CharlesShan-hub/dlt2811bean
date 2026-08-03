@@ -8,9 +8,18 @@ import com.ysh.jcms.data.InnerGetServerDirectoryRequestPDU;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GetServerDirectory-RequestPDU ::= SEQUENCE { reqId Int16U, objectClass [0]
- * IMPLICIT ObjectClass, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL }
- * — 8.3.1
+ * <pre>
+ * {@code
+ * GetServerDirectory-RequestPDU ::= SEQUENCE {
+ *     objectClass      [0] IMPLICIT INTEGER {
+ *         reserved        (0),
+ *         logical-device  (1),
+ *         file-system     (2)
+ *     } (0..2),
+ *     referenceAfter   [1] IMPLICIT ObjectReference OPTIONAL
+ * } — 8.3.1
+ * }
+ * </pre>
  */
 public class CmsGetServerDirectoryRequest extends CmsSequence {
 

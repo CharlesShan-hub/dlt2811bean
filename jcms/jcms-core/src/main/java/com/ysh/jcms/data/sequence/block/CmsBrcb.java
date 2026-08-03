@@ -12,6 +12,29 @@ import com.ysh.jcms.data.scalar.CmsOctetString;
 import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 
+/**
+ * <pre>
+ * {@code
+ * BRCB ::= SEQUENCE {
+ *     rptID           [1] IMPLICIT VisibleString129,
+ *     rptEna          [2] IMPLICIT BOOLEAN,
+ *     datSet          [3] IMPLICIT ObjectReference,
+ *     confRev         [4] IMPLICIT INT32U,
+ *     optFlds         [5] IMPLICIT RCBOptFlds,
+ *     bufTm           [6] IMPLICIT INT32U,
+ *     sqNum           [7] IMPLICIT INT16U,
+ *     trgOps          [8] IMPLICIT TriggerConditions,
+ *     intgPd          [9] IMPLICIT INT32U,
+ *     gi              [10] IMPLICIT BOOLEAN,
+ *     purgeBuf        [11] IMPLICIT BOOLEAN,
+ *     entryID         [12] IMPLICIT EntryID,
+ *     timeOfEntry     [13] IMPLICIT EntryTime,
+ *     resvTms         [14] IMPLICIT INT16 OPTIONAL,
+ *     owner           [15] IMPLICIT OCTET STRING (SIZE (0..64)) OPTIONAL
+ * } — 8.7.2
+ * }
+ * </pre>
+ */
 public class CmsBrcb extends CmsSequence {
     @CmsField
     public CmsString rptID;

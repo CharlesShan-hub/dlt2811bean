@@ -8,9 +8,18 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1] IMPLICIT
- * FunctionalConstraint } — used by CreateDataSet Request memberData and
- * GetDataSetDirectory Response memberData.
+ * <pre>
+ * {@code
+ * SEQUENCE {
+ *     reference     [0] IMPLICIT ObjectReference,
+ *     fc            [1] IMPLICIT FunctionalConstraint
+ * } — SEQUENCE OF element — inline within CreateDataSet-RequestPDU / GetDataSetDirectory-ResponsePDU
+ * }
+ * </pre>
+ *
+ * <p>
+ * Used by CreateDataSet Request memberData and GetDataSetDirectory Response
+ * memberData.
  */
 public class CmsDataRefFcEntry extends CmsSequence {
 
