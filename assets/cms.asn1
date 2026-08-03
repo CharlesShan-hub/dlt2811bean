@@ -603,7 +603,7 @@ ACSIClass ::= INTEGER {
     urcb           (4),
     lcb            (5),
     log            (6),
-    sgecb          (7),
+    sgcb           (7),
     gocb           (8),
     msvcb          (10)
 } (0..10)
@@ -692,7 +692,7 @@ GetAllCBValues-ResponsePDU ::= SEQUENCE {
             brcb        [0] IMPLICIT BRCB,
             urcb        [1] IMPLICIT URCB,
             lcb         [2] IMPLICIT LCB,
-            sgecb       [3] IMPLICIT SGECB,
+            sgcb        [3] IMPLICIT SGCB,
             gocb        [4] IMPLICIT GOCB,
             msvcb       [5] IMPLICIT MSVCB
         }

@@ -16,7 +16,7 @@ import com.ysh.jcms.data.sequence.block.CmsUrcb;
  *     brcb  [0] IMPLICIT BRCB,
  *     urcb  [1] IMPLICIT URCB,
  *     lcb   [2] IMPLICIT LCB,
- *     sgecb [3] IMPLICIT SGECB,
+ *     sgcb  [3] IMPLICIT SGCB,
  *     gocb  [4] IMPLICIT GOCB,
  *     msvcb [5] IMPLICIT MSVCB
  * } — 8.3.6
@@ -28,7 +28,7 @@ public class CmsCbValueChoice extends CmsChoice {
     public static final int BRCB = 0;
     public static final int URCB = 1;
     public static final int LCB = 2;
-    public static final int SGECB = 3;
+    public static final int SGCB = 3;
     public static final int GOCB = 4;
     public static final int MSVCB = 5;
 
@@ -38,8 +38,8 @@ public class CmsCbValueChoice extends CmsChoice {
     public CmsUrcb altUrcb;
     @Choice(index = 2, name = "lcb", sync = Sync.WRAPPER, innerField = "lcb")
     public CmsLcb altLcb;
-    @Choice(index = 3, name = "sgecb", sync = Sync.WRAPPER, innerField = "sgcb")
-    public CmsSgcb altSgecb;
+    @Choice(index = 3, name = "sgcb", sync = Sync.WRAPPER, innerField = "sgcb")
+    public CmsSgcb altSgcb;
     @Choice(index = 4, name = "gocb", sync = Sync.WRAPPER, innerField = "gocb")
     public CmsGoCb altGocb;
     @Choice(index = 5, name = "msvcb", sync = Sync.WRAPPER, innerField = "msvcb")
@@ -70,9 +70,9 @@ public class CmsCbValueChoice extends CmsChoice {
         this.altLcb.value(v);
         return this;
     }
-    public CmsCbValueChoice altSgecb(CmsSgcb v) {
-        choice(SGECB);
-        this.altSgecb.value(v);
+    public CmsCbValueChoice altSgcb(CmsSgcb v) {
+        choice(SGCB);
+        this.altSgcb.value(v);
         return this;
     }
     public CmsCbValueChoice altGocb(CmsGoCb v) {
@@ -95,8 +95,8 @@ public class CmsCbValueChoice extends CmsChoice {
                 return altUrcb(v.altUrcb);
             case LCB :
                 return altLcb(v.altLcb);
-            case SGECB :
-                return altSgecb(v.altSgecb);
+            case SGCB :
+                return altSgcb(v.altSgcb);
             case GOCB :
                 return altGocb(v.altGocb);
             case MSVCB :

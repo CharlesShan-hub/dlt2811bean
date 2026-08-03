@@ -13,7 +13,7 @@ public class AllCbValuesDao {
     private String ldName;
     /** lnReference (e.g. "LD0/LLN0") — alternative to ldName */
     private String lnReference;
-    /** ACSI class (e.g. 3=BRCB, 4=URCB, 5=LCB, 7=SGECB, 8=GOCB, 10=MSVCB) */
+    /** ACSI class (e.g. 3=BRCB, 4=URCB, 5=LCB, 7=SGCB, 8=GOCB, 10=MSVCB) */
     private int acsiClass;
     /** Optional pagination: return items after this reference */
     private String referenceAfter;

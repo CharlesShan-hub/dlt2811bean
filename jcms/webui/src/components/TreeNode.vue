@@ -12,7 +12,18 @@
       </span>
       <span class="node-label" :class="labelClass">{{ node.label }}</span>
       <span v-if="node.type === 'ld'" class="node-type">LD</span>
-      <span v-else-if="node.type === 'ln'" class="node-type">LN</span>
+      <!-- LN：右侧 9 个 ACSI 分类圆点，点哪个加载哪个 -->
+      <span v-else-if="node.type === 'ln'" class="acsi-dots">
+        <span
+          v-for="d in ACSI_DEFS"
+          :key="d.key"
+          class="acsi-dot"
+          :class="{ on: isAcsiOn(d.key) }"
+          :style="{ background: d.color }"
+          :title="d.label"
+          @click.stop="onAcsiClick(d.key)"
+        ></span>
+      </span>
     </div>
     <div v-if="node.expanded && node.children" class="node-children">
       <TreeNode
@@ -28,13 +39,14 @@
 
 <script setup>
 import { computed } from 'vue'
+import { ACSI_DEFS } from '../acsiDefs.js'
 
 const props = defineProps({
   node: Object,
   depth: { type: Number, default: 0 },
 })
 
-const emit = defineEmits(['toggle'])
+const emit = defineEmits(['toggle', 'toggle-acsi'])
 
 const isLeaf = props.node.isLeaf
 
@@ -48,6 +60,16 @@ const labelClass = computed(() => {
 
 function handleClick() {
   emit('toggle', props.node)
+}
+
+/** ACSI 分类是否已展开（圆点高亮） */
+function isAcsiOn(acsi) {
+  const c = (props.node.children || []).find((c) => c.acsi === acsi)
+  return !!(c && c.expanded)
+}
+
+function onAcsiClick(acsi) {
+  emit('toggle-acsi', { node: props.node, acsi })
 }
 </script>
 
@@ -129,5 +151,34 @@ function handleClick() {
   margin-left: auto;
   flex-shrink: 0;
   line-height: 1.6;
+}
+
+/* ── LN 的 9 个 ACSI 分类圆点 ── */
+.acsi-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.acsi-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.35;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.acsi-dot:hover {
+  opacity: 0.95;
+  transform: scale(1.25);
+}
+
+.acsi-dot.on {
+  opacity: 1;
+  box-shadow: 0 0 6px currentColor;
 }
 </style>

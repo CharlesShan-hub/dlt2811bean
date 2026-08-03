@@ -20,7 +20,7 @@ public class LnDirConsole implements CommandHandler {
         ACSI_MAP.put("gocb", CmsAcsiClass.GOCB);
         ACSI_MAP.put("msvcb", CmsAcsiClass.MSVCB);
         ACSI_MAP.put("log", CmsAcsiClass.LOG);
-        ACSI_MAP.put("sgecb", CmsAcsiClass.SGECB);
+        ACSI_MAP.put("sgcb", CmsAcsiClass.SGCB);
         // integer strings
         ACSI_MAP.put("1", CmsAcsiClass.DATA_OBJECT);
         ACSI_MAP.put("2", CmsAcsiClass.DATA_SET);
@@ -28,7 +28,7 @@ public class LnDirConsole implements CommandHandler {
         ACSI_MAP.put("4", CmsAcsiClass.URCB);
         ACSI_MAP.put("5", CmsAcsiClass.LCB);
         ACSI_MAP.put("6", CmsAcsiClass.LOG);
-        ACSI_MAP.put("7", CmsAcsiClass.SGECB);
+        ACSI_MAP.put("7", CmsAcsiClass.SGCB);
         ACSI_MAP.put("8", CmsAcsiClass.GOCB);
         ACSI_MAP.put("10", CmsAcsiClass.MSVCB);
     }
@@ -47,7 +47,7 @@ public class LnDirConsole implements CommandHandler {
     public List<Param> params() {
         return Arrays.asList(
                 new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LTSM1）", null), new Param("acsi",
-                        "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)", "data-object"),
+                        "ACSI 类：data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)", "data-object"),
                 new Param("after", "起始引用（分页截取）", ""), new Param("json", "JSON 格式输出", ""));
     }
 
@@ -66,7 +66,7 @@ public class LnDirConsole implements CommandHandler {
                 CmsConsole.jsonError("Unknown ACSI class: " + args.get("acsi"));
             } else {
                 ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi")
-                        + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), gocb(8), msvcb(10)");
+                        + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)");
             }
             return;
         }

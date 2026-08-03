@@ -19,7 +19,7 @@ import java.util.List;
  *             brcb        [0] IMPLICIT BRCB,
  *             urcb        [1] IMPLICIT URCB,
  *             lcb         [2] IMPLICIT LCB,
- *             sgecb       [3] IMPLICIT SGECB,
+ *             sgcb        [3] IMPLICIT SGCB,
  *             gocb        [4] IMPLICIT GOCB,
  *             msvcb       [5] IMPLICIT MSVCB
  *         }

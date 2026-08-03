@@ -197,6 +197,6 @@ public class AllCbValuesServer extends BaseServerHandler {
 
     private static boolean isValidAcsiClass(int acsiClass) {
         return acsiClass == CmsAcsiClass.BRCB || acsiClass == CmsAcsiClass.URCB || acsiClass == CmsAcsiClass.LCB
-                || acsiClass == CmsAcsiClass.SGECB || acsiClass == CmsAcsiClass.GOCB || acsiClass == CmsAcsiClass.MSVCB;
+                || acsiClass == CmsAcsiClass.SGCB || acsiClass == CmsAcsiClass.GOCB || acsiClass == CmsAcsiClass.MSVCB;
     }
 }

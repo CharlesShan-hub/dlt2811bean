@@ -1,6 +1,6 @@
 # scan-sg.ps1 — 扫描 all APs，检测定值组 (SG) 并验证是否有真实定值数据
 #
-# 对每个有 SGECB 的 AP，会进一步尝试 select-edit-sg + get-edit-sg，
+# 对每个有 SGCB 的 AP，会进一步尝试 select-edit-sg + get-edit-sg，
 # 确认 LN 里是否真的有可读写的定值数据。
 #
 # 用法:
@@ -49,7 +49,7 @@ function Parse-ListEntries($text) {
 function Parse-SgcbRefs($text) {
     $result = @()
     foreach ($line in ($text -split "`n")) {
-        if ($line -match '\[\d+\]\s+(\S+)\s+\[SGECB\]') {
+        if ($line -match '\[\d+\]\s+(\S+)\s+\[SGCB\]') {
             $result += $matches[1].Trim()
         }
     }
@@ -141,11 +141,11 @@ for ($i = 0; $i -lt $total; $i++) {
     $entries = Parse-ListEntries $sd
     $ldsToTry = if ($entries.Count -gt 0) { $entries + $ldCandidates | Select-Object -Unique } else { $ldCandidates }
 
-    # 找 SGECB
+    # 找 SGCB
     $sgRefs = @()
     $sgLDs = @()
     foreach ($ld in $ldsToTry) {
-        $cb = Invoke-Cms "all-cb --ln $ld --acsi sgecb"
+        $cb = Invoke-Cms "all-cb --ln $ld --acsi sgcb"
         $refs = Parse-SgcbRefs $cb
         if ($refs.Count -gt 0) {
             $sgRefs += $refs
@@ -161,7 +161,7 @@ for ($i = 0; $i -lt $total; $i++) {
 
     $sgFound++
     $sampleRef = Pick-TestRef $sgRefs $sgLDs
-    Write-Host "  $($sgLDs -join ',') | $($sgRefs.Count) SGECB | 测试: $sampleRef" -ForegroundColor Gray
+    Write-Host "  $($sgLDs -join ',') | $($sgRefs.Count) SGCB | 测试: $sampleRef" -ForegroundColor Gray
 
     # ─── 测试运行时编辑缓冲区（set-edit-sg + get-edit-sg）───
     $hasRealData = $false
@@ -216,7 +216,7 @@ Write-Host "=============================================" -ForegroundColor Cyan
 Write-Host "AP 过滤前缀: $prefix" -ForegroundColor Gray
 Write-Host "扫描范围: #$($skip+1) ~ #$($total+$skip)" -ForegroundColor Gray
 Write-Host "扫描耗时: $elapsedStr" -ForegroundColor Gray
-Write-Host "总 AP: $total | 已连接: $connected | 有 SGECB: $sgFound | 有真实定值: $sgWithRealData" -ForegroundColor Cyan
+Write-Host "总 AP: $total | 已连接: $connected | 有 SGCB: $sgFound | 有真实定值: $sgWithRealData" -ForegroundColor Cyan
 
 if ($results.Count -gt 0) {
     Write-Host "`n----------------- 完整结果 -----------------" -ForegroundColor Cyan
@@ -233,10 +233,10 @@ if ($results.Count -gt 0) {
             @{N='详情';E={$_.Detail}} -AutoSize
     }
 
-    # 只有 SGECB 没有真实数据的
+    # 只有 SGCB 没有真实数据的
     $empty = $results | Where-Object { -not $_.HasRealData }
     if ($empty.Count -gt 0) {
-        Write-Host "`n>>> 仅有 SGECB 框架 (无定值数据) ($($empty.Count) 个):" -ForegroundColor DarkYellow
+        Write-Host "`n>>> 仅有 SGCB 框架 (无定值数据) ($($empty.Count) 个):" -ForegroundColor DarkYellow
         $empty | Format-Table -Property @{N='AP';E={$_.AP};width=22},
             @{N='LD';E={$_.LDs};width=14},
             @{N='SG数';E={$_.SGCount};width=6},

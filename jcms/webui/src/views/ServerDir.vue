@@ -9,6 +9,7 @@
           :key="ld.name"
           :node="ld"
           @toggle="onToggle"
+          @toggle-acsi="onToggleAcsi"
         />
       </div>
     </div>
@@ -76,6 +77,7 @@ import { ref, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
 import { ldCache, refreshLds } from '../ldCache.js'
+import { ACSI_DEFS } from '../acsiDefs.js'
 
 const props = defineProps({
   connected: Boolean,
@@ -222,13 +224,8 @@ async function onToggle(node) {
         }))
       }
     } else if (node.type === 'ln') {
-      const lnRef = node.name  // e.g. "LD0/LLN0"
-      node.children = [
-        { name: `${lnRef}/data-object`, type: 'acsi-cat', label: 'Data Objects', acsi: 'data-object', lnRef, children: null, loading: false, expanded: false },
-        { name: `${lnRef}/data-set`, type: 'acsi-cat', label: 'Data Sets', acsi: 'data-set', lnRef, children: null, loading: false, expanded: false },
-        { name: `${lnRef}/brcb`, type: 'acsi-cat', label: 'BRCB', acsi: 'brcb', lnRef, children: null, loading: false, expanded: false },
-        { name: `${lnRef}/urcb`, type: 'acsi-cat', label: 'URCB', acsi: 'urcb', lnRef, children: null, loading: false, expanded: false },
-      ]
+      // LN 内容由右侧 9 个 ACSI 圆点驱动，行点击仅折叠/展开已加载的分类
+      node.children = node.children || []
     } else if (node.type === 'acsi-cat') {
       const res = await executeJson(`ln-dir --ln ${node.lnRef} --acsi ${node.acsi} --json`)
       if (res.success) {
@@ -250,6 +247,29 @@ async function onToggle(node) {
   } finally {
     node.loading = false
   }
+}
+
+/** LN 行上的 ACSI 圆点：点击展开/收起对应分类（懒加载 ln-dir --acsi）。 */
+async function onToggleAcsi({ node, acsi }) {
+  let cat = (node.children || []).find((c) => c.acsi === acsi)
+  if (cat) {
+    cat.expanded = !cat.expanded
+    return
+  }
+  const def = ACSI_DEFS.find((d) => d.key === acsi)
+  cat = {
+    name: `${node.name}/${acsi}`,
+    type: 'acsi-cat',
+    label: def ? def.label : acsi,
+    acsi,
+    lnRef: node.name,
+    children: null,
+    loading: false,
+    expanded: true,
+  }
+  if (!node.children) node.children = []
+  node.children.push(cat)
+  await onToggle(cat)
 }
 
 function buildDoRef(name) {

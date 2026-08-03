@@ -14,7 +14,7 @@ import com.ysh.jcms.data.InnerACSIClass;
  *     urcb       (4),
  *     lcb        (5),
  *     log        (6),
- *     sgecb      (7),
+ *     sgcb       (7),
  *     gocb       (8),
  *     msvcb      (10)
  * } (0..10) — 8.3.3
@@ -34,7 +34,7 @@ public class CmsAcsiClass extends CmsEnum<CmsAcsiClass> {
     public static final int URCB = 4;
     public static final int LCB = 5;
     public static final int LOG = 6;
-    public static final int SGECB = 7;
+    public static final int SGCB = 7;
     public static final int GOCB = 8;
     public static final int MSVCB = 10;
 

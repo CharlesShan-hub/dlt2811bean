@@ -18,7 +18,7 @@ public class AllCbValuesConsole implements CommandHandler {
         ACSI_MAP.put("brcb", 3);
         ACSI_MAP.put("urcb", 4);
         ACSI_MAP.put("lcb", 5);
-        ACSI_MAP.put("sgecb", 7);
+        ACSI_MAP.put("sgcb", 7);
         ACSI_MAP.put("gocb", 8);
         ACSI_MAP.put("msvcb", 10);
         // numeric aliases
@@ -30,7 +30,7 @@ public class AllCbValuesConsole implements CommandHandler {
         ACSI_MAP.put("10", 10);
     }
 
-    private static final String[] CB_TYPE_NAMES = {"BRCB", "URCB", "LCB", "SGECB", "GOCB", "MSVCB"};
+    private static final String[] CB_TYPE_NAMES = {"BRCB", "URCB", "LCB", "SGCB", "GOCB", "MSVCB"};
 
     @Override
     public String name() {
@@ -45,7 +45,7 @@ public class AllCbValuesConsole implements CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
-                new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgecb/gocb/msvcb 或数字", null), new Param("after", "起始引用（分页截取）", ""),
+                new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgcb/gocb/msvcb 或数字", null), new Param("after", "起始引用（分页截取）", ""),
                 new Param("json", "JSON 格式输出", ""));
     }
 
@@ -67,7 +67,7 @@ public class AllCbValuesConsole implements CommandHandler {
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid acsiClass: " + CmsFormatUtil.escapeJson(acsiStr) + ".\"}");
             } else {
-                ConsolePrinter.error("Invalid acsiClass: " + acsiStr + ". Valid values: brcb, urcb, lcb, sgecb, gocb, msvcb");
+                ConsolePrinter.error("Invalid acsiClass: " + acsiStr + ". Valid values: brcb, urcb, lcb, sgcb, gocb, msvcb");
             }
             return;
         }
@@ -118,7 +118,7 @@ public class AllCbValuesConsole implements CommandHandler {
             ConsolePrinter.raw(sb.toString());
         } else {
             ConsolePrinter.list("CB values (" + entries.size() + " items)", new java.util.ArrayList<>(entries), e -> {
-                int idx = e.cbType; /* CmsCbValueChoice: 0=BRCB, 1=URCB, 2=LCB, 3=SGECB, 4=GOCB, 5=MSVCB */
+                int idx = e.cbType; /* CmsCbValueChoice: 0=BRCB, 1=URCB, 2=LCB, 3=SGCB, 4=GOCB, 5=MSVCB */
                 String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
                 return e.reference + "  [" + typeName + "]";
             });
