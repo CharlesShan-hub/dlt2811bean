@@ -15,6 +15,11 @@
         <span class="lock">{{ apSecure ? '🔒' : '🔓' }}</span>
         {{ ap || '未关联' }}
       </span>
+      <!-- 终端面板开关（调试窗口） -->
+      <button class="topbar-btn" :class="{ active: terminalOpen }" title="打开/关闭终端" @click="$emit('toggle-terminal')">
+        <span class="tb-icon">⊢</span>
+        <span>终端</span>
+      </button>
     </div>
   </header>
 </template>
@@ -29,7 +34,11 @@ defineProps({
   tls: Boolean,
   /** 关联是否使用应用层安全认证 */
   apSecure: Boolean,
+  /** 底部终端面板是否打开 */
+  terminalOpen: Boolean,
 })
+
+defineEmits(['toggle-terminal'])
 </script>
 
 <style scoped>
@@ -91,4 +100,31 @@ defineProps({
   font-size: 13px;
   line-height: 1;
 }
+
+.topbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.topbar-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.topbar-btn.active {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
 </style>

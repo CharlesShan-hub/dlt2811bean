@@ -45,4 +45,17 @@ defineEmits(['update:modelValue'])
   color: var(--text-muted);
   cursor: not-allowed;
 }
+
+/* number 输入：隐藏浏览器原生白色 spinner（无法换肤），改用键盘上下键调节 */
+.ui-input[type='number']::-webkit-inner-spin-button,
+.ui-input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+}
+
+.ui-input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
 </style>

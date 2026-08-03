@@ -1,10 +1,12 @@
 <template>
-  <div class="terminal-page">
-    <h1 class="page-title">终端</h1>
-    <p class="page-desc">直接输入 CMS 命令，支持 --json 参数</p>
+  <div class="terminal-page" :class="{ embedded }">
+    <template v-if="!embedded">
+      <h1 class="page-title">终端</h1>
+      <p class="page-desc">直接输入 CMS 命令，支持 --json 参数</p>
+    </template>
 
     <div class="terminal-box">
-      <div ref="outputRef" class="terminal-output">
+      <div ref="outputRef" class="terminal-output" @scroll="onScroll">
         <div v-for="(line, i) in output" :key="i" class="line">
           <span class="line-num">{{ i + 1 }}</span>
           <span class="line-text">
@@ -33,11 +35,17 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, watch } from 'vue'
 import { executeCommand } from '../api/cms.js'
+import { terminalLog, clearTerminal } from '../terminalLog.js'
+
+defineProps({
+  /** 嵌入式（底部面板）：隐藏标题头、去掉页面留白 */
+  embedded: Boolean,
+})
 
 const input = ref('')
-const output = ref(['// CMS Console — 输入命令开始'])
+const output = terminalLog
 const outputRef = ref(null)
 const inputRef = ref(null)
 
@@ -98,18 +106,40 @@ async function send() {
   const cmd = input.value.trim()
   if (!cmd) return
 
-  output.value.push(`$ ${cmd}`)
+  // 本地命令：clear/cls 清空屏幕（不发往服务器）
+  if (cmd === 'clear' || cmd === 'cls') {
+    clearTerminal()
+    input.value = ''
+    return
+  }
+
+  output.push(`$ ${cmd}`)
   input.value = ''
 
   const result = await executeCommand(cmd)
   const lines = result.split('\n').filter(l => l.trim())
 
   // trim terminal control sequences (can interfere with ANSI parsing)
-  output.value.push(...lines)
-
-  await nextTick()
-  outputRef.value.scrollTop = outputRef.value.scrollHeight
+  output.push(...lines)
 }
+
+// 贴底跟随：默认用户在底部。上翻离开底部时暂停跟随，滚回底部时恢复。
+// 仅当 follow 为 true 时，新日志到达自动滚到最新。
+const follow = ref(true)
+
+function onScroll() {
+  const el = outputRef.value
+  if (!el) return
+  follow.value = el.scrollHeight - el.scrollTop - el.clientHeight < 8
+}
+
+watch(terminalLog, async () => {
+  if (!follow.value) return
+  const el = outputRef.value
+  if (!el) return
+  await nextTick()
+  el.scrollTop = el.scrollHeight
+})
 </script>
 
 <style scoped>
@@ -118,6 +148,15 @@ async function send() {
   height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.terminal-page.embedded {
+  padding: 0;
+}
+
+.terminal-page.embedded .terminal-box {
+  border: none;
+  border-radius: 0;
 }
 
 .page-title {

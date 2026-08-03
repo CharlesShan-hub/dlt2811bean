@@ -7,7 +7,7 @@
 
     <div class="debug-grid">
       <!-- ── 左栏：参数 ── -->
-      <UiCard title="参数" icon="⚙">
+      <UiCard title="参数" icon="⚙" fill>
         <!-- connect 专属：使用共享连接表单 -->
         <ConnectForm v-if="isConnect" :busy="busy" submit-label="执行 connect" @submit="runCmd" @update:cmd="connectCmd = $event" />
 
@@ -52,7 +52,7 @@
           <pre v-else class="pdu">{{ def.asn1 }}</pre>
         </UiCard>
 
-        <UiCard title="命令与返回" icon="🔄" fill>
+        <UiCard title="命令与返回" icon="🔄">
           <div class="cmd-preview">
             <code class="preview-line">{{ previewCmd }}</code>
             <UiButton variant="ghost" @click="copyCmd">
@@ -86,6 +86,7 @@ import UiSwitch from '../components/ui/UiSwitch.vue'
 import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
+import { pushTerminal } from '../terminalLog.js'
 
 const props = defineProps({
   cmd: String,
@@ -190,22 +191,26 @@ async function run() {
   await runCmd(buildCmd())
 }
 
-/** 执行命令并写入历史（ConnectForm 提交的 connect 命令也走这里）。 */
+/** 执行命令并写入历史（ConnectForm 提交的 connect 命令也走这里），同时回显到共享终端。 */
 async function runCmd(cmdLine) {
   busy.value = true
   try {
     const text = await executeCommand(cmdLine)
+    const clean = text.replace(/\x1b\[\d+m/g, '').trim()
     history.value.unshift({
       cmd: cmdLine,
-      output: text.replace(/\x1b\[\d+m/g, '').trim(),
+      output: clean,
       time: new Date().toLocaleTimeString(),
     })
+    // 终端里保留 ANSI 颜色（由 Terminal.vue 的 parseAnsi 渲染）
+    pushTerminal([`$ ${cmdLine}`, text.trim()])
   } catch (e) {
     history.value.unshift({
       cmd: cmdLine,
       output: String(e),
       time: new Date().toLocaleTimeString(),
     })
+    pushTerminal([`$ ${cmdLine}`, 'ERR ' + e])
   } finally {
     busy.value = false
   }
@@ -243,14 +248,18 @@ async function runCmd(cmdLine) {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.4fr);
+  /* 行高受容器约束，内容超高时由列内滚动条承接 */
+  grid-auto-rows: minmax(0, 1fr);
   gap: 20px;
 }
 
 .col-right {
   min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-right: 6px;
 }
 
 .field {

@@ -54,8 +54,9 @@ import StateDiagram from '../components/StateDiagram.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import UiCollapse from '../components/ui/UiCollapse.vue'
-import { executeJson } from '../api/cms.js'
+import { executeCommand } from '../api/cms.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
+import { pushTerminal } from '../terminalLog.js'
 
 const props = defineProps({
   connected: Boolean,
@@ -126,25 +127,50 @@ const busy = ref(false)
 const message = ref('')
 const msgOk = ref(true)
 
-/** ConnectForm 提交：执行 connect 命令并显示结果。 */
-async function onConnect(cmd) {
+/** 从原始响应中提取 JSON 结果（与 executeJson 同逻辑，避免重复发命令）。 */
+function parseResult(text) {
+  const clean = text.replace(/\x1b\[\d+m/g, '').trim()
+  const jsonStart = clean.indexOf('{')
+  if (jsonStart >= 0) {
+    try {
+      return JSON.parse(clean.slice(jsonStart))
+    } catch {
+      // fall through
+    }
+  }
+  return { success: false, error: clean }
+}
+
+/** 执行命令：返回内容同步推送到终端，结果以 JSON 解析后展示。 */
+async function runSync(cmd) {
   busy.value = true
-  message.value = ''
   try {
-    const res = await executeJson(`${cmd} --json`)
-    msgOk.value = !!res.success
-    message.value = res.success ? (res.message || '连接成功') : (res.error || '连接失败')
+    const text = await executeCommand(cmd)
+    pushTerminal([`$ ${cmd}`, text.trim()])
+    return parseResult(text)
   } catch (e) {
-    msgOk.value = false
-    message.value = String(e)
+    pushTerminal([`$ ${cmd}`, 'ERR ' + e])
+    return { success: false, error: String(e) }
   } finally {
     busy.value = false
   }
 }
 
-async function disconnect() {
-  await executeJson('disconnect --json')
+/** ConnectForm 提交：执行 connect 命令并显示结果。 */
+async function onConnect(cmd) {
   message.value = ''
+  const res = await runSync(`${cmd} --json`)
+  msgOk.value = !!res.success
+  message.value = res.success ? (res.message || '连接成功') : (res.error || '连接失败')
+}
+
+async function disconnect() {
+  message.value = ''
+  const res = await runSync('disconnect --json')
+  if (!res.success) {
+    msgOk.value = false
+    message.value = res.error || '断开失败'
+  }
 }
 </script>
 
@@ -179,6 +205,8 @@ async function disconnect() {
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(340px, 1fr) minmax(400px, 1.3fr);
+  /* 行高受容器约束，内容超高时由列内滚动条承接（否则会溢出被底部终端面板盖住） */
+  grid-auto-rows: minmax(0, 1fr);
   gap: 20px;
 }
 

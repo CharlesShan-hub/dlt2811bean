@@ -1,18 +1,35 @@
 <template>
   <div class="app">
-    <TopBar :tcp-connected="tcpConnected" :ap="associatedAp" :tls="tlsConnected" :ap-secure="apSecure" />
+    <TopBar
+      :tcp-connected="tcpConnected"
+      :ap="associatedAp"
+      :tls="tlsConnected"
+      :ap-secure="apSecure"
+      :terminal-open="showTerminal"
+      @toggle-terminal="showTerminal = !showTerminal"
+    />
     <div class="app-body">
       <Sidebar
         :items="navItems"
         :active="activeView"
         @select="activeView = $event"
       />
-      <main class="main-content">
-        <Dashboard v-if="activeView === 'connect-root'" :connected="connected" :tcp-connected="tcpConnected" />
-        <CommandDebug v-else-if="isCmdView" :cmd="activeView" />
-        <Terminal v-else-if="activeView === 'terminal'" />
-        <ServerDir v-else-if="activeView === 'server-dir'" :connected="connected" />
-      </main>
+      <div class="app-main">
+        <main class="main-content">
+          <Dashboard v-if="activeView === 'connect-root'" :connected="connected" :tcp-connected="tcpConnected" />
+          <CommandDebug v-else-if="isCmdView" :cmd="activeView" />
+          <ServerDir v-else-if="activeView === 'server-dir'" :connected="connected" />
+        </main>
+
+        <!-- 底部终端面板（调试窗口，类似 IDE 的下方面板；v-show 保活，关闭再开内容不丢） -->
+        <div v-show="showTerminal" class="terminal-panel">
+          <div class="terminal-panel-head">
+            <span class="terminal-panel-title">⊢ 终端</span>
+            <button class="terminal-panel-close" title="关闭终端" @click="showTerminal = false">✕</button>
+          </div>
+          <Terminal embedded class="terminal-panel-body" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +51,7 @@ const tcpConnected = ref(false)
 const associatedAp = ref('')
 const tlsConnected = ref(false)
 const apSecure = ref(false)
+const showTerminal = ref(false)
 
 const navItems = [
   {
@@ -42,7 +60,6 @@ const navItems = [
     icon: '🔌',
     children: CMD_IDS.map((id) => ({ id, label: CMD_DEFS[id].title })),
   },
-  { id: 'terminal', label: '终端', icon: '⊢' },
   { id: 'server-dir', label: '目录树', icon: '⊞' },
   { id: 'data', label: '数据浏览', icon: '☰' },
   { id: 'dataset', label: '数据集', icon: '⧉' },
@@ -97,8 +114,61 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+.app-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .main-content {
   flex: 1;
   overflow-y: auto;
+  min-height: 0;
+}
+
+/* ── 底部终端面板 ── */
+.terminal-panel {
+  height: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+
+.terminal-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.terminal-panel-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.terminal-panel-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.terminal-panel-close:hover {
+  color: var(--red);
+  background: var(--red-bg);
+}
+
+.terminal-panel-body {
+  flex: 1;
+  min-height: 0;
 }
 </style>
