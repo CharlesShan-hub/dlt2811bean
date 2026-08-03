@@ -75,7 +75,10 @@ public class LdDirServer extends BaseServerHandler {
         List<String> names = new ArrayList<>();
         for (SclIED ied : doc.ieds()) {
             for (SclLDevice ld : ied.lDevices()) {
-                names.addAll(getLnNames(ld));
+                // 未指定 ldName：返回完整引用（LD/LN），满足标准 8.3.2.2 a) 与 d)
+                for (String n : getLnNames(ld)) {
+                    names.add(ld.inst() + "/" + n);
+                }
             }
         }
         return names;

@@ -11,7 +11,7 @@ GetLogicalDeviceDirectory-ResponsePDU ::= SEQUENCE {
     moreFollows     [1] IMPLICIT Boolean DEFAULT 1
 } — 8.3.2`,
   params: [
-    { key: 'ld', label: '逻辑设备 ld', type: 'ld-select', placeholder: '选择逻辑设备' },
+    { key: 'ld', label: '逻辑设备 ld', type: 'ld-select', placeholder: '选择逻辑设备（可选，省略则返回所有 LD 的完整引用）' },
     { key: 'after', label: '起始引用 after', type: 'ln-select', placeholder: '选择起始 LN（可选）' },
   ],
 }

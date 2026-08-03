@@ -36,7 +36,7 @@
               <UiSelect
                 v-else-if="p.type === 'ld-select'"
                 v-model="form[p.key]"
-                :options="['', ...ldCache]"
+                :options="p.required ? ldCache : ['', ...ldCache]"
                 :placeholder="p.placeholder"
                 empty-label="（不选）"
               />
@@ -159,6 +159,9 @@ function initForm() {
       form[p.key] = p.options[0] || ''
     } else if (p.type === 'ap-select') {
       form[p.key] = ''
+    } else if (p.type === 'ld-select') {
+      // 必填的 LD 默认选中缓存第一个，避免空值
+      form[p.key] = p.required && ldCache.length ? ldCache[0] : ''
     } else {
       form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
     }
