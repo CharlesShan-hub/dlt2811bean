@@ -2,7 +2,6 @@
 #  DL/T 2811 (CMS) 项目构建命令
 #  `just` — https://github.com/casey/just
 #
-#  single-c-xxx → C 原子级
 #  single-j-xxx → Java 原子级
 #  xxx          → 批量级（组合 single-*）
 # ──────────────────────────────────────────────
@@ -11,55 +10,6 @@ set shell := ["cmd.exe", "/C"]
 
 _default:
     just --list
-
-# ╔═══════════════════════════════════════════╗
-# ║  CCMS — C 动态库                          ║
-# ╚═══════════════════════════════════════════╝
-
-[windows]
-single-c-clean:
-    powershell -NoProfile -File scripts\single-c-clean-win.ps1
-
-[unix]
-single-c-clean:
-    chmod +x scripts/single-c-clean-unix.sh && ./scripts/single-c-clean-unix.sh
-
-[windows]
-single-c-check-env:
-    powershell -NoProfile -File scripts\single-c-check-env-win.ps1
-
-[unix]
-single-c-check-env:
-    chmod +x scripts/single-c-check-env-unix.sh && ./scripts/single-c-check-env-unix.sh
-
-[windows]
-single-c-build:
-    powershell -NoProfile -File scripts\single-c-build-win.ps1
-
-[unix]
-single-c-build:
-    chmod +x scripts/single-c-build-unix.sh && ./scripts/single-c-build-unix.sh
-
-[windows]
-single-c-test:
-    powershell -NoProfile -File scripts\single-c-test-win.ps1
-
-[unix]
-single-c-test:
-    chmod +x scripts/single-c-test-unix.sh && ./scripts/single-c-test-unix.sh
-
-[windows]
-single-c-load:
-    copy /Y ccms\dist\ccms.dll jcms\jcms-core\src\main\resources\win32-x86-64\ccms.dll
-
-[unix]
-single-c-load:
-    chmod +x scripts/single-c-load-unix.sh && ./scripts/single-c-load-unix.sh
-
-# ── C 批量级 ──
-
-c-rebuild: single-c-clean single-c-check-env single-c-build single-c-test single-c-load
-c-quick: single-c-clean single-c-build single-c-load
 
 # ╔═══════════════════════════════════════════╗
 # ║  WebUI — Vue 前端                         ║
@@ -97,17 +47,43 @@ ui-quick: single-ui-clean single-ui-install single-ui-build
 
 [windows]
 single-j-all-clean:
-    powershell  -File scripts\single-j-all-clean-win.ps1
+    powershell -NoProfile -File scripts\single-j-all-clean-win.ps1
 
 [unix]
 single-j-all-clean:
     chmod +x scripts/single-j-all-clean-unix.sh && ./scripts/single-j-all-clean-unix.sh
 
+# ── jcms-data（由 csasn1 Rust 生成） ──
+
+[windows]
+single-j-data-gen:
+    powershell -NoProfile -File scripts\single-j-data-gen-win.ps1
+
+[unix]
+single-j-data-gen:
+    chmod +x scripts/single-j-data-gen-unix.sh && ./scripts/single-j-data-gen-unix.sh
+
+[windows]
+single-j-data-test:
+    powershell -NoProfile -File scripts\single-j-data-test-win.ps1
+
+[unix]
+single-j-data-test:
+    chmod +x scripts/single-j-data-test-unix.sh && ./scripts/single-j-data-test-unix.sh
+
+[windows]
+single-j-data-install:
+    powershell -NoProfile -File scripts\single-j-data-install-win.ps1
+
+[unix]
+single-j-data-install:
+    chmod +x scripts/single-j-data-install-unix.sh && ./scripts/single-j-data-install-unix.sh
+
 # ── jcms-core ──
 
 [windows]
 single-j-core-compile:
-    powershell  -File scripts\single-j-core-compile-win.ps1
+    powershell -NoProfile -File scripts\single-j-core-compile-win.ps1
 
 [unix]
 single-j-core-compile:
@@ -115,25 +91,25 @@ single-j-core-compile:
 
 [windows]
 single-j-core-test:
-    powershell  -File scripts\single-j-core-test-win.ps1
+    powershell -NoProfile -File scripts\single-j-core-test-win.ps1
 
 [unix]
 single-j-core-test:
     chmod +x scripts/single-j-core-test-unix.sh && ./scripts/single-j-core-test-unix.sh
 
 [windows]
-single-j-core-package:
-    powershell  -File scripts\single-j-core-package-win.ps1
+single-j-core-install:
+    powershell -NoProfile -File scripts\single-j-core-install-win.ps1
 
 [unix]
-single-j-core-package:
-    chmod +x scripts/single-j-core-package-unix.sh && ./scripts/single-j-core-package-unix.sh
+single-j-core-install:
+    chmod +x scripts/single-j-core-install-unix.sh && ./scripts/single-j-core-install-unix.sh
 
 # ── jcms-utils ──
 
 [windows]
 single-j-utils-compile:
-    powershell  -File scripts\single-j-utils-compile-win.ps1
+    powershell -NoProfile -File scripts\single-j-utils-compile-win.ps1
 
 [unix]
 single-j-utils-compile:
@@ -141,25 +117,25 @@ single-j-utils-compile:
 
 [windows]
 single-j-utils-test:
-    powershell  -File scripts\single-j-utils-test-win.ps1
+    powershell -NoProfile -File scripts\single-j-utils-test-win.ps1
 
 [unix]
 single-j-utils-test:
     chmod +x scripts/single-j-utils-test-unix.sh && ./scripts/single-j-utils-test-unix.sh
 
 [windows]
-single-j-utils-package:
-    powershell  -File scripts\single-j-utils-package-win.ps1
+single-j-utils-install:
+    powershell -NoProfile -File scripts\single-j-utils-install-win.ps1
 
 [unix]
-single-j-utils-package:
-    chmod +x scripts/single-j-utils-package-unix.sh && ./scripts/single-j-utils-package-unix.sh
+single-j-utils-install:
+    chmod +x scripts/single-j-utils-install-unix.sh && ./scripts/single-j-utils-install-unix.sh
 
 # ── jcms-app ──
 
 [windows]
 single-j-app-compile:
-    powershell  -File scripts\single-j-app-compile-win.ps1
+    powershell -NoProfile -File scripts\single-j-app-compile-win.ps1
 
 [unix]
 single-j-app-compile:
@@ -167,39 +143,36 @@ single-j-app-compile:
 
 [windows]
 single-j-app-test:
-    powershell  -File scripts\single-j-app-test-win.ps1
+    powershell -NoProfile -File scripts\single-j-app-test-win.ps1
 
 [unix]
 single-j-app-test:
     chmod +x scripts/single-j-app-test-unix.sh && ./scripts/single-j-app-test-unix.sh
 
 [windows]
-single-j-app-package:
-    powershell  -File scripts\single-j-app-package-win.ps1
+single-j-app-install:
+    powershell -NoProfile -File scripts\single-j-app-install-win.ps1
 
 [unix]
-single-j-app-package:
-    chmod +x scripts/single-j-app-package-unix.sh && ./scripts/single-j-app-package-unix.sh
+single-j-app-install:
+    chmod +x scripts/single-j-app-install-unix.sh && ./scripts/single-j-app-install-unix.sh
 
 # 批量级
 
 j-core-compile: single-j-all-clean single-j-core-compile
 j-core-test: j-core-compile single-j-core-test
-j-core-test-c: c-quick j-core-test
 
 j-utils-compile: single-j-all-clean single-j-utils-compile
 j-utils-test: j-utils-compile single-j-utils-test
-j-utils-test-c: c-quick j-utils-compile single-j-core-test single-j-utils-test
 
 j-all-compile: single-j-all-clean single-j-app-compile
 j-all-test: j-all-compile single-j-app-test
-j-all-test-c: c-quick j-all-compile single-j-core-test single-j-utils-test single-j-app-test
 
 # ── 锁机制（进程间同步） ──
 
 [windows]
 single-lock:
-    powershell  -File scripts\single-lock-win.ps1
+    powershell -NoProfile -File scripts\single-lock-win.ps1
 
 [unix]
 single-lock:
@@ -207,7 +180,7 @@ single-lock:
 
 [windows]
 single-unlock:
-    powershell  -File scripts\single-unlock-win.ps1
+    powershell -NoProfile -File scripts\single-unlock-win.ps1
 
 [unix]
 single-unlock:
@@ -215,7 +188,7 @@ single-unlock:
 
 [windows]
 single-check-lock:
-    powershell  -File scripts\single-check-lock-win.ps1
+    powershell -NoProfile -File scripts\single-check-lock-win.ps1
 
 [unix]
 single-check-lock:
@@ -225,7 +198,7 @@ single-check-lock:
 
 [windows]
 single-server:
-    powershell  -File scripts\single-server-win.ps1
+    powershell -NoProfile -File scripts\single-server-win.ps1
 
 [unix]
 single-server:
@@ -233,7 +206,7 @@ single-server:
 
 [windows]
 single-client:
-    powershell  -File scripts\single-client-win.ps1
+    powershell -NoProfile -File scripts\single-client-win.ps1
 
 [unix]
 single-client:
@@ -246,7 +219,7 @@ single-client:
 
 [windows]
 java-quick:
-    powershell  -File scripts\quick-java-win.ps1
+    powershell -NoProfile -File scripts\quick-java-win.ps1
 
 [unix]
 java-quick:
@@ -256,22 +229,15 @@ run-server: single-check-lock single-server
 run-client: single-check-lock single-client
 build-java-run-server:single-lock java-quick single-unlock run-server
 build-java-run-client:single-lock java-quick single-unlock run-client
-build-c-java-run-server:single-lock c-quick java-quick single-unlock run-server
-build-c-java-run-client:single-lock c-quick java-quick single-unlock run-client
 
 # ── UI 组合 ──
 
 [windows]
 run-client-ui: single-check-lock
     start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
-    powershell -File scripts\single-client-win.ps1
+    powershell -NoProfile -File scripts\single-client-win.ps1
 
 [windows]
 build-java-run-client-ui: single-lock java-quick single-unlock
     start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
-    powershell -File scripts\single-client-win.ps1
-
-[windows]
-build-c-java-run-client-ui: single-lock c-quick java-quick single-unlock
-    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
-    powershell -File scripts\single-client-win.ps1
+    powershell -NoProfile -File scripts\single-client-win.ps1

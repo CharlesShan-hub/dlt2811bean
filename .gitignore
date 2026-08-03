@@ -66,6 +66,10 @@ replay_pid*
 # Maven Wrapper - keep the jar but ignore the dist
 !/.mvn/wrapper/maven-wrapper.jar
 
+# 独立 git 依赖仓库（由各自 git 管理）
+rasn/
+csasn1/
+
 # Temp files
 *.tmp
 *.swp
