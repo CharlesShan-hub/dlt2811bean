@@ -52,6 +52,21 @@ public abstract class CmsConsole extends CmsNode {
         return isClientConnected() && getClient().getSession() != null && getClient().getSession().getState() == SessionState.ASSOCIATED;
     }
 
+    /** 当前关联的访问点引用（IED/AP），未关联时返回 null。 */
+    public String getAssociatedAp() {
+        return isConnected() && getClient().getSession() != null ? getClient().getSession().getAssociatedApRef() : null;
+    }
+
+    /** 当前 TCP 连接是否 TLS 加密。 */
+    public boolean isTlsConnected() {
+        return getClient() != null && getClient().isTls();
+    }
+
+    /** 当前关联是否使用应用层安全认证。 */
+    public boolean isAssociatedSecure() {
+        return isConnected() && getClient().getSession() != null && getClient().getSession().isAssociatedSecure();
+    }
+
     // ── helpers for console command handlers ──
 
     /** Get json flag from args. */
@@ -67,6 +82,21 @@ public abstract class CmsConsole extends CmsNode {
             ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected.\"}");
         } else {
             ConsolePrinter.error("Not connected. Type 'connect' first.");
+        }
+        return false;
+    }
+
+    /**
+     * Check TCP-level connected (association not required), output error and return
+     * false if not.
+     */
+    public boolean requireTcpConnected(Map<String, String> args) {
+        if (isClientConnected())
+            return true;
+        if (isJsonMode(args)) {
+            ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Use 'connect' first.\"}");
+        } else {
+            ConsolePrinter.error("Not connected. Use 'connect' first.");
         }
         return false;
     }

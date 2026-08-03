@@ -31,13 +31,16 @@ public class NegotiateConsole implements CommandHandler {
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireConnected(args))
+        // negotiate 只需 TCP 连接，无需已关联（connect 不带 --ap 后即可手动协商）
+        if (!console.requireTcpConnected(args))
             return;
 
         NegotiateClientDao dao = new NegotiateClientDao();
-        String apduStr = args.get("apduSize");
-        String asduStr = args.get("asduSize");
-        String protoStr = args.get("protocolVersion");
+        // 兼容两套参数名：CLI 用 apduSize/asduSize/protocolVersion，webui/connect 用
+        // apdu/asdu/version
+        String apduStr = firstNonEmpty(args.get("apduSize"), args.get("apdu"));
+        String asduStr = firstNonEmpty(args.get("asduSize"), args.get("asdu"));
+        String protoStr = firstNonEmpty(args.get("protocolVersion"), args.get("version"));
         if (apduStr != null && !apduStr.isEmpty())
             dao.apduSize(Integer.parseInt(apduStr));
         if (asduStr != null && !asduStr.isEmpty())
@@ -47,5 +50,9 @@ public class NegotiateConsole implements CommandHandler {
 
         console.getClient(NegotiateClient.class).execute(dao);
         CmsConsole.outputMessage("Negotiate completed.", args);
+    }
+
+    private static String firstNonEmpty(String a, String b) {
+        return (a != null && !a.isEmpty()) ? a : b;
     }
 }

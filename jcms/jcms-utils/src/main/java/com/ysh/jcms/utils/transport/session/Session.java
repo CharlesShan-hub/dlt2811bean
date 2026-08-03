@@ -17,6 +17,8 @@ public abstract class Session {
     private final Connection connection;
     private volatile SessionState state = SessionState.DISCONNECTED;
     private volatile byte[] associationId;
+    private volatile String associatedApRef;
+    private volatile boolean associatedSecure;
 
     private volatile boolean negotiated;
     private volatile int negotiatedApduSize = 65535;
@@ -30,6 +32,8 @@ public abstract class Session {
      */
     public void clear() {
         this.associationId = null;
+        this.associatedApRef = null;
+        this.associatedSecure = false;
         this.fragmentationSupported = true;
         RcbStateManager.clear();
     }

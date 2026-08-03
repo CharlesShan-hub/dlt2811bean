@@ -2,6 +2,7 @@ package com.ysh.jcms.app.console.api;
 
 import com.ysh.jcms.app.console.CmsClientConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.util.CmsFormatUtil;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -90,7 +91,11 @@ public class CliApiServer {
     }
 
     private void handleStatus(HttpExchange exchange) throws IOException {
-        String status = "{\"connected\": " + console.isConnected() + ", \"serverRunning\": true, \"port\": " + port + "}";
+        String ap = console.getAssociatedAp();
+        String status = "{\"connected\": " + console.isConnected() + ", \"tcpConnected\": " + console.isClientConnected()
+                + ", \"associated\": " + console.isConnected() + ", \"ap\": "
+                + (ap != null ? "\"" + CmsFormatUtil.escapeJson(ap) + "\"" : "null") + ", \"tls\": " + console.isTlsConnected()
+                + ", \"apSecure\": " + console.isAssociatedSecure() + ", \"serverRunning\": true, \"port\": " + port + "}";
         exchange.getResponseHeaders().set("Content-Type", "application/json");
         sendResponse(exchange, 200, status);
     }

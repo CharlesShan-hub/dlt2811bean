@@ -1,0 +1,419 @@
+<template>
+  <div class="cmd-debug">
+    <header class="page-head">
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-desc">{{ def.desc }}</p>
+    </header>
+
+    <div class="debug-grid">
+      <!-- ── 左栏：参数 ── -->
+      <UiCard title="参数" icon="⚙">
+        <!-- connect 专属：使用共享连接表单 -->
+        <ConnectForm v-if="isConnect" :busy="busy" submit-label="执行 connect" @submit="runCmd" />
+
+        <!-- 通用参数渲染（connect 由上方专属模板渲染，跳过） -->
+        <template v-if="!isConnect && simpleParams.length">
+          <template v-for="p in simpleParams" :key="p.key">
+            <ApPicker v-if="p.type === 'ap-select'" v-model="form[p.key]" />
+            <div v-else class="field" :class="{ 'switch-field': p.type === 'switch' }">
+              <label class="field-label">{{ p.label }}</label>
+              <UiInput
+                v-if="p.type === 'text'"
+                v-model="form[p.key]"
+                :placeholder="p.placeholder"
+              />
+              <UiInput
+                v-else-if="p.type === 'number'"
+                v-model.number="form[p.key]"
+                type="number"
+                :readonly="p.readonly"
+              />
+              <UiSelect
+                v-else-if="p.type === 'select'"
+                v-model="form[p.key]"
+                :options="p.options"
+              />
+              <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
+            </div>
+          </template>
+        </template>
+        <p v-if="!isConnect && simpleParams.length === 0" class="empty">该命令无需参数，直接执行。</p>
+
+        <div v-if="!isConnect" class="actions">
+          <UiButton variant="primary" :loading="busy" @click="run">执行 {{ cmd }}</UiButton>
+        </div>
+      </UiCard>
+
+      <!-- ── 右栏：流程/ASN.1 + 会话记录 ── -->
+      <div class="col-right">
+        <UiCard title="连接流程" icon="⛓" collapsible>
+          <!-- connect 是便捷封装命令：显示流程图而非 ASN.1 -->
+          <div v-if="isConnect" class="flow-diagram">
+            <template v-for="(step, i) in connectFlow" :key="step.title">
+              <div class="flow-node">
+                <div class="flow-icon">{{ step.icon }}</div>
+                <div class="flow-body">
+                  <div class="flow-title">{{ step.title }}</div>
+                  <div class="flow-desc">{{ step.desc }}</div>
+                </div>
+              </div>
+              <div v-if="i < connectFlow.length - 1" class="flow-arrow">
+                <span class="flow-arrow-line"></span>
+                <span class="flow-arrow-head">▾</span>
+              </div>
+            </template>
+          </div>
+          <pre v-else class="pdu">{{ def.asn1 }}</pre>
+        </UiCard>
+
+        <UiCard title="命令与返回" icon="🔄" fill>
+          <div v-if="history.length === 0" class="empty">执行后在此显示发送的命令与返回结果。</div>
+          <div v-for="(h, i) in history" :key="i" class="hist-item">
+            <div class="hist-cmd">
+              <span class="hist-time">{{ h.time }}</span>
+              <code class="hist-line">$ {{ h.cmd }}</code>
+            </div>
+            <pre class="hist-out">{{ h.output }}</pre>
+          </div>
+        </UiCard>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { computed, reactive, ref, watch } from 'vue'
+import ConnectForm from '../components/ConnectForm.vue'
+import ApPicker from '../components/ApPicker.vue'
+import UiCard from '../components/ui/UiCard.vue'
+import UiButton from '../components/ui/UiButton.vue'
+import UiInput from '../components/ui/UiInput.vue'
+import UiSelect from '../components/ui/UiSelect.vue'
+import UiSwitch from '../components/ui/UiSwitch.vue'
+import { executeCommand, executeJson } from '../api/cms.js'
+import { CMD_DEFS } from '../cmddefs/index.js'
+
+const props = defineProps({
+  cmd: String,
+})
+
+/** connect 便捷封装命令的流程图节点。 */
+const connectFlow = [
+  { icon: '🔌', title: 'TCP 连接', desc: '建立到服务器的传输层连接（可 TLS）' },
+  { icon: '🤝', title: '协商 Negotiate', desc: '交换 APDU / ASDU 大小与协议版本' },
+  { icon: '📨', title: '关联 Associate', desc: '指定 ServerAccessPointReference 建立应用层关联' },
+  { icon: '✅', title: '已连接', desc: '关联建立后即可调用各服务' },
+]
+
+const def = computed(() => CMD_DEFS[props.cmd] || CMD_DEFS.connect)
+const title = computed(() => def.value.title)
+const isConnect = computed(() => props.cmd === 'connect')
+const simpleParams = computed(() => def.value.params)
+
+const form = reactive({})
+const busy = ref(false)
+const history = ref([])
+
+function initForm() {
+  for (const k of Object.keys(form)) {
+    delete form[k]
+  }
+  for (const p of def.value.params) {
+    if (p.type === 'select') {
+      form[p.key] = p.options[0] || ''
+    } else if (p.type === 'ap-select') {
+      form[p.key] = ''
+    } else {
+      form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
+    }
+  }
+}
+
+watch(() => props.cmd, async () => {
+  history.value = []
+  initForm()
+  if (props.cmd === 'negotiate') {
+    await loadNegotiateDefaults()
+  }
+}, { immediate: true })
+
+/** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
+async function loadNegotiateDefaults() {
+  try {
+    const neg = await executeJson('neg-cfg --json')
+    if (neg.success && neg.data) {
+      form.apdu = neg.data.apduSize
+      form.asdu = neg.data.asduSize
+      form.version = neg.data.protocolVersion
+    }
+  } catch {
+    // 配置读取失败时保留默认值
+  }
+}
+
+function buildCmd() {
+  const parts = [props.cmd]
+  for (const p of def.value.params) {
+    const v = form[p.key]
+    if (p.type === 'switch') {
+      if (v) {
+        parts.push(`--${p.key}`)
+      }
+    } else if (p.type === 'select') {
+      if (v) {
+        parts.push(`--${p.key}`, String(v).split(' ')[0])
+      }
+    } else if (p.type === 'ap-select') {
+      if (v) {
+        parts.push(`--${p.key}`, String(v))
+      }
+    } else if (v !== '' && v !== null && v !== undefined) {
+      parts.push(`--${p.key}`, String(v))
+    }
+  }
+  return parts.join(' ')
+}
+
+async function run() {
+  await runCmd(buildCmd())
+}
+
+/** 执行命令并写入历史（ConnectForm 提交的 connect 命令也走这里）。 */
+async function runCmd(cmdLine) {
+  busy.value = true
+  try {
+    const text = await executeCommand(cmdLine)
+    history.value.unshift({
+      cmd: cmdLine,
+      output: text.replace(/\x1b\[\d+m/g, '').trim(),
+      time: new Date().toLocaleTimeString(),
+    })
+  } catch (e) {
+    history.value.unshift({
+      cmd: cmdLine,
+      output: String(e),
+      time: new Date().toLocaleTimeString(),
+    })
+  } finally {
+    busy.value = false
+  }
+}
+</script>
+
+<style scoped>
+.cmd-debug {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 32px;
+  overflow: hidden;
+}
+
+.page-head {
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.page-desc {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.debug-grid {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.4fr);
+  gap: 20px;
+}
+
+.col-right {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.field-label::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red);
+  margin-right: 7px;
+  vertical-align: middle;
+  box-shadow: 0 0 4px rgba(229, 85, 90, 0.6);
+}
+
+.switch-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.switch-field .field-label {
+  margin-bottom: 0;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 0 20px;
+}
+
+.actions {
+  margin-top: 20px;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* ── 连接流程图 ── */
+.flow-diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.flow-node {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.15s;
+}
+
+.flow-node:hover {
+  border-color: var(--accent);
+}
+
+.flow-icon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  background: var(--accent-muted);
+  border-radius: 10px;
+}
+
+.flow-body {
+  min-width: 0;
+}
+
+.flow-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 3px;
+}
+
+.flow-desc {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.flow-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
+}
+
+.flow-arrow-line {
+  width: 2px;
+  height: 14px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  opacity: 0.5;
+}
+
+.flow-arrow-head {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1;
+}
+
+/* ── ASN.1 ── */
+.pdu {
+  margin: 0;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ── 会话记录 ── */
+.hist-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.hist-item:last-child {
+  margin-bottom: 0;
+}
+
+.hist-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.hist-time {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.hist-line {
+  font-size: 12px;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hist-out {
+  margin: 0;
+  padding: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+</style>

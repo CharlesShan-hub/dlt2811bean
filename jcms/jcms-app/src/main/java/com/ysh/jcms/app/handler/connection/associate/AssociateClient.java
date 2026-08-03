@@ -24,9 +24,12 @@ public class AssociateClient extends BaseClientHandler {
 
     /** The sapRef used in the current request, needed for response validation. */
     private String currentSapRef;
+    /** Whether the current request uses application-layer security. */
+    private boolean currentSecure;
 
     public void execute(AssociateClientDao dao) throws Exception {
         this.currentSapRef = dao.sapRef();
+        this.currentSecure = dao.secure();
         CmsAssociateRequest req = new CmsAssociateRequest();
         if (dao.sapRef() != null && !dao.sapRef().isEmpty()) {
             req.serverAccessPointReference(dao.sapRef());
@@ -67,6 +70,8 @@ public class AssociateClient extends BaseClientHandler {
         }
 
         node.getClient().getSession().setAssociationId(resp.associationId.value());
+        node.getClient().getSession().setAssociatedApRef(currentSapRef);
+        node.getClient().getSession().setAssociatedSecure(currentSecure);
         node.getClient().getSession().setState(SessionState.ASSOCIATED);
         log.info("Association established: session={}", node.getClient().getSession().getSessionId());
     }

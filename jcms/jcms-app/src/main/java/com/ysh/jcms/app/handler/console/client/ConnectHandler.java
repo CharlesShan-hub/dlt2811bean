@@ -28,12 +28,12 @@ public class ConnectHandler implements CommandHandler {
 
     @Override
     public String description() {
-        return "连接到 CMS 服务器。用法: connect [--ip addr] [--ap IED/AP] [--secure] [--apdu N] [--asdu N] [--version N] [--json]";
+        return "连接到 CMS 服务器。用法: connect [--ip addr] [--port N] [--ap IED/AP] [--secure] [--apdu N] [--asdu N] [--version N] [--json]";
     }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
+        return Arrays.asList(new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"), new Param("port", "服务器端口（默认 8102，TLS 默认 9102）", ""),
                 new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
                 new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""), new Param("version", "协议版本", ""),
                 new Param("json", "JSON 格式输出", ""));
@@ -54,7 +54,13 @@ public class ConnectHandler implements CommandHandler {
 
         String host = args.get("ip");
         boolean secure = "true".equals(args.get("secure"));
-        int port = secure ? CmsConfigLoader.load().getServer().getSslPort() : CmsConfigLoader.load().getServer().getPort();
+        int port;
+        String portStr = args.get("port");
+        if (portStr != null && !portStr.isEmpty()) {
+            port = Integer.parseInt(portStr);
+        } else {
+            port = secure ? CmsConfigLoader.load().getServer().getSslPort() : CmsConfigLoader.load().getServer().getPort();
+        }
         String sapRef = args.get("ap");
 
         if (secure) {

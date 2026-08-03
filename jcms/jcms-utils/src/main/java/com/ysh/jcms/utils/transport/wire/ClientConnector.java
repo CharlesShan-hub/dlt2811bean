@@ -32,7 +32,10 @@ public class ClientConnector {
         try {
             javax.net.ssl.SSLSocket socket = (javax.net.ssl.SSLSocket) sslContext.getSocketFactory().createSocket(host, port);
             socket.setUseClientMode(true);
+            // 握手限时：打到非 TLS 端口（如明文 8102）时快速报错，避免无限阻塞
+            socket.setSoTimeout(connectTimeout);
             socket.startHandshake();
+            socket.setSoTimeout(0); // 握手完成后恢复阻塞读
             return new Connection(socket, listener);
         } catch (Exception e) {
             throw new IOException("TLS connection failed: " + e.getMessage(), e);

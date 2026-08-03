@@ -32,6 +32,7 @@ public class InnerClient implements ConnectionListener {
     private volatile Connection connection;
     private volatile String host;
     private volatile int port;
+    private volatile boolean tls;
 
     private volatile Consumer<Frame> reportHandler;
 
@@ -46,6 +47,7 @@ public class InnerClient implements ConnectionListener {
     public void connect(String host, int port) throws IOException {
         this.host = host;
         this.port = port;
+        this.tls = false;
         this.connection = connector.connect(host, port, this);
         this.session = new ClientSession(connection);
         connection.startReader();
@@ -58,6 +60,7 @@ public class InnerClient implements ConnectionListener {
     public void connectTls(String host, int port, SSLContext sslContext) throws IOException {
         this.host = host;
         this.port = port;
+        this.tls = true;
         this.connection = connector.connectTls(host, port, this, sslContext);
         this.session = new ClientSession(connection);
         connection.startReader();
@@ -100,6 +103,11 @@ public class InnerClient implements ConnectionListener {
 
     public boolean isConnected() {
         return session != null && session.isConnected();
+    }
+
+    /** 当前连接是否 TLS 加密。 */
+    public boolean isTls() {
+        return tls;
     }
     public ClientSession getSession() {
         return session;
