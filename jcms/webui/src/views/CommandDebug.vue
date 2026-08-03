@@ -40,6 +40,13 @@
                 :placeholder="p.placeholder"
                 empty-label="（不选）"
               />
+              <UiSelect
+                v-else-if="p.type === 'ln-select'"
+                v-model="form[p.key]"
+                :options="['', ...(ldLns[form.ld] || [])]"
+                :placeholder="p.placeholder"
+                empty-label="（不选）"
+              />
               <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
             </div>
           </template>
@@ -98,7 +105,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache } from '../ldCache.js'
+import { ldCache, ldLns, ensureLdLns } from '../ldCache.js'
 
 const props = defineProps({
   cmd: String,
@@ -168,6 +175,13 @@ watch(() => props.cmd, async () => {
   }
 }, { immediate: true })
 
+// ld-dir：选中 LD 后预加载其 LN 列表，供 after 下拉选择
+watch(() => form.ld, async (ld) => {
+  if (props.cmd === 'ld-dir' && ld) {
+    await ensureLdLns(ld)
+  }
+})
+
 /** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
 async function loadNegotiateDefaults() {
   try {
@@ -199,6 +213,10 @@ function buildCmd() {
         parts.push(`--${p.key}`, String(v))
       }
     } else if (p.type === 'ld-select') {
+      if (v) {
+        parts.push(`--${p.key}`, String(v))
+      }
+    } else if (p.type === 'ln-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
       }

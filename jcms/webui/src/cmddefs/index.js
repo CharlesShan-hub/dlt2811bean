@@ -7,6 +7,7 @@ import release from './release.js'
 import abort from './abort.js'
 import test from './test.js'
 import serverDir from './server-dir.js'
+import ldDir from './ld-dir.js'
 
 export const CMD_DEFS = {
   connect,
@@ -17,6 +18,7 @@ export const CMD_DEFS = {
   abort,
   test,
   'server-dir': serverDir,
+  'ld-dir': ldDir,
 }
 
 /** 命令 id 列表（保持注册表顺序）。 */
