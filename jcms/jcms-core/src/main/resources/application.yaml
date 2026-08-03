@@ -5,6 +5,7 @@ server:
     - config/sample-scd-full.scd
   sclFiles:
     - /Users/charles/Downloads/big.scd
+    - /media/psf/Home/workspace/project/dlt2811bean/config/big.scd
     - C:\Users\17428\Downloads\longyang\big-file.scd
   keepalive:
     idleTimeoutMs: 30000

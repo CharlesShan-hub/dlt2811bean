@@ -8,12 +8,14 @@ import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.data.enumerate.CmsObjectClass;
-import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class SvrDirServer extends BaseServerHandler {
 
@@ -24,17 +26,21 @@ public class SvrDirServer extends BaseServerHandler {
     @Override
     protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
-        log.info("GetServerDirectory from {}: reqId={}, objectClass={}", session.getSessionId(), reqId, req.getObjectClass());
+        log.info("GetServerDirectory from {}: reqId={}, objectClass={}, refAfter={}, present={}", session.getSessionId(), reqId,
+                req.getObjectClass(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null,
+                req.isPresent("referenceAfter"));
 
         if (req.getObjectClass() != CmsObjectClass.LOGICAL_DEVICE)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        SclDocument doc = requireScl(session, reqId);
+        // 只返回当前关联 IED（访问点）下的逻辑设备，而非全站所有 IED
+        SclIED ied = requireIed(session, reqId);
+        List<String> ldNames = ied.lDevices().stream().map(SclLDevice::inst).collect(Collectors.toList());
 
-        List<String> ldNames = after(doc.ldNames(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
+        List<String> afterList = after(ldNames, req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
-        for (String name : ldNames)
+        for (String name : afterList)
             resp.reference.add(new CmsObjectReference(name));
         resp.moreFollows(false);
         return ok(resp, reqId);

@@ -6,7 +6,8 @@
 #  xxx          → 批量级（组合 single-*）
 # ──────────────────────────────────────────────
 
-set shell := ["cmd.exe", "/C"]
+#  shell 由 just 按平台自动选择：unix → sh，windows → cmd.exe
+#  （[unix]/[windows] 变体分别使用各自 shell 语法）
 
 _default:
     just --list
@@ -19,21 +20,41 @@ _default:
 single-ui-install:
     yarn --cwd jcms\webui install
 
+[unix]
+single-ui-install:
+    yarn --cwd jcms/webui install
+
 [windows]
 single-ui-dev:
     yarn --cwd jcms\webui dev
+
+[unix]
+single-ui-dev:
+    yarn --cwd jcms/webui dev
 
 [windows]
 single-ui-build:
     yarn --cwd jcms\webui build
 
+[unix]
+single-ui-build:
+    yarn --cwd jcms/webui build
+
 [windows]
 single-ui-clean:
     if exist jcms\webui\dist rmdir /s /q jcms\webui\dist
 
+[unix]
+single-ui-clean:
+    rm -rf jcms/webui/dist
+
 [windows]
 single-ui-preview:
     yarn --cwd jcms\webui preview
+
+[unix]
+single-ui-preview:
+    yarn --cwd jcms/webui preview
 
 # ── UI 批量级 ──
 

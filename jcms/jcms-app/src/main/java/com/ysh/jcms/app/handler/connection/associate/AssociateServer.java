@@ -109,8 +109,10 @@ public class AssociateServer extends BaseServerHandler {
             return true;
         InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
         SclDocument scl = ss.getSclDocument();
-        if (scl == null)
-            return true;
+        if (scl == null) {
+            log.warn("Associate rejected: no SCL model loaded on server");
+            return false;
+        }
 
         int slashIdx = sapRef.indexOf('/');
         String iedName = slashIdx >= 0 ? sapRef.substring(0, slashIdx) : sapRef;
@@ -136,8 +138,10 @@ public class AssociateServer extends BaseServerHandler {
             return true;
         InnerServer.ServerSession ss = (InnerServer.ServerSession) session;
         SclDocument scl = ss.getSclDocument();
-        if (scl == null)
-            return true;
+        if (scl == null) {
+            log.warn("Associate rejected: no SCL model loaded on server");
+            return false;
+        }
         for (SclIED ied : scl.ieds()) {
             if (!ied.accessPoints().isEmpty()) {
                 SclAccessPoint ap = ied.accessPoints().get(0);

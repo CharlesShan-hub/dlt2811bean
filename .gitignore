@@ -70,6 +70,9 @@ replay_pid*
 rasn/
 csasn1/
 
+# 本地大 SCL 测试文件（体积大，不入库）
+config/big.scd
+
 # Temp files
 *.tmp
 *.swp
