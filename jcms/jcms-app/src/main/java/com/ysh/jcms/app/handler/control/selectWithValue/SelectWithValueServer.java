@@ -48,10 +48,8 @@ public class SelectWithValueServer extends BaseServerHandler {
 
         if (ControlCache.select(ref, sid)) {
             log.info("SelectWithValue: locked '{}' for session {}", ref, sid);
-            CmsSelectWithValueResponse resp = new CmsSelectWithValueResponse()
-                    .reference(ref).ctlVal(req.ctlVal)
-                    .operTm(req.isPresent("operTm") ? req.operTm : null)
-                    .origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
+            CmsSelectWithValueResponse resp = new CmsSelectWithValueResponse().reference(ref).ctlVal(req.ctlVal)
+                    .operTm(req.isPresent("operTm") ? req.operTm : null).origin(req.origin).ctlNum(req.ctlNum.value()).t(req.t)
                     .test(req.test.value()).check(req.check);
             return ok(resp, reqId);
         } else {

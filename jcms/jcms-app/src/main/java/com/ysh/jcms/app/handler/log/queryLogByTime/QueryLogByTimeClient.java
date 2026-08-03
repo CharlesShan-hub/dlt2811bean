@@ -25,8 +25,8 @@ public class QueryLogByTimeClient extends BaseClientHandler {
                     .daysSince1984((int) (dao.startTime().longValue() / 86400000L)));
         }
         if (dao.stopTime() != null) {
-            req.stopTime(new CmsBinaryTime().msOfDay(dao.stopTime() % 86400000L)
-                    .daysSince1984((int) (dao.stopTime().longValue() / 86400000L)));
+            req.stopTime(
+                    new CmsBinaryTime().msOfDay(dao.stopTime() % 86400000L).daysSince1984((int) (dao.stopTime().longValue() / 86400000L)));
         }
         send(ServiceName.QUERY_LOG_BY_TIME, req);
     }

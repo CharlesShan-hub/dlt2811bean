@@ -55,8 +55,7 @@ public class SetFileClient extends BaseClientHandler {
                 chunk = new byte[0];
             }
 
-            CmsSetFileRequest req = new CmsSetFileRequest().filename(remoteFile).startPosition(position).fileData(chunk)
-                    .endOfFile(isLast);
+            CmsSetFileRequest req = new CmsSetFileRequest().filename(remoteFile).startPosition(position).fileData(chunk).endOfFile(isLast);
 
             Frame frame = send(ServiceName.SET_FILE, req);
             CmsSetFileResponse resp = decodeFrame(frame, new CmsSetFileResponse());

@@ -55,9 +55,9 @@ public class GetLcbValuesClient extends BaseClientHandler {
                 sb.append(" datSet=").append(b.datSet.value());
                 sb.append(" intgPd=").append(b.intgPd.value());
                 sb.append(" logRef=").append(b.logRef.value());
-                sb.append(" trgOps=dc:").append(b.trgOps.data_change()).append(",qc:").append(b.trgOps.quality_change())
-                        .append(",du:").append(b.trgOps.data_update()).append(",integrity:").append(b.trgOps.integrity())
-                        .append(",gi:").append(b.trgOps.general_interrogation());
+                sb.append(" trgOps=dc:").append(b.trgOps.data_change()).append(",qc:").append(b.trgOps.quality_change()).append(",du:")
+                        .append(b.trgOps.data_update()).append(",integrity:").append(b.trgOps.integrity()).append(",gi:")
+                        .append(b.trgOps.general_interrogation());
                 entries.add(new LcbEntry(sb.toString()));
             } else {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));

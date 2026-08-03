@@ -90,8 +90,7 @@ public class MockLogGenerator {
             storage.append(LOG_REF, entry);
 
             LocalDateTime dt = LocalDateTime.ofInstant(Instant.ofEpochMilli(entryEpochMs), ZoneId.systemDefault());
-            System.out.printf("  [%s] entryId=%s  %d data entries%n", dt.toString().replace("T", " "), entryId,
-                    entry.entryData.size());
+            System.out.printf("  [%s] entryId=%s  %d data entries%n", dt.toString().replace("T", " "), entryId, entry.entryData.size());
         }
 
         System.out.println();

@@ -21,7 +21,8 @@ import java.util.List;
  *
  * <p>
  * {@link #handleRequest(Session, Frame)} is {@code final} — it auto-decodes the
- * request PDU and delegates to {@link #onDecodeSuccess(Session, CmsTypeOld, int)}.
+ * request PDU and delegates to
+ * {@link #onDecodeSuccess(Session, CmsTypeOld, int)}.
  *
  * <p>
  * If an error PDU type is provided via constructor, the default
@@ -140,7 +141,8 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
         try {
             CmsType errorPdu;
             try {
-                // New-style error PDUs carry the error code in the constructor, e.g. new CmsGetDataValuesError(int)
+                // New-style error PDUs carry the error code in the constructor, e.g. new
+                // CmsGetDataValuesError(int)
                 errorPdu = errorType.getDeclaredConstructor(int.class).newInstance(err);
             } catch (NoSuchMethodException e) {
                 errorPdu = errorType.getDeclaredConstructor().newInstance();

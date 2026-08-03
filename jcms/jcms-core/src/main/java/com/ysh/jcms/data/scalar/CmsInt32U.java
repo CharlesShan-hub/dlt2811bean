@@ -11,8 +11,8 @@ import com.ysh.jcms.data.InnerInt32U;
  * </pre>
  *
  * <p>
- * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so).
- * 32-bit unsigned, represented as long (0..4294967295).
+ * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so). 32-bit
+ * unsigned, represented as long (0..4294967295).
  */
 public class CmsInt32U extends CmsScalar {
 

@@ -182,8 +182,8 @@ public class SetLcbValuesServer extends BaseServerHandler {
         }
         // trgOps
         if (entry.isPresent("trgOps")) {
-            lc.trgOps(entry.trgOps.data_change() + "," + entry.trgOps.quality_change() + "," + entry.trgOps.data_update()
-                    + "," + entry.trgOps.integrity());
+            lc.trgOps(entry.trgOps.data_change() + "," + entry.trgOps.quality_change() + "," + entry.trgOps.data_update() + ","
+                    + entry.trgOps.integrity());
             result.setPresent("trgOps", false);
         }
         // intgPd

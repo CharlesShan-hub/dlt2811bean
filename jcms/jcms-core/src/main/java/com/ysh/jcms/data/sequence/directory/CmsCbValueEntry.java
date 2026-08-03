@@ -26,8 +26,8 @@ import com.ysh.jcms.data.scalar.CmsSubReference;
  * </pre>
  *
  * <p>
- * Used by GetAllCBValues response (SEQUENCE OF CBValueEntry).
- * Backed by {@link InnerAnonymousGetAllCBValuesResponsePDUCbValue}.
+ * Used by GetAllCBValues response (SEQUENCE OF CBValueEntry). Backed by
+ * {@link InnerAnonymousGetAllCBValuesResponsePDUCbValue}.
  */
 public class CmsCbValueEntry extends CmsSequence {
 

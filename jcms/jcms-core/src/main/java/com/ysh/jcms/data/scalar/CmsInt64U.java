@@ -12,8 +12,8 @@ import java.math.BigInteger;
  * </pre>
  *
  * <p>
- * Wraps {@link InnerInt64U} for PER encode/decode via Rust (libasn1.so).
- * 64-bit unsigned — Java {@code long} cannot represent values above
+ * Wraps {@link InnerInt64U} for PER encode/decode via Rust (libasn1.so). 64-bit
+ * unsigned — Java {@code long} cannot represent values above
  * {@link Long#MAX_VALUE}, so this wrapper uses {@link BigInteger}.
  */
 public class CmsInt64U extends CmsScalar {

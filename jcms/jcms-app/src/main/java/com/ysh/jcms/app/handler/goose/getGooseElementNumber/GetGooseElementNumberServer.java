@@ -37,8 +37,7 @@ public class GetGooseElementNumberServer extends BaseServerHandler {
         // Full member offset resolution would require traversing the SCL data model
         // to find each (reference, fc) pair's index in the dataset.
 
-        CmsGetGooseElementNumberResponse resp = new CmsGetGooseElementNumberResponse().gocbReference(str(req.gocbReference))
-                .confRev(0);
+        CmsGetGooseElementNumberResponse resp = new CmsGetGooseElementNumberResponse().gocbReference(str(req.gocbReference)).confRev(0);
 
         // memberOffset is left empty — dataset resolution not yet implemented
         log.info("GetGOOSEElementNumber: returning gocbRef={} (dataset resolution TBD)", gocbRef);

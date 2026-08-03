@@ -69,8 +69,8 @@ public class GetFileDirectoryClient extends BaseClientHandler {
         for (CmsFileEntry fe : resp.fileEntry) {
             long epochSeconds = fe.lastModified.secondsSinceEpoch.value();
             int fractionMicros = fe.lastModified.fractionOfSecond.value();
-            entries.add(new FileEntryResult(fe.fileName.value(), fe.fileSize.value(),
-                    epochSeconds * 1000 + fractionMicros / 1000, fe.checkSum.value()));
+            entries.add(new FileEntryResult(fe.fileName.value(), fe.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
+                    fe.checkSum.value()));
         }
 
         lastResult = new FileDirectoryResult(entries, resp.moreFollows.value());

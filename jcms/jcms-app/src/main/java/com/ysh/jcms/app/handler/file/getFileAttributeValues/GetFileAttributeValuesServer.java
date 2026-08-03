@@ -55,8 +55,7 @@ public class GetFileAttributeValuesServer extends BaseServerHandler {
             long lastMod = attrs.lastModifiedTime().toMillis();
             long seconds = lastMod / 1000;
             int micros = (int) ((lastMod % 1000) * 1000);
-            CmsGetFileAttributeValuesResponse resp = new CmsGetFileAttributeValuesResponse()
-                    .fileName(fileName).fileSize(attrs.size())
+            CmsGetFileAttributeValuesResponse resp = new CmsGetFileAttributeValuesResponse().fileName(fileName).fileSize(attrs.size())
                     .lastModified(new CmsUtcTime().secondsSinceEpoch(seconds).fractionOfSecond(micros)).checkSum(crc.getValue());
 
             log.info("GetFileAttributeValues: file='{}' size={}", fileName, attrs.size());

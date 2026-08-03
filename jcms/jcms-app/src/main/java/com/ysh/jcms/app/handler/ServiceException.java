@@ -27,8 +27,7 @@ public class ServiceException extends RuntimeException {
     }
 
     /**
-     * Service error code (e.g.
-     * {@link CmsServiceError#INSTANCE_NOT_AVAILABLE}).
+     * Service error code (e.g. {@link CmsServiceError#INSTANCE_NOT_AVAILABLE}).
      */
     public int serviceError() {
         return serviceError;

@@ -28,8 +28,8 @@ public class GetRpcMethodDefinitionServer extends BaseServerHandler {
             RpcRegistry.MethodDef def = RpcRegistry.getMethodByRef(ref);
             CmsRpcMethodDefChoice choice;
             if (def != null) {
-                choice = new CmsRpcMethodDefChoice().altMethod(new CmsRpcMethodDef().version(def.version)
-                        .timeout(def.timeout).request(def.requestDef).response(def.responseDef));
+                choice = new CmsRpcMethodDefChoice().altMethod(
+                        new CmsRpcMethodDef().version(def.version).timeout(def.timeout).request(def.requestDef).response(def.responseDef));
             } else {
                 choice = new CmsRpcMethodDefChoice().altError(12); // TYPE_CONFLICT
             }

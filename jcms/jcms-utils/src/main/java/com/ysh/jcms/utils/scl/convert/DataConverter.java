@@ -60,7 +60,8 @@ public final class DataConverter {
     }
 
     /**
-     * Auto-detect type from a value string (used when bType is unknown, e.g. ReportEngine).
+     * Auto-detect type from a value string (used when bType is unknown, e.g.
+     * ReportEngine).
      */
     public static CmsData autoDetect(String val) {
         if ("true".equalsIgnoreCase(val) || "false".equalsIgnoreCase(val) || "0".equals(val) || "1".equals(val))

@@ -7,7 +7,7 @@ if (-not $env:JAVA_HOME -or -not (Test-Path "$env:JAVA_HOME\bin\java.exe")) {
 }
 
 Push-Location jcms
-mvn spotless:apply -q
+mvn com.diffplug.spotless:spotless-maven-plugin:2.13.0:apply -q
 mvn install -DskipTests -q
 if ($LASTEXITCODE -ne 0) { Pop-Location; exit 1 }
 Pop-Location

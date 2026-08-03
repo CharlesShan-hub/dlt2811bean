@@ -13,8 +13,7 @@ import java.util.List;
 public class LdDirClient extends BaseClientHandler {
 
     public void execute(LdDirDao dao) throws Exception {
-        CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest()
-                .referenceAfter(dao.referenceAfter());
+        CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest().referenceAfter(dao.referenceAfter());
         if (dao.ldName() != null) {
             req.ldName(dao.ldName());
         }
@@ -24,8 +23,7 @@ public class LdDirClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogicalDeviceDirectoryError err = decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
-        throw new IOException(
-                "GetLogicalDeviceDirectory rejected: " + err.value());
+        throw new IOException("GetLogicalDeviceDirectory rejected: " + err.value());
     }
 
     @Override

@@ -38,8 +38,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetFileAttributeValuesError err = decodeErr(frame, new CmsGetFileAttributeValuesError());
-        throw new IOException(
-                "GetFileAttributeValues rejected: " + err.value());
+        throw new IOException("GetFileAttributeValues rejected: " + err.value());
     }
 
     @Override
@@ -48,7 +47,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
 
         long epochSeconds = resp.lastModified.secondsSinceEpoch.value();
         int fractionMicros = resp.lastModified.fractionOfSecond.value();
-        lastResult = new FileAttrResult(resp.fileName.value(),
-                resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000, resp.checkSum.value());
+        lastResult = new FileAttrResult(resp.fileName.value(), resp.fileSize.value(), epochSeconds * 1000 + fractionMicros / 1000,
+                resp.checkSum.value());
     }
 }

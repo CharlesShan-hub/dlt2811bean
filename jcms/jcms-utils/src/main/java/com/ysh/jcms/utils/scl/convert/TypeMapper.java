@@ -8,7 +8,8 @@ import java.nio.charset.StandardCharsets;
 /**
  * Maps an SCL bType + string value to a {@link CmsData} CHOICE instance.
  *
- * <p>Pure lookup; falls back to OCTET STRING on parse failure or unknown type.
+ * <p>
+ * Pure lookup; falls back to OCTET STRING on parse failure or unknown type.
  */
 public final class TypeMapper {
 
@@ -18,8 +19,10 @@ public final class TypeMapper {
     /**
      * Convert a bType + string value to a CmsData CHOICE.
      *
-     * @param bType SCL bType, e.g. "INT32", "FLOAT32", "BOOLEAN"
-     * @param value string value
+     * @param bType
+     *            SCL bType, e.g. "INT32", "FLOAT32", "BOOLEAN"
+     * @param value
+     *            string value
      * @return CmsData instance; OCTET STRING fallback on failure
      */
     public static CmsData createTypedValue(String bType, String value) {

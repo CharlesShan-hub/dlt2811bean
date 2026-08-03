@@ -66,7 +66,6 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
             offsets.add(off.value());
         }
 
-        lastResult = new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(),
-                resp.datSet.value(), offsets);
+        lastResult = new ElementNumberResult(resp.gocbReference.value(), resp.confRev.value(), resp.datSet.value(), offsets);
     }
 }

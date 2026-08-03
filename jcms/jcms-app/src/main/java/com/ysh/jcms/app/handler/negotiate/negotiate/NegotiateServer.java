@@ -44,7 +44,6 @@ public class NegotiateServer extends BaseServerHandler {
                 config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
 
         return buildSuccess(new CmsNegotiateResponse().apduSize(negotiatedApduSize).asduSize(config.getAsduSize())
-                .protocolVersion(config.getProtocolVersion())
-                .modelVersion(config.getModelVersion()).encode(), reqId);
+                .protocolVersion(config.getProtocolVersion()).modelVersion(config.getModelVersion()).encode(), reqId);
     }
 }

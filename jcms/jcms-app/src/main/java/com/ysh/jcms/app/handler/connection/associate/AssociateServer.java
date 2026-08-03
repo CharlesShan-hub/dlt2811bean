@@ -88,8 +88,8 @@ public class AssociateServer extends BaseServerHandler {
             try {
                 byte[] signedData = buildServerSignedData(sapRef);
                 byte[] signature = GmSignature.sign(serverPrivateKey, signedData);
-                resp.authenticationParameter(
-                        new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes).signedTime(new CmsUtcTime().now()).signedValue(signature));
+                resp.authenticationParameter(new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes)
+                        .signedTime(new CmsUtcTime().now()).signedValue(signature));
             } catch (Exception e) {
                 log.warn("Failed to sign server auth param", e);
             }
@@ -166,7 +166,8 @@ public class AssociateServer extends BaseServerHandler {
     private byte[] prepareSignedData(String sapRef, CmsAssociateRequest req) {
         byte[] sapBytes = sapRef.getBytes(StandardCharsets.UTF_8);
         if (req.isPresent("authenticationParameter") && req.authenticationParameter.signedTime != null) {
-            byte[] timeBytes = String.valueOf(req.authenticationParameter.signedTime.secondsSinceEpoch.value()).getBytes(StandardCharsets.UTF_8);
+            byte[] timeBytes = String.valueOf(req.authenticationParameter.signedTime.secondsSinceEpoch.value())
+                    .getBytes(StandardCharsets.UTF_8);
             byte[] result = new byte[sapBytes.length + timeBytes.length];
             System.arraycopy(sapBytes, 0, result, 0, sapBytes.length);
             System.arraycopy(timeBytes, 0, result, sapBytes.length, timeBytes.length);

@@ -16,13 +16,15 @@ public class QueryLogAfterClient extends BaseClientHandler {
     public void execute(QueryLogAfterDao dao) throws Exception {
         CmsQueryLogAfterRequest req = new CmsQueryLogAfterRequest().logReference(dao.logRef()).entry(entryIdBytes(dao.entryId()));
         if (dao.startTime() != null) {
-            req.startTime(new CmsBinaryTime().msOfDay(dao.startTime() % 86400000L)
-                    .daysSince1984((int) (dao.startTime() / 86400000L)));
+            req.startTime(new CmsBinaryTime().msOfDay(dao.startTime() % 86400000L).daysSince1984((int) (dao.startTime() / 86400000L)));
         }
         send(ServiceName.QUERY_LOG_AFTER, req);
     }
 
-    /** EntryID 为固定 8 字节 OCTET STRING — 字符串左补 '0' 到 8 字节（与 MockLogGenerator 的 %08d 格式一致）。 */
+    /**
+     * EntryID 为固定 8 字节 OCTET STRING — 字符串左补 '0' 到 8 字节（与 MockLogGenerator 的 %08d
+     * 格式一致）。
+     */
     private static byte[] entryIdBytes(String id) {
         if (id == null)
             id = "";
