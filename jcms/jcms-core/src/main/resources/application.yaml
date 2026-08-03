@@ -17,6 +17,12 @@ client:
   defaultSecure: false
   connectTimeoutMs: 5000
   requestTimeoutMs: 5000
+  accessPoint:
+    # true=ap-dir 从 SCD 文件读 AP；false=从 defaultAps 静态列表读（无 SCD 场景）
+    fromScd: false
+    defaultAps:
+      - C_B5041X/S1
+      - P_B5041A/S1
   console:
     tracePdu: false
     apiPort: 7899

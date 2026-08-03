@@ -77,7 +77,16 @@ public class CmsConfig {
         private boolean defaultSecure = false;
         private int connectTimeoutMs = 5000;
         private int requestTimeoutMs = 5000;
+        private AccessPoint accessPoint = new AccessPoint();
         private Console console = new Console();
+
+        @Data
+        public static class AccessPoint {
+            /** AP 来源: true=从 SCD 读, false=从 defaultAps 列表读 */
+            private boolean fromScd = true;
+            /** fromScd=false 时的静态 AP 引用列表（如 C_B5041X/S1） */
+            private List<String> defaultAps = new ArrayList<>();
+        }
 
         @Data
         public static class Console {
@@ -193,6 +202,12 @@ public class CmsConfig {
                 client.connectTimeoutMs = other.client.connectTimeoutMs;
             if (other.client.requestTimeoutMs != 5000)
                 client.requestTimeoutMs = other.client.requestTimeoutMs;
+            if (other.client.accessPoint != null) {
+                if (other.client.accessPoint.fromScd != true)
+                    client.accessPoint.fromScd = other.client.accessPoint.fromScd;
+                if (other.client.accessPoint.defaultAps != null && !other.client.accessPoint.defaultAps.isEmpty())
+                    client.accessPoint.defaultAps = new ArrayList<>(other.client.accessPoint.defaultAps);
+            }
         }
         if (other.protocol != null) {
             if (other.protocol.maxArraySize != 1024)

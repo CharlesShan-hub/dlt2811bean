@@ -318,6 +318,7 @@ connect --ap C_B5041X/S1; server-dir; // 查看有哪些 LD
 |------|------|
 | **系统** | help, clear, exit |
 | **连接** | connect, disconnect, associate, release, abort, negotiate, test |
+| **配置** | ap-dir（列出 SCD 中的 AccessPoint，无需连接） |
 | **调试** | trace-pdu |
 | **目录** | server-dir, ld-dir, ln-dir, all-data, all-def, all-cb |
 | **数据** | get-data-values, set-data-values, data-dir, get-data-def |

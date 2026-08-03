@@ -101,4 +101,14 @@ public final class ConsolePrinter {
         for (int i = 0; i < items.size(); i++)
             println(GRY + "    [" + i + "] " + RST + formatter.apply(items.get(i)));
     }
+
+    /** 输出纯编号列表（不带标题行）。 */
+    public static <T> void listItems(List<T> items, Function<T, String> formatter) {
+        if (items.isEmpty()) {
+            gray("（empty）");
+            return;
+        }
+        for (int i = 0; i < items.size(); i++)
+            println(GRY + "    [" + i + "] " + RST + formatter.apply(items.get(i)));
+    }
 }
