@@ -8,7 +8,7 @@
         @select="activeView = $event"
       />
       <main class="main-content">
-        <Dashboard v-if="activeView === 'connect-root'" :connected="connected" />
+        <Dashboard v-if="activeView === 'connect-root'" :connected="connected" :tcp-connected="tcpConnected" />
         <CommandDebug v-else-if="isCmdView" :cmd="activeView" />
         <Terminal v-else-if="activeView === 'terminal'" />
         <ServerDir v-else-if="activeView === 'server-dir'" :connected="connected" />

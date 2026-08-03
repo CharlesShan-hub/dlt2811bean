@@ -39,12 +39,7 @@
         </UiCard>
 
         <UiCard title="连接流程" icon="⛓">
-          <ol class="flow-steps">
-            <li v-for="step in flowSteps" :key="step.title">
-              <span class="step-title">{{ step.title }}</span>
-              <span class="step-desc">{{ step.desc }}</span>
-            </li>
-          </ol>
+          <StateDiagram :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
           <p class="tip">💡 <code>connect --ap</code> 自动完成上述三步；关联建立后即可使用各服务页面。</p>
         </UiCard>
       </div>
@@ -53,15 +48,27 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import ConnectForm from '../components/ConnectForm.vue'
+import StateDiagram from '../components/StateDiagram.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import UiCollapse from '../components/ui/UiCollapse.vue'
 import { executeJson } from '../api/cms.js'
+import { CONNECT_FLOW } from '../cmddefs/connect.js'
 
-defineProps({
+const props = defineProps({
   connected: Boolean,
+  tcpConnected: Boolean,
+})
+
+const connectFlow = CONNECT_FLOW
+
+/** 根据实时状态高亮状态图中的当前状态。 */
+const activeState = computed(() => {
+  if (props.connected) return 'assoc'
+  if (props.tcpConnected) return 'tcp'
+  return 'init'
 })
 
 const cmdRows = [
@@ -113,12 +120,6 @@ const cmdRows = [
     desc: '切换 AP 来源',
     detail: '运行时切换 AP 来源（SCD 文件 / 静态列表），立即生效，无需重启。',
   },
-]
-
-const flowSteps = [
-  { title: '① TCP 连接', desc: '建立到 127.0.0.1:8102 的传输层连接（可 TLS）' },
-  { title: '② 协商 Negotiate', desc: '交换 APDU/ASDU 大小与协议版本' },
-  { title: '③ 关联 Associate', desc: '指定 ServerAccessPointReference 建立应用层关联' },
 ]
 
 const busy = ref(false)
@@ -284,37 +285,6 @@ async function disconnect() {
   margin: 8px 0 0;
   font-size: 12px;
   line-height: 1.7;
-  color: var(--text-secondary);
-}
-
-.flow-steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  counter-reset: none;
-}
-
-.flow-steps li {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px dashed var(--border);
-}
-
-.flow-steps li:last-child {
-  border-bottom: none;
-}
-
-.step-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-}
-
-.step-desc {
-  font-size: 12px;
   color: var(--text-secondary);
 }
 

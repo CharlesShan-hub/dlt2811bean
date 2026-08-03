@@ -64,7 +64,7 @@ defineProps({
   submitLabel: { type: String, default: '连接' },
 })
 
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit', 'update:cmd'])
 
 const form = ref({ ap: '', ip: '127.0.0.1', port: 8102, secure: false, withAp: true, apdu: 65535, asdu: 65531, version: 1 })
 
@@ -72,6 +72,9 @@ const form = ref({ ap: '', ip: '127.0.0.1', port: 8102, secure: false, withAp: t
 watch(() => form.value.secure, (secure) => {
   form.value.port = secure ? 9102 : 8102
 })
+
+// 表单任何变化都实时向外输出拼好的命令（供命令预览使用）
+watch(form, () => emit('update:cmd', buildCmd()), { immediate: true, deep: true })
 
 /** 读取当前 neg-cfg 配置并回填协商参数。 */
 async function loadConfig() {

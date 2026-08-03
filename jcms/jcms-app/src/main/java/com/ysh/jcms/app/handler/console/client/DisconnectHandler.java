@@ -28,8 +28,8 @@ public class DisconnectHandler implements CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) {
         boolean jsonMode = "true".equals(args.get("json"));
-        if (!console.isConnected()) {
-            ConsolePrinter.info("Not connected.");
+        // disconnect 是传输层操作：只要 TCP 连接就能断开，无需已关联
+        if (!console.requireTcpConnected(args)) {
             return;
         }
         console.close();

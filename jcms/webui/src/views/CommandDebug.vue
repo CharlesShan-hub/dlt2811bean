@@ -9,7 +9,7 @@
       <!-- ── 左栏：参数 ── -->
       <UiCard title="参数" icon="⚙">
         <!-- connect 专属：使用共享连接表单 -->
-        <ConnectForm v-if="isConnect" :busy="busy" submit-label="执行 connect" @submit="runCmd" />
+        <ConnectForm v-if="isConnect" :busy="busy" submit-label="执行 connect" @submit="runCmd" @update:cmd="connectCmd = $event" />
 
         <!-- 通用参数渲染（connect 由上方专属模板渲染，跳过） -->
         <template v-if="!isConnect && simpleParams.length">
@@ -44,30 +44,22 @@
         </div>
       </UiCard>
 
-      <!-- ── 右栏：流程/ASN.1 + 会话记录 ── -->
+      <!-- ── 右栏：流程 + 命令与返回（含实时预览） ── -->
       <div class="col-right">
         <UiCard title="连接流程" icon="⛓" collapsible>
-          <!-- connect 是便捷封装命令：显示流程图而非 ASN.1 -->
-          <div v-if="isConnect" class="flow-diagram">
-            <template v-for="(step, i) in connectFlow" :key="step.title">
-              <div class="flow-node">
-                <div class="flow-icon">{{ step.icon }}</div>
-                <div class="flow-body">
-                  <div class="flow-title">{{ step.title }}</div>
-                  <div class="flow-desc">{{ step.desc }}</div>
-                </div>
-              </div>
-              <div v-if="i < connectFlow.length - 1" class="flow-arrow">
-                <span class="flow-arrow-line"></span>
-                <span class="flow-arrow-head">▾</span>
-              </div>
-            </template>
-          </div>
+          <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
+          <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" />
           <pre v-else class="pdu">{{ def.asn1 }}</pre>
         </UiCard>
 
         <UiCard title="命令与返回" icon="🔄" fill>
-          <div v-if="history.length === 0" class="empty">执行后在此显示发送的命令与返回结果。</div>
+          <div class="cmd-preview">
+            <code class="preview-line">{{ previewCmd }}</code>
+            <UiButton variant="ghost" @click="copyCmd">
+              {{ copied ? '✓ 已复制' : '复制命令' }}
+            </UiButton>
+          </div>
+          <div v-if="history.length === 0" class="empty">执行后在此显示返回结果。</div>
           <div v-for="(h, i) in history" :key="i" class="hist-item">
             <div class="hist-cmd">
               <span class="hist-time">{{ h.time }}</span>
@@ -85,6 +77,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import ConnectForm from '../components/ConnectForm.vue'
 import ApPicker from '../components/ApPicker.vue'
+import StateDiagram from '../components/StateDiagram.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import UiInput from '../components/ui/UiInput.vue'
@@ -92,18 +85,13 @@ import UiSelect from '../components/ui/UiSelect.vue'
 import UiSwitch from '../components/ui/UiSwitch.vue'
 import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
+import { CONNECT_FLOW } from '../cmddefs/connect.js'
 
 const props = defineProps({
   cmd: String,
 })
 
-/** connect 便捷封装命令的流程图节点。 */
-const connectFlow = [
-  { icon: '🔌', title: 'TCP 连接', desc: '建立到服务器的传输层连接（可 TLS）' },
-  { icon: '🤝', title: '协商 Negotiate', desc: '交换 APDU / ASDU 大小与协议版本' },
-  { icon: '📨', title: '关联 Associate', desc: '指定 ServerAccessPointReference 建立应用层关联' },
-  { icon: '✅', title: '已连接', desc: '关联建立后即可调用各服务' },
-]
+const connectFlow = CONNECT_FLOW
 
 const def = computed(() => CMD_DEFS[props.cmd] || CMD_DEFS.connect)
 const title = computed(() => def.value.title)
@@ -113,6 +101,28 @@ const simpleParams = computed(() => def.value.params)
 const form = reactive({})
 const busy = ref(false)
 const history = ref([])
+const connectCmd = ref('')
+const copied = ref(false)
+let copyTimer
+
+/** 实时生成的命令：connect 由 ConnectForm 输出，其余由表单状态实时拼接 */
+const previewCmd = computed(() => {
+  if (isConnect.value) {
+    return connectCmd.value
+  }
+  return buildCmd()
+})
+
+async function copyCmd() {
+  try {
+    await navigator.clipboard.writeText(previewCmd.value)
+    copied.value = true
+    clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => (copied.value = false), 1500)
+  } catch {
+    // 剪贴板不可用时忽略
+  }
+}
 
 function initForm() {
   for (const k of Object.keys(form)) {
@@ -131,6 +141,8 @@ function initForm() {
 
 watch(() => props.cmd, async () => {
   history.value = []
+  connectCmd.value = ''
+  copied.value = false
   initForm()
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
@@ -289,74 +301,25 @@ async function runCmd(cmdLine) {
   font-size: 13px;
 }
 
-/* ── 连接流程图 ── */
-.flow-diagram {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-}
-
-.flow-node {
+/* ── 命令预览 ── */
+.cmd-preview {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.preview-line {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
   background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
-  transition: border-color 0.15s;
-}
-
-.flow-node:hover {
-  border-color: var(--accent);
-}
-
-.flow-icon {
-  width: 40px;
-  height: 40px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  background: var(--accent-muted);
-  border-radius: 10px;
-}
-
-.flow-body {
-  min-width: 0;
-}
-
-.flow-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 3px;
-}
-
-.flow-desc {
+  border-radius: 8px;
+  padding: 10px 12px;
   font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.flow-arrow {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 2px 0;
-}
-
-.flow-arrow-line {
-  width: 2px;
-  height: 14px;
-  background: linear-gradient(to bottom, var(--accent), transparent);
-  opacity: 0.5;
-}
-
-.flow-arrow-head {
   color: var(--accent);
-  font-size: 12px;
-  line-height: 1;
 }
 
 /* ── ASN.1 ── */
