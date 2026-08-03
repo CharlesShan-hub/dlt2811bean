@@ -15,8 +15,10 @@ import java.util.Map;
 /**
  * Base class for BIT STRING types.
  *
- * <p>The packed value is stored in {@code inner._v} as a hex string (JER format).
- * Subclasses declare fields annotated with {@link Bit} for individual bit positions.
+ * <p>
+ * The packed value is stored in {@code inner._v} as a hex string (JER format).
+ * Subclasses declare fields annotated with {@link Bit} for individual bit
+ * positions.
  */
 public abstract class CmsBits extends CmsType {
 
@@ -27,7 +29,9 @@ public abstract class CmsBits extends CmsType {
         int length() default 1;
     }
 
-    /** Per-class metadata: @Bit fields and total bit width, built once per class. */
+    /**
+     * Per-class metadata: @Bit fields and total bit width, built once per class.
+     */
     private static final ClassValue<BitsMeta> BITS_META = new ClassValue<BitsMeta>() {
         @Override
         protected BitsMeta computeValue(Class<?> type) {
@@ -35,7 +39,8 @@ public abstract class CmsBits extends CmsType {
             int max = 0;
             for (Field f : type.getFields()) {
                 Bit bit = f.getAnnotation(Bit.class);
-                if (bit == null) continue;
+                if (bit == null)
+                    continue;
                 fields.add(f);
                 max = Math.max(max, bit.value() + bit.length());
             }
@@ -62,7 +67,10 @@ public abstract class CmsBits extends CmsType {
         return BITS_META.get(getClass()).bitCount;
     }
 
-    /** Read packed value from _v. Supports hex string or JER form {"value": "HEX", "length": N}. */
+    /**
+     * Read packed value from _v. Supports hex string or JER form {"value": "HEX",
+     * "length": N}.
+     */
     private int readPacked() {
         Object v = V.getVal(inner._v);
         if (v instanceof String) {
@@ -120,9 +128,11 @@ public abstract class CmsBits extends CmsType {
                 Class<?> type = f.getType();
 
                 if (len == 1 && (type == boolean.class || type == Boolean.class)) {
-                    if (f.getBoolean(this)) packed |= (1 << pos);
+                    if (f.getBoolean(this))
+                        packed |= (1 << pos);
                 } else if (len == 1 && CmsBoolean.class.isAssignableFrom(type)) {
-                    if (((CmsBoolean) f.get(this)).value()) packed |= (1 << pos);
+                    if (((CmsBoolean) f.get(this)).value())
+                        packed |= (1 << pos);
                 } else if (type == int.class || type == Integer.class) {
                     int val = f.getInt(this);
                     packed |= (val & mask(len)) << pos;

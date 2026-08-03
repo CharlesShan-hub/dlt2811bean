@@ -3,14 +3,17 @@ package com.ysh.jcms.util;
 import java.nio.ByteBuffer;
 
 /**
- * Byte-level utilities for packed OCTET STRING types (UtcTime, BinaryTime, etc.).
+ * Byte-level utilities for packed OCTET STRING types (UtcTime, BinaryTime,
+ * etc.).
  *
- * <p>Supplements {@link ByteBuffer} with unsigned and 24-bit operations that
- * the JDK does not provide natively.
+ * <p>
+ * Supplements {@link ByteBuffer} with unsigned and 24-bit operations that the
+ * JDK does not provide natively.
  */
 public final class CmsBytesUtil {
 
-    private CmsBytesUtil() {}
+    private CmsBytesUtil() {
+    }
 
     // ── unsigned int24 ────────────────────────────────────────────────
 

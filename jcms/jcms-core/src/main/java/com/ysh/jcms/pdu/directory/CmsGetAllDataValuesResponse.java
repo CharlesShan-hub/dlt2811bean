@@ -2,9 +2,7 @@ package com.ysh.jcms.pdu.directory;
 
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.InnerAnonymousGetAllDataValuesResponsePDUData;
 import com.ysh.jcms.data.InnerGetAllDataValuesResponsePDU;
-import com.ysh.jcms.data.InnerSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 
@@ -38,6 +36,5 @@ public class CmsGetAllDataValuesResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
 
 }

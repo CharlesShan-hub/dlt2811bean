@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetLogStatusValues-ErrorPDU ::= ServiceError — 8.8.6
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetLogStatusValuesError extends CmsServiceError {
 

@@ -1,11 +1,8 @@
 package com.ysh.jcms.pdu.directory;
 
-import com.ysh.jcms.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.InnerAnonymousGetAllCBValuesResponsePDUCbValue;
 import com.ysh.jcms.data.InnerGetAllCBValuesResponsePDU;
-import com.ysh.jcms.data.InnerSubReference;
 import com.ysh.jcms.data.scalar.CmsBoolean;
 import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
 
@@ -39,6 +36,5 @@ public class CmsGetAllCbValuesResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
 
 }

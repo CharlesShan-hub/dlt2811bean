@@ -6,8 +6,16 @@ import com.ysh.jcms.data.InnerFloat64;
 import java.nio.ByteBuffer;
 
 /**
+ * <pre>
+ * {@code
+ * Float64 ::= OCTET STRING (SIZE (8)) — 7.1.4
+ * }
+ * </pre>
+ *
+ * <p>
  * Wraps {@link InnerFloat64} for PER encode/decode via Rust (libasn1.so).
- * InnerFloat64 stores the double as an 8-byte OCTET STRING (IEEE 754 big-endian).
+ * InnerFloat64 stores the double as an 8-byte OCTET STRING (IEEE 754
+ * big-endian).
  */
 public class CmsFloat64 extends CmsScalar {
 

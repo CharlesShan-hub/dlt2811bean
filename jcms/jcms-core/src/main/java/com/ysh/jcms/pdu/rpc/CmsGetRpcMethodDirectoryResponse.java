@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetRpcMethodDirectory-ResponsePDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF VisibleString,
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.13.3
+ * GetRpcMethodDirectory-ResponsePDU ::= SEQUENCE { reference [0] IMPLICIT
+ * SEQUENCE OF VisibleString, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } —
+ * 8.13.3
  */
 public class CmsGetRpcMethodDirectoryResponse extends CmsSequence {
 

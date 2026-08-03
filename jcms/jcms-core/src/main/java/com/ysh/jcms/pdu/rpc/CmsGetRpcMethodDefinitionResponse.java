@@ -10,10 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetRpcMethodDefinition-ResponsePDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF RpcMethodDefChoice,
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.13.5
+ * GetRpcMethodDefinition-ResponsePDU ::= SEQUENCE { reference [0] IMPLICIT
+ * SEQUENCE OF RpcMethodDefChoice, moreFollows [1] IMPLICIT Boolean DEFAULT 1 }
+ * — 8.13.5
  */
 public class CmsGetRpcMethodDefinitionResponse extends CmsSequence {
 

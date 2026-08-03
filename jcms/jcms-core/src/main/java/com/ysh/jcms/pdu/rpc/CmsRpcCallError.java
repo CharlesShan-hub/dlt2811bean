@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * RpcCall-ErrorPDU ::= ServiceError — 8.13.6
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsRpcCallError extends CmsServiceError {
 

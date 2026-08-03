@@ -4,9 +4,14 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerBoolean;
 
 /**
- * BOOLEAN — 8.2.1.
+ * <pre>
+ * {@code
+ * Boolean ::= INTEGER (0..1) — 7.1.1
+ * }
+ * </pre>
  *
- * <p>Read/write via CmsScalar which reads {@code inner.value} directly.
+ * <p>
+ * Read/write via CmsScalar which reads {@code inner.value} directly.
  */
 public class CmsBoolean extends CmsScalar {
 

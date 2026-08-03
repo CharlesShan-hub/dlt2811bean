@@ -11,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetDataSetValues-RequestPDU ::= SEQUENCE {
- *     datasetReference    [0] IMPLICIT ObjectReference,
- *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL,
- *     value               [2] IMPLICIT SEQUENCE OF Data
- * } — 8.5.2
+ * SetDataSetValues-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
+ * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL, value
+ * [2] IMPLICIT SEQUENCE OF Data } — 8.5.2
  */
 public class CmsSetDataSetValuesRequest extends CmsSequence {
 
@@ -35,8 +33,13 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
         this.value = new ArrayList<>();
     }
 
-    public CmsSetDataSetValuesRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsSetDataSetValuesRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsSetDataSetValuesRequest datasetReference(String v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsSetDataSetValuesRequest datasetReference(byte[] v) {
+        return datasetReference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsSetDataSetValuesRequest referenceAfter(byte[] v) {
         return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
@@ -53,6 +56,5 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
         this.value = v;
         return this;
     }
-
 
 }

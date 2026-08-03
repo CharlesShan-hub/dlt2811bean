@@ -6,7 +6,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 /**
  * SetLCBValues-ResponsePDU ::= NULL — 8.8.3
  *
- * <p>Response has no payload.
+ * <p>
+ * Response has no payload.
  */
 public class CmsSetLcbValuesResponse extends CmsSequence {
 

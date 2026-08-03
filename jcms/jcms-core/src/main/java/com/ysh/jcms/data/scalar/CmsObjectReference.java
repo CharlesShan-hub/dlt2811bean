@@ -4,9 +4,15 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerObjectReference;
 
 /**
+ * <pre>
+ * {@code
  * ObjectReference ::= VisibleString (SIZE(0..129)) — 7.3.2
+ * }
+ * </pre>
+ *
  * <p>
- * Wraps {@link InnerObjectReference} for PER encode/decode via Rust (libasn1.so).
+ * Wraps {@link InnerObjectReference} for PER encode/decode via Rust
+ * (libasn1.so).
  */
 public class CmsObjectReference extends CmsScalar {
     public static final int MAX_LEN = 129;

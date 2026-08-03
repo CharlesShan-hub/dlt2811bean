@@ -13,15 +13,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoReference-ResponsePDU ::= SEQUENCE {
- *     gocbReference   [0] IMPLICIT ObjectReference,
- *     confRev         [1] IMPLICIT Int32U,
- *     datSet          [2] IMPLICIT ObjectReference,
- *     memberData      [3] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference   [0] IMPLICIT ObjectReference,
- *         fc          [1] IMPLICIT FunctionalConstraint
- *     }
- * } — 8.9.2
+ * GetGoReference-ResponsePDU ::= SEQUENCE { gocbReference [0] IMPLICIT
+ * ObjectReference, confRev [1] IMPLICIT Int32U, datSet [2] IMPLICIT
+ * ObjectReference, memberData [3] IMPLICIT SEQUENCE OF SEQUENCE { reference [0]
+ * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.9.2
  */
 public class CmsGetGoReferenceResponse extends CmsSequence {
 
@@ -42,10 +37,26 @@ public class CmsGetGoReferenceResponse extends CmsSequence {
         this.memberData = new ArrayList<>();
     }
 
-    public CmsGetGoReferenceResponse gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGoReferenceResponse gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGoReferenceResponse confRev(long v) { this.confRev.value(v); return this; }
-    public CmsGetGoReferenceResponse datSet(String v) { this.datSet.value(v); return this; }
-    public CmsGetGoReferenceResponse datSet(byte[] v) { return datSet(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGoReferenceResponse memberData(List<CmsGoRefFcEntry> v) { this.memberData = v; return this; }
+    public CmsGetGoReferenceResponse gocbReference(String v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceResponse gocbReference(byte[] v) {
+        return gocbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGoReferenceResponse confRev(long v) {
+        this.confRev.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceResponse datSet(String v) {
+        this.datSet.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceResponse datSet(byte[] v) {
+        return datSet(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGoReferenceResponse memberData(List<CmsGoRefFcEntry> v) {
+        this.memberData = v;
+        return this;
+    }
 }

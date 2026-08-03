@@ -7,9 +7,28 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * Quality ::= BIT STRING (SIZE(13)) — 7.3.6
+ * <pre>
+ * {@code
+ * Quality ::= BIT STRING {
+ *     validity        (0..1),
+ *     overflow        (2),
+ *     outOfRange      (3),
+ *     badReference    (4),
+ *     oscillatory     (5),
+ *     failure         (6),
+ *     oldData         (7),
+ *     inconsistent    (8),
+ *     inaccurate      (9),
+ *     substituted     (10),
+ *     test            (11),
+ *     operatorBlocked (12)
+ * } (SIZE(13)) — 7.3.6
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true)
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
 public class CmsQuality extends CmsBits {
 
     /** Validity values (2-bit field). */
@@ -18,18 +37,32 @@ public class CmsQuality extends CmsBits {
     public static final int RESERVED = 2;
     public static final int QUESTIONABLE = 3;
 
-    @Bit(value = 0, length = 2) public int validity;
-    @Bit(2) public boolean overflow;
-    @Bit(3) public boolean outOfRange;
-    @Bit(4) public boolean badReference;
-    @Bit(5) public boolean oscillatory;
-    @Bit(6) public boolean failure;
-    @Bit(7) public boolean oldData;
-    @Bit(8) public boolean inconsistent;
-    @Bit(9) public boolean inaccurate;
-    @Bit(10) public boolean substituted;
-    @Bit(11) public boolean test;
-    @Bit(12) public boolean operatorBlocked;
+    @Bit(value = 0, length = 2)
+    public int validity;
+    @Bit(2)
+    public boolean overflow;
+    @Bit(3)
+    public boolean outOfRange;
+    @Bit(4)
+    public boolean badReference;
+    @Bit(5)
+    public boolean oscillatory;
+    @Bit(6)
+    public boolean failure;
+    @Bit(7)
+    public boolean oldData;
+    @Bit(8)
+    public boolean inconsistent;
+    @Bit(9)
+    public boolean inaccurate;
+    @Bit(10)
+    public boolean substituted;
+    @Bit(11)
+    public boolean test;
+    @Bit(12)
+    public boolean operatorBlocked;
 
-    public CmsQuality() { super(new InnerQuality()); }
+    public CmsQuality() {
+        super(new InnerQuality());
+    }
 }

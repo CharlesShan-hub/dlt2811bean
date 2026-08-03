@@ -14,7 +14,8 @@ import com.ysh.jcms.data.scalar.CmsSubReference;
  *     fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
  * }
  *
- * <p>Used by GetDataDirectory Response (SEQUENCE OF SubRefEntry).
+ * <p>
+ * Used by GetDataDirectory Response (SEQUENCE OF SubRefEntry).
  */
 public class CmsSubRefEntry extends CmsSequence {
 
@@ -30,8 +31,14 @@ public class CmsSubRefEntry extends CmsSequence {
         this.fc = new CmsFC();
     }
 
-    public CmsSubRefEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSubRefEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
+    public CmsSubRefEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSubRefEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
     public CmsSubRefEntry fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

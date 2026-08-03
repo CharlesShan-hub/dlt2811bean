@@ -5,9 +5,14 @@ import com.ysh.jcms.data.InnerInt64;
 import java.math.BigInteger;
 
 /**
- * Wraps {@link InnerInt64} for PER encode/decode via Rust (libasn1.so).
+ * <pre>
+ * {@code
+ * Int64 ::= INTEGER (-9223372036854775808..9223372036854775807) — 7.1.2
+ * }
+ * </pre>
+ *
  * <p>
- * Int64 ::= INTEGER (-9223372036854775808..9223372036854775807)
+ * Wraps {@link InnerInt64} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt64 extends CmsScalar {
 

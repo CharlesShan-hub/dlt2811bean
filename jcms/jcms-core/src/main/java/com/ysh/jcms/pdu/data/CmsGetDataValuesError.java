@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetDataValues-ErrorPDU ::= ServiceError — 8.4.1
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetDataValuesError extends CmsServiceError {
 

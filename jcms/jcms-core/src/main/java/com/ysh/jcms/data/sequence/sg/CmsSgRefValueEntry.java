@@ -14,16 +14,26 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
  */
 public class CmsSgRefValueEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData value;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData value;
 
     public CmsSgRefValueEntry() {
         super(new InnerAnonymousSetEditSGValueRequestPDUData());
     }
 
-    public CmsSgRefValueEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSgRefValueEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsSgRefValueEntry value(CmsData v) { this.value.value(v); return this; }
+    public CmsSgRefValueEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSgRefValueEntry reference(byte[] v) {
+        return reference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsSgRefValueEntry value(CmsData v) {
+        this.value.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsSgRefValueEntry (fluent). */
     public CmsSgRefValueEntry value(CmsSgRefValueEntry v) {

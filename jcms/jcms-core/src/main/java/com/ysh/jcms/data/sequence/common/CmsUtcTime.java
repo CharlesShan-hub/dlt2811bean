@@ -96,8 +96,6 @@ public class CmsUtcTime extends CmsType {
     }
 
     public CmsUtcTime value(CmsUtcTime v) {
-        return secondsSinceEpoch(v.secondsSinceEpoch.value())
-            .fractionOfSecond(v.fractionOfSecond.value())
-            .timeQuality(v.timeQuality);
+        return secondsSinceEpoch(v.secondsSinceEpoch.value()).fractionOfSecond(v.fractionOfSecond.value()).timeQuality(v.timeQuality);
     }
 }

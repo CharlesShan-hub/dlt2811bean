@@ -4,9 +4,15 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt32U;
 
 /**
- * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so).
+ * <pre>
+ * {@code
+ * Int32U ::= INTEGER (0..4294967295) — 7.1.2
+ * }
+ * </pre>
+ *
  * <p>
- * Int32U ::= INTEGER (0..4294967295) — 32-bit unsigned.
+ * Wraps {@link InnerInt32U} for PER encode/decode via Rust (libasn1.so).
+ * 32-bit unsigned, represented as long (0..4294967295).
  */
 public class CmsInt32U extends CmsScalar {
 
@@ -23,7 +29,8 @@ public class CmsInt32U extends CmsScalar {
     /** Get unsigned int value as long (always 0..4294967295). */
     public long value() {
         Object v = innerGet();
-        if (v instanceof Number) return ((Number) v).longValue() & 0xFFFFFFFFL;
+        if (v instanceof Number)
+            return ((Number) v).longValue() & 0xFFFFFFFFL;
         return 0L;
     }
     public CmsInt32U value(long v) {

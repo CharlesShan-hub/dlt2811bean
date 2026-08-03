@@ -10,22 +10,31 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 
 /**
- * QueryLogAfter-RequestPDU ::= SEQUENCE {
- *     logReference    [0] IMPLICIT ObjectReference,
- *     startTime       [1] IMPLICIT EntryTime OPTIONAL,
- *     entry           [2] IMPLICIT EntryID
- * } — 8.8.5
+ * QueryLogAfter-RequestPDU ::= SEQUENCE { logReference [0] IMPLICIT
+ * ObjectReference, startTime [1] IMPLICIT EntryTime OPTIONAL, entry [2]
+ * IMPLICIT EntryID } — 8.8.5
  */
 public class CmsQueryLogAfterRequest extends CmsSequence {
 
-    @CmsField public CmsObjectReference logReference;
-    @CmsField(optional = true) public CmsBinaryTime startTime;
-    @CmsField public CmsEntryId entry;
+    @CmsField
+    public CmsObjectReference logReference;
+    @CmsField(optional = true)
+    public CmsBinaryTime startTime;
+    @CmsField
+    public CmsEntryId entry;
 
-    public CmsQueryLogAfterRequest() { super(new InnerQueryLogAfterRequestPDU()); }
+    public CmsQueryLogAfterRequest() {
+        super(new InnerQueryLogAfterRequestPDU());
+    }
 
-    public CmsQueryLogAfterRequest logReference(byte[] v) { this.logReference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsQueryLogAfterRequest logReference(String v) { this.logReference.value(v); return this; }
+    public CmsQueryLogAfterRequest logReference(byte[] v) {
+        this.logReference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsQueryLogAfterRequest logReference(String v) {
+        this.logReference.value(v);
+        return this;
+    }
     public CmsQueryLogAfterRequest startTime(CmsBinaryTime v) {
         if (v != null) {
             this.startTime.value(v);
@@ -35,5 +44,8 @@ public class CmsQueryLogAfterRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsQueryLogAfterRequest entry(byte[] v) { this.entry.value(v); return this; }
+    public CmsQueryLogAfterRequest entry(byte[] v) {
+        this.entry.value(v);
+        return this;
+    }
 }

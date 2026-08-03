@@ -8,9 +8,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * DeleteDataSet-RequestPDU ::= SEQUENCE {
- *     datasetReference    [0] IMPLICIT ObjectReference
- * } — 8.5.4
+ * DeleteDataSet-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
+ * ObjectReference } — 8.5.4
  */
 public class CmsDeleteDataSetRequest extends CmsSequence {
 
@@ -22,6 +21,11 @@ public class CmsDeleteDataSetRequest extends CmsSequence {
         this.datasetReference = new CmsObjectReference();
     }
 
-    public CmsDeleteDataSetRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsDeleteDataSetRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsDeleteDataSetRequest datasetReference(String v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsDeleteDataSetRequest datasetReference(byte[] v) {
+        return datasetReference(new String(v, StandardCharsets.UTF_8));
+    }
 }

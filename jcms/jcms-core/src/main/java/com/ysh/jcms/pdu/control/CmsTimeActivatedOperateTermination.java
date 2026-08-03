@@ -19,27 +19,65 @@ import com.ysh.jcms.data.sequence.common.CmsUtcTime;
  */
 public class CmsTimeActivatedOperateTermination extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData ctlVal;
-    @CmsField public CmsUtcTime operTm;
-    @CmsField public CmsOriginator origin;
-    @CmsField public CmsInt8U ctlNum;
-    @CmsField public CmsUtcTime t;
-    @CmsField public CmsBoolean test;
-    @CmsField public CmsCheck check;
-    @CmsField(optional = true) public CmsAddCause addCause;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData ctlVal;
+    @CmsField
+    public CmsUtcTime operTm;
+    @CmsField
+    public CmsOriginator origin;
+    @CmsField
+    public CmsInt8U ctlNum;
+    @CmsField
+    public CmsUtcTime t;
+    @CmsField
+    public CmsBoolean test;
+    @CmsField
+    public CmsCheck check;
+    @CmsField(optional = true)
+    public CmsAddCause addCause;
 
-    public CmsTimeActivatedOperateTermination() { super(new InnerTimeActivatedOperateTerminationRequestPDU()); }
+    public CmsTimeActivatedOperateTermination() {
+        super(new InnerTimeActivatedOperateTerminationRequestPDU());
+    }
 
-    public CmsTimeActivatedOperateTermination reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsTimeActivatedOperateTermination reference(String v) { this.reference.value(v); return this; }
-    public CmsTimeActivatedOperateTermination ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
-    public CmsTimeActivatedOperateTermination operTm(CmsUtcTime v) { this.operTm.value(v); return this; }
-    public CmsTimeActivatedOperateTermination origin(CmsOriginator v) { this.origin.value(v); return this; }
-    public CmsTimeActivatedOperateTermination ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsTimeActivatedOperateTermination t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsTimeActivatedOperateTermination test(boolean v) { this.test.value(v); return this; }
-    public CmsTimeActivatedOperateTermination check(CmsCheck v) { this.check.value(v); return this; }
+    public CmsTimeActivatedOperateTermination reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination ctlVal(CmsData v) {
+        this.ctlVal.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination operTm(CmsUtcTime v) {
+        this.operTm.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination origin(CmsOriginator v) {
+        this.origin.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsTimeActivatedOperateTermination check(CmsCheck v) {
+        this.check.value(v);
+        return this;
+    }
     public CmsTimeActivatedOperateTermination addCause(int v) {
         this.addCause.value(v);
         setPresent("addCause", true);

@@ -7,11 +7,16 @@ import com.ysh.jcms.data.scalar.CmsObjectName;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
+ * <pre>
+ * {@code
  * ReferenceChoice ::= CHOICE {
- *      ldName [0] IMPLICIT ObjectName,
- *      lnReference [1] IMPLICIT ObjectReference
+ *     ldName      [0] IMPLICIT ObjectName,
+ *     lnReference [1] IMPLICIT ObjectReference
  * } — 8.3.3
+ * }
+ * </pre>
  *
+ * <p>
  * Used by GetLogicalNodeDirectory, GetAllDataValues, GetAllDataDefinition,
  * GetAllCBValues. Each parent passes its own Inner*Reference type.
  */
@@ -36,40 +41,44 @@ public class CmsReferenceChoice extends CmsChoice {
         super(inner);
     }
 
-    public CmsReferenceChoice choice(int v) { super.choice(v); return this; }
+    public CmsReferenceChoice choice(int v) {
+        super.choice(v);
+        return this;
+    }
 
     /** Select ldName and set value in one call. */
-    public CmsReferenceChoice altLdName(String v) { choice(LD_NAME); this.altLdName.value(v); return this; }
+    public CmsReferenceChoice altLdName(String v) {
+        choice(LD_NAME);
+        this.altLdName.value(v);
+        return this;
+    }
 
     /** Select lnReference and set value in one call. */
-    public CmsReferenceChoice altLnReference(String v) { choice(LN_REFERENCE); this.altLnReference.value(v); return this; }
+    public CmsReferenceChoice altLnReference(String v) {
+        choice(LN_REFERENCE);
+        this.altLnReference.value(v);
+        return this;
+    }
 
     public CmsReferenceChoice value(CmsReferenceChoice v) {
-        int ch = v.choice();
-        choice(ch);
-        switch (ch) {
-            case LD_NAME:
-                this.altLdName.value(v.altLdName.value());
-                break;
-            case LN_REFERENCE:
-                this.altLnReference.value(v.altLnReference.value());
-                break;
+        switch (v.choice()) {
+            case LD_NAME :
+                return altLdName(v.altLdName.value());
+            case LN_REFERENCE :
+                return altLnReference(v.altLnReference.value());
+            default :
+                throw new IllegalArgumentException("Unknown ReferenceChoice choice: " + v.choice());
         }
-        return this;
     }
 
     public CmsReferenceChoice value(int ch, Object val) {
         choice(ch);
         switch (ch) {
-            case LD_NAME:
-                this.altLdName = val instanceof CmsObjectName
-                    ? (CmsObjectName) val
-                    : new CmsObjectName((String) val);
+            case LD_NAME :
+                this.altLdName = val instanceof CmsObjectName ? (CmsObjectName) val : new CmsObjectName((String) val);
                 break;
-            case LN_REFERENCE:
-                this.altLnReference = val instanceof CmsObjectReference
-                    ? (CmsObjectReference) val
-                    : new CmsObjectReference((String) val);
+            case LN_REFERENCE :
+                this.altLnReference = val instanceof CmsObjectReference ? (CmsObjectReference) val : new CmsObjectReference((String) val);
                 break;
         }
         return this;

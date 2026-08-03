@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * ConfirmEditSGValues-ErrorPDU ::= ServiceError — 8.6.4
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsConfirmEditSgValuesError extends CmsServiceError {
 

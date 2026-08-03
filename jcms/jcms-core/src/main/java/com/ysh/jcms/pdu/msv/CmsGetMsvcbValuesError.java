@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetMSVCBValues-ErrorPDU ::= ServiceError — 8.10.2
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetMsvcbValuesError extends CmsServiceError {
 

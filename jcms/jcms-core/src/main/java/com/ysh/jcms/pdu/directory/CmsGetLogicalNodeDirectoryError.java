@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetLogicalNodeDirectoryError extends CmsServiceError {
 

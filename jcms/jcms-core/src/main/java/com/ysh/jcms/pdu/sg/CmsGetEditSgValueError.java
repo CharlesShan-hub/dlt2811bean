@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetEditSGValue-ErrorPDU ::= ServiceError — 8.6.5
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetEditSgValueError extends CmsServiceError {
 

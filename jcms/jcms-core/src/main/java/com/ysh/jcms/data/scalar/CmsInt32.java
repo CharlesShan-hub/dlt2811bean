@@ -4,6 +4,13 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt32;
 
 /**
+ * <pre>
+ * {@code
+ * Int32 ::= INTEGER (-2147483648..2147483647) — 7.1.2
+ * }
+ * </pre>
+ *
+ * <p>
  * Wraps {@link InnerInt32} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt32 extends CmsScalar {

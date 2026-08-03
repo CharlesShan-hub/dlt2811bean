@@ -9,23 +9,45 @@ import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 public class CmsLcb extends CmsSequence {
-    @CmsField public CmsBoolean logEna;
-    @CmsField public CmsObjectReference datSet;
-    @CmsField public CmsTriggerConditions trgOps;
-    @CmsField public CmsInt32U intgPd;
-    @CmsField public CmsObjectReference logRef;
-    @CmsField(optional = true) public CmsLcbOptFlds optFlds;
-    @CmsField(optional = true) public CmsInt32U bufTm;
+    @CmsField
+    public CmsBoolean logEna;
+    @CmsField
+    public CmsObjectReference datSet;
+    @CmsField
+    public CmsTriggerConditions trgOps;
+    @CmsField
+    public CmsInt32U intgPd;
+    @CmsField
+    public CmsObjectReference logRef;
+    @CmsField(optional = true)
+    public CmsLcbOptFlds optFlds;
+    @CmsField(optional = true)
+    public CmsInt32U bufTm;
 
     public CmsLcb() {
         super(new InnerLCB());
     }
 
-    public CmsLcb logEna(boolean v) { this.logEna.value(v); return this; }
-    public CmsLcb datSet(String v) { this.datSet.value(v); return this; }
-    public CmsLcb trgOps(CmsTriggerConditions v) { this.trgOps.value(v); return this; }
-    public CmsLcb intgPd(long v) { this.intgPd.value(v); return this; }
-    public CmsLcb logRef(String v) { this.logRef.value(v); return this; }
+    public CmsLcb logEna(boolean v) {
+        this.logEna.value(v);
+        return this;
+    }
+    public CmsLcb datSet(String v) {
+        this.datSet.value(v);
+        return this;
+    }
+    public CmsLcb trgOps(CmsTriggerConditions v) {
+        this.trgOps.value(v);
+        return this;
+    }
+    public CmsLcb intgPd(long v) {
+        this.intgPd.value(v);
+        return this;
+    }
+    public CmsLcb logRef(String v) {
+        this.logRef.value(v);
+        return this;
+    }
     public CmsLcb optFlds(CmsLcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

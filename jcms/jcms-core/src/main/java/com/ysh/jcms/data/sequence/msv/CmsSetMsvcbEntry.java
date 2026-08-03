@@ -13,30 +13,40 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetMSVCBValues-RequestPDU msvcb entry ::= SEQUENCE {
- *     reference   [0] IMPLICIT ObjectReference,
- *     svEna       [1] IMPLICIT Boolean OPTIONAL,
- *     msvID       [2] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *     datSet      [3] IMPLICIT ObjectReference OPTIONAL,
- *     smpMod      [5] IMPLICIT SmpMod OPTIONAL,
- *     smpRate     [6] IMPLICIT Int16U OPTIONAL,
- *     optFlds     [7] IMPLICIT MsvcbOptFlds OPTIONAL
- * } — 8.10.3
+ * SetMSVCBValues-RequestPDU msvcb entry ::= SEQUENCE { reference [0] IMPLICIT
+ * ObjectReference, svEna [1] IMPLICIT Boolean OPTIONAL, msvID [2] IMPLICIT
+ * VisibleString (SIZE (0..129)) OPTIONAL, datSet [3] IMPLICIT ObjectReference
+ * OPTIONAL, smpMod [5] IMPLICIT SmpMod OPTIONAL, smpRate [6] IMPLICIT Int16U
+ * OPTIONAL, optFlds [7] IMPLICIT MsvcbOptFlds OPTIONAL } — 8.10.3
  */
 public class CmsSetMsvcbEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField(optional = true) public CmsBoolean svEna;
-    @CmsField(optional = true) public CmsString msvID;
-    @CmsField(optional = true) public CmsObjectReference datSet;
-    @CmsField(optional = true) public CmsSmpMod smpMod;
-    @CmsField(optional = true) public CmsInt16U smpRate;
-    @CmsField(optional = true) public CmsMsvcbOptFlds optFlds;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField(optional = true)
+    public CmsBoolean svEna;
+    @CmsField(optional = true)
+    public CmsString msvID;
+    @CmsField(optional = true)
+    public CmsObjectReference datSet;
+    @CmsField(optional = true)
+    public CmsSmpMod smpMod;
+    @CmsField(optional = true)
+    public CmsInt16U smpRate;
+    @CmsField(optional = true)
+    public CmsMsvcbOptFlds optFlds;
 
-    public CmsSetMsvcbEntry() { super(new InnerAnonymousSetMSVCBValuesRequestPDUMsvcb()); }
+    public CmsSetMsvcbEntry() {
+        super(new InnerAnonymousSetMSVCBValuesRequestPDUMsvcb());
+    }
 
-    public CmsSetMsvcbEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSetMsvcbEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsSetMsvcbEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSetMsvcbEntry reference(byte[] v) {
+        return reference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsSetMsvcbEntry svEna(boolean v) {
         this.svEna.value(v);
         setPresent("svEna", true);

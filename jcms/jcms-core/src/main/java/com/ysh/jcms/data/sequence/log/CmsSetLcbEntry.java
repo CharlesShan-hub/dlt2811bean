@@ -12,32 +12,44 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline SEQUENCE within SetLCBValues-RequestPDU lcb) ::= SEQUENCE {
- *     reference   [0] IMPLICIT ObjectReference,
- *     logEna      [1] IMPLICIT Boolean OPTIONAL,
- *     datSet      [2] IMPLICIT ObjectReference OPTIONAL,
- *     trgOps      [3] IMPLICIT TriggerConditions OPTIONAL,
- *     intgPd      [4] IMPLICIT Int32U OPTIONAL,
- *     logRef      [5] IMPLICIT ObjectReference OPTIONAL,
- *     optFlds     [6] IMPLICIT LcbOptFlds OPTIONAL,
- *     bufTm       [7] IMPLICIT Int32U OPTIONAL
- * } — 8.8.3
+ * (inline SEQUENCE within SetLCBValues-RequestPDU lcb) ::= SEQUENCE { reference
+ * [0] IMPLICIT ObjectReference, logEna [1] IMPLICIT Boolean OPTIONAL, datSet
+ * [2] IMPLICIT ObjectReference OPTIONAL, trgOps [3] IMPLICIT TriggerConditions
+ * OPTIONAL, intgPd [4] IMPLICIT Int32U OPTIONAL, logRef [5] IMPLICIT
+ * ObjectReference OPTIONAL, optFlds [6] IMPLICIT LcbOptFlds OPTIONAL, bufTm [7]
+ * IMPLICIT Int32U OPTIONAL } — 8.8.3
  */
 public class CmsSetLcbEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField(optional = true) public CmsBoolean logEna;
-    @CmsField(optional = true) public CmsObjectReference datSet;
-    @CmsField(optional = true) public CmsTriggerConditions trgOps;
-    @CmsField(optional = true) public CmsInt32U intgPd;
-    @CmsField(optional = true) public CmsObjectReference logRef;
-    @CmsField(optional = true) public CmsLcbOptFlds optFlds;
-    @CmsField(optional = true) public CmsInt32U bufTm;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField(optional = true)
+    public CmsBoolean logEna;
+    @CmsField(optional = true)
+    public CmsObjectReference datSet;
+    @CmsField(optional = true)
+    public CmsTriggerConditions trgOps;
+    @CmsField(optional = true)
+    public CmsInt32U intgPd;
+    @CmsField(optional = true)
+    public CmsObjectReference logRef;
+    @CmsField(optional = true)
+    public CmsLcbOptFlds optFlds;
+    @CmsField(optional = true)
+    public CmsInt32U bufTm;
 
-    public CmsSetLcbEntry() { super(new InnerAnonymousSetLCBValuesRequestPDULcb()); }
+    public CmsSetLcbEntry() {
+        super(new InnerAnonymousSetLCBValuesRequestPDULcb());
+    }
 
-    public CmsSetLcbEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsSetLcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetLcbEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsSetLcbEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsSetLcbEntry logEna(boolean v) {
         this.logEna.value(v);
         setPresent("logEna", true);
@@ -52,7 +64,9 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetLcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetLcbEntry datSet(byte[] v) {
+        return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetLcbEntry trgOps(CmsTriggerConditions v) {
         if (v != null) {
             this.trgOps.value(v);
@@ -76,7 +90,9 @@ public class CmsSetLcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetLcbEntry logRef(byte[] v) { return logRef(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetLcbEntry logRef(byte[] v) {
+        return logRef(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetLcbEntry optFlds(CmsLcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

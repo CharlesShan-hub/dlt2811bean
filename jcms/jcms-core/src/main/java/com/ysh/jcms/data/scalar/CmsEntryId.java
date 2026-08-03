@@ -4,7 +4,12 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerEntryID;
 
 /**
+ * <pre>
+ * {@code
  * EntryID ::= OCTET STRING (SIZE(8)) — 7.3.8
+ * }
+ * </pre>
+ *
  * <p>
  * Wraps {@link InnerEntryID} for PER encode/decode via Rust (libasn1.so).
  */

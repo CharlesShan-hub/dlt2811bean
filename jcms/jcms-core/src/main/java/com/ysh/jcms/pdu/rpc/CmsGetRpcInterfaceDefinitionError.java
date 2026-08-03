@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetRpcInterfaceDefinition-ErrorPDU ::= ServiceError — 8.13.4
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetRpcInterfaceDefinitionError extends CmsServiceError {
 

@@ -26,9 +26,18 @@ public class CmsDataRefFcEntry extends CmsSequence {
         this.fc = new CmsFC();
     }
 
-    public CmsDataRefFcEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataRefFcEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsDataRefFcEntry fc(int v) { this.fc.value(v); return this; }
+    public CmsDataRefFcEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsDataRefFcEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsDataRefFcEntry fc(int v) {
+        this.fc.value(v);
+        return this;
+    }
 
     public CmsDataRefFcEntry value(CmsDataRefFcEntry v) {
         this.reference.value(v.reference.value());

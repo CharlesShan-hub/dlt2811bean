@@ -17,8 +17,10 @@ import java.util.logging.Logger;
 /**
  * Base class for CHOICE types.
  *
- * <p>The variant selection is stored in {@code inner._v} as {@code {"_choice": "name", "name": value}}.
- * Wrappers share the {@code _v} sub-map with the selected variant, eliminating explicit data sync.
+ * <p>
+ * The variant selection is stored in {@code inner._v} as {@code {"_choice":
+ * "name", "name": value}}. Wrappers share the {@code _v} sub-map with the
+ * selected variant, eliminating explicit data sync.
  */
 public abstract class CmsChoice extends CmsType {
 
@@ -32,9 +34,9 @@ public abstract class CmsChoice extends CmsType {
         /** {@code _choice} string value. */
         String name();
         /**
-         * Inner field name — defaults to the field name with {@code alt_} prefix stripped.
-         * Override when the Inner field name differs (e.g. Cms field {@code alt_boolean}
-         * but Inner key is {@code Boolean}).
+         * Inner field name — defaults to the field name with {@code alt_} prefix
+         * stripped. Override when the Inner field name differs (e.g. Cms field
+         * {@code alt_boolean} but Inner key is {@code Boolean}).
          */
         String innerField() default "";
         /** Sync mode. {@link Sync#AUTO} detects from field type. */
@@ -42,7 +44,10 @@ public abstract class CmsChoice extends CmsType {
     }
 
     public enum Sync {
-        /** Auto-detect: CmsScalar → SCALAR, List → LIST, InnerBase → INNER, else WRAPPER. */
+        /**
+         * Auto-detect: CmsScalar → SCALAR, List → LIST, InnerBase → INNER, else
+         * WRAPPER.
+         */
         AUTO,
         /** Direct inner.value access (for CmsScalar subclasses). */
         SCALAR,
@@ -65,11 +70,10 @@ public abstract class CmsChoice extends CmsType {
         final String name;
         final String innerField;
         final Sync sync;
-        final Field field;         // alt_* field on this CmsChoice subclass
-        final boolean isScalar;    // field type extends CmsScalar
+        final Field field; // alt_* field on this CmsChoice subclass
+        final boolean isScalar; // field type extends CmsScalar
 
-        VariantInfo(int index, String name, String innerField, Sync sync,
-                    Field field, boolean isScalar) {
+        VariantInfo(int index, String name, String innerField, Sync sync, Field field, boolean isScalar) {
             this.index = index;
             this.name = name;
             this.innerField = innerField;
@@ -82,8 +86,8 @@ public abstract class CmsChoice extends CmsType {
     /**
      * Per-class metadata built from {@code @Choice} annotations — variant
      * descriptions only (Field refs are class-level). Wrapper instances stay
-     * per-object. NULL variants registered via {@link #registerNullChoice}
-     * at construction time are still instance-level.
+     * per-object. NULL variants registered via {@link #registerNullChoice} at
+     * construction time are still instance-level.
      */
     private static final ClassValue<ChoiceMeta> CHOICE_META = new ClassValue<ChoiceMeta>() {
         @Override
@@ -91,20 +95,27 @@ public abstract class CmsChoice extends CmsType {
             Map<Integer, VariantInfo> byIndex = new LinkedHashMap<>();
             Map<String, VariantInfo> byName = new LinkedHashMap<>();
             for (Field f : type.getFields()) {
-                if (Modifier.isStatic(f.getModifiers())) continue;
+                if (Modifier.isStatic(f.getModifiers()))
+                    continue;
                 Choice ann = f.getAnnotation(Choice.class);
-                if (ann == null) continue;
+                if (ann == null)
+                    continue;
 
                 String innerFn = ann.innerField().isEmpty() ? stripAlt(f.getName()) : ann.innerField();
                 boolean isScalar = CmsScalar.class.isAssignableFrom(f.getType());
 
                 Sync sync = ann.sync();
                 if (sync == Sync.AUTO) {
-                    if (isScalar) sync = Sync.SCALAR;
-                    else if (List.class.isAssignableFrom(f.getType())) sync = Sync.ARRAY;
-                    else if (InnerBase.class.isAssignableFrom(f.getType())) sync = Sync.INNER;
-                    else if (CmsType.class.isAssignableFrom(f.getType())) sync = Sync.WRAPPER;
-                    else sync = Sync.RAW;
+                    if (isScalar)
+                        sync = Sync.SCALAR;
+                    else if (List.class.isAssignableFrom(f.getType()))
+                        sync = Sync.ARRAY;
+                    else if (InnerBase.class.isAssignableFrom(f.getType()))
+                        sync = Sync.INNER;
+                    else if (CmsType.class.isAssignableFrom(f.getType()))
+                        sync = Sync.WRAPPER;
+                    else
+                        sync = Sync.RAW;
                 }
 
                 VariantInfo vi = new VariantInfo(ann.index(), ann.name(), innerFn, sync, f, isScalar);
@@ -137,7 +148,8 @@ public abstract class CmsChoice extends CmsType {
 
     /**
      * Register a NULL variant (no payload field). Call from subclass constructor
-     * after {@code super(inner)} for variants that only store a {@code _choice} string.
+     * after {@code super(inner)} for variants that only store a {@code _choice}
+     * string.
      */
     protected final void registerNullChoice(int index, String name) {
         VariantInfo vi = new VariantInfo(index, name, null, null, null, false);
@@ -146,15 +158,17 @@ public abstract class CmsChoice extends CmsType {
     }
 
     /**
-     * Rebind wrapper _v references after {@code inner} is replaced.
-     * Shares the variant's {@code _v} sub-map with each wrapper.
+     * Rebind wrapper _v references after {@code inner} is replaced. Shares the
+     * variant's {@code _v} sub-map with each wrapper.
      */
     public void rebindChoices() {
         for (VariantInfo vi : variantByIndex.values()) {
-            if (vi.field == null || !CmsType.class.isAssignableFrom(vi.field.getType())) continue;
+            if (vi.field == null || !CmsType.class.isAssignableFrom(vi.field.getType()))
+                continue;
             try {
                 CmsType w = (CmsType) vi.field.get(this);
-                if (w == null) continue;
+                if (w == null)
+                    continue;
                 Object sub = inner._v.get(vi.name);
                 if (sub instanceof LinkedHashMap) {
                     w.inner._v = (LinkedHashMap<String, Object>) sub;
@@ -164,8 +178,7 @@ public abstract class CmsChoice extends CmsType {
                 if (w instanceof CmsSequence)
                     ((CmsSequence) w).rebindWrappers();
             } catch (Exception e) {
-                LOG.log(Level.WARNING,
-                        "rebindChoices failed for variant " + vi.name + " in " + getClass().getSimpleName(), e);
+                LOG.log(Level.WARNING, "rebindChoices failed for variant " + vi.name + " in " + getClass().getSimpleName(), e);
             }
         }
     }
@@ -175,7 +188,8 @@ public abstract class CmsChoice extends CmsType {
         // only per-object work remains: creating wrapper instances + setting fields.
         for (VariantInfo vi : CHOICE_META.get(getClass()).byIndex.values()) {
             Field f = vi.field;
-            if (f == null) continue;
+            if (f == null)
+                continue;
             Class<?> ft = f.getType();
 
             if (CmsType.class.isAssignableFrom(ft)) {
@@ -231,7 +245,8 @@ public abstract class CmsChoice extends CmsType {
         if (vi != null) {
             // Remove all old variant entries from _v
             for (VariantInfo old : variantByIndex.values()) {
-                if (old != vi) inner._v.remove(old.name);
+                if (old != vi)
+                    inner._v.remove(old.name);
             }
             V.setChoice(inner._v, vi.name);
             // Share the wrapper's _v with parent so writes go to the right place.
@@ -251,8 +266,7 @@ public abstract class CmsChoice extends CmsType {
                         }
                     }
                 } catch (Exception e) {
-                    LOG.log(Level.WARNING,
-                            "choice(" + v + ") failed to seed variant " + vi.name + " in " + getClass().getSimpleName(), e);
+                    LOG.log(Level.WARNING, "choice(" + v + ") failed to seed variant " + vi.name + " in " + getClass().getSimpleName(), e);
                 }
             }
         }
@@ -275,37 +289,39 @@ public abstract class CmsChoice extends CmsType {
     @Override
     public void syncToInner() {
         int ch = choice();
-        if (ch < 0) throw new IllegalStateException(
-            "CHOICE variant not selected — call one of the alt*() setters before encode " +
-            "(class=" + getClass().getSimpleName() + ")");
+        if (ch < 0)
+            throw new IllegalStateException("CHOICE variant not selected — call one of the alt*() setters before encode " + "(class="
+                    + getClass().getSimpleName() + ")");
         VariantInfo vi = variantByIndex.get(ch);
-        if (vi == null) return;
+        if (vi == null)
+            return;
 
         // Clear all non-selected variant values from _v
         for (VariantInfo v : variantByIndex.values()) {
-            if (v == vi) continue;
+            if (v == vi)
+                continue;
             inner._v.remove(v.name);
         }
 
         inner._v.put("_choice", vi.name);
         try {
             switch (vi.sync) {
-                case SCALAR:
+                case SCALAR :
                     syncScalarToInner(vi);
                     break;
-                case WRAPPER:
+                case WRAPPER :
                     syncWrapperToInner(vi);
                     break;
-                case INNER:
+                case INNER :
                     syncInnerToInner(vi);
                     break;
-                case LIST:
+                case LIST :
                     syncListToInner(vi);
                     break;
-                case ARRAY:
+                case ARRAY :
                     syncListToInner(vi);
                     break;
-                case RAW:
+                case RAW :
                     syncRawToInner(vi);
                     break;
             }
@@ -320,30 +336,32 @@ public abstract class CmsChoice extends CmsType {
         if (ch == null) {
             normalizeVariant();
             ch = V.choice(inner._v);
-            if (ch == null) return;
+            if (ch == null)
+                return;
         }
         VariantInfo vi = variantByName.get(ch);
-        if (vi == null) return;
+        if (vi == null)
+            return;
         selectedChoiceIndex = vi.index;
 
         try {
             switch (vi.sync) {
-                case SCALAR:
+                case SCALAR :
                     syncScalarFromInner(vi);
                     break;
-                case WRAPPER:
+                case WRAPPER :
                     syncWrapperFromInner(vi);
                     break;
-                case INNER:
+                case INNER :
                     syncInnerFromInner(vi);
                     break;
-                case LIST:
+                case LIST :
                     syncListFromInner(vi);
                     break;
-                case ARRAY:
+                case ARRAY :
                     syncListFromInner(vi);
                     break;
-                case RAW:
+                case RAW :
                     syncRawFromInner(vi);
                     break;
             }
@@ -354,11 +372,13 @@ public abstract class CmsChoice extends CmsType {
 
     /**
      * If {@code _v} holds JER form {@code {"variant": value}} (no {@code _choice}),
-     * normalize it to the internal form {@code {"_choice": "variant", "variant": {"_": value}}}.
+     * normalize it to the internal form {@code {"_choice": "variant", "variant":
+     * {"_": value}}}.
      */
     protected final void normalizeVariant() {
         for (java.util.Map.Entry<String, Object> e : new ArrayList<>(inner._v.entrySet())) {
-            if (e.getKey().startsWith("_")) continue;
+            if (e.getKey().startsWith("_"))
+                continue;
             V.setChoice(inner._v, e.getKey());
             if (!(e.getValue() instanceof LinkedHashMap)) {
                 inner._v.put(e.getKey(), V.wrapScalar(e.getValue()));
@@ -372,16 +392,19 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncScalarToInner(VariantInfo vi) throws Exception {
         CmsScalar wrapper = (CmsScalar) vi.field.get(this);
-        if (wrapper == null) return;
+        if (wrapper == null)
+            return;
         wrapper.syncToInner();
-        // Use toJsonValue() so special scalars (e.g. unsigned Int32U) serialize correctly
+        // Use toJsonValue() so special scalars (e.g. unsigned Int32U) serialize
+        // correctly
         inner._v.put(vi.name, wrapper.inner.toJsonValue());
     }
 
     @SuppressWarnings("unchecked")
     private void syncScalarFromInner(VariantInfo vi) throws Exception {
         CmsScalar wrapper = (CmsScalar) vi.field.get(this);
-        if (wrapper == null) return;
+        if (wrapper == null)
+            return;
         Object sub = inner._v.get(vi.name);
         if (sub instanceof LinkedHashMap) {
             wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
@@ -394,14 +417,16 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncWrapperToInner(VariantInfo vi) throws Exception {
         CmsType wrapper = (CmsType) vi.field.get(this);
-        if (wrapper == null) return;
+        if (wrapper == null)
+            return;
         wrapper.syncToInner();
     }
 
     @SuppressWarnings("unchecked")
     private void syncWrapperFromInner(VariantInfo vi) throws Exception {
         CmsType wrapper = (CmsType) vi.field.get(this);
-        if (wrapper == null) return;
+        if (wrapper == null)
+            return;
         Object sub = inner._v.get(vi.name);
         if (sub instanceof LinkedHashMap) {
             wrapper.inner._v = (LinkedHashMap<String, Object>) sub;
@@ -419,7 +444,8 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncInnerToInner(VariantInfo vi) throws Exception {
         InnerBase val = (InnerBase) vi.field.get(this);
-        if (val == null) return;
+        if (val == null)
+            return;
         // DefaultInner* types store their payload in val._v, which choice(int)
         // already aliased into parent _v. Just (re-)assert the alias so the
         // shared-_v invariant holds; byte[] stays in the map and JER hex is
@@ -430,14 +456,16 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncInnerFromInner(VariantInfo vi) throws Exception {
         Object sub = inner._v.get(vi.name);
-        if (!(sub instanceof LinkedHashMap)) return;
+        if (!(sub instanceof LinkedHashMap))
+            return;
         InnerBase val = (InnerBase) vi.field.get(this);
         if (val != null) {
             LinkedHashMap<String, Object> m = (LinkedHashMap<String, Object>) sub;
             // OCTET STRING: JER hex string → byte[]
             if (val instanceof DefaultInnerOctetString) {
                 Object raw = V.getVal(m);
-                if (raw instanceof String) V.setVal(m, InnerBase.unhex((String) raw));
+                if (raw instanceof String)
+                    V.setVal(m, InnerBase.unhex((String) raw));
             }
             // DefaultInner* stores everything in _v, so sharing the map is enough
             val._v = m;
@@ -447,7 +475,8 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncListToInner(VariantInfo vi) throws Exception {
         List<CmsType> list = (List<CmsType>) vi.field.get(this);
-        if (list == null) return;
+        if (list == null)
+            return;
         List<InnerBase> innerList = new ArrayList<>();
         for (CmsType elem : list) {
             elem.syncToInner();
@@ -459,10 +488,12 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncListFromInner(VariantInfo vi) throws Exception {
         List<Object> innerList = (List<Object>) inner._v.get(vi.name);
-        if (innerList == null) return;
+        if (innerList == null)
+            return;
 
         Class<? extends CmsType> elemClass = inferListElemClass(vi);
-        if (elemClass == null) return;
+        if (elemClass == null)
+            return;
 
         List<CmsType> list = (List<CmsType>) vi.field.get(this);
         if (list == null) {
@@ -471,7 +502,8 @@ public abstract class CmsChoice extends CmsType {
         }
         list.clear();
         for (Object innerElem : innerList) {
-            if (!(innerElem instanceof InnerBase)) continue;
+            if (!(innerElem instanceof InnerBase))
+                continue;
             CmsType elem = elemClass.getDeclaredConstructor().newInstance();
             elem.inner = (InnerBase) innerElem;
             elem.syncFromInner();
@@ -483,8 +515,7 @@ public abstract class CmsChoice extends CmsType {
     private Class<? extends CmsType> inferListElemClass(VariantInfo vi) {
         java.lang.reflect.Type gt = vi.field.getGenericType();
         if (gt instanceof ParameterizedType) {
-            return (Class<? extends CmsType>) ((ParameterizedType) gt)
-                    .getActualTypeArguments()[0];
+            return (Class<? extends CmsType>) ((ParameterizedType) gt).getActualTypeArguments()[0];
         }
         return null;
     }
@@ -507,7 +538,8 @@ public abstract class CmsChoice extends CmsType {
     @SuppressWarnings("unchecked")
     private void syncRawFromInner(VariantInfo vi) throws Exception {
         Object val = inner._v.get(vi.name);
-        if (val == null) return;
+        if (val == null)
+            return;
         if (val instanceof java.util.Map && vi.field.getType() == byte[].class) {
             // BIT STRING in JER: {"length": N, "value": "HEX"}
             Object hex = ((java.util.Map<String, Object>) val).get("value");

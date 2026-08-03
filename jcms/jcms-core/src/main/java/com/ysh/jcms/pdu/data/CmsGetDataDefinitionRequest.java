@@ -9,12 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetDataDefinition-RequestPDU ::= SEQUENCE {
- *     data             [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference     [0] IMPLICIT ObjectReference,
- *         fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
- *     }
- * } — 8.4.4
+ * GetDataDefinition-RequestPDU ::= SEQUENCE { data [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1] IMPLICIT
+ * FunctionalConstraint OPTIONAL } } — 8.4.4
  */
 public class CmsGetDataDefinitionRequest extends CmsSequence {
 
@@ -30,6 +27,5 @@ public class CmsGetDataDefinitionRequest extends CmsSequence {
         this.data = v;
         return this;
     }
-
 
 }

@@ -18,9 +18,12 @@ public class CmsGetServerDirectoryRequest extends CmsSequence {
         super(new InnerGetServerDirectoryRequestPDU());
     }
 
-    public int getObjectClass() { return getInt("objectClass"); }
+    public int getObjectClass() {
+        return getInt("objectClass");
+    }
     public CmsGetServerDirectoryRequest objectClass(int v) {
-        setInt("objectClass", v); return this;
+        setInt("objectClass", v);
+        return this;
     }
 
     @CmsField(optional = true)

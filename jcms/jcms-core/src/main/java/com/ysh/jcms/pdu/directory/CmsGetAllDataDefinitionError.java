@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetAllDataDefinition-ErrorPDU ::= ServiceError — 8.3.5
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetAllDataDefinitionError extends CmsServiceError {
 

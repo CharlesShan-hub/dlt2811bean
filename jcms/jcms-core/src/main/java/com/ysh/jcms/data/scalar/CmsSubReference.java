@@ -4,7 +4,12 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerSubReference;
 
 /**
+ * <pre>
+ * {@code
  * SubReference ::= VisibleString (SIZE(0..129)) — 7.3.3
+ * }
+ * </pre>
+ *
  * <p>
  * Wraps {@link InnerSubReference} for PER encode/decode via Rust (libasn1.so).
  */

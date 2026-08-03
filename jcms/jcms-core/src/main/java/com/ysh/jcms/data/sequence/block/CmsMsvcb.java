@@ -11,28 +11,56 @@ import com.ysh.jcms.data.sequence.common.CmsPhyComAddr;
 import com.ysh.jcms.data.scalar.CmsString;
 
 public class CmsMsvcb extends CmsSequence {
-    @CmsField public CmsBoolean svEna;
-    @CmsField public CmsString msvID;
-    @CmsField public CmsObjectReference datSet;
-    @CmsField public CmsInt32U confRev;
-    @CmsField(optional = true) public CmsSmpMod smpMod;
-    @CmsField public CmsInt16U smpRate;
-    @CmsField public CmsMsvcbOptFlds optFlds;
-    @CmsField(optional = true) public CmsPhyComAddr dstAddress;
+    @CmsField
+    public CmsBoolean svEna;
+    @CmsField
+    public CmsString msvID;
+    @CmsField
+    public CmsObjectReference datSet;
+    @CmsField
+    public CmsInt32U confRev;
+    @CmsField(optional = true)
+    public CmsSmpMod smpMod;
+    @CmsField
+    public CmsInt16U smpRate;
+    @CmsField
+    public CmsMsvcbOptFlds optFlds;
+    @CmsField(optional = true)
+    public CmsPhyComAddr dstAddress;
 
-    public CmsMsvcb() { super(new InnerMSVCB()); }
+    public CmsMsvcb() {
+        super(new InnerMSVCB());
+    }
 
-    public CmsMsvcb svEna(boolean v) { this.svEna.value(v); return this; }
-    public CmsMsvcb msvID(String v) { this.msvID.value(v); return this; }
-    public CmsMsvcb datSet(String v) { this.datSet.value(v); return this; }
-    public CmsMsvcb confRev(long v) { this.confRev.value(v); return this; }
+    public CmsMsvcb svEna(boolean v) {
+        this.svEna.value(v);
+        return this;
+    }
+    public CmsMsvcb msvID(String v) {
+        this.msvID.value(v);
+        return this;
+    }
+    public CmsMsvcb datSet(String v) {
+        this.datSet.value(v);
+        return this;
+    }
+    public CmsMsvcb confRev(long v) {
+        this.confRev.value(v);
+        return this;
+    }
     public CmsMsvcb smpMod(int v) {
         this.smpMod.value(v);
         setPresent("smpMod", true);
         return this;
     }
-    public CmsMsvcb smpRate(int v) { this.smpRate.value(v); return this; }
-    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) { this.optFlds.value(v); return this; }
+    public CmsMsvcb smpRate(int v) {
+        this.smpRate.value(v);
+        return this;
+    }
+    public CmsMsvcb optFlds(CmsMsvcbOptFlds v) {
+        this.optFlds.value(v);
+        return this;
+    }
     public CmsMsvcb dstAddress(CmsPhyComAddr v) {
         if (v != null) {
             this.dstAddress.value(v);

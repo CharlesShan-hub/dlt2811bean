@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLogStatusValues-ResponsePDU ::= SEQUENCE {
- *     log         [0] IMPLICIT SEQUENCE OF LogStatusValueChoice,
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.8.6
+ * GetLogStatusValues-ResponsePDU ::= SEQUENCE { log [0] IMPLICIT SEQUENCE OF
+ * LogStatusValueChoice, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.8.6
  */
 public class CmsGetLogStatusValuesResponse extends CmsSequence {
 

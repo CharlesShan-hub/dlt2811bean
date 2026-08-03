@@ -36,10 +36,7 @@ public class CmsBinaryTime extends CmsType {
 
     @Override
     public void syncToInner() {
-        V.setVal(inner._v, ByteBuffer.allocate(6)
-            .putInt((int) msOfDay.value())
-            .putShort((short) daysSince1984.value())
-            .array());
+        V.setVal(inner._v, ByteBuffer.allocate(6).putInt((int) msOfDay.value()).putShort((short) daysSince1984.value()).array());
     }
 
     @Override

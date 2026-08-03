@@ -18,16 +18,25 @@ import com.ysh.jcms.data.scalar.CmsString;
  */
 public class CmsDataDefinitionEntry extends CmsSequence {
 
-    @CmsField public CmsSubReference reference;
-    @CmsField(optional = true) public CmsString cdcType;
-    @CmsField public CmsDataDefinition definition;
+    @CmsField
+    public CmsSubReference reference;
+    @CmsField(optional = true)
+    public CmsString cdcType;
+    @CmsField
+    public CmsDataDefinition definition;
 
     public CmsDataDefinitionEntry() {
         super(new InnerAnonymousGetAllDataDefinitionResponsePDUData());
     }
 
-    public CmsDataDefinitionEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsDataDefinitionEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsDataDefinitionEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsDataDefinitionEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsDataDefinitionEntry cdcType(byte[] v) {
         return cdcType(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }
@@ -40,7 +49,10 @@ public class CmsDataDefinitionEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsDataDefinitionEntry definition(CmsDataDefinition v) { this.definition.value(v); return this; }
+    public CmsDataDefinitionEntry definition(CmsDataDefinition v) {
+        this.definition.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsDataDefinitionEntry (fluent). */
     public CmsDataDefinitionEntry value(CmsDataDefinitionEntry v) {

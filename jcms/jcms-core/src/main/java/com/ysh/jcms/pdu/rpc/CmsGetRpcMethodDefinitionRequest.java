@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetRpcMethodDefinition-RequestPDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF VisibleString
- * } — 8.13.5
+ * GetRpcMethodDefinition-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT
+ * SEQUENCE OF VisibleString } — 8.13.5
  */
 public class CmsGetRpcMethodDefinitionRequest extends CmsSequence {
 

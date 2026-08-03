@@ -8,10 +8,9 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GetDataSetValues-RequestPDU ::= SEQUENCE {
- *     datasetReference    [0] IMPLICIT ObjectReference,
- *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL
- * } — 8.5.1
+ * GetDataSetValues-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
+ * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL } —
+ * 8.5.1
  */
 public class CmsGetDataSetValuesRequest extends CmsSequence {
 
@@ -27,8 +26,13 @@ public class CmsGetDataSetValuesRequest extends CmsSequence {
         this.referenceAfter = new CmsObjectReference();
     }
 
-    public CmsGetDataSetValuesRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsGetDataSetValuesRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsGetDataSetValuesRequest datasetReference(String v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsGetDataSetValuesRequest datasetReference(byte[] v) {
+        return datasetReference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsGetDataSetValuesRequest referenceAfter(byte[] v) {
         return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }

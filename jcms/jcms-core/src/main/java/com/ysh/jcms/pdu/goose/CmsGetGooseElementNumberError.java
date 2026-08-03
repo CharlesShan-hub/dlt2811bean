@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetGOOSEElementNumber-ErrorPDU ::= ServiceError — 8.9.3
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetGooseElementNumberError extends CmsServiceError {
 

@@ -12,21 +12,23 @@ import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * ReportDataEntry ::= SEQUENCE {
- *     reference [0] IMPLICIT ObjectReference OPTIONAL,
- *     fc        [1] IMPLICIT FunctionalConstraint OPTIONAL,
- *     id        [2] IMPLICIT Int16U,
- *     value     [3] IMPLICIT Data,
- *     reason    [4] IMPLICIT ReasonCode OPTIONAL
- * } — 8.7.1 (inline within ReportPDU entryData)
+ * ReportDataEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference
+ * OPTIONAL, fc [1] IMPLICIT FunctionalConstraint OPTIONAL, id [2] IMPLICIT
+ * Int16U, value [3] IMPLICIT Data, reason [4] IMPLICIT ReasonCode OPTIONAL } —
+ * 8.7.1 (inline within ReportPDU entryData)
  */
 public class CmsReportDataEntry extends CmsSequence {
 
-    @CmsField(optional = true) public CmsObjectReference reference;
-    @CmsField(optional = true) public CmsFC fc;
-    @CmsField public CmsInt16U id;
-    @CmsField public CmsData value;
-    @CmsField(optional = true) public CmsReasonCode reason;
+    @CmsField(optional = true)
+    public CmsObjectReference reference;
+    @CmsField(optional = true)
+    public CmsFC fc;
+    @CmsField
+    public CmsInt16U id;
+    @CmsField
+    public CmsData value;
+    @CmsField(optional = true)
+    public CmsReasonCode reason;
 
     public CmsReportDataEntry() {
         super(new InnerAnonymousReportPDUEntryEntryData());
@@ -41,14 +43,22 @@ public class CmsReportDataEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsReportDataEntry reference(byte[] v) { return reference(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsReportDataEntry reference(byte[] v) {
+        return reference(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsReportDataEntry fc(int v) {
         this.fc.value(v);
         setPresent("fc", true);
         return this;
     }
-    public CmsReportDataEntry id(int v) { this.id.value(v); return this; }
-    public CmsReportDataEntry value(CmsData v) { this.value.value(v); return this; }
+    public CmsReportDataEntry id(int v) {
+        this.id.value(v);
+        return this;
+    }
+    public CmsReportDataEntry value(CmsData v) {
+        this.value.value(v);
+        return this;
+    }
     public CmsReportDataEntry reason(CmsReasonCode v) {
         if (v != null) {
             this.reason.value(v);

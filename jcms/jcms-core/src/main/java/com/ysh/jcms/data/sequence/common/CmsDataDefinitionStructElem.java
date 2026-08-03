@@ -15,21 +15,30 @@ import com.ysh.jcms.data.scalar.CmsFC;
  */
 public class CmsDataDefinitionStructElem extends CmsSequence {
 
-    @CmsField public CmsObjectName name;
-    @CmsField(optional = true) public CmsFC fc;
-    @CmsField public CmsDataDefinition type;
+    @CmsField
+    public CmsObjectName name;
+    @CmsField(optional = true)
+    public CmsFC fc;
+    @CmsField
+    public CmsDataDefinition type;
 
     public CmsDataDefinitionStructElem() {
         super(new InnerAnonymousDataDefinitionStructure());
     }
 
-    public CmsDataDefinitionStructElem name(String v) { this.name.value(v); return this; }
+    public CmsDataDefinitionStructElem name(String v) {
+        this.name.value(v);
+        return this;
+    }
     public CmsDataDefinitionStructElem fc(int v) {
         this.fc.value(v);
         setPresent("fc", true);
         return this;
     }
-    public CmsDataDefinitionStructElem type(CmsDataDefinition v) { this.type.value(v); return this; }
+    public CmsDataDefinitionStructElem type(CmsDataDefinition v) {
+        this.type.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsDataDefinitionStructElem (fluent). */
     public CmsDataDefinitionStructElem value(CmsDataDefinitionStructElem v) {
@@ -44,5 +53,7 @@ public class CmsDataDefinitionStructElem extends CmsSequence {
         return this;
     }
 
-    public boolean hasFc() { return isPresent("fc"); }
+    public boolean hasFc() {
+        return isPresent("fc");
+    }
 }

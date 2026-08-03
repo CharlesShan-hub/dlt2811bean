@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLCBValues-RequestPDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF ObjectReference
- * } — 8.8.2
+ * GetLCBValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
+ * ObjectReference } — 8.8.2
  */
 public class CmsGetLcbValuesRequest extends CmsSequence {
 

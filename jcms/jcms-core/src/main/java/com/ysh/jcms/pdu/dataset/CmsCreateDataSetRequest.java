@@ -5,21 +5,16 @@ import java.nio.charset.StandardCharsets;
 import com.ysh.jcms.data.InnerCreateDataSetRequestPDU;
 import com.ysh.jcms.data.core.CmsField;
 import com.ysh.jcms.data.core.CmsSequence;
-import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CreateDataSet-RequestPDU ::= SEQUENCE {
- *     datasetReference    [0] IMPLICIT ObjectReference,
- *     referenceAfter      [1] IMPLICIT ObjectReference OPTIONAL,
- *     memberData          [2] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference       [0] IMPLICIT ObjectReference,
- *         fc              [1] IMPLICIT FunctionalConstraint
- *     }
- * } — 8.5.3
+ * CreateDataSet-RequestPDU ::= SEQUENCE { datasetReference [0] IMPLICIT
+ * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL,
+ * memberData [2] IMPLICIT SEQUENCE OF SEQUENCE { reference [0] IMPLICIT
+ * ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.5.3
  */
 public class CmsCreateDataSetRequest extends CmsSequence {
 
@@ -39,8 +34,13 @@ public class CmsCreateDataSetRequest extends CmsSequence {
         this.memberData = new ArrayList<>();
     }
 
-    public CmsCreateDataSetRequest datasetReference(String v) { this.datasetReference.value(v); return this; }
-    public CmsCreateDataSetRequest datasetReference(byte[] v) { return datasetReference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsCreateDataSetRequest datasetReference(String v) {
+        this.datasetReference.value(v);
+        return this;
+    }
+    public CmsCreateDataSetRequest datasetReference(byte[] v) {
+        return datasetReference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsCreateDataSetRequest referenceAfter(byte[] v) {
         return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }

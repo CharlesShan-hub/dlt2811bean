@@ -15,7 +15,8 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
  *     fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
  * }
  *
- * <p>Used by GetDataValues Request, GetDataDefinition Request.
+ * <p>
+ * Used by GetDataValues Request, GetDataDefinition Request.
  */
 public class CmsDataRefEntry extends CmsSequence {
 
@@ -31,8 +32,14 @@ public class CmsDataRefEntry extends CmsSequence {
         this.fc = new CmsFC();
     }
 
-    public CmsDataRefEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataRefEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
+    public CmsDataRefEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsDataRefEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
     public CmsDataRefEntry fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

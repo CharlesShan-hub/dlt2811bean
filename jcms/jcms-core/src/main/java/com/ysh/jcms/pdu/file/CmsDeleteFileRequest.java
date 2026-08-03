@@ -8,9 +8,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * DeleteFile-RequestPDU ::= SEQUENCE {
- *     filename    [0] IMPLICIT VisibleString (SIZE (0..255))
- * } — 8.12.3
+ * DeleteFile-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT VisibleString
+ * (SIZE (0..255)) } — 8.12.3
  */
 public class CmsDeleteFileRequest extends CmsSequence {
 
@@ -21,6 +20,11 @@ public class CmsDeleteFileRequest extends CmsSequence {
         super(new InnerDeleteFileRequestPDU());
     }
 
-    public CmsDeleteFileRequest filename(String v) { this.filename.value(v); return this; }
-    public CmsDeleteFileRequest filename(byte[] v) { return filename(new String(v, StandardCharsets.UTF_8)); }
+    public CmsDeleteFileRequest filename(String v) {
+        this.filename.value(v);
+        return this;
+    }
+    public CmsDeleteFileRequest filename(byte[] v) {
+        return filename(new String(v, StandardCharsets.UTF_8));
+    }
 }

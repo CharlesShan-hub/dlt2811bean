@@ -29,7 +29,10 @@ public class CmsGetLogicalNodeDirectoryRequest extends CmsSequence {
         super(new InnerGetLogicalNodeDirectoryRequestPDU());
     }
 
-    public CmsGetLogicalNodeDirectoryRequest reference(CmsReferenceChoice v) { this.reference.value(v); return this; }
+    public CmsGetLogicalNodeDirectoryRequest reference(CmsReferenceChoice v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsGetLogicalNodeDirectoryRequest acsiClass(int v) {
         this.acsiClass.value(v);
         return this;

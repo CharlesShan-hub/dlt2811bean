@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetBRCBValues-ErrorPDU ::= SEQUENCE {
- *     result  [0] IMPLICIT SEQUENCE OF SetBRCBResult
- * } — 8.7.3
+ * SetBRCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
+ * SetBRCBResult } — 8.7.3
  */
 public class CmsSetBrcbValuesError extends CmsSequence {
 

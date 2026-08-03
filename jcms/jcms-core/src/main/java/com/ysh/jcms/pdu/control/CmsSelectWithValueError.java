@@ -16,21 +16,41 @@ import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 public class CmsSelectWithValueError extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData ctlVal;
-    @CmsField(optional = true) public CmsUtcTime operTm;
-    @CmsField public CmsOriginator origin;
-    @CmsField public CmsInt8U ctlNum;
-    @CmsField public CmsUtcTime t;
-    @CmsField public CmsBoolean test;
-    @CmsField public CmsCheck check;
-    @CmsField public CmsAddCause addCause;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData ctlVal;
+    @CmsField(optional = true)
+    public CmsUtcTime operTm;
+    @CmsField
+    public CmsOriginator origin;
+    @CmsField
+    public CmsInt8U ctlNum;
+    @CmsField
+    public CmsUtcTime t;
+    @CmsField
+    public CmsBoolean test;
+    @CmsField
+    public CmsCheck check;
+    @CmsField
+    public CmsAddCause addCause;
 
-    public CmsSelectWithValueError() { super(new InnerSelectWithValueErrorPDU()); }
+    public CmsSelectWithValueError() {
+        super(new InnerSelectWithValueErrorPDU());
+    }
 
-    public CmsSelectWithValueError reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsSelectWithValueError reference(String v) { this.reference.value(v); return this; }
-    public CmsSelectWithValueError ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
+    public CmsSelectWithValueError reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsSelectWithValueError reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError ctlVal(CmsData v) {
+        this.ctlVal.value(v);
+        return this;
+    }
     public CmsSelectWithValueError operTm(CmsUtcTime v) {
         if (v != null) {
             this.operTm.value(v);
@@ -40,12 +60,30 @@ public class CmsSelectWithValueError extends CmsSequence {
         }
         return this;
     }
-    public CmsSelectWithValueError origin(CmsOriginator v) { this.origin.value(v); return this; }
-    public CmsSelectWithValueError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsSelectWithValueError t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsSelectWithValueError test(boolean v) { this.test.value(v); return this; }
-    public CmsSelectWithValueError check(CmsCheck v) { this.check.value(v); return this; }
-    public CmsSelectWithValueError addCause(int v) { this.addCause.value(v); return this; }
+    public CmsSelectWithValueError origin(CmsOriginator v) {
+        this.origin.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError check(CmsCheck v) {
+        this.check.value(v);
+        return this;
+    }
+    public CmsSelectWithValueError addCause(int v) {
+        this.addCause.value(v);
+        return this;
+    }
 
     public CmsSelectWithValueError value(CmsSelectWithValueError v) {
         reference(v.reference.value());

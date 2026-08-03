@@ -4,7 +4,12 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerObjectName;
 
 /**
+ * <pre>
+ * {@code
  * ObjectName ::= VisibleString (SIZE(0..64)) — 7.3.1
+ * }
+ * </pre>
+ *
  * <p>
  * Wraps {@link InnerObjectName} for PER encode/decode via Rust (libasn1.so).
  */

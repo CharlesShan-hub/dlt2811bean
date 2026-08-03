@@ -10,14 +10,12 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetGoCBEntry ::= SEQUENCE {
- *     reference   [0] IMPLICIT ObjectReference,
- *     goEna       [1] IMPLICIT Boolean OPTIONAL,
- *     goID        [2] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *     datSet      [3] IMPLICIT ObjectReference OPTIONAL
- * } — 8.9.5
+ * SetGoCBEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, goEna [1]
+ * IMPLICIT Boolean OPTIONAL, goID [2] IMPLICIT VisibleString (SIZE (0..129))
+ * OPTIONAL, datSet [3] IMPLICIT ObjectReference OPTIONAL } — 8.9.5
  *
- * <p>Used by SetGoCBValues request.
+ * <p>
+ * Used by SetGoCBValues request.
  */
 public class CmsSetGoCbEntry extends CmsSequence {
 
@@ -41,8 +39,13 @@ public class CmsSetGoCbEntry extends CmsSequence {
         this.datSet = new CmsObjectReference();
     }
 
-    public CmsSetGoCbEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsSetGoCbEntry reference(byte[] v) { return reference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsSetGoCbEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsSetGoCbEntry reference(byte[] v) {
+        return reference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsSetGoCbEntry goEna(boolean v) {
         this.goEna.value(v);
         setPresent("goEna", true);
@@ -57,7 +60,9 @@ public class CmsSetGoCbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetGoCbEntry goID(byte[] v) { return goID(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetGoCbEntry goID(byte[] v) {
+        return goID(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetGoCbEntry datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -67,16 +72,30 @@ public class CmsSetGoCbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetGoCbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetGoCbEntry datSet(byte[] v) {
+        return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
 
     public CmsSetGoCbEntry value(CmsSetGoCbEntry v) {
         reference(v.reference.value());
-        if (v.isPresent("goEna")) { this.goEna.value(v.goEna.value()); setPresent("goEna", true); }
-        else { setPresent("goEna", false); }
-        if (v.isPresent("goID")) { this.goID.value(v.goID.value()); setPresent("goID", true); }
-        else { setPresent("goID", false); }
-        if (v.isPresent("datSet")) { this.datSet.value(v.datSet.value()); setPresent("datSet", true); }
-        else { setPresent("datSet", false); }
+        if (v.isPresent("goEna")) {
+            this.goEna.value(v.goEna.value());
+            setPresent("goEna", true);
+        } else {
+            setPresent("goEna", false);
+        }
+        if (v.isPresent("goID")) {
+            this.goID.value(v.goID.value());
+            setPresent("goID", true);
+        } else {
+            setPresent("goID", false);
+        }
+        if (v.isPresent("datSet")) {
+            this.datSet.value(v.datSet.value());
+            setPresent("datSet", true);
+        } else {
+            setPresent("datSet", false);
+        }
         return this;
     }
 }

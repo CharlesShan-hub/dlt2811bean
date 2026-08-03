@@ -7,13 +7,26 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 /**
- * Check ::= BIT STRING (SIZE(2)) — 7.5.3
+ * <pre>
+ * {@code
+ * Check ::= BIT STRING {
+ *     syncheck        (0),
+ *     interlock-check (1)
+ * } (SIZE (2)) — 7.5.3
+ * }
+ * </pre>
  */
-@Getter @Setter @Accessors(chain = true, fluent = true)
+@Getter
+@Setter
+@Accessors(chain = true, fluent = true)
 public class CmsCheck extends CmsBits {
 
-    @Bit(0) public boolean syncheck;
-    @Bit(1) public boolean interlock_check;
+    @Bit(0)
+    public boolean syncheck;
+    @Bit(1)
+    public boolean interlock_check;
 
-    public CmsCheck() { super(new InnerCheck()); }
+    public CmsCheck() {
+        super(new InnerCheck());
+    }
 }

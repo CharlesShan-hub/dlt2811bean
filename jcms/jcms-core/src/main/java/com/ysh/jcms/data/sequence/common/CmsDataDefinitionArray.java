@@ -12,15 +12,23 @@ import com.ysh.jcms.data.scalar.CmsInt32;
  */
 public class CmsDataDefinitionArray extends CmsSequence {
 
-    @CmsField public CmsInt32 numberOfElement;
-    @CmsField public CmsDataDefinition elementType;
+    @CmsField
+    public CmsInt32 numberOfElement;
+    @CmsField
+    public CmsDataDefinition elementType;
 
     public CmsDataDefinitionArray() {
         super(new InnerDataDefinitionArray());
     }
 
-    public CmsDataDefinitionArray numberOfElement(int v) { this.numberOfElement.value(v); return this; }
-    public CmsDataDefinitionArray elementType(CmsDataDefinition v) { this.elementType.value(v); return this; }
+    public CmsDataDefinitionArray numberOfElement(int v) {
+        this.numberOfElement.value(v);
+        return this;
+    }
+    public CmsDataDefinitionArray elementType(CmsDataDefinition v) {
+        this.elementType.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsDataDefinitionArray (fluent). */
     public CmsDataDefinitionArray value(CmsDataDefinitionArray v) {

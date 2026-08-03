@@ -10,16 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * LogEntry ::= SEQUENCE {
- *     timeOfEntry [0] IMPLICIT EntryTime,
- *     entryID     [1] IMPLICIT EntryID,
- *     entryData   [2] IMPLICIT SEQUENCE OF SEQUENCE { reference, fc, value, reason }
- * } — 8.8.1
+ * LogEntry ::= SEQUENCE { timeOfEntry [0] IMPLICIT EntryTime, entryID [1]
+ * IMPLICIT EntryID, entryData [2] IMPLICIT SEQUENCE OF SEQUENCE { reference,
+ * fc, value, reason } } — 8.8.1
  */
 public class CmsLogEntry extends CmsSequence {
 
-    @CmsField public CmsBinaryTime timeOfEntry;
-    @CmsField public CmsEntryId entryID;
+    @CmsField
+    public CmsBinaryTime timeOfEntry;
+    @CmsField
+    public CmsEntryId entryID;
     @CmsField(sequenceOf = true, elementType = CmsLogDataEntry.class)
     public List<CmsLogDataEntry> entryData; /* SEQUENCE OF LogDataEntry */
 
@@ -28,9 +28,18 @@ public class CmsLogEntry extends CmsSequence {
         this.entryData = new ArrayList<>();
     }
 
-    public CmsLogEntry timeOfEntry(CmsBinaryTime v) { this.timeOfEntry.value(v); return this; }
-    public CmsLogEntry entryID(byte[] v) { this.entryID.value(v); return this; }
-    public CmsLogEntry entryData(List<CmsLogDataEntry> v) { this.entryData = v; return this; }
+    public CmsLogEntry timeOfEntry(CmsBinaryTime v) {
+        this.timeOfEntry.value(v);
+        return this;
+    }
+    public CmsLogEntry entryID(byte[] v) {
+        this.entryID.value(v);
+        return this;
+    }
+    public CmsLogEntry entryData(List<CmsLogDataEntry> v) {
+        this.entryData = v;
+        return this;
+    }
 
     /** Copy all field values from another CmsLogEntry (fluent). */
     public CmsLogEntry value(CmsLogEntry v) {

@@ -15,42 +15,54 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetBRCBEntry ::= SEQUENCE {
- *     reference [0] IMPLICIT ObjectReference,
- *     rptID     [1] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *     rptEna    [2] IMPLICIT Boolean OPTIONAL,
- *     datSet    [3] IMPLICIT ObjectReference OPTIONAL,
- *     optFlds   [5] IMPLICIT RcbOptFlds OPTIONAL,
- *     bufTm     [6] IMPLICIT Int32U OPTIONAL,
- *     trgOps    [8] IMPLICIT TriggerConditions OPTIONAL,
- *     intgPd    [9] IMPLICIT Int32U OPTIONAL,
- *     gi        [10] IMPLICIT Boolean OPTIONAL,
- *     purgeBuf  [11] IMPLICIT Boolean OPTIONAL,
- *     entryID   [12] IMPLICIT EntryID OPTIONAL,
- *     resvTms   [13] IMPLICIT Int16 OPTIONAL
- * } — 8.7.3 (inline within SetBRCBValues-RequestPDU)
+ * SetBRCBEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, rptID [1]
+ * IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL, rptEna [2] IMPLICIT Boolean
+ * OPTIONAL, datSet [3] IMPLICIT ObjectReference OPTIONAL, optFlds [5] IMPLICIT
+ * RcbOptFlds OPTIONAL, bufTm [6] IMPLICIT Int32U OPTIONAL, trgOps [8] IMPLICIT
+ * TriggerConditions OPTIONAL, intgPd [9] IMPLICIT Int32U OPTIONAL, gi [10]
+ * IMPLICIT Boolean OPTIONAL, purgeBuf [11] IMPLICIT Boolean OPTIONAL, entryID
+ * [12] IMPLICIT EntryID OPTIONAL, resvTms [13] IMPLICIT Int16 OPTIONAL } —
+ * 8.7.3 (inline within SetBRCBValues-RequestPDU)
  */
 public class CmsSetBrcbEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField(optional = true) public CmsString rptID;
-    @CmsField(optional = true) public CmsBoolean rptEna;
-    @CmsField(optional = true) public CmsObjectReference datSet;
-    @CmsField(optional = true) public CmsRcbOptFlds optFlds;
-    @CmsField(optional = true) public CmsInt32U bufTm;
-    @CmsField(optional = true) public CmsTriggerConditions trgOps;
-    @CmsField(optional = true) public CmsInt32U intgPd;
-    @CmsField(optional = true) public CmsBoolean gi;
-    @CmsField(optional = true) public CmsBoolean purgeBuf;
-    @CmsField(optional = true) public CmsEntryId entryID;
-    @CmsField(optional = true) public CmsInt16 resvTms;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField(optional = true)
+    public CmsString rptID;
+    @CmsField(optional = true)
+    public CmsBoolean rptEna;
+    @CmsField(optional = true)
+    public CmsObjectReference datSet;
+    @CmsField(optional = true)
+    public CmsRcbOptFlds optFlds;
+    @CmsField(optional = true)
+    public CmsInt32U bufTm;
+    @CmsField(optional = true)
+    public CmsTriggerConditions trgOps;
+    @CmsField(optional = true)
+    public CmsInt32U intgPd;
+    @CmsField(optional = true)
+    public CmsBoolean gi;
+    @CmsField(optional = true)
+    public CmsBoolean purgeBuf;
+    @CmsField(optional = true)
+    public CmsEntryId entryID;
+    @CmsField(optional = true)
+    public CmsInt16 resvTms;
 
     public CmsSetBrcbEntry() {
         super(new InnerAnonymousSetBRCBValuesRequestPDUBrcb());
     }
 
-    public CmsSetBrcbEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsSetBrcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetBrcbEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsSetBrcbEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsSetBrcbEntry rptID(String v) {
         if (v != null) {
             this.rptID.value(v);
@@ -60,7 +72,9 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetBrcbEntry rptID(byte[] v) { return rptID(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetBrcbEntry rptID(byte[] v) {
+        return rptID(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetBrcbEntry rptEna(boolean v) {
         this.rptEna.value(v);
         setPresent("rptEna", true);
@@ -75,7 +89,9 @@ public class CmsSetBrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetBrcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetBrcbEntry datSet(byte[] v) {
+        return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetBrcbEntry optFlds(CmsRcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

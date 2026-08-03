@@ -12,13 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGOOSEElementNumber-RequestPDU ::= SEQUENCE {
- *     gocbReference   [0] IMPLICIT ObjectReference,
- *     memberData      [1] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference   [0] IMPLICIT ObjectReference,
- *         fc          [1] IMPLICIT FunctionalConstraint
- *     }
- * } — 8.9.3
+ * GetGOOSEElementNumber-RequestPDU ::= SEQUENCE { gocbReference [0] IMPLICIT
+ * ObjectReference, memberData [1] IMPLICIT SEQUENCE OF SEQUENCE { reference [0]
+ * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint } } — 8.9.3
  */
 public class CmsGetGooseElementNumberRequest extends CmsSequence {
 
@@ -33,7 +29,15 @@ public class CmsGetGooseElementNumberRequest extends CmsSequence {
         this.memberData = new ArrayList<>();
     }
 
-    public CmsGetGooseElementNumberRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGooseElementNumberRequest gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGooseElementNumberRequest memberData(List<CmsGoRefFcEntry> v) { this.memberData = v; return this; }
+    public CmsGetGooseElementNumberRequest gocbReference(String v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGooseElementNumberRequest gocbReference(byte[] v) {
+        return gocbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGooseElementNumberRequest memberData(List<CmsGoRefFcEntry> v) {
+        this.memberData = v;
+        return this;
+    }
 }

@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetFileAttributeValues-ErrorPDU ::= ServiceError — 8.12.4
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetFileAttributeValuesError extends CmsServiceError {
 

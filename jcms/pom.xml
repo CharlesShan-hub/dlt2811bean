@@ -108,6 +108,7 @@
                                 <exclude>**/NativeBridge.java</exclude>
                                 <exclude>**/info/**</exclude>
                                 <exclude>jcms-data/**</exclude>
+                                <exclude>jcms-core/src/test/**</exclude>
                             </excludes>
                         </java>
                     </configuration>

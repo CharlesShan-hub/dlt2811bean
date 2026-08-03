@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * AssociateNegotiate-ErrorPDU ::= ServiceError — 8.15
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsNegotiateError extends CmsServiceError {
 

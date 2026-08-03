@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetBRCBValues-ErrorPDU ::= ServiceError — 8.7.2
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetBrcbValuesError extends CmsServiceError {
 

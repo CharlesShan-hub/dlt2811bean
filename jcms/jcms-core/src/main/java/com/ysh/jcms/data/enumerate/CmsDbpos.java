@@ -4,7 +4,16 @@ import com.ysh.jcms.data.InnerDbpos;
 import com.ysh.jcms.data.core.CmsEnum;
 
 /**
- * Dbpos ::= BIT STRING (SIZE(2)) — 7.3.5
+ * <pre>
+ * {@code
+ * Dbpos ::= BIT STRING {
+ *     intermediate (0),
+ *     off          (1),
+ *     on           (2),
+ *     bad-state    (3)
+ * } (SIZE(2)) — 7.3.5
+ * }
+ * </pre>
  */
 @CmsEnum.ValueRange(min = 0, max = 3)
 public class CmsDbpos extends CmsEnum<CmsDbpos> {
@@ -14,6 +23,11 @@ public class CmsDbpos extends CmsEnum<CmsDbpos> {
     public static final int ON = 2;
     public static final int BAD_STATE = 3;
 
-    public CmsDbpos() { super(new InnerDbpos()); }
-    public CmsDbpos(int v) { this(); value(v); }
+    public CmsDbpos() {
+        super(new InnerDbpos());
+    }
+    public CmsDbpos(int v) {
+        this();
+        value(v);
+    }
 }

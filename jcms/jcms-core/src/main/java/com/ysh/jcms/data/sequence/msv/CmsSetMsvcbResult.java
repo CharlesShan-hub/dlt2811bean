@@ -6,35 +6,68 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 
 /**
- * SetMSVCBValues-ErrorPDU result entry ::= SEQUENCE {
- *     error       [0] IMPLICIT ServiceError OPTIONAL,
- *     svEna       [1] IMPLICIT ServiceError OPTIONAL,
- *     msvID       [2] IMPLICIT ServiceError OPTIONAL,
- *     datSet      [3] IMPLICIT ServiceError OPTIONAL,
- *     smpMod      [5] IMPLICIT ServiceError OPTIONAL,
- *     smpRate     [6] IMPLICIT ServiceError OPTIONAL,
- *     optFlds     [7] IMPLICIT ServiceError OPTIONAL
- * } — 8.10.3
+ * SetMSVCBValues-ErrorPDU result entry ::= SEQUENCE { error [0] IMPLICIT
+ * ServiceError OPTIONAL, svEna [1] IMPLICIT ServiceError OPTIONAL, msvID [2]
+ * IMPLICIT ServiceError OPTIONAL, datSet [3] IMPLICIT ServiceError OPTIONAL,
+ * smpMod [5] IMPLICIT ServiceError OPTIONAL, smpRate [6] IMPLICIT ServiceError
+ * OPTIONAL, optFlds [7] IMPLICIT ServiceError OPTIONAL } — 8.10.3
  */
 public class CmsSetMsvcbResult extends CmsSequence {
 
-    @CmsField(optional = true) public CmsServiceError error;
-    @CmsField(optional = true) public CmsServiceError svEna;
-    @CmsField(optional = true) public CmsServiceError msvID;
-    @CmsField(optional = true) public CmsServiceError datSet;
-    @CmsField(optional = true) public CmsServiceError smpMod;
-    @CmsField(optional = true) public CmsServiceError smpRate;
-    @CmsField(optional = true) public CmsServiceError optFlds;
+    @CmsField(optional = true)
+    public CmsServiceError error;
+    @CmsField(optional = true)
+    public CmsServiceError svEna;
+    @CmsField(optional = true)
+    public CmsServiceError msvID;
+    @CmsField(optional = true)
+    public CmsServiceError datSet;
+    @CmsField(optional = true)
+    public CmsServiceError smpMod;
+    @CmsField(optional = true)
+    public CmsServiceError smpRate;
+    @CmsField(optional = true)
+    public CmsServiceError optFlds;
 
-    public CmsSetMsvcbResult() { super(new InnerAnonymousSetMSVCBValuesErrorPDUResult()); }
+    public CmsSetMsvcbResult() {
+        super(new InnerAnonymousSetMSVCBValuesErrorPDUResult());
+    }
 
-    public CmsSetMsvcbResult error(int v) { this.error.value(v); setPresent("error", true); return this; }
-    public CmsSetMsvcbResult svEna(int v) { this.svEna.value(v); setPresent("svEna", true); return this; }
-    public CmsSetMsvcbResult msvID(int v) { this.msvID.value(v); setPresent("msvID", true); return this; }
-    public CmsSetMsvcbResult datSet(int v) { this.datSet.value(v); setPresent("datSet", true); return this; }
-    public CmsSetMsvcbResult smpMod(int v) { this.smpMod.value(v); setPresent("smpMod", true); return this; }
-    public CmsSetMsvcbResult smpRate(int v) { this.smpRate.value(v); setPresent("smpRate", true); return this; }
-    public CmsSetMsvcbResult optFlds(int v) { this.optFlds.value(v); setPresent("optFlds", true); return this; }
+    public CmsSetMsvcbResult error(int v) {
+        this.error.value(v);
+        setPresent("error", true);
+        return this;
+    }
+    public CmsSetMsvcbResult svEna(int v) {
+        this.svEna.value(v);
+        setPresent("svEna", true);
+        return this;
+    }
+    public CmsSetMsvcbResult msvID(int v) {
+        this.msvID.value(v);
+        setPresent("msvID", true);
+        return this;
+    }
+    public CmsSetMsvcbResult datSet(int v) {
+        this.datSet.value(v);
+        setPresent("datSet", true);
+        return this;
+    }
+    public CmsSetMsvcbResult smpMod(int v) {
+        this.smpMod.value(v);
+        setPresent("smpMod", true);
+        return this;
+    }
+    public CmsSetMsvcbResult smpRate(int v) {
+        this.smpRate.value(v);
+        setPresent("smpRate", true);
+        return this;
+    }
+    public CmsSetMsvcbResult optFlds(int v) {
+        this.optFlds.value(v);
+        setPresent("optFlds", true);
+        return this;
+    }
 
     /** Copy all field values from another result entry (fluent). */
     public CmsSetMsvcbResult value(CmsSetMsvcbResult v) {

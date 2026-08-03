@@ -9,12 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetEditSGValue-RequestPDU ::= SEQUENCE {
- *     data    [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference   [0] IMPLICIT ObjectReference,
- *         fc          [1] IMPLICIT FunctionalConstraint
- *     }
- * } — 8.6.5
+ * GetEditSGValue-RequestPDU ::= SEQUENCE { data [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { reference [0] IMPLICIT ObjectReference, fc [1] IMPLICIT
+ * FunctionalConstraint } } — 8.6.5
  */
 public class CmsGetEditSgValueRequest extends CmsSequence {
 

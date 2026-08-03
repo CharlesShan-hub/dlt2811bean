@@ -6,7 +6,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 /**
  * SelectEditSG-ResponsePDU ::= NULL — 8.6.2
  *
- * <p>Response has no payload.
+ * <p>
+ * Response has no payload.
  */
 public class CmsSelectEditSgResponse extends CmsSequence {
 

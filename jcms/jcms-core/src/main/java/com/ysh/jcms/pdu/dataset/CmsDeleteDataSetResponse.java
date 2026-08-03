@@ -6,7 +6,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 /**
  * DeleteDataSet-ResponsePDU ::= NULL — 8.5.4
  *
- * <p>Response has no payload.
+ * <p>
+ * Response has no payload.
  */
 public class CmsDeleteDataSetResponse extends CmsSequence {
 

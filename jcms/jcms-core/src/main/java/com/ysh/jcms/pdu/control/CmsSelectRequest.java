@@ -8,14 +8,24 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * Select-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference } — 8.11.1
+ * Select-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference } —
+ * 8.11.1
  */
 public class CmsSelectRequest extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
+    @CmsField
+    public CmsObjectReference reference;
 
-    public CmsSelectRequest() { super(new InnerSelectRequestPDU()); }
+    public CmsSelectRequest() {
+        super(new InnerSelectRequestPDU());
+    }
 
-    public CmsSelectRequest reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsSelectRequest reference(String v) { this.reference.value(v); return this; }
+    public CmsSelectRequest reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsSelectRequest reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
 }

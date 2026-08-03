@@ -10,13 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetDataDirectory-ResponsePDU ::= SEQUENCE {
- *     dataAttribute    [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference     [0] IMPLICIT SubReference,
- *         fc            [1] IMPLICIT FunctionalConstraint OPTIONAL
- *     },
- *     moreFollows      [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.4.3
+ * GetDataDirectory-ResponsePDU ::= SEQUENCE { dataAttribute [0] IMPLICIT
+ * SEQUENCE OF SEQUENCE { reference [0] IMPLICIT SubReference, fc [1] IMPLICIT
+ * FunctionalConstraint OPTIONAL }, moreFollows [1] IMPLICIT Boolean DEFAULT 1 }
+ * — 8.4.3
  */
 public class CmsGetDataDirectoryResponse extends CmsSequence {
 
@@ -40,6 +37,5 @@ public class CmsGetDataDirectoryResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
 
 }

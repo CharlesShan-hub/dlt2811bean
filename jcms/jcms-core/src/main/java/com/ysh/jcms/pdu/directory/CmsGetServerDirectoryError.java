@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetServerDirectory-ErrorPDU ::= ServiceError — 8.3.1
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetServerDirectoryError extends CmsServiceError {
 

@@ -5,11 +5,16 @@ import com.ysh.jcms.data.InnerInt64U;
 import java.math.BigInteger;
 
 /**
- * Wraps {@link InnerInt64U} for PER encode/decode via Rust (libasn1.so).
+ * <pre>
+ * {@code
+ * Int64U ::= INTEGER (0..18446744073709551615) — 7.1.2
+ * }
+ * </pre>
+ *
  * <p>
- * Int64U ::= INTEGER (0..18446744073709551615) — 64-bit unsigned.
- * Java {@code long} cannot represent values above {@link Long#MAX_VALUE},
- * so this wrapper uses {@link BigInteger}.
+ * Wraps {@link InnerInt64U} for PER encode/decode via Rust (libasn1.so).
+ * 64-bit unsigned — Java {@code long} cannot represent values above
+ * {@link Long#MAX_VALUE}, so this wrapper uses {@link BigInteger}.
  */
 public class CmsInt64U extends CmsScalar {
 
@@ -26,8 +31,10 @@ public class CmsInt64U extends CmsScalar {
 
     public BigInteger value() {
         Long v = (Long) innerGet();
-        if (v == null) return BigInteger.ZERO;
-        if (v >= 0) return BigInteger.valueOf(v);
+        if (v == null)
+            return BigInteger.ZERO;
+        if (v >= 0)
+            return BigInteger.valueOf(v);
         return BigInteger.valueOf(v).and(MAX);
     }
     public CmsInt64U value(BigInteger v) {

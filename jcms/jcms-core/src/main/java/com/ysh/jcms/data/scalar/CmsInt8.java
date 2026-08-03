@@ -4,6 +4,13 @@ import com.ysh.jcms.data.core.CmsScalar;
 import com.ysh.jcms.data.InnerInt8;
 
 /**
+ * <pre>
+ * {@code
+ * Int8 ::= INTEGER (-128..127) — 7.1.2
+ * }
+ * </pre>
+ *
+ * <p>
  * Wraps {@link InnerInt8} for PER encode/decode via Rust (libasn1.so).
  */
 public class CmsInt8 extends CmsScalar {

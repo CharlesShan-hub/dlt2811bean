@@ -7,10 +7,9 @@ import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 
 /**
- * Associate-RequestPDU ::= SEQUENCE {
- *     serverAccessPointReference    [0] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *     authenticationParameter       [1] IMPLICIT SEQUENCE { ... } OPTIONAL
- * } — 8.2.1
+ * Associate-RequestPDU ::= SEQUENCE { serverAccessPointReference [0] IMPLICIT
+ * VisibleString (SIZE (0..129)) OPTIONAL, authenticationParameter [1] IMPLICIT
+ * SEQUENCE { ... } OPTIONAL } — 8.2.1
  */
 public class CmsAssociateRequest extends CmsSequence {
 

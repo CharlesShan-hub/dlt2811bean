@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError — 8.3.2
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetLogicalDeviceDirectoryError extends CmsServiceError {
 

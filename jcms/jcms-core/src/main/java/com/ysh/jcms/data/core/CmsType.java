@@ -6,16 +6,19 @@ import com.ysh.jcms.data.InnerEmpty;
 /**
  * Root of the Cms* wrapper hierarchy.
  *
- * <p>A CmsType wraps an auto-generated {@code Inner*} instance (from jcms-data).
- * The Inner* tree (backed by {@link InnerBase#_v}) is the single source of truth;
- * encode/decode operate directly on it via Rust FFI and JSON interchange.
+ * <p>
+ * A CmsType wraps an auto-generated {@code Inner*} instance (from jcms-data).
+ * The Inner* tree (backed by {@link InnerBase#_v}) is the single source of
+ * truth; encode/decode operate directly on it via Rust FFI and JSON
+ * interchange.
  *
- * <p>Two kinds of subclasses:
+ * <p>
+ * Two kinds of subclasses:
  * <ul>
- *   <li><b>PDU types</b> — constructed with {@code super(new InnerXxx())}.
- *       Have real {@link #encode()} / {@link #decode(byte[])} backed by Rust.</li>
- *   <li><b>Container types</b> — constructed with the no-arg constructor,
- *       backed by {@link InnerEmpty}. These are field holders embedded in a parent PDU.</li>
+ * <li><b>PDU types</b> — constructed with {@code super(new InnerXxx())}. Have
+ * real {@link #encode()} / {@link #decode(byte[])} backed by Rust.</li>
+ * <li><b>Container types</b> — constructed with the no-arg constructor, backed
+ * by {@link InnerEmpty}. These are field holders embedded in a parent PDU.</li>
  * </ul>
  */
 public abstract class CmsType {
@@ -23,7 +26,10 @@ public abstract class CmsType {
     /** The Inner* instance backing this wrapper. */
     public InnerBase inner;
 
-    /** Static decode(byte[]) method per Inner class — cached (reflection lookup on every decode is wasteful). */
+    /**
+     * Static decode(byte[]) method per Inner class — cached (reflection lookup on
+     * every decode is wasteful).
+     */
     private static final ClassValue<java.lang.reflect.Method> DECODE_METHOD = new ClassValue<java.lang.reflect.Method>() {
         @Override
         protected java.lang.reflect.Method computeValue(Class<?> type) {
@@ -48,45 +54,49 @@ public abstract class CmsType {
     // ── Encode / decode ──────────────────────────────────────────────
 
     /**
-     * Encodes this wrapper to APER bytes via Rust FFI.
-     * Delegates directly to {@code Inner*.encode()}.
+     * Encodes this wrapper to APER bytes via Rust FFI. Delegates directly to
+     * {@code Inner*.encode()}.
      */
     public byte[] encode() {
         return inner.encode();
     }
 
     /**
-     * Decodes APER bytes into this wrapper via Rust FFI.
-     * Replaces the backing Inner* instance with a freshly decoded one.
+     * Decodes APER bytes into this wrapper via Rust FFI. Replaces the backing
+     * Inner* instance with a freshly decoded one.
      */
     public void decode(byte[] data) {
         try {
             java.lang.reflect.Method m = DECODE_METHOD.get(inner.getClass());
             inner = (InnerBase) m.invoke(null, (Object) data);
         } catch (Exception e) {
-            throw new RuntimeException("decode failed for " + inner.getClass().getSimpleName()
-                    + (data != null ? ", dataLen=" + data.length : ""), e);
+            throw new RuntimeException(
+                    "decode failed for " + inner.getClass().getSimpleName() + (data != null ? ", dataLen=" + data.length : ""), e);
         }
     }
 
     /**
-     * Push wrapper state into the Inner* tree before encode.
-     * Subclasses with Java fields that need packing (e.g. CmsBits) override this.
+     * Push wrapper state into the Inner* tree before encode. Subclasses with Java
+     * fields that need packing (e.g. CmsBits) override this.
      */
-    public void syncToInner() {}
+    public void syncToInner() {
+    }
 
     /**
-     * Pull values from Inner* tree into wrapper fields after decode.
-     * Subclasses with Java fields that need unpacking override this.
+     * Pull values from Inner* tree into wrapper fields after decode. Subclasses
+     * with Java fields that need unpacking override this.
      */
-    public void syncFromInner() {}
+    public void syncFromInner() {
+    }
 
     // ── Object overrides ─────────────────────────────────────────────
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || !(o instanceof CmsType)) return false;
+        if (this == o)
+            return true;
+        if (o == null || !(o instanceof CmsType))
+            return false;
         return inner.equals(((CmsType) o).inner);
     }
 

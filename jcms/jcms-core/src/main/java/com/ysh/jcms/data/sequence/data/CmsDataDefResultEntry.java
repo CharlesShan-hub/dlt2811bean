@@ -13,7 +13,8 @@ import com.ysh.jcms.data.scalar.CmsString;
  *     definition    [1] IMPLICIT DataDefinition
  * }
  *
- * <p>Used by GetDataDefinition Response (SEQUENCE OF DataDefResultEntry).
+ * <p>
+ * Used by GetDataDefinition Response (SEQUENCE OF DataDefResultEntry).
  */
 public class CmsDataDefResultEntry extends CmsSequence {
 

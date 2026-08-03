@@ -10,13 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetMSVCBValues-ResponsePDU ::= SEQUENCE {
- *     msvcb       [0] IMPLICIT SEQUENCE OF CHOICE {
- *         error   [0] IMPLICIT ServiceError,
- *         value   [1] IMPLICIT MSVCB
- *     },
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.10.2
+ * GetMSVCBValues-ResponsePDU ::= SEQUENCE { msvcb [0] IMPLICIT SEQUENCE OF
+ * CHOICE { error [0] IMPLICIT ServiceError, value [1] IMPLICIT MSVCB },
+ * moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.10.2
  */
 public class CmsGetMsvcbValuesResponse extends CmsSequence {
 

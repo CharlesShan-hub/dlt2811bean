@@ -11,29 +11,48 @@ import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * (inline SEQUENCE within LogEntry.entryData) ::= SEQUENCE {
- *     reference   [0] IMPLICIT ObjectReference,
- *     fc          [1] IMPLICIT FunctionalConstraint,
- *     value       [2] IMPLICIT Data,
- *     reason      [3] IMPLICIT ReasonCode
- * } — 8.8.1
+ * (inline SEQUENCE within LogEntry.entryData) ::= SEQUENCE { reference [0]
+ * IMPLICIT ObjectReference, fc [1] IMPLICIT FunctionalConstraint, value [2]
+ * IMPLICIT Data, reason [3] IMPLICIT ReasonCode } — 8.8.1
  *
- * <p>Element of {@link CmsLogEntry#entryData}.
+ * <p>
+ * Element of {@link CmsLogEntry#entryData}.
  */
 public class CmsLogDataEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsFC fc;
-    @CmsField public CmsData value;
-    @CmsField public CmsReasonCode reason;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsFC fc;
+    @CmsField
+    public CmsData value;
+    @CmsField
+    public CmsReasonCode reason;
 
-    public CmsLogDataEntry() { super(new InnerAnonymousLogEntryEntryData()); }
+    public CmsLogDataEntry() {
+        super(new InnerAnonymousLogEntryEntryData());
+    }
 
-    public CmsLogDataEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsLogDataEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsLogDataEntry fc(int v) { this.fc.value(v); return this; }
-    public CmsLogDataEntry value(CmsData v) { this.value.value(v); return this; }
-    public CmsLogDataEntry reason(CmsReasonCode v) { this.reason.value(v); return this; }
+    public CmsLogDataEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsLogDataEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsLogDataEntry fc(int v) {
+        this.fc.value(v);
+        return this;
+    }
+    public CmsLogDataEntry value(CmsData v) {
+        this.value.value(v);
+        return this;
+    }
+    public CmsLogDataEntry reason(CmsReasonCode v) {
+        this.reason.value(v);
+        return this;
+    }
 
     /** Copy all field values from another CmsLogDataEntry (fluent). */
     public CmsLogDataEntry value(CmsLogDataEntry v) {

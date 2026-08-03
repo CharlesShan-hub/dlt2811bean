@@ -12,10 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoReference-RequestPDU ::= SEQUENCE {
- *     gocbReference   [0] IMPLICIT ObjectReference,
- *     memberOfs       [1] IMPLICIT SEQUENCE OF Int16U
- * } — 8.9.2
+ * GetGoReference-RequestPDU ::= SEQUENCE { gocbReference [0] IMPLICIT
+ * ObjectReference, memberOfs [1] IMPLICIT SEQUENCE OF Int16U } — 8.9.2
  */
 public class CmsGetGoReferenceRequest extends CmsSequence {
 
@@ -30,7 +28,15 @@ public class CmsGetGoReferenceRequest extends CmsSequence {
         this.memberOfs = new ArrayList<>();
     }
 
-    public CmsGetGoReferenceRequest gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGoReferenceRequest gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGoReferenceRequest memberOfs(List<CmsInt16U> v) { this.memberOfs = v; return this; }
+    public CmsGetGoReferenceRequest gocbReference(String v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGoReferenceRequest gocbReference(byte[] v) {
+        return gocbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGoReferenceRequest memberOfs(List<CmsInt16U> v) {
+        this.memberOfs = v;
+        return this;
+    }
 }

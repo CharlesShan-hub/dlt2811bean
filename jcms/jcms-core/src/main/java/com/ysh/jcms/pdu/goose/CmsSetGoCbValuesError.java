@@ -9,14 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetGoCBValues-ErrorPDU ::= SEQUENCE {
- *     result  [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         error   [0] IMPLICIT ServiceError OPTIONAL,
- *         goEna   [1] IMPLICIT ServiceError OPTIONAL,
- *         goID    [2] IMPLICIT ServiceError OPTIONAL,
- *         datSet  [3] IMPLICIT ServiceError OPTIONAL
- *     }
- * } — 8.9.5
+ * SetGoCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { error [0] IMPLICIT ServiceError OPTIONAL, goEna [1] IMPLICIT
+ * ServiceError OPTIONAL, goID [2] IMPLICIT ServiceError OPTIONAL, datSet [3]
+ * IMPLICIT ServiceError OPTIONAL } } — 8.9.5
  */
 public class CmsSetGoCbValuesError extends CmsSequence {
 
@@ -28,5 +24,8 @@ public class CmsSetGoCbValuesError extends CmsSequence {
         this.result = new ArrayList<>();
     }
 
-    public CmsSetGoCbValuesError result(List<CmsSetGoCbResult> v) { this.result = v; return this; }
+    public CmsSetGoCbValuesError result(List<CmsSetGoCbResult> v) {
+        this.result = v;
+        return this;
+    }
 }

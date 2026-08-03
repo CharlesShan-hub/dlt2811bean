@@ -9,10 +9,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * RpcCall-RequestPDU ::= SEQUENCE {
- *     method  [0] IMPLICIT VisibleString,
- *     req     [1] IMPLICIT RpcCallReqChoice
- * } — 8.13.6
+ * RpcCall-RequestPDU ::= SEQUENCE { method [0] IMPLICIT VisibleString, req [1]
+ * IMPLICIT RpcCallReqChoice } — 8.13.6
  */
 public class CmsRpcCallRequest extends CmsSequence {
 
@@ -22,9 +20,19 @@ public class CmsRpcCallRequest extends CmsSequence {
     @CmsField
     public CmsRpcCallReqChoice req;
 
-    public CmsRpcCallRequest() { super(new InnerRpcCallRequestPDU()); }
+    public CmsRpcCallRequest() {
+        super(new InnerRpcCallRequestPDU());
+    }
 
-    public CmsRpcCallRequest method(String v) { this.method.value(v); return this; }
-    public CmsRpcCallRequest method(byte[] v) { return method(new String(v, StandardCharsets.UTF_8)); }
-    public CmsRpcCallRequest req(CmsRpcCallReqChoice v) { this.req.value(v); return this; }
+    public CmsRpcCallRequest method(String v) {
+        this.method.value(v);
+        return this;
+    }
+    public CmsRpcCallRequest method(byte[] v) {
+        return method(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsRpcCallRequest req(CmsRpcCallReqChoice v) {
+        this.req.value(v);
+        return this;
+    }
 }

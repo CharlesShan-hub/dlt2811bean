@@ -6,10 +6,13 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * Associate-ErrorPDU ::= ServiceError — 8.2.1
  *
- * <p>Type alias, not a SEQUENCE. Encoding as a plain ServiceError (INTEGER)
- * is required for inter-vendor interoperability.
+ * <p>
+ * Type alias, not a SEQUENCE. Encoding as a plain ServiceError (INTEGER) is
+ * required for inter-vendor interoperability.
  *
- * <p>NOTE: reqId is handled at the protocol level, not part of the ASN.1 definition.
+ * <p>
+ * NOTE: reqId is handled at the protocol level, not part of the ASN.1
+ * definition.
  */
 public class CmsAssociateError extends CmsServiceError {
 

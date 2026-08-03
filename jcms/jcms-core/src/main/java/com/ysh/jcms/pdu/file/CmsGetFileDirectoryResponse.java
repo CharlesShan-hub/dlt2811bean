@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetFileDirectory-ResponsePDU ::= SEQUENCE {
- *     fileEntry   [0] IMPLICIT SEQUENCE OF FileEntry,
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.12.5
+ * GetFileDirectory-ResponsePDU ::= SEQUENCE { fileEntry [0] IMPLICIT SEQUENCE
+ * OF FileEntry, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.12.5
  */
 public class CmsGetFileDirectoryResponse extends CmsSequence {
 

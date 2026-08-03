@@ -13,38 +13,49 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * SetURCBEntry ::= SEQUENCE {
- *     reference [0] IMPLICIT ObjectReference,
- *     rptID     [1] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *     rptEna    [2] IMPLICIT Boolean OPTIONAL,
- *     datSet    [3] IMPLICIT ObjectReference OPTIONAL,
- *     optFlds   [5] IMPLICIT RcbOptFlds OPTIONAL,
- *     bufTm     [6] IMPLICIT Int32U OPTIONAL,
- *     trgOps    [8] IMPLICIT TriggerConditions OPTIONAL,
- *     intgPd    [9] IMPLICIT Int32U OPTIONAL,
- *     gi        [10] IMPLICIT Boolean OPTIONAL,
- *     resv      [13] IMPLICIT Boolean OPTIONAL
- * } — 8.7.5 (inline within SetURCBValues-RequestPDU)
+ * SetURCBEntry ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, rptID [1]
+ * IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL, rptEna [2] IMPLICIT Boolean
+ * OPTIONAL, datSet [3] IMPLICIT ObjectReference OPTIONAL, optFlds [5] IMPLICIT
+ * RcbOptFlds OPTIONAL, bufTm [6] IMPLICIT Int32U OPTIONAL, trgOps [8] IMPLICIT
+ * TriggerConditions OPTIONAL, intgPd [9] IMPLICIT Int32U OPTIONAL, gi [10]
+ * IMPLICIT Boolean OPTIONAL, resv [13] IMPLICIT Boolean OPTIONAL } — 8.7.5
+ * (inline within SetURCBValues-RequestPDU)
  */
 public class CmsSetUrcbEntry extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField(optional = true) public CmsString rptID;
-    @CmsField(optional = true) public CmsBoolean rptEna;
-    @CmsField(optional = true) public CmsObjectReference datSet;
-    @CmsField(optional = true) public CmsRcbOptFlds optFlds;
-    @CmsField(optional = true) public CmsInt32U bufTm;
-    @CmsField(optional = true) public CmsTriggerConditions trgOps;
-    @CmsField(optional = true) public CmsInt32U intgPd;
-    @CmsField(optional = true) public CmsBoolean gi;
-    @CmsField(optional = true) public CmsBoolean resv;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField(optional = true)
+    public CmsString rptID;
+    @CmsField(optional = true)
+    public CmsBoolean rptEna;
+    @CmsField(optional = true)
+    public CmsObjectReference datSet;
+    @CmsField(optional = true)
+    public CmsRcbOptFlds optFlds;
+    @CmsField(optional = true)
+    public CmsInt32U bufTm;
+    @CmsField(optional = true)
+    public CmsTriggerConditions trgOps;
+    @CmsField(optional = true)
+    public CmsInt32U intgPd;
+    @CmsField(optional = true)
+    public CmsBoolean gi;
+    @CmsField(optional = true)
+    public CmsBoolean resv;
 
     public CmsSetUrcbEntry() {
         super(new InnerAnonymousSetURCBValuesRequestPDUUrcb());
     }
 
-    public CmsSetUrcbEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsSetUrcbEntry reference(String v) { this.reference.value(v); return this; }
+    public CmsSetUrcbEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsSetUrcbEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsSetUrcbEntry rptID(String v) {
         if (v != null) {
             this.rptID.value(v);
@@ -54,7 +65,9 @@ public class CmsSetUrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetUrcbEntry rptID(byte[] v) { return rptID(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetUrcbEntry rptID(byte[] v) {
+        return rptID(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetUrcbEntry rptEna(boolean v) {
         this.rptEna.value(v);
         setPresent("rptEna", true);
@@ -69,7 +82,9 @@ public class CmsSetUrcbEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsSetUrcbEntry datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSetUrcbEntry datSet(byte[] v) {
+        return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSetUrcbEntry optFlds(CmsRcbOptFlds v) {
         if (v != null) {
             this.optFlds.value(v);

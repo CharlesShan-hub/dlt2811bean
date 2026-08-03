@@ -10,13 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetSGCBValues-ResponsePDU ::= SEQUENCE {
- *     sgscb       [0] IMPLICIT SEQUENCE OF CHOICE {
- *         error   [0] IMPLICIT ServiceError,
- *         value   [1] IMPLICIT SGCB
- *     },
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.6.6
+ * GetSGCBValues-ResponsePDU ::= SEQUENCE { sgscb [0] IMPLICIT SEQUENCE OF
+ * CHOICE { error [0] IMPLICIT ServiceError, value [1] IMPLICIT SGCB },
+ * moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.6.6
  */
 public class CmsGetSgcbValuesResponse extends CmsSequence {
 

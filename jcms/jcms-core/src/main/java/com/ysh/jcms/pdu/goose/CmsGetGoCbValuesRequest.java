@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoCbValues-RequestPDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF ObjectReference
- * } — 8.9.4
+ * GetGoCbValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
+ * ObjectReference } — 8.9.4
  */
 public class CmsGetGoCbValuesRequest extends CmsSequence {
 
@@ -23,5 +22,8 @@ public class CmsGetGoCbValuesRequest extends CmsSequence {
         this.reference = new ArrayList<>();
     }
 
-    public CmsGetGoCbValuesRequest reference(List<CmsObjectReference> v) { this.reference = v; return this; }
+    public CmsGetGoCbValuesRequest reference(List<CmsObjectReference> v) {
+        this.reference = v;
+        return this;
+    }
 }

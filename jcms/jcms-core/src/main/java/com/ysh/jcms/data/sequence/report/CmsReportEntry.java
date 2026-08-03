@@ -10,17 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * ReportEntry ::= SEQUENCE {
- *     timeOfEntry [0] IMPLICIT EntryTime OPTIONAL,
- *     entryID     [1] IMPLICIT EntryID OPTIONAL,
- *     entryData   [2] IMPLICIT SEQUENCE OF ReportDataEntry
- * } — 8.7.1 (inline within ReportPDU)
+ * ReportEntry ::= SEQUENCE { timeOfEntry [0] IMPLICIT EntryTime OPTIONAL,
+ * entryID [1] IMPLICIT EntryID OPTIONAL, entryData [2] IMPLICIT SEQUENCE OF
+ * ReportDataEntry } — 8.7.1 (inline within ReportPDU)
  */
 public class CmsReportEntry extends CmsSequence {
 
-    @CmsField(optional = true) public CmsBinaryTime timeOfEntry;
-    @CmsField(optional = true) public CmsEntryId entryID;
-    @CmsField(sequenceOf = true, elementType = CmsReportDataEntry.class) public List<CmsReportDataEntry> entryData;
+    @CmsField(optional = true)
+    public CmsBinaryTime timeOfEntry;
+    @CmsField(optional = true)
+    public CmsEntryId entryID;
+    @CmsField(sequenceOf = true, elementType = CmsReportDataEntry.class)
+    public List<CmsReportDataEntry> entryData;
 
     public CmsReportEntry() {
         super(new InnerReportPDUEntry());
@@ -45,7 +46,10 @@ public class CmsReportEntry extends CmsSequence {
         }
         return this;
     }
-    public CmsReportEntry entryData(List<CmsReportDataEntry> v) { this.entryData = v; return this; }
+    public CmsReportEntry entryData(List<CmsReportDataEntry> v) {
+        this.entryData = v;
+        return this;
+    }
 
     public CmsReportEntry value(CmsReportEntry v) {
         if (v.isPresent("timeOfEntry")) {

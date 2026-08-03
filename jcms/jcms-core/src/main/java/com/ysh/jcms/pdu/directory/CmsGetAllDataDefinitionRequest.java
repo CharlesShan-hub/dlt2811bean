@@ -29,7 +29,10 @@ public class CmsGetAllDataDefinitionRequest extends CmsSequence {
         super(new InnerGetAllDataDefinitionRequestPDU());
     }
 
-    public CmsGetAllDataDefinitionRequest reference(CmsReferenceChoice v) { this.reference.value(v); return this; }
+    public CmsGetAllDataDefinitionRequest reference(CmsReferenceChoice v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsGetAllDataDefinitionRequest fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

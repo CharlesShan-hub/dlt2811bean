@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetBRCBValues-RequestPDU ::= SEQUENCE {
- *     brcb    [0] IMPLICIT SEQUENCE OF SetBRCBEntry
- * } — 8.7.3
+ * SetBRCBValues-RequestPDU ::= SEQUENCE { brcb [0] IMPLICIT SEQUENCE OF
+ * SetBRCBEntry } — 8.7.3
  */
 public class CmsSetBrcbValuesRequest extends CmsSequence {
 

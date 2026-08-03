@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetEditSGValue-ErrorPDU ::= SEQUENCE {
- *     result  [0] IMPLICIT SEQUENCE OF ServiceError
- * } — 8.6.3
+ * SetEditSGValue-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
+ * ServiceError } — 8.6.3
  */
 public class CmsSetEditSgValueError extends CmsSequence {
 

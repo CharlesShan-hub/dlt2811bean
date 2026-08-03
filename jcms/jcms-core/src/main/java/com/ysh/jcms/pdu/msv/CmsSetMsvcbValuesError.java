@@ -9,17 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetMSVCBValues-ErrorPDU ::= SEQUENCE {
- *     result  [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         error       [0] IMPLICIT ServiceError OPTIONAL,
- *         svEna       [1] IMPLICIT ServiceError OPTIONAL,
- *         msvID       [2] IMPLICIT ServiceError OPTIONAL,
- *         datSet      [3] IMPLICIT ServiceError OPTIONAL,
- *         smpMod      [5] IMPLICIT ServiceError OPTIONAL,
- *         smpRate     [6] IMPLICIT ServiceError OPTIONAL,
- *         optFlds     [7] IMPLICIT ServiceError OPTIONAL
- *     }
- * } — 8.10.3
+ * SetMSVCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { error [0] IMPLICIT ServiceError OPTIONAL, svEna [1] IMPLICIT
+ * ServiceError OPTIONAL, msvID [2] IMPLICIT ServiceError OPTIONAL, datSet [3]
+ * IMPLICIT ServiceError OPTIONAL, smpMod [5] IMPLICIT ServiceError OPTIONAL,
+ * smpRate [6] IMPLICIT ServiceError OPTIONAL, optFlds [7] IMPLICIT ServiceError
+ * OPTIONAL } } — 8.10.3
  */
 public class CmsSetMsvcbValuesError extends CmsSequence {
 

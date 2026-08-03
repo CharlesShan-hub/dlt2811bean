@@ -10,24 +10,34 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 
 /**
- * QueryLogByTime-RequestPDU ::= SEQUENCE {
- *     logReference    [0] IMPLICIT ObjectReference,
- *     startTime       [1] IMPLICIT EntryTime OPTIONAL,
- *     stopTime        [2] IMPLICIT EntryTime OPTIONAL,
- *     entryAfter      [3] IMPLICIT EntryID OPTIONAL
- * } — 8.8.4
+ * QueryLogByTime-RequestPDU ::= SEQUENCE { logReference [0] IMPLICIT
+ * ObjectReference, startTime [1] IMPLICIT EntryTime OPTIONAL, stopTime [2]
+ * IMPLICIT EntryTime OPTIONAL, entryAfter [3] IMPLICIT EntryID OPTIONAL } —
+ * 8.8.4
  */
 public class CmsQueryLogByTimeRequest extends CmsSequence {
 
-    @CmsField public CmsObjectReference logReference;
-    @CmsField(optional = true) public CmsBinaryTime startTime;
-    @CmsField(optional = true) public CmsBinaryTime stopTime;
-    @CmsField(optional = true) public CmsEntryId entryAfter;
+    @CmsField
+    public CmsObjectReference logReference;
+    @CmsField(optional = true)
+    public CmsBinaryTime startTime;
+    @CmsField(optional = true)
+    public CmsBinaryTime stopTime;
+    @CmsField(optional = true)
+    public CmsEntryId entryAfter;
 
-    public CmsQueryLogByTimeRequest() { super(new InnerQueryLogByTimeRequestPDU()); }
+    public CmsQueryLogByTimeRequest() {
+        super(new InnerQueryLogByTimeRequestPDU());
+    }
 
-    public CmsQueryLogByTimeRequest logReference(byte[] v) { this.logReference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsQueryLogByTimeRequest logReference(String v) { this.logReference.value(v); return this; }
+    public CmsQueryLogByTimeRequest logReference(byte[] v) {
+        this.logReference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsQueryLogByTimeRequest logReference(String v) {
+        this.logReference.value(v);
+        return this;
+    }
     public CmsQueryLogByTimeRequest startTime(CmsBinaryTime v) {
         if (v != null) {
             this.startTime.value(v);

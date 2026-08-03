@@ -8,10 +8,9 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * GetRpcMethodDirectory-RequestPDU ::= SEQUENCE {
- *     interface       [0] IMPLICIT VisibleString OPTIONAL,
- *     referenceAfter  [1] IMPLICIT VisibleString OPTIONAL
- * } — 8.13.3
+ * GetRpcMethodDirectory-RequestPDU ::= SEQUENCE { interface [0] IMPLICIT
+ * VisibleString OPTIONAL, referenceAfter [1] IMPLICIT VisibleString OPTIONAL }
+ * — 8.13.3
  */
 public class CmsGetRpcMethodDirectoryRequest extends CmsSequence {
 
@@ -21,7 +20,9 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsSequence {
     @CmsField(optional = true)
     public CmsString referenceAfter;
 
-    public CmsGetRpcMethodDirectoryRequest() { super(new InnerGetRpcMethodDirectoryRequestPDU()); }
+    public CmsGetRpcMethodDirectoryRequest() {
+        super(new InnerGetRpcMethodDirectoryRequestPDU());
+    }
 
     public CmsGetRpcMethodDirectoryRequest interfaceName(String v) {
         if (v != null) {
@@ -32,7 +33,9 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsGetRpcMethodDirectoryRequest interfaceName(byte[] v) { return interfaceName(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsGetRpcMethodDirectoryRequest interfaceName(byte[] v) {
+        return interfaceName(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsGetRpcMethodDirectoryRequest referenceAfter(String v) {
         if (v != null) {
             this.referenceAfter.value(v);
@@ -42,5 +45,7 @@ public class CmsGetRpcMethodDirectoryRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsGetRpcMethodDirectoryRequest referenceAfter(byte[] v) { return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsGetRpcMethodDirectoryRequest referenceAfter(byte[] v) {
+        return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
 }

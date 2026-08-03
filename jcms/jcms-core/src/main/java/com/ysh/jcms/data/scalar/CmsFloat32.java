@@ -6,6 +6,13 @@ import com.ysh.jcms.data.InnerFloat32;
 import java.nio.ByteBuffer;
 
 /**
+ * <pre>
+ * {@code
+ * Float32 ::= OCTET STRING (SIZE (4)) — 7.1.4
+ * }
+ * </pre>
+ *
+ * <p>
  * Wraps {@link InnerFloat32} for PER encode/decode via Rust (libasn1.so).
  * InnerFloat32 stores the float as a 4-byte OCTET STRING (IEEE 754 big-endian).
  */

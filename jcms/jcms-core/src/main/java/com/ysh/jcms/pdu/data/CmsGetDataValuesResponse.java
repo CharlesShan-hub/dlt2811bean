@@ -9,10 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetDataValues-ResponsePDU ::= SEQUENCE {
- *     value            [0] IMPLICIT SEQUENCE OF Data,
- *     moreFollows      [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.4.1
+ * GetDataValues-ResponsePDU ::= SEQUENCE { value [0] IMPLICIT SEQUENCE OF Data,
+ * moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.4.1
  */
 public class CmsGetDataValuesResponse extends CmsSequence {
 
@@ -36,6 +34,5 @@ public class CmsGetDataValuesResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
 
 }

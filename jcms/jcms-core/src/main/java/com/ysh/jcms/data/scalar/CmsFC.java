@@ -5,7 +5,12 @@ import com.ysh.jcms.data.InnerFunctionalConstraint;
 import com.ysh.jcms.data.V;
 
 /**
- * FunctionalConstraint ::= VisibleString (SIZE(2)) — 7.4
+ * <pre>
+ * {@code
+ * FunctionalConstraint ::= VisibleString (SIZE (2)) — 7.4
+ * }
+ * </pre>
+ *
  * <p>
  * CmsFC stores the value as int (0..12), while inner
  * {@link InnerFunctionalConstraint} stores it as 2-char code ("ST".."XX").
@@ -26,10 +31,7 @@ public class CmsFC extends CmsScalar {
     public static final int EX = 11;
     public static final int XX = 12;
 
-    private static final String[] CODES = {
-        "ST", "MX", "SP", "SV", "CF", "DC",
-        "SG", "SE", "SR", "OR", "BL", "EX", "XX"
-    };
+    private static final String[] CODES = {"ST", "MX", "SP", "SV", "CF", "DC", "SG", "SE", "SR", "OR", "BL", "EX", "XX"};
 
     private int val = XX;
 
@@ -41,7 +43,9 @@ public class CmsFC extends CmsScalar {
         value(value);
     }
 
-    public int value() { return val; }
+    public int value() {
+        return val;
+    }
     public CmsFC value(int v) {
         if (v < 0 || v > 12)
             throw new IllegalArgumentException("CmsFC out of range [0,12]: " + v);
@@ -53,22 +57,37 @@ public class CmsFC extends CmsScalar {
      * Look up by 2-char FC code ("ST", "MX", ...). Returns XX if unknown.
      */
     public static int fromCode(String code) {
-        if (code == null) return XX;
+        if (code == null)
+            return XX;
         switch (code) {
-            case "ST": return ST;
-            case "MX": return MX;
-            case "SP": return SP;
-            case "SV": return SV;
-            case "CF": return CF;
-            case "DC": return DC;
-            case "SG": return SG;
-            case "SE": return SE;
-            case "SR": return SR;
-            case "OR": return OR;
-            case "BL": return BL;
-            case "EX": return EX;
-            case "XX": return XX;
-            default: throw new IllegalArgumentException("Unknown FC code: " + code);
+            case "ST" :
+                return ST;
+            case "MX" :
+                return MX;
+            case "SP" :
+                return SP;
+            case "SV" :
+                return SV;
+            case "CF" :
+                return CF;
+            case "DC" :
+                return DC;
+            case "SG" :
+                return SG;
+            case "SE" :
+                return SE;
+            case "SR" :
+                return SR;
+            case "OR" :
+                return OR;
+            case "BL" :
+                return BL;
+            case "EX" :
+                return EX;
+            case "XX" :
+                return XX;
+            default :
+                throw new IllegalArgumentException("Unknown FC code: " + code);
         }
     }
 

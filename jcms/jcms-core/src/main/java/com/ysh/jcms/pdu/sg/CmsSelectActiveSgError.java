@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * SelectActiveSG-ErrorPDU ::= ServiceError — 8.6.1
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsSelectActiveSgError extends CmsServiceError {
 

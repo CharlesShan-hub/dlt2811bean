@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetURCBValues-ErrorPDU ::= SEQUENCE {
- *     result  [0] IMPLICIT SEQUENCE OF SetURCBResult
- * } — 8.7.5
+ * SetURCBValues-ErrorPDU ::= SEQUENCE { result [0] IMPLICIT SEQUENCE OF
+ * SetURCBResult } — 8.7.5
  */
 public class CmsSetUrcbValuesError extends CmsSequence {
 

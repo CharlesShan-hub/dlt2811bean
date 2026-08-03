@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * DeleteFile-ErrorPDU ::= ServiceError — 8.12.3
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsDeleteFileError extends CmsServiceError {
 

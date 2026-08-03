@@ -12,11 +12,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * DataDefinition ::= CHOICE { 24 alternatives } — 7.7
+ * <pre>
+ * {@code
+ * DataDefinition ::= CHOICE {
+ *     error          [0] IMPLICIT ServiceError,
+ *     array          [1] IMPLICIT SEQUENCE {
+ *         numberOfElement  [1] IMPLICIT Int32,
+ *         elementType      [2] DataDefinition
+ *     },
+ *     structure      [2] IMPLICIT SEQUENCE OF SEQUENCE {
+ *         name             [0] IMPLICIT ObjectName,
+ *         fc               [1] IMPLICIT FunctionalConstraint OPTIONAL,
+ *         type             [2] DataDefinition
+ *     },
+ *     boolean        [3] IMPLICIT NULL,
+ *     int8           [4] IMPLICIT NULL,
+ *     int16          [5] IMPLICIT NULL,
+ *     int32          [6] IMPLICIT NULL,
+ *     int64          [7] IMPLICIT NULL,
+ *     int8u          [8] IMPLICIT NULL,
+ *     int16u         [9] IMPLICIT NULL,
+ *     int32u         [10] IMPLICIT NULL,
+ *     int64u         [11] IMPLICIT NULL,
+ *     float32        [12] IMPLICIT NULL,
+ *     float64        [13] IMPLICIT NULL,
+ *     bit-string     [14] IMPLICIT INTEGER,
+ *     octet-string   [15] IMPLICIT INTEGER,
+ *     visible-string [16] IMPLICIT INTEGER,
+ *     unicode-string [17] IMPLICIT INTEGER,
+ *     utc-time       [18] IMPLICIT NULL,
+ *     binary-time    [19] IMPLICIT NULL,
+ *     quality        [20] IMPLICIT NULL,
+ *     dbpos          [21] IMPLICIT NULL,
+ *     tcmd           [22] IMPLICIT NULL,
+ *     check          [23] IMPLICIT NULL
+ * } — 7.7.2
+ * }
+ * </pre>
+ *
  * <p>
  * Only alternatives with payload are mapped: error (0), array (1), structure
- * (2), bit-string (14), octet-string (15), visible-string (16),
- * unicode-string (17). Alternatives [3..13] and [18..23] are NULL (no data).
+ * (2), bit-string (14), octet-string (15), visible-string (16), unicode-string
+ * (17). Alternatives [3..13] and [18..23] are NULL (no data).
  */
 public class CmsDataDefinition extends CmsChoice {
 
@@ -49,11 +86,16 @@ public class CmsDataDefinition extends CmsChoice {
     @Choice(index = 0, name = "error", sync = Sync.WRAPPER)
     public CmsServiceError alt_error;
 
-    /* [1] array — manual (no @Choice: eager creation would recurse via
-       CmsDataDefinitionArray.elementType → new CmsDataDefinition()) */
+    /*
+     * [1] array — manual (no @Choice: eager creation would recurse via
+     * CmsDataDefinitionArray.elementType → new CmsDataDefinition())
+     */
     public CmsDataDefinitionArray alt_array;
 
-    /* [2] structure — SEQUENCE OF DataDefinitionStructElem (manual, creates new container each sync) */
+    /*
+     * [2] structure — SEQUENCE OF DataDefinitionStructElem (manual, creates new
+     * container each sync)
+     */
     public List<CmsDataDefinitionStructElem> alt_structure;
 
     /* [14..17] CmsInt32 → Integer in inner (manual, no matching InnerBase field) */
@@ -65,13 +107,13 @@ public class CmsDataDefinition extends CmsChoice {
     public CmsDataDefinition() {
         super(new InnerDataDefinition());
         // NULL alternatives [3..13]
-        registerNullChoice(3,  "Boolean");
-        registerNullChoice(4,  "int8");
-        registerNullChoice(5,  "int16");
-        registerNullChoice(6,  "int32");
-        registerNullChoice(7,  "int64");
-        registerNullChoice(8,  "int8u");
-        registerNullChoice(9,  "int16u");
+        registerNullChoice(3, "Boolean");
+        registerNullChoice(4, "int8");
+        registerNullChoice(5, "int16");
+        registerNullChoice(6, "int32");
+        registerNullChoice(7, "int64");
+        registerNullChoice(8, "int8u");
+        registerNullChoice(9, "int16u");
         registerNullChoice(10, "int32u");
         registerNullChoice(11, "int64u");
         registerNullChoice(12, "float32");
@@ -93,52 +135,76 @@ public class CmsDataDefinition extends CmsChoice {
         this.alt_unicode_string_len = new CmsInt32();
     }
 
-    public CmsDataDefinition choice(int v) { super.choice(v); return this; }
+    public CmsDataDefinition choice(int v) {
+        super.choice(v);
+        return this;
+    }
 
     /* ─── Fluent setters ─── */
-    public CmsDataDefinition alt_error(int v) { choice(CHOICE_ERROR); this.alt_error.value(v); return this; }
-    public CmsDataDefinition alt_bit_string_len(int v) { choice(CHOICE_BIT_STRING); this.alt_bit_string_len.value(v); return this; }
-    public CmsDataDefinition alt_octet_string_len(int v) { choice(CHOICE_OCTET_STRING); this.alt_octet_string_len.value(v); return this; }
-    public CmsDataDefinition alt_visible_string_len(int v) { choice(CHOICE_VISIBLE_STRING); this.alt_visible_string_len.value(v); return this; }
-    public CmsDataDefinition alt_unicode_string_len(int v) { choice(CHOICE_UNICODE_STRING); this.alt_unicode_string_len.value(v); return this; }
+    public CmsDataDefinition alt_error(int v) {
+        choice(CHOICE_ERROR);
+        this.alt_error.value(v);
+        return this;
+    }
+    public CmsDataDefinition alt_bit_string_len(int v) {
+        choice(CHOICE_BIT_STRING);
+        this.alt_bit_string_len.value(v);
+        return this;
+    }
+    public CmsDataDefinition alt_octet_string_len(int v) {
+        choice(CHOICE_OCTET_STRING);
+        this.alt_octet_string_len.value(v);
+        return this;
+    }
+    public CmsDataDefinition alt_visible_string_len(int v) {
+        choice(CHOICE_VISIBLE_STRING);
+        this.alt_visible_string_len.value(v);
+        return this;
+    }
+    public CmsDataDefinition alt_unicode_string_len(int v) {
+        choice(CHOICE_UNICODE_STRING);
+        this.alt_unicode_string_len.value(v);
+        return this;
+    }
 
     /** Copy choice selection and value from another CmsDataDefinition (fluent). */
     public CmsDataDefinition value(CmsDataDefinition v) {
         int ch = v.choice();
-        choice(ch);
         switch (ch) {
-            case CHOICE_ERROR:
-                this.alt_error.value(v.alt_error.value());
-                break;
-            case CHOICE_ARRAY:
+            case CHOICE_ERROR :
+                return alt_error(v.alt_error.value());
+            case CHOICE_ARRAY :
                 this.alt_array = v.alt_array;
-                break;
-            case CHOICE_BIT_STRING:
-                this.alt_bit_string_len.value(v.alt_bit_string_len.value());
-                break;
-            case CHOICE_OCTET_STRING:
-                this.alt_octet_string_len.value(v.alt_octet_string_len.value());
-                break;
-            case CHOICE_VISIBLE_STRING:
-                this.alt_visible_string_len.value(v.alt_visible_string_len.value());
-                break;
-            case CHOICE_UNICODE_STRING:
-                this.alt_unicode_string_len.value(v.alt_unicode_string_len.value());
-                break;
-            // CHOICE_STRUCTURE, BOOLEAN..FLOAT64, UTC_TIME..CHECK are NULL — choice only
+                return choice(ch);
+            case CHOICE_BIT_STRING :
+                return alt_bit_string_len(v.alt_bit_string_len.value());
+            case CHOICE_OCTET_STRING :
+                return alt_octet_string_len(v.alt_octet_string_len.value());
+            case CHOICE_VISIBLE_STRING :
+                return alt_visible_string_len(v.alt_visible_string_len.value());
+            case CHOICE_UNICODE_STRING :
+                return alt_unicode_string_len(v.alt_unicode_string_len.value());
+            default :
+                // NULL alternatives: structure (2), [3..13], [18..23] — choice only
+                if (ch == CHOICE_STRUCTURE || (ch >= CHOICE_BOOLEAN && ch <= CHOICE_FLOAT64)
+                        || (ch >= CHOICE_UTC_TIME && ch <= CHOICE_CHECK)) {
+                    return choice(ch);
+                }
+                throw new IllegalArgumentException("Unknown DataDefinition choice: " + ch);
         }
-        return this;
     }
 
     @Override
     public void syncToInner() {
         int ch = choice();
-        if (ch < 0) return;
+        if (ch < 0)
+            return;
 
         // Handle array manually — alt_array is created lazily to break the
         // ctor recursion CmsDataDefinition ↔ CmsDataDefinitionArray
         if (ch == CHOICE_ARRAY) {
-            if (alt_array == null) alt_array = new CmsDataDefinitionArray();
+            if (alt_array == null)
+                alt_array = new CmsDataDefinitionArray();
             alt_array.syncToInner();
             inner._v.put("_choice", "array");
             inner._v.put("array", alt_array.inner._v);
@@ -188,7 +254,8 @@ public class CmsDataDefinition extends CmsChoice {
     @Override
     public void syncFromInner() {
         Object chObj = inner._v.get("_choice");
-        if (!(chObj instanceof String)) return;
+        if (!(chObj instanceof String))
+            return;
         String ch = (String) chObj;
 
         // Handle array manually

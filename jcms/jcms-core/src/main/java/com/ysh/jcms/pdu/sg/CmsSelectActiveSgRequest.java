@@ -9,10 +9,8 @@ import com.ysh.jcms.data.scalar.CmsInt8U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SelectActiveSG-RequestPDU ::= SEQUENCE {
- *     sgcbReference       [0] IMPLICIT ObjectReference,
- *     settingGroupNumber  [1] IMPLICIT Int8U
- * } — 8.6.1
+ * SelectActiveSG-RequestPDU ::= SEQUENCE { sgcbReference [0] IMPLICIT
+ * ObjectReference, settingGroupNumber [1] IMPLICIT Int8U } — 8.6.1
  */
 public class CmsSelectActiveSgRequest extends CmsSequence {
 
@@ -22,9 +20,19 @@ public class CmsSelectActiveSgRequest extends CmsSequence {
     @CmsField
     public CmsInt8U settingGroupNumber;
 
-    public CmsSelectActiveSgRequest() { super(new InnerSelectActiveSGRequestPDU()); }
+    public CmsSelectActiveSgRequest() {
+        super(new InnerSelectActiveSGRequestPDU());
+    }
 
-    public CmsSelectActiveSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
-    public CmsSelectActiveSgRequest sgcbReference(byte[] v) { return sgcbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsSelectActiveSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
+    public CmsSelectActiveSgRequest sgcbReference(String v) {
+        this.sgcbReference.value(v);
+        return this;
+    }
+    public CmsSelectActiveSgRequest sgcbReference(byte[] v) {
+        return sgcbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsSelectActiveSgRequest settingGroupNumber(int v) {
+        this.settingGroupNumber.value(v);
+        return this;
+    }
 }

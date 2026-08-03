@@ -16,7 +16,8 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
  *     value         [2] IMPLICIT Data
  * }
  *
- * <p>Used by SetDataValues Request.
+ * <p>
+ * Used by SetDataValues Request.
  */
 public class CmsDataRefValueEntry extends CmsSequence {
 
@@ -36,8 +37,14 @@ public class CmsDataRefValueEntry extends CmsSequence {
         this.value = new CmsData();
     }
 
-    public CmsDataRefValueEntry reference(String v) { this.reference.value(v); return this; }
-    public CmsDataRefValueEntry reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
+    public CmsDataRefValueEntry reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsDataRefValueEntry reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
     public CmsDataRefValueEntry fc(int v) {
         setPresent("fc", true);
         this.fc.value(v);

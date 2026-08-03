@@ -16,20 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SendGOOSEMessage-PDU ::= SEQUENCE {
- *     goID        [0] IMPLICIT VisibleString (SIZE (0..129)),
- *     datSet      [1] IMPLICIT ObjectReference OPTIONAL,
- *     goRef       [2] IMPLICIT ObjectReference OPTIONAL,
- *     t           [3] IMPLICIT TimeStamp,
- *     stNum       [4] IMPLICIT Int32U,
- *     sqNum       [5] IMPLICIT Int32U,
- *     simulation  [6] IMPLICIT Boolean,
- *     confRev     [7] IMPLICIT Int32U,
- *     ndsCom      [8] IMPLICIT Boolean,
- *     data        [9] IMPLICIT SEQUENCE OF Data
- * } — 8.9.1
+ * SendGOOSEMessage-PDU ::= SEQUENCE { goID [0] IMPLICIT VisibleString (SIZE
+ * (0..129)), datSet [1] IMPLICIT ObjectReference OPTIONAL, goRef [2] IMPLICIT
+ * ObjectReference OPTIONAL, t [3] IMPLICIT TimeStamp, stNum [4] IMPLICIT
+ * Int32U, sqNum [5] IMPLICIT Int32U, simulation [6] IMPLICIT Boolean, confRev
+ * [7] IMPLICIT Int32U, ndsCom [8] IMPLICIT Boolean, data [9] IMPLICIT SEQUENCE
+ * OF Data } — 8.9.1
  *
- * <p>Unconfirmed service — no Response or Error PDU.
+ * <p>
+ * Unconfirmed service — no Response or Error PDU.
  */
 public class CmsSendGooseMessage extends CmsSequence {
 
@@ -68,8 +63,13 @@ public class CmsSendGooseMessage extends CmsSequence {
         this.data = new ArrayList<>();
     }
 
-    public CmsSendGooseMessage goID(String v) { this.goID.value(v); return this; }
-    public CmsSendGooseMessage goID(byte[] v) { return goID(new String(v, StandardCharsets.UTF_8)); }
+    public CmsSendGooseMessage goID(String v) {
+        this.goID.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage goID(byte[] v) {
+        return goID(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsSendGooseMessage datSet(String v) {
         if (v != null) {
             this.datSet.value(v);
@@ -79,7 +79,9 @@ public class CmsSendGooseMessage extends CmsSequence {
         }
         return this;
     }
-    public CmsSendGooseMessage datSet(byte[] v) { return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
+    public CmsSendGooseMessage datSet(byte[] v) {
+        return datSet(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
     public CmsSendGooseMessage goRef(String v) {
         if (v != null) {
             this.goRef.value(v);
@@ -89,12 +91,35 @@ public class CmsSendGooseMessage extends CmsSequence {
         }
         return this;
     }
-    public CmsSendGooseMessage goRef(byte[] v) { return goRef(v != null ? new String(v, StandardCharsets.UTF_8) : null); }
-    public CmsSendGooseMessage t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsSendGooseMessage stNum(long v) { this.stNum.value(v); return this; }
-    public CmsSendGooseMessage sqNum(long v) { this.sqNum.value(v); return this; }
-    public CmsSendGooseMessage simulation(boolean v) { this.simulation.value(v); return this; }
-    public CmsSendGooseMessage confRev(long v) { this.confRev.value(v); return this; }
-    public CmsSendGooseMessage ndsCom(boolean v) { this.ndsCom.value(v); return this; }
-    public CmsSendGooseMessage data(List<CmsData> v) { this.data = v; return this; }
+    public CmsSendGooseMessage goRef(byte[] v) {
+        return goRef(v != null ? new String(v, StandardCharsets.UTF_8) : null);
+    }
+    public CmsSendGooseMessage t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage stNum(long v) {
+        this.stNum.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage sqNum(long v) {
+        this.sqNum.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage simulation(boolean v) {
+        this.simulation.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage confRev(long v) {
+        this.confRev.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage ndsCom(boolean v) {
+        this.ndsCom.value(v);
+        return this;
+    }
+    public CmsSendGooseMessage data(List<CmsData> v) {
+        this.data = v;
+        return this;
+    }
 }

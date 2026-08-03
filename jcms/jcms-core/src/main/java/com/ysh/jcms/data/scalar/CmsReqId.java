@@ -1,10 +1,14 @@
 package com.ysh.jcms.data.scalar;
 
 /**
- * ReqId ::= Int16U — Int16U ::= INTEGER (0..65535) typedef cms_int16u_t
- * cms_req_id_t;
+ * <pre>
+ * {@code
+ * ReqId ::= Int16U — Int16U ::= INTEGER (0..65535)
+ * }
+ * </pre>
  *
- * Alias for CmsInt16U.
+ * <p>
+ * Alias for CmsInt16U (typedef cms_int16u_t cms_req_id_t).
  */
 public class CmsReqId extends CmsInt16U {
 

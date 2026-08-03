@@ -9,10 +9,8 @@ import com.ysh.jcms.data.scalar.CmsInt8U;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * SelectEditSG-RequestPDU ::= SEQUENCE {
- *     sgcbReference       [0] IMPLICIT ObjectReference,
- *     settingGroupNumber  [1] IMPLICIT Int8U
- * } — 8.6.2
+ * SelectEditSG-RequestPDU ::= SEQUENCE { sgcbReference [0] IMPLICIT
+ * ObjectReference, settingGroupNumber [1] IMPLICIT Int8U } — 8.6.2
  */
 public class CmsSelectEditSgRequest extends CmsSequence {
 
@@ -22,9 +20,19 @@ public class CmsSelectEditSgRequest extends CmsSequence {
     @CmsField
     public CmsInt8U settingGroupNumber;
 
-    public CmsSelectEditSgRequest() { super(new InnerSelectEditSGRequestPDU()); }
+    public CmsSelectEditSgRequest() {
+        super(new InnerSelectEditSGRequestPDU());
+    }
 
-    public CmsSelectEditSgRequest sgcbReference(String v) { this.sgcbReference.value(v); return this; }
-    public CmsSelectEditSgRequest sgcbReference(byte[] v) { return sgcbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsSelectEditSgRequest settingGroupNumber(int v) { this.settingGroupNumber.value(v); return this; }
+    public CmsSelectEditSgRequest sgcbReference(String v) {
+        this.sgcbReference.value(v);
+        return this;
+    }
+    public CmsSelectEditSgRequest sgcbReference(byte[] v) {
+        return sgcbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsSelectEditSgRequest settingGroupNumber(int v) {
+        this.settingGroupNumber.value(v);
+        return this;
+    }
 }

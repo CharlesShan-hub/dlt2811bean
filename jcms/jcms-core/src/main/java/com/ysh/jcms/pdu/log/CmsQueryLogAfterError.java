@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * QueryLogAfter-ErrorPDU ::= ServiceError — 8.8.5
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsQueryLogAfterError extends CmsServiceError {
 

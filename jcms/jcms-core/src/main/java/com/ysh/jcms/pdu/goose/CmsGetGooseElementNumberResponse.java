@@ -13,12 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGOOSEElementNumber-ResponsePDU ::= SEQUENCE {
- *     gocbReference   [0] IMPLICIT ObjectReference,
- *     confRev         [1] IMPLICIT Int32U,
- *     datSet          [2] IMPLICIT ObjectReference,
- *     memberOffset    [3] IMPLICIT SEQUENCE OF Int16U
- * } — 8.9.3
+ * GetGOOSEElementNumber-ResponsePDU ::= SEQUENCE { gocbReference [0] IMPLICIT
+ * ObjectReference, confRev [1] IMPLICIT Int32U, datSet [2] IMPLICIT
+ * ObjectReference, memberOffset [3] IMPLICIT SEQUENCE OF Int16U } — 8.9.3
  */
 public class CmsGetGooseElementNumberResponse extends CmsSequence {
 
@@ -39,10 +36,26 @@ public class CmsGetGooseElementNumberResponse extends CmsSequence {
         this.memberOffset = new ArrayList<>();
     }
 
-    public CmsGetGooseElementNumberResponse gocbReference(String v) { this.gocbReference.value(v); return this; }
-    public CmsGetGooseElementNumberResponse gocbReference(byte[] v) { return gocbReference(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGooseElementNumberResponse confRev(long v) { this.confRev.value(v); return this; }
-    public CmsGetGooseElementNumberResponse datSet(String v) { this.datSet.value(v); return this; }
-    public CmsGetGooseElementNumberResponse datSet(byte[] v) { return datSet(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetGooseElementNumberResponse memberOffset(List<CmsInt16U> v) { this.memberOffset = v; return this; }
+    public CmsGetGooseElementNumberResponse gocbReference(String v) {
+        this.gocbReference.value(v);
+        return this;
+    }
+    public CmsGetGooseElementNumberResponse gocbReference(byte[] v) {
+        return gocbReference(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGooseElementNumberResponse confRev(long v) {
+        this.confRev.value(v);
+        return this;
+    }
+    public CmsGetGooseElementNumberResponse datSet(String v) {
+        this.datSet.value(v);
+        return this;
+    }
+    public CmsGetGooseElementNumberResponse datSet(byte[] v) {
+        return datSet(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetGooseElementNumberResponse memberOffset(List<CmsInt16U> v) {
+        this.memberOffset = v;
+        return this;
+    }
 }

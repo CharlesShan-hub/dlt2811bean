@@ -6,7 +6,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 /**
  * DeleteFile-ResponsePDU ::= NULL — 8.12.3
  *
- * <p>Response has no payload.
+ * <p>
+ * Response has no payload.
  */
 public class CmsDeleteFileResponse extends CmsSequence {
 

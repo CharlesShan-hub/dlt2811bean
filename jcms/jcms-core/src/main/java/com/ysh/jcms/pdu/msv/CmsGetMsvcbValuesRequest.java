@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetMSVCBValues-RequestPDU ::= SEQUENCE {
- *     reference   [0] IMPLICIT SEQUENCE OF ObjectReference
- * } — 8.10.2
+ * GetMSVCBValues-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT SEQUENCE OF
+ * ObjectReference } — 8.10.2
  */
 public class CmsGetMsvcbValuesRequest extends CmsSequence {
 

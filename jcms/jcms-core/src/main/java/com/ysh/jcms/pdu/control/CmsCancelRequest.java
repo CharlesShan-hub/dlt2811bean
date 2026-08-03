@@ -13,26 +13,44 @@ import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
 /**
- * Cancel-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference, ctlVal
- * [1] IMPLICIT Data, operTm [2] IMPLICIT TimeStamp OPTIONAL, origin [3]
+ * Cancel-RequestPDU ::= SEQUENCE { reference [0] IMPLICIT ObjectReference,
+ * ctlVal [1] IMPLICIT Data, operTm [2] IMPLICIT TimeStamp OPTIONAL, origin [3]
  * IMPLICIT Originator, ctlNum [4] IMPLICIT Int8U, t [5] IMPLICIT TimeStamp,
  * test [6] IMPLICIT Boolean } — 8.11.4
  */
 public class CmsCancelRequest extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData ctlVal;
-    @CmsField(optional = true) public CmsUtcTime operTm;
-    @CmsField public CmsOriginator origin;
-    @CmsField public CmsInt8U ctlNum;
-    @CmsField public CmsUtcTime t;
-    @CmsField public CmsBoolean test;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData ctlVal;
+    @CmsField(optional = true)
+    public CmsUtcTime operTm;
+    @CmsField
+    public CmsOriginator origin;
+    @CmsField
+    public CmsInt8U ctlNum;
+    @CmsField
+    public CmsUtcTime t;
+    @CmsField
+    public CmsBoolean test;
 
-    public CmsCancelRequest() { super(new InnerCancelRequestPDU()); }
+    public CmsCancelRequest() {
+        super(new InnerCancelRequestPDU());
+    }
 
-    public CmsCancelRequest reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsCancelRequest reference(String v) { this.reference.value(v); return this; }
-    public CmsCancelRequest ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
+    public CmsCancelRequest reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsCancelRequest reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsCancelRequest ctlVal(CmsData v) {
+        this.ctlVal.value(v);
+        return this;
+    }
     public CmsCancelRequest operTm(CmsUtcTime v) {
         if (v != null) {
             this.operTm.value(v);
@@ -42,8 +60,20 @@ public class CmsCancelRequest extends CmsSequence {
         }
         return this;
     }
-    public CmsCancelRequest origin(CmsOriginator v) { this.origin.value(v); return this; }
-    public CmsCancelRequest ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsCancelRequest t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsCancelRequest test(boolean v) { this.test.value(v); return this; }
+    public CmsCancelRequest origin(CmsOriginator v) {
+        this.origin.value(v);
+        return this;
+    }
+    public CmsCancelRequest ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsCancelRequest t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsCancelRequest test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
 }

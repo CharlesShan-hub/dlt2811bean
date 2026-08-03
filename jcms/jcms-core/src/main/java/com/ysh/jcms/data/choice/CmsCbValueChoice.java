@@ -10,9 +10,18 @@ import com.ysh.jcms.data.sequence.block.CmsSgcb;
 import com.ysh.jcms.data.sequence.block.CmsUrcb;
 
 /**
- * CBValue ::= CHOICE { brcb [0] IMPLICIT BRCB, urcb [1] IMPLICIT URCB, lcb [2]
- * IMPLICIT LCB, sgecb [3] IMPLICIT SGECB, gocb [4] IMPLICIT GOCB, msvcb [5]
- * IMPLICIT MSVCB } — 8.3.6
+ * <pre>
+ * {@code
+ * CBValue ::= CHOICE {
+ *     brcb  [0] IMPLICIT BRCB,
+ *     urcb  [1] IMPLICIT URCB,
+ *     lcb   [2] IMPLICIT LCB,
+ *     sgecb [3] IMPLICIT SGECB,
+ *     gocb  [4] IMPLICIT GOCB,
+ *     msvcb [5] IMPLICIT MSVCB
+ * } — 8.3.6
+ * }
+ * </pre>
  */
 public class CmsCbValueChoice extends CmsChoice {
 
@@ -23,39 +32,77 @@ public class CmsCbValueChoice extends CmsChoice {
     public static final int GOCB = 4;
     public static final int MSVCB = 5;
 
-    @Choice(index = 0, name = "brcb",    sync = Sync.WRAPPER, innerField = "brcb")  public CmsBrcb altBrcb;
-    @Choice(index = 1, name = "urcb",    sync = Sync.WRAPPER, innerField = "urcb")  public CmsUrcb altUrcb;
-    @Choice(index = 2, name = "lcb",     sync = Sync.WRAPPER, innerField = "lcb")   public CmsLcb altLcb;
-    @Choice(index = 3, name = "sgecb",   sync = Sync.WRAPPER, innerField = "sgcb")  public CmsSgcb altSgecb;
-    @Choice(index = 4, name = "gocb",    sync = Sync.WRAPPER, innerField = "gocb")  public CmsGoCb altGocb;
-    @Choice(index = 5, name = "msvcb",   sync = Sync.WRAPPER, innerField = "msvcb") public CmsMsvcb altMsvcb;
+    @Choice(index = 0, name = "brcb", sync = Sync.WRAPPER, innerField = "brcb")
+    public CmsBrcb altBrcb;
+    @Choice(index = 1, name = "urcb", sync = Sync.WRAPPER, innerField = "urcb")
+    public CmsUrcb altUrcb;
+    @Choice(index = 2, name = "lcb", sync = Sync.WRAPPER, innerField = "lcb")
+    public CmsLcb altLcb;
+    @Choice(index = 3, name = "sgecb", sync = Sync.WRAPPER, innerField = "sgcb")
+    public CmsSgcb altSgecb;
+    @Choice(index = 4, name = "gocb", sync = Sync.WRAPPER, innerField = "gocb")
+    public CmsGoCb altGocb;
+    @Choice(index = 5, name = "msvcb", sync = Sync.WRAPPER, innerField = "msvcb")
+    public CmsMsvcb altMsvcb;
 
     public CmsCbValueChoice() {
         super(new InnerEmpty());
     }
 
-    public CmsCbValueChoice choice(int v) { super.choice(v); return this; }
+    public CmsCbValueChoice choice(int v) {
+        super.choice(v);
+        return this;
+    }
 
     /* ─── Fluent setters (set choice + value in one call) ─── */
-    public CmsCbValueChoice altBrcb(CmsBrcb v) { choice(BRCB); this.altBrcb.value(v); return this; }
-    public CmsCbValueChoice altUrcb(CmsUrcb v) { choice(URCB); this.altUrcb.value(v); return this; }
-    public CmsCbValueChoice altLcb(CmsLcb v) { choice(LCB); this.altLcb.value(v); return this; }
-    public CmsCbValueChoice altSgecb(CmsSgcb v) { choice(SGECB); this.altSgecb.value(v); return this; }
-    public CmsCbValueChoice altGocb(CmsGoCb v) { choice(GOCB); this.altGocb.value(v); return this; }
-    public CmsCbValueChoice altMsvcb(CmsMsvcb v) { choice(MSVCB); this.altMsvcb.value(v); return this; }
+    public CmsCbValueChoice altBrcb(CmsBrcb v) {
+        choice(BRCB);
+        this.altBrcb.value(v);
+        return this;
+    }
+    public CmsCbValueChoice altUrcb(CmsUrcb v) {
+        choice(URCB);
+        this.altUrcb.value(v);
+        return this;
+    }
+    public CmsCbValueChoice altLcb(CmsLcb v) {
+        choice(LCB);
+        this.altLcb.value(v);
+        return this;
+    }
+    public CmsCbValueChoice altSgecb(CmsSgcb v) {
+        choice(SGECB);
+        this.altSgecb.value(v);
+        return this;
+    }
+    public CmsCbValueChoice altGocb(CmsGoCb v) {
+        choice(GOCB);
+        this.altGocb.value(v);
+        return this;
+    }
+    public CmsCbValueChoice altMsvcb(CmsMsvcb v) {
+        choice(MSVCB);
+        this.altMsvcb.value(v);
+        return this;
+    }
 
     /** Copy choice selection and value from another CmsCbValueChoice (fluent). */
     public CmsCbValueChoice value(CmsCbValueChoice v) {
-        int ch = v.choice();
-        super.choice(ch);
-        switch (ch) {
-            case BRCB:   this.altBrcb.value(v.altBrcb); break;
-            case URCB:   this.altUrcb.value(v.altUrcb); break;
-            case LCB:    this.altLcb.value(v.altLcb); break;
-            case SGECB:  this.altSgecb.value(v.altSgecb); break;
-            case GOCB:   this.altGocb.value(v.altGocb); break;
-            case MSVCB:  this.altMsvcb.value(v.altMsvcb); break;
+        switch (v.choice()) {
+            case BRCB :
+                return altBrcb(v.altBrcb);
+            case URCB :
+                return altUrcb(v.altUrcb);
+            case LCB :
+                return altLcb(v.altLcb);
+            case SGECB :
+                return altSgecb(v.altSgecb);
+            case GOCB :
+                return altGocb(v.altGocb);
+            case MSVCB :
+                return altMsvcb(v.altMsvcb);
+            default :
+                throw new IllegalArgumentException("Unknown CBValue choice: " + v.choice());
         }
-        return this;
     }
 }

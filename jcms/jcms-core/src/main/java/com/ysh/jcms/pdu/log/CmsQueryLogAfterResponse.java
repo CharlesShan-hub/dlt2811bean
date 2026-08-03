@@ -10,10 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * QueryLogAfter-ResponsePDU ::= SEQUENCE {
- *     logEntry    [0] IMPLICIT SEQUENCE OF LogEntry,
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.8.5
+ * QueryLogAfter-ResponsePDU ::= SEQUENCE { logEntry [0] IMPLICIT SEQUENCE OF
+ * LogEntry, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } — 8.8.5
  */
 public class CmsQueryLogAfterResponse extends CmsSequence {
 

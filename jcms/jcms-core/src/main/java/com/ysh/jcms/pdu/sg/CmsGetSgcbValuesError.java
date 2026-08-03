@@ -6,7 +6,8 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 /**
  * GetSGCBValues-ErrorPDU ::= ServiceError — 8.6.6
  *
- * <p>Type alias, not a SEQUENCE.
+ * <p>
+ * Type alias, not a SEQUENCE.
  */
 public class CmsGetSgcbValuesError extends CmsServiceError {
 

@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetLogStatusValues-RequestPDU ::= SEQUENCE {
- *     logReference    [0] IMPLICIT SEQUENCE OF ObjectReference
- * } — 8.8.6
+ * GetLogStatusValues-RequestPDU ::= SEQUENCE { logReference [0] IMPLICIT
+ * SEQUENCE OF ObjectReference } — 8.8.6
  */
 public class CmsGetLogStatusValuesRequest extends CmsSequence {
 

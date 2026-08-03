@@ -9,9 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetURCBValues-RequestPDU ::= SEQUENCE {
- *     urcb    [0] IMPLICIT SEQUENCE OF SetURCBEntry
- * } — 8.7.5
+ * SetURCBValues-RequestPDU ::= SEQUENCE { urcb [0] IMPLICIT SEQUENCE OF
+ * SetURCBEntry } — 8.7.5
  */
 public class CmsSetUrcbValuesRequest extends CmsSequence {
 

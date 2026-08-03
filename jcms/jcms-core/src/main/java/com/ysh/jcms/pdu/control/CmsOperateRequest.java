@@ -21,22 +21,55 @@ import com.ysh.jcms.data.sequence.common.CmsUtcTime;
  */
 public class CmsOperateRequest extends CmsSequence {
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData ctlVal;
-    @CmsField public CmsOriginator origin;
-    @CmsField public CmsInt8U ctlNum;
-    @CmsField public CmsUtcTime t;
-    @CmsField public CmsBoolean test;
-    @CmsField public CmsCheck check;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData ctlVal;
+    @CmsField
+    public CmsOriginator origin;
+    @CmsField
+    public CmsInt8U ctlNum;
+    @CmsField
+    public CmsUtcTime t;
+    @CmsField
+    public CmsBoolean test;
+    @CmsField
+    public CmsCheck check;
 
-    public CmsOperateRequest() { super(new InnerOperateRequestPDU()); }
+    public CmsOperateRequest() {
+        super(new InnerOperateRequestPDU());
+    }
 
-    public CmsOperateRequest reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsOperateRequest reference(String v) { this.reference.value(v); return this; }
-    public CmsOperateRequest ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
-    public CmsOperateRequest origin(CmsOriginator v) { this.origin.value(v); return this; }
-    public CmsOperateRequest ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsOperateRequest t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsOperateRequest test(boolean v) { this.test.value(v); return this; }
-    public CmsOperateRequest check(CmsCheck v) { this.check.value(v); return this; }
+    public CmsOperateRequest reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsOperateRequest reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsOperateRequest ctlVal(CmsData v) {
+        this.ctlVal.value(v);
+        return this;
+    }
+    public CmsOperateRequest origin(CmsOriginator v) {
+        this.origin.value(v);
+        return this;
+    }
+    public CmsOperateRequest ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsOperateRequest t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsOperateRequest test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsOperateRequest check(CmsCheck v) {
+        this.check.value(v);
+        return this;
+    }
 }

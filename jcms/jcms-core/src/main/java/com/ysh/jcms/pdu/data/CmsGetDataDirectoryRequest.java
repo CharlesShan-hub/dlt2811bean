@@ -8,10 +8,9 @@ import com.ysh.jcms.data.core.CmsSequence;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 
 /**
- * GetDataDirectory-RequestPDU ::= SEQUENCE {
- *     dataReference    [0] IMPLICIT ObjectReference,
- *     referenceAfter   [1] IMPLICIT ObjectReference OPTIONAL
- * } — 8.4.3
+ * GetDataDirectory-RequestPDU ::= SEQUENCE { dataReference [0] IMPLICIT
+ * ObjectReference, referenceAfter [1] IMPLICIT ObjectReference OPTIONAL } —
+ * 8.4.3
  */
 public class CmsGetDataDirectoryRequest extends CmsSequence {
 
@@ -27,8 +26,13 @@ public class CmsGetDataDirectoryRequest extends CmsSequence {
         this.referenceAfter = new CmsObjectReference();
     }
 
-    public CmsGetDataDirectoryRequest dataReference(String v) { this.dataReference.value(v); return this; }
-    public CmsGetDataDirectoryRequest dataReference(byte[] v) { return dataReference(new String(v, StandardCharsets.UTF_8)); }
+    public CmsGetDataDirectoryRequest dataReference(String v) {
+        this.dataReference.value(v);
+        return this;
+    }
+    public CmsGetDataDirectoryRequest dataReference(byte[] v) {
+        return dataReference(new String(v, StandardCharsets.UTF_8));
+    }
     public CmsGetDataDirectoryRequest referenceAfter(byte[] v) {
         return referenceAfter(v != null ? new String(v, StandardCharsets.UTF_8) : null);
     }

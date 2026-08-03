@@ -6,7 +6,8 @@ import com.ysh.jcms.data.core.CmsSequence;
 /**
  * SetBRCBValues-ResponsePDU ::= NULL — 8.7.3
  *
- * <p>Response has no payload.
+ * <p>
+ * Response has no payload.
  */
 public class CmsSetBrcbValuesResponse extends CmsSequence {
 

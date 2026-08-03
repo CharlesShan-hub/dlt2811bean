@@ -9,14 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetGoCBValues-RequestPDU ::= SEQUENCE {
- *     gocb    [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         reference   [0] IMPLICIT ObjectReference,
- *         goEna       [1] IMPLICIT Boolean OPTIONAL,
- *         goID        [2] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL,
- *         datSet      [3] IMPLICIT ObjectReference OPTIONAL
- *     }
- * } — 8.9.5
+ * SetGoCBValues-RequestPDU ::= SEQUENCE { gocb [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { reference [0] IMPLICIT ObjectReference, goEna [1] IMPLICIT Boolean
+ * OPTIONAL, goID [2] IMPLICIT VisibleString (SIZE (0..129)) OPTIONAL, datSet
+ * [3] IMPLICIT ObjectReference OPTIONAL } } — 8.9.5
  */
 public class CmsSetGoCbValuesRequest extends CmsSequence {
 
@@ -28,5 +24,8 @@ public class CmsSetGoCbValuesRequest extends CmsSequence {
         this.gocb = new ArrayList<>();
     }
 
-    public CmsSetGoCbValuesRequest gocb(List<CmsSetGoCbEntry> v) { this.gocb = v; return this; }
+    public CmsSetGoCbValuesRequest gocb(List<CmsSetGoCbEntry> v) {
+        this.gocb = v;
+        return this;
+    }
 }

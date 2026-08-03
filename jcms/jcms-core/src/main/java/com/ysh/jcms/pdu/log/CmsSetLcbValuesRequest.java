@@ -9,9 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * SetLCBValues-RequestPDU ::= SEQUENCE {
- *     lcb [0] IMPLICIT SEQUENCE OF SEQUENCE { reference, logEna, datSet, trgOps, intgPd, logRef, optFlds, bufTm }
- * } — 8.8.3
+ * SetLCBValues-RequestPDU ::= SEQUENCE { lcb [0] IMPLICIT SEQUENCE OF SEQUENCE
+ * { reference, logEna, datSet, trgOps, intgPd, logRef, optFlds, bufTm } } —
+ * 8.8.3
  */
 public class CmsSetLcbValuesRequest extends CmsSequence {
 

@@ -26,24 +26,44 @@ public class CmsCancelError extends CmsSequence {
 
     public CmsReqId reqId;
 
-    @CmsField public CmsObjectReference reference;
-    @CmsField public CmsData ctlVal;
-    @CmsField(optional = true) public CmsUtcTime operTm;
-    @CmsField public CmsOriginator origin;
-    @CmsField public CmsInt8U ctlNum;
-    @CmsField public CmsUtcTime t;
-    @CmsField public CmsBoolean test;
-    @CmsField public CmsAddCause addCause;
+    @CmsField
+    public CmsObjectReference reference;
+    @CmsField
+    public CmsData ctlVal;
+    @CmsField(optional = true)
+    public CmsUtcTime operTm;
+    @CmsField
+    public CmsOriginator origin;
+    @CmsField
+    public CmsInt8U ctlNum;
+    @CmsField
+    public CmsUtcTime t;
+    @CmsField
+    public CmsBoolean test;
+    @CmsField
+    public CmsAddCause addCause;
 
     public CmsCancelError() {
         super(new InnerCancelErrorPDU());
         this.reqId = new CmsReqId();
     }
 
-    public CmsCancelError reqId(int v) { this.reqId.value(v); return this; }
-    public CmsCancelError reference(byte[] v) { this.reference.value(new String(v, StandardCharsets.UTF_8)); return this; }
-    public CmsCancelError reference(String v) { this.reference.value(v); return this; }
-    public CmsCancelError ctlVal(CmsData v) { this.ctlVal.value(v); return this; }
+    public CmsCancelError reqId(int v) {
+        this.reqId.value(v);
+        return this;
+    }
+    public CmsCancelError reference(byte[] v) {
+        this.reference.value(new String(v, StandardCharsets.UTF_8));
+        return this;
+    }
+    public CmsCancelError reference(String v) {
+        this.reference.value(v);
+        return this;
+    }
+    public CmsCancelError ctlVal(CmsData v) {
+        this.ctlVal.value(v);
+        return this;
+    }
     public CmsCancelError operTm(CmsUtcTime v) {
         if (v != null) {
             this.operTm.value(v);
@@ -53,11 +73,26 @@ public class CmsCancelError extends CmsSequence {
         }
         return this;
     }
-    public CmsCancelError origin(CmsOriginator v) { this.origin.value(v); return this; }
-    public CmsCancelError ctlNum(int v) { this.ctlNum.value(v); return this; }
-    public CmsCancelError t(CmsUtcTime v) { this.t.value(v); return this; }
-    public CmsCancelError test(boolean v) { this.test.value(v); return this; }
-    public CmsCancelError addCause(int v) { this.addCause.value(v); return this; }
+    public CmsCancelError origin(CmsOriginator v) {
+        this.origin.value(v);
+        return this;
+    }
+    public CmsCancelError ctlNum(int v) {
+        this.ctlNum.value(v);
+        return this;
+    }
+    public CmsCancelError t(CmsUtcTime v) {
+        this.t.value(v);
+        return this;
+    }
+    public CmsCancelError test(boolean v) {
+        this.test.value(v);
+        return this;
+    }
+    public CmsCancelError addCause(int v) {
+        this.addCause.value(v);
+        return this;
+    }
 
     public CmsCancelError value(CmsCancelError v) {
         reqId(v.reqId.value());

@@ -12,14 +12,18 @@ import com.ysh.jcms.data.sequence.common.CmsUtcTime;
  * OCTET STRING, signedTime [1] IMPLICIT UtcTime, signedValue [2] IMPLICIT OCTET
  * STRING } — 8.2.1
  *
- * Used by CmsAssociateRequest and CmsAssociateResponse.
- * Uses {@link InnerAssociateRequestPDUAuthenticationParameter} as the backing Inner*.
+ * Used by CmsAssociateRequest and CmsAssociateResponse. Uses
+ * {@link InnerAssociateRequestPDUAuthenticationParameter} as the backing
+ * Inner*.
  */
 public class CmsAuthenticationParameter extends CmsSequence {
 
-    @CmsField public CmsOctetString signatureCertificate;
-    @CmsField public CmsUtcTime signedTime;
-    @CmsField public CmsOctetString signedValue;
+    @CmsField
+    public CmsOctetString signatureCertificate;
+    @CmsField
+    public CmsUtcTime signedTime;
+    @CmsField
+    public CmsOctetString signedValue;
 
     public CmsAuthenticationParameter() {
         super(new InnerAssociateRequestPDUAuthenticationParameter());
@@ -50,8 +54,6 @@ public class CmsAuthenticationParameter extends CmsSequence {
     }
 
     public CmsAuthenticationParameter value(CmsAuthenticationParameter v) {
-        return signatureCertificate(v.signatureCertificate.value())
-            .signedTime(v.signedTime)
-            .signedValue(v.signedValue.value());
+        return signatureCertificate(v.signatureCertificate.value()).signedTime(v.signedTime).signedValue(v.signedValue.value());
     }
 }

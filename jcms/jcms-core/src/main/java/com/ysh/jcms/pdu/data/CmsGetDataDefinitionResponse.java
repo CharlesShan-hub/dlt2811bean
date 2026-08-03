@@ -10,13 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetDataDefinition-ResponsePDU ::= SEQUENCE {
- *     data             [0] IMPLICIT SEQUENCE OF SEQUENCE {
- *         cdcType       [0] IMPLICIT VisibleString OPTIONAL,
- *         definition    [1] IMPLICIT DataDefinition
- *     },
- *     moreFollows      [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.4.4
+ * GetDataDefinition-ResponsePDU ::= SEQUENCE { data [0] IMPLICIT SEQUENCE OF
+ * SEQUENCE { cdcType [0] IMPLICIT VisibleString OPTIONAL, definition [1]
+ * IMPLICIT DataDefinition }, moreFollows [1] IMPLICIT Boolean DEFAULT 1 } —
+ * 8.4.4
  */
 public class CmsGetDataDefinitionResponse extends CmsSequence {
 
@@ -40,6 +37,5 @@ public class CmsGetDataDefinitionResponse extends CmsSequence {
         this.moreFollows.value(v);
         return this;
     }
-
 
 }

@@ -29,7 +29,10 @@ public class CmsGetAllCbValuesRequest extends CmsSequence {
         super(new InnerGetAllCBValuesRequestPDU());
     }
 
-    public CmsGetAllCbValuesRequest reference(CmsReferenceChoice v) { this.reference.value(v); return this; }
+    public CmsGetAllCbValuesRequest reference(CmsReferenceChoice v) {
+        this.reference.value(v);
+        return this;
+    }
     public CmsGetAllCbValuesRequest acsiClass(int v) {
         this.acsiClass.value(v);
         return this;

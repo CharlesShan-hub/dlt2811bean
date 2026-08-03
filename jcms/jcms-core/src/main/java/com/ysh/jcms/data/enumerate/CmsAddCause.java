@@ -4,8 +4,43 @@ import com.ysh.jcms.data.core.CmsEnum;
 import com.ysh.jcms.data.InnerAddCause;
 
 /**
- * AddCause ::= INTEGER (0..27) — 7.5.4 PER: constrained integer (0..27), 5 bits
- * sizeof = 4
+ * <pre>
+ * {@code
+ * AddCause ::= INTEGER {
+ *     unknown                              (0),
+ *     not-supported                        (1),
+ *     blocked-by-switching-hierarchy       (2),
+ *     select-failed                        (3),
+ *     invalid-position                     (4),
+ *     position-reached                     (5),
+ *     parameter-change-in-execution        (6),
+ *     step-limit                           (7),
+ *     blocked-by-mode                      (8),
+ *     blocked-by-process                   (9),
+ *     blocked-by-interlocking              (10),
+ *     blocked-by-syncheck                  (11),
+ *     command-already-in-execution         (12),
+ *     blocked-by-health                    (13),
+ *     one-of-a-control                     (14),
+ *     abortion-by-cancel                   (15),
+ *     time-limit-over                      (16),
+ *     abortion-by-trip                     (17),
+ *     object-not-selected                  (18),
+ *     object-already-selected              (19),
+ *     no-access-authority                  (20),
+ *     ended-with-overshoot                 (21),
+ *     abortion-due-to-deviation            (22),
+ *     abortion-by-communication-loss       (23),
+ *     blocked-by-command                   (24),
+ *     none                                 (25),
+ *     locked-by-other-client               (26),
+ *     inconsistent-parameters              (27)
+ * } (0..27) — 7.5.4
+ * }
+ * </pre>
+ *
+ * <p>
+ * PER: constrained integer (0..27), 5 bits; sizeof = 4.
  */
 @CmsEnum.ValueRange(min = 0, max = 27)
 public class CmsAddCause extends CmsEnum<CmsAddCause> {
@@ -39,6 +74,11 @@ public class CmsAddCause extends CmsEnum<CmsAddCause> {
     public static final int LOCKED_BY_OTHER_CLIENT = 26;
     public static final int INCONSISTENT_PARAMETERS = 27;
 
-    public CmsAddCause() { super(new InnerAddCause()); }
-    public CmsAddCause(int v) { this(); value(v); }
+    public CmsAddCause() {
+        super(new InnerAddCause());
+    }
+    public CmsAddCause(int v) {
+        this();
+        value(v);
+    }
 }

@@ -9,10 +9,8 @@ import com.ysh.jcms.data.scalar.CmsInt32U;
 import com.ysh.jcms.data.scalar.CmsString;
 
 /**
- * GetFile-RequestPDU ::= SEQUENCE {
- *     filename        [0] IMPLICIT VisibleString (SIZE (0..255)),
- *     startPosition   [1] IMPLICIT Int32U
- * } — 8.12.1
+ * GetFile-RequestPDU ::= SEQUENCE { filename [0] IMPLICIT VisibleString (SIZE
+ * (0..255)), startPosition [1] IMPLICIT Int32U } — 8.12.1
  */
 public class CmsGetFileRequest extends CmsSequence {
 
@@ -26,7 +24,15 @@ public class CmsGetFileRequest extends CmsSequence {
         super(new InnerGetFileRequestPDU());
     }
 
-    public CmsGetFileRequest filename(String v) { this.filename.value(v); return this; }
-    public CmsGetFileRequest filename(byte[] v) { return filename(new String(v, StandardCharsets.UTF_8)); }
-    public CmsGetFileRequest startPosition(long v) { this.startPosition.value(v); return this; }
+    public CmsGetFileRequest filename(String v) {
+        this.filename.value(v);
+        return this;
+    }
+    public CmsGetFileRequest filename(byte[] v) {
+        return filename(new String(v, StandardCharsets.UTF_8));
+    }
+    public CmsGetFileRequest startPosition(long v) {
+        this.startPosition.value(v);
+        return this;
+    }
 }

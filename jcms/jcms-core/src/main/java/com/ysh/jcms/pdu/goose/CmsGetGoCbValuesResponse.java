@@ -10,13 +10,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * GetGoCbValues-ResponsePDU ::= SEQUENCE {
- *     gocb        [0] IMPLICIT SEQUENCE OF CHOICE {
- *         error   [0] IMPLICIT ServiceError,
- *         value   [1] IMPLICIT GoCB
- *     },
- *     moreFollows [1] IMPLICIT Boolean DEFAULT 1
- * } — 8.9.4
+ * GetGoCbValues-ResponsePDU ::= SEQUENCE { gocb [0] IMPLICIT SEQUENCE OF CHOICE
+ * { error [0] IMPLICIT ServiceError, value [1] IMPLICIT GoCB }, moreFollows [1]
+ * IMPLICIT Boolean DEFAULT 1 } — 8.9.4
  */
 public class CmsGetGoCbValuesResponse extends CmsSequence {
 
@@ -32,6 +28,12 @@ public class CmsGetGoCbValuesResponse extends CmsSequence {
         this.moreFollows.value(true);
     }
 
-    public CmsGetGoCbValuesResponse gocb(List<CmsGocbValueChoice> v) { this.gocb = v; return this; }
-    public CmsGetGoCbValuesResponse moreFollows(boolean v) { this.moreFollows.value(v); return this; }
+    public CmsGetGoCbValuesResponse gocb(List<CmsGocbValueChoice> v) {
+        this.gocb = v;
+        return this;
+    }
+    public CmsGetGoCbValuesResponse moreFollows(boolean v) {
+        this.moreFollows.value(v);
+        return this;
+    }
 }
