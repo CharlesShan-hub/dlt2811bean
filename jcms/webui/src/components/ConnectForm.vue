@@ -21,6 +21,11 @@
       <UiSwitch v-model="form.withAp" />
     </div>
 
+    <div v-if="form.withAp" class="field switch-field">
+      <span class="field-label">应用层安全认证</span>
+      <UiSwitch v-model="form.apsecure" />
+    </div>
+
     <template v-if="form.withAp">
       <div class="divider"></div>
 
@@ -66,7 +71,7 @@ defineProps({
 
 const emit = defineEmits(['submit', 'update:cmd'])
 
-const form = ref({ ap: '', ip: '127.0.0.1', port: 8102, secure: false, withAp: true, apdu: 65535, asdu: 65531, version: 1 })
+const form = ref({ ap: '', ip: '127.0.0.1', port: 8102, secure: false, apsecure: false, withAp: true, apdu: 65535, asdu: 65531, version: 1 })
 
 // 端口由 TLS 开关决定（只读展示）：TLS → 9102（sslPort），明文 → 8102
 watch(() => form.value.secure, (secure) => {
@@ -98,6 +103,9 @@ function buildCmd() {
   let cmd = `connect --ip ${ip} --port ${port}${secure}`
   if (form.value.withAp && form.value.ap.trim()) {
     cmd += ` --ap ${form.value.ap.trim()} --apdu ${form.value.apdu} --asdu ${form.value.asdu} --version ${form.value.version}`
+    if (form.value.apsecure) {
+      cmd += ' --apsecure'
+    }
   }
   return cmd
 }

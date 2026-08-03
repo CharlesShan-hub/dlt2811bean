@@ -9,6 +9,7 @@ export default {
     P_IP,
     P_AP,
     { key: 'secure', label: '安全连接（TLS）', type: 'switch' },
+    { key: 'apsecure', label: '应用层安全认证', type: 'switch' },
     P_APDU,
     P_ASDU,
     P_VERSION,

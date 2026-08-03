@@ -94,17 +94,27 @@ const saving = ref(false)
 const editError = ref('')
 const editInputRef = ref(null)
 
-// load LDs when connected（复用共享缓存，连接后已由 App 拉取）
+// load LDs when connected（复用共享缓存，连接后已由 App 拉取；并行预取 ln 数量用于着色）
 watch(() => props.connected, async (val) => {
   if (val) {
     await refreshLds()
-    lds.value = ldCache.map(name => ({
-      name,
-      type: 'ld',
-      label: name,
-      children: null,
-      loading: false,
-      expanded: false,
+    lds.value = await Promise.all(ldCache.map(async (name) => {
+      let hasLn = false
+      try {
+        const res = await executeJson(`ld-dir --ld ${name} --json`)
+        hasLn = res.success && Array.isArray(res.data) && res.data.length > 0
+      } catch {
+        hasLn = false
+      }
+      return {
+        name,
+        type: 'ld',
+        label: name,
+        children: null,
+        loading: false,
+        expanded: false,
+        hasLn,
+      }
     }))
   } else {
     lds.value = []

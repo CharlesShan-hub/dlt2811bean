@@ -10,7 +10,7 @@
       <span v-else class="node-arrow" :class="{ expanded: node.expanded }">
         {{ node.loading ? '○' : '▸' }}
       </span>
-      <span class="node-label">{{ node.label }}</span>
+      <span class="node-label" :class="labelClass">{{ node.label }}</span>
       <span v-if="node.type === 'ld'" class="node-type">LD</span>
       <span v-else-if="node.type === 'ln'" class="node-type">LN</span>
     </div>
@@ -27,6 +27,8 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 const props = defineProps({
   node: Object,
   depth: { type: Number, default: 0 },
@@ -35,6 +37,14 @@ const props = defineProps({
 const emit = defineEmits(['toggle'])
 
 const isLeaf = props.node.isLeaf
+
+/** LD 节点按是否含 LN 着色：有 LN 绿色，无 LN 灰色 */
+const labelClass = computed(() => {
+  if (props.node.type === 'ld') {
+    return props.node.hasLn ? 'ld-has' : 'ld-empty'
+  }
+  return ''
+})
 
 function handleClick() {
   emit('toggle', props.node)
@@ -98,6 +108,15 @@ function handleClick() {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* LD 按是否含 LN 着色 */
+.node-label.ld-has {
+  color: var(--green);
+}
+
+.node-label.ld-empty {
+  color: var(--text-muted);
 }
 
 .node-type {
