@@ -75,6 +75,7 @@
 import { ref, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
+import { ldCache, refreshLds } from '../ldCache.js'
 
 const props = defineProps({
   connected: Boolean,
@@ -93,20 +94,18 @@ const saving = ref(false)
 const editError = ref('')
 const editInputRef = ref(null)
 
-// load LDs when connected
+// load LDs when connected（复用共享缓存，连接后已由 App 拉取）
 watch(() => props.connected, async (val) => {
   if (val) {
-    const res = await executeJson('server-dir --json')
-    if (res.success) {
-      lds.value = res.data.map(name => ({
-        name,
-        type: 'ld',
-        label: name,
-        children: null,
-        loading: false,
-        expanded: false,
-      }))
-    }
+    await refreshLds()
+    lds.value = ldCache.map(name => ({
+      name,
+      type: 'ld',
+      label: name,
+      children: null,
+      loading: false,
+      expanded: false,
+    }))
   } else {
     lds.value = []
   }

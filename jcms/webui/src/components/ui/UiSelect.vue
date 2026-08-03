@@ -19,7 +19,7 @@
           :class="{ selected: opt === modelValue }"
           @click="choose(opt)"
         >
-          {{ opt }}
+          {{ opt === '' ? emptyLabel : opt }}
         </div>
       </div>
     </transition>
@@ -34,6 +34,8 @@ defineProps({
   /** 字符串选项列表 */
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: '请选择' },
+  /** 空选项（''）显示的标签，用于表达"不选" */
+  emptyLabel: { type: String, default: '' },
   loading: Boolean,
 })
 

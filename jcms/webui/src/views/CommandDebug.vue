@@ -33,6 +33,13 @@
                 v-model="form[p.key]"
                 :options="p.options"
               />
+              <UiSelect
+                v-else-if="p.type === 'ld-select'"
+                v-model="form[p.key]"
+                :options="['', ...ldCache]"
+                :placeholder="p.placeholder"
+                empty-label="（不选）"
+              />
               <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
             </div>
           </template>
@@ -46,10 +53,13 @@
 
       <!-- ── 右栏：流程 + 命令与返回（含实时预览） ── -->
       <div class="col-right">
-        <UiCard title="连接流程" icon="⛓" collapsible>
+        <UiCard :title="rightTitle" icon="⛓" collapsible>
           <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
           <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" />
-          <pre v-else class="pdu">{{ def.asn1 }}</pre>
+          <template v-else>
+            <Asn1Code v-if="def.asn1" :code="def.asn1" />
+            <p v-if="def.note" class="svc-note">{{ def.note }}</p>
+          </template>
         </UiCard>
 
         <UiCard title="命令与返回" icon="🔄">
@@ -78,6 +88,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import ConnectForm from '../components/ConnectForm.vue'
 import ApPicker from '../components/ApPicker.vue'
 import StateDiagram from '../components/StateDiagram.vue'
+import Asn1Code from '../components/Asn1Code.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import UiInput from '../components/ui/UiInput.vue'
@@ -87,6 +98,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
+import { ldCache } from '../ldCache.js'
 
 const props = defineProps({
   cmd: String,
@@ -98,6 +110,12 @@ const def = computed(() => CMD_DEFS[props.cmd] || CMD_DEFS.connect)
 const title = computed(() => def.value.title)
 const isConnect = computed(() => props.cmd === 'connect')
 const simpleParams = computed(() => def.value.params)
+
+/** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
+const rightTitle = computed(() => {
+  if (isConnect.value) return '连接流程'
+  return def.value.asn1 ? 'ASN.1' : '服务说明'
+})
 
 const form = reactive({})
 const busy = ref(false)
@@ -174,9 +192,13 @@ function buildCmd() {
       }
     } else if (p.type === 'select') {
       if (v) {
-        parts.push(`--${p.key}`, String(v).split(' ')[0])
+        parts.push(`--${p.key}`, String(v).split(':')[0])
       }
     } else if (p.type === 'ap-select') {
+      if (v) {
+        parts.push(`--${p.key}`, String(v))
+      }
+    } else if (p.type === 'ld-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
       }
@@ -332,16 +354,11 @@ async function runCmd(cmdLine) {
   color: var(--accent);
 }
 
-/* ── ASN.1 ── */
-.pdu {
+/* ── 服务说明（无报文的命令） ── */
+.svc-note {
   margin: 0;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  overflow-x: auto;
-  font-size: 12px;
-  line-height: 1.7;
+  font-size: 13px;
+  line-height: 1.8;
   color: var(--text-secondary);
 }
 
