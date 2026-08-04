@@ -89,7 +89,6 @@ public abstract class InnerBase {
     /** Create an ObjectMapper configured for JER-compatible serialization. */
     protected static ObjectMapper createMapper() {
         ObjectMapper m = new ObjectMapper();
-        m.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         m.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         m.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         m.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
@@ -214,8 +213,12 @@ public abstract class InnerBase {
      */
     public static Object toJson(Object val) {
         if (val instanceof InnerBase) {
-            // Recursively process toJsonValue() result so that Map branch strips _-prefixed keys
-            return toJson(((InnerBase) val).toJsonValue());
+            // toJsonValue() already runs toJson() recursively — do NOT re-run
+            // toJson() on its result. On a second pass a CHOICE NULL variant map
+            // {"Boolean": null} is treated as a plain map and the null value is
+            // dropped again (plain-map branch skips nulls), emitting {} which the
+            // native decoder rejects (NoValidChoice).
+            return ((InnerBase) val).toJsonValue();
         }
         // byte[] -> hex string: canonical form never holds raw arrays (identity
         // equals/hashCode would break structural equality)
@@ -225,8 +228,6 @@ public abstract class InnerBase {
         if (val instanceof java.util.Map) {
             java.util.Map<String, Object> m = (java.util.Map<String, Object>) val;
             // CHOICE map: {"_choice": "variant", "variant": value} -> {"variant": value}
-            // NULL variants (e.g. {"Boolean": null}) keep a real null: the custom
-            // LinkedHashMap serializer in createMapper() writes map nulls as JSON null.
             if (m.containsKey("_choice")) {
                 String choice = (String) m.get("_choice");
                 java.util.LinkedHashMap<String, Object> out = new java.util.LinkedHashMap<>();

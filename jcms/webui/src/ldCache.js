@@ -13,6 +13,39 @@ export const ldLns = reactive({})
 /** 全量 LN 完整引用列表（省略 ldName 的 ld-dir 结果，如 "LD0/GGIO2"）。 */
 export const allLnRefs = reactive([])
 
+/** LN 目录子引用缓存（ln-dir 响应，供 ln-dir 的 after 下拉选择），key 为 "ln|acsi"。 */
+export const lnDirRefs = reactive([])
+let lnDirRefsKey = ''
+
+/** 清空 ln-dir 子引用缓存（断开连接或 LN/ACSI 切换时）。 */
+export function clearLnDirRefs() {
+  lnDirRefs.splice(0)
+  lnDirRefsKey = ''
+}
+
+/**
+ * 拉取某 LN（或 LD）在指定 ACSI 类下的子引用列表（幂等，供 ln-dir 的 after 下拉）。
+ * @param {string} lnRef ln-select 值，如 "LD0" 或 "LD0/LLN0"
+ * @param {number|string} acsi ACSI 数字（如 1）
+ */
+export async function ensureLnDirRefs(lnRef, acsi) {
+  if (!lnRef) {
+    lnDirRefs.splice(0)
+    return lnDirRefs
+  }
+  const key = `${lnRef}|${acsi}`
+  if (lnDirRefsKey === key && lnDirRefs.length > 0) return lnDirRefs
+  try {
+    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${acsi} --json`)
+    lnDirRefs.splice(0, lnDirRefs.length, ...(res.success && Array.isArray(res.data) ? res.data : []))
+    lnDirRefsKey = key
+  } catch {
+    lnDirRefs.splice(0)
+    lnDirRefsKey = key
+  }
+  return lnDirRefs
+}
+
 export function setLds(list) {
   ldCache.splice(0, ldCache.length, ...(list || []))
   if (!list || list.length === 0) {
@@ -69,4 +102,5 @@ export function clearLdLns() {
   for (const k of Object.keys(ldLns)) {
     delete ldLns[k]
   }
+  clearLnDirRefs()
 }

@@ -5,6 +5,7 @@ import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerDataDefinition;
+import com.ysh.jcms.data.V;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsInt32;
 import java.util.ArrayList;
@@ -252,8 +253,21 @@ public class CmsDataDefinition extends CmsChoice {
     @Override
     public void syncFromInner() {
         Object chObj = inner._v.get("_choice");
-        if (!(chObj instanceof String))
-            return;
+        if (!(chObj instanceof String)) {
+            // Decoded _v holds JER form ({"structure": [...]}, {"Boolean": null}, …)
+            // without _choice — pick the variant from the first non-metadata key.
+            // normalizeVariant() is NOT safe here: it wraps non-map payloads (e.g.
+            // structure's List) into {"_": ...}.
+            for (java.util.Map.Entry<String, Object> e : inner._v.entrySet()) {
+                if (e.getKey().startsWith("_"))
+                    continue;
+                chObj = e.getKey();
+                V.setChoice(inner._v, e.getKey());
+                break;
+            }
+            if (!(chObj instanceof String))
+                return;
+        }
         String ch = (String) chObj;
 
         // Handle array manually
@@ -274,11 +288,21 @@ public class CmsDataDefinition extends CmsChoice {
             alt_structure.clear();
             Object structObj = inner._v.get("structure");
             if (structObj instanceof List) {
-                @SuppressWarnings("unchecked")
-                List<InnerBase> src = (List<InnerBase>) structObj;
-                for (InnerBase elem : src) {
+                for (Object elem : (List<?>) structObj) {
                     CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
-                    c.inner = elem;
+                    if (elem instanceof InnerBase) {
+                        c.inner = (InnerBase) elem;
+                    } else if (elem instanceof java.util.Map) {
+                        // Jackson deserialized the SEQUENCE OF elements into raw
+                        // maps — share them as the wrapper's _v and rebind the
+                        // injected name/fc/type wrappers to the new map.
+                        @SuppressWarnings("unchecked")
+                        java.util.LinkedHashMap<String, Object> m = (java.util.LinkedHashMap<String, Object>) elem;
+                        c.inner._v = m;
+                        c.rebindWrappers();
+                    } else {
+                        continue;
+                    }
                     c.syncFromInner();
                     alt_structure.add(c);
                 }
