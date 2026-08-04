@@ -1,6 +1,6 @@
 <template>
   <div ref="wrapEl" class="ui-select">
-    <button type="button" class="ui-select__trigger" @click="toggle">
+    <button type="button" class="ui-select__trigger" :class="{ disabled }" :disabled="disabled" @click="toggle">
       <span class="ui-select__value" :class="{ placeholder: !currentLabel }">
         <span v-if="currentColor" class="ui-select__dot" :style="{ background: currentColor }"></span>
         {{ currentLabel || (loading ? '加载中...' : placeholder) }}
@@ -39,6 +39,8 @@ const props = defineProps({
   /** 空选项（''）显示的标签，用于表达"不选" */
   emptyLabel: { type: String, default: '' },
   loading: Boolean,
+  /** 禁用：仅展示当前选中项，不可打开选择（如协议固定值的参数） */
+  disabled: Boolean,
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -141,6 +143,17 @@ onBeforeUnmount(close)
 
 .ui-select__trigger:hover {
   border-color: var(--text-muted);
+}
+
+.ui-select__trigger.disabled,
+.ui-select__trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.ui-select__trigger.disabled:hover,
+.ui-select__trigger:disabled:hover {
+  border-color: var(--border);
 }
 
 .ui-select__value {

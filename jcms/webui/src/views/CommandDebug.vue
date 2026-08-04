@@ -4,21 +4,46 @@
       <div class="title-row">
         <div class="title-left">
           <span v-if="section" class="sec-badge">✦ {{ section }}</span>
-          <h1 class="page-title">{{ shortTitle }}</h1>
+          <h1 class="page-title">{{ isConnect ? '连接管理' : shortTitle }}</h1>
         </div>
         <div class="title-right">
-          <code class="cmd-chip">{{ props.cmd }}</code>
-          <span class="sep">·</span>
-          <span class="desc-text">{{ def.desc }}</span>
+          <button v-if="def.doc" type="button" class="doc-btn" title="协议说明" @click="docOpen = true">📖</button>
+          <template v-if="isConnect">
+            <code class="cmd-chip">connect</code>
+            <span class="desc-text">TCP → 协商 → 关联</span>
+            <span class="sep">·</span>
+            <code class="cmd-chip">disconnect</code>
+            <span class="desc-text">断开 TCP 连接</span>
+          </template>
+          <template v-else>
+            <code class="cmd-chip">{{ props.cmd }}</code>
+            <span class="sep">·</span>
+            <span class="desc-text">{{ def.desc }}</span>
+          </template>
         </div>
       </div>
     </header>
 
+    <UiModal v-model="docOpen" wide title="协议说明">
+      <div v-if="def.doc" class="doc-md" v-html="docHtml"></div>
+      <template v-else>
+        <pre v-if="def.asn1" class="doc-asn1">{{ def.asn1 }}</pre>
+        <p v-else class="doc-desc muted">该命令没有独立的协议说明。</p>
+      </template>
+    </UiModal>
+
     <div class="debug-grid">
       <!-- ── 左栏：参数 ── -->
-      <UiCard title="参数" icon="⚙" fill>
-        <!-- connect 专属：使用共享连接表单 -->
-        <ConnectForm v-if="isConnect" :busy="busy" submit-label="执行 connect" @submit="runCmd" @update:cmd="connectCmd = $event" />
+      <UiCard :title="isConnect ? '连接设置' : '参数'" icon="⚙" fill>
+        <!-- connect 专属：使用共享连接表单 + 断开按钮 + 结果消息 -->
+        <ConnectForm v-if="isConnect" :busy="busy" submit-label="连接" @submit="runCmd" @update:cmd="connectCmd = $event">
+          <template #extra>
+            <UiButton v-if="connected" @click="disconnect">断开</UiButton>
+          </template>
+        </ConnectForm>
+        <transition name="fade">
+          <div v-if="isConnect && connMsg" class="msg" :class="connMsgOk ? 'ok' : 'err'">{{ connMsg }}</div>
+        </transition>
 
         <!-- 通用参数渲染（connect 由上方专属模板渲染，跳过） -->
         <template v-if="!isConnect && simpleParams.length">
@@ -51,6 +76,7 @@
                   v-else-if="p.type === 'select'"
                   v-model="form[p.key]"
                   :options="p.options"
+                  :disabled="p.disabled"
                 />
                 <UiSelect
                   v-else-if="p.type === 'ld-select'"
@@ -89,14 +115,22 @@
       <div class="col-right">
         <UiCard :title="rightTitle" icon="⛓" collapsible>
           <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
-          <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" />
+          <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
+          <p v-if="isConnect" class="tip">💡 <code>connect --ap</code> 自动完成上述三步；关联建立后即可使用各服务页面。</p>
           <template v-else>
             <Asn1Code v-if="def.asn1" :code="def.asn1" />
+            <p v-else-if="def.desc" class="svc-note">{{ def.desc }}</p>
             <p v-if="def.note" class="svc-note">{{ def.note }}</p>
           </template>
         </UiCard>
 
         <UiCard title="命令与返回" icon="🔄">
+          <template #header>
+            <div class="json-opt">
+              <span class="json-opt-label">--json</span>
+              <UiSwitch v-model="jsonMode" />
+            </div>
+          </template>
           <div class="cmd-preview">
             <code class="preview-line">{{ previewCmd }}</code>
             <UiButton variant="ghost" @click="copyCmd">
@@ -128,7 +162,9 @@ import UiButton from '../components/ui/UiButton.vue'
 import UiInput from '../components/ui/UiInput.vue'
 import UiSelect from '../components/ui/UiSelect.vue'
 import UiSwitch from '../components/ui/UiSwitch.vue'
+import UiModal from '../components/ui/UiModal.vue'
 import { executeCommand, executeJson } from '../api/cms.js'
+import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
@@ -136,11 +172,21 @@ import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLn
 
 const props = defineProps({
   cmd: String,
+  /** 连接管理页：当前是否已关联 / 已 TCP 连接（用于状态图高亮） */
+  connected: { type: Boolean, default: false },
+  tcpConnected: { type: Boolean, default: false },
 })
 
 const connectFlow = CONNECT_FLOW
 
 const def = computed(() => CMD_DEFS[props.cmd] || { title: props.cmd, desc: '', params: [] })
+
+/** connect 状态图高亮：关联 > TCP 连接 > 未连接。 */
+const activeState = computed(() => {
+  if (props.connected) return 'assoc'
+  if (props.tcpConnected) return 'tcp'
+  return 'init'
+})
 
 /** 页头拆解："关联 associate (8.2.1)" → 大标题"关联" + 章节徽章"8.2.1"。 */
 const titleParts = computed(() => {
@@ -191,6 +237,17 @@ const busy = ref(false)
 const result = ref(null)
 const connectCmd = ref('')
 const copied = ref(false)
+const docOpen = ref(false)
+/** 连接管理页：执行 connect/disconnect 的结果消息。 */
+const connMsg = ref('')
+const connMsgOk = ref(true)
+
+/** 全局 JSON 输出开关：命令自动追加 --json（localStorage 持久化，各子页面共享）。 */
+const jsonMode = ref(localStorage.getItem('cms-json-mode') === '1')
+watch(jsonMode, (v) => localStorage.setItem('cms-json-mode', v ? '1' : '0'))
+
+/** 协议说明 doc 的 markdown 渲染结果。 */
+const docHtml = computed(() => marked.parse(def.value.doc || ''))
 let copyTimer
 
 /** 实时生成的命令：connect 由 ConnectForm 输出，其余由表单状态实时拼接 */
@@ -310,6 +367,8 @@ function buildCmd() {
         parts.push(`--${p.key}`)
       }
     } else if (p.type === 'select') {
+      // disabled 参数（如协议固定值）仅展示，不拼入命令
+      if (p.disabled) continue
       if (v) {
         parts.push(`--${p.key}`, String(v).split(':')[0])
       }
@@ -333,6 +392,9 @@ function buildCmd() {
       parts.push(`--${p.key}`, String(v))
     }
   }
+  if (jsonMode.value) {
+    parts.push('--json')
+  }
   return parts.join(' ')
 }
 
@@ -344,15 +406,27 @@ async function run() {
 async function runCmd(cmdLine) {
   busy.value = true
   try {
-    const text = await executeCommand(cmdLine)
+    // 连接管理页：按 --json 开关决定是否补 --json（开关开才解析结构化消息）
+    const final = isConnect.value && jsonMode.value && !cmdLine.includes('--json') ? `${cmdLine} --json` : cmdLine
+    const text = await executeCommand(final)
     const clean = text.replace(/\x1b\[\d+m/g, '').trim()
     result.value = {
-      cmd: cmdLine,
+      cmd: final,
       output: clean,
       time: new Date().toLocaleTimeString(),
     }
     // 终端里保留 ANSI 颜色（由 Terminal.vue 的 parseAnsi 渲染）
-    pushTerminal([`$ ${cmdLine}`, text.trim()])
+    pushTerminal([`$ ${final}`, text.trim()])
+    if (isConnect.value) {
+      const res = parseResult(clean)
+      if (res) {
+        connMsg.value = res.success ? (res.message || '操作成功') : (res.error || '操作失败')
+        connMsgOk.value = !!res.success
+      } else {
+        connMsg.value = '命令已执行（未启用 --json）'
+        connMsgOk.value = true
+      }
+    }
   } catch (e) {
     result.value = {
       cmd: cmdLine,
@@ -360,9 +434,32 @@ async function runCmd(cmdLine) {
       time: new Date().toLocaleTimeString(),
     }
     pushTerminal([`$ ${cmdLine}`, 'ERR ' + e])
+    if (isConnect.value) {
+      connMsg.value = String(e)
+      connMsgOk.value = false
+    }
   } finally {
     busy.value = false
   }
+}
+
+/** 从原始响应中提取 JSON 结果（连接管理页解析 connect/disconnect 成败），无 JSON 时返回 null。 */
+function parseResult(text) {
+  const clean = text.replace(/\x1b\[\d+m/g, '').trim()
+  const jsonStart = clean.indexOf('{')
+  if (jsonStart >= 0) {
+    try {
+      return JSON.parse(clean.slice(jsonStart))
+    } catch {
+      // fall through
+    }
+  }
+  return null
+}
+
+/** 连接管理页：断开 TCP 连接。 */
+async function disconnect() {
+  await runCmd('disconnect')
 }
 </script>
 
@@ -450,6 +547,235 @@ async function runCmd(cmdLine) {
   color: var(--text-secondary);
 }
 
+.doc-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.12s, transform 0.12s;
+}
+
+.doc-btn:hover {
+  background: var(--bg-hover);
+  transform: scale(1.12);
+}
+
+.doc-desc {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.doc-desc.muted {
+  color: var(--text-muted);
+}
+
+.doc-asn1 {
+  margin: 0;
+  padding: 12px 14px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+/* ── 协议说明：markdown 渲染（v-html 内容需 :deep 才生效） ── */
+.doc-md {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+
+/* 章节花纹：每个二级标题一种主题色，顶部有彩色渐变花纹线 + 花纹字符 */
+.doc-md :deep(h2) {
+  --doc-color: var(--accent);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 34px 0 14px;
+  padding: 11px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--doc-color);
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--doc-color) 35%, transparent);
+  background: color-mix(in srgb, var(--doc-color) 9%, transparent);
+}
+
+.doc-md :deep(h2:nth-of-type(1)) { --doc-color: #7c8cf8; }
+.doc-md :deep(h2:nth-of-type(2)) { --doc-color: #4caf7d; }
+.doc-md :deep(h2:nth-of-type(3)) { --doc-color: #e5b955; }
+.doc-md :deep(h2:nth-of-type(4)) { --doc-color: #e56a7f; }
+.doc-md :deep(h2:nth-of-type(5)) { --doc-color: #5b8def; }
+.doc-md :deep(h2:nth-of-type(6)) { --doc-color: #8a5ce0; }
+
+/* 花纹字符（章节前缀） */
+.doc-md :deep(h2::before) {
+  content: '❖';
+  flex-shrink: 0;
+  font-size: 12px;
+  color: var(--doc-color);
+  text-shadow: 0 0 8px var(--doc-color);
+}
+
+/* 小节标题：绿色菱形点缀 */
+.doc-md :deep(h3) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.doc-md :deep(h3::before) {
+  content: '◆';
+  flex-shrink: 0;
+  font-size: 9px;
+  color: var(--green);
+  text-shadow: 0 0 6px var(--green);
+}
+
+.doc-md :deep(p) {
+  margin: 8px 0;
+}
+
+/* 列表：彩色项目符号 / 编号 */
+.doc-md :deep(ul),
+.doc-md :deep(ol) {
+  margin: 8px 0;
+  padding-left: 24px;
+}
+
+.doc-md :deep(li) {
+  margin: 4px 0;
+}
+
+.doc-md :deep(ul li::marker) {
+  color: var(--accent);
+}
+
+.doc-md :deep(ol li::marker) {
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* 加粗：暖金高亮 */
+.doc-md :deep(strong) {
+  color: #ffc163;
+  font-weight: 600;
+}
+
+/* 行内代码 */
+.doc-md :deep(code) {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--accent-muted);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 5px;
+  padding: 1px 6px;
+  color: var(--accent-hover);
+}
+
+.doc-md :deep(pre) {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  overflow-x: auto;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.doc-md :deep(pre code) {
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* 表格：居中 + 圆角 + 渐变彩色表头 + 斑马纹 */
+.doc-md :deep(table) {
+  width: fit-content;
+  max-width: 100%;
+  margin: 14px auto;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+.doc-md :deep(th) {
+  padding: 9px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #fff;
+  background: linear-gradient(135deg, #5b8def, #7a5ce0);
+  border: none;
+}
+
+.doc-md :deep(td) {
+  padding: 8px 16px;
+  font-size: 12px;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.doc-md :deep(tbody tr:nth-child(even)) {
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.doc-md :deep(tbody tr:hover) {
+  background: var(--bg-hover);
+}
+
+.doc-md :deep(td:first-child) {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.doc-md :deep(tr:last-child td) {
+  border-bottom: none;
+}
+
+/* 引用块：绿色侧边 */
+.doc-md :deep(blockquote) {
+  margin: 10px 0;
+  padding: 8px 14px;
+  border-radius: 0 8px 8px 0;
+  background: var(--green-bg);
+  border-left: 3px solid var(--green);
+  color: var(--text-secondary);
+}
+
+.doc-md :deep(hr) {
+  border: none;
+  height: 2px;
+  margin: 18px 0;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.doc-md :deep(a) {
+  color: var(--accent-hover);
+}
+
 .debug-grid {
   flex: 1;
   min-height: 0;
@@ -530,7 +856,60 @@ async function runCmd(cmdLine) {
   font-size: 13px;
 }
 
+/* ── 连接管理页：结果消息 ── */
+.msg {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.msg.ok {
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1px solid rgba(76, 175, 125, 0.3);
+}
+
+.msg.err {
+  color: var(--red);
+  background: var(--red-bg);
+  border: 1px solid rgba(229, 85, 90, 0.3);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ── 连接流程提示 ── */
+.tip {
+  margin: 12px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.tip code {
+  color: var(--accent);
+}
+
 /* ── 命令预览 ── */
+.json-opt {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.json-opt-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
 .cmd-preview {
   display: flex;
   align-items: center;

@@ -32,6 +32,46 @@ GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE {
 }
 
 GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读逻辑节点目录服务用于获取逻辑节点内的所有数据对象或控制块，服务的参数见表 25。
+
+**表 25 读逻辑节点目录服务参数**
+
+| 服务/参数 | 数据类型 |
+|-----------|----------|
+| **Request** | |
+| \`ldName/lnReference\` | \`ObjectName/ObjectReference\` |
+| \`acsiClass\` | \`ACSIClass\` |
+| \`referenceAfter\` [0..1] | \`ObjectReference\` |
+| **Response+** | |
+| \`reference\` [0..n] | \`SubReference\` |
+| \`moreFollows\` [0..1] | \`BOOLEAN\` |
+| **Response-** | |
+| \`serviceError\` | \`ServiceError\` |
+
+\`acsiClass\` 参数用于限定请求的对象类型，其定义见表 26。
+
+**表 26 ACSIClass 值**
+
+| ACSIClass | 值 | 含义 |
+|-----------|-----|------|
+| \`reserved\` | 0 | 保留 |
+| \`DataObject\` | 1 | 数据对象 |
+| \`DATA-SET\` | 2 | 数据集 |
+| \`BRCB\` | 3 | 缓存报告控制块 |
+| \`URCB\` | 4 | 非缓存报告控制块 |
+| \`LCB\` | 5 | 日志控制块 |
+| \`LOG\` | 6 | 日志 |
+| \`SGCB\` | 7 | 定值组控制块 |
+| \`GoCB\` | 8 | GOOSE 控制块 |
+| \`MSVCB\` | 10 | 多播采样值控制块 |
+
+### 服务要求
+
+1. \`acsiClass\` 为 \`DataObject\` 时，请求逻辑节点下所有数据对象及其子数据对象的引用名，引用名应按模型定义的顺序排序。如 \`LD/LN.DO1\`, \`LD/LN.DO1.SDO1\`, \`LD/LN.DO1.SDO2\`。`,
   params: [
     { key: 'ln', label: '逻辑节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
     {

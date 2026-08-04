@@ -16,7 +16,7 @@
       />
       <div class="app-main">
         <main class="main-content">
-          <Dashboard v-if="activeView === 'connect-root'" :connected="connected" :tcp-connected="tcpConnected" />
+          <CommandDebug v-if="activeView === 'connect-root'" cmd="connect" :connected="connected" :tcp-connected="tcpConnected" />
           <CommandDebug v-else-if="isCmdView" :cmd="activeView" />
           <ServerDir v-else-if="activeView === 'dir-tree'" :connected="connected" />
         </main>
@@ -38,7 +38,6 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import TopBar from './components/TopBar.vue'
 import Sidebar from './components/Sidebar.vue'
-import Dashboard from './views/Dashboard.vue'
 import CommandDebug from './views/CommandDebug.vue'
 import Terminal from './views/Terminal.vue'
 import ServerDir from './views/ServerDir.vue'
@@ -54,20 +53,26 @@ const tlsConnected = ref(false)
 const apSecure = ref(false)
 const showTerminal = ref(false)
 
+/** 侧边栏子项只显示中文短名（title 格式 "中文 英文 (章节)" → 取中文部分）。 */
+const cnTitle = (id) => {
+  const t = CMD_DEFS[id] && CMD_DEFS[id].title ? CMD_DEFS[id].title : id
+  return t.split(' ')[0] || t
+}
+
 const navItems = [
   {
     id: 'connect-root',
     label: '连接管理',
     icon: '🔌',
-    children: CMD_IDS.filter((id) => !['server-dir', 'ld-dir', 'ln-dir', 'all-data', 'all-def', 'all-cb'].includes(id)).map((id) => ({ id, label: CMD_DEFS[id].title })),
+    children: CMD_IDS.filter((id) => !['server-dir', 'ld-dir', 'ln-dir', 'all-data', 'all-def', 'all-cb'].includes(id)).map((id) => ({ id, label: cnTitle(id) })),
   },
   { id: 'dir-tree', label: '目录树', icon: '⊞', children: [
-    { id: 'server-dir', label: CMD_DEFS['server-dir'].title },
-    { id: 'ld-dir', label: CMD_DEFS['ld-dir'].title },
-    { id: 'ln-dir', label: CMD_DEFS['ln-dir'].title },
-    { id: 'all-data', label: CMD_DEFS['all-data'].title },
-    { id: 'all-def', label: CMD_DEFS['all-def'].title },
-    { id: 'all-cb', label: CMD_DEFS['all-cb'].title },
+    { id: 'server-dir', label: cnTitle('server-dir') },
+    { id: 'ld-dir', label: cnTitle('ld-dir') },
+    { id: 'ln-dir', label: cnTitle('ln-dir') },
+    { id: 'all-data', label: cnTitle('all-data') },
+    { id: 'all-def', label: cnTitle('all-def') },
+    { id: 'all-cb', label: cnTitle('all-cb') },
   ] },
   { id: 'data', label: '数据浏览', icon: '☰' },
   { id: 'dataset', label: '数据集', icon: '⧉' },

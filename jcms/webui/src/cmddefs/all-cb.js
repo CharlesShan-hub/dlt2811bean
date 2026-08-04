@@ -31,6 +31,29 @@ GetAllCBValues-ResponsePDU ::= SEQUENCE {
 }
 
 GetAllCBValues-ErrorPDU ::= ServiceError — 8.3.6`,
+  doc: `## 协议原文
+
+### 服务参数
+
+读所有控制块值服务用于获取指定逻辑设备或逻辑节点下所有控制块的值，服务的参数见表 30。
+
+**表 30 读所有控制块值服务参数**
+
+| 服务/参数 | 所属 | 数据类型 |
+|-----------|------|----------|
+| **Request** | | |
+| \`ldName/lnReference\` | | \`ObjectName/ObjectReference\` |
+| \`acsiClass\` | | \`ACSIClass\` |
+| \`referenceAfter\` [0..1] | | \`ObjectReference\` |
+| **Response+** | | |
+| \`cbValue\` [0..n] | | |
+| \`reference\` | cbValue | \`SubReference\` |
+| \`value\` | cbValue | \`BRCB/URCB/LCB/SGCB/GoCB/MSVCB\` |
+| \`moreFollows\` [0..1] | | \`BOOLEAN\` |
+| **Response-** | | |
+| \`serviceError\` | | \`ServiceError\` |
+
+控制块类型由 \`acsiClass\` 指定，如缓存报告控制块、非缓存报告控制块、定值控制块等。控制块定义见 8.6~8.10。`,
   params: [
     { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
     {
