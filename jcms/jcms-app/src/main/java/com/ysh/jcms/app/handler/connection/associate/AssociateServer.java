@@ -123,6 +123,7 @@ public class AssociateServer extends BaseServerHandler {
                 SclAccessPoint ap = ied.findAccessPointByName(apName);
                 if (ap != null) {
                     ss.setSclAccessPoint(ap);
+                    ss.setSclIed(ied);
                     ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
                     log.info("Resolved SCL access point: IED={}, AP={}", iedName, apName);
                     return true;
@@ -146,6 +147,7 @@ public class AssociateServer extends BaseServerHandler {
             if (!ied.accessPoints().isEmpty()) {
                 SclAccessPoint ap = ied.accessPoints().get(0);
                 ss.setSclAccessPoint(ap);
+                ss.setSclIed(ied);
                 ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
                 log.info("Resolved default access point: IED={}, AP={}", ied.name(), ap.name());
                 return true;

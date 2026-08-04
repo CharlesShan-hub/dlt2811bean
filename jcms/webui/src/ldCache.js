@@ -21,6 +21,36 @@ let lnDirRefsKey = ''
 export function clearLnDirRefs() {
   lnDirRefs.splice(0)
   lnDirRefsKey = ''
+  allDefRefs.splice(0)
+  allDefRefsKey = ''
+}
+
+/** all-def 响应引用缓存（供 all-data / all-def 的 after 下拉），key 为 "ln|fc"。 */
+export const allDefRefs = reactive([])
+let allDefRefsKey = ''
+
+/**
+ * 拉取某 LN（或 LD）在指定 fc 过滤下的数据对象引用（经轻量的 all-def 查询，
+ * 供 all-data / all-def 的 after 下拉；值域与 all-data 返回的 DO 引用一致）。
+ * @param {string} lnRef ln-select 值，如 "LD0" 或 "LD0/LLN0"
+ * @param {string} fc 功能约束码（如 "XX"、"ST"）
+ */
+export async function ensureAllDefRefs(lnRef, fc) {
+  if (!lnRef) {
+    allDefRefs.splice(0)
+    return allDefRefs
+  }
+  const key = `${lnRef}|${fc}`
+  if (allDefRefsKey === key && allDefRefs.length > 0) return allDefRefs
+  try {
+    const res = await executeJson(`all-def --ln ${lnRef} --fc ${fc} --json`)
+    allDefRefs.splice(0, allDefRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []))
+    allDefRefsKey = key
+  } catch {
+    allDefRefs.splice(0)
+    allDefRefsKey = key
+  }
+  return allDefRefs
 }
 
 /**

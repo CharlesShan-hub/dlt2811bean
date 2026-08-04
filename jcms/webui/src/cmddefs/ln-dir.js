@@ -45,6 +45,6 @@ GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
   params: [
     { key: 'ln', label: '逻辑节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
     { key: 'acsi', label: '对象类型 acsiClass', type: 'select', options: acsiClasses.map((a) => `${a.value}: ${a.cn}（${a.label}）`) },
-    { key: 'after', label: '起始引用 after', type: 'text', placeholder: '可选：上次响应的最后一个引用' },
+    { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
   ],
 }

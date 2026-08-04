@@ -5,6 +5,7 @@ import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -224,6 +225,7 @@ public class InnerServer implements ConnectionListener {
     public static class ServerSession extends Session {
         private SclDocument scl2Document;
         private SclAccessPoint sclAccessPoint;
+        private SclIED sclIed;
         private SclDataTypeTemplates sclDataTypeTemplates;
         private volatile long lastActivityTime = System.currentTimeMillis();
         private volatile int keepaliveRetries;
@@ -262,16 +264,11 @@ public class InnerServer implements ConnectionListener {
             this.sclAccessPoint = sclAccessPoint;
         }
 
-        public com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed() {
-            if (scl2Document == null || sclAccessPoint == null)
-                return null;
-            for (com.ysh.jcms.utils.scl.model.ied.SclIED ied : scl2Document.ieds()) {
-                for (SclAccessPoint ap : ied.accessPoints()) {
-                    if (ap.name().equals(sclAccessPoint.name()))
-                        return ied;
-                }
-            }
-            return null;
+        public SclIED getSclIed() {
+            return sclIed;
+        }
+        public void setSclIed(SclIED ied) {
+            this.sclIed = ied;
         }
         public SclDataTypeTemplates getSclDataTypeTemplates() {
             return sclDataTypeTemplates;

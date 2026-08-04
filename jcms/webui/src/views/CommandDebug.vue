@@ -66,6 +66,13 @@
                   :placeholder="p.placeholder"
                   :empty-label="p.required ? '暂无选项' : '（不选）'"
                 />
+                <UiSelect
+                  v-else-if="p.type === 'ln-ref-select'"
+                  v-model="form[p.key]"
+                  :options="['', ...refOptions]"
+                  :placeholder="p.placeholder"
+                  empty-label="（不选）"
+                />
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
               </div>
             </div>
@@ -125,7 +132,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs } from '../ldCache.js'
 
 const props = defineProps({
   cmd: String,
@@ -165,6 +172,12 @@ const paramRows = computed(() => {
 
 /** ln 下拉选项：选中 LD 时用该 LD 下的 LN，否则用全量完整引用。 */
 const lnOptions = computed(() => (form.ld ? ldLns[form.ld] || [] : allLnRefs))
+
+/** after 下拉选项：ln-dir 用该 LN 的子引用；all-data/all-def 用 all-def 的 DO 引用。 */
+const refOptions = computed(() => {
+  if (props.cmd === 'ln-dir') return lnDirRefs
+  return allDefRefs
+})
 
 /** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
 const rightTitle = computed(() => {
@@ -252,6 +265,20 @@ watch([() => allLnRefs.length, () => ldCache.length], async () => {
   if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
 })
 
+// ln-dir：ln / acsi 变化时懒加载该 LN 下的子引用列表（供 after 下拉）
+watch([() => form.ln, () => form.acsi], async () => {
+  if (props.cmd !== 'ln-dir' || !form.ln) return
+  const acsi = String(form.acsi || '').split(':')[0] || '1'
+  await ensureLnDirRefs(form.ln, acsi)
+}, { immediate: true })
+
+// all-data / all-def：ln / fc 变化时懒加载该 LN 下的 DO 引用（经轻量 all-def 查询，供 after 下拉）
+watch([() => form.ln, () => form.fc], async () => {
+  if (!['all-data', 'all-def'].includes(props.cmd) || !form.ln) return
+  const fc = String(form.fc || '').split(':')[0] || 'XX'
+  await ensureAllDefRefs(form.ln, fc)
+}, { immediate: true })
+
 /** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
 async function loadNegotiateDefaults() {
   try {
@@ -287,6 +314,10 @@ function buildCmd() {
         parts.push(`--${p.key}`, String(v))
       }
     } else if (p.type === 'ln-select') {
+      if (v) {
+        parts.push(`--${p.key}`, String(v))
+      }
+    } else if (p.type === 'ln-ref-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
       }
