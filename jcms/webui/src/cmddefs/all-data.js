@@ -44,8 +44,6 @@ GetAllDataValues-ErrorPDU ::= ServiceError — 8.3.4`,
 | **Response-** | | |
 | \`serviceError\` | | \`ServiceError\` |
 
-功能约束 \`fc\` 的值为 \`SG\` 或 \`SE\`。
-
 ### 服务要求
 
 1. 数据不包含指定 \`fc\` 的内容时，返回的结果中应不包含该数据。
