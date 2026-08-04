@@ -31,14 +31,16 @@
 
       <ApPicker v-model="form.ap" />
 
-      <div class="field">
-        <label class="field-label">APDU 大小</label>
-        <UiInput v-model.number="form.apdu" type="number" />
-      </div>
+      <div class="row-pair">
+        <div class="field">
+          <label class="field-label">APDU 大小</label>
+          <UiInput v-model.number="form.apdu" type="number" />
+        </div>
 
-      <div class="field">
-        <label class="field-label">ASDU 大小</label>
-        <UiInput v-model.number="form.asdu" type="number" />
+        <div class="field">
+          <label class="field-label">ASDU 大小</label>
+          <UiInput v-model.number="form.asdu" type="number" />
+        </div>
       </div>
 
       <div class="field">
@@ -133,6 +135,16 @@ onMounted(loadConfig)
 }
 
 .row-2 .field:first-child {
+  margin-bottom: 20px;
+}
+
+.row-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.row-pair .field {
   margin-bottom: 20px;
 }
 

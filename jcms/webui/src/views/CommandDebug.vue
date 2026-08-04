@@ -1,8 +1,17 @@
 <template>
   <div class="cmd-debug">
     <header class="page-head">
-      <h1 class="page-title">{{ title }}</h1>
-      <p class="page-desc">{{ def.desc }}</p>
+      <div class="title-row">
+        <div class="title-left">
+          <span v-if="section" class="sec-badge">✦ {{ section }}</span>
+          <h1 class="page-title">{{ shortTitle }}</h1>
+        </div>
+        <div class="title-right">
+          <code class="cmd-chip">{{ props.cmd }}</code>
+          <span class="sep">·</span>
+          <span class="desc-text">{{ def.desc }}</span>
+        </div>
+      </div>
     </header>
 
     <div class="debug-grid">
@@ -15,39 +24,50 @@
         <template v-if="!isConnect && simpleParams.length">
           <template v-for="p in simpleParams" :key="p.key">
             <ApPicker v-if="p.type === 'ap-select'" v-model="form[p.key]" />
-            <div v-else class="field" :class="{ 'switch-field': p.type === 'switch' }">
-              <label class="field-label">{{ p.label }}</label>
-              <UiInput
-                v-if="p.type === 'text'"
-                v-model="form[p.key]"
-                :placeholder="p.placeholder"
-              />
-              <UiInput
-                v-else-if="p.type === 'number'"
-                v-model.number="form[p.key]"
-                type="number"
-                :readonly="p.readonly"
-              />
-              <UiSelect
-                v-else-if="p.type === 'select'"
-                v-model="form[p.key]"
-                :options="p.options"
-              />
-              <UiSelect
-                v-else-if="p.type === 'ld-select'"
-                v-model="form[p.key]"
-                :options="p.required ? ldCache : ['', ...ldCache]"
-                :placeholder="p.placeholder"
-                empty-label="（不选）"
-              />
-              <UiSelect
-                v-else-if="p.type === 'ln-select'"
-                v-model="form[p.key]"
-                :options="['', ...(form.ld ? (ldLns[form.ld] || []) : allLnRefs)]"
-                :placeholder="p.placeholder"
-                empty-label="（不选）"
-              />
-              <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
+          </template>
+
+          <!-- 其余参数按行渲染：inline 同组的参数并排一行（如 APDU / ASDU） -->
+          <template v-for="row in paramRows" :key="row.inline || row.items[0].key">
+            <div class="field-row" :class="{ single: !row.inline }">
+              <div
+                v-for="p in row.items"
+                :key="p.key"
+                class="field"
+                :class="{ 'switch-field': p.type === 'switch' }"
+              >
+                <label class="field-label">{{ p.label }}</label>
+                <UiInput
+                  v-if="p.type === 'text'"
+                  v-model="form[p.key]"
+                  :placeholder="p.placeholder"
+                />
+                <UiInput
+                  v-else-if="p.type === 'number'"
+                  v-model.number="form[p.key]"
+                  type="number"
+                  :readonly="p.readonly"
+                />
+                <UiSelect
+                  v-else-if="p.type === 'select'"
+                  v-model="form[p.key]"
+                  :options="p.options"
+                />
+                <UiSelect
+                  v-else-if="p.type === 'ld-select'"
+                  v-model="form[p.key]"
+                  :options="p.required ? ldCache : ['', ...ldCache]"
+                  :placeholder="p.placeholder"
+                  empty-label="（不选）"
+                />
+                <UiSelect
+                  v-else-if="p.type === 'ln-select'"
+                  v-model="form[p.key]"
+                  :options="p.required ? lnOptions : ['', ...lnOptions]"
+                  :placeholder="p.placeholder"
+                  :empty-label="p.required ? '暂无选项' : '（不选）'"
+                />
+                <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
+              </div>
             </div>
           </template>
         </template>
@@ -113,10 +133,38 @@ const props = defineProps({
 
 const connectFlow = CONNECT_FLOW
 
-const def = computed(() => CMD_DEFS[props.cmd] || CMD_DEFS.connect)
-const title = computed(() => def.value.title)
+const def = computed(() => CMD_DEFS[props.cmd] || { title: props.cmd, desc: '', params: [] })
+
+/** 页头拆解："关联 associate (8.2.1)" → 大标题"关联" + 章节徽章"8.2.1"。 */
+const titleParts = computed(() => {
+  const m = (def.value.title || '').match(/^(.*?)\s+\S+\s*\(([\d.]+)\)$/)
+  return m ? { name: m[1], section: m[2] } : { name: def.value.title, section: '' }
+})
+const shortTitle = computed(() => titleParts.value.name)
+const section = computed(() => titleParts.value.section)
 const isConnect = computed(() => props.cmd === 'connect')
 const simpleParams = computed(() => def.value.params)
+
+/** 参数按行分组：inline 值相同的参数并排一行（如 APDU / ASDU）。 */
+const paramRows = computed(() => {
+  const rows = []
+  let cur = null
+  for (const p of def.value.params || []) {
+    if (p.inline) {
+      if (!cur || cur.inline !== p.inline) {
+        cur = { inline: p.inline, items: [] }
+        rows.push(cur)
+      }
+      cur.items.push(p)
+    } else {
+      rows.push({ inline: null, items: [p] })
+    }
+  }
+  return rows
+})
+
+/** ln 下拉选项：选中 LD 时用该 LD 下的 LN，否则用全量完整引用。 */
+const lnOptions = computed(() => (form.ld ? ldLns[form.ld] || [] : allLnRefs))
 
 /** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
 const rightTitle = computed(() => {
@@ -168,6 +216,9 @@ function initForm() {
   }
 }
 
+/** ln 必填的命令：进入页面时预加载全量 LN 引用并默认选中第一个。 */
+const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def']
+
 watch(() => props.cmd, async () => {
   result.value = null
   connectCmd.value = ''
@@ -175,6 +226,10 @@ watch(() => props.cmd, async () => {
   initForm()
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
+  }
+  if (LN_REQUIRED_CMDS.includes(props.cmd)) {
+    await ensureAllLnRefs()
+    if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
   }
 }, { immediate: true })
 
@@ -188,6 +243,14 @@ watch([() => form.ld, () => ldCache.length], async ([ld]) => {
     await ensureAllLnRefs()
   }
 }, { immediate: true })
+
+// ln 必填命令：等全量 LN 引用缓存就绪后自动选中第一个（覆盖连接后才进入/缓存在填充中的情况）
+watch([() => allLnRefs.length, () => ldCache.length], async () => {
+  if (!LN_REQUIRED_CMDS.includes(props.cmd)) return
+  if (form.ln) return
+  await ensureAllLnRefs()
+  if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
+})
 
 /** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
 async function loadNegotiateDefaults() {
@@ -282,12 +345,70 @@ async function runCmd(cmdLine) {
 .page-title {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 4px;
 }
 
-.page-desc {
+/* ── 页头标题行：左（章节徽章 + 大标题）右（命令名 + 简介）两端对齐 ── */
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.title-left .sec-badge {
+  padding: 3px 12px;
+  font-size: 13px;
+}
+
+.title-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  text-align: right;
   color: var(--text-secondary);
   font-size: 13px;
+  min-width: 0;
+}
+
+/* ── 页头副标题：章节徽章 + 命令名 + 简介 ── */
+.sec-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cmd-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 8px;
+}
+
+.sep {
+  color: var(--text-muted);
+}
+
+.desc-text {
+  color: var(--text-secondary);
 }
 
 .debug-grid {
@@ -311,6 +432,19 @@ async function runCmd(cmdLine) {
 
 .field {
   margin-bottom: 16px;
+}
+
+/* 参数按行分组：同组并排一行（如 APDU / ASDU） */
+.field-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.field-row .field {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
 }
 
 .field-label {

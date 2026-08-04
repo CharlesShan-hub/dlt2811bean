@@ -304,6 +304,9 @@ public abstract class CmsChoice extends CmsType {
         }
 
         inner._v.put("_choice", vi.name);
+        // NULL variants (registerNullChoice) carry no payload field — nothing to sync
+        if (vi.sync == null)
+            return;
         try {
             switch (vi.sync) {
                 case SCALAR :
@@ -344,6 +347,9 @@ public abstract class CmsChoice extends CmsType {
             return;
         selectedChoiceIndex = vi.index;
 
+        // NULL variants carry no payload field — nothing to sync
+        if (vi.sync == null)
+            return;
         try {
             switch (vi.sync) {
                 case SCALAR :

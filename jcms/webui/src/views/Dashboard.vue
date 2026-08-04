@@ -1,15 +1,25 @@
 <template>
   <div class="connect-page">
     <header class="page-head">
-      <h1 class="page-title">连接管理</h1>
-      <p class="page-desc">配置 AP 来源与连接参数，发起 / 断开与 CMS 服务器的关联</p>
+      <div class="title-row">
+        <div class="title-left">
+          <h1 class="page-title">连接管理</h1>
+        </div>
+        <div class="title-right">
+          <code class="cmd-chip">connect</code>
+          <span class="desc-text">TCP → 协商 → 关联</span>
+          <span class="sep">·</span>
+          <code class="cmd-chip">disconnect</code>
+          <span class="desc-text">断开 TCP 连接</span>
+        </div>
+      </div>
     </header>
 
     <div class="columns">
       <!-- ── 左栏：操作 ── -->
       <div class="col-left">
-        <UiCard title="连接设置" icon="🔌">
-          <ConnectForm :busy="busy" submit-label="连接" @submit="onConnect">
+        <UiCard title="连接设置" icon="🔌" fill>
+          <ConnectForm :busy="busy" submit-label="连接" @submit="onConnect" @update:cmd="connectCmd = $event">
             <template #extra>
               <UiButton v-if="connected" @click="disconnect">断开</UiButton>
             </template>
@@ -23,24 +33,26 @@
 
       <!-- ── 右栏：说明 ── -->
       <div class="col-right">
-        <UiCard title="命令速览" icon="⌘">
-          <div class="cmd-list">
-            <UiCollapse v-for="cmd in cmdRows" :key="cmd.name">
-              <template #title>
-                <code class="cmd-name">{{ cmd.name }}</code>
-                <span class="cmd-short">{{ cmd.desc }}</span>
-              </template>
-              <div class="cmd-detail">
-                <div class="cmd-usage"><code>{{ cmd.usage }}</code></div>
-                <p class="cmd-desc">{{ cmd.detail }}</p>
-              </div>
-            </UiCollapse>
-          </div>
-        </UiCard>
-
         <UiCard title="连接流程" icon="⛓">
           <StateDiagram :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
           <p class="tip">💡 <code>connect --ap</code> 自动完成上述三步；关联建立后即可使用各服务页面。</p>
+        </UiCard>
+
+        <UiCard title="命令与返回" icon="🔄">
+          <div class="cmd-preview">
+            <code class="preview-line">{{ connectCmd || 'connect --ap …' }}</code>
+            <UiButton variant="ghost" @click="copyCmd">
+              {{ copied ? '✓ 已复制' : '复制命令' }}
+            </UiButton>
+          </div>
+          <div v-if="!result" class="empty">连接 / 断开后在此显示返回结果。</div>
+          <div v-else class="hist-item">
+            <div class="hist-cmd">
+              <span class="hist-time">{{ result.time }}</span>
+              <code class="hist-line">$ {{ result.cmd }}</code>
+            </div>
+            <pre class="hist-out">{{ result.output }}</pre>
+          </div>
         </UiCard>
       </div>
     </div>
@@ -53,7 +65,6 @@ import ConnectForm from '../components/ConnectForm.vue'
 import StateDiagram from '../components/StateDiagram.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
-import UiCollapse from '../components/ui/UiCollapse.vue'
 import { executeCommand } from '../api/cms.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
@@ -72,60 +83,26 @@ const activeState = computed(() => {
   return 'init'
 })
 
-const cmdRows = [
-  {
-    name: 'connect',
-    usage: 'connect [--ip addr] [--ap IED/AP] [--secure] [--apdu N] [--asdu N] [--version N]',
-    desc: 'TCP → 协商 → 关联',
-    detail: '最常用命令，自动完成 TCP 连接、参数协商与关联三步。指定 --ap 时同时协商并关联到该访问点。',
-  },
-  {
-    name: 'disconnect',
-    usage: 'disconnect',
-    desc: '断开',
-    detail: '断开与服务器的 TCP 连接，需先释放/中止关联。',
-  },
-  {
-    name: 'negotiate',
-    usage: 'negotiate [--apdu N] [--asdu N] [--version N]',
-    desc: '手动协商 (8.15)',
-    detail: '单独执行参数协商（connect --ap 已自动包含）。协商必须在关联之前完成。',
-  },
-  {
-    name: 'associate',
-    usage: 'associate [--ap IED/AP] [--secure]',
-    desc: '手动关联 (8.2.1)',
-    detail: '纯 TCP 连接后手动关联，或关联后更换访问点（先 release 再 associate）。--secure 为应用层证书认证。',
-  },
-  {
-    name: 'release',
-    usage: 'release',
-    desc: '释放关联 (8.2.2)',
-    detail: '释放当前应用层关联，保持 TCP 连接不变，可继续 associate 其他访问点。',
-  },
-  {
-    name: 'abort',
-    usage: 'abort',
-    desc: '中止关联 (8.2.3)',
-    detail: '直接中止当前关联，与 release 相比更主动，通常用于异常场景。',
-  },
-  {
-    name: 'ap-dir',
-    usage: 'ap-dir [--scd path] [--ied name]',
-    desc: '列出可用 AP',
-    detail: '本地配置命令，无需连接。从 SCD 文件或 defaultAps 静态列表列出所有可用访问点，供 connect --ap 使用。',
-  },
-  {
-    name: 'ap-cfg',
-    usage: 'ap-cfg [--source scd|list]',
-    desc: '切换 AP 来源',
-    detail: '运行时切换 AP 来源（SCD 文件 / 静态列表），立即生效，无需重启。',
-  },
-]
-
 const busy = ref(false)
 const message = ref('')
 const msgOk = ref(true)
+
+// ── 命令与返回（与 CommandDebug 子页面统一：只保留最新一条） ──
+const connectCmd = ref('')
+const result = ref(null)
+const copied = ref(false)
+let copyTimer
+
+async function copyCmd() {
+  try {
+    await navigator.clipboard.writeText(connectCmd.value)
+    copied.value = true
+    clearTimeout(copyTimer)
+    copyTimer = setTimeout(() => (copied.value = false), 1500)
+  } catch {
+    // 剪贴板不可用时忽略
+  }
+}
 
 /** 从原始响应中提取 JSON 结果（与 executeJson 同逻辑，避免重复发命令）。 */
 function parseResult(text) {
@@ -141,14 +118,17 @@ function parseResult(text) {
   return { success: false, error: clean }
 }
 
-/** 执行命令：返回内容同步推送到终端，结果以 JSON 解析后展示。 */
+/** 执行命令：返回内容同步推送到终端，结果写入"命令与返回"卡片。 */
 async function runSync(cmd) {
   busy.value = true
   try {
     const text = await executeCommand(cmd)
+    const clean = text.replace(/\x1b\[\d+m/g, '').trim()
+    result.value = { cmd, output: clean, time: new Date().toLocaleTimeString() }
     pushTerminal([`$ ${cmd}`, text.trim()])
     return parseResult(text)
   } catch (e) {
+    result.value = { cmd, output: String(e), time: new Date().toLocaleTimeString() }
     pushTerminal([`$ ${cmd}`, 'ERR ' + e])
     return { success: false, error: String(e) }
   } finally {
@@ -192,12 +172,52 @@ async function disconnect() {
 .page-title {
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 4px;
 }
 
-.page-desc {
+/* ── 页头标题行：左标题 + 右命令简介（与 CommandDebug 子页面统一） ── */
+.title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 6px;
+}
+
+.title-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.title-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  text-align: right;
   color: var(--text-secondary);
   font-size: 13px;
+  min-width: 0;
+}
+
+.cmd-chip {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 1px 8px;
+}
+
+.sep {
+  color: var(--text-muted);
+}
+
+.desc-text {
+  color: var(--text-secondary);
 }
 
 .columns {
@@ -272,48 +292,72 @@ async function disconnect() {
   opacity: 0;
 }
 
-/* ── 右栏文档 ── */
-.cmd-list {
+/* ── 命令与返回 ── */
+.cmd-preview {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 
-.cmd-name {
+.preview-line {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--font-mono);
   font-size: 13px;
   color: var(--accent);
-  background: var(--accent-muted);
-  border-radius: 4px;
-  padding: 2px 8px;
+}
+
+.empty {
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.hist-item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hist-cmd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border);
+}
+
+.hist-time {
+  font-size: 11px;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
-.cmd-short {
-  font-size: 12px;
-  color: var(--text-muted);
+.hist-line {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.cmd-detail {
-  padding: 2px 2px 0;
-}
-
-.cmd-usage {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 8px 10px;
-  overflow-x: auto;
-}
-
-.cmd-usage code {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.cmd-desc {
-  margin: 8px 0 0;
-  font-size: 12px;
+.hist-out {
+  margin: 0;
+  padding: 10px;
+  font-family: var(--font-mono);
+  font-size: 13px;
   line-height: 1.7;
   color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .tip {
