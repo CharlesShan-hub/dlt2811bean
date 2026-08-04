@@ -8,6 +8,7 @@
 
 #  shell 由 just 按平台自动选择：unix → sh，windows → cmd.exe
 #  （[unix]/[windows] 变体分别使用各自 shell 语法）
+#  路径统一用正斜杠：cmd.exe / PowerShell / sh 都能正确解析
 
 _default:
     just --list
@@ -18,7 +19,7 @@ _default:
 
 [windows]
 single-ui-install:
-    yarn --cwd jcms\webui install
+    yarn --cwd jcms/webui install
 
 [unix]
 single-ui-install:
@@ -26,7 +27,7 @@ single-ui-install:
 
 [windows]
 single-ui-dev:
-    yarn --cwd jcms\webui dev
+    yarn --cwd jcms/webui dev
 
 [unix]
 single-ui-dev:
@@ -34,7 +35,7 @@ single-ui-dev:
 
 [windows]
 single-ui-build:
-    yarn --cwd jcms\webui build
+    yarn --cwd jcms/webui build
 
 [unix]
 single-ui-build:
@@ -42,7 +43,7 @@ single-ui-build:
 
 [windows]
 single-ui-clean:
-    if exist jcms\webui\dist rmdir /s /q jcms\webui\dist
+    if exist jcms/webui/dist rmdir /s /q jcms/webui/dist
 
 [unix]
 single-ui-clean:
@@ -50,7 +51,7 @@ single-ui-clean:
 
 [windows]
 single-ui-preview:
-    yarn --cwd jcms\webui preview
+    yarn --cwd jcms/webui preview
 
 [unix]
 single-ui-preview:
@@ -68,7 +69,7 @@ ui-quick: single-ui-clean single-ui-install single-ui-build
 
 [windows]
 single-j-all-clean:
-    powershell -NoProfile -File scripts\single-j-all-clean-win.ps1
+    powershell -NoProfile -File scripts/single-j-all-clean-win.ps1
 
 [unix]
 single-j-all-clean:
@@ -78,7 +79,7 @@ single-j-all-clean:
 
 [windows]
 single-j-data-gen:
-    powershell -NoProfile -File scripts\single-j-data-gen-win.ps1
+    powershell -NoProfile -File scripts/single-j-data-gen-win.ps1
 
 [unix]
 single-j-data-gen:
@@ -86,7 +87,7 @@ single-j-data-gen:
 
 [windows]
 single-j-data-test:
-    powershell -NoProfile -File scripts\single-j-data-test-win.ps1
+    powershell -NoProfile -File scripts/single-j-data-test-win.ps1
 
 [unix]
 single-j-data-test:
@@ -94,7 +95,7 @@ single-j-data-test:
 
 [windows]
 single-j-data-install:
-    powershell -NoProfile -File scripts\single-j-data-install-win.ps1
+    powershell -NoProfile -File scripts/single-j-data-install-win.ps1
 
 [unix]
 single-j-data-install:
@@ -104,7 +105,7 @@ single-j-data-install:
 
 [windows]
 single-j-core-compile:
-    powershell -NoProfile -File scripts\single-j-core-compile-win.ps1
+    powershell -NoProfile -File scripts/single-j-core-compile-win.ps1
 
 [unix]
 single-j-core-compile:
@@ -112,7 +113,7 @@ single-j-core-compile:
 
 [windows]
 single-j-core-test:
-    powershell -NoProfile -File scripts\single-j-core-test-win.ps1
+    powershell -NoProfile -File scripts/single-j-core-test-win.ps1
 
 [unix]
 single-j-core-test:
@@ -120,7 +121,7 @@ single-j-core-test:
 
 [windows]
 single-j-core-install:
-    powershell -NoProfile -File scripts\single-j-core-install-win.ps1
+    powershell -NoProfile -File scripts/single-j-core-install-win.ps1
 
 [unix]
 single-j-core-install:
@@ -130,7 +131,7 @@ single-j-core-install:
 
 [windows]
 single-j-utils-compile:
-    powershell -NoProfile -File scripts\single-j-utils-compile-win.ps1
+    powershell -NoProfile -File scripts/single-j-utils-compile-win.ps1
 
 [unix]
 single-j-utils-compile:
@@ -138,7 +139,7 @@ single-j-utils-compile:
 
 [windows]
 single-j-utils-test:
-    powershell -NoProfile -File scripts\single-j-utils-test-win.ps1
+    powershell -NoProfile -File scripts/single-j-utils-test-win.ps1
 
 [unix]
 single-j-utils-test:
@@ -146,7 +147,7 @@ single-j-utils-test:
 
 [windows]
 single-j-utils-install:
-    powershell -NoProfile -File scripts\single-j-utils-install-win.ps1
+    powershell -NoProfile -File scripts/single-j-utils-install-win.ps1
 
 [unix]
 single-j-utils-install:
@@ -156,7 +157,7 @@ single-j-utils-install:
 
 [windows]
 single-j-app-compile:
-    powershell -NoProfile -File scripts\single-j-app-compile-win.ps1
+    powershell -NoProfile -File scripts/single-j-app-compile-win.ps1
 
 [unix]
 single-j-app-compile:
@@ -164,7 +165,7 @@ single-j-app-compile:
 
 [windows]
 single-j-app-test:
-    powershell -NoProfile -File scripts\single-j-app-test-win.ps1
+    powershell -NoProfile -File scripts/single-j-app-test-win.ps1
 
 [unix]
 single-j-app-test:
@@ -172,7 +173,7 @@ single-j-app-test:
 
 [windows]
 single-j-app-install:
-    powershell -NoProfile -File scripts\single-j-app-install-win.ps1
+    powershell -NoProfile -File scripts/single-j-app-install-win.ps1
 
 [unix]
 single-j-app-install:
@@ -193,7 +194,7 @@ j-all-test: j-all-compile single-j-app-test
 
 [windows]
 single-lock:
-    powershell -NoProfile -File scripts\single-lock-win.ps1
+    powershell -NoProfile -File scripts/single-lock-win.ps1
 
 [unix]
 single-lock:
@@ -201,7 +202,7 @@ single-lock:
 
 [windows]
 single-unlock:
-    powershell -NoProfile -File scripts\single-unlock-win.ps1
+    powershell -NoProfile -File scripts/single-unlock-win.ps1
 
 [unix]
 single-unlock:
@@ -209,7 +210,7 @@ single-unlock:
 
 [windows]
 single-check-lock:
-    powershell -NoProfile -File scripts\single-check-lock-win.ps1
+    powershell -NoProfile -File scripts/single-check-lock-win.ps1
 
 [unix]
 single-check-lock:
@@ -219,7 +220,7 @@ single-check-lock:
 
 [windows]
 single-server:
-    powershell -NoProfile -File scripts\single-server-win.ps1
+    powershell -NoProfile -File scripts/single-server-win.ps1
 
 [unix]
 single-server:
@@ -227,7 +228,7 @@ single-server:
 
 [windows]
 single-client:
-    powershell -NoProfile -File scripts\single-client-win.ps1
+    powershell -NoProfile -File scripts/single-client-win.ps1
 
 [unix]
 single-client:
@@ -240,7 +241,7 @@ single-client:
 
 [windows]
 java-quick:
-    powershell -NoProfile -File scripts\quick-java-win.ps1
+    powershell -NoProfile -File scripts/quick-java-win.ps1
 
 [unix]
 java-quick:
@@ -255,10 +256,10 @@ build-java-run-client:single-lock java-quick single-unlock run-client
 
 [windows]
 run-client-ui: single-check-lock
-    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
-    powershell -NoProfile -File scripts\single-client-win.ps1
+    start "CMS WebUI" cmd /c yarn --cwd jcms/webui dev
+    powershell -NoProfile -File scripts/single-client-win.ps1
 
 [windows]
 build-java-run-client-ui: single-lock java-quick single-unlock
-    start "CMS WebUI" cmd /c yarn --cwd jcms\webui dev
-    powershell -NoProfile -File scripts\single-client-win.ps1
+    start "CMS WebUI" cmd /c yarn --cwd jcms/webui dev
+    powershell -NoProfile -File scripts/single-client-win.ps1

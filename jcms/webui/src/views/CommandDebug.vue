@@ -43,7 +43,7 @@
               <UiSelect
                 v-else-if="p.type === 'ln-select'"
                 v-model="form[p.key]"
-                :options="['', ...(ldLns[form.ld] || [])]"
+                :options="['', ...(form.ld ? (ldLns[form.ld] || []) : allLnRefs)]"
                 :placeholder="p.placeholder"
                 empty-label="（不选）"
               />
@@ -76,13 +76,13 @@
               {{ copied ? '✓ 已复制' : '复制命令' }}
             </UiButton>
           </div>
-          <div v-if="history.length === 0" class="empty">执行后在此显示返回结果。</div>
-          <div v-for="(h, i) in history" :key="i" class="hist-item">
+          <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
+          <div v-else class="hist-item">
             <div class="hist-cmd">
-              <span class="hist-time">{{ h.time }}</span>
-              <code class="hist-line">$ {{ h.cmd }}</code>
+              <span class="hist-time">{{ result.time }}</span>
+              <code class="hist-line">$ {{ result.cmd }}</code>
             </div>
-            <pre class="hist-out">{{ h.output }}</pre>
+            <pre class="hist-out">{{ result.output }}</pre>
           </div>
         </UiCard>
       </div>
@@ -105,7 +105,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, ensureLdLns } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs } from '../ldCache.js'
 
 const props = defineProps({
   cmd: String,
@@ -126,7 +126,7 @@ const rightTitle = computed(() => {
 
 const form = reactive({})
 const busy = ref(false)
-const history = ref([])
+const result = ref(null)
 const connectCmd = ref('')
 const copied = ref(false)
 let copyTimer
@@ -169,7 +169,7 @@ function initForm() {
 }
 
 watch(() => props.cmd, async () => {
-  history.value = []
+  result.value = null
   connectCmd.value = ''
   copied.value = false
   initForm()
@@ -178,12 +178,16 @@ watch(() => props.cmd, async () => {
   }
 }, { immediate: true })
 
-// ld-dir：选中 LD 后预加载其 LN 列表，供 after 下拉选择
-watch(() => form.ld, async (ld) => {
-  if (props.cmd === 'ld-dir' && ld) {
+// ld-dir：选中 LD 后预加载其 LN 列表；未选 LD 时预加载全量完整引用（供 after 下拉）
+// 同时监听 ldCache 长度：直接进入页面时缓存可能还没填充，填充后自动补拼全量引用
+watch([() => form.ld, () => ldCache.length], async ([ld]) => {
+  if (props.cmd !== 'ld-dir') return
+  if (ld) {
     await ensureLdLns(ld)
+  } else {
+    await ensureAllLnRefs()
   }
-})
+}, { immediate: true })
 
 /** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
 async function loadNegotiateDefaults() {
@@ -234,25 +238,25 @@ async function run() {
   await runCmd(buildCmd())
 }
 
-/** 执行命令并写入历史（ConnectForm 提交的 connect 命令也走这里），同时回显到共享终端。 */
+/** 执行命令并写入结果区（只保留最新一条），同时回显到共享终端。 */
 async function runCmd(cmdLine) {
   busy.value = true
   try {
     const text = await executeCommand(cmdLine)
     const clean = text.replace(/\x1b\[\d+m/g, '').trim()
-    history.value.unshift({
+    result.value = {
       cmd: cmdLine,
       output: clean,
       time: new Date().toLocaleTimeString(),
-    })
+    }
     // 终端里保留 ANSI 颜色（由 Terminal.vue 的 parseAnsi 渲染）
     pushTerminal([`$ ${cmdLine}`, text.trim()])
   } catch (e) {
-    history.value.unshift({
+    result.value = {
       cmd: cmdLine,
       output: String(e),
       time: new Date().toLocaleTimeString(),
-    })
+    }
     pushTerminal([`$ ${cmdLine}`, 'ERR ' + e])
   } finally {
     busy.value = false

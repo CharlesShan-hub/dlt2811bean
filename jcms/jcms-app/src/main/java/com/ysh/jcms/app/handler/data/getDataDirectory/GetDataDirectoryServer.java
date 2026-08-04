@@ -60,6 +60,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         String ref = str(req.dataReference);
         log.info("GetDataDirectory ref='{}'", ref);
@@ -77,8 +78,8 @@ public class GetDataDirectoryServer extends BaseServerHandler {
 
         if (isDoLevel) {
             // DO level: resolve DOI and collect DA/SDI directory
-            SclDOI doi = resolveDoi(doc, parsed);
-            ln = resolveLn(doc, parsed);
+            SclDOI doi = resolveDoi(ied, parsed);
+            ln = resolveLn(ied, parsed);
             if (ln == null) {
                 log.debug("GetDataDirectory: ln not found for ref='{}'", ref);
                 return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
@@ -91,7 +92,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
             }
         } else {
             // LN level: collect DO directory
-            ln = resolveLn(doc, parsed);
+            ln = resolveLn(ied, parsed);
             if (ln == null)
                 return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             allEntries = collectLnDirectory(doc, ln);
@@ -119,38 +120,34 @@ public class GetDataDirectoryServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    /** Resolve LN from SclRef across all IEDs. */
-    private static SclLN resolveLn(SclDocument doc, SclRef parsed) {
+    /** Resolve LN within the current IED. */
+    private static SclLN resolveLn(SclIED ied, SclRef parsed) {
         String ldInst = parsed.ldInst();
         String lnName = parsed.lnName();
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice ld = srv.findLDeviceByInst(ldInst);
-                    if (ld != null)
-                        return ld.findLnByFullName(lnName);
-                }
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldInst);
+                if (ld != null)
+                    return ld.findLnByFullName(lnName);
             }
         }
         return null;
     }
 
-    /** Resolve DOI from SclRef across all IEDs. */
-    private static SclDOI resolveDoi(SclDocument doc, SclRef parsed) {
+    /** Resolve DOI within the current IED. */
+    private static SclDOI resolveDoi(SclIED ied, SclRef parsed) {
         String ldInst = parsed.ldInst();
         String lnName = parsed.lnName();
         String doName = parsed.doName();
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice ld = srv.findLDeviceByInst(ldInst);
-                    if (ld != null) {
-                        SclLN ln = ld.findLnByFullName(lnName);
-                        if (ln != null)
-                            return ln.findDoiByName(doName);
-                    }
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice ld = srv.findLDeviceByInst(ldInst);
+                if (ld != null) {
+                    SclLN ln = ld.findLnByFullName(lnName);
+                    if (ln != null)
+                        return ln.findDoiByName(doName);
                 }
             }
         }

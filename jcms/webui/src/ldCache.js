@@ -10,10 +10,14 @@ export const ldCache = reactive([])
 /** LD → LN 引用列表（由 ld-dir 懒加载缓存，供 ld-dir 的 after 引用选择）。 */
 export const ldLns = reactive({})
 
+/** 全量 LN 完整引用列表（省略 ldName 的 ld-dir 结果，如 "LD0/GGIO2"）。 */
+export const allLnRefs = reactive([])
+
 export function setLds(list) {
   ldCache.splice(0, ldCache.length, ...(list || []))
   if (!list || list.length === 0) {
     clearLdLns()
+    allLnRefs.splice(0)
   }
 }
 
@@ -42,6 +46,22 @@ export async function ensureLdLns(ldName) {
     ldLns[ldName] = []
   }
   return ldLns[ldName]
+}
+
+/** 全量 LN 完整引用：由 ldCache + ldLns 拼接（LD/LN），无需额外请求裸 ld-dir。 */
+export async function ensureAllLnRefs() {
+  if (allLnRefs.length > 0) return allLnRefs
+  const refs = []
+  for (const ld of ldCache) {
+    if (!ldLns[ld]) {
+      await ensureLdLns(ld) // 未缓存的 LD 顺带补齐
+    }
+    for (const ln of ldLns[ld] || []) {
+      refs.push(`${ld}/${ln}`)
+    }
+  }
+  allLnRefs.splice(0, allLnRefs.length, ...refs)
+  return allLnRefs
 }
 
 /** 清空 LN 缓存（断开连接时）。 */

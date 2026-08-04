@@ -50,13 +50,8 @@ const emit = defineEmits(['toggle', 'toggle-acsi'])
 
 const isLeaf = props.node.isLeaf
 
-/** LD 节点按是否含 LN 着色：有 LN 绿色，无 LN 灰色 */
-const labelClass = computed(() => {
-  if (props.node.type === 'ld') {
-    return props.node.hasLn ? 'ld-has' : 'ld-empty'
-  }
-  return ''
-})
+/** LD 节点固定绿色（不再按是否有内容区分） */
+const labelClass = computed(() => (props.node.type === 'ld' ? 'ld-has' : ''))
 
 function handleClick() {
   emit('toggle', props.node)
@@ -132,13 +127,9 @@ function onAcsiClick(acsi) {
   white-space: nowrap;
 }
 
-/* LD 按是否含 LN 着色 */
+/* LD 固定绿色 */
 .node-label.ld-has {
   color: var(--green);
-}
-
-.node-label.ld-empty {
-  color: var(--text-muted);
 }
 
 .node-type {

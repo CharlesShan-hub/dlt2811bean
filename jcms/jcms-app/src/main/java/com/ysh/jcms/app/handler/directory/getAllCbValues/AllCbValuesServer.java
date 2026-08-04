@@ -10,7 +10,6 @@ import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.CbConverter;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
@@ -42,7 +41,7 @@ public class AllCbValuesServer extends BaseServerHandler {
 
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
-        SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
 
         String ldName = null;
         String lnReference = null;
@@ -52,7 +51,7 @@ public class AllCbValuesServer extends BaseServerHandler {
             lnReference = req.reference.altLnReference.value();
         }
 
-        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
+        List<SclLN> lns = resolveLns(ied, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -103,19 +102,17 @@ public class AllCbValuesServer extends BaseServerHandler {
         }
     }
 
-    /** Resolve LNs across all IEDs. */
-    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+    /** Resolve LNs within the current IED. */
+    private static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
         List<SclLN> result = new ArrayList<>();
         if (ldName != null && !ldName.isEmpty()) {
-            for (SclIED ied : doc.ieds()) {
-                for (SclAccessPoint ap : ied.accessPoints()) {
-                    SclServer srv = ap.server();
-                    if (srv != null) {
-                        SclLDevice device = srv.findLDeviceByInst(ldName);
-                        if (device != null) {
-                            result.addAll(device.lns());
-                            return result;
-                        }
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(ldName);
+                    if (device != null) {
+                        result.addAll(device.lns());
+                        return result;
                     }
                 }
             }
@@ -128,17 +125,15 @@ public class AllCbValuesServer extends BaseServerHandler {
             return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice device = srv.findLDeviceByInst(refLd);
-                    if (device != null) {
-                        SclLN ln = device.findLnByFullName(refLn);
-                        if (ln != null) {
-                            result.add(ln);
-                            return result;
-                        }
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice device = srv.findLDeviceByInst(refLd);
+                if (device != null) {
+                    SclLN ln = device.findLnByFullName(refLn);
+                    if (ln != null) {
+                        result.add(ln);
+                        return result;
                     }
                 }
             }

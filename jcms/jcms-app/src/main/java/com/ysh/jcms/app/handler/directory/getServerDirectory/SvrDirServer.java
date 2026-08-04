@@ -27,8 +27,7 @@ public class SvrDirServer extends BaseServerHandler {
     protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
         CmsGetServerDirectoryRequest req = (CmsGetServerDirectoryRequest) rawReq;
         log.info("GetServerDirectory from {}: reqId={}, objectClass={}, refAfter={}, present={}", session.getSessionId(), reqId,
-                req.getObjectClass(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null,
-                req.isPresent("referenceAfter"));
+                req.getObjectClass(), req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, req.isPresent("referenceAfter"));
 
         if (req.getObjectClass() != CmsObjectClass.LOGICAL_DEVICE)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

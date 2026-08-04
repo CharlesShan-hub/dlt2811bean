@@ -66,6 +66,7 @@ public class AllDataDefServer extends BaseServerHandler {
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
 
         String ldName = null;
@@ -76,7 +77,7 @@ public class AllDataDefServer extends BaseServerHandler {
             lnReference = str(req.reference.altLnReference);
         }
 
-        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
+        List<SclLN> lns = resolveLns(ied, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -150,18 +151,16 @@ public class AllDataDefServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+    private static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
         List<SclLN> result = new ArrayList<>();
         if (ldName != null && !ldName.isEmpty()) {
-            for (SclIED ied : doc.ieds()) {
-                for (SclAccessPoint ap : ied.accessPoints()) {
-                    SclServer srv = ap.server();
-                    if (srv != null) {
-                        SclLDevice device = srv.findLDeviceByInst(ldName);
-                        if (device != null) {
-                            result.addAll(device.lns());
-                            return result;
-                        }
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(ldName);
+                    if (device != null) {
+                        result.addAll(device.lns());
+                        return result;
                     }
                 }
             }
@@ -174,17 +173,15 @@ public class AllDataDefServer extends BaseServerHandler {
             return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice device = srv.findLDeviceByInst(refLd);
-                    if (device != null) {
-                        SclLN ln = device.findLnByFullName(refLn);
-                        if (ln != null) {
-                            result.add(ln);
-                            return result;
-                        }
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice device = srv.findLDeviceByInst(refLd);
+                if (device != null) {
+                    SclLN ln = device.findLnByFullName(refLn);
+                    if (ln != null) {
+                        result.add(ln);
+                        return result;
                     }
                 }
             }

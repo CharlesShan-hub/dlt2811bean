@@ -47,6 +47,7 @@ public class LnDirServer extends BaseServerHandler {
         log.info("GetLogicalNodeDirectory from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
         SclDocument doc = requireScl(session, reqId);
+        SclIED ied = requireIed(session, reqId);
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         log.info("TIMING: server+templates resolved in {}ms", System.currentTimeMillis() - t0);
 
@@ -58,7 +59,7 @@ public class LnDirServer extends BaseServerHandler {
             lnReference = str(req.reference.altLnReference);
         }
 
-        List<SclLN> lns = resolveLns(doc, ldName, lnReference);
+        List<SclLN> lns = resolveLns(ied, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -85,16 +86,14 @@ public class LnDirServer extends BaseServerHandler {
         return ok(resp, reqId);
     }
 
-    private static List<SclLN> resolveLns(SclDocument doc, String ldName, String lnReference) {
+    private static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
         if (ldName != null && !ldName.isEmpty()) {
-            for (SclIED ied : doc.ieds()) {
-                for (SclAccessPoint ap : ied.accessPoints()) {
-                    SclServer srv = ap.server();
-                    if (srv != null) {
-                        SclLDevice device = srv.findLDeviceByInst(ldName);
-                        if (device != null)
-                            return device.lns();
-                    }
+            for (SclAccessPoint ap : ied.accessPoints()) {
+                SclServer srv = ap.server();
+                if (srv != null) {
+                    SclLDevice device = srv.findLDeviceByInst(ldName);
+                    if (device != null)
+                        return device.lns();
                 }
             }
             return null;
@@ -106,18 +105,16 @@ public class LnDirServer extends BaseServerHandler {
             return null;
         String refLd = lnReference.substring(0, slashIdx);
         String refLn = lnReference.substring(slashIdx + 1);
-        for (SclIED ied : doc.ieds()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice device = srv.findLDeviceByInst(refLd);
-                    if (device != null) {
-                        SclLN ln = device.findLnByFullName(refLn);
-                        if (ln != null) {
-                            List<SclLN> result = new ArrayList<>();
-                            result.add(ln);
-                            return result;
-                        }
+        for (SclAccessPoint ap : ied.accessPoints()) {
+            SclServer srv = ap.server();
+            if (srv != null) {
+                SclLDevice device = srv.findLDeviceByInst(refLd);
+                if (device != null) {
+                    SclLN ln = device.findLnByFullName(refLn);
+                    if (ln != null) {
+                        List<SclLN> result = new ArrayList<>();
+                        result.add(ln);
+                        return result;
                     }
                 }
             }
