@@ -59,7 +59,7 @@ const navItems = [
     id: 'connect-root',
     label: '连接管理',
     icon: '🔌',
-    children: CMD_IDS.filter((id) => !['server-dir', 'ld-dir', 'ln-dir', 'all-data', 'all-def'].includes(id)).map((id) => ({ id, label: CMD_DEFS[id].title })),
+    children: CMD_IDS.filter((id) => !['server-dir', 'ld-dir', 'ln-dir', 'all-data', 'all-def', 'all-cb'].includes(id)).map((id) => ({ id, label: CMD_DEFS[id].title })),
   },
   { id: 'dir-tree', label: '目录树', icon: '⊞', children: [
     { id: 'server-dir', label: CMD_DEFS['server-dir'].title },
@@ -67,6 +67,7 @@ const navItems = [
     { id: 'ln-dir', label: CMD_DEFS['ln-dir'].title },
     { id: 'all-data', label: CMD_DEFS['all-data'].title },
     { id: 'all-def', label: CMD_DEFS['all-def'].title },
+    { id: 'all-cb', label: CMD_DEFS['all-cb'].title },
   ] },
   { id: 'data', label: '数据浏览', icon: '☰' },
   { id: 'dataset', label: '数据集', icon: '⧉' },

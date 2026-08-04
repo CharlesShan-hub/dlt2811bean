@@ -1,8 +1,9 @@
 <template>
   <div ref="wrapEl" class="ui-select">
     <button type="button" class="ui-select__trigger" @click="toggle">
-      <span class="ui-select__value" :class="{ placeholder: !modelValue }">
-        {{ modelValue || (loading ? '加载中...' : placeholder) }}
+      <span class="ui-select__value" :class="{ placeholder: !currentLabel }">
+        <span v-if="currentColor" class="ui-select__dot" :style="{ background: currentColor }"></span>
+        {{ currentLabel || (loading ? '加载中...' : placeholder) }}
       </span>
       <span class="ui-select__arrow" :class="{ open }">▾</span>
     </button>
@@ -14,12 +15,13 @@
         </div>
         <div
           v-for="opt in options"
-          :key="opt"
+          :key="optKey(opt)"
           class="ui-select__option"
-          :class="{ selected: opt === modelValue }"
+          :class="{ selected: optValue(opt) === modelValue }"
           @click="choose(opt)"
         >
-          {{ opt === '' ? emptyLabel : opt }}
+          <span v-if="optColor(opt)" class="ui-select__dot" :style="{ background: optColor(opt) }"></span>
+          {{ opt === '' ? emptyLabel : optLabel(opt) }}
         </div>
       </div>
     </transition>
@@ -27,11 +29,11 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, computed, onBeforeUnmount } from 'vue'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: String, default: '' },
-  /** 字符串选项列表 */
+  /** 字符串选项列表，或对象选项 { value, label, color }（color 为可选圆点颜色） */
   options: { type: Array, default: () => [] },
   placeholder: { type: String, default: '请选择' },
   /** 空选项（''）显示的标签，用于表达"不选" */
@@ -45,6 +47,32 @@ const open = ref(false)
 const wrapEl = ref(null)
 const menuEl = ref(null)
 const menuStyle = ref({})
+
+/** 选项值：对象取 value 字段，字符串取自身。 */
+function optValue(opt) {
+  return typeof opt === 'object' && opt !== null ? opt.value : opt
+}
+function optLabel(opt) {
+  return typeof opt === 'object' && opt !== null ? opt.label : opt
+}
+function optColor(opt) {
+  return typeof opt === 'object' && opt !== null ? opt.color : ''
+}
+function optKey(opt) {
+  return typeof opt === 'object' && opt !== null ? opt.value : opt
+}
+
+/** 当前选中项（用于触发按钮上显示彩色圆点 + 标签）。 */
+const currentOpt = computed(() => props.options.find((o) => optValue(o) === props.modelValue))
+const currentLabel = computed(() => {
+  if (!props.modelValue) return ''
+  const o = currentOpt.value
+  return o === undefined ? String(props.modelValue) : optLabel(o)
+})
+const currentColor = computed(() => {
+  const o = currentOpt.value
+  return o !== undefined ? optColor(o) : ''
+})
 
 function toggle() {
   open.value ? close() : openMenu()
@@ -82,7 +110,7 @@ function onDocScroll(e) {
 }
 
 function choose(opt) {
-  emit('update:modelValue', opt)
+  emit('update:modelValue', optValue(opt))
   close()
 }
 
@@ -116,6 +144,9 @@ onBeforeUnmount(close)
 }
 
 .ui-select__value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -149,12 +180,23 @@ onBeforeUnmount(close)
 }
 
 .ui-select__option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 13px;
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.12s;
+}
+
+.ui-select__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .ui-select__option:hover {

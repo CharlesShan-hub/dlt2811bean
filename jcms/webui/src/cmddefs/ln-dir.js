@@ -1,15 +1,5 @@
-// 8.3.3 读逻辑节点目录：ACSI 类限定（标准表 26）
-const acsiClasses = [
-  { value: 1, label: 'DataObject', cn: '数据对象' },
-  { value: 2, label: 'DATA-SET', cn: '数据集' },
-  { value: 3, label: 'BRCB', cn: '缓存报告控制块' },
-  { value: 4, label: 'URCB', cn: '非缓存报告控制块' },
-  { value: 5, label: 'LCB', cn: '日志控制块' },
-  { value: 6, label: 'LOG', cn: '日志' },
-  { value: 7, label: 'SGCB', cn: '定值组控制块' },
-  { value: 8, label: 'GoCB', cn: 'GOOSE 控制块' },
-  { value: 10, label: 'MSVCB', cn: '多播采样值控制块' },
-]
+// 8.3.3 读逻辑节点目录：ACSI 类限定（标准表 26），选项与目录树圆点颜色一致
+import { ACSI_DEFS } from '../acsiDefs.js'
 
 export default {
   title: '逻辑节点目录 ln-dir (8.3.3)',
@@ -44,7 +34,12 @@ GetLogicalNodeDirectory-ResponsePDU ::= SEQUENCE {
 GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
   params: [
     { key: 'ln', label: '逻辑节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
-    { key: 'acsi', label: '对象类型 acsiClass', type: 'select', options: acsiClasses.map((a) => `${a.value}: ${a.cn}（${a.label}）`) },
+    {
+      key: 'acsi',
+      label: '对象类型 acsiClass',
+      type: 'select',
+      options: ACSI_DEFS.map((a) => ({ value: a.key, label: `${a.label}（${a.key}）`, color: a.color })),
+    },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
   ],
 }

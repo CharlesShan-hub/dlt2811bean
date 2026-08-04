@@ -10,6 +10,7 @@ import ldDir from './ld-dir.js'
 import lnDir from './ln-dir.js'
 import allData from './all-data.js'
 import allDef from './all-def.js'
+import allCb from './all-cb.js'
 
 export const CMD_DEFS = {
   negotiate,
@@ -22,6 +23,7 @@ export const CMD_DEFS = {
   'ln-dir': lnDir,
   'all-data': allData,
   'all-def': allDef,
+  'all-cb': allCb,
 }
 
 /** 命令 id 列表（保持注册表顺序）。 */

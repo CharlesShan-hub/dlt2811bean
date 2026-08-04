@@ -132,7 +132,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
-import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs } from '../ldCache.js'
+import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
 
 const props = defineProps({
   cmd: String,
@@ -173,9 +173,10 @@ const paramRows = computed(() => {
 /** ln 下拉选项：选中 LD 时用该 LD 下的 LN，否则用全量完整引用。 */
 const lnOptions = computed(() => (form.ld ? ldLns[form.ld] || [] : allLnRefs))
 
-/** after 下拉选项：ln-dir 用该 LN 的子引用；all-data/all-def 用 all-def 的 DO 引用。 */
+/** after 下拉选项：ln-dir 用该 LN 的子引用；all-data/all-def 用 all-def 的 DO 引用；all-cb 用 CB 引用。 */
 const refOptions = computed(() => {
   if (props.cmd === 'ln-dir') return lnDirRefs
+  if (props.cmd === 'all-cb') return allCbRefs
   return allDefRefs
 })
 
@@ -217,7 +218,9 @@ function initForm() {
   }
   for (const p of def.value.params) {
     if (p.type === 'select') {
-      form[p.key] = p.options[0] || ''
+      const first = p.options[0]
+      // 选项可能是对象 { value, label, color }（带颜色），默认取 value
+      form[p.key] = first && typeof first === 'object' ? first.value : (first || '')
     } else if (p.type === 'ap-select') {
       form[p.key] = ''
     } else if (p.type === 'ld-select') {
@@ -230,7 +233,7 @@ function initForm() {
 }
 
 /** ln 必填的命令：进入页面时预加载全量 LN 引用并默认选中第一个。 */
-const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def']
+const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def', 'all-cb']
 
 watch(() => props.cmd, async () => {
   result.value = null
@@ -265,11 +268,16 @@ watch([() => allLnRefs.length, () => ldCache.length], async () => {
   if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
 })
 
-// ln-dir：ln / acsi 变化时懒加载该 LN 下的子引用列表（供 after 下拉）
+// ln-dir / all-cb：ln / acsi 变化时懒加载引用列表（供 after 下拉）
 watch([() => form.ln, () => form.acsi], async () => {
-  if (props.cmd !== 'ln-dir' || !form.ln) return
-  const acsi = String(form.acsi || '').split(':')[0] || '1'
-  await ensureLnDirRefs(form.ln, acsi)
+  if (!form.ln) return
+  if (props.cmd === 'ln-dir') {
+    const acsi = String(form.acsi || '').split(':')[0] || '1'
+    await ensureLnDirRefs(form.ln, acsi)
+  } else if (props.cmd === 'all-cb') {
+    const acsi = String(form.acsi || '').split(':')[0] || 'brcb'
+    await ensureAllCbRefs(form.ln, acsi)
+  }
 }, { immediate: true })
 
 // all-data / all-def：ln / fc 变化时懒加载该 LN 下的 DO 引用（经轻量 all-def 查询，供 after 下拉）

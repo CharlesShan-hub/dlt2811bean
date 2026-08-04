@@ -23,6 +23,8 @@ export function clearLnDirRefs() {
   lnDirRefsKey = ''
   allDefRefs.splice(0)
   allDefRefsKey = ''
+  allCbRefs.splice(0)
+  allCbRefsKey = ''
 }
 
 /** all-def 响应引用缓存（供 all-data / all-def 的 after 下拉），key 为 "ln|fc"。 */
@@ -51,6 +53,34 @@ export async function ensureAllDefRefs(lnRef, fc) {
     allDefRefsKey = key
   }
   return allDefRefs
+}
+
+/** all-cb 响应引用缓存（供 all-cb 的 after 下拉），key 为 "ln|acsi"。 */
+export const allCbRefs = reactive([])
+let allCbRefsKey = ''
+
+/**
+ * 拉取某 LN（或 LD）在指定 ACSI 控制块类下的引用列表（经 all-cb 查询，
+ * 供 all-cb 的 after 下拉）。
+ * @param {string} lnRef ln-select 值，如 "LD0" 或 "LD0/LLN0"
+ * @param {string} acsi ACSI 控制块类（如 "brcb"、"sgcb"）
+ */
+export async function ensureAllCbRefs(lnRef, acsi) {
+  if (!lnRef) {
+    allCbRefs.splice(0)
+    return allCbRefs
+  }
+  const key = `${lnRef}|${acsi}`
+  if (allCbRefsKey === key && allCbRefs.length > 0) return allCbRefs
+  try {
+    const res = await executeJson(`all-cb --ln ${lnRef} --acsi ${acsi} --json`)
+    allCbRefs.splice(0, allCbRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []))
+    allCbRefsKey = key
+  } catch {
+    allCbRefs.splice(0)
+    allCbRefsKey = key
+  }
+  return allCbRefs
 }
 
 /**
