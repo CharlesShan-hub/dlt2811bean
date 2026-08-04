@@ -202,7 +202,7 @@ public class AllDataDefServer extends BaseServerHandler {
             if (bType == null)
                 bType = "BOOLEAN";
             CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem().name(da.name())
-                    .fc(da.fc() != null ? CmsFC.fromCode(da.fc()) : 0).type(bTypeToDataDefinition(bType));
+                    .fc(da.fc() != null ? CmsFC.fromCodeOr(da.fc(), CmsFC.XX) : 0).type(bTypeToDataDefinition(bType));
             arr.add(elem);
         }
         for (SclSDO sdo : doType.sdos()) {

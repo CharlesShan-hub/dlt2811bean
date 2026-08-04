@@ -7,31 +7,36 @@
       @click="handleClick"
     >
       <span v-if="isLeaf" class="node-icon leaf-icon">◌</span>
+      <span v-else-if="node.type === 'ln'" class="node-icon leaf-icon">◌</span>
       <span v-else class="node-arrow" :class="{ expanded: node.expanded }">
         {{ node.loading ? '○' : '▸' }}
       </span>
       <span class="node-label" :class="labelClass">{{ node.label }}</span>
       <span v-if="node.type === 'ld'" class="node-type">LD</span>
-      <!-- LN：右侧 9 个 ACSI 分类圆点，点哪个加载哪个 -->
+      <!-- LN：右侧 9 个 ACSI 分类圆点，单选切换视图（LN 下方直接显示该分类成员） -->
       <span v-else-if="node.type === 'ln'" class="acsi-dots">
         <span
           v-for="d in ACSI_DEFS"
           :key="d.key"
           class="acsi-dot"
-          :class="{ on: isAcsiOn(d.key) }"
+          :class="{ on: node.activeAcsi === d.key }"
           :style="{ background: d.color }"
           :title="d.label"
           @click.stop="onAcsiClick(d.key)"
         ></span>
       </span>
     </div>
-    <div v-if="node.expanded && node.children" class="node-children">
+    <div
+      v-if="node.children && (node.type === 'ln' ? !!node.activeAcsi : node.expanded)"
+      class="node-children"
+    >
       <TreeNode
         v-for="child in node.children"
         :key="child.name"
         :node="child"
         :depth="depth + 1"
         @toggle="$emit('toggle', $event)"
+        @toggle-acsi="$emit('toggle-acsi', $event)"
       />
     </div>
   </div>
@@ -55,12 +60,6 @@ const labelClass = computed(() => (props.node.type === 'ld' ? 'ld-has' : ''))
 
 function handleClick() {
   emit('toggle', props.node)
-}
-
-/** ACSI 分类是否已展开（圆点高亮） */
-function isAcsiOn(acsi) {
-  const c = (props.node.children || []).find((c) => c.acsi === acsi)
-  return !!(c && c.expanded)
 }
 
 function onAcsiClick(acsi) {

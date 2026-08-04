@@ -111,7 +111,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
             DirEntry e = allEntries.get(i);
             CmsSubRefEntry entry = new CmsSubRefEntry().reference(e.ref);
             if (e.fc != null && !e.fc.isEmpty())
-                entry.fc(CmsFC.fromCode(e.fc));
+                entry.fc(CmsFC.fromCodeOr(e.fc, CmsFC.XX));
             resp.dataAttribute.add(entry);
             count++;
         }

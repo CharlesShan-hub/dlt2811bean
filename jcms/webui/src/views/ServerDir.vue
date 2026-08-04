@@ -214,52 +214,43 @@ async function onToggle(node) {
         }))
       }
     } else if (node.type === 'ln') {
-      // LN 内容由右侧 9 个 ACSI 圆点驱动，行点击仅折叠/展开已加载的分类
-      node.children = node.children || []
-    } else if (node.type === 'acsi-cat') {
-      const res = await executeJson(`ln-dir --ln ${node.lnRef} --acsi ${node.acsi} --json`)
-      if (res.success) {
-        const childType = node.acsi === 'data-object' ? 'do' : node.acsi
-        node.children = res.data.map(name => ({
-          name: `${node.name}/${name}`,
-          type: childType,
-          label: name,
-          ref: node.acsi === 'data-object' ? buildDoRef(`${node.name}/${name}`) : `${node.lnRef}.${name}`,
-          children: null,
-          loading: false,
-          expanded: false,
-          isLeaf: true,
-        }))
-      } else {
-        node.children = []
-      }
+      // LN 内容由右侧 ACSI 圆点单选驱动，行点击不做事
     }
   } finally {
     node.loading = false
   }
 }
 
-/** LN 行上的 ACSI 圆点：点击展开/收起对应分类（懒加载 ln-dir --acsi）。 */
+/** LN 行上的 ACSI 圆点：单选切换视图，懒加载分类成员直接展示在 LN 下方（无中间分类层）。 */
 async function onToggleAcsi({ node, acsi }) {
-  let cat = (node.children || []).find((c) => c.acsi === acsi)
-  if (cat) {
-    cat.expanded = !cat.expanded
+  // 再次点击已选中的分类：取消视图
+  if (node.activeAcsi === acsi) {
+    node.activeAcsi = null
+    node.children = []
     return
   }
-  const def = ACSI_DEFS.find((d) => d.key === acsi)
-  cat = {
-    name: `${node.name}/${acsi}`,
-    type: 'acsi-cat',
-    label: def ? def.label : acsi,
-    acsi,
-    lnRef: node.name,
-    children: null,
-    loading: false,
-    expanded: true,
+  node.activeAcsi = acsi
+  node.loading = true
+  try {
+    const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --json`)
+    if (res.success) {
+      const childType = acsi === 'data-object' ? 'do' : acsi
+      node.children = res.data.map(name => ({
+        name: `${node.name}/${name}`,
+        type: childType,
+        label: name,
+        ref: acsi === 'data-object' ? buildDoRef(`${node.name}/${name}`) : `${node.name}.${name}`,
+        children: null,
+        loading: false,
+        expanded: false,
+        isLeaf: true,
+      }))
+    } else {
+      node.children = []
+    }
+  } finally {
+    node.loading = false
   }
-  if (!node.children) node.children = []
-  node.children.push(cat)
-  await onToggle(cat)
 }
 
 function buildDoRef(name) {

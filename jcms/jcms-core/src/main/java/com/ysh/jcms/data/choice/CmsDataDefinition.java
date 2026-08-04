@@ -5,7 +5,6 @@ import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
 import com.ysh.jcms.data.core.CmsChoice;
 import com.ysh.jcms.data.InnerBase;
 import com.ysh.jcms.data.InnerDataDefinition;
-import com.ysh.jcms.data.InnerDataDefinitionStructure;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsInt32;
 import java.util.ArrayList;
@@ -211,17 +210,16 @@ public class CmsDataDefinition extends CmsChoice {
             return;
         }
 
-        // Handle structure manually — original creates new container each sync
+        // Handle structure manually — JER 中 structure 是 SEQUENCE OF（直接数组，
+        // {"structure": [...]}），不能用 InnerDataDefinitionStructure 包 {"value": [...]}
         if (ch == CHOICE_STRUCTURE) {
             inner._v.put("_choice", "structure");
-            InnerDataDefinitionStructure innerStruct = new InnerDataDefinitionStructure();
             List<InnerBase> list = new ArrayList<>();
             for (CmsDataDefinitionStructElem elem : alt_structure) {
                 elem.syncToInner();
                 list.add(elem.inner);
             }
-            innerStruct._v.put("value", list);
-            inner._v.put("structure", innerStruct._v);
+            inner._v.put("structure", list);
             return;
         }
 
@@ -270,24 +268,19 @@ public class CmsDataDefinition extends CmsChoice {
             return;
         }
 
-        // Handle structure manually
+        // Handle structure manually — JER 中 structure 是数组
         if ("structure".equals(ch)) {
             selectedChoiceIndex = CHOICE_STRUCTURE;
             alt_structure.clear();
             Object structObj = inner._v.get("structure");
-            if (structObj instanceof java.util.LinkedHashMap) {
+            if (structObj instanceof List) {
                 @SuppressWarnings("unchecked")
-                java.util.LinkedHashMap<String, Object> structM = (java.util.LinkedHashMap<String, Object>) structObj;
-                Object valObj = structM.get("value");
-                if (valObj instanceof List) {
-                    @SuppressWarnings("unchecked")
-                    List<InnerBase> src = (List<InnerBase>) valObj;
-                    for (InnerBase elem : src) {
-                        CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
-                        c.inner = elem;
-                        c.syncFromInner();
-                        alt_structure.add(c);
-                    }
+                List<InnerBase> src = (List<InnerBase>) structObj;
+                for (InnerBase elem : src) {
+                    CmsDataDefinitionStructElem c = new CmsDataDefinitionStructElem();
+                    c.inner = elem;
+                    c.syncFromInner();
+                    alt_structure.add(c);
                 }
             }
             return;

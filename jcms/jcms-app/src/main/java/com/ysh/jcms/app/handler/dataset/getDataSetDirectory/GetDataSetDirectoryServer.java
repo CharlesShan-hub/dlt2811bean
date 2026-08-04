@@ -69,8 +69,8 @@ public class GetDataSetDirectoryServer extends BaseServerHandler {
                 }
                 continue;
             }
-            resp.memberData
-                    .add(new CmsDataRefFcEntry().reference(fcda.buildFcdaRef()).fc(fcda.fc() != null ? CmsFC.fromCode(fcda.fc()) : 0));
+            resp.memberData.add(new CmsDataRefFcEntry().reference(fcda.buildFcdaRef())
+                    .fc(fcda.fc() != null ? CmsFC.fromCodeOr(fcda.fc(), CmsFC.XX) : 0));
             if (++count >= ps)
                 break;
         }

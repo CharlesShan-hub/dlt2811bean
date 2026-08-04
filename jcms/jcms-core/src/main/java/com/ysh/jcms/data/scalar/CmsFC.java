@@ -98,6 +98,19 @@ public class CmsFC extends CmsScalar {
         return fromCode(s != null ? s.toUpperCase() : null);
     }
 
+    /**
+     * Like {@link #fromCode(String)} but returns the given fallback for unknown
+     * codes instead of throwing. SCL 数据里可能含有本实现未定义的 FC（如 IEC 61850 的 CO），
+     * 服务端遇到时不应让整个服务崩溃。
+     */
+    public static int fromCodeOr(String code, int fallback) {
+        try {
+            return fromCode(code);
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
+    }
+
     @Override
     public void syncToInner() {
         V.setVal(inner._v, CODES[val]);

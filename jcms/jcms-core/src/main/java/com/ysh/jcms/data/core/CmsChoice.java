@@ -304,9 +304,13 @@ public abstract class CmsChoice extends CmsType {
         }
 
         inner._v.put("_choice", vi.name);
-        // NULL variants (registerNullChoice) carry no payload field — nothing to sync
-        if (vi.sync == null)
+        // NULL variants (registerNullChoice) carry no payload field — but JER
+        // still needs the variant key present ({"Boolean": {"_": null}}), otherwise
+        // toJson emits {} and the native encoder has no variant to encode.
+        if (vi.sync == null) {
+            inner._v.putIfAbsent(vi.name, V.wrapScalar(null));
             return;
+        }
         try {
             switch (vi.sync) {
                 case SCALAR :
