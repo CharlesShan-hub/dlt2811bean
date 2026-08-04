@@ -89,12 +89,33 @@ public abstract class InnerBase {
     /** Create an ObjectMapper configured for JER-compatible serialization. */
     protected static ObjectMapper createMapper() {
         ObjectMapper m = new ObjectMapper();
+        m.setSerializationInclusion(JsonInclude.Include.ALWAYS);
         m.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
         m.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         m.setVisibility(PropertyAccessor.IS_GETTER, JsonAutoDetect.Visibility.NONE);
         m.setVisibility(PropertyAccessor.SETTER, JsonAutoDetect.Visibility.NONE);
         m.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.NONE);
         SimpleModule mod = new SimpleModule();
+        // MapSerializer's null handling is influenced by the @JsonInclude(NON_NULL)
+        // on generated classes (which wins over the mapper-wide inclusion above),
+        // so plain-Map nulls (e.g. NULL choice variants {"Boolean": null}) would be
+        // silently dropped. Force them out as real JSON null instead.
+        mod.addSerializer(java.util.LinkedHashMap.class, new JsonSerializer<Object>() {
+            @Override
+            public void serialize(Object value, JsonGenerator gen, SerializerProvider prov) throws IOException {
+                java.util.LinkedHashMap<String, Object> m = (java.util.LinkedHashMap<String, Object>) value;
+                gen.writeStartObject();
+                for (java.util.Map.Entry<String, Object> e : m.entrySet()) {
+                    Object v = e.getValue();
+                    if (v == null) {
+                        gen.writeNullField(e.getKey());
+                    } else {
+                        gen.writeObjectField(e.getKey(), v);
+                    }
+                }
+                gen.writeEndObject();
+            }
+        });
         mod.addSerializer(byte[].class, new JsonSerializer<byte[]>() {
             @Override
             public void serialize(byte[] value, JsonGenerator gen, SerializerProvider prov) throws IOException {
@@ -204,6 +225,8 @@ public abstract class InnerBase {
         if (val instanceof java.util.Map) {
             java.util.Map<String, Object> m = (java.util.Map<String, Object>) val;
             // CHOICE map: {"_choice": "variant", "variant": value} -> {"variant": value}
+            // NULL variants (e.g. {"Boolean": null}) keep a real null: the custom
+            // LinkedHashMap serializer in createMapper() writes map nulls as JSON null.
             if (m.containsKey("_choice")) {
                 String choice = (String) m.get("_choice");
                 java.util.LinkedHashMap<String, Object> out = new java.util.LinkedHashMap<>();

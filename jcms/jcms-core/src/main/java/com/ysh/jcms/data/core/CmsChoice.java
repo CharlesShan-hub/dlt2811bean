@@ -249,6 +249,14 @@ public abstract class CmsChoice extends CmsType {
                     inner._v.remove(old.name);
             }
             V.setChoice(inner._v, vi.name);
+            // NULL variants (registerNullChoice) carry no payload field, but the
+            // variant key must still be present in _v ({"Boolean": {"_": null}}):
+            // JER needs a real null variant, and syncToInner() may never run on
+            // this instance (e.g. shared-_v wrappers nested in CmsSequence), so
+            // seed the key here at selection time (idempotent).
+            if (vi.sync == null) {
+                inner._v.putIfAbsent(vi.name, V.wrapScalar(null));
+            }
             // Share the wrapper's _v with parent so writes go to the right place.
             // Both CmsType and InnerBase (DefaultInner*) variants keep the shared-_v
             // invariant: the entry in parent _v aliases the variant's own _v map.
