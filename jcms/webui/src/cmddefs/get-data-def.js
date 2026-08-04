@@ -49,7 +49,7 @@ GetDataDefinition-ErrorPDU ::= ServiceError — 8.4.4`,
 3. 请求队列中的某一个数据无法访问时，应返回错误原因，并继续处理下一个数据。
 4. 数据不包含指定 \`fc\` 的内容时，应返回错误原因。`,
   params: [
-    { key: 'refs', label: '数据引用 refs', type: 'refs-list', placeholder: '选择数据引用' },
+    { key: 'refs', label: '数据引用 refs', type: 'refs-list', cascade: true, placeholder: 'LD/LN/DO/DA 逐级选择' },
     { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
   ],
 }

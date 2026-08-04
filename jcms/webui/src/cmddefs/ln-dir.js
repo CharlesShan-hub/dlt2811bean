@@ -73,7 +73,7 @@ GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
 
 1. \`acsiClass\` 为 \`DataObject\` 时，请求逻辑节点下所有数据对象及其子数据对象的引用名，引用名应按模型定义的顺序排序。如 \`LD/LN.DO1\`, \`LD/LN.DO1.SDO1\`, \`LD/LN.DO1.SDO2\`。`,
   params: [
-    { key: 'ln', label: '逻辑节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
+    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（必填）', required: true },
     {
       key: 'acsi',
       label: '对象类型 acsiClass',

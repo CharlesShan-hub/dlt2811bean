@@ -51,7 +51,7 @@ GetAllDataValues-ErrorPDU ::= ServiceError — 8.3.4`,
 1. 数据不包含指定 \`fc\` 的内容时，返回的结果中应不包含该数据。
 2. 参数 \`fc\` 为 \`XX\` 或空时，应返回指定逻辑设备或逻辑节点内全部数据属性的值（不包括功能约束 \`SE\`）。仅当参数 \`fc\` 明确指定为 \`SE\` 时，服务器才返回功能约束 \`SE\` 的数据属性值。仅当选择编辑定值组服务后，功能约束 \`SE\` 的数据属性值有效。`,
   params: [
-    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
+    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（必填）', required: true },
     { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
   ],

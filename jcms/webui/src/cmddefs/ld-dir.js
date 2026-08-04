@@ -49,6 +49,6 @@ GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError — 8.3.2`,
 不指定 LD 的全量请求可能返回上百个 LN，一条响应装不下：\`moreFollows\` 置真表示"还有"，客户端带 \`referenceAfter\`（上一次返回的最后一个 \`lnReference\`）循环续拉直到拉完——这是游标分页的经典示例。`,
   params: [
     { key: 'ld', label: '逻辑设备 ld', type: 'ld-select', placeholder: '选择逻辑设备（可选，省略则返回所有 LD 的完整引用）' },
-    { key: 'after', label: '起始引用 after', type: 'ln-select', placeholder: '选择起始 LN（可选）' },
+    { key: 'after', label: '起始引用 after', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（上面选 ld 后自动跟随，只选 LN）' },
   ],
 }

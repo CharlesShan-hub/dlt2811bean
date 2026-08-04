@@ -54,7 +54,7 @@ GetAllDataDefinition-ErrorPDU ::= ServiceError — 8.3.5`,
 2. 参数 \`fc\` 为 \`XX\` 或空时，应返回指定逻辑设备或逻辑节点内全部数据属性的定义（不包括功能约束 \`SE\`）。
 3. 仅当参数 \`fc\` 明确指定为 \`SE\` 时，服务器返回功能约束 \`SE\` 的数据属性定义。功能约束 \`SE\` 的数据属性定义应与功能约束 \`SG\` 完全相同。`,
   params: [
-    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
+    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（必填）', required: true },
     { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
   ],

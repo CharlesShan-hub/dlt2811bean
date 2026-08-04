@@ -55,7 +55,7 @@ GetAllCBValues-ErrorPDU ::= ServiceError — 8.3.6`,
 
 控制块类型由 \`acsiClass\` 指定，如缓存报告控制块、非缓存报告控制块、定值控制块等。控制块定义见 8.6~8.10。`,
   params: [
-    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-select', placeholder: '选择逻辑节点（必填）', required: true },
+    { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（必填）', required: true },
     {
       key: 'acsi',
       label: '控制块类型 acsiClass',

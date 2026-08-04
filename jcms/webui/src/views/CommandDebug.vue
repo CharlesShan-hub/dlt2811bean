@@ -85,13 +85,23 @@
                   :placeholder="p.placeholder"
                   empty-label="（不选）"
                 />
-                <UiSelect
-                  v-else-if="p.type === 'ln-select'"
-                  v-model="form[p.key]"
-                  :options="p.required ? lnOptions : ['', ...lnOptions]"
-                  :placeholder="p.placeholder"
-                  :empty-label="p.required ? '暂无选项' : '（不选）'"
-                />
+                <!-- 级联二选：LD → LN，生成 --ln/--after "LD/LN"（ld-dir 的 after 与上面 ld 联动） -->
+                <div v-else-if="p.type === 'ln-cascade'" class="cascade-pair">
+                  <UiSelect
+                    v-model="form[p.key].ld"
+                    :options="ldCache"
+                    :disabled="cascadeLdDisabled(p)"
+                    placeholder="LD"
+                    empty-label="（不选）"
+                    @update:modelValue="onCascadeLd(p.key)"
+                  />
+                  <UiSelect
+                    v-model="form[p.key].ln"
+                    :options="cascadeLns(form[p.key])"
+                    placeholder="LN"
+                    empty-label="（不选）"
+                  />
+                </div>
                 <UiSelect
                   v-else-if="p.type === 'ln-ref-select'"
                   v-model="form[p.key]"
@@ -101,15 +111,50 @@
                 />
                 <!-- 动态引用列表：加号增行、叉号删行，命令拼接为 --refs "r1 r2 ..." -->
                 <div v-else-if="p.type === 'refs-list'" class="refs-list">
-                  <div v-for="(r, i) in form[p.key]" :key="i" class="refs-row">
-                    <UiSelect
-                      v-model="form[p.key][i]"
-                      :options="['', ...refsListOptions]"
-                      :placeholder="p.placeholder"
-                      empty-label="（不选）"
-                    />
-                    <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
-                  </div>
+                  <!-- 级联三选：LD → LN → DO，逐层下钻引用 -->
+                  <template v-if="p.cascade">
+                    <div v-for="(r, i) in form[p.key]" :key="i" class="refs-row">
+                      <UiSelect
+                        v-model="r.ld"
+                        :options="ldCache"
+                        placeholder="LD"
+                        empty-label="（不选）"
+                        @update:modelValue="onRowLd(r)"
+                      />
+                      <UiSelect
+                        v-model="r.ln"
+                        :options="r.ld ? ldLns[r.ld] || [] : []"
+                        placeholder="LN"
+                        empty-label="（不选）"
+                        @update:modelValue="onRowLn(r)"
+                      />
+                      <UiSelect
+                        v-model="r.do"
+                        :options="rowDoOptions(r)"
+                        placeholder="DO"
+                        empty-label="（不选）"
+                        @update:modelValue="onRowDo(r)"
+                      />
+                      <UiSelect
+                        v-model="r.da"
+                        :options="rowDaOptions(r)"
+                        placeholder="DA"
+                        empty-label="（不选）"
+                      />
+                      <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div v-for="(r, i) in form[p.key]" :key="i" class="refs-row">
+                      <UiSelect
+                        v-model="form[p.key][i]"
+                        :options="['', ...refsListOptions]"
+                        :placeholder="p.placeholder"
+                        empty-label="（不选）"
+                      />
+                      <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                    </div>
+                  </template>
                   <button type="button" class="refs-add" @click="addRefs">＋ 添加引用</button>
                 </div>
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
@@ -229,8 +274,30 @@ const paramRows = computed(() => {
   return rows
 })
 
-/** ln 下拉选项：选中 LD 时用该 LD 下的 LN，否则用全量完整引用。 */
-const lnOptions = computed(() => (form.ld ? ldLns[form.ld] || [] : allLnRefs))
+/** ln-cascade 参数（key=ln）当前拼出的 LD/LN 引用（未选时为空），驱动 after 下拉懒加载。 */
+const lnRef = computed(() => {
+  const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
+  const o = p ? form[p.key] : null
+  return o && o.ld ? (o.ln ? `${o.ld}/${o.ln}` : o.ld) : ''
+})
+
+/** ln-cascade 的 LN 选项：选中 LD 后取该 LD 的 LN 列表。 */
+function cascadeLns(o) {
+  return o && o.ld ? ldLns[o.ld] || [] : []
+}
+
+/** ln-cascade 的 LD 变化：清空 LN 并懒加载该 LD 的 LN 列表。 */
+function onCascadeLd(key) {
+  const o = form[key]
+  if (!o) return
+  o.ln = ''
+  if (o.ld) ensureLdLns(o.ld)
+}
+
+/** ld-dir 的 after 级联：上面已选 ld 时，after 的 LD 跟随上面并禁用（只选 LN，单设备模式不带前缀）。 */
+function cascadeLdDisabled(p) {
+  return props.cmd === 'ld-dir' && p.key === 'after' && !!form.ld
+}
 
 /** after 下拉选项：ln-dir 用该 LN 的子引用；all-data/all-def 用 all-def 的 DO 引用；all-cb 用 CB 引用。 */
 const refOptions = computed(() => {
@@ -299,9 +366,12 @@ function initForm() {
     } else if (p.type === 'ld-select') {
       // 必填的 LD 默认选中缓存第一个，避免空值
       form[p.key] = p.required && ldCache.length ? ldCache[0] : ''
+    } else if (p.type === 'ln-cascade') {
+      // 级联二选：LD → LN
+      form[p.key] = { ld: '', ln: '' }
     } else if (p.type === 'refs-list') {
-      // 动态引用列表：初始一行空引用
-      form[p.key] = ['']
+      // 动态引用列表：初始一行空引用（级联模式为 LD/LN/DO/DA 对象）
+      form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', da: '' }] : ['']
     } else {
       form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
     }
@@ -310,8 +380,9 @@ function initForm() {
 
 /** 动态引用列表：追加一行。 */
 function addRefs() {
-  const key = def.value.params.find((p) => p.type === 'refs-list')?.key
-  if (key) form[key].push('')
+  const p = def.value.params.find((x) => x.type === 'refs-list')
+  if (!p) return
+  form[p.key].push(p.cascade ? { ld: '', ln: '', do: '', da: '' } : '')
 }
 
 /** 动态引用列表：删除指定行。 */
@@ -319,6 +390,81 @@ function removeRefs(i) {
   const key = def.value.params.find((p) => p.type === 'refs-list')?.key
   if (key) form[key].splice(i, 1)
 }
+
+/** 级联引用行的 DO 选项缓存：key = "LD/LN|fc"（经 all-def 轻量查询）。 */
+const rowDoRefs = reactive({})
+function rowDoKey(row) {
+  const fc = String(form.fc || '').split(':')[0] || 'XX'
+  return `${row.ld}/${row.ln}|${fc}`
+}
+function rowDoOptions(row) {
+  if (!row.ld || !row.ln) return []
+  return rowDoRefs[rowDoKey(row)] || []
+}
+async function loadRowDo(row) {
+  if (!row.ld || !row.ln) return
+  const key = rowDoKey(row)
+  if (rowDoRefs[key]) return
+  const fc = String(form.fc || '').split(':')[0] || 'XX'
+  try {
+    const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --json`)
+    rowDoRefs[key] = res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []
+  } catch {
+    rowDoRefs[key] = []
+  }
+}
+/** LD 变化：清空下级并加载该 LD 的 LN 列表。 */
+function onRowLd(row) {
+  row.ln = ''
+  row.do = ''
+  row.da = ''
+  if (row.ld) ensureLdLns(row.ld)
+}
+/** LN 变化：清空 DO/DA 并懒加载 DO 列表。 */
+function onRowLn(row) {
+  row.do = ''
+  row.da = ''
+  loadRowDo(row)
+}
+/** DO 变化：清空 DA 并懒加载 DA 列表。 */
+function onRowDo(row) {
+  row.da = ''
+  loadRowDa(row)
+}
+
+/** 级联引用行的 DA 选项缓存：key = "LD/LN.DO"（经 data-dir 轻量查询）。 */
+const rowDaRefs = reactive({})
+function rowDaKey(row) {
+  if (!row.ld || !row.ln || !row.do) return ''
+  return `${row.ld}/${row.ln}.${row.do}`
+}
+function rowDaOptions(row) {
+  const key = rowDaKey(row)
+  if (!key) return []
+  return rowDaRefs[key] || []
+}
+async function loadRowDa(row) {
+  const key = rowDaKey(row)
+  if (!key || rowDaRefs[key]) return
+  try {
+    const res = await executeJson(`data-dir --ref ${key} --json`)
+    rowDaRefs[key] = res.success && Array.isArray(res.data)
+      ? res.data.map((s) => String(s).replace(/^\[[A-Z]+\]\s+/, '')).filter(Boolean)
+      : []
+  } catch {
+    rowDaRefs[key] = []
+  }
+}
+
+// 级联引用：fc 变化时重新加载各行的 DO 选项（缓存按 fc 分键）
+watch(() => form.fc, () => {
+  const p = def.value.params.find((x) => x.type === 'refs-list' && x.cascade)
+  const rows = p ? form[p.key] : null
+  if (!Array.isArray(rows)) return
+  for (const row of rows) {
+    if (row && row.ld && row.ln) loadRowDo(row)
+  }
+})
 
 /** ln 必填的命令：进入页面时预加载全量 LN 引用并默认选中第一个。 */
 const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def', 'all-cb']
@@ -331,55 +477,68 @@ watch(() => props.cmd, async () => {
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
   }
-  if (props.cmd === 'get-data-values' || props.cmd === 'get-data-def') {
-    await ensureAllLnRefs()
-  }
   if (LN_REQUIRED_CMDS.includes(props.cmd)) {
     await ensureAllLnRefs()
-    if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
+    const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
+    const o = p ? form[p.key] : null
+    if (o && !o.ld && ldCache.length) {
+      o.ld = ldCache[0]
+      const lns = ldLns[o.ld] || []
+      if (lns.length) o.ln = lns[0]
+    }
   }
 }, { immediate: true })
 
 // ld-dir：选中 LD 后预加载其 LN 列表；未选 LD 时预加载全量完整引用（供 after 下拉）
 // 同时监听 ldCache 长度：直接进入页面时缓存可能还没填充，填充后自动补拼全量引用
+// after 级联联动：上面 ld 变化时同步 after.ld（单设备模式 after 只带 LN）
 watch([() => form.ld, () => ldCache.length], async ([ld]) => {
   if (props.cmd !== 'ld-dir') return
   if (ld) {
     await ensureLdLns(ld)
+    const o = form.after
+    if (o) {
+      o.ld = ld
+      o.ln = ''
+    }
   } else {
     await ensureAllLnRefs()
+    const o = form.after
+    if (o && !o.ln) o.ld = ''
   }
 }, { immediate: true })
 
-// ln 必填命令：等全量 LN 引用缓存就绪后自动选中第一个（覆盖连接后才进入/缓存在填充中的情况）
+// ln 必填命令：等 LD 缓存就绪后自动选中第一个 LD + 其下第一个 LN（覆盖连接后才进入/缓存在填充中的情况）
 watch([() => allLnRefs.length, () => ldCache.length], async () => {
-  if (props.cmd === 'get-data-values' || props.cmd === 'get-data-def') {
-    await ensureAllLnRefs()
-    return
-  }
   if (!LN_REQUIRED_CMDS.includes(props.cmd)) return
-  if (form.ln) return
+  const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
+  const o = p ? form[p.key] : null
+  if (!o || o.ld) return
   await ensureAllLnRefs()
-  if (!form.ln && allLnRefs.length) form.ln = allLnRefs[0]
+  if (ldCache.length && !o.ld) {
+    o.ld = ldCache[0]
+    const lns = ldLns[o.ld] || []
+    if (lns.length) o.ln = lns[0]
+  }
 })
 
 // ln-dir / all-cb：ln / acsi 变化时懒加载引用列表（供 after 下拉）
-watch([() => form.ln, () => form.acsi], async () => {
-  if (!form.ln) return
+watch([lnRef, () => form.acsi], async () => {
+  if (!lnRef.value) return
   if (props.cmd === 'ln-dir') {
     const acsi = String(form.acsi || '').split(':')[0] || '1'
-    await ensureLnDirRefs(form.ln, acsi)
+    await ensureLnDirRefs(lnRef.value, acsi)
   } else if (props.cmd === 'all-cb') {
     const acsi = String(form.acsi || '').split(':')[0] || 'brcb'
-    await ensureAllCbRefs(form.ln, acsi)
+    await ensureAllCbRefs(lnRef.value, acsi)
   }
 }, { immediate: true })
 
 // all-data / all-def：ln / fc 变化时懒加载该 LN 下的 DO 引用（经轻量 all-def 查询，供 after 下拉）
-watch([() => form.ln, () => form.fc], async () => {
-  if (!['all-data', 'all-def'].includes(props.cmd) || !form.ln) return
+watch([lnRef, () => form.fc], async () => {
+  if (!['all-data', 'all-def'].includes(props.cmd) || !lnRef.value) return
   const fc = String(form.fc || '').split(':')[0] || 'XX'
-  await ensureAllDefRefs(form.ln, fc)
+  await ensureAllDefRefs(lnRef.value, fc)
 }, { immediate: true })
 
 /** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
@@ -418,16 +577,36 @@ function buildCmd() {
       if (v) {
         parts.push(`--${p.key}`, String(v))
       }
-    } else if (p.type === 'ln-select') {
-      if (v) {
-        parts.push(`--${p.key}`, String(v))
+    } else if (p.type === 'ln-cascade') {
+      const o = v || {}
+      if (o.ld) {
+        // ld-dir 的 after：上面已选 ld 时按单设备模式只带 LN（服务端拒绝带前缀），否则带完整 LD/LN
+        const ref = props.cmd === 'ld-dir' && p.key === 'after' && form.ld
+          ? o.ln
+          : (o.ln ? `${o.ld}/${o.ln}` : o.ld)
+        if (ref) {
+          parts.push(`--${p.key}`, ref)
+        }
       }
     } else if (p.type === 'ln-ref-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
       }
     } else if (p.type === 'refs-list') {
-      const refs = (v || []).filter(Boolean)
+      const rows = (v || []).filter(Boolean)
+      let refs
+      if (p.cascade) {
+        // 级联行 → "LD/LN[.DO[.DA]]" 完整引用
+        refs = rows.map((row) => {
+          if (!row.ld || !row.ln) return ''
+          let ref = `${row.ld}/${row.ln}`
+          if (row.do) ref += `.${row.do}`
+          if (row.da) ref += `.${row.da}`
+          return ref
+        }).filter(Boolean)
+      } else {
+        refs = rows.filter((r) => typeof r === 'string' && r)
+      }
       if (refs.length) {
         // 多个引用用引号包裹成单参数（后端 --refs "r1 r2 ..."），避免空格拆分
         parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
@@ -899,6 +1078,18 @@ async function disconnect() {
 }
 
 .refs-row .ui-select {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── 级联二选（ln-cascade：LD → LN） ── */
+.cascade-pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cascade-pair .ui-select {
   flex: 1;
   min-width: 0;
 }
