@@ -37,8 +37,6 @@ public class CmsCreateDataSetRequest extends CmsSequence {
 
     public CmsCreateDataSetRequest() {
         super(new InnerCreateDataSetRequestPDU());
-        this.datasetReference = new CmsObjectReference();
-        this.referenceAfter = new CmsObjectReference();
         this.memberData = new ArrayList<>();
     }
 

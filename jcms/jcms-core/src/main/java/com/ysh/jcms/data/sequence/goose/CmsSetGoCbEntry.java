@@ -40,10 +40,6 @@ public class CmsSetGoCbEntry extends CmsSequence {
 
     public CmsSetGoCbEntry() {
         super(new InnerEmpty());
-        this.reference = new CmsObjectReference();
-        this.goEna = new CmsBoolean();
-        this.goID = new CmsString();
-        this.datSet = new CmsObjectReference();
     }
 
     public CmsSetGoCbEntry reference(String v) {

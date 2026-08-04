@@ -27,8 +27,6 @@ public class CmsGetDataSetDirectoryRequest extends CmsSequence {
 
     public CmsGetDataSetDirectoryRequest() {
         super(new InnerGetDataSetDirectoryRequestPDU());
-        this.datasetReference = new CmsObjectReference();
-        this.referenceAfter = new CmsObjectReference();
     }
 
     public CmsGetDataSetDirectoryRequest datasetReference(String v) {

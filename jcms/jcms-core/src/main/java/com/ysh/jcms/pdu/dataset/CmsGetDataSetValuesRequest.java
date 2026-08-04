@@ -27,8 +27,6 @@ public class CmsGetDataSetValuesRequest extends CmsSequence {
 
     public CmsGetDataSetValuesRequest() {
         super(new InnerGetDataSetValuesRequestPDU());
-        this.datasetReference = new CmsObjectReference();
-        this.referenceAfter = new CmsObjectReference();
     }
 
     public CmsGetDataSetValuesRequest datasetReference(String v) {

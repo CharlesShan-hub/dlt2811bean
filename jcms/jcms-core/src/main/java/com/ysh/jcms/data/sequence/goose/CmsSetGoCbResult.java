@@ -36,10 +36,6 @@ public class CmsSetGoCbResult extends CmsSequence {
 
     public CmsSetGoCbResult() {
         super(new InnerEmpty());
-        this.error = new CmsServiceError();
-        this.goEna = new CmsServiceError();
-        this.goID = new CmsServiceError();
-        this.datSet = new CmsServiceError();
     }
 
     public CmsSetGoCbResult error(int v) {

@@ -31,8 +31,6 @@ public class CmsGoRefFcEntry extends CmsSequence {
 
     public CmsGoRefFcEntry() {
         super(new InnerEmpty());
-        this.reference = new CmsObjectReference();
-        this.fc = new CmsFC();
     }
 
     public CmsGoRefFcEntry reference(String v) {

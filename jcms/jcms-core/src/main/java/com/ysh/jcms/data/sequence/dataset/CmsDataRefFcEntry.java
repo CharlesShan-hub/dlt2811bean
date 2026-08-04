@@ -31,8 +31,6 @@ public class CmsDataRefFcEntry extends CmsSequence {
 
     public CmsDataRefFcEntry() {
         super(new com.ysh.jcms.data.InnerEmpty());
-        this.reference = new CmsObjectReference();
-        this.fc = new CmsFC();
     }
 
     public CmsDataRefFcEntry reference(String v) {

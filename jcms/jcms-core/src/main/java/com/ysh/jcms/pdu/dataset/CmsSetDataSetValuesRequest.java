@@ -34,8 +34,6 @@ public class CmsSetDataSetValuesRequest extends CmsSequence {
 
     public CmsSetDataSetValuesRequest() {
         super(new InnerSetDataSetValuesRequestPDU());
-        this.datasetReference = new CmsObjectReference();
-        this.referenceAfter = new CmsObjectReference();
         this.value = new ArrayList<>();
     }
 

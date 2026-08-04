@@ -23,7 +23,6 @@ public class CmsDeleteDataSetRequest extends CmsSequence {
 
     public CmsDeleteDataSetRequest() {
         super(new InnerDeleteDataSetRequestPDU());
-        this.datasetReference = new CmsObjectReference();
     }
 
     public CmsDeleteDataSetRequest datasetReference(String v) {

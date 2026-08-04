@@ -35,9 +35,6 @@ public class CmsDataRefValueEntry extends CmsSequence {
 
     public CmsDataRefValueEntry() {
         super(new com.ysh.jcms.data.InnerEmpty());
-        this.reference = new CmsObjectReference();
-        this.fc = new CmsFC();
-        this.value = new CmsData();
     }
 
     public CmsDataRefValueEntry reference(String v) {

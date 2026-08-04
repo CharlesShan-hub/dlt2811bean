@@ -29,8 +29,6 @@ public class CmsDataDefResultEntry extends CmsSequence {
 
     public CmsDataDefResultEntry() {
         super(new InnerAnonymousGetDataDefinitionResponsePDUData());
-        this.cdcType = new CmsString();
-        this.definition = new CmsDataDefinition();
     }
 
     public CmsDataDefResultEntry cdcType(String v) {

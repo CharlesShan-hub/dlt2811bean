@@ -30,8 +30,6 @@ public class CmsSubRefEntry extends CmsSequence {
 
     public CmsSubRefEntry() {
         super(new com.ysh.jcms.data.InnerEmpty());
-        this.reference = new CmsSubReference();
-        this.fc = new CmsFC();
     }
 
     public CmsSubRefEntry reference(String v) {
