@@ -99,6 +99,19 @@
                   :placeholder="p.placeholder"
                   empty-label="（不选）"
                 />
+                <!-- 动态引用列表：加号增行、叉号删行，命令拼接为 --refs "r1 r2 ..." -->
+                <div v-else-if="p.type === 'refs-list'" class="refs-list">
+                  <div v-for="(r, i) in form[p.key]" :key="i" class="refs-row">
+                    <UiSelect
+                      v-model="form[p.key][i]"
+                      :options="['', ...refsListOptions]"
+                      :placeholder="p.placeholder"
+                      empty-label="（不选）"
+                    />
+                    <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                  </div>
+                  <button type="button" class="refs-add" @click="addRefs">＋ 添加引用</button>
+                </div>
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
               </div>
             </div>
@@ -226,6 +239,9 @@ const refOptions = computed(() => {
   return allDefRefs
 })
 
+/** 动态引用列表（refs-list）选项：全量 LD/LN 完整引用。 */
+const refsListOptions = computed(() => allLnRefs)
+
 /** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
 const rightTitle = computed(() => {
   if (isConnect.value) return '连接流程'
@@ -283,10 +299,25 @@ function initForm() {
     } else if (p.type === 'ld-select') {
       // 必填的 LD 默认选中缓存第一个，避免空值
       form[p.key] = p.required && ldCache.length ? ldCache[0] : ''
+    } else if (p.type === 'refs-list') {
+      // 动态引用列表：初始一行空引用
+      form[p.key] = ['']
     } else {
       form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
     }
   }
+}
+
+/** 动态引用列表：追加一行。 */
+function addRefs() {
+  const key = def.value.params.find((p) => p.type === 'refs-list')?.key
+  if (key) form[key].push('')
+}
+
+/** 动态引用列表：删除指定行。 */
+function removeRefs(i) {
+  const key = def.value.params.find((p) => p.type === 'refs-list')?.key
+  if (key) form[key].splice(i, 1)
 }
 
 /** ln 必填的命令：进入页面时预加载全量 LN 引用并默认选中第一个。 */
@@ -299,6 +330,9 @@ watch(() => props.cmd, async () => {
   initForm()
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
+  }
+  if (props.cmd === 'get-data-values' || props.cmd === 'get-data-def') {
+    await ensureAllLnRefs()
   }
   if (LN_REQUIRED_CMDS.includes(props.cmd)) {
     await ensureAllLnRefs()
@@ -319,6 +353,10 @@ watch([() => form.ld, () => ldCache.length], async ([ld]) => {
 
 // ln 必填命令：等全量 LN 引用缓存就绪后自动选中第一个（覆盖连接后才进入/缓存在填充中的情况）
 watch([() => allLnRefs.length, () => ldCache.length], async () => {
+  if (props.cmd === 'get-data-values' || props.cmd === 'get-data-def') {
+    await ensureAllLnRefs()
+    return
+  }
   if (!LN_REQUIRED_CMDS.includes(props.cmd)) return
   if (form.ln) return
   await ensureAllLnRefs()
@@ -387,6 +425,12 @@ function buildCmd() {
     } else if (p.type === 'ln-ref-select') {
       if (v) {
         parts.push(`--${p.key}`, String(v))
+      }
+    } else if (p.type === 'refs-list') {
+      const refs = (v || []).filter(Boolean)
+      if (refs.length) {
+        // 多个引用用引号包裹成单参数（后端 --refs "r1 r2 ..."），避免空格拆分
+        parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
       }
     } else if (v !== '' && v !== null && v !== undefined) {
       parts.push(`--${p.key}`, String(v))
@@ -839,6 +883,59 @@ async function disconnect() {
 
 .switch-field .field-label {
   margin-bottom: 0;
+}
+
+/* ── 动态引用列表（refs-list） ── */
+.refs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.refs-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refs-row .ui-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.refs-del {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.refs-del:hover {
+  background: var(--red-bg);
+  color: var(--red);
+}
+
+.refs-add {
+  align-self: flex-start;
+  border: 1px dashed var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.refs-add:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .divider {

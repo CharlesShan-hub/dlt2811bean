@@ -11,6 +11,10 @@ import lnDir from './ln-dir.js'
 import allData from './all-data.js'
 import allDef from './all-def.js'
 import allCb from './all-cb.js'
+import getDataValues from './get-data-values.js'
+import setDataValues from './set-data-values.js'
+import dataDir from './data-dir.js'
+import getDataDef from './get-data-def.js'
 
 export const CMD_DEFS = {
   negotiate,
@@ -24,6 +28,10 @@ export const CMD_DEFS = {
   'all-data': allData,
   'all-def': allDef,
   'all-cb': allCb,
+  'get-data-values': getDataValues,
+  'set-data-values': setDataValues,
+  'data-dir': dataDir,
+  'get-data-def': getDataDef,
 }
 
 /** 命令 id 列表（保持注册表顺序）。 */
