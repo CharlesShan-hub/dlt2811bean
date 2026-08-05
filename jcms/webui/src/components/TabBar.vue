@@ -195,8 +195,10 @@ function onDrop(e, index) {
 .tab-bar {
   display: flex;
   align-items: center;
-  background: var(--bg-secondary);
-  border-bottom: 1px solid var(--border);
+  background: rgba(22, 24, 34, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
   overflow-x: auto;
   overflow-y: hidden;
@@ -229,20 +231,23 @@ function onDrop(e, index) {
   color: var(--text-secondary);
   cursor: pointer;
   white-space: nowrap;
-  border-right: 1px solid var(--border);
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
   user-select: none;
   position: relative;
+  background: transparent;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .tab-item:hover {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
 }
 
 .tab-item.active {
   color: var(--accent);
-  background: var(--bg-primary);
+  background: rgba(91, 141, 239, 0.08);
   border-bottom: 2px solid var(--accent);
   margin-bottom: -1px;
 }
@@ -312,12 +317,13 @@ function onDrop(e, index) {
   position: fixed;
   z-index: 9999;
   min-width: 140px;
-  background: #1e1f2e;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 31, 46, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 4px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .ctx-item {

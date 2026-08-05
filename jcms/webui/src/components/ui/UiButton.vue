@@ -29,49 +29,60 @@ defineEmits(['click'])
   gap: 6px;
   padding: 9px 22px;
   border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-primary);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.15s;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
 }
 
 .ui-btn:hover:not(:disabled) {
-  background: var(--bg-hover);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .ui-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.4;
   cursor: not-allowed;
   box-shadow: none;
 }
 
 .ui-btn--primary {
-  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
-  border-color: transparent;
-  color: #fff;
-  box-shadow: 0 2px 10px rgba(91, 141, 239, 0.3);
+  background: rgba(91, 141, 239, 0.18);
+  border-color: rgba(91, 141, 239, 0.3);
+  color: #b8d0ff;
+  box-shadow: 0 4px 20px rgba(91, 141, 239, 0.15);
 }
 
 .ui-btn--primary:hover:not(:disabled) {
-  filter: brightness(1.08);
+  background: rgba(91, 141, 239, 0.28);
+  border-color: rgba(91, 141, 239, 0.5);
+  box-shadow: 0 6px 28px rgba(91, 141, 239, 0.25);
+  color: #d6e4ff;
 }
 
 .ui-btn--danger {
   color: var(--red);
+  border-color: rgba(229, 85, 90, 0.2);
+  background: rgba(229, 85, 90, 0.06);
 }
 
 .ui-btn--danger:hover:not(:disabled) {
-  background: var(--red-bg);
+  background: rgba(229, 85, 90, 0.15);
   border-color: rgba(229, 85, 90, 0.4);
+  box-shadow: 0 4px 20px rgba(229, 85, 90, 0.15);
 }
 
 .ui-btn__spinner {
   width: 12px;
   height: 12px;
-  border: 2px solid rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.25);
   border-top-color: #fff;
   border-radius: 50%;
   animation: ui-spin 0.7s linear infinite;
@@ -79,7 +90,7 @@ defineEmits(['click'])
 
 .ui-btn--ghost .ui-btn__spinner,
 .ui-btn--danger .ui-btn__spinner {
-  border-color: var(--text-muted);
+  border-color: rgba(255, 255, 255, 0.15);
   border-top-color: var(--text-primary);
 }
 

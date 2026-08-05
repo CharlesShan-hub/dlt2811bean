@@ -201,54 +201,19 @@
         <!-- 水平拖拽手柄：仅在 ASN.1 可见时显示 -->
         <div v-if="showAsn1" class="drag-h" @mousedown.prevent="startHDrag"></div>
 
-        <UiCard title="命令与返回" icon="🔄" fill class="cmd-result-card">
-          <template #header>
-            <div class="json-opt">
-              <span class="json-opt-label">--json</span>
-              <UiSwitch v-model="jsonMode" />
-            </div>
-          </template>
-          <div class="cmd-preview">
-            <code class="preview-line">
-              <span class="preview-text" v-html="highlightedCmd"></span>
-              <button type="button" class="copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
-            </code>
-          </div>
-          <!-- 上次执行的命令标题栏（固定，不滚动） -->
-          <div v-if="result" class="term-title-bar">
-            <span class="term-time">{{ result.time }}</span>
-            <span class="term-cmd"><span class="dollar">$</span> <span v-html="highlightedResultCmd"></span></span>
-            <span class="term-title-actions">
-              <button type="button" class="copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
-            </span>
-          </div>
-          <div class="cmd-result-scroll">
-            <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
-            <div v-else-if="jsonFormat && formattedJson" class="json-window">
-              <div class="json-body">
-                <pre class="json-pre"><code v-html="formattedJson"></code></pre>
-                <button type="button" class="copy-icon-btn copy-inline copy-out-json" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
-              </div>
-            </div>
-            <div v-else class="term-window">
-              <div class="term-body">
-                <div v-for="(line, i) in outputLines" :key="i" class="term-line">
-                  <span class="term-ln">{{ i + 1 }}</span>
-                  <span class="term-text">
-                    <span
-                      v-for="(seg, j) in parseAnsi(line)"
-                      :key="j"
-                      :style="seg.style"
-                    >{{ seg.text }}</span>
-                  </span>
-                  <span v-if="i === 0" class="term-line-actions">
-                    <button type="button" class="copy-icon-btn copy-inline" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </UiCard>
+        <CmdResultCard
+          :result="result"
+          :json-mode="jsonMode"
+          :json-format="jsonFormat"
+          :highlighted-cmd="highlightedCmd"
+          :highlighted-result-cmd="highlightedResultCmd"
+          :formatted-json="formattedJson"
+          :output-lines="outputLines"
+          :preview-cmd="previewCmd"
+          :result-cmd="result?.cmd ?? ''"
+          @update:json-mode="jsonMode = $event"
+          @update:json-format="jsonFormat = $event"
+        />
       </div>
     </div>
   </div>
@@ -261,6 +226,7 @@ import ConnectForm from '../components/ConnectForm.vue'
 import ApPicker from '../components/ApPicker.vue'
 import StateDiagram from '../components/StateDiagram.vue'
 import Asn1Code from '../components/Asn1Code.vue'
+import CmdResultCard from '../components/CmdResultCard.vue'
 import UiCard from '../components/ui/UiCard.vue'
 import UiButton from '../components/ui/UiButton.vue'
 import UiInput from '../components/ui/UiInput.vue'
@@ -271,8 +237,9 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
-import { pushTerminal, parseAnsi } from '../terminalLog.js'
+import { pushTerminal } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
+import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult } from '../utils/cmdFormat.js'
 
 const props = defineProps({
   cmd: String,
@@ -365,7 +332,6 @@ const form = reactive({})
 const busy = ref(false)
 const result = ref(null)
 const connectCmd = ref('')
-const copied = ref(false)
 const docOpen = ref(false)
 
 /** 可拖拽分割面板（跨标签页共享） */
@@ -423,7 +389,6 @@ watch(jsonFormat, (v) => localStorage.setItem('cms-json-format', v ? '1' : '0'))
 const formattedJson = computed(() => {
   if (!result.value) return ''
   const raw = result.value.output.replace(/\x1b\[\d+m/g, '').trim()
-  // 尝试找到 JSON 起始位置
   const jsonStart = raw.indexOf('{')
   if (jsonStart < 0) return ''
   try {
@@ -434,34 +399,6 @@ const formattedJson = computed(() => {
   }
 })
 
-/** 给 JSON 字符串添加语法高亮 HTML。 */
-function syntaxHighlightJson(str) {
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(
-      /("(?:[^"\\]|\\.)*")\s*:/g,
-      '<span class="json-key">$1</span>:'
-    )
-    .replace(
-      /:\s*("(?:[^"\\]|\\.)*")/g,
-      ': <span class="json-string">$1</span>'
-    )
-    .replace(
-      /:\s*(true|false)/g,
-      ': <span class="json-bool">$1</span>'
-    )
-    .replace(
-      /:\s*(null)/g,
-      ': <span class="json-null">$1</span>'
-    )
-    .replace(
-      /:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
-      ': <span class="json-num">$1</span>'
-    )
-}
-
 /** 将结果输出按行拆分，用于终端风格渲染。 */
 const outputLines = computed(() => {
   if (!result.value) return []
@@ -470,31 +407,14 @@ const outputLines = computed(() => {
 
 /** 协议说明 doc 的 markdown 渲染结果。 */
 const docHtml = computed(() => marked.parse(def.value.doc || ''))
-let copyTimer
 
 /** 实时生成的命令：connect 由 ConnectForm 输出，其余由表单状态实时拼接 */
 const previewCmd = computed(() => {
   if (isConnect.value) {
     return connectCmd.value
   }
-  return buildCmd()
+  return buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd })
 })
-
-/** 命令高亮：命令名 → 蓝色，参数 → 绿色，值 → 橙色 */
-function highlightCmdStr(cmd) {
-  const tokens = cmd.match(/(?:--?\w[\w-]*|"[^"]*"|[^\s"]+)/g) || []
-  let first = true
-  return tokens.map((t) => {
-    if (first) {
-      first = false
-      return `<span style="color:var(--accent)">${escHtml(t)}</span>`
-    }
-    if (t.startsWith('--')) {
-      return `<span style="color:#34d399">${escHtml(t)}</span>`
-    }
-    return `<span style="color:#fb923c">${escHtml(t)}</span>`
-  }).join(' ')
-}
 
 const highlightedCmd = computed(() => highlightCmdStr(previewCmd.value))
 
@@ -502,49 +422,6 @@ const highlightedCmd = computed(() => highlightCmdStr(previewCmd.value))
 const highlightedResultCmd = computed(() => {
   return result.value ? highlightCmdStr(result.value.cmd) : ''
 })
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-}
-
-async function copyCmd() {
-  try {
-    await navigator.clipboard.writeText(previewCmd.value)
-    copied.value = true
-    clearTimeout(copyTimer)
-    copyTimer = setTimeout(() => (copied.value = false), 1500)
-  } catch {
-    // 剪贴板不可用时忽略
-  }
-}
-
-const copiedOutput = ref(false)
-let copyOutTimer = 0
-async function copyOutput() {
-  try {
-    const raw = result.value?.output?.replace(/\x1b\[[\d;]*m/g, '') ?? ''
-    await navigator.clipboard.writeText(raw)
-    copiedOutput.value = true
-    clearTimeout(copyOutTimer)
-    copyOutTimer = setTimeout(() => (copiedOutput.value = false), 1500)
-  } catch { /* 剪贴板不可用时忽略 */ }
-}
-
-const copiedCmdResult = ref(false)
-let copyCmdResultTimer = 0
-async function copyCmdResult() {
-  try {
-    const cmd = result.value?.cmd ?? ''
-    await navigator.clipboard.writeText(cmd)
-    copiedCmdResult.value = true
-    clearTimeout(copyCmdResultTimer)
-    copyCmdResultTimer = setTimeout(() => (copiedCmdResult.value = false), 1500)
-  } catch { /* 剪贴板不可用时忽略 */ }
-}
-
-// 剪贴板 SVG 图标
-const clipIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
-const checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4caf7d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 
 function initForm() {
   for (const k of Object.keys(form)) {
@@ -666,7 +543,6 @@ const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def', 'all-cb']
 watch(() => props.cmd, async () => {
   result.value = null
   connectCmd.value = ''
-  copied.value = false
   initForm()
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
@@ -755,77 +631,8 @@ async function loadNegotiateDefaults() {
   }
 }
 
-function buildCmd() {
-  const parts = [props.cmd]
-  for (const p of def.value.params) {
-    const v = form[p.key]
-    if (p.type === 'switch') {
-      if (v) {
-        parts.push(`--${p.key}`)
-      }
-    } else if (p.type === 'select') {
-      // disabled 参数（如协议固定值）仅展示，不拼入命令
-      if (p.disabled) continue
-      if (v) {
-        parts.push(`--${p.key}`, String(v).split(':')[0])
-      }
-    } else if (p.type === 'ap-select') {
-      if (v) {
-        parts.push(`--${p.key}`, String(v))
-      }
-    } else if (p.type === 'ld-select') {
-      if (v) {
-        parts.push(`--${p.key}`, String(v))
-      }
-    } else if (p.type === 'ln-cascade') {
-      const o = v || {}
-      if (o.ld) {
-        // ld-dir 的 after：上面已选 ld 时按单设备模式只带 LN（服务端拒绝带前缀），否则带完整 LD/LN
-        const ref = props.cmd === 'ld-dir' && p.key === 'after' && form.ld
-          ? o.ln
-          : (o.ln ? `${o.ld}/${o.ln}` : o.ld)
-        if (ref) {
-          parts.push(`--${p.key}`, ref)
-        }
-      }
-    } else if (p.type === 'ln-ref-select') {
-      if (v) {
-        parts.push(`--${p.key}`, String(v))
-      }
-    } else if (p.type === 'refs-list') {
-      const rows = (v || []).filter(Boolean)
-      let refs
-      if (p.cascade) {
-        // 级联行 → "LD/LN[.DO[.DA]]" 完整引用
-        refs = rows.map((row) => {
-          if (!row.ld || !row.ln) return ''
-          let ref = `${row.ld}/${row.ln}`
-          if (row.do) ref += `.${row.do}`
-          if (row.da) ref += `.${row.da}`
-          return ref
-        }).filter(Boolean)
-      } else {
-        refs = rows.filter((r) => typeof r === 'string' && r)
-      }
-      if (refs.length) {
-        // 多个引用用引号包裹成单参数（后端 --refs "r1 r2 ..."），避免空格拆分
-        parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
-      }
-    } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {
-      // refs 为 text 类型时，多个引用用空格分隔，需整体引号包裹避免被 CLI 拆分
-      parts.push(`--${p.key}`, `"${String(v)}"`)
-    } else if (v !== '' && v !== null && v !== undefined) {
-      parts.push(`--${p.key}`, String(v))
-    }
-  }
-  if (jsonMode.value) {
-    parts.push('--json')
-  }
-  return parts.join(' ')
-}
-
 async function run() {
-  await runCmd(buildCmd())
+  await runCmd(buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd }))
 }
 
 /** 执行命令并写入结果区（只保留最新一条），同时回显到共享终端。 */
@@ -866,20 +673,6 @@ async function runCmd(cmdLine) {
   } finally {
     busy.value = false
   }
-}
-
-/** 从原始响应中提取 JSON 结果（连接管理页解析 connect/disconnect 成败），无 JSON 时返回 null。 */
-function parseResult(text) {
-  const clean = text.replace(/\x1b\[\d+m/g, '').trim()
-  const jsonStart = clean.indexOf('{')
-  if (jsonStart >= 0) {
-    try {
-      return JSON.parse(clean.slice(jsonStart))
-    } catch {
-      // fall through
-    }
-  }
-  return null
 }
 
 /** 连接管理页：断开 TCP 连接。 */
@@ -946,20 +739,25 @@ async function disconnect() {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--accent-muted);
+  background: rgba(91, 141, 239, 0.15);
   color: var(--accent);
   border-radius: 999px;
   padding: 2px 10px;
   font-size: 12px;
   font-weight: 600;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(91, 141, 239, 0.2);
 }
 
 .cmd-chip {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--text-primary);
-  background: var(--bg-tertiary);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 5px;
   padding: 1px 8px;
 }
@@ -986,25 +784,28 @@ async function disconnect() {
 /* ASN.1 切换按钮（标题栏右侧） */
 .asn1-toggle-header-btn {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
+  width: 30px;
+  height: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   font-size: 16px;
   font-style: italic;
   font-weight: bold;
   line-height: 1;
   cursor: pointer;
-  opacity: 0.5;
-  transition: opacity 0.15s, background 0.12s, transform 0.12s;
   color: var(--text-secondary);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s;
 }
 .asn1-toggle-header-btn:hover {
-  opacity: 1;
-  background: var(--bg-hover);
-  transform: scale(1.12);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  transform: scale(1.08);
 }
 
 .doc-desc {
@@ -1278,30 +1079,24 @@ async function disconnect() {
   margin-left: auto;
   cursor: pointer;
   font-size: 14px;
-  opacity: 0.5;
-  transition: opacity 0.15s;
+  color: var(--text-secondary);
+  transition: all 0.2s;
   user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 .ui-card__toggle:hover {
-  opacity: 1;
-}
-
-/* 命令与返回卡片：预览固定，结果区域滚动 */
-.cmd-result-card :deep(.ui-card__body) {
-  display: flex;
-  flex-direction: column;
-  overflow-y: visible;
-}
-.cmd-result-card .cmd-preview {
-  flex-shrink: 0;
-}
-.cmd-result-card .term-title-bar {
-  flex-shrink: 0;
-}
-.cmd-result-card .cmd-result-scroll {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-primary);
 }
 
 .field {
@@ -1382,37 +1177,48 @@ async function disconnect() {
 
 .refs-del {
   flex-shrink: 0;
-  width: 26px;
-  height: 26px;
-  border: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
-  transition: background 0.12s, color 0.12s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
 }
 
 .refs-del:hover {
-  background: var(--red-bg);
+  background: rgba(229, 85, 90, 0.15);
+  border-color: rgba(229, 85, 90, 0.3);
   color: var(--red);
+  box-shadow: 0 4px 16px rgba(229, 85, 90, 0.15);
 }
 
 .refs-add {
   align-self: flex-start;
-  border: 1px dashed var(--border);
-  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text-secondary);
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
-  transition: border-color 0.12s, color 0.12s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
 }
 
 .refs-add:hover {
-  border-color: var(--accent);
+  border-color: rgba(91, 141, 239, 0.5);
+  border-style: solid;
   color: var(--accent);
+  background: rgba(91, 141, 239, 0.08);
+  box-shadow: 0 4px 16px rgba(91, 141, 239, 0.12);
 }
 
 .divider {
@@ -1487,227 +1293,6 @@ async function disconnect() {
 .tip code {
   color: var(--accent);
 }
-
-/* ── 命令预览 ── */
-.json-opt {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.json-opt-label {
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-.cmd-preview {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.preview-line {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--accent);
-}
-
-.preview-text {
-  flex: 1;
-  min-width: 0;
-  overflow-x: auto;
-  white-space: nowrap;
-}
-
-/* ── 服务说明（无报文的命令） ── */
-.svc-note {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--text-secondary);
-}
-
-/* ── 终端风格输出窗口 ── */
-.term-window {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: #0a0b10;
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.term-title-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  background: #1a1b26;
-  border-bottom: 1px solid var(--border);
-}
-
-.term-cmd {
-  flex: 1;
-  min-width: 0;
-  color: var(--accent);
-  font-size: 12px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.term-time {
-  font-size: 11px;
-  color: var(--text-dim);
-  flex-shrink: 0;
-}
-
-.term-title-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex-shrink: 0;
-  margin-left: 8px;
-}
-
-.term-body {
-  padding: 12px 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
-/* 复制图标按钮默认暗色，hover 变亮 */
-.copy-icon-btn {
-  margin-left: 6px;
-  padding: 4px;
-  border: none;
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.5;
-  transition: opacity 0.15s, color 0.15s, background 0.15s;
-  flex-shrink: 0;
-}
-.copy-icon-btn:hover {
-  opacity: 1;
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.cmd-preview .copy-icon-btn {
-  margin-left: 8px;
-  padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 6px;
-}
-
-/* 代码行内的复制按钮更紧凑 */
-.copy-inline {
-  margin-left: 8px;
-  padding: 4px;
-  border: none;
-  border-radius: 4px;
-  opacity: 0.4;
-  flex-shrink: 0;
-}
-.copy-inline:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.term-line {
-  display: flex;
-  gap: 12px;
-  padding: 1px 14px;
-  line-height: 1.7;
-}
-
-/* 输出首行右侧的复制按钮 */
-.term-line-actions {
-  margin-left: auto;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-}
-
-/* JSON 输出右上角叠加的复制按钮 */
-.copy-out-json {
-  position: absolute;
-  top: 6px;
-  right: 10px;
-  opacity: 0.4;
-}
-.copy-out-json:hover {
-  opacity: 1;
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.term-line:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.term-ln {
-  color: var(--text-muted);
-  min-width: 28px;
-  text-align: right;
-  user-select: none;
-  font-size: 11px;
-  opacity: 0.5;
-}
-
-.term-text {
-  white-space: pre-wrap;
-  word-break: break-all;
-  color: var(--text-secondary);
-}
-
-/* ── JSON 格式化输出窗口 ── */
-.json-window {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  overflow: hidden;
-  background: #0a0b10;
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.json-body {
-  position: relative;
-  padding: 12px 0;
-  max-height: none;
-  overflow-y: auto;
-}
-
-.json-pre {
-  margin: 0;
-  padding: 0 14px;
-  line-height: 1.7;
-}
-
-.json-pre code {
-  font-family: var(--font-mono);
-  font-size: 13px;
-}
-
-.json-pre :deep(.json-key) { color: #7aa3ff; }
-.json-pre :deep(.json-string) { color: #4caf7d; }
-.json-pre :deep(.json-bool) { color: #c975dd; }
-.json-pre :deep(.json-null) { color: #e5b955; }
-.json-pre :deep(.json-num) { color: #e5b955; }
 
 /* ── JSON 格式化开关 ── */
 .json-opt-sep {
