@@ -97,7 +97,7 @@
                   />
                   <UiSelect
                     v-model="form[p.key].ln"
-                    :options="cascadeLns(form[p.key])"
+                    :options="props.cmd === 'ln-dir' ? ['', ...cascadeLns(form[p.key])] : cascadeLns(form[p.key])"
                     placeholder="LN"
                     empty-label="（不选）"
                   />
@@ -164,6 +164,12 @@
         </template>
         <p v-if="!isConnect && simpleParams.length === 0" class="empty">该命令无需参数，直接执行。</p>
 
+        <!-- JSON 格式化开关：仅在 --json 模式开启时可用 -->
+        <div v-if="!isConnect && jsonMode" class="json-format-opt">
+          <span class="json-opt-label prettify-label">JSON 格式化</span>
+          <UiSwitch v-model="jsonFormat" />
+        </div>
+
         <div v-if="!isConnect" class="actions">
           <UiButton variant="primary" :loading="busy" @click="run">执行 {{ cmd }}</UiButton>
         </div>
@@ -196,12 +202,40 @@
             </UiButton>
           </div>
           <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
-          <div v-else class="hist-item">
-            <div class="hist-cmd">
-              <span class="hist-time">{{ result.time }}</span>
-              <code class="hist-line">$ {{ result.cmd }}</code>
+          <div v-else-if="jsonFormat && formattedJson" class="json-window">
+            <div class="term-title-bar">
+              <span class="term-dot red"></span>
+              <span class="term-dot yellow"></span>
+              <span class="term-dot green"></span>
+              <span class="term-cmd">$ {{ result.cmd }}</span>
+              <span class="term-time">{{ result.time }}</span>
+              <button type="button" class="copy-out-btn" :title="copyOutTip" @click="copyOutput" v-html="copyOutIcon"></button>
             </div>
-            <pre class="hist-out">{{ result.output }}</pre>
+            <div class="json-body">
+              <pre class="json-pre"><code v-html="formattedJson"></code></pre>
+            </div>
+          </div>
+          <div v-else class="term-window">
+            <div class="term-title-bar">
+              <span class="term-dot red"></span>
+              <span class="term-dot yellow"></span>
+              <span class="term-dot green"></span>
+              <span class="term-cmd">$ {{ result.cmd }}</span>
+              <span class="term-time">{{ result.time }}</span>
+              <button type="button" class="copy-out-btn" :title="copyOutTip" @click="copyOutput" v-html="copyOutIcon"></button>
+            </div>
+            <div class="term-body">
+              <div v-for="(line, i) in outputLines" :key="i" class="term-line">
+                <span class="term-ln">{{ i + 1 }}</span>
+                <span class="term-text">
+                  <span
+                    v-for="(seg, j) in parseAnsi(line)"
+                    :key="j"
+                    :style="seg.style"
+                  >{{ seg.text }}</span>
+                </span>
+              </div>
+            </div>
           </div>
         </UiCard>
       </div>
@@ -225,7 +259,7 @@ import { executeCommand, executeJson } from '../api/cms.js'
 import { marked } from 'marked'
 import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
-import { pushTerminal } from '../terminalLog.js'
+import { pushTerminal, parseAnsi } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
 
 const props = defineProps({
@@ -329,6 +363,59 @@ const connMsgOk = ref(true)
 const jsonMode = ref(localStorage.getItem('cms-json-mode') === '1')
 watch(jsonMode, (v) => localStorage.setItem('cms-json-mode', v ? '1' : '0'))
 
+/** JSON 格式化显示开关：将输出中的 JSON 部分漂亮打印并高亮。 */
+const jsonFormat = ref(localStorage.getItem('cms-json-format') === '1')
+watch(jsonFormat, (v) => localStorage.setItem('cms-json-format', v ? '1' : '0'))
+
+/** 将结果输出中的 JSON 提取并格式化为语法高亮的 HTML。 */
+const formattedJson = computed(() => {
+  if (!result.value) return ''
+  const raw = result.value.output.replace(/\x1b\[\d+m/g, '').trim()
+  // 尝试找到 JSON 起始位置
+  const jsonStart = raw.indexOf('{')
+  if (jsonStart < 0) return ''
+  try {
+    const parsed = JSON.parse(raw.slice(jsonStart))
+    return syntaxHighlightJson(JSON.stringify(parsed, null, 2))
+  } catch {
+    return ''
+  }
+})
+
+/** 给 JSON 字符串添加语法高亮 HTML。 */
+function syntaxHighlightJson(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(
+      /("(?:[^"\\]|\\.)*")\s*:/g,
+      '<span class="json-key">$1</span>:'
+    )
+    .replace(
+      /:\s*("(?:[^"\\]|\\.)*")/g,
+      ': <span class="json-string">$1</span>'
+    )
+    .replace(
+      /:\s*(true|false)/g,
+      ': <span class="json-bool">$1</span>'
+    )
+    .replace(
+      /:\s*(null)/g,
+      ': <span class="json-null">$1</span>'
+    )
+    .replace(
+      /:\s*(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g,
+      ': <span class="json-num">$1</span>'
+    )
+}
+
+/** 将结果输出按行拆分，用于终端风格渲染。 */
+const outputLines = computed(() => {
+  if (!result.value) return []
+  return result.value.output.split('\n')
+})
+
 /** 协议说明 doc 的 markdown 渲染结果。 */
 const docHtml = computed(() => marked.parse(def.value.doc || ''))
 let copyTimer
@@ -350,6 +437,22 @@ async function copyCmd() {
   } catch {
     // 剪贴板不可用时忽略
   }
+}
+
+const copiedOutput = ref(false)
+let copyOutTimer = 0
+const copyOutIcon = computed(() => copiedOutput.value
+  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4caf7d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+  : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>')
+const copyOutTip = computed(() => copiedOutput.value ? '已复制' : '复制输出内容')
+async function copyOutput() {
+  try {
+    const raw = result.value?.output?.replace(/\x1b\[[\d;]*m/g, '') ?? ''
+    await navigator.clipboard.writeText(raw)
+    copiedOutput.value = true
+    clearTimeout(copyOutTimer)
+    copyOutTimer = setTimeout(() => (copiedOutput.value = false), 1500)
+  } catch { /* 剪贴板不可用时忽略 */ }
 }
 
 function initForm() {
@@ -483,8 +586,11 @@ watch(() => props.cmd, async () => {
     const o = p ? form[p.key] : null
     if (o && !o.ld && ldCache.length) {
       o.ld = ldCache[0]
-      const lns = ldLns[o.ld] || []
-      if (lns.length) o.ln = lns[0]
+      // ln-dir：仅选 LD，LN 可选（留空 = 查 LD 下全部 LN）
+      if (props.cmd !== 'ln-dir') {
+        const lns = ldLns[o.ld] || []
+        if (lns.length) o.ln = lns[0]
+      }
     }
   }
 }, { immediate: true })
@@ -508,7 +614,7 @@ watch([() => form.ld, () => ldCache.length], async ([ld]) => {
   }
 }, { immediate: true })
 
-// ln 必填命令：等 LD 缓存就绪后自动选中第一个 LD + 其下第一个 LN（覆盖连接后才进入/缓存在填充中的情况）
+// ln 必填命令：等 LD 缓存就绪后自动选中第一个 LD（ln-dir 仅选 LD，其余命令自动选 LN）
 watch([() => allLnRefs.length, () => ldCache.length], async () => {
   if (!LN_REQUIRED_CMDS.includes(props.cmd)) return
   const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
@@ -517,8 +623,11 @@ watch([() => allLnRefs.length, () => ldCache.length], async () => {
   await ensureAllLnRefs()
   if (ldCache.length && !o.ld) {
     o.ld = ldCache[0]
-    const lns = ldLns[o.ld] || []
-    if (lns.length) o.ln = lns[0]
+    // ln-dir：仅选 LD，LN 可选
+    if (props.cmd !== 'ln-dir') {
+      const lns = ldLns[o.ld] || []
+      if (lns.length) o.ln = lns[0]
+    }
   }
 })
 
@@ -611,6 +720,9 @@ function buildCmd() {
         // 多个引用用引号包裹成单参数（后端 --refs "r1 r2 ..."），避免空格拆分
         parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
       }
+    } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {
+      // refs 为 text 类型时，多个引用用空格分隔，需整体引号包裹避免被 CLI 拆分
+      parts.push(`--${p.key}`, `"${String(v)}"`)
     } else if (v !== '' && v !== null && v !== undefined) {
       parts.push(`--${p.key}`, String(v))
     }
@@ -632,16 +744,15 @@ async function runCmd(cmdLine) {
     // 连接管理页：按 --json 开关决定是否补 --json（开关开才解析结构化消息）
     const final = isConnect.value && jsonMode.value && !cmdLine.includes('--json') ? `${cmdLine} --json` : cmdLine
     const text = await executeCommand(final)
-    const clean = text.replace(/\x1b\[\d+m/g, '').trim()
     result.value = {
       cmd: final,
-      output: clean,
+      output: text.trim(),
       time: new Date().toLocaleTimeString(),
     }
     // 终端里保留 ANSI 颜色（由 Terminal.vue 的 parseAnsi 渲染）
     pushTerminal([`$ ${final}`, text.trim()])
     if (isConnect.value) {
-      const res = parseResult(clean)
+      const res = parseResult(text)
       if (res) {
         connMsg.value = res.success ? (res.message || '操作成功') : (res.error || '操作失败')
         connMsgOk.value = !!res.success
@@ -1139,6 +1250,23 @@ async function disconnect() {
   margin-top: 20px;
 }
 
+/* ── JSON 格式化选项（左栏） ── */
+.json-format-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: rgba(229, 185, 85, 0.08);
+  border: 1px solid rgba(229, 185, 85, 0.2);
+  border-radius: 8px;
+}
+
+.json-format-opt .json-opt-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
 .empty {
   color: var(--text-muted);
   font-size: 13px;
@@ -1227,50 +1355,144 @@ async function disconnect() {
   color: var(--text-secondary);
 }
 
-/* ── 会话记录 ── */
-.hist-item {
+/* ── 终端风格输出窗口 ── */
+.term-window {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 10px;
+  border-radius: 10px;
   overflow: hidden;
+  background: #0a0b10;
+  font-family: var(--font-mono);
+  font-size: 13px;
 }
 
-.hist-item:last-child {
-  margin-bottom: 0;
-}
-
-.hist-cmd {
+.term-title-bar {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 10px;
-  background: var(--bg-primary);
+  padding: 10px 14px;
+  background: #1a1b26;
   border-bottom: 1px solid var(--border);
 }
 
-.hist-time {
-  font-size: 11px;
-  color: var(--text-muted);
+.term-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
 }
 
-.hist-line {
-  font-family: var(--font-mono);
-  font-size: 13px;
+.term-dot.red { background: #ff5f57; }
+.term-dot.yellow { background: #ffbd2e; }
+.term-dot.green { background: #28c840; }
+
+.term-cmd {
+  margin-left: 8px;
   color: var(--accent);
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.hist-out {
-  margin: 0;
-  padding: 10px;
-  font-family: var(--font-mono);
-  font-size: 13px;
+.term-time {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--text-dim);
+  flex-shrink: 0;
+}
+
+.copy-out-btn {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 11px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.copy-out-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.term-body {
+  padding: 12px 0;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.term-line {
+  display: flex;
+  gap: 12px;
+  padding: 1px 14px;
   line-height: 1.7;
-  color: var(--text-secondary);
+}
+
+.term-line:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.term-ln {
+  color: var(--text-muted);
+  min-width: 28px;
+  text-align: right;
+  user-select: none;
+  font-size: 11px;
+  opacity: 0.5;
+}
+
+.term-text {
   white-space: pre-wrap;
   word-break: break-all;
+  color: var(--text-secondary);
+}
+
+/* ── JSON 格式化输出窗口 ── */
+.json-window {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #0a0b10;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.json-body {
+  padding: 12px 0;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.json-pre {
+  margin: 0;
+  padding: 0 14px;
+  line-height: 1.7;
+}
+
+.json-pre code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.json-pre :deep(.json-key) { color: #7aa3ff; }
+.json-pre :deep(.json-string) { color: #4caf7d; }
+.json-pre :deep(.json-bool) { color: #c975dd; }
+.json-pre :deep(.json-null) { color: #e5b955; }
+.json-pre :deep(.json-num) { color: #e5b955; }
+
+/* ── JSON 格式化开关 ── */
+.json-opt-sep {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+  margin: 0 6px;
+}
+
+.prettify-label {
+  color: var(--yellow) !important;
 }
 </style>

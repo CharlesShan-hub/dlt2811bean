@@ -142,12 +142,12 @@ public class TypeChain {
     /**
      * 快捷解析：从 lnType 开始，一步解析引用到 bType。
      * <p>
-     * 引用格式：{@code DO.DA} 或 {@code DO.SDI.BDA}
+     * 引用格式：{@code DO.DA}、{@code DO.SDI.BDA} 或 {@code DO.SDO[.SDO...].DA}
      *
      * @param lnTypeId
      *            LNodeType 的 id
      * @param ref
-     *            DO 级别引用（如 "Mod.stVal"）
+     *            DO 级别引用（如 "Mod.stVal" 或 "PPV.phsAB.cVal"）
      * @return bType 字符串，无法解析返回 null
      */
     public String resolveBType(String lnTypeId, String ref) {
@@ -169,54 +169,47 @@ public class TypeChain {
         if (doType == null)
             return null;
 
+        // Only DO part
         if (parts.length == 1) {
             return doType.cdc();
         }
 
+        // DO.DA (2 parts)
         if (parts.length == 2) {
-            // DO.DA
             SclDA da = doType.findDaByName(parts[1]);
             return da != null ? da.bType() : null;
         }
 
-        // DO.SDI[.SDI].BDA
-        for (int i = 1; i < parts.length - 1; i++) {
-            SclDA da = doType.findDaByName(parts[i]);
-            if (da == null || !"Struct".equals(da.bType()) || da.type() == null)
-                return null;
-            SclDAType dat = templates.findDaTypeById(da.type());
-            if (dat == null)
-                return null;
-            // 下一级：继续在 DAType 中查找同名的 DA 作为下一层 SDI
-            // 但标准中 SDI 对应 DOType 里的 DA，而不是 DA 嵌套
-            // 实际 SDI 链是这样：DOType.DA(name="sVC", bType=Struct, type="ScaledValueConfig")
-            // → DAType("ScaledValueConfig").BDA(name="scaleFactor")
-            // 所以对于 DO.SDI.BDA，我们需要找到 DOType 中 name=sdiName 的 DA
-            // 然后到 DAType 中找 name=bdaName 的 BDA
-        }
-
-        // 最后一段是 BDA 名
-        int lastDot = ref.lastIndexOf('.');
-        String prefix = ref.substring(0, lastDot);
-        String bdaName = ref.substring(lastDot + 1);
-
-        // 追溯 SDI 链
-        String[] doParts = prefix.split("\\.");
+        // 3+ parts: DO.SDO[.SDO...].DA or DO.SDI.BDA
+        // Walk intermediate parts: try SDO first, then DA-with-Struct (SDI)
         SclDOType currentDoType = doType;
-        SclDAType currentDat = null;
-
-        // doParts[0] 是 DO 名，跳过。从 doParts[1] 开始是 SDI 名
-        for (int i = 1; i < doParts.length; i++) {
-            SclDA sdiDa = currentDoType.findDaByName(doParts[i]);
+        for (int i = 1; i < parts.length - 1; i++) {
+            String name = parts[i];
+            // Try SDO path first
+            SclSDO sdo = currentDoType.findSdoByName(name);
+            if (sdo != null && sdo.type() != null) {
+                SclDOType sdoType = templates.findDoTypeById(sdo.type());
+                if (sdoType == null)
+                    return null;
+                currentDoType = sdoType;
+                continue;
+            }
+            // Fall back to SDI path (DA with Struct bType → DAType)
+            SclDA sdiDa = currentDoType.findDaByName(name);
             if (sdiDa == null || !"Struct".equals(sdiDa.bType()) || sdiDa.type() == null)
                 return null;
-            currentDat = templates.findDaTypeById(sdiDa.type());
-            if (currentDat == null)
+            // For SDI path, subsequent parts are BDA within the DAType
+            // Only the last part is the BDA name
+            SclDAType dat = templates.findDaTypeById(sdiDa.type());
+            if (dat == null)
                 return null;
-            // 最后一级用 DAType 查 BDA
+            String bdaName = parts[parts.length - 1];
+            SclBDA bda = dat.findBdaByName(bdaName);
+            return bda != null ? bda.bType() : null;
         }
 
-        SclBDA bda = currentDat.findBdaByName(bdaName);
-        return bda != null ? bda.bType() : null;
+        // Last part is the DA name in the final DOType (SDO path)
+        SclDA da = currentDoType.findDaByName(parts[parts.length - 1]);
+        return da != null ? da.bType() : null;
     }
 }

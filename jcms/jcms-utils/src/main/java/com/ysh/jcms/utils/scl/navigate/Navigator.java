@@ -108,15 +108,27 @@ public class Navigator {
 
         // DA 级别：走 SDI 链→DAI
         SclSDI currentSdi = null;
+        boolean sdiFound = true;
         for (String sdiName : sclRef.sdiChain()) {
-            currentSdi = (currentSdi == null) ? doi.findSdiByName(sdiName) : currentSdi.findSdiByName(sdiName);
-            if (currentSdi == null)
-                return empty();
+            SclSDI next = (currentSdi == null) ? doi.findSdiByName(sdiName) : currentSdi.findSdiByName(sdiName);
+            if (next == null) {
+                sdiFound = false;
+                break;
+            }
+            currentSdi = next;
+        }
+
+        if (!sdiFound) {
+            // SDI 未在实例中找到 → 可能是 SDO 级引用（模板级 SDO，无实例 SDI）
+            // 返回部分 Navigator（有 DOI，无 SDI/DAI），让下游走模板查找
+            return new Navigator(doc, ied, ld, ln, doi, null, null, sclRef);
         }
 
         SclDAI dai = (currentSdi != null) ? currentSdi.findDaiByName(sclRef.daName()) : doi.findDaiByName(sclRef.daName());
-        if (dai == null)
-            return empty();
+        if (dai == null) {
+            // DAI 未在实例中找到 → 返回部分 Navigator（有 DOI，无 DAI），让下游走模板查找
+            return new Navigator(doc, ied, ld, ln, doi, currentSdi, null, sclRef);
+        }
 
         return new Navigator(doc, ied, ld, ln, doi, currentSdi, dai, sclRef);
     }

@@ -22,13 +22,16 @@ import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
 import com.ysh.jcms.utils.scl.model.template.SclDO;
+import com.ysh.jcms.utils.scl.model.template.SclSDO;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class LnDirServer extends BaseServerHandler {
@@ -65,7 +68,10 @@ public class LnDirServer extends BaseServerHandler {
         }
         log.info("TIMING: resolved {} LNs in {}ms", lns.size(), System.currentTimeMillis() - t0);
 
-        List<String> names = collectNamesByAcsiClass(lns, acsiClass, templates, refAfter, t0);
+        // 获取有效 LD 名：ldName 或从 lnReference 中提取
+        String effectiveLd = ldName != null ? ldName : (lnReference != null ? lnReference.substring(0, lnReference.indexOf('/')) : null);
+
+        List<String> names = collectNamesByAcsiClass(lns, effectiveLd, acsiClass, templates, refAfter, t0);
         if (names == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -122,7 +128,8 @@ public class LnDirServer extends BaseServerHandler {
         return null;
     }
 
-    private List<String> collectNamesByAcsiClass(List<SclLN> lns, int acsiClass, SclDataTypeTemplates templates, String after, long t0) {
+    private List<String> collectNamesByAcsiClass(List<SclLN> lns, String ldName, int acsiClass, SclDataTypeTemplates templates,
+            String after, long t0) {
         List<String> all = new ArrayList<>();
         int lnIdx = 0;
         for (SclLN ln : lns) {
@@ -130,10 +137,10 @@ public class LnDirServer extends BaseServerHandler {
             switch (acsiClass) {
                 case CmsAcsiClass.DATA_OBJECT :
                     if (templates != null) {
-                        all.addAll(getDataObjectNames(ln, templates));
+                        all.addAll(getDataObjectNames(ldName, ln, templates));
                     } else {
                         for (SclDOI doi : ln.dois()) {
-                            all.add(doi.name());
+                            all.add(ldName + "/" + ln.getFullName() + "." + doi.name());
                         }
                     }
                     break;
@@ -197,16 +204,34 @@ public class LnDirServer extends BaseServerHandler {
         return all;
     }
 
-    private static List<String> getDataObjectNames(SclLN ln, SclDataTypeTemplates templates) {
+    private static List<String> getDataObjectNames(String ldName, SclLN ln, SclDataTypeTemplates templates) {
         List<String> names = new ArrayList<>();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
             return names;
         SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
         if (lnt == null)
             return names;
+        String lnPrefix = ldName + "/" + ln.getFullName() + ".";
         for (SclDO doDef : lnt.dos()) {
-            names.add(doDef.name());
+            names.add(lnPrefix + doDef.name());
+            // 递归收集 SDO（子数据对象）
+            collectSdoNames(lnPrefix + doDef.name(), doDef.type(), templates, names, new HashSet<>());
         }
         return names;
+    }
+
+    private static void collectSdoNames(String parentRef, String doTypeId, SclDataTypeTemplates templates, List<String> names,
+            HashSet<String> visited) {
+        if (doTypeId == null || doTypeId.isEmpty() || !visited.add(doTypeId))
+            return;
+        SclDOType doType = templates.findDoTypeById(doTypeId);
+        if (doType == null)
+            return;
+        for (SclSDO sdo : doType.sdos()) {
+            String ref = parentRef + "." + sdo.name();
+            names.add(ref);
+            // 递归：SDO 的 type 指向另一个 DOType
+            collectSdoNames(ref, sdo.type(), templates, names, visited);
+        }
     }
 }

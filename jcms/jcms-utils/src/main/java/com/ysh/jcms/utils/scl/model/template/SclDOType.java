@@ -49,4 +49,13 @@ public class SclDOType {
         }
         return null;
     }
+
+    public SclSDO findSdoByName(String name) {
+        for (SclSDO s : sdos) {
+            if (s.name().equals(name)) {
+                return s;
+            }
+        }
+        return null;
+    }
 }

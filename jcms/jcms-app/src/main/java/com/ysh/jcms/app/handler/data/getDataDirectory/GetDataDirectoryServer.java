@@ -84,11 +84,22 @@ public class GetDataDirectoryServer extends BaseServerHandler {
                 log.debug("GetDataDirectory: ln not found for ref='{}'", ref);
                 return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             }
-            if (doi != null) {
-                allEntries = collectDoDirectory(doc, doi, ln);
+
+            // 检查是否有 SDO 层级需要进一步穿透（如 ref=LD/LN.DO.SDO）
+            String sdoName = parsed.daName();
+            if (sdoName != null) {
+                allEntries = collectSdoDirectory(doc, ln, parsed.doName(), sdoName);
+                if (allEntries == null) {
+                    log.debug("GetDataDirectory: '{}' is not an SDO, returning empty", sdoName);
+                    allEntries = new ArrayList<>();
+                }
             } else {
-                log.debug("GetDataDirectory: doi not found for ref='{}', fallback to template only", ref);
-                allEntries = collectDoDirectoryFromTemplate(doc, ln, parsed.doName());
+                if (doi != null) {
+                    allEntries = collectDoDirectory(doc, doi, ln);
+                } else {
+                    log.debug("GetDataDirectory: doi not found for ref='{}', fallback to template only", ref);
+                    allEntries = collectDoDirectoryFromTemplate(doc, ln, parsed.doName());
+                }
             }
         } else {
             // LN level: collect DO directory
@@ -245,6 +256,40 @@ public class GetDataDirectoryServer extends BaseServerHandler {
                 entries.add(new DirEntry(sdo.name(), null));
             }
         }
+    }
+
+    /**
+     * 收集 SDO 级别的目录：穿透到 SDO 的 DOType 中返回 DA 列表。 如 ref=LD/LN.DO.SDO，则返回 SDO 对应的
+     * DOType 中的 DA。
+     *
+     * @return 条目列表，若 sdoName 不是有效的 SDO 则返回 null
+     */
+    private static List<DirEntry> collectSdoDirectory(SclDocument doc, SclLN ln, String doName, String sdoName) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return null;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null)
+            return null;
+        SclDO doDef = lnt.findDoByName(doName);
+        if (doDef == null || doDef.type() == null)
+            return null;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
+        if (doType == null)
+            return null;
+
+        SclSDO sdo = doType.findSdoByName(sdoName);
+        if (sdo == null || sdo.type() == null)
+            return null;
+        SclDOType sdoType = templates.findDoTypeById(sdo.type());
+        if (sdoType == null)
+            return null;
+
+        List<DirEntry> entries = new ArrayList<>();
+        for (SclDA da : sdoType.das()) {
+            entries.add(new DirEntry(da.name(), da.fc()));
+        }
+        return entries;
     }
 
     /** Resolve FC for a DA name from the DOType. */

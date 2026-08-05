@@ -170,6 +170,10 @@ async function onToggle(node) {
     } finally {
       detailLoading.value = false
     }
+    // DO 节点：显示 data-dir 详情，如果有 SDO 子节点则切换展开/收起
+    if (node.children && node.children.length > 0) {
+      node.expanded = !node.expanded
+    }
     return
   }
 
@@ -235,16 +239,18 @@ async function onToggleAcsi({ node, acsi }) {
     const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --json`)
     if (res.success) {
       const childType = acsi === 'data-object' ? 'do' : acsi
-      node.children = res.data.map(name => ({
-        name: `${node.name}/${name}`,
-        type: childType,
-        label: name,
-        ref: acsi === 'data-object' ? buildDoRef(`${node.name}/${name}`) : `${node.name}.${name}`,
-        children: null,
-        loading: false,
-        expanded: false,
-        isLeaf: true,
-      }))
+      node.children = acsi === 'data-object'
+        ? buildDoTree(node.name, res.data)
+        : res.data.map(name => ({
+            name: `${node.name}/${name}`,
+            type: childType,
+            label: name,
+            ref: `${node.name}.${name}`,
+            children: null,
+            loading: false,
+            expanded: false,
+            isLeaf: true,
+          }))
     } else {
       node.children = []
     }
@@ -253,18 +259,38 @@ async function onToggleAcsi({ node, acsi }) {
   }
 }
 
-function buildDoRef(name) {
-  // Convert "LD0/LLN0/data-object/Mod" to "LD0/LLN0.Mod"
-  const parts = name.split('/')
-  // parts: [LD, LN, acsi-cat, DO-name]
-  if (parts.length >= 4) {
-    return parts.slice(0, -2).join('/') + '.' + parts[parts.length - 1]
+/** 将扁平引用列表解析为 DO/SDO 层级树 */
+function buildDoTree(nodeName, refs) {
+  const prefix = nodeName + '.'
+  // 构建嵌套 map：{ "Mod": { "Beh": {}, "Mag": {} } }
+  const root = {}
+  for (const ref of refs) {
+    const relative = ref.startsWith(prefix) ? ref.substring(prefix.length) : ref
+    const parts = relative.split('.')
+    let current = root
+    for (const part of parts) {
+      if (!current[part]) current[part] = {}
+      current = current[part]
+    }
   }
-  // parts: [LD, LN, DO-name] (fallback)
-  if (parts.length === 3) {
-    return parts[0] + '/' + parts[1] + '.' + parts[2]
+  // 递归转树节点
+  function toNodes(obj) {
+    return Object.entries(obj).map(([key, children]) => {
+      const childKeys = Object.keys(children)
+      const hasChildren = childKeys.length > 0
+      return {
+        name: `${nodeName}/${key}`,
+        type: 'do',
+        label: key,
+        ref: `${nodeName}.${key}`,
+        children: hasChildren ? toNodes(children) : null,
+        loading: false,
+        expanded: false,
+        isLeaf: !hasChildren,
+      }
+    })
   }
-  return name
+  return toNodes(root)
 }
 
 function startEdit(entry) {

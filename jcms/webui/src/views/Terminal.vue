@@ -37,7 +37,7 @@
 <script setup>
 import { ref, nextTick, watch } from 'vue'
 import { executeCommand } from '../api/cms.js'
-import { terminalLog, clearTerminal } from '../terminalLog.js'
+import { terminalLog, clearTerminal, parseAnsi } from '../terminalLog.js'
 
 defineProps({
   /** 嵌入式（底部面板）：隐藏标题头、去掉页面留白 */
@@ -48,59 +48,6 @@ const input = ref('')
 const output = terminalLog
 const outputRef = ref(null)
 const inputRef = ref(null)
-
-const ansiStyles = {
-  '0': {},                                          // reset
-  '1': { fontWeight: 'bold' },
-  '30': { color: '#333' },
-  '31': { color: '#e5555a' },                        // red
-  '32': { color: '#4caf7d' },                        // green
-  '33': { color: '#e5b955' },                        // yellow
-  '34': { color: '#5b8def' },
-  '35': { color: '#c975dd' },
-  '36': { color: '#5bc0de' },                        // cyan
-  '37': { color: '#e1e3ec' },
-  '90': { color: '#5c6078' },                        // gray
-  '91': { color: '#e5555a' },
-  '92': { color: '#4caf7d' },
-  '93': { color: '#e5b955' },
-  '94': { color: '#7aa3ff' },
-  '95': { color: '#c975dd' },
-  '96': { color: '#5bc0de' },
-}
-
-function parseAnsi(text) {
-  const parts = []
-  const regex = /\x1b\[(\d+)m/g
-  let lastIdx = 0
-  let currentStyle = {}
-
-  while (true) {
-    const match = regex.exec(text)
-    if (!match) break
-
-    // text before this code
-    if (match.index > lastIdx) {
-      parts.push({ text: text.slice(lastIdx, match.index), style: { ...currentStyle } })
-    }
-
-    const code = match[1]
-    if (code === '0') {
-      currentStyle = {}
-    } else if (ansiStyles[code]) {
-      currentStyle = { ...currentStyle, ...ansiStyles[code] }
-    }
-
-    lastIdx = regex.lastIndex
-  }
-
-  // remaining text
-  if (lastIdx < text.length) {
-    parts.push({ text: text.slice(lastIdx), style: { ...currentStyle } })
-  }
-
-  return parts.length ? parts : [{ text, style: {} }]
-}
 
 async function send() {
   const cmd = input.value.trim()

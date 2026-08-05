@@ -20,6 +20,7 @@
           class="nav-item nav-child"
           :class="{ active: active === child.id }"
           @click="$emit('select', child.id)"
+          @dblclick="$emit('select-duplicate', child.id)"
         >
           <span class="nav-icon">{{ child.icon || '·' }}</span>
           <span class="nav-label">{{ child.label }}</span>
@@ -37,7 +38,7 @@ const props = defineProps({
   active: String,
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'select-duplicate'])
 
 const expanded = ref(null)
 
