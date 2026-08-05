@@ -15,6 +15,7 @@ export const P_VERSION = { key: 'version', label: '协议版本 version', type: 
  * XX 放首位作为默认（select 默认取 options[0]），即不过滤。
  */
 export const FC_OPTIONS = [
+  '',      // 空 = 不选
   'XX: 全部（all，不过滤）',
   'ST: 状态（status）',
   'MX: 测量（measurand）',

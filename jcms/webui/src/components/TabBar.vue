@@ -148,7 +148,6 @@ function onDragStart(e, index) {
   dragIndex.value = index
   e.dataTransfer.effectAllowed = 'move'
   e.dataTransfer.setData('text/plain', String(index))
-  // 拖拽半透明
   e.target.style.opacity = '0.5'
 }
 

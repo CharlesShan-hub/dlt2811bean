@@ -29,21 +29,51 @@
           @reorder="reorderTab"
         />
         <div class="main-content">
-          <!-- 空状态：无标签时显示默认背景 -->
+          <!-- 空状态：毛玻璃卡片 -->
           <div v-if="tabs.length === 0" class="empty-state">
-            <div class="empty-bg">
-              <div class="empty-icon">
-                <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="50" cy="50" r="42" stroke="currentColor" stroke-width="2" opacity="0.15"/>
-                  <circle cx="50" cy="50" r="28" stroke="currentColor" stroke-width="1.5" opacity="0.1"/>
-                  <path d="M50 8 L50 92" stroke="currentColor" stroke-width="1" opacity="0.08"/>
-                  <path d="M8 50 L92 50" stroke="currentColor" stroke-width="1" opacity="0.08"/>
-                  <path d="M50 20 C50 20 60 40 70 50 C60 60 50 80 50 80" stroke="currentColor" stroke-width="1.5" opacity="0.12" stroke-linecap="round"/>
-                  <path d="M50 20 C50 20 40 40 30 50 C40 60 50 80 50 80" stroke="currentColor" stroke-width="1.5" opacity="0.12" stroke-linecap="round"/>
-                  <text x="50" y="55" text-anchor="middle" fill="currentColor" opacity="0.25" font-size="14" font-weight="600" font-family="system-ui">CMS Console</text>
+            <!-- 背景装饰光晕 -->
+            <div class="glow-spot glow-spot-1"></div>
+            <div class="glow-spot glow-spot-2"></div>
+            <!-- 毛玻璃卡片 -->
+            <div class="glass-card">
+              <div class="glass-icon">
+                <svg viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="bolt-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#fbbf24"/>
+                      <stop offset="100%" stop-color="#f59e0b"/>
+                    </linearGradient>
+                    <filter id="bolt-glow">
+                      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f59e0b" flood-opacity="0.6"/>
+                    </filter>
+                  </defs>
+                  <path d="M42 6 L18 44 L38 44 L32 74 L62 36 L40 36 Z" fill="url(#bolt-grad)" opacity="0.9" filter="url(#bolt-glow)"/>
                 </svg>
               </div>
-              <p class="empty-text">从左侧导航打开功能页面</p>
+              <h2 class="glass-title"><span class="title-accent">C</span>ommunication <span class="title-accent">M</span>essage <span class="title-accent">S</span>pecification</h2>
+              <div class="glass-tags">
+                <a class="badge" href="https://std.samr.gov.cn/hb/search/stdHBDetailed?id=2FA2BA0490F589C3E06397BE0A0A088A" target="_blank" rel="noopener">
+                  <span class="badge-label">DL/T 2811</span>
+                  <span class="badge-value badge-blue">2024</span>
+                </a>
+                <a class="badge" href="https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=74223AF4CD83CFF63AFA1CA04B9CCFF9" target="_blank" rel="noopener">
+                  <span class="badge-label">GB/T 45906.3</span>
+                  <span class="badge-value badge-teal">2025</span>
+                </a>
+              </div>
+              <div class="glass-divider"></div>
+              <div class="glass-info">
+                <span class="info-item">
+                  <span class="info-label">状态</span>
+                  <span
+                    class="info-value status-dot"
+                    :class="connected ? 'online' : 'offline'"
+                    :style="connected ? {} : { cursor: 'pointer' }"
+                    @click="!connected && openTab('connect-root')"
+                  >{{ connected ? '已连接' : '未连接' }}</span>
+                </span>
+              </div>
+              <p class="glass-footer">© {{ currentYear }} CMS Console</p>
             </div>
           </div>
           <div
@@ -91,6 +121,9 @@ const associatedAp = ref('')
 const tlsConnected = ref(false)
 const apSecure = ref(false)
 const showTerminal = ref(false)
+
+// 当前年份（空状态版权）
+const currentYear = new Date().getFullYear()
 
 // 从当前标签推导 activeView，用于侧边栏高亮
 const activeView = computed(() => {
@@ -142,12 +175,14 @@ function switchTab(id) {
 function closeTab(id) {
   const idx = tabs.value.findIndex((t) => t.id === id)
   if (idx === -1) return
-  // 至少保留一个标签
-  if (tabs.value.length <= 1) return
+  // 允许关闭最后一个标签，显示空状态背景
   tabs.value.splice(idx, 1)
+  if (tabs.value.length === 0) {
+    activeTab.value = ''
+    return
+  }
   // 如果关闭的是当前标签，切换到相邻标签
   if (activeTab.value === id) {
-    // 优先选前一个，否则后一个
     const newIdx = idx > 0 ? idx - 1 : 0
     activeTab.value = tabs.value[newIdx]?.id || ''
   }
@@ -158,27 +193,25 @@ function closeTab(id) {
 /** 关闭指定索引左边的所有非固定标签 */
 function closeLeft(index) {
   const toRemove = tabs.value.slice(0, index).filter((t) => !t.pinned)
-  const activeId = toRemove.find((t) => t.id === activeTab.value) ? null : activeTab.value
+  const activeLost = toRemove.some((t) => t.id === activeTab.value)
   toRemove.forEach((t) => {
     const i = tabs.value.findIndex((x) => x.id === t.id)
     if (i !== -1) tabs.value.splice(i, 1)
   })
-  if (activeId === null) {
-    // 当前标签被删了，选前一个
-    const newIdx = Math.max(0, index - toRemove.length)
-    activeTab.value = tabs.value[newIdx]?.id || ''
+  if (activeLost) {
+    activeTab.value = tabs.value[0]?.id || ''
   }
 }
 
 /** 关闭指定索引右边的所有非固定标签 */
 function closeRight(index) {
   const toRemove = tabs.value.slice(index + 1).filter((t) => !t.pinned)
-  const activeId = toRemove.find((t) => t.id === activeTab.value) ? null : activeTab.value
+  const activeLost = toRemove.some((t) => t.id === activeTab.value)
   toRemove.forEach((t) => {
     const i = tabs.value.findIndex((x) => x.id === t.id)
     if (i !== -1) tabs.value.splice(i, 1)
   })
-  if (activeId === null) {
+  if (activeLost) {
     activeTab.value = tabs.value[index]?.id || ''
   }
 }
@@ -194,7 +227,7 @@ function closeOthers(index) {
   activeTab.value = target?.id || tabs.value[0]?.id || ''
 }
 
-/** 关闭所有非固定标签 */
+/** 关闭所有非固定标签（有 pin 的保留） */
 function closeAll() {
   const toRemove = tabs.value.filter((t) => !t.pinned)
   toRemove.forEach((t) => {
@@ -317,33 +350,236 @@ onUnmounted(() => {
   height: 100%;
 }
 
-/* ── 空状态背景 ── */
+/* ── 空状态：毛玻璃卡片 ── */
 .empty-state {
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(160deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+  background: var(--bg-primary);
+  position: relative;
+  overflow: hidden;
 }
 
-.empty-bg {
+/* 背景光晕 */
+.glow-spot {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(100px);
+}
+
+.glow-spot-1 {
+  width: 500px;
+  height: 500px;
+  top: -15%;
+  left: -10%;
+  background: radial-gradient(circle, rgba(91, 141, 239, 0.08), transparent 70%);
+  animation: glowFloat 10s ease-in-out infinite;
+}
+
+.glow-spot-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -15%;
+  right: -10%;
+  background: radial-gradient(circle, rgba(91, 141, 239, 0.06), transparent 70%);
+  animation: glowFloat 12s ease-in-out infinite reverse;
+}
+
+@keyframes glowFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -15px) scale(1.05); }
+}
+
+/* 毛玻璃卡片 */
+.glass-card {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 0;
+  padding: 44px 56px 40px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 12px 64px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   user-select: none;
+  max-width: 440px;
+  width: 100%;
+  transition: border-color 0.4s, box-shadow 0.4s;
 }
 
-.empty-icon {
-  width: 160px;
-  height: 160px;
-  color: var(--text-primary);
+.glass-card:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 16px 72px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
-.empty-text {
-  font-size: 14px;
-  color: var(--text-muted);
+.glass-icon {
+  width: 100px;
+  height: 100px;
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 60px rgba(245, 158, 11, 0.25));
+}
+
+.glass-title {
+  font-size: 19px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+  letter-spacing: 0.8px;
+  white-space: nowrap;
+}
+
+.title-accent {
+  text-shadow: 0 0 14px rgba(91, 141, 239, 0.6), 0 0 28px rgba(91, 141, 239, 0.25);
+}
+
+.glass-tags {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  color: rgba(91, 141, 239, 0.85);
+  background: rgba(91, 141, 239, 0.08);
+  border: 1px solid rgba(91, 141, 239, 0.15);
+  border-radius: 6px;
+  letter-spacing: 0.3px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.tag:hover {
+  background: rgba(91, 141, 239, 0.14);
+  border-color: rgba(91, 141, 239, 0.3);
+}
+
+/* ── GitHub 风格 Badge ── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 11px;
+  line-height: 1;
+  border-radius: 6px;
+  overflow: hidden;
+  transition: opacity 0.2s;
+}
+
+.badge:hover {
+  opacity: 0.85;
+}
+
+.badge-label {
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0.3px;
+}
+
+.badge-value {
+  padding: 4px 8px;
+  font-weight: 600;
   letter-spacing: 0.5px;
+}
+
+.badge-blue {
+  background: rgba(59, 130, 246, 0.7);
+  color: #fff;
+}
+
+.badge-teal {
+  background: rgba(249, 115, 22, 0.75);
+  color: #fff;
+}
+
+.glass-divider {
+  width: 48px;
+  height: 1px;
+  margin: 22px 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+}
+
+.glass-info {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+.status-dot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.online::before {
+  background: #22c55e;
+  filter: drop-shadow(0 0 4px rgba(34, 197, 94, 0.6));
+}
+
+.status-dot.offline::before {
+  background: #6b7280;
+}
+
+.status-dot.offline:hover {
+  color: #60a5fa;
+}
+.status-dot.offline:hover::before {
+  background: #60a5fa;
+  filter: drop-shadow(0 0 4px rgba(96, 165, 250, 0.5));
+}
+
+.glass-footer {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.18);
+  margin: 18px 0 0;
+  letter-spacing: 0.5px;
+  font-weight: 400;
 }
 
 /* ── 底部终端面板 ── */

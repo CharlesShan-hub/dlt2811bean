@@ -77,6 +77,7 @@
                   v-model="form[p.key]"
                   :options="p.options"
                   :disabled="p.disabled"
+                  empty-label="（不选）"
                 />
                 <UiSelect
                   v-else-if="p.type === 'ld-select'"
