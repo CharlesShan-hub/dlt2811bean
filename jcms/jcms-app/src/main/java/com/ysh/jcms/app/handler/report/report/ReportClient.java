@@ -3,15 +3,12 @@ package com.ysh.jcms.app.handler.report.report;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * ReportClient — 客户端接收服务端推送的 REPORT 帧。
  */
 public class ReportClient extends BaseClientHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportClient.class);
 
     public void handleReport(Frame frame) {
         try {

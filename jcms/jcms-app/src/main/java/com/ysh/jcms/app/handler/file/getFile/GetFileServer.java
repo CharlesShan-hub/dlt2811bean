@@ -10,8 +10,6 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +17,6 @@ import java.nio.file.Paths;
 
 public class GetFileServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetFileServer.class);
 
     // Leave room for PER overhead: reqId(2) + filename(1+max255) + startPosition(4)
     private static final int CHUNK_SIZE = 64000;

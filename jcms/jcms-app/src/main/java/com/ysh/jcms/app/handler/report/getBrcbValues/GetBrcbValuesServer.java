@@ -16,12 +16,9 @@ import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetBrcbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetBrcbValuesServer.class);
 
     public GetBrcbValuesServer() {
         super(ServiceName.GET_BRCB_VALUES, CmsGetBrcbValuesRequest.class, CmsGetBrcbValuesError.class);

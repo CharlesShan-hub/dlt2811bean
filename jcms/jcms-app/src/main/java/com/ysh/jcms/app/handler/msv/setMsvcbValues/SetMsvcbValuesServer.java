@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.msv.GetMsvcbValuesUtil;
 import com.ysh.jcms.app.handler.msv.MsvcbCache;
-import com.ysh.jcms.app.handler.msv.getMsvcbValues.GetMsvcbValuesServer;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
@@ -13,8 +13,6 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * SetMSVCBValues server handler.
@@ -25,7 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SetMsvcbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetMsvcbValuesServer.class);
 
     public SetMsvcbValuesServer() {
         super(ServiceName.SET_MSVCB_VALUES, CmsSetMsvcbValuesRequest.class, CmsSetMsvcbValuesError.class);
@@ -47,7 +44,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler {
             // Get baseline from cache or SCL
             CmsMsvcb baseline = MsvcbCache.get(ref);
             if (baseline == null && ied != null) {
-                baseline = GetMsvcbValuesServer.resolveMsvcb(ied, ref);
+                baseline = GetMsvcbValuesUtil.resolveMsvcb(ied, ref);
             }
 
             if (baseline == null) {

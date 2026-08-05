@@ -11,11 +11,8 @@ import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetRpcInterfaceDefinitionServer extends BaseServerHandler {
-    private static final Logger log = LoggerFactory.getLogger(GetRpcInterfaceDefinitionServer.class);
     public GetRpcInterfaceDefinitionServer() {
         super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class, CmsGetRpcInterfaceDefinitionError.class);
     }

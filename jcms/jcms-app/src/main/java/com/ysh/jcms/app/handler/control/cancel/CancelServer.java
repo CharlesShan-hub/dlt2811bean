@@ -10,8 +10,6 @@ import com.ysh.jcms.pdu.control.CmsCancelResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Cancel server handler — 8.11.4
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CancelServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(CancelServer.class);
 
     public CancelServer() {
         super(ServiceName.CANCEL, CmsCancelRequest.class, CmsCancelError.class);

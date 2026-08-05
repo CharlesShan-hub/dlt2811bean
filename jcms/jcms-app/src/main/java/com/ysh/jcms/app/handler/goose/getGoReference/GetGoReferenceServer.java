@@ -8,8 +8,6 @@ import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * GetGoReference server handler.
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GetGoReferenceServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetGoReferenceServer.class);
 
     public GetGoReferenceServer() {
         super(ServiceName.GET_GO_REFERENCE, CmsGetGoReferenceRequest.class, CmsGetGoReferenceError.class);

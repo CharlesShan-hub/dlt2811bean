@@ -11,8 +11,6 @@ import com.ysh.jcms.pdu.rpc.CmsRpcCallResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +18,6 @@ import java.util.function.Function;
 
 public class RpcCallServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(RpcCallServer.class);
 
     /** Registered method implementations. */
     private static final Map<String, Function<Void, String>> methods = new HashMap<>();

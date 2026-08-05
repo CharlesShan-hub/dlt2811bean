@@ -28,8 +28,6 @@ import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -38,7 +36,6 @@ import java.util.Set;
 
 public class GetDataDirectoryServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataDirectoryServer.class);
 
     /** Simple directory entry with ref name and optional fc. */
     private static final class DirEntry {

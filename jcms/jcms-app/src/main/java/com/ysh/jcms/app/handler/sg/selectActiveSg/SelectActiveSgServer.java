@@ -11,12 +11,9 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SelectActiveSgServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectActiveSgServer.class);
 
     public SelectActiveSgServer() {
         super(ServiceName.SELECT_ACTIVE_SG, CmsSelectActiveSgRequest.class, CmsSelectActiveSgError.class);

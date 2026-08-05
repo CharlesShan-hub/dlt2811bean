@@ -6,8 +6,6 @@ import com.ysh.jcms.pdu.file.CmsGetFileRequest;
 import com.ysh.jcms.pdu.file.CmsGetFileResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -19,7 +17,6 @@ import java.util.List;
 
 public class GetFileClient extends BaseClientHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetFileClient.class);
 
     /**
      * Download a file from the server. The client loops, sending GetFile requests

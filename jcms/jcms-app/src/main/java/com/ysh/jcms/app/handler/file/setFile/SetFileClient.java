@@ -6,8 +6,6 @@ import com.ysh.jcms.pdu.file.CmsSetFileRequest;
 import com.ysh.jcms.pdu.file.CmsSetFileResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +14,6 @@ import java.nio.file.Paths;
 
 public class SetFileClient extends BaseClientHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetFileClient.class);
 
     // Leave room for PER overhead
     private static final int CHUNK_SIZE = 64000;

@@ -1,0 +1,102 @@
+package com.ysh.jcms.app.handler.goose;
+
+import com.ysh.jcms.data.sequence.block.CmsGoCb;
+import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Shared GoCB resolution logic for GetGoCBValues and SetGoCBValues services.
+ */
+public final class GetGoCbValuesUtil {
+
+    private static final Logger log = LoggerFactory.getLogger(GetGoCbValuesUtil.class);
+
+    private GetGoCbValuesUtil() {
+    }
+
+    /**
+     * Resolves a GoCB reference to its current value. Checks in-memory cache
+     * first, then falls back to SCL.
+     */
+    public static CmsGoCb resolveGocb(SclIED ied, String ref) {
+        // Check in-memory cache first (written by SetGoCBValues)
+        CmsGoCb cached = GoCbCache.get(ref);
+        if (cached != null) {
+            log.debug("resolveGocb: cache hit for '{}'", ref);
+            return cached;
+        }
+
+        int slashIdx = ref.indexOf('/');
+        int dotIdx = ref.indexOf('.');
+        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
+            log.warn("resolveGocb: invalid ref format '{}'", ref);
+            return null;
+        }
+
+        String ldName = ref.substring(0, slashIdx);
+        String lnPart = ref.substring(slashIdx + 1, dotIdx);
+        String cbName = ref.substring(dotIdx + 1);
+        log.debug("resolveGocb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
+
+        SclLDevice device = findLd(ied, ldName);
+        if (device == null) {
+            log.warn("resolveGocb: LD '{}' not found", ldName);
+            return null;
+        }
+
+        // Try findLnByFullName first (exact match on getFullName())
+        SclLN ln = device.findLnByFullName(lnPart);
+        if (ln != null) {
+            SclGSEControl gc = ln.findGseControlByName(cbName);
+            if (gc != null)
+                return buildGocb(gc);
+            log.warn("resolveGocb: GSEControl '{}' not in LN '{}' (exact match)", cbName, ln.getFullName());
+        }
+
+        // Fallback: search all LNs in this LD where getFullName() starts with lnPart
+        // (handles cases where lnPart="CTRL" but fullName="CTRL1")
+        List<String> candidates = new java.util.ArrayList<>();
+        for (SclLN candidate : device.lns()) {
+            String fullName = candidate.getFullName();
+            if (fullName.startsWith(lnPart)) {
+                candidates.add(fullName);
+                SclGSEControl gc = candidate.findGseControlByName(cbName);
+                if (gc != null) {
+                    log.debug("resolveGocb: found GSEControl in LN '{}' (prefix match)", fullName);
+                    return buildGocb(gc);
+                }
+            }
+        }
+        log.warn(
+                "resolveGocb: GSEControl '{}' not found in any LN matching '{}' under LD '{}'. "
+                        + "Checked LNs: {}, candidate prefix matches: {}",
+                cbName, lnPart, ldName, device.lns().stream().map(SclLN::getFullName).collect(Collectors.toList()), candidates);
+        return null;
+    }
+
+    private static CmsGoCb buildGocb(SclGSEControl gc) {
+        CmsGoCb gocb = new CmsGoCb();
+        if (gc.appID() != null)
+            gocb.goID(gc.appID());
+        if (gc.datSet() != null)
+            gocb.datSet(gc.datSet());
+        if (gc.confRev() != null) {
+            try {
+                gocb.confRev(Long.parseLong(gc.confRev()));
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        return gocb;
+    }
+
+    private static SclLDevice findLd(SclIED ied, String ldName) {
+        return ied.lDevice(ldName);
+    }
+}

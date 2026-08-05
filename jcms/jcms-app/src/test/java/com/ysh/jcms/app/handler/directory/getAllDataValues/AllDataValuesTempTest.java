@@ -6,8 +6,6 @@ import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
 import org.junit.Test;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class AllDataValuesTempTest extends BaseLoopbackTest {
 
     @Override
@@ -23,29 +21,21 @@ public class AllDataValuesTempTest extends BaseLoopbackTest {
     }
 
     @Test
-    public void all_data_ld() throws Exception {
+    public void stress_50() throws Exception {
         associate();
+        int ok = 0;
+        int err = 0;
         long t0 = System.currentTimeMillis();
-        final AtomicReference<Exception> err = new AtomicReference<>();
-        Thread t = new Thread(() -> {
+        for (int i = 0; i < 50; i++) {
             try {
-                clientNode().getClient(AllDataValuesClient.class)
-                        .execute(new AllDataValuesDao().ldName("C1"));
+                clientNode().getClient(AllDataValuesClient.class).execute(new AllDataValuesDao().ldName("C1"));
+                ok++;
             } catch (Exception e) {
-                err.set(e);
+                err++;
+                System.out.println("iter " + i + " FAIL: " + e);
             }
-        });
-        t.start();
-        t.join(8000); // 超过客户端 5s 超时仍不返回 = 卡住
-        long elapsed = System.currentTimeMillis() - t0;
-        if (t.isAlive()) {
-            System.out.println("STUCK: no return after " + elapsed + "ms");
-            t.interrupt();
-        } else if (err.get() != null) {
-            System.out.println("ERROR: " + err.get());
-        } else {
-            System.out.println("OK elapsed=" + elapsed + "ms entries="
-                    + clientNode().getContentManager().getAllDataEntries().size());
         }
+        long elapsed = System.currentTimeMillis() - t0;
+        System.out.println("stress done: ok=" + ok + " err=" + err + " elapsed=" + elapsed + "ms");
     }
 }

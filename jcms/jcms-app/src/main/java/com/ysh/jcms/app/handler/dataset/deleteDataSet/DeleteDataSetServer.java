@@ -13,12 +13,9 @@ import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DeleteDataSetServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteDataSetServer.class);
 
     public DeleteDataSetServer() {
         super(ServiceName.DELETE_DATA_SET, CmsDeleteDataSetRequest.class, CmsDeleteDataSetError.class);

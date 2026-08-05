@@ -18,12 +18,9 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetLcbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetLcbValuesServer.class);
 
     public GetLcbValuesServer() {
         super(ServiceName.GET_LCB_VALUES, CmsGetLcbValuesRequest.class, CmsGetLcbValuesError.class);

@@ -6,12 +6,9 @@ import com.ysh.jcms.pdu.report.CmsReport;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReportServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ReportServer.class);
 
     public ReportServer() {
         super(ServiceName.REPORT, CmsReport.class, null);

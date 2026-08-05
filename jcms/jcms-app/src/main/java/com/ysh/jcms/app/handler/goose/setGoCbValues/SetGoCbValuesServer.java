@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.goose.GetGoCbValuesUtil;
 import com.ysh.jcms.app.handler.goose.GoCbCache;
-import com.ysh.jcms.app.handler.goose.getGoCbValues.GetGoCbValuesServer;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
@@ -13,8 +13,6 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * SetGoCBValues server handler.
@@ -25,7 +23,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SetGoCbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetGoCbValuesServer.class);
 
     public SetGoCbValuesServer() {
         super(ServiceName.SET_GOCB_VALUES, CmsSetGoCbValuesRequest.class, CmsSetGoCbValuesError.class);
@@ -46,7 +43,7 @@ public class SetGoCbValuesServer extends BaseServerHandler {
             // Get baseline from cache or SCL
             CmsGoCb baseline = GoCbCache.get(ref);
             if (baseline == null && ied != null) {
-                baseline = GetGoCbValuesServer.resolveGocb(ied, ref);
+                baseline = GetGoCbValuesUtil.resolveGocb(ied, ref);
             }
 
             if (baseline == null) {

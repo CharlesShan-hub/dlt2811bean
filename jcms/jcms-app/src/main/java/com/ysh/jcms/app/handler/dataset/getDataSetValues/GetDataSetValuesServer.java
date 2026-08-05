@@ -18,12 +18,9 @@ import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetDataSetValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataSetValuesServer.class);
 
     public GetDataSetValuesServer() {
         super(ServiceName.GET_DATA_SET_VALUES, CmsGetDataSetValuesRequest.class, CmsGetDataSetValuesError.class);

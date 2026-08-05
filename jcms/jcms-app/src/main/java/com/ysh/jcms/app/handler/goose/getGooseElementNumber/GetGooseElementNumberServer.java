@@ -8,8 +8,6 @@ import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * GetGOOSEElementNumber server handler.
@@ -20,7 +18,6 @@ import org.slf4j.LoggerFactory;
  */
 public class GetGooseElementNumberServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetGooseElementNumberServer.class);
 
     public GetGooseElementNumberServer() {
         super(ServiceName.GET_GOOSE_ELEMENT_NUMBER, CmsGetGooseElementNumberRequest.class, CmsGetGooseElementNumberError.class);

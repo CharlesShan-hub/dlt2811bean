@@ -11,12 +11,9 @@ import com.ysh.jcms.pdu.sg.CmsSetEditSgValueResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SetEditSgValueServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetEditSgValueServer.class);
 
     public SetEditSgValueServer() {
         super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSgValueRequest.class, CmsSetEditSgValueError.class);

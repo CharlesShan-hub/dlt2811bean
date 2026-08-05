@@ -11,8 +11,6 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +20,6 @@ import java.util.zip.CRC32;
 
 public class GetFileAttributeValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetFileAttributeValuesServer.class);
 
     public GetFileAttributeValuesServer() {
         super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);

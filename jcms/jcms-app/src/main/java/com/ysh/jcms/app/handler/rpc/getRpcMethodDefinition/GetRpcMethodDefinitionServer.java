@@ -10,11 +10,8 @@ import com.ysh.jcms.pdu.rpc.*;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetRpcMethodDefinitionServer extends BaseServerHandler {
-    private static final Logger log = LoggerFactory.getLogger(GetRpcMethodDefinitionServer.class);
     public GetRpcMethodDefinitionServer() {
         super(ServiceName.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinitionRequest.class, CmsGetRpcMethodDefinitionError.class);
     }

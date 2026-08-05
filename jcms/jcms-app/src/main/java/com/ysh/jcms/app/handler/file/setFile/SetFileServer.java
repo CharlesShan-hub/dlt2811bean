@@ -10,8 +10,6 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,7 +18,6 @@ import java.nio.file.StandardOpenOption;
 
 public class SetFileServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetFileServer.class);
 
     public SetFileServer() {
         super(ServiceName.SET_FILE, CmsSetFileRequest.class, CmsSetFileError.class);

@@ -18,15 +18,12 @@ import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetBrcbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetBrcbValuesServer.class);
 
     public SetBrcbValuesServer() {
         super(ServiceName.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);

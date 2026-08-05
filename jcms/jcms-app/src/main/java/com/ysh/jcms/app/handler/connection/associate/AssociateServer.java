@@ -21,8 +21,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
 import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
@@ -30,7 +28,6 @@ import java.util.Optional;
 
 public class AssociateServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(AssociateServer.class);
     private GmAuthenticator authenticator;
     private PrivateKey serverPrivateKey;
     private byte[] serverCertificateBytes;

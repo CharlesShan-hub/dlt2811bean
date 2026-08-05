@@ -11,12 +11,9 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SelectEditSgServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectEditSgServer.class);
 
     public SelectEditSgServer() {
         super(ServiceName.SELECT_EDIT_SG, CmsSelectEditSgRequest.class, CmsSelectEditSgError.class);

@@ -10,8 +10,6 @@ import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,7 +17,6 @@ import java.nio.file.Paths;
 
 public class DeleteFileServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(DeleteFileServer.class);
 
     public DeleteFileServer() {
         super(ServiceName.DELETE_FILE, CmsDeleteFileRequest.class, CmsDeleteFileError.class);

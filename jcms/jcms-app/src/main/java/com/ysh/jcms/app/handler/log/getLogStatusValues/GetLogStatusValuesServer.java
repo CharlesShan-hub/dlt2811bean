@@ -13,15 +13,12 @@ import com.ysh.jcms.utils.log.LogStorage;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * GetLogStatusValues — 8.8.6 读日志状态值服务。
  */
 public class GetLogStatusValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetLogStatusValuesServer.class);
 
     private final LogStorage logStorage;
 

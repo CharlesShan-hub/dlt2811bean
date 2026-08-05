@@ -18,12 +18,9 @@ import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class SetDataSetValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SetDataSetValuesServer.class);
 
     public SetDataSetValuesServer() {
         super(ServiceName.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, CmsSetDataSetValuesError.class);

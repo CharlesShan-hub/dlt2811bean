@@ -10,8 +10,6 @@ import com.ysh.jcms.pdu.control.CmsSelectResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Select server handler — 8.11.1
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SelectServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectServer.class);
 
     public SelectServer() {
         super(ServiceName.SELECT, CmsSelectRequest.class, CmsSelectError.class);

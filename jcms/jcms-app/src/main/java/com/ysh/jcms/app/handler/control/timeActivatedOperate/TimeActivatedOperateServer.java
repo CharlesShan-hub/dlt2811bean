@@ -9,12 +9,9 @@ import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TimeActivatedOperateServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeActivatedOperateServer.class);
 
     public TimeActivatedOperateServer() {
         super(ServiceName.TIME_ACTIVATED_OPERATE, CmsTimeActivatedOperateRequest.class, CmsTimeActivatedOperateError.class);

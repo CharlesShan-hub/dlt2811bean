@@ -10,8 +10,6 @@ import com.ysh.jcms.pdu.control.CmsOperateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Operate server handler — 8.11.3
@@ -22,7 +20,6 @@ import org.slf4j.LoggerFactory;
  */
 public class OperateServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(OperateServer.class);
 
     public OperateServer() {
         super(ServiceName.OPERATE, CmsOperateRequest.class, CmsOperateError.class);

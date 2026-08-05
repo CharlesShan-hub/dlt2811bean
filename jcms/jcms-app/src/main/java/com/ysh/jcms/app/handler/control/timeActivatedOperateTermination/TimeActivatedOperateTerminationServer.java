@@ -6,12 +6,9 @@ import com.ysh.jcms.pdu.control.CmsTimeActivatedOperateTermination;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TimeActivatedOperateTerminationServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(TimeActivatedOperateTerminationServer.class);
 
     public TimeActivatedOperateTerminationServer() {
         super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION, CmsTimeActivatedOperateTermination.class);

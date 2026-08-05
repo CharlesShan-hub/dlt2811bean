@@ -17,12 +17,9 @@ import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetUrcbValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetUrcbValuesServer.class);
 
     public GetUrcbValuesServer() {
         super(ServiceName.GET_URCB_VALUES, CmsGetUrcbValuesRequest.class, CmsGetUrcbValuesError.class);

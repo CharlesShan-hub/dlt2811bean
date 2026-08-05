@@ -11,12 +11,9 @@ import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ConfirmEditSgValuesServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(ConfirmEditSgValuesServer.class);
 
     public ConfirmEditSgValuesServer() {
         super(ServiceName.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSgValuesRequest.class, CmsConfirmEditSgValuesError.class);

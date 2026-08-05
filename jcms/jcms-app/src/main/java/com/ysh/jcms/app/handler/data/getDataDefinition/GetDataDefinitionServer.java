@@ -15,12 +15,9 @@ import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetDataDefinitionServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(GetDataDefinitionServer.class);
 
     public GetDataDefinitionServer() {
         super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinitionRequest.class, CmsGetDataDefinitionError.class);

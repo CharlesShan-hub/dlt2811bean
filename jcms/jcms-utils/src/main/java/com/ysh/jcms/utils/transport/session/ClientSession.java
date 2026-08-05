@@ -51,6 +51,11 @@ public class ClientSession extends Session {
         return pendingRequests.remove(reqId);
     }
 
+    /** Number of requests currently awaiting a response. */
+    public int pendingCount() {
+        return pendingRequests.size();
+    }
+
     /**
      * Try to dispatch an incoming frame to a matching pending request. Sets the
      * result on the PendingRequest so that waitForPendingRequest can unblock.

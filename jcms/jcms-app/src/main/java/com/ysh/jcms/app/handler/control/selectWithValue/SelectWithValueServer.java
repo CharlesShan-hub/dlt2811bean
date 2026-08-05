@@ -10,8 +10,6 @@ import com.ysh.jcms.pdu.control.CmsSelectWithValueResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * SelectWithValue server handler — 8.11.2
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SelectWithValueServer extends BaseServerHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(SelectWithValueServer.class);
 
     public SelectWithValueServer() {
         super(ServiceName.SELECT_WITH_VALUE, CmsSelectWithValueRequest.class, CmsSelectWithValueError.class);

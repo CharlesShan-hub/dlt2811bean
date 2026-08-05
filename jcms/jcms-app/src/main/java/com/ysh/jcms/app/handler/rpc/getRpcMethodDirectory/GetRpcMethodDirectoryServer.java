@@ -11,11 +11,8 @@ import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetRpcMethodDirectoryServer extends BaseServerHandler {
-    private static final Logger log = LoggerFactory.getLogger(GetRpcMethodDirectoryServer.class);
     public GetRpcMethodDirectoryServer() {
         super(ServiceName.GET_RPC_METHOD_DIRECTORY, CmsGetRpcMethodDirectoryRequest.class, CmsGetRpcMethodDirectoryError.class);
     }

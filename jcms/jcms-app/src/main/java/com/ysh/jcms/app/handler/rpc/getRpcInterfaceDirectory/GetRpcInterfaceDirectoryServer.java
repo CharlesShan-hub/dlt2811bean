@@ -10,11 +10,8 @@ import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class GetRpcInterfaceDirectoryServer extends BaseServerHandler {
-    private static final Logger log = LoggerFactory.getLogger(GetRpcInterfaceDirectoryServer.class);
     public GetRpcInterfaceDirectoryServer() {
         super(ServiceName.GET_RPC_INTERFACE_DIRECTORY, CmsGetRpcInterfaceDirectoryRequest.class, CmsGetRpcInterfaceDirectoryError.class);
     }
