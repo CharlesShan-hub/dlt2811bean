@@ -15,18 +15,37 @@ export const P_VERSION = { key: 'version', label: '协议版本 version', type: 
  * XX 放首位作为默认（select 默认取 options[0]），即不过滤。
  */
 export const FC_OPTIONS = [
-  '',      // 空 = 不选
-  'XX: 全部（all，不过滤）',
-  'ST: 状态（status）',
-  'MX: 测量（measurand）',
-  'SP: 定值（setpoint）',
-  'SV: 替代值（substituted）',
-  'CF: 配置（configuration）',
-  'DC: 描述（description）',
-  'SG: 定值组（setting group）',
-  'SE: 定值组编辑（setting group editable）',
-  'SR: 服务响应（service response）',
-  'OR: 操作（operational）',
-  'BL: 闭锁（blocked）',
-  'EX: 扩展（extended）',
+  { value: '', label: '（不选）' },
+  { value: 'XX', label: '全部（all，不过滤）' },
+  { value: 'ST', label: '状态（status）' },
+  { value: 'MX', label: '测量（measurand）' },
+  { value: 'SP', label: '定值（setpoint）' },
+  { value: 'SV', label: '替代值（substituted）' },
+  { value: 'CF', label: '配置（configuration）' },
+  { value: 'DC', label: '描述（description）' },
+  { value: 'SG', label: '定值组（setting group）' },
+  { value: 'SE', label: '定值组编辑（setting group editable）' },
+  { value: 'SR', label: '服务响应（service response）' },
+  { value: 'OR', label: '操作（operational）' },
+  { value: 'BL', label: '闭锁（blocked）' },
+  { value: 'EX', label: '扩展（extended）' },
+]
+
+/**
+ * 数据类型选项（用于设置数据值时的类型选择）。
+ */
+export const TYPE_OPTIONS = [
+  'visible-string',
+  'int32',
+  'float32',
+  'boolean',
+  'int8',
+  'int16',
+  'int8u',
+  'int16u',
+  'int32u',
+  'int64',
+  'int64u',
+  'float64',
+  'octet-string',
 ]

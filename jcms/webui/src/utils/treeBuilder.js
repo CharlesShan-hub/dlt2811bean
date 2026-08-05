@@ -22,17 +22,18 @@ export function buildDoTree(nodeName, refs) {
       current = current[part]
     }
   }
-  // 递归转树节点
-  function toNodes(obj) {
+  // 递归转树节点，parentKey 传递祖先路径（如 "A" 或 "A.phsA"）
+  function toNodes(obj, parentKey) {
     return Object.entries(obj).map(([key, children]) => {
       const childKeys = Object.keys(children)
       const hasChildren = childKeys.length > 0
+      const fullKey = parentKey ? `${parentKey}.${key}` : key
       return {
-        name: `${nodeName}/${key}`,
+        name: `${nodeName}/${fullKey.replace(/\./g, '/')}`,
         type: 'do',
         label: key,
-        ref: `${nodeName}.${key}`,
-        children: hasChildren ? toNodes(children) : null,
+        ref: `${nodeName}.${fullKey}`,
+        children: hasChildren ? toNodes(children, fullKey) : null,
         loading: false,
         expanded: false,
         isLeaf: !hasChildren,

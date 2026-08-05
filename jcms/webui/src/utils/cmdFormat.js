@@ -112,20 +112,49 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
       }
     } else if (p.type === 'refs-list') {
       const rows = (v || []).filter(Boolean)
-      let refs
+      const refs = []
+      const fcs = []
+      const values = []
+      const types = []
       if (p.cascade) {
-        refs = rows.map((row) => {
-          if (!row.ld || !row.ln) return ''
+        for (const row of rows) {
+          if (!row.ld || !row.ln) continue
           let ref = `${row.ld}/${row.ln}`
           if (row.do) ref += `.${row.do}`
+          if (row.sdo) ref += `.${row.sdo}`
           if (row.da) ref += `.${row.da}`
-          return ref
-        }).filter(Boolean)
+          refs.push(ref)
+          fcs.push(row.fc || '')
+          values.push(row.value || '')
+          types.push(row.type || '')
+        }
       } else {
-        refs = rows.filter((r) => typeof r === 'string' && r)
+        for (const r of rows) {
+          if (typeof r === 'string' && r) {
+            refs.push(r)
+            fcs.push('')
+            values.push('')
+            types.push('')
+          }
+        }
       }
       if (refs.length) {
         parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
+        const hasFc = fcs.some(f => f)
+        if (hasFc) {
+          parts.push('--fc', `"${fcs.join(' ')}"`)
+        }
+        // 仅 set-data-values 需要 --values 和 --type
+        if (cmd === 'set-data-values') {
+          const hasValue = values.some(v => v)
+          if (hasValue) {
+            parts.push('--values', `"${values.join(' ')}"`)
+          }
+          const hasType = types.some(t => t)
+          if (hasType) {
+            parts.push('--type', `"${types.join(' ')}"`)
+          }
+        }
       }
     } else if (p.key === 'refs' && v !== '' && v !== null && v !== undefined) {
       parts.push(`--${p.key}`, `"${String(v)}"`)
@@ -137,6 +166,90 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
     parts.push('--json')
   }
   return parts.join(' ')
+}
+
+/**
+ * 解析命令字符串回表单值（反向 buildCmd）
+ * @param {string} cmdStr - 完整命令字符串
+ * @param {Array} params - 参数定义
+ * @param {object} opts - 选项
+ * @param {string} opts.cmdName - 命令名（可选，不传则从 cmdStr 提取）
+ * @returns {{ form: object, jsonMode: boolean, valid: boolean, errors: string[] }}
+ */
+export function parseCmd(cmdStr, params, opts = {}) {
+  const form = {}
+  let jsonMode = false
+  const errors = []
+
+  // 分词：支持引号包裹的值
+  const tokens = []
+  const re = /(?:--?\w[\w-]*|"(?:[^"\\]|\\.)*"|[^\s"]+)/g
+  let m
+  while ((m = re.exec(cmdStr)) !== null) {
+    tokens.push(m[0])
+  }
+
+  // 跳过命令名
+  const cmdName = opts.cmdName || tokens[0] || ''
+  let i = cmdName ? 1 : 0
+
+  while (i < tokens.length) {
+    const t = tokens[i]
+    if (t === '--json') {
+      jsonMode = true
+      i++
+      continue
+    }
+    if (t.startsWith('--')) {
+      const key = t.slice(2)
+      const param = params.find((p) => p.key === key)
+      if (!param) {
+        errors.push(`未知参数：--${key}`)
+        i++
+        continue
+      }
+
+      if (param.type === 'switch') {
+        form[key] = true
+        i++
+      } else if (param.type === 'select' && param.disabled) {
+        // 跳过禁用参数
+        i++
+      } else if (param.type === 'ln-cascade') {
+        // ln-cascade：值可能是 "LD/LN" 或纯 "LN"
+        const val = tokens[i + 1]
+        if (val === undefined || val.startsWith('--')) {
+          errors.push(`参数 --${key} 缺少值`)
+          i++
+        } else {
+          const raw = val.startsWith('"') && val.endsWith('"') ? val.slice(1, -1) : val
+          if (raw.includes('/')) {
+            const parts = raw.split('/')
+            form[key] = { ld: parts[0], ln: parts.slice(1).join('/') }
+          } else {
+            form[key] = { ld: '', ln: raw }
+          }
+          i += 2
+        }
+      } else {
+        // 取值（可能被引号包裹）
+        const val = tokens[i + 1]
+        if (val === undefined || val.startsWith('--')) {
+          errors.push(`参数 --${key} 缺少值`)
+          i++
+        } else {
+          const raw = val.startsWith('"') && val.endsWith('"') ? val.slice(1, -1) : val
+          form[key] = raw
+          i += 2
+        }
+      }
+    } else {
+      errors.push(`无法识别的输入：${t}`)
+      i++
+    }
+  }
+
+  return { form, jsonMode, valid: errors.length === 0, errors }
 }
 
 /** 剪贴板 SVG 图标 */

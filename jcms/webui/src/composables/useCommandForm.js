@@ -1,7 +1,7 @@
 /**
  * 命令表单逻辑 composable
- * 负责：表单初始化、动态引用列表管理、级联选择（LD/LN/DO/DA）、
- *       DO/DA 选项懒加载、negotiate 默认值回填
+ * 负责：表单初始化、动态引用列表管理、级联选择（LD/LN/DO/SDO/DA）、
+ *       DO/SDO/DA 选项懒加载、negotiate 默认值回填
  */
 import { reactive, watch } from 'vue'
 import { ldCache, ldLns, allLnRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
@@ -37,7 +37,7 @@ export function useCommandForm(form, opts = {}) {
       } else if (p.type === 'ln-cascade') {
         form[p.key] = { ld: '', ln: '' }
       } else if (p.type === 'refs-list') {
-        form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', da: '' }] : ['']
+        form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', sdo: '', da: '', fc: '', value: '', type: 'visible-string' }] : ['']
       } else {
         form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
       }
@@ -49,7 +49,7 @@ export function useCommandForm(form, opts = {}) {
   function addRefs() {
     const p = getDef().params.find((x) => x.type === 'refs-list')
     if (!p) return
-    form[p.key].push(p.cascade ? { ld: '', ln: '', do: '', da: '' } : '')
+    form[p.key].push(p.cascade ? { ld: '', ln: '', do: '', sdo: '', da: '', fc: '', value: '', type: 'visible-string' } : '')
   }
 
   function removeRefs(i) {
@@ -84,17 +84,77 @@ export function useCommandForm(form, opts = {}) {
   function onRowLd(row) {
     row.ln = ''
     row.do = ''
+    row.sdo = ''
     row.da = ''
     if (row.ld) ensureLdLns(row.ld)
   }
   function onRowLn(row) {
     row.do = ''
+    row.sdo = ''
     row.da = ''
     loadRowDo(row)
   }
   function onRowDo(row) {
+    row.sdo = ''
     row.da = ''
+    row.fc = ''
+    loadRowSdo(row)
+  }
+  function onRowSdo(row) {
+    row.da = ''
+    row.fc = ''
     loadRowDa(row)
+  }
+  function onRowDa(row) {
+    // DA 已选定时，从选项自动补上 FC
+    const opts = rowDaOptions(row)
+    const opt = opts.find(o => o.value === row.da)
+    if (opt && opt.fc) {
+      row.fc = opt.fc
+    } else {
+      row.fc = ''
+    }
+  }
+
+  // ── 级联 SDO 选项 ──
+
+  const rowSdoRefs = reactive({})
+  function rowSdoKey(row) {
+    if (!row.ld || !row.ln || !row.do) return ''
+    return `${row.ld}/${row.ln}.${row.do}`
+  }
+  function rowSdoOptions(row) {
+    const key = rowSdoKey(row)
+    if (!key) return []
+    return rowSdoRefs[key] || []
+  }
+  async function loadRowSdo(row) {
+    const key = rowSdoKey(row)
+    if (!key || rowSdoRefs[key]) return
+    try {
+      const res = await executeJson(`data-dir --ref ${key} --json`)
+      if (res.success && Array.isArray(res.data)) {
+        // 只取不带 [FC] 前缀的条目（SDO），带 [FC] 的是 DA
+        const sdos = []
+        const das = []
+        for (const s of res.data) {
+          const m = String(s).match(/^\[(\w+)\]\s+(.+)$/)
+          if (m) {
+            das.push(m[2].trim())
+          } else {
+            sdos.push(String(s).trim())
+          }
+        }
+        rowSdoRefs[key] = sdos
+        rowDaRefs[key] = das
+      } else {
+        rowSdoRefs[key] = []
+        rowDaRefs[key] = []
+      }
+    } catch {
+      rowSdoRefs[key] = []
+      rowDaRefs[key] = []
+    }
   }
 
   // ── 级联 DA 选项 ──
@@ -102,21 +162,29 @@ export function useCommandForm(form, opts = {}) {
   const rowDaRefs = reactive({})
   function rowDaKey(row) {
     if (!row.ld || !row.ln || !row.do) return ''
-    return `${row.ld}/${row.ln}.${row.do}`
+    const base = `${row.ld}/${row.ln}.${row.do}`
+    return row.sdo ? `${base}.${row.sdo}` : base
   }
   function rowDaOptions(row) {
     const key = rowDaKey(row)
-    if (!key) return []
-    return rowDaRefs[key] || []
+    if (!key) return ['']
+    return ['', ...(rowDaRefs[key] || [])]
   }
   async function loadRowDa(row) {
     const key = rowDaKey(row)
     if (!key || rowDaRefs[key]) return
     try {
       const res = await executeJson(`data-dir --ref ${key} --json`)
-      rowDaRefs[key] = res.success && Array.isArray(res.data)
-        ? res.data.map((s) => String(s).replace(/^\[[A-Z]+\]\s+/, '')).filter(Boolean)
-        : []
+      if (res.success && Array.isArray(res.data)) {
+        rowDaRefs[key] = res.data
+          .map((s) => {
+            const m = String(s).match(/^\[(\w+)\]\s+(.+)$/)
+            return m ? { value: m[2].trim(), fc: m[1] } : null
+          })
+          .filter(Boolean)
+      } else {
+        rowDaRefs[key] = []
+      }
     } catch {
       rowDaRefs[key] = []
     }
@@ -247,6 +315,11 @@ export function useCommandForm(form, opts = {}) {
     onRowLd,
     onRowLn,
     onRowDo,
+    onRowSdo,
+    onRowDa,
+    rowSdoRefs,
+    rowSdoOptions,
+    loadRowSdo,
     rowDaRefs,
     rowDaOptions,
     loadRowDa,

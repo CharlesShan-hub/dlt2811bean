@@ -8,7 +8,19 @@
     </template>
     <div class="cmd-preview">
       <code class="preview-line">
-        <span class="preview-text" v-html="highlightedCmd"></span>
+        <template v-if="editing">
+          <input
+            ref="editInput"
+            v-model="editValue"
+            class="cmd-edit-input"
+            @keydown.enter="confirmEdit"
+            @keydown.escape="cancelEdit"
+            @blur="confirmEdit"
+          />
+        </template>
+        <template v-else>
+          <span class="preview-text" v-html="highlightedCmd" @dblclick="startEdit" title="双击编辑命令"></span>
+        </template>
         <button type="button" class="glass copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
       </code>
     </div>
@@ -49,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, nextTick } from 'vue'
 import UiCard from './ui/UiCard.vue'
 import UiSwitch from './ui/UiSwitch.vue'
 import { parseAnsi } from '../terminalLog.js'
@@ -69,7 +81,7 @@ const props = defineProps({
   resultCmd: { type: String, default: '' },
 })
 
-defineEmits(['update:jsonMode', 'update:jsonFormat'])
+const emit = defineEmits(['update:jsonMode', 'update:jsonFormat', 'edit'])
 
 const copied = ref(false)
 const copiedOutput = ref(false)
@@ -77,6 +89,37 @@ const copiedCmdResult = ref(false)
 let copyTimer = 0
 let copyOutTimer = 0
 let copyCmdResultTimer = 0
+
+// ── 双击编辑 ──
+const editing = ref(false)
+const editValue = ref('')
+const editInput = ref(null)
+
+watch(() => props.previewCmd, (val) => {
+  editValue.value = val
+})
+
+function startEdit() {
+  editValue.value = props.previewCmd
+  editing.value = true
+  nextTick(() => {
+    editInput.value?.focus()
+    editInput.value?.select()
+  })
+}
+
+function confirmEdit() {
+  if (!editing.value) return
+  editing.value = false
+  if (editValue.value !== props.previewCmd) {
+    emit('edit', editValue.value)
+  }
+}
+
+function cancelEdit() {
+  editing.value = false
+  editValue.value = props.previewCmd
+}
 
 async function copyCmd() {
   try {
@@ -157,10 +200,27 @@ async function copyCmdResult() {
 .preview-text {
   flex: 1;
   min-width: 0;
+  cursor: default;
+}
+.preview-text:hover {
+  outline: 1px dashed var(--border);
+  border-radius: 3px;
 }
 .preview-text code {
   word-break: break-all;
   font-family: var(--font-mono);
+}
+.cmd-edit-input {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 4px 8px;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  outline: none;
 }
 
 /* ── 终端标题栏（已执行命令 + 时间 + 复制按钮） ── */

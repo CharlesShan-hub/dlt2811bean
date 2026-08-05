@@ -1,5 +1,4 @@
 // 8.4.2 设置数据值（SetDataValues）
-import { FC_OPTIONS } from './common.js'
 
 export default {
   title: '设置数据值 set-data-values (8.4.2)',
@@ -40,7 +39,6 @@ SetDataValues-ErrorPDU ::= SEQUENCE {
 
 设置数据值服务的每一个数据由 \`Reference\` 唯一索引，当包含 \`fc\`（功能约束）时，表示数据值为 FCD 的值；不包含 \`fc\`（功能约束）时，表示数据值为所有数据属性的值。所有数据值设置成功时返回 Response+，部分或全部失败时返回 Response-。在 Response- 中，依次返回每个数据值的设置结果。`,
   params: [
-    { key: 'pairs', label: '数据值对 pairs', type: 'text', placeholder: 'LD/LN.DO.DA=value，多个用空格分隔' },
-    { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
+    { key: 'refs', label: '数据引用', type: 'refs-list', cascade: true },
   ],
 }

@@ -115,35 +115,70 @@
                 <div v-else-if="p.type === 'refs-list'" class="refs-list">
                   <!-- 级联三选：LD → LN → DO，逐层下钻引用 -->
                   <template v-if="p.cascade">
-                    <div v-for="(r, i) in form[p.key]" :key="i" class="refs-row">
-                      <UiSelect
-                        v-model="r.ld"
-                        :options="ldCache"
-                        placeholder="LD"
-                        empty-label="（不选）"
-                        @update:modelValue="onRowLd(r)"
-                      />
-                      <UiSelect
-                        v-model="r.ln"
-                        :options="r.ld ? ldLns[r.ld] || [] : []"
-                        placeholder="LN"
-                        empty-label="（不选）"
-                        @update:modelValue="onRowLn(r)"
-                      />
-                      <UiSelect
-                        v-model="r.do"
-                        :options="rowDoOptions(r)"
-                        placeholder="DO"
-                        empty-label="（不选）"
-                        @update:modelValue="onRowDo(r)"
-                      />
-                      <UiSelect
-                        v-model="r.da"
-                        :options="rowDaOptions(r)"
-                        placeholder="DA"
-                        empty-label="（不选）"
-                      />
-                      <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                    <div v-for="(r, i) in form[p.key]" :key="i" class="refs-entry">
+                      <div class="refs-row">
+                        <span class="refs-label">{{ i + 1 }}</span>
+                        <UiSelect
+                          v-model="r.ld"
+                          :options="ldCache"
+                          placeholder="LD"
+                          empty-label="（不选）"
+                          @update:modelValue="onRowLd(r)"
+                        />
+                        <UiSelect
+                          v-model="r.ln"
+                          :options="r.ld ? ldLns[r.ld] || [] : []"
+                          placeholder="LN"
+                          empty-label="（不选）"
+                          @update:modelValue="onRowLn(r)"
+                        />
+                        <UiSelect
+                          v-model="r.do"
+                          :options="rowDoOptions(r)"
+                          placeholder="DO"
+                          empty-label="（不选）"
+                          @update:modelValue="onRowDo(r)"
+                        />
+                      </div>
+                      <div class="refs-row">
+                        <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                        <UiSelect
+                          v-model="r.sdo"
+                          :options="rowSdoOptions(r)"
+                          placeholder="SDO"
+                          empty-label="（不选）"
+                          @update:modelValue="onRowSdo(r)"
+                        />
+                        <UiSelect
+                          v-model="r.da"
+                          :options="rowDaOptions(r)"
+                          placeholder="DA"
+                          empty-label="（不选）"
+                          @update:modelValue="onRowDa(r)"
+                        />
+                        <UiSelect
+                          v-model="r.fc"
+                          :options="fcRowOptions"
+                          :disabled="!!r.da"
+                          placeholder="FC"
+                          empty-label="（不选）"
+                        />
+                      </div>
+                      <!-- 第三行：值 + 类型（仅 set-data-values） -->
+                      <div v-if="props.cmd === 'set-data-values'" class="refs-row">
+                        <span class="refs-label-spacer"></span>
+                        <UiInput
+                          v-model="r.value"
+                          placeholder="值 value"
+                          class="refs-value-input"
+                        />
+                        <UiSelect
+                          v-model="r.type"
+                          :options="typeRowOptions"
+                          placeholder="类型 type"
+                          empty-label="（不选）"
+                        />
+                      </div>
                     </div>
                   </template>
                   <template v-else>
@@ -213,6 +248,7 @@
           :result-cmd="result?.cmd ?? ''"
           @update:json-mode="jsonMode = $event"
           @update:json-format="jsonFormat = $event"
+          @edit="onCmdEdit"
         />
       </div>
     </div>
@@ -239,7 +275,8 @@ import { CMD_DEFS } from '../cmddefs/index.js'
 import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
-import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult } from '../utils/cmdFormat.js'
+import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
+import { FC_OPTIONS, TYPE_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
 import { useCommandForm } from '../composables/useCommandForm.js'
 
@@ -324,6 +361,12 @@ const refOptions = computed(() => {
 /** 动态引用列表（refs-list）选项：全量 LD/LN 完整引用。 */
 const refsListOptions = computed(() => allLnRefs)
 
+/** 每行引用的 FC 选项 */
+const fcRowOptions = computed(() => FC_OPTIONS)
+
+/** 每行引用的类型选项 */
+const typeRowOptions = computed(() => TYPE_OPTIONS)
+
 /** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
 const rightTitle = computed(() => {
   if (isConnect.value) return '连接流程'
@@ -355,6 +398,8 @@ const {
   onRowLd,
   onRowLn,
   onRowDo,
+  onRowSdo,
+  rowSdoOptions,
   rowDaOptions,
   loadNegotiateDefaults,
   setupFcWatch,
@@ -440,6 +485,46 @@ watch(() => props.cmd, async () => {
 
 async function run() {
   await runCmd(buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd }))
+}
+
+/** @type {function} 双击命令预览编辑后，尝试同步回左侧表单 */
+function onCmdEdit(cmdStr) {
+  const cmdName = (cmdStr.match(/^\S+/) || [''])[0]
+  const curCmd = props.cmd
+  // 命令名不一致：不生效
+  if (cmdName !== curCmd) {
+    pushTerminal(['⚠ 双击编辑未同步：命令名不匹配，当前页面为 ' + curCmd])
+    return
+  }
+  const parsed = parseCmd(cmdStr, def.value.params, { cmdName: curCmd })
+  // 参数有误：不生效，错误信息在终端提示
+  if (!parsed.valid) {
+    for (const err of parsed.errors) {
+      pushTerminal(['⚠ 双击编辑未同步：' + err])
+    }
+    return
+  }
+  if (parsed.jsonMode !== undefined) {
+    jsonMode.value = parsed.jsonMode
+  }
+  // 逐字段更新表单
+  for (const key of Object.keys(parsed.form)) {
+    if (key in form) {
+      const val = parsed.form[key]
+      // ln-cascade 类型：若只有 ln 没有 ld，从 form.ld 补上
+      if (val && typeof val === 'object' && val.ld === '' && val.ln && form.ld) {
+        form[key] = { ld: form.ld, ln: val.ln }
+      } else {
+        form[key] = val
+      }
+      // 同步后加载级联所需数据
+      if (typeof val === 'string' && key === 'ld' && val) {
+        ensureLdLns(val)
+      } else if (val && typeof val === 'object' && val.ld) {
+        ensureLdLns(val.ld)
+      }
+    }
+  }
 }
 
 /** 执行命令并写入结果区（只保留最新一条），同时回显到共享终端。 */
@@ -940,6 +1025,16 @@ async function disconnect() {
   gap: 8px;
 }
 
+.refs-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary, rgba(255,255,255,0.02));
+}
+
 .refs-row {
   display: flex;
   align-items: center;
@@ -947,6 +1042,32 @@ async function disconnect() {
 }
 
 .refs-row .ui-select {
+  flex: 1;
+  min-width: 0;
+}
+
+.refs-label {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-tertiary, rgba(255,255,255,0.05));
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+.refs-label-spacer {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+}
+
+.refs-value-input {
   flex: 1;
   min-width: 0;
 }
@@ -965,11 +1086,11 @@ async function disconnect() {
 
 .refs-del {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
 }
 

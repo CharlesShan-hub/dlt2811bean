@@ -127,10 +127,12 @@ async function onToggle(node) {
       detailRaw.value = JSON.stringify(dirRes, null, 2)
 
       if (dirRes.success && dirRes.data.length) {
-        const attrs = dirRes.data.map(s => {
-          const m = s.match(/^\[(\w+)\]\s+(.+)$/)
-          return m ? { fc: m[1], attr: m[2] } : { fc: '?', attr: s }
-        })
+        const attrs = dirRes.data
+          .map(s => {
+            const m = s.match(/^\[(\w+)\]\s+(.+)$/)
+            return m ? { fc: m[1], attr: m[2] } : null
+          })
+          .filter(Boolean)
 
         const refs = attrs.map(a => `${node.ref}.${a.attr}`).join(' ')
 
@@ -310,11 +312,12 @@ async function onToggleAcsi({ node, acsi }) {
 
 // buildDoTree 实现在 utils/treeBuilder.js 中
 
-/** 递归给树节点加上 dotColor */
+/** 递归给树节点加上 dotColor，并默认展开 SDO */
 function addDotColor(nodes, color) {
   return nodes.map(n => ({
     ...n,
     dotColor: color,
+    expanded: !!n.children,
     children: n.children ? addDotColor(n.children, color) : null,
   }))
 }
