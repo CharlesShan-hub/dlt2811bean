@@ -54,3 +54,44 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
+
+/* ── 毛玻璃通用工具类 ── */
+/* 使用：在元素上同时添加 .glass 和组件自身的尺寸/定位类 */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+.glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+/* 删除按钮（红色）hover 变体 */
+.glass-danger:hover {
+  background: rgba(229, 85, 90, 0.15) !important;
+  border-color: rgba(229, 85, 90, 0.3) !important;
+  color: var(--red) !important;
+  box-shadow: 0 4px 16px rgba(229, 85, 90, 0.15) !important;
+}
+/* 添加按钮（蓝色）hover 变体 */
+.glass-accent:hover {
+  border-color: rgba(91, 141, 239, 0.5) !important;
+  border-style: solid !important;
+  color: var(--accent) !important;
+  background: rgba(91, 141, 239, 0.08) !important;
+  box-shadow: 0 4px 16px rgba(91, 141, 239, 0.12) !important;
+}
+
+/* ── 淡入淡出动画 ── */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

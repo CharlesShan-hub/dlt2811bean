@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import TopBar from './components/TopBar.vue'
 import Sidebar from './components/Sidebar.vue'
 import TabBar from './components/TabBar.vue'
@@ -110,10 +110,26 @@ import CommandDebug from './views/CommandDebug.vue'
 import Terminal from './views/Terminal.vue'
 import ServerDir from './views/ServerDir.vue'
 import { getStatus } from './api/cms.js'
-import { CMD_DEFS, CMD_IDS } from './cmddefs/index.js'
+import { CMD_IDS } from './cmddefs/index.js'
 import { refreshLds, setLds } from './ldCache.js'
+import { useTabs, cnTitle } from './composables/useTabs.js'
 
 const cmdViews = CMD_IDS
+
+const {
+  tabs,
+  activeTab,
+  activeView,
+  openTab,
+  switchTab,
+  closeTab,
+  closeLeft,
+  closeRight,
+  closeOthers,
+  closeAll,
+  togglePin,
+  reorderTab,
+} = useTabs()
 
 const connected = ref(false)
 const tcpConnected = ref(false)
@@ -124,132 +140,6 @@ const showTerminal = ref(false)
 
 // 当前年份（空状态版权）
 const currentYear = new Date().getFullYear()
-
-// 从当前标签推导 activeView，用于侧边栏高亮
-const activeView = computed(() => {
-  const tab = tabs.value.find((t) => t.id === activeTab.value)
-  return tab ? tab.viewId : ''
-})
-
-// ── 标签页管理 ──
-const tabs = ref([
-  { id: 'tab-connect', viewId: 'connect-root', title: '连接管理', pinned: false },
-  { id: 'tab-dir', viewId: 'dir-tree', title: '目录与数据', pinned: false },
-])
-const activeTab = ref('tab-connect')
-let nextTabId = 3
-
-/** 侧边栏子项只显示中文短名（title 格式 "中文 英文 (章节)" → 取中文部分）。 */
-const cnTitle = (id) => {
-  const t = CMD_DEFS[id] && CMD_DEFS[id].title ? CMD_DEFS[id].title : id
-  return t.split(' ')[0] || t
-}
-
-/** 根据 viewId 获取标签标题 */
-function tabTitle(viewId) {
-  if (viewId === 'dir-tree') return '目录与数据'
-  if (viewId === 'connect-root') return '连接管理'
-  return cnTitle(viewId)
-}
-
-/** 打开/切换标签。forceNew=true 强制新建（多开）。 */
-function openTab(viewId, forceNew) {
-  if (!forceNew) {
-    // 单击：查找已有相同 viewId 的标签，有则切换
-    const existing = tabs.value.find((t) => t.viewId === viewId)
-    if (existing) {
-      activeTab.value = existing.id
-      return
-    }
-  }
-  // 没找到或双击强制新建
-  const id = 'tab-' + (nextTabId++)
-  tabs.value.push({ id, viewId, title: tabTitle(viewId), pinned: false })
-  activeTab.value = id
-}
-
-function switchTab(id) {
-  activeTab.value = id
-}
-
-function closeTab(id) {
-  const idx = tabs.value.findIndex((t) => t.id === id)
-  if (idx === -1) return
-  // 允许关闭最后一个标签，显示空状态背景
-  tabs.value.splice(idx, 1)
-  if (tabs.value.length === 0) {
-    activeTab.value = ''
-    return
-  }
-  // 如果关闭的是当前标签，切换到相邻标签
-  if (activeTab.value === id) {
-    const newIdx = idx > 0 ? idx - 1 : 0
-    activeTab.value = tabs.value[newIdx]?.id || ''
-  }
-}
-
-// ── 右键菜单操作 ──
-
-/** 关闭指定索引左边的所有非固定标签 */
-function closeLeft(index) {
-  const toRemove = tabs.value.slice(0, index).filter((t) => !t.pinned)
-  const activeLost = toRemove.some((t) => t.id === activeTab.value)
-  toRemove.forEach((t) => {
-    const i = tabs.value.findIndex((x) => x.id === t.id)
-    if (i !== -1) tabs.value.splice(i, 1)
-  })
-  if (activeLost) {
-    activeTab.value = tabs.value[0]?.id || ''
-  }
-}
-
-/** 关闭指定索引右边的所有非固定标签 */
-function closeRight(index) {
-  const toRemove = tabs.value.slice(index + 1).filter((t) => !t.pinned)
-  const activeLost = toRemove.some((t) => t.id === activeTab.value)
-  toRemove.forEach((t) => {
-    const i = tabs.value.findIndex((x) => x.id === t.id)
-    if (i !== -1) tabs.value.splice(i, 1)
-  })
-  if (activeLost) {
-    activeTab.value = tabs.value[index]?.id || ''
-  }
-}
-
-/** 关闭除指定索引以外的所有非固定标签 */
-function closeOthers(index) {
-  const toRemove = tabs.value.filter((t, i) => i !== index && !t.pinned)
-  const target = tabs.value[index]
-  toRemove.forEach((t) => {
-    const i = tabs.value.findIndex((x) => x.id === t.id)
-    if (i !== -1) tabs.value.splice(i, 1)
-  })
-  activeTab.value = target?.id || tabs.value[0]?.id || ''
-}
-
-/** 关闭所有非固定标签（有 pin 的保留） */
-function closeAll() {
-  const toRemove = tabs.value.filter((t) => !t.pinned)
-  toRemove.forEach((t) => {
-    const i = tabs.value.findIndex((x) => x.id === t.id)
-    if (i !== -1) tabs.value.splice(i, 1)
-  })
-  activeTab.value = tabs.value[0]?.id || ''
-}
-
-/** 切换固定状态 */
-function togglePin(id) {
-  const tab = tabs.value.find((t) => t.id === id)
-  if (tab) {
-    tab.pinned = !tab.pinned
-  }
-}
-
-/** 拖动排序 */
-function reorderTab({ from, to }) {
-  const [moved] = tabs.value.splice(from, 1)
-  tabs.value.splice(to, 0, moved)
-}
 
 function onSidebarSelect(viewId, forceNew) {
   openTab(viewId, forceNew)

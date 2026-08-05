@@ -78,6 +78,7 @@ import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
 import { ldCache, refreshLds } from '../ldCache.js'
 import { ACSI_DEFS } from '../acsiDefs.js'
+import { buildDoTree } from '../utils/treeBuilder.js'
 
 const props = defineProps({
   connected: Boolean,
@@ -259,39 +260,7 @@ async function onToggleAcsi({ node, acsi }) {
   }
 }
 
-/** 将扁平引用列表解析为 DO/SDO 层级树 */
-function buildDoTree(nodeName, refs) {
-  const prefix = nodeName + '.'
-  // 构建嵌套 map：{ "Mod": { "Beh": {}, "Mag": {} } }
-  const root = {}
-  for (const ref of refs) {
-    const relative = ref.startsWith(prefix) ? ref.substring(prefix.length) : ref
-    const parts = relative.split('.')
-    let current = root
-    for (const part of parts) {
-      if (!current[part]) current[part] = {}
-      current = current[part]
-    }
-  }
-  // 递归转树节点
-  function toNodes(obj) {
-    return Object.entries(obj).map(([key, children]) => {
-      const childKeys = Object.keys(children)
-      const hasChildren = childKeys.length > 0
-      return {
-        name: `${nodeName}/${key}`,
-        type: 'do',
-        label: key,
-        ref: `${nodeName}.${key}`,
-        children: hasChildren ? toNodes(children) : null,
-        loading: false,
-        expanded: false,
-        isLeaf: !hasChildren,
-      }
-    })
-  }
-  return toNodes(root)
-}
+// buildDoTree 实现在 utils/treeBuilder.js 中
 
 function startEdit(entry) {
   editingRef.value = entry.fullRef

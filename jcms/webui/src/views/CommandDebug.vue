@@ -8,16 +8,16 @@
           <h1 class="page-title">{{ isConnect ? '连接管理' : shortTitle }}</h1>
         </div>
         <div class="title-right">
-          <button type="button" class="asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
+          <button type="button" class="glass asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
           <template v-if="isConnect">
-            <code class="cmd-chip">connect</code>
+            <code class="glass cmd-chip">connect</code>
             <span class="desc-text">TCP → 协商 → 关联</span>
             <span class="sep">·</span>
-            <code class="cmd-chip">disconnect</code>
+            <code class="glass cmd-chip">disconnect</code>
             <span class="desc-text">断开 TCP 连接</span>
           </template>
           <template v-else>
-            <code class="cmd-chip">{{ props.cmd }}</code>
+            <code class="glass cmd-chip">{{ props.cmd }}</code>
             <span class="sep">·</span>
             <span class="desc-text">{{ def.desc }}</span>
           </template>
@@ -143,7 +143,7 @@
                         placeholder="DA"
                         empty-label="（不选）"
                       />
-                      <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                      <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
                     </div>
                   </template>
                   <template v-else>
@@ -154,10 +154,10 @@
                         :placeholder="p.placeholder"
                         empty-label="（不选）"
                       />
-                      <button type="button" class="refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
+                      <button type="button" class="glass glass-danger refs-del" title="删除该引用" @click="removeRefs(i)">✕</button>
                     </div>
                   </template>
-                  <button type="button" class="refs-add" @click="addRefs">＋ 添加引用</button>
+                  <button type="button" class="glass glass-accent refs-add" @click="addRefs">＋ 添加引用</button>
                 </div>
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
               </div>
@@ -185,7 +185,7 @@
         <div v-if="showAsn1" class="split-top" :style="{ height: topHeight + 'px' }">
           <UiCard :title="rightTitle" icon="⛓" fill>
             <template #header>
-              <span class="ui-card__toggle" title="隐藏 {{ rightTitle }}" @click="showAsn1 = false">𝔄</span>
+              <span class="glass ui-card__toggle" title="隐藏 {{ rightTitle }}" @click="showAsn1 = false">𝔄</span>
             </template>
             <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
             <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
@@ -220,7 +220,7 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, toRef, watch } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { debugShared } from '../stores/debugShared.js'
 import ConnectForm from '../components/ConnectForm.vue'
 import ApPicker from '../components/ApPicker.vue'
@@ -240,6 +240,8 @@ import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult } from '../utils/cmdFormat.js'
+import { useSplitPane } from '../composables/useSplitPane.js'
+import { useCommandForm } from '../composables/useCommandForm.js'
 
 const props = defineProps({
   cmd: String,
@@ -335,44 +337,39 @@ const connectCmd = ref('')
 const docOpen = ref(false)
 
 /** 可拖拽分割面板（跨标签页共享） */
-const gridRef = ref(null)
-const leftColWidth = toRef(debugShared, 'leftColWidth')
-const topHeight = toRef(debugShared, 'topHeight')
-const showAsn1 = toRef(debugShared, 'showAsn1')
-watch(showAsn1, (v) => localStorage.setItem('cms-show-asn1', v ? '1' : '0'))
-let dragging = null
+const {
+  gridRef,
+  leftColWidth,
+  topHeight,
+  showAsn1,
+  startVDrag,
+  startHDrag,
+} = useSplitPane()
 
-function startVDrag(e) {
-  dragging = { type: 'v', startX: e.clientX, startW: leftColWidth.value }
-  document.addEventListener('mousemove', onDragMove)
-  document.addEventListener('mouseup', stopDrag)
-  document.body.style.cursor = 'col-resize'
-  document.body.style.userSelect = 'none'
-}
-function startHDrag(e) {
-  dragging = { type: 'h', startY: e.clientY, startH: topHeight.value }
-  document.addEventListener('mousemove', onDragMove)
-  document.addEventListener('mouseup', stopDrag)
-  document.body.style.cursor = 'row-resize'
-  document.body.style.userSelect = 'none'
-}
-function onDragMove(e) {
-  if (!dragging) return
-  if (dragging.type === 'v') {
-    const dx = e.clientX - dragging.startX
-    leftColWidth.value = Math.max(200, Math.min(800, dragging.startW + dx))
-  } else {
-    const dy = e.clientY - dragging.startY
-    topHeight.value = Math.max(100, Math.min(2000, dragging.startH + dy))
-  }
-}
-function stopDrag() {
-  dragging = null
-  document.removeEventListener('mousemove', onDragMove)
-  document.removeEventListener('mouseup', stopDrag)
-  document.body.style.cursor = ''
-  document.body.style.userSelect = ''
-}
+/** 命令表单逻辑 */
+const {
+  initForm,
+  addRefs,
+  removeRefs,
+  rowDoOptions,
+  onRowLd,
+  onRowLn,
+  onRowDo,
+  rowDaOptions,
+  loadNegotiateDefaults,
+  setupFcWatch,
+  setupLnRequiredWatch,
+  setupLdDirWatch,
+  setupLazyLnWatch,
+  setupRefsWatch,
+  setupAllDataRefsWatch,
+} = useCommandForm(form, {
+  getDef: () => def.value,
+  getCmd: () => props.cmd,
+  getLnRef: () => lnRef.value,
+  lnRequiredCmds: ['ln-dir', 'all-data', 'all-def', 'all-cb'],
+})
+
 /** 连接管理页：执行 connect/disconnect 的结果消息。 */
 const connMsg = ref('')
 const connMsgOk = ref(true)
@@ -423,123 +420,15 @@ const highlightedResultCmd = computed(() => {
   return result.value ? highlightCmdStr(result.value.cmd) : ''
 })
 
-function initForm() {
-  for (const k of Object.keys(form)) {
-    delete form[k]
-  }
-  for (const p of def.value.params) {
-    if (p.type === 'select') {
-      const first = p.options[0]
-      // 选项可能是对象 { value, label, color }（带颜色），默认取 value
-      form[p.key] = first && typeof first === 'object' ? first.value : (first || '')
-    } else if (p.type === 'ap-select') {
-      form[p.key] = ''
-    } else if (p.type === 'ld-select') {
-      // 必填的 LD 默认选中缓存第一个，避免空值
-      form[p.key] = p.required && ldCache.length ? ldCache[0] : ''
-    } else if (p.type === 'ln-cascade') {
-      // 级联二选：LD → LN
-      form[p.key] = { ld: '', ln: '' }
-    } else if (p.type === 'refs-list') {
-      // 动态引用列表：初始一行空引用（级联模式为 LD/LN/DO/DA 对象）
-      form[p.key] = p.cascade ? [{ ld: '', ln: '', do: '', da: '' }] : ['']
-    } else {
-      form[p.key] = p.default ?? (p.type === 'switch' ? false : '')
-    }
-  }
-}
+// 设置 watcher
+setupFcWatch()
+setupLnRequiredWatch()
+setupLdDirWatch()
+setupLazyLnWatch()
+setupRefsWatch()
+setupAllDataRefsWatch()
 
-/** 动态引用列表：追加一行。 */
-function addRefs() {
-  const p = def.value.params.find((x) => x.type === 'refs-list')
-  if (!p) return
-  form[p.key].push(p.cascade ? { ld: '', ln: '', do: '', da: '' } : '')
-}
-
-/** 动态引用列表：删除指定行。 */
-function removeRefs(i) {
-  const key = def.value.params.find((p) => p.type === 'refs-list')?.key
-  if (key) form[key].splice(i, 1)
-}
-
-/** 级联引用行的 DO 选项缓存：key = "LD/LN|fc"（经 all-def 轻量查询）。 */
-const rowDoRefs = reactive({})
-function rowDoKey(row) {
-  const fc = String(form.fc || '').split(':')[0] || 'XX'
-  return `${row.ld}/${row.ln}|${fc}`
-}
-function rowDoOptions(row) {
-  if (!row.ld || !row.ln) return []
-  return rowDoRefs[rowDoKey(row)] || []
-}
-async function loadRowDo(row) {
-  if (!row.ld || !row.ln) return
-  const key = rowDoKey(row)
-  if (rowDoRefs[key]) return
-  const fc = String(form.fc || '').split(':')[0] || 'XX'
-  try {
-    const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --json`)
-    rowDoRefs[key] = res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []
-  } catch {
-    rowDoRefs[key] = []
-  }
-}
-/** LD 变化：清空下级并加载该 LD 的 LN 列表。 */
-function onRowLd(row) {
-  row.ln = ''
-  row.do = ''
-  row.da = ''
-  if (row.ld) ensureLdLns(row.ld)
-}
-/** LN 变化：清空 DO/DA 并懒加载 DO 列表。 */
-function onRowLn(row) {
-  row.do = ''
-  row.da = ''
-  loadRowDo(row)
-}
-/** DO 变化：清空 DA 并懒加载 DA 列表。 */
-function onRowDo(row) {
-  row.da = ''
-  loadRowDa(row)
-}
-
-/** 级联引用行的 DA 选项缓存：key = "LD/LN.DO"（经 data-dir 轻量查询）。 */
-const rowDaRefs = reactive({})
-function rowDaKey(row) {
-  if (!row.ld || !row.ln || !row.do) return ''
-  return `${row.ld}/${row.ln}.${row.do}`
-}
-function rowDaOptions(row) {
-  const key = rowDaKey(row)
-  if (!key) return []
-  return rowDaRefs[key] || []
-}
-async function loadRowDa(row) {
-  const key = rowDaKey(row)
-  if (!key || rowDaRefs[key]) return
-  try {
-    const res = await executeJson(`data-dir --ref ${key} --json`)
-    rowDaRefs[key] = res.success && Array.isArray(res.data)
-      ? res.data.map((s) => String(s).replace(/^\[[A-Z]+\]\s+/, '')).filter(Boolean)
-      : []
-  } catch {
-    rowDaRefs[key] = []
-  }
-}
-
-// 级联引用：fc 变化时重新加载各行的 DO 选项（缓存按 fc 分键）
-watch(() => form.fc, () => {
-  const p = def.value.params.find((x) => x.type === 'refs-list' && x.cascade)
-  const rows = p ? form[p.key] : null
-  if (!Array.isArray(rows)) return
-  for (const row of rows) {
-    if (row && row.ld && row.ln) loadRowDo(row)
-  }
-})
-
-/** ln 必填的命令：进入页面时预加载全量 LN 引用并默认选中第一个。 */
-const LN_REQUIRED_CMDS = ['ln-dir', 'all-data', 'all-def', 'all-cb']
-
+// cmd 切换时重置表单 + 加载 negotiate 默认值
 watch(() => props.cmd, async () => {
   result.value = null
   connectCmd.value = ''
@@ -547,89 +436,7 @@ watch(() => props.cmd, async () => {
   if (props.cmd === 'negotiate') {
     await loadNegotiateDefaults()
   }
-  if (LN_REQUIRED_CMDS.includes(props.cmd)) {
-    await ensureAllLnRefs()
-    const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
-    const o = p ? form[p.key] : null
-    if (o && !o.ld && ldCache.length) {
-      o.ld = ldCache[0]
-      // ln-dir：仅选 LD，LN 可选（留空 = 查 LD 下全部 LN）
-      if (props.cmd !== 'ln-dir') {
-        const lns = ldLns[o.ld] || []
-        if (lns.length) o.ln = lns[0]
-      }
-    }
-  }
 }, { immediate: true })
-
-// ld-dir：选中 LD 后预加载其 LN 列表；未选 LD 时预加载全量完整引用（供 after 下拉）
-// 同时监听 ldCache 长度：直接进入页面时缓存可能还没填充，填充后自动补拼全量引用
-// after 级联联动：上面 ld 变化时同步 after.ld（单设备模式 after 只带 LN）
-watch([() => form.ld, () => ldCache.length], async ([ld]) => {
-  if (props.cmd !== 'ld-dir') return
-  if (ld) {
-    await ensureLdLns(ld)
-    const o = form.after
-    if (o) {
-      o.ld = ld
-      o.ln = ''
-    }
-  } else {
-    await ensureAllLnRefs()
-    const o = form.after
-    if (o && !o.ln) o.ld = ''
-  }
-}, { immediate: true })
-
-// ln 必填命令：等 LD 缓存就绪后自动选中第一个 LD（ln-dir 仅选 LD，其余命令自动选 LN）
-watch([() => allLnRefs.length, () => ldCache.length], async () => {
-  if (!LN_REQUIRED_CMDS.includes(props.cmd)) return
-  const p = def.value.params.find((x) => x.key === 'ln' && x.type === 'ln-cascade')
-  const o = p ? form[p.key] : null
-  if (!o || o.ld) return
-  await ensureAllLnRefs()
-  if (ldCache.length && !o.ld) {
-    o.ld = ldCache[0]
-    // ln-dir：仅选 LD，LN 可选
-    if (props.cmd !== 'ln-dir') {
-      const lns = ldLns[o.ld] || []
-      if (lns.length) o.ln = lns[0]
-    }
-  }
-})
-
-// ln-dir / all-cb：ln / acsi 变化时懒加载引用列表（供 after 下拉）
-watch([lnRef, () => form.acsi], async () => {
-  if (!lnRef.value) return
-  if (props.cmd === 'ln-dir') {
-    const acsi = String(form.acsi || '').split(':')[0] || '1'
-    await ensureLnDirRefs(lnRef.value, acsi)
-  } else if (props.cmd === 'all-cb') {
-    const acsi = String(form.acsi || '').split(':')[0] || 'brcb'
-    await ensureAllCbRefs(lnRef.value, acsi)
-  }
-}, { immediate: true })
-
-// all-data / all-def：ln / fc 变化时懒加载该 LN 下的 DO 引用（经轻量 all-def 查询，供 after 下拉）
-watch([lnRef, () => form.fc], async () => {
-  if (!['all-data', 'all-def'].includes(props.cmd) || !lnRef.value) return
-  const fc = String(form.fc || '').split(':')[0] || 'XX'
-  await ensureAllDefRefs(lnRef.value, fc)
-}, { immediate: true })
-
-/** negotiate 专属：读取 neg-cfg 配置回填 APDU/ASDU/版本。 */
-async function loadNegotiateDefaults() {
-  try {
-    const neg = await executeJson('neg-cfg --json')
-    if (neg.success && neg.data) {
-      form.apdu = neg.data.apduSize
-      form.asdu = neg.data.asduSize
-      form.version = neg.data.protocolVersion
-    }
-  } catch {
-    // 配置读取失败时保留默认值
-  }
-}
 
 async function run() {
   await runCmd(buildCmd(props.cmd, def.value.params, form, jsonMode.value, { cmdProp: props.cmd }))
@@ -754,10 +561,6 @@ async function disconnect() {
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-radius: 5px;
   padding: 1px 8px;
 }
@@ -786,25 +589,16 @@ async function disconnect() {
   flex-shrink: 0;
   width: 30px;
   height: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   font-size: 16px;
   font-style: italic;
   font-weight: bold;
   line-height: 1;
   cursor: pointer;
   color: var(--text-secondary);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
-  transition: all 0.2s;
 }
 .asn1-toggle-header-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.2);
   color: var(--text-primary);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   transform: scale(1.08);
 }
 
@@ -1088,14 +882,8 @@ async function disconnect() {
   width: 26px;
   height: 26px;
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 .ui-card__toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.15);
   color: var(--text-primary);
 }
 
@@ -1179,46 +967,20 @@ async function disconnect() {
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   color: var(--text-muted);
   font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-}
-
-.refs-del:hover {
-  background: rgba(229, 85, 90, 0.15);
-  border-color: rgba(229, 85, 90, 0.3);
-  color: var(--red);
-  box-shadow: 0 4px 16px rgba(229, 85, 90, 0.15);
 }
 
 .refs-add {
   align-self: flex-start;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  color: var(--text-secondary);
+  border-style: dashed;
   border-radius: 8px;
   padding: 6px 12px;
   font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
-}
-
-.refs-add:hover {
-  border-color: rgba(91, 141, 239, 0.5);
-  border-style: solid;
-  color: var(--accent);
-  background: rgba(91, 141, 239, 0.08);
-  box-shadow: 0 4px 16px rgba(91, 141, 239, 0.12);
+  color: var(--text-secondary);
 }
 
 .divider {
@@ -1271,16 +1033,6 @@ async function disconnect() {
   color: var(--red);
   background: var(--red-bg);
   border: 1px solid rgba(229, 85, 90, 0.3);
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 
 /* ── 连接流程提示 ── */

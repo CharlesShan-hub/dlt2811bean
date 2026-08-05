@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-bar" ref="tabBarRef" @contextmenu.prevent>
+  <div class="tab-bar" ref="tabBarRef">
     <div class="tab-scroll" ref="scrollRef">
       <div
         v-for="(tab, index) in tabs"
@@ -32,22 +32,22 @@
         >✕</span>
       </div>
     </div>
+  </div>
 
-    <!-- 右键菜单 -->
-    <div
-      v-if="contextMenu.visible"
-      class="context-menu"
-      :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
-      ref="menuRef"
-    >
-      <div class="ctx-item" @click="closeLeft">关闭左边</div>
-      <div class="ctx-item" @click="closeRight">关闭右边</div>
-      <div class="ctx-item" @click="closeOthers">关闭其他</div>
-      <div class="ctx-item" @click="closeAll">关闭全部</div>
-      <div class="ctx-divider"></div>
-      <div class="ctx-item" @click="togglePin">
-        {{ contextMenu.tab?.pinned ? '取消固定' : '固定标签' }}
-      </div>
+  <!-- 右键菜单（放在 .tab-bar 外面，避免被 overflow 裁剪） -->
+  <div
+    v-if="contextMenu.visible"
+    class="context-menu"
+    :style="{ left: contextMenu.x + 'px', top: contextMenu.y + 'px' }"
+    ref="menuRef"
+  >
+    <div class="ctx-item" @click="closeLeft">关闭左边</div>
+    <div class="ctx-item" @click="closeRight">关闭右边</div>
+    <div class="ctx-item" @click="closeOthers">关闭其他</div>
+    <div class="ctx-item" @click="closeAll">关闭全部</div>
+    <div class="ctx-divider"></div>
+    <div class="ctx-item" @click="togglePin">
+      {{ contextMenu.tab?.pinned ? '取消固定' : '固定标签' }}
     </div>
   </div>
 </template>
@@ -76,6 +76,8 @@ const contextMenu = reactive({
 })
 
 function openContextMenu(e, tab, index) {
+  e.preventDefault()
+  e.stopPropagation()
   contextMenu.visible = true
   contextMenu.x = e.clientX
   contextMenu.y = e.clientY

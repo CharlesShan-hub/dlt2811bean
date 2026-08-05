@@ -9,15 +9,14 @@
     <div class="cmd-preview">
       <code class="preview-line">
         <span class="preview-text" v-html="highlightedCmd"></span>
-        <button type="button" class="copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
+        <button type="button" class="glass copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
       </code>
     </div>
-    <!-- 上次执行的命令标题栏（固定，不滚动） -->
-    <div v-if="result" class="term-title-bar">
+    <div v-if="result" class="glass term-title-bar">
       <span class="term-time">{{ result.time }}</span>
       <span class="term-cmd"><span class="dollar">$</span> <span v-html="highlightedResultCmd"></span></span>
       <span class="term-title-actions">
-        <button type="button" class="copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
+        <button type="button" class="glass copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
       </span>
     </div>
     <div class="cmd-result-scroll">
@@ -25,7 +24,7 @@
       <div v-else-if="jsonFormat && formattedJson" class="json-window">
         <div class="json-body">
           <pre class="json-pre"><code v-html="formattedJson"></code></pre>
-          <button type="button" class="copy-icon-btn copy-inline copy-out-json" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
+          <button type="button" class="glass copy-icon-btn copy-inline copy-out-json" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
         </div>
       </div>
       <div v-else class="term-window">
@@ -170,8 +169,6 @@ async function copyCmdResult() {
   align-items: center;
   gap: 14px;
   padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 8px 8px 0 0;
   margin-bottom: 0;
   font-size: 12px;
@@ -215,35 +212,25 @@ async function copyCmdResult() {
   overflow-y: auto;
 }
 
-/* 复制图标按钮 */
+/* 复制图标按钮（glass 风格由全局 .glass 类提供） */
 .copy-icon-btn {
   margin-left: 6px;
   padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   color: var(--text-muted);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: all 0.2s;
   flex-shrink: 0;
 }
 .copy-icon-btn:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
 }
 
 .cmd-preview .copy-icon-btn {
   margin-left: 8px;
   padding: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 6px;
 }
 
@@ -251,19 +238,12 @@ async function copyCmdResult() {
 .copy-inline {
   margin-left: 8px;
   padding: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 4px;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   color: var(--text-muted);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   flex-shrink: 0;
 }
 .copy-inline:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.15);
 }
 
 .term-line {
@@ -286,10 +266,6 @@ async function copyCmdResult() {
   position: absolute;
   top: 6px;
   right: 10px;
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 5px;
   border-radius: 5px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
