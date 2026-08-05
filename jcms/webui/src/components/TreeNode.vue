@@ -6,11 +6,12 @@
       :style="{ paddingLeft: depth * 16 + 12 + 'px' }"
       @click="handleClick"
     >
-      <span v-if="isLeaf" class="node-icon leaf-icon">◌</span>
+      <span v-if="isLeaf && !node.dotColor" class="node-icon leaf-icon">◌</span>
       <span v-else-if="node.type === 'ln'" class="node-icon leaf-icon">◌</span>
-      <span v-else class="node-arrow" :class="{ expanded: node.expanded }">
+      <span v-else-if="!node.dotColor" class="node-arrow" :class="{ expanded: node.expanded }">
         {{ node.loading ? '○' : '▸' }}
       </span>
+      <span v-if="node.dotColor" class="child-dot" :style="{ background: node.dotColor }"></span>
       <span class="node-label" :class="labelClass">{{ node.label }}</span>
       <span v-if="node.type === 'ld'" class="node-type">LD</span>
       <!-- LN：右侧 9 个 ACSI 分类圆点，单选切换视图（LN 下方直接显示该分类成员） -->
@@ -19,8 +20,11 @@
           v-for="d in ACSI_DEFS"
           :key="d.key"
           class="acsi-dot"
-          :class="{ on: node.activeAcsi === d.key }"
-          :style="{ background: d.color }"
+          :class="{
+            on: node.activeAcsi === d.key,
+            has: node.contentAcsis?.includes(d.key)
+          }"
+          :style="{ '--dot-color': d.color }"
           :title="d.label"
           @click.stop="onAcsiClick(d.key)"
         ></span>
@@ -152,14 +156,26 @@ function onAcsiClick(acsi) {
   flex-shrink: 0;
 }
 
+/* 子节点左侧的彩色小圆点，颜色继承自父 ACSI 分类 */
+.child-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 4px;
+  opacity: 0.7;
+}
+
 .acsi-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  opacity: 0.35;
+  background: var(--dot-color);
+  border: 1.5px solid transparent;
+  opacity: 0.3;
   cursor: pointer;
   flex-shrink: 0;
-  transition: opacity 0.15s, transform 0.15s;
+  transition: opacity 0.15s, transform 0.15s, background 0.15s, border-color 0.15s;
 }
 
 .acsi-dot:hover {
@@ -167,8 +183,21 @@ function onAcsiClick(acsi) {
   transform: scale(1.25);
 }
 
-.acsi-dot.on {
+/* 亮一圈：有内容，叠加彩色描边（背景不变） */
+.acsi-dot.has {
+  border-color: var(--dot-color);
   opacity: 1;
-  box-shadow: 0 0 6px currentColor;
+}
+
+.acsi-dot.has:hover {
+  opacity: 1;
+}
+
+/* 全亮：激活，实心填充发光 */
+.acsi-dot.on {
+  background: var(--dot-color);
+  border-color: var(--dot-color);
+  opacity: 1;
+  box-shadow: 0 0 6px var(--dot-color);
 }
 </style>

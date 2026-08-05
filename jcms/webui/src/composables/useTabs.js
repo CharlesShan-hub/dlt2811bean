@@ -20,8 +20,8 @@ function tabTitle(viewId) {
 
 export function useTabs() {
   const tabs = ref([
-    { id: 'tab-connect', viewId: 'connect-root', title: '连接管理', pinned: false },
-    { id: 'tab-dir', viewId: 'dir-tree', title: '目录与数据', pinned: false },
+    { id: 'tab-connect', viewId: 'connect-root', title: '连接管理', pinned: false, persistent: true },
+    { id: 'tab-dir', viewId: 'dir-tree', title: '目录与数据', pinned: false, persistent: true },
   ])
   const activeTab = ref('tab-connect')
   let nextTabId = 3
@@ -32,19 +32,36 @@ export function useTabs() {
     return tab ? tab.viewId : ''
   })
 
-  /** 打开/切换标签。forceNew=true 强制新建（多开）。 */
+  /** 打开/切换标签 */
   function openTab(viewId, forceNew) {
-    if (!forceNew) {
-      // 单击：查找已有相同 viewId 的标签，有则切换
-      const existing = tabs.value.find((t) => t.viewId === viewId)
-      if (existing) {
-        activeTab.value = existing.id
-        return
-      }
+    // 双击（forceNew=true）：总是新建一个 persistent 标签
+    if (forceNew) {
+      const id = 'tab-' + (nextTabId++)
+      tabs.value.push({ id, viewId, title: tabTitle(viewId), pinned: false, persistent: true })
+      activeTab.value = id
+      return
     }
-    // 没找到或双击强制新建
+
+    // 单击：先看是否已有相同 viewId 的标签（不管什么类型）
+    const existing = tabs.value.find((t) => t.viewId === viewId)
+    if (existing) {
+      activeTab.value = existing.id
+      return
+    }
+
+    // 没找到：找可替换的标签（非 persistent、非 pinned）
+    const replaceable = tabs.value.find((t) => !t.persistent && !t.pinned)
+    if (replaceable) {
+      replaceable.viewId = viewId
+      replaceable.title = tabTitle(viewId)
+      replaceable.pinned = false
+      activeTab.value = replaceable.id
+      return
+    }
+
+    // 没有可替换的，新建一个 non-persistent 标签
     const id = 'tab-' + (nextTabId++)
-    tabs.value.push({ id, viewId, title: tabTitle(viewId), pinned: false })
+    tabs.value.push({ id, viewId, title: tabTitle(viewId), pinned: false, persistent: false })
     activeTab.value = id
   }
 

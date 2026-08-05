@@ -216,6 +216,8 @@ async function onToggle(node) {
           children: null,
           loading: false,
           expanded: false,
+          emptyAcsis: [],   // 已确认无内容
+          contentAcsis: [], // 已确认有内容
         }))
       }
     } else if (node.type === 'ln') {
@@ -223,6 +225,37 @@ async function onToggle(node) {
     }
   } finally {
     node.loading = false
+  }
+
+  // 展开 LD 后，自动预检所有 LN 子节点的 ACSI 内容
+  if (node.type === 'ld' && node.children) {
+    node.children.forEach(preCheckLnAcsis)
+  }
+}
+
+/** 预检一个 LN 的所有 ACSI 分类，标记哪些有内容/无内容。串行执行避免并发超时。 */
+async function preCheckLnAcsis(lnNode) {
+  const acsiList = ACSI_DEFS.map(d => d.key)
+  for (const acsi of acsiList) {
+    // 每个请求间隔 50ms，避免打满服务器
+    await new Promise(r => setTimeout(r, 50))
+    try {
+      const res = await executeJson(`ln-dir --ln ${lnNode.name} --acsi ${acsi} --json`)
+      if (res.success && res.data.length > 0) {
+        if (!lnNode.contentAcsis.includes(acsi)) {
+          lnNode.contentAcsis.push(acsi)
+        }
+      } else {
+        if (!lnNode.emptyAcsis.includes(acsi)) {
+          lnNode.emptyAcsis.push(acsi)
+        }
+      }
+    } catch {
+      // 请求失败视为无内容
+      if (!lnNode.emptyAcsis.includes(acsi)) {
+        lnNode.emptyAcsis.push(acsi)
+      }
+    }
   }
 }
 
@@ -238,10 +271,20 @@ async function onToggleAcsi({ node, acsi }) {
   node.loading = true
   try {
     const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --json`)
-    if (res.success) {
+    if (res.success && res.data.length > 0) {
+      // 有内容：记录到 contentAcsis
+      if (!node.contentAcsis.includes(acsi)) {
+        node.contentAcsis.push(acsi)
+      }
+      // 从空列表中移除（如果之前被标记过）
+      const idx = node.emptyAcsis.indexOf(acsi)
+      if (idx !== -1) node.emptyAcsis.splice(idx, 1)
+      // 找到该 ACSI 分类的颜色，传给子节点
+      const acsiDef = ACSI_DEFS.find(d => d.key === acsi)
+      const acsiColor = acsiDef ? acsiDef.color : '#888'
       const childType = acsi === 'data-object' ? 'do' : acsi
       node.children = acsi === 'data-object'
-        ? buildDoTree(node.name, res.data)
+        ? addDotColor(buildDoTree(node.name, res.data), acsiColor)
         : res.data.map(name => ({
             name: `${node.name}/${name}`,
             type: childType,
@@ -251,8 +294,13 @@ async function onToggleAcsi({ node, acsi }) {
             loading: false,
             expanded: false,
             isLeaf: true,
+            dotColor: acsiColor,
           }))
     } else {
+      // 没有内容：记录为空
+      if (!node.emptyAcsis.includes(acsi)) {
+        node.emptyAcsis.push(acsi)
+      }
       node.children = []
     }
   } finally {
@@ -261,6 +309,15 @@ async function onToggleAcsi({ node, acsi }) {
 }
 
 // buildDoTree 实现在 utils/treeBuilder.js 中
+
+/** 递归给树节点加上 dotColor */
+function addDotColor(nodes, color) {
+  return nodes.map(n => ({
+    ...n,
+    dotColor: color,
+    children: n.children ? addDotColor(n.children, color) : null,
+  }))
+}
 
 function startEdit(entry) {
   editingRef.value = entry.fullRef
