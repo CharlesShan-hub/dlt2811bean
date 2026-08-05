@@ -146,30 +146,78 @@ function onSidebarSelect(viewId, forceNew) {
 }
 
 // ── 导航配置 ──
+// done: true  → 绿色圆点（已实现），false → 红色圆点（尚未实现）
 const navItems = [
   {
     id: 'connect-root',
     label: '连接管理',
-    icon: '🔌',
-    children: ['negotiate', 'associate', 'release', 'abort', 'test'].map((id) => ({ id, label: cnTitle(id) })),
+    icon: 'Plug',
+    children: ['negotiate', 'associate', 'release', 'abort', 'test'].map((id) => ({ id, label: cnTitle(id), done: true })),
   },
-  { id: 'dir-tree', label: '目录与数据', icon: '⊞', children: [
-    { id: 'server-dir', label: cnTitle('server-dir') },
-    { id: 'ld-dir', label: cnTitle('ld-dir') },
-    { id: 'ln-dir', label: cnTitle('ln-dir') },
-    { id: 'all-data', label: cnTitle('all-data') },
-    { id: 'all-def', label: cnTitle('all-def') },
-    { id: 'all-cb', label: cnTitle('all-cb') },
-    { id: 'get-data-values', label: cnTitle('get-data-values') },
-    { id: 'set-data-values', label: cnTitle('set-data-values') },
-    { id: 'data-dir', label: cnTitle('data-dir') },
-    { id: 'get-data-def', label: cnTitle('get-data-def') },
+  { id: 'dir-tree', label: '目录与数据', icon: 'FolderTree', children: [
+    { id: 'server-dir', label: cnTitle('server-dir'), done: true },
+    { id: 'ld-dir', label: cnTitle('ld-dir'), done: true },
+    { id: 'ln-dir', label: cnTitle('ln-dir'), done: true },
+    { id: 'all-data', label: cnTitle('all-data'), done: true },
+    { id: 'all-def', label: cnTitle('all-def'), done: true },
+    { id: 'all-cb', label: cnTitle('all-cb'), done: true },
+    { id: 'get-data-values', label: cnTitle('get-data-values'), done: true },
+    { id: 'set-data-values', label: cnTitle('set-data-values'), done: true },
+    { id: 'data-dir', label: cnTitle('data-dir'), done: true },
+    { id: 'get-data-def', label: cnTitle('get-data-def'), done: true },
   ] },
-  { id: 'dataset', label: '数据集', icon: '⧉' },
-  { id: 'sg', label: '定值组', icon: '⚙' },
-  { id: 'report', label: '报告', icon: '📋' },
-  { id: 'file', label: '文件', icon: '📁' },
-  { id: 'log', label: '日志', icon: '📝' },
+  { id: 'dataset', label: '数据集', icon: 'Table', done: false, children: [
+    { id: 'get-dataset-values', label: cnTitle('get-dataset-values'), done: false },
+    { id: 'set-dataset-values', label: cnTitle('set-dataset-values'), done: false },
+    { id: 'create-dataset', label: cnTitle('create-dataset'), done: false },
+    { id: 'delete-dataset', label: cnTitle('delete-dataset'), done: false },
+    { id: 'get-dataset-dir', label: cnTitle('get-dataset-dir'), done: false },
+  ] },
+  { id: 'sg', label: '定值组', icon: 'Settings', done: false, children: [
+    { id: 'select-active-sg', label: cnTitle('select-active-sg'), done: false },
+    { id: 'select-edit-sg', label: cnTitle('select-edit-sg'), done: false },
+    { id: 'set-edit-sg', label: cnTitle('set-edit-sg'), done: false },
+    { id: 'confirm-edit-sg', label: cnTitle('confirm-edit-sg'), done: false },
+    { id: 'get-edit-sg', label: cnTitle('get-edit-sg'), done: false },
+    { id: 'sgcb-vals', label: cnTitle('sgcb-vals'), done: false },
+  ] },
+  { id: 'report', label: '报告', icon: 'FileText', done: false, children: [
+    { id: 'get-brcb-vals', label: cnTitle('get-brcb-vals'), done: false },
+    { id: 'set-brcb-vals', label: cnTitle('set-brcb-vals'), done: false },
+    { id: 'get-urcb-vals', label: cnTitle('get-urcb-vals'), done: false },
+    { id: 'set-urcb-vals', label: cnTitle('set-urcb-vals'), done: false },
+  ] },
+  { id: 'log', label: '日志', icon: 'Scroll', done: false, children: [
+    { id: 'get-lcb-vals', label: cnTitle('get-lcb-vals'), done: false },
+    { id: 'set-lcb-vals', label: cnTitle('set-lcb-vals'), done: false },
+    { id: 'query-log-by-time', label: cnTitle('query-log-by-time'), done: false },
+    { id: 'query-log-after', label: cnTitle('query-log-after'), done: false },
+    { id: 'get-log-status', label: cnTitle('get-log-status'), done: false },
+  ] },
+  { id: 'goose', label: 'GOOSE', icon: 'Radio', done: false, children: [
+    { id: 'get-go-ref', label: cnTitle('get-go-ref'), done: false },
+    { id: 'get-goose-elem', label: cnTitle('get-goose-elem'), done: false },
+    { id: 'get-gocb-vals', label: cnTitle('get-gocb-vals'), done: false },
+    { id: 'set-gocb-vals', label: cnTitle('set-gocb-vals'), done: false },
+  ] },
+  { id: 'msv', label: '多播采样值', icon: 'Activity', done: false, children: [
+    { id: 'get-msvcb-vals', label: cnTitle('get-msvcb-vals'), done: false },
+    { id: 'set-msvcb-vals', label: cnTitle('set-msvcb-vals'), done: false },
+  ] },
+  { id: 'file', label: '文件', icon: 'Folder', done: false, children: [
+    { id: 'get-file', label: cnTitle('get-file'), done: false },
+    { id: 'set-file', label: cnTitle('set-file'), done: false },
+    { id: 'delete-file', label: cnTitle('delete-file'), done: false },
+    { id: 'get-file-attrs', label: cnTitle('get-file-attrs'), done: false },
+    { id: 'get-file-dir', label: cnTitle('get-file-dir'), done: false },
+  ] },
+  { id: 'rpc', label: 'RPC接口', icon: 'ArrowLeftRight', done: false, children: [
+    { id: 'rpc-iface-dir', label: cnTitle('rpc-iface-dir'), done: false },
+    { id: 'rpc-method-dir', label: cnTitle('rpc-method-dir'), done: false },
+    { id: 'rpc-iface-def', label: cnTitle('rpc-iface-def'), done: false },
+    { id: 'rpc-method-def', label: cnTitle('rpc-method-def'), done: false },
+    { id: 'rpc-call', label: cnTitle('rpc-call'), done: false },
+  ] },
 ]
 
 // ── 状态轮询 ──

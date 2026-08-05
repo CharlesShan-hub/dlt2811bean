@@ -16,19 +16,19 @@ export const P_VERSION = { key: 'version', label: '协议版本 version', type: 
  */
 export const FC_OPTIONS = [
   { value: '', label: '（不选）' },
-  { value: 'XX', label: '全部（all，不过滤）' },
-  { value: 'ST', label: '状态（status）' },
-  { value: 'MX', label: '测量（measurand）' },
-  { value: 'SP', label: '定值（setpoint）' },
-  { value: 'SV', label: '替代值（substituted）' },
-  { value: 'CF', label: '配置（configuration）' },
-  { value: 'DC', label: '描述（description）' },
-  { value: 'SG', label: '定值组（setting group）' },
-  { value: 'SE', label: '定值组编辑（setting group editable）' },
-  { value: 'SR', label: '服务响应（service response）' },
-  { value: 'OR', label: '操作（operational）' },
-  { value: 'BL', label: '闭锁（blocked）' },
-  { value: 'EX', label: '扩展（extended）' },
+  { value: 'XX', label: 'XX' },
+  { value: 'ST', label: 'ST' },
+  { value: 'MX', label: 'MX' },
+  { value: 'SP', label: 'SP' },
+  { value: 'SV', label: 'SV' },
+  { value: 'CF', label: 'CF' },
+  { value: 'DC', label: 'DC' },
+  { value: 'SG', label: 'SG' },
+  { value: 'SE', label: 'SE' },
+  { value: 'SR', label: 'SR' },
+  { value: 'OR', label: 'OR' },
+  { value: 'BL', label: 'BL' },
+  { value: 'EX', label: 'EX' },
 ]
 
 /**

@@ -9,7 +9,7 @@
         :class="{ active: isParentActive(item) }"
         @click="handleClick(item)"
       >
-        <span class="nav-icon">{{ item.icon }}</span>
+        <span class="nav-icon"><component :is="iconMap[item.icon]" :size="16" /></span>
         <span class="nav-label">{{ item.label }}</span>
         <span v-if="item.children" class="nav-arrow" :class="{ open: expanded === item.id }">▾</span>
       </a>
@@ -22,7 +22,15 @@
           @click="$emit('select', child.id)"
           @dblclick="$emit('select-duplicate', child.id)"
         >
-          <span class="nav-icon">{{ child.icon || '·' }}</span>
+          <span
+            v-if="child.icon"
+            class="nav-icon"
+          ><component :is="iconMap[child.icon]" :size="14" /></span>
+          <span
+            v-else
+            class="status-dot"
+            :class="child.done ? 'done' : 'todo'"
+          ></span>
           <span class="nav-label">{{ child.label }}</span>
         </a>
       </div>
@@ -32,6 +40,29 @@
 
 <script setup>
 import { ref } from 'vue'
+import Plug from '@lucide/vue/dist/esm/icons/plug.mjs'
+import FolderTree from '@lucide/vue/dist/esm/icons/folder-tree.mjs'
+import Table from '@lucide/vue/dist/esm/icons/table.mjs'
+import Settings from '@lucide/vue/dist/esm/icons/settings.mjs'
+import FileText from '@lucide/vue/dist/esm/icons/file-text.mjs'
+import Scroll from '@lucide/vue/dist/esm/icons/scroll.mjs'
+import Radio from '@lucide/vue/dist/esm/icons/radio.mjs'
+import Activity from '@lucide/vue/dist/esm/icons/activity.mjs'
+import Folder from '@lucide/vue/dist/esm/icons/folder.mjs'
+import ArrowLeftRight from '@lucide/vue/dist/esm/icons/arrow-left-right.mjs'
+
+const iconMap = {
+  Plug,
+  FolderTree,
+  Table,
+  Settings,
+  FileText,
+  Scroll,
+  Radio,
+  Activity,
+  Folder,
+  ArrowLeftRight,
+}
 
 const props = defineProps({
   items: Array,
@@ -113,6 +144,25 @@ function handleClick(item) {
   width: 20px;
   text-align: center;
   flex-shrink: 0;
+}
+
+/* 服务状态指示圆点 */
+.status-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin: 0 5px;
+  transition: box-shadow 0.2s;
+}
+.status-dot.done {
+  background: #2ecc71;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.5);
+}
+.status-dot.todo {
+  background: #e74c3c;
+  box-shadow: 0 0 6px rgba(231, 76, 60, 0.5);
 }
 
 .nav-label {

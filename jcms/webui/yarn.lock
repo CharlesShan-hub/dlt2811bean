@@ -162,6 +162,11 @@
   resolved "https://registry.npmjs.org/@jridgewell/sourcemap-codec/-/sourcemap-codec-1.5.5.tgz"
   integrity sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==
 
+"@lucide/vue@^1.28.0":
+  version "1.28.0"
+  resolved "https://registry.yarnpkg.com/@lucide/vue/-/vue-1.28.0.tgz#05173964580340b30de46b83e68cebfa66373963"
+  integrity sha512-cO89UyNM/0i2Srdi04nFWeEOQkqzDZlM2ehtWyBhcMpRTJDKpMZPCGAVlmVBgBgr5HaeL5L6FsU8RHsOdwXtKw==
+
 "@rollup/rollup-android-arm-eabi@4.62.2":
   version "4.62.2"
   resolved "https://registry.yarnpkg.com/@rollup/rollup-android-arm-eabi/-/rollup-android-arm-eabi-4.62.2.tgz#5e9849b661c2229cf967a08dbe2dbbe9e8c991e5"
