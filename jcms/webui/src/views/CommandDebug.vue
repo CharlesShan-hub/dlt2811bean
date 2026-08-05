@@ -3,11 +3,12 @@
     <header class="page-head">
       <div class="title-row">
         <div class="title-left">
-          <span v-if="section" class="sec-badge">✦ {{ section }}</span>
+          <span v-if="def.doc" class="sec-badge doc-badge" title="协议说明" @click="docOpen = true">✦ {{ section }}</span>
+          <span v-else-if="section" class="sec-badge">✦ {{ section }}</span>
           <h1 class="page-title">{{ isConnect ? '连接管理' : shortTitle }}</h1>
         </div>
         <div class="title-right">
-          <button v-if="def.doc" type="button" class="doc-btn" title="协议说明" @click="docOpen = true">📖</button>
+          <button type="button" class="asn1-toggle-header-btn" :title="showAsn1 ? '隐藏 ASN.1' : '显示 ASN.1'" @click="showAsn1 = !showAsn1">𝔄</button>
           <template v-if="isConnect">
             <code class="cmd-chip">connect</code>
             <span class="desc-text">TCP → 协商 → 关联</span>
@@ -32,7 +33,7 @@
       </template>
     </UiModal>
 
-    <div class="debug-grid">
+    <div class="debug-grid" ref="gridRef" :style="{ gridTemplateColumns: leftColWidth + 'px 6px 1fr' }">
       <!-- ── 左栏：参数 ── -->
       <UiCard :title="isConnect ? '连接设置' : '参数'" icon="⚙" fill>
         <!-- connect 专属：使用共享连接表单 + 断开按钮 + 结果消息 -->
@@ -98,7 +99,7 @@
                   />
                   <UiSelect
                     v-model="form[p.key].ln"
-                    :options="props.cmd === 'ln-dir' ? ['', ...cascadeLns(form[p.key])] : cascadeLns(form[p.key])"
+                    :options="['', ...cascadeLns(form[p.key])]"
                     placeholder="LN"
                     empty-label="（不选）"
                   />
@@ -176,20 +177,31 @@
         </div>
       </UiCard>
 
+      <!-- 垂直拖拽手柄 -->
+      <div class="drag-v" @mousedown.prevent="startVDrag"></div>
+
       <!-- ── 右栏：流程 + 命令与返回（含实时预览） ── -->
       <div class="col-right">
-        <UiCard :title="rightTitle" icon="⛓" collapsible>
-          <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
-          <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
-          <p v-if="isConnect" class="tip">💡 <code>connect --ap</code> 自动完成上述三步；关联建立后即可使用各服务页面。</p>
-          <template v-else>
-            <Asn1Code v-if="def.asn1" :code="def.asn1" />
-            <p v-else-if="def.desc" class="svc-note">{{ def.desc }}</p>
-            <p v-if="def.note" class="svc-note">{{ def.note }}</p>
-          </template>
-        </UiCard>
+        <div v-if="showAsn1" class="split-top" :style="{ height: topHeight + 'px' }">
+          <UiCard :title="rightTitle" icon="⛓" fill>
+            <template #header>
+              <span class="ui-card__toggle" title="隐藏 {{ rightTitle }}" @click="showAsn1 = false">𝔄</span>
+            </template>
+            <!-- connect 是便捷封装命令：显示状态图而非 ASN.1 -->
+            <StateDiagram v-if="isConnect" :states="connectFlow.states" :edges="connectFlow.edges" :active="activeState" />
+            <p v-if="isConnect" class="tip">💡 <code>connect --ap</code> 自动完成上述三步；关联建立后即可使用各服务页面。</p>
+            <template v-else>
+              <Asn1Code v-if="def.asn1" :code="def.asn1" />
+              <p v-else-if="def.desc" class="svc-note">{{ def.desc }}</p>
+              <p v-if="def.note" class="svc-note">{{ def.note }}</p>
+            </template>
+          </UiCard>
+        </div>
 
-        <UiCard title="命令与返回" icon="🔄">
+        <!-- 水平拖拽手柄：仅在 ASN.1 可见时显示 -->
+        <div v-if="showAsn1" class="drag-h" @mousedown.prevent="startHDrag"></div>
+
+        <UiCard title="命令与返回" icon="🔄" fill class="cmd-result-card">
           <template #header>
             <div class="json-opt">
               <span class="json-opt-label">--json</span>
@@ -197,44 +209,42 @@
             </div>
           </template>
           <div class="cmd-preview">
-            <code class="preview-line">{{ previewCmd }}</code>
-            <UiButton variant="ghost" @click="copyCmd">
-              {{ copied ? '✓ 已复制' : '复制命令' }}
-            </UiButton>
+            <code class="preview-line">
+              <span class="preview-text" v-html="highlightedCmd"></span>
+              <button type="button" class="copy-icon-btn copy-inline" :title="copied ? '已复制' : '复制命令'" @click="copyCmd" v-html="copied ? checkIcon : clipIcon"></button>
+            </code>
           </div>
-          <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
-          <div v-else-if="jsonFormat && formattedJson" class="json-window">
-            <div class="term-title-bar">
-              <span class="term-dot red"></span>
-              <span class="term-dot yellow"></span>
-              <span class="term-dot green"></span>
-              <span class="term-cmd">$ {{ result.cmd }}</span>
-              <span class="term-time">{{ result.time }}</span>
-              <button type="button" class="copy-out-btn" :title="copyOutTip" @click="copyOutput" v-html="copyOutIcon"></button>
-            </div>
-            <div class="json-body">
-              <pre class="json-pre"><code v-html="formattedJson"></code></pre>
-            </div>
+          <!-- 上次执行的命令标题栏（固定，不滚动） -->
+          <div v-if="result" class="term-title-bar">
+            <span class="term-time">{{ result.time }}</span>
+            <span class="term-cmd"><span class="dollar">$</span> <span v-html="highlightedResultCmd"></span></span>
+            <span class="term-title-actions">
+              <button type="button" class="copy-icon-btn copy-inline" :title="copiedCmdResult ? '已复制' : '复制命令'" @click="copyCmdResult" v-html="copiedCmdResult ? checkIcon : clipIcon"></button>
+            </span>
           </div>
-          <div v-else class="term-window">
-            <div class="term-title-bar">
-              <span class="term-dot red"></span>
-              <span class="term-dot yellow"></span>
-              <span class="term-dot green"></span>
-              <span class="term-cmd">$ {{ result.cmd }}</span>
-              <span class="term-time">{{ result.time }}</span>
-              <button type="button" class="copy-out-btn" :title="copyOutTip" @click="copyOutput" v-html="copyOutIcon"></button>
+          <div class="cmd-result-scroll">
+            <div v-if="!result" class="empty">执行后在此显示返回结果。</div>
+            <div v-else-if="jsonFormat && formattedJson" class="json-window">
+              <div class="json-body">
+                <pre class="json-pre"><code v-html="formattedJson"></code></pre>
+                <button type="button" class="copy-icon-btn copy-inline copy-out-json" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
+              </div>
             </div>
-            <div class="term-body">
-              <div v-for="(line, i) in outputLines" :key="i" class="term-line">
-                <span class="term-ln">{{ i + 1 }}</span>
-                <span class="term-text">
-                  <span
-                    v-for="(seg, j) in parseAnsi(line)"
-                    :key="j"
-                    :style="seg.style"
-                  >{{ seg.text }}</span>
-                </span>
+            <div v-else class="term-window">
+              <div class="term-body">
+                <div v-for="(line, i) in outputLines" :key="i" class="term-line">
+                  <span class="term-ln">{{ i + 1 }}</span>
+                  <span class="term-text">
+                    <span
+                      v-for="(seg, j) in parseAnsi(line)"
+                      :key="j"
+                      :style="seg.style"
+                    >{{ seg.text }}</span>
+                  </span>
+                  <span v-if="i === 0" class="term-line-actions">
+                    <button type="button" class="copy-icon-btn copy-inline" :title="copiedOutput ? '已复制' : '复制输出'" @click="copyOutput" v-html="copiedOutput ? checkIcon : clipIcon"></button>
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -245,7 +255,8 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, reactive, ref, toRef, watch } from 'vue'
+import { debugShared } from '../stores/debugShared.js'
 import ConnectForm from '../components/ConnectForm.vue'
 import ApPicker from '../components/ApPicker.vue'
 import StateDiagram from '../components/StateDiagram.vue'
@@ -356,6 +367,46 @@ const result = ref(null)
 const connectCmd = ref('')
 const copied = ref(false)
 const docOpen = ref(false)
+
+/** 可拖拽分割面板（跨标签页共享） */
+const gridRef = ref(null)
+const leftColWidth = toRef(debugShared, 'leftColWidth')
+const topHeight = toRef(debugShared, 'topHeight')
+const showAsn1 = toRef(debugShared, 'showAsn1')
+watch(showAsn1, (v) => localStorage.setItem('cms-show-asn1', v ? '1' : '0'))
+let dragging = null
+
+function startVDrag(e) {
+  dragging = { type: 'v', startX: e.clientX, startW: leftColWidth.value }
+  document.addEventListener('mousemove', onDragMove)
+  document.addEventListener('mouseup', stopDrag)
+  document.body.style.cursor = 'col-resize'
+  document.body.style.userSelect = 'none'
+}
+function startHDrag(e) {
+  dragging = { type: 'h', startY: e.clientY, startH: topHeight.value }
+  document.addEventListener('mousemove', onDragMove)
+  document.addEventListener('mouseup', stopDrag)
+  document.body.style.cursor = 'row-resize'
+  document.body.style.userSelect = 'none'
+}
+function onDragMove(e) {
+  if (!dragging) return
+  if (dragging.type === 'v') {
+    const dx = e.clientX - dragging.startX
+    leftColWidth.value = Math.max(200, Math.min(800, dragging.startW + dx))
+  } else {
+    const dy = e.clientY - dragging.startY
+    topHeight.value = Math.max(100, Math.min(2000, dragging.startH + dy))
+  }
+}
+function stopDrag() {
+  dragging = null
+  document.removeEventListener('mousemove', onDragMove)
+  document.removeEventListener('mouseup', stopDrag)
+  document.body.style.cursor = ''
+  document.body.style.userSelect = ''
+}
 /** 连接管理页：执行 connect/disconnect 的结果消息。 */
 const connMsg = ref('')
 const connMsgOk = ref(true)
@@ -429,6 +480,33 @@ const previewCmd = computed(() => {
   return buildCmd()
 })
 
+/** 命令高亮：命令名 → 蓝色，参数 → 绿色，值 → 橙色 */
+function highlightCmdStr(cmd) {
+  const tokens = cmd.match(/(?:--?\w[\w-]*|"[^"]*"|[^\s"]+)/g) || []
+  let first = true
+  return tokens.map((t) => {
+    if (first) {
+      first = false
+      return `<span style="color:var(--accent)">${escHtml(t)}</span>`
+    }
+    if (t.startsWith('--')) {
+      return `<span style="color:#34d399">${escHtml(t)}</span>`
+    }
+    return `<span style="color:#fb923c">${escHtml(t)}</span>`
+  }).join(' ')
+}
+
+const highlightedCmd = computed(() => highlightCmdStr(previewCmd.value))
+
+/** 已执行命令的高亮，基于 result.cmd（不会随当前参数变化） */
+const highlightedResultCmd = computed(() => {
+  return result.value ? highlightCmdStr(result.value.cmd) : ''
+})
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+}
+
 async function copyCmd() {
   try {
     await navigator.clipboard.writeText(previewCmd.value)
@@ -442,10 +520,6 @@ async function copyCmd() {
 
 const copiedOutput = ref(false)
 let copyOutTimer = 0
-const copyOutIcon = computed(() => copiedOutput.value
-  ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4caf7d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-  : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>')
-const copyOutTip = computed(() => copiedOutput.value ? '已复制' : '复制输出内容')
 async function copyOutput() {
   try {
     const raw = result.value?.output?.replace(/\x1b\[[\d;]*m/g, '') ?? ''
@@ -455,6 +529,22 @@ async function copyOutput() {
     copyOutTimer = setTimeout(() => (copiedOutput.value = false), 1500)
   } catch { /* 剪贴板不可用时忽略 */ }
 }
+
+const copiedCmdResult = ref(false)
+let copyCmdResultTimer = 0
+async function copyCmdResult() {
+  try {
+    const cmd = result.value?.cmd ?? ''
+    await navigator.clipboard.writeText(cmd)
+    copiedCmdResult.value = true
+    clearTimeout(copyCmdResultTimer)
+    copyCmdResultTimer = setTimeout(() => (copiedCmdResult.value = false), 1500)
+  } catch { /* 剪贴板不可用时忽略 */ }
+}
+
+// 剪贴板 SVG 图标
+const clipIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
+const checkIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4caf7d" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
 
 function initForm() {
   for (const k of Object.keys(form)) {
@@ -882,22 +972,39 @@ async function disconnect() {
   color: var(--text-secondary);
 }
 
-.doc-btn {
+/* 可点击的章节徽章（打开协议说明） */
+.doc-badge {
+  cursor: pointer;
+  transition: background 0.15s, transform 0.12s;
+}
+.doc-badge:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* ASN.1 切换按钮（标题栏右侧） */
+.asn1-toggle-header-btn {
   flex-shrink: 0;
   width: 26px;
   height: 26px;
   border: none;
   border-radius: 6px;
   background: transparent;
-  font-size: 15px;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: bold;
   line-height: 1;
   cursor: pointer;
-  transition: background 0.12s, transform 0.12s;
+  opacity: 0.5;
+  transition: opacity 0.15s, background 0.12s, transform 0.12s;
+  color: var(--text-secondary);
 }
-
-.doc-btn:hover {
+.asn1-toggle-header-btn:hover {
+  opacity: 1;
   background: var(--bg-hover);
   transform: scale(1.12);
+  color: var(--text-primary);
 }
 
 .doc-desc {
@@ -1115,30 +1222,97 @@ async function disconnect() {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(420px, 1.4fr);
-  /* 行高受容器约束，内容超高时由列内滚动条承接 */
+  grid-template-columns: 380px 6px 1fr;
   grid-auto-rows: minmax(0, 1fr);
-  gap: 20px;
+  gap: 12px;
 }
 
 .col-right {
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   padding-right: 6px;
 }
 
+/* 垂直拖拽手柄 */
+.drag-v {
+  width: 6px;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  z-index: 5;
+  transition: background 0.15s;
+}
+.drag-v:hover,
+.drag-v:active {
+  background: var(--accent);
+}
+
+/* 右列上半部分（ASN.1） */
+.split-top {
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 水平拖拽手柄 */
+.drag-h {
+  height: 6px;
+  cursor: row-resize;
+  background: transparent;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 5;
+  transition: background 0.15s;
+}
+.drag-h:hover,
+.drag-h:active {
+  background: var(--accent);
+}
+
+/* ASN.1 卡片头部：隐藏按钮 */
+.ui-card__toggle {
+  margin-left: auto;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+  transition: opacity 0.15s;
+  user-select: none;
+}
+.ui-card__toggle:hover {
+  opacity: 1;
+}
+
+/* 命令与返回卡片：预览固定，结果区域滚动 */
+.cmd-result-card :deep(.ui-card__body) {
+  display: flex;
+  flex-direction: column;
+  overflow-y: visible;
+}
+.cmd-result-card .cmd-preview {
+  flex-shrink: 0;
+}
+.cmd-result-card .term-title-bar {
+  flex-shrink: 0;
+}
+.cmd-result-card .cmd-result-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .field {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 /* 参数按行分组：同组并排一行（如 APDU / ASDU） */
 .field-row {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .field-row .field {
@@ -1337,8 +1511,8 @@ async function disconnect() {
 .preview-line {
   flex: 1;
   min-width: 0;
-  overflow-x: auto;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -1346,6 +1520,13 @@ async function disconnect() {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--accent);
+}
+
+.preview-text {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 
 /* ── 服务说明（无报文的命令） ── */
@@ -1375,19 +1556,9 @@ async function disconnect() {
   border-bottom: 1px solid var(--border);
 }
 
-.term-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.term-dot.red { background: #ff5f57; }
-.term-dot.yellow { background: #ffbd2e; }
-.term-dot.green { background: #28c840; }
-
 .term-cmd {
-  margin-left: 8px;
+  flex: 1;
+  min-width: 0;
   color: var(--accent);
   font-size: 12px;
   overflow: hidden;
@@ -1396,34 +1567,66 @@ async function disconnect() {
 }
 
 .term-time {
-  margin-left: auto;
   font-size: 11px;
   color: var(--text-dim);
   flex-shrink: 0;
 }
 
-.copy-out-btn {
-  margin-left: 8px;
-  padding: 2px 8px;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text-dim);
-  font-size: 11px;
-  cursor: pointer;
+.term-title-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   flex-shrink: 0;
-  transition: all 0.15s;
-}
-.copy-out-btn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: var(--text-main);
-  border-color: rgba(255, 255, 255, 0.3);
+  margin-left: 8px;
 }
 
 .term-body {
   padding: 12px 0;
-  max-height: 400px;
+  max-height: none;
   overflow-y: auto;
+}
+
+/* 复制图标按钮默认暗色，hover 变亮 */
+.copy-icon-btn {
+  margin-left: 6px;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.15s, color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.copy-icon-btn:hover {
+  opacity: 1;
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.cmd-preview .copy-icon-btn {
+  margin-left: 8px;
+  padding: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+}
+
+/* 代码行内的复制按钮更紧凑 */
+.copy-inline {
+  margin-left: 8px;
+  padding: 4px;
+  border: none;
+  border-radius: 4px;
+  opacity: 0.4;
+  flex-shrink: 0;
+}
+.copy-inline:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .term-line {
@@ -1431,6 +1634,26 @@ async function disconnect() {
   gap: 12px;
   padding: 1px 14px;
   line-height: 1.7;
+}
+
+/* 输出首行右侧的复制按钮 */
+.term-line-actions {
+  margin-left: auto;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* JSON 输出右上角叠加的复制按钮 */
+.copy-out-json {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  opacity: 0.4;
+}
+.copy-out-json:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .term-line:hover {
@@ -1463,8 +1686,9 @@ async function disconnect() {
 }
 
 .json-body {
+  position: relative;
   padding: 12px 0;
-  max-height: 500px;
+  max-height: none;
   overflow-y: auto;
 }
 

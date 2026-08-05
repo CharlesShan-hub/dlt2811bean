@@ -199,6 +199,7 @@ function onDrop(e, index) {
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
   overflow-x: auto;
+  overflow-y: hidden;
   scrollbar-width: thin;
   position: relative;
   z-index: 10;
