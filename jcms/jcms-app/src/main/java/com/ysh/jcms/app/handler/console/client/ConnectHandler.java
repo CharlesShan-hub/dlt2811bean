@@ -19,16 +19,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectHandler implements CommandHandler {
+public class ConnectHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "connect";
-    }
-
-    @Override
-    public String description() {
-        return "连接到 CMS 服务器。用法: connect [--ip addr] [--port N] [--ap IED/AP] [--secure] [--apsecure] [--apdu N] [--asdu N] [--version N] [--json]";
+    public ConnectHandler() {
+        super(CommandInfo.CONNECT);
     }
 
     @Override

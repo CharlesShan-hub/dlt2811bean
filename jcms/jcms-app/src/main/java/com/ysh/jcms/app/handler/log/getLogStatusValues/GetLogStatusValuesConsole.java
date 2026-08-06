@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetLogStatusValuesConsole implements CommandHandler {
+public class GetLogStatusValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-log-status";
-    }
-
-    @Override
-    public String description() {
-        return "获取日志状态值 (GetLogStatusValues)。用法: get-log-status --refs \"<ref1> <ref2>...\" [--json]";
+    public GetLogStatusValuesConsole() {
+        super(CommandInfo.GET_LOG_STATUS);
     }
 
     @Override

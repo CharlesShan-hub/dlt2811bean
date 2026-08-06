@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class OperateConsole implements CommandHandler {
+public class OperateConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "operate";
-    }
-
-    @Override
-    public String description() {
-        return "执行控制操作 (Operate)。用法: operate --ref <reference> [--value true/false] [--origin <num>] [--ctlNum <num>] [--test true/false] [--check <code>] [--json]";
+    public OperateConsole() {
+        super(CommandInfo.OPERATE);
     }
 
     @Override

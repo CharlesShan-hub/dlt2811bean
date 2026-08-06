@@ -11,16 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ListHandler implements CommandHandler {
+public class ListHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "list-ap";
-    }
-
-    @Override
-    public String description() {
-        return "列出全部访问点。用法: list-ap [--limit N] [--offset N]";
+    public ListHandler() {
+        super(CommandInfo.LIST_AP);
     }
 
     @Override

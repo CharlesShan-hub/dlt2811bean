@@ -9,11 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetGoCbValuesConsole implements CommandHandler {
+public class SetGoCbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-gocb-vals";
+    public SetGoCbValuesConsole() {
+        super(CommandInfo.SET_GOCB_VALS);
     }
 
     @Override

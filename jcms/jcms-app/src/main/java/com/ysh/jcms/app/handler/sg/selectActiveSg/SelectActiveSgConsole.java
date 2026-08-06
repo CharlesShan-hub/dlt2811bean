@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SelectActiveSgConsole implements CommandHandler {
+public class SelectActiveSgConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "select-active-sg";
-    }
-
-    @Override
-    public String description() {
-        return "选择激活定值组 (SelectActiveSG)。用法: select-active-sg --ref <sgcbRef> --num <groupNumber> [--json]";
+    public SelectActiveSgConsole() {
+        super(CommandInfo.SELECT_ACTIVE_SG);
     }
 
     @Override

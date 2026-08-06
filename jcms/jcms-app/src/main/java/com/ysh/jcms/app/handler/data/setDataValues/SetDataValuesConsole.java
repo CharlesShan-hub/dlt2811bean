@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetDataValuesConsole implements CommandHandler {
+public class SetDataValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-data-values";
-    }
-
-    @Override
-    public String description() {
-        return "设置数据值 (SetDataValues) —— 用法: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC] [--json]";
+    public SetDataValuesConsole() {
+        super(CommandInfo.SET_DATA_VALUES);
     }
 
     @Override

@@ -10,17 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetGooseElementNumberConsole implements CommandHandler {
+public class GetGooseElementNumberConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-goose-elem-num";
-    }
-
-    @Override
-    public String description() {
-        return "读 GOOSE 元素序号 (GetGOOSEElementNumber, 8.9.3) [--json]。\n"
-                + "  用法: get-goose-elem-num --ref LD0/LLN0.gocb1 --members \"ref1:fc1 ref2:fc2\"";
+    public GetGooseElementNumberConsole() {
+        super(CommandInfo.GET_GOOSE_ELEM_NUM);
     }
 
     @Override

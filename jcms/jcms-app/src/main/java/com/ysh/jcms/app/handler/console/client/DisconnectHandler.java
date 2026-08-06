@@ -10,16 +10,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DisconnectHandler implements CommandHandler {
+public class DisconnectHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "disconnect";
+    public DisconnectHandler() {
+        super(CommandInfo.DISCONNECT);
     }
-    @Override
-    public String description() {
-        return "断开当前连接 [--json]";
-    }
+
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("json", "JSON 格式输出", ""));

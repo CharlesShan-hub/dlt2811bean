@@ -13,16 +13,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class GetDataValuesConsole implements CommandHandler {
+public class GetDataValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-data-values";
-    }
-
-    @Override
-    public String description() {
-        return "获取数据值 (GetDataValues) —— 用法: get-data-values --refs \"<ref1> <ref2>...\" [--fc FC] [--json]";
+    public GetDataValuesConsole() {
+        super(CommandInfo.GET_DATA_VALUES);
     }
 
     @Override

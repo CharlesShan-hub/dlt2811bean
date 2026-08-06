@@ -9,18 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class QueryLogByTimeConsole implements CommandHandler {
+public class QueryLogByTimeConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "query-log-by-time";
-    }
-
-    @Override
-    public String description() {
-        return "按时间查询日志 (QueryLogByTime) [--json]。\n" + "  用法: query-log-by-time --ref <logRef> [--start <ms>] [--stop <ms>]\n" + "  案例:\n"
-                + "    query-log-by-time --ref LD0/LLN0.lcb1\n"
-                + "    query-log-by-time --ref LD0/LLN0.lcb1 --start 1700000000000 --stop 1700000100000";
+    public QueryLogByTimeConsole() {
+        super(CommandInfo.QUERY_LOG_BY_TIME);
     }
 
     @Override

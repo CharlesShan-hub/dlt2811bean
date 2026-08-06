@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetLcbValuesConsole implements CommandHandler {
+public class GetLcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-lcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "获取日志控制块值 (GetLCBValues)。用法: get-lcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetLcbValuesConsole() {
+        super(CommandInfo.GET_LCB_VALS);
     }
 
     @Override

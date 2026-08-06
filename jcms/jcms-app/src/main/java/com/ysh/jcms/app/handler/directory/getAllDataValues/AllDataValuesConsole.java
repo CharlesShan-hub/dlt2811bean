@@ -14,16 +14,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class AllDataValuesConsole implements CommandHandler {
+public class AllDataValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "all-data";
-    }
-
-    @Override
-    public String description() {
-        return "获取所有数据值 (GetAllDataValues)。用法: all-data --ln <ldName|lnReference> [--fc FC] [--after REF] [--json]";
+    public AllDataValuesConsole() {
+        super(CommandInfo.ALL_DATA);
     }
 
     @Override

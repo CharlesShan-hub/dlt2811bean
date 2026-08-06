@@ -8,14 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class RpcCallConsole implements CommandHandler {
-    @Override
-    public String name() {
-        return "rpc-call";
-    }
-    @Override
-    public String description() {
-        return "远程过程调用 (RpcCall)。用法: rpc-call --method <接口名.方法名> [--json]";
+public class RpcCallConsole extends CommandHandler {
+    public RpcCallConsole() {
+        super(CommandInfo.RPC_CALL);
     }
     @Override
     public List<Param> params() {

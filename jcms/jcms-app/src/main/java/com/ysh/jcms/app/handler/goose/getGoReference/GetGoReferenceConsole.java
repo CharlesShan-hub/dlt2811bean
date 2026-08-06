@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetGoReferenceConsole implements CommandHandler {
+public class GetGoReferenceConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-go-ref";
-    }
-
-    @Override
-    public String description() {
-        return "读 GOOSE 引用 (GetGoReference, 8.9.2) [--json]。\n" + "  用法: get-go-ref --ref LD0/LLN0.gocb1 --offsets \"0 1 2\"";
+    public GetGoReferenceConsole() {
+        super(CommandInfo.GET_GO_REF);
     }
 
     @Override

@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class LdDirConsole implements CommandHandler {
+public class LdDirConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "ld-dir";
-    }
-
-    @Override
-    public String description() {
-        return "获取逻辑节点目录 (GetLogicalDeviceDirectory)。用法: ld-dir [--ld LD] [--after REF] [--json]";
+    public LdDirConsole() {
+        super(CommandInfo.LD_DIR);
     }
 
     @Override

@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetGoCbValuesConsole implements CommandHandler {
+public class GetGoCbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-gocb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "获取 GOOSE 控制块值 (GetGoCBValues)。用法: get-gocb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetGoCbValuesConsole() {
+        super(CommandInfo.GET_GOCB_VALS);
     }
 
     @Override

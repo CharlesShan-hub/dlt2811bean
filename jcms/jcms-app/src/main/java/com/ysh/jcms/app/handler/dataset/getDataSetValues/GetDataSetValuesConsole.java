@@ -12,16 +12,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class GetDataSetValuesConsole implements CommandHandler {
+public class GetDataSetValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-dataset-values";
-    }
-
-    @Override
-    public String description() {
-        return "获取数据集值 (GetDataSetValues)。用法: get-dataset-values --ds <ref> [--after REF] [--json]";
+    public GetDataSetValuesConsole() {
+        super(CommandInfo.GET_DATASET_VALUES);
     }
 
     @Override

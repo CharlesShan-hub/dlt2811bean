@@ -4,43 +4,13 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.data.enumerate.CmsAcsiClass;
 
 import java.util.*;
 
-public class LnDirConsole implements CommandHandler {
+public class LnDirConsole extends CommandHandler {
 
-    private static final Map<String, Integer> ACSI_MAP = new LinkedHashMap<>();
-    static {
-        ACSI_MAP.put("data-object", CmsAcsiClass.DATA_OBJECT);
-        ACSI_MAP.put("data-set", CmsAcsiClass.DATA_SET);
-        ACSI_MAP.put("brcb", CmsAcsiClass.BRCB);
-        ACSI_MAP.put("urcb", CmsAcsiClass.URCB);
-        ACSI_MAP.put("lcb", CmsAcsiClass.LCB);
-        ACSI_MAP.put("gocb", CmsAcsiClass.GOCB);
-        ACSI_MAP.put("msvcb", CmsAcsiClass.MSVCB);
-        ACSI_MAP.put("log", CmsAcsiClass.LOG);
-        ACSI_MAP.put("sgcb", CmsAcsiClass.SGCB);
-        // integer strings
-        ACSI_MAP.put("1", CmsAcsiClass.DATA_OBJECT);
-        ACSI_MAP.put("2", CmsAcsiClass.DATA_SET);
-        ACSI_MAP.put("3", CmsAcsiClass.BRCB);
-        ACSI_MAP.put("4", CmsAcsiClass.URCB);
-        ACSI_MAP.put("5", CmsAcsiClass.LCB);
-        ACSI_MAP.put("6", CmsAcsiClass.LOG);
-        ACSI_MAP.put("7", CmsAcsiClass.SGCB);
-        ACSI_MAP.put("8", CmsAcsiClass.GOCB);
-        ACSI_MAP.put("10", CmsAcsiClass.MSVCB);
-    }
-
-    @Override
-    public String name() {
-        return "ln-dir";
-    }
-
-    @Override
-    public String description() {
-        return "获取逻辑节点子目录 (GetLogicalNodeDirectory)。用法: ln-dir --ln <ldName|lnReference> [--acsi <type>] [--after REF] [--json]";
+    public LnDirConsole() {
+        super(CommandInfo.LN_DIR);
     }
 
     @Override

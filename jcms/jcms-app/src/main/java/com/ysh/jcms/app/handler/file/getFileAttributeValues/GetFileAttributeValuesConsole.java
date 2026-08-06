@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetFileAttributeValuesConsole implements CommandHandler {
+public class GetFileAttributeValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-file-attrs";
-    }
-
-    @Override
-    public String description() {
-        return "读文件属性值 (GetFileAttributeValues, 8.12.4)。\n" + "  用法: get-file-attrs --file /path/to/file [--json]";
+    public GetFileAttributeValuesConsole() {
+        super(CommandInfo.GET_FILE_ATTRS);
     }
 
     @Override

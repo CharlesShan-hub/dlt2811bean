@@ -26,16 +26,10 @@ import java.util.Map;
  * 使用 {@link SclReader#scanAccessPoints} 轻量扫描，只读取 IED/AccessPoint 名称属性，不构建完整 SCL
  * 模型，因此大 SCD（几百个 IED）也能秒级返回。
  */
-public class ApDirHandler implements CommandHandler {
+public class ApDirHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "ap-dir";
-    }
-
-    @Override
-    public String description() {
-        return "列出 SCD 中所有可用的 AccessPoint（本地配置命令，无需连接）。用法: ap-dir [--scd path] [--ied name] [--json]";
+    public ApDirHandler() {
+        super(CommandInfo.AP_DIR);
     }
 
     @Override

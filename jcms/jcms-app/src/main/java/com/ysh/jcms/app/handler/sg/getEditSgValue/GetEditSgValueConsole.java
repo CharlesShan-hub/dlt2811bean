@@ -13,16 +13,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class GetEditSgValueConsole implements CommandHandler {
+public class GetEditSgValueConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-edit-sg";
-    }
-
-    @Override
-    public String description() {
-        return "获取编辑定值组值 (GetEditSGValue)。用法: get-edit-sg --refs \"<ref1> <ref2>...\" --fc SG/SE [--json]";
+    public GetEditSgValueConsole() {
+        super(CommandInfo.GET_EDIT_SG);
     }
 
     @Override

@@ -11,7 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AllCbValuesConsole implements CommandHandler {
+public class AllCbValuesConsole extends CommandHandler {
 
     private static final Map<String, Integer> ACSI_MAP = new LinkedHashMap<>();
     static {
@@ -32,9 +32,8 @@ public class AllCbValuesConsole implements CommandHandler {
 
     private static final String[] CB_TYPE_NAMES = {"BRCB", "URCB", "LCB", "SGCB", "GOCB", "MSVCB"};
 
-    @Override
-    public String name() {
-        return "all-cb";
+    public AllCbValuesConsole() {
+        super(CommandInfo.ALL_CB);
     }
 
     @Override

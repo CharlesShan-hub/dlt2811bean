@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ConfirmEditSgValuesConsole implements CommandHandler {
+public class ConfirmEditSgValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "confirm-edit-sg";
-    }
-
-    @Override
-    public String description() {
-        return "确认编辑定值组值生效 (ConfirmEditSGValues)。" + "用法: confirm-edit-sg --ref <sgcbRef> [--json]";
+    public ConfirmEditSgValuesConsole() {
+        super(CommandInfo.CONFIRM_EDIT_SG);
     }
 
     @Override

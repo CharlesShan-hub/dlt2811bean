@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetSgcbValuesConsole implements CommandHandler {
+public class GetSgcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "sgcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "获取定值组控制块值 (GetSGCBValues)。用法: sgcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetSgcbValuesConsole() {
+        super(CommandInfo.SGCB_VALS);
     }
 
     @Override

@@ -16,16 +16,10 @@ import java.util.Map;
  * Toggles PDU tracing on/off (print raw bytes for every sent/received frame).
  * Works on both server and client consoles.
  */
-public class TracePduHandler implements CommandHandler {
+public class TracePduHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "trace-pdu";
-    }
-
-    @Override
-    public String description() {
-        return "开启/关闭 PDU 跟踪。用法: trace-pdu [--value true/false] [--json]";
+    public TracePduHandler() {
+        super(CommandInfo.TRACE_PDU);
     }
 
     @Override

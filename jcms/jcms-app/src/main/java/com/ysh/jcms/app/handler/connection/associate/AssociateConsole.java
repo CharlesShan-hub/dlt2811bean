@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class AssociateConsole implements CommandHandler {
+public class AssociateConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "associate";
-    }
-
-    @Override
-    public String description() {
-        return "建立关联 (Associate)。用法: associate --ap <IED/AP> [--secure] [--json]";
+    public AssociateConsole() {
+        super(CommandInfo.ASSOCIATE);
     }
 
     @Override

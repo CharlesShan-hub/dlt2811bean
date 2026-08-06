@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SelectWithValueConsole implements CommandHandler {
+public class SelectWithValueConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "select-with-value";
-    }
-
-    @Override
-    public String description() {
-        return "带值选择控制对象 (SelectWithValue)。用法: select-with-value --ref <reference> [--value true/false] [--origin <num>] [--ctlNum <num>] [--test true/false] [--check syncheck,interlock] [--json]";
+    public SelectWithValueConsole() {
+        super(CommandInfo.SELECT_WITH_VALUE);
     }
 
     @Override

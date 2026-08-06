@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetDataSetDirectoryConsole implements CommandHandler {
+public class GetDataSetDirectoryConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-dataset-dir";
-    }
-
-    @Override
-    public String description() {
-        return "获取数据集目录 (GetDataSetDirectory)。用法: get-dataset-dir --ds <ref> [--after REF] [--json]";
+    public GetDataSetDirectoryConsole() {
+        super(CommandInfo.GET_DATASET_DIR);
     }
 
     @Override

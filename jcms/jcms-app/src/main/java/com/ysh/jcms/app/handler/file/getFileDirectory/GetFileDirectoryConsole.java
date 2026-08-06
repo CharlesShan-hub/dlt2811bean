@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetFileDirectoryConsole implements CommandHandler {
+public class GetFileDirectoryConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-file-dir";
-    }
-
-    @Override
-    public String description() {
-        return "列文件目录 (GetFileDirectory, 8.12.5)。\n" + "  用法: get-file-dir --path /config --after file.txt [--json]";
+    public GetFileDirectoryConsole() {
+        super(CommandInfo.GET_FILE_DIR);
     }
 
     @Override

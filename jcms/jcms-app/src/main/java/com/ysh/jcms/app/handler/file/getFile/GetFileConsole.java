@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetFileConsole implements CommandHandler {
+public class GetFileConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-file";
-    }
-
-    @Override
-    public String description() {
-        return "读文件 (GetFile, 8.12.1)。\n" + "  用法: get-file --file /remote/path [--output ./local.txt] [--json]";
+    public GetFileConsole() {
+        super(CommandInfo.GET_FILE);
     }
 
     @Override

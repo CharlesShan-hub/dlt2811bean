@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SelectEditSgConsole implements CommandHandler {
+public class SelectEditSgConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "select-edit-sg";
-    }
-
-    @Override
-    public String description() {
-        return "选择编辑定值组 (SelectEditSG)。用法: select-edit-sg --ref <sgcbRef> --num <groupNumber> [--json]";
+    public SelectEditSgConsole() {
+        super(CommandInfo.SELECT_EDIT_SG);
     }
 
     @Override

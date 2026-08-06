@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetFileConsole implements CommandHandler {
+public class SetFileConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-file";
-    }
-
-    @Override
-    public String description() {
-        return "写文件 (SetFile, 8.12.2)。\n" + "  用法: set-file --local ./localfile.txt --remote /config/remotefile.txt [--json]";
+    public SetFileConsole() {
+        super(CommandInfo.SET_FILE);
     }
 
     @Override

@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetBrcbValuesConsole implements CommandHandler {
+public class GetBrcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-brcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "获取缓存报告控制块值 (GetBRCBValues)。用法: get-brcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetBrcbValuesConsole() {
+        super(CommandInfo.GET_BRCB_VALS);
     }
 
     @Override

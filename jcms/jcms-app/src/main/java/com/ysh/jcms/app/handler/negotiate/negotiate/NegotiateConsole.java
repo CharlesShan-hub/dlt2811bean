@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class NegotiateConsole implements CommandHandler {
+public class NegotiateConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "negotiate";
-    }
-
-    @Override
-    public String description() {
-        return "协商参数 (Negotiate) — 用法: negotiate [--apduSize N] [--asduSize N] [--protocolVersion N] [--json]";
+    public NegotiateConsole() {
+        super(CommandInfo.NEGOTIATE);
     }
 
     @Override

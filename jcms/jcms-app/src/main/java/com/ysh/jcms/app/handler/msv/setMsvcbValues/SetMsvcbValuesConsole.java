@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetMsvcbValuesConsole implements CommandHandler {
+public class SetMsvcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-msvcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "设置多播采样值控制块值 (SetMSVCBValues)。用法: set-msvcb-vals --ref <ref> [--sv-ena true/false] [--msv-id <id>] [--dat-set <ds>] [--json]";
+    public SetMsvcbValuesConsole() {
+        super(CommandInfo.SET_MSVCB_VALS);
     }
 
     @Override

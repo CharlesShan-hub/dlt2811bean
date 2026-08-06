@@ -4,22 +4,15 @@ import com.ysh.jcms.app.console.*;
 
 import java.util.*;
 
-public class HelpHandler implements CommandHandler {
+public class HelpHandler extends CommandHandler {
 
     private final CmsConsole console;
 
     public HelpHandler(CmsConsole console) {
+        super(CommandInfo.HELP);
         this.console = console;
     }
 
-    @Override
-    public String name() {
-        return "help";
-    }
-    @Override
-    public String description() {
-        return "显示帮助信息";
-    }
     @Override
     public List<Param> params() {
         return Collections.emptyList();

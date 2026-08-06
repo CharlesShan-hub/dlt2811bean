@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CancelConsole implements CommandHandler {
+public class CancelConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "cancel";
-    }
-
-    @Override
-    public String description() {
-        return "取消选择控制对象 (Cancel)。用法: cancel --ref <reference> [--value true/false] [--origin <num>] [--ctlNum <num>] [--test true/false] [--json]";
+    public CancelConsole() {
+        super(CommandInfo.CANCEL);
     }
 
     @Override

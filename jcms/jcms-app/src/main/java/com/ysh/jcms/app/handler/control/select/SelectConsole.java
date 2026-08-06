@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SelectConsole implements CommandHandler {
+public class SelectConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "select";
-    }
-
-    @Override
-    public String description() {
-        return "选择控制对象 (Select/SelectWithValue)。用法: select --ref <reference> [--value true/false] [--origin <num>] [--ctlNum <num>] [--test true/false] [--check syncheck,interlock] [--json]";
+    public SelectConsole() {
+        super(CommandInfo.SELECT);
     }
 
     @Override

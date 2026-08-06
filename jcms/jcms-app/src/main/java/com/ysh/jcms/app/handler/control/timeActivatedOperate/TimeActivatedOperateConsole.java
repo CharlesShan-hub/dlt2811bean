@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class TimeActivatedOperateConsole implements CommandHandler {
+public class TimeActivatedOperateConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "time-act-ope";
-    }
-
-    @Override
-    public String description() {
-        return "定时执行控制 (TimeActivatedOperate)。用法: time-act-ope --ref <ref> --oper-tm <epochSeconds> [--value true/false] [--origin N] [--ctlNum N] [--test true/false] [--check <code>] [--json]";
+    public TimeActivatedOperateConsole() {
+        super(CommandInfo.TIME_ACT_OPE);
     }
 
     @Override

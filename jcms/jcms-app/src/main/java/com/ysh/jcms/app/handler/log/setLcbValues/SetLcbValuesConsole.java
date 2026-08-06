@@ -9,11 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetLcbValuesConsole implements CommandHandler {
+public class SetLcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-lcb-vals";
+    public SetLcbValuesConsole() {
+        super(CommandInfo.SET_LCB_VALS);
     }
 
     @Override

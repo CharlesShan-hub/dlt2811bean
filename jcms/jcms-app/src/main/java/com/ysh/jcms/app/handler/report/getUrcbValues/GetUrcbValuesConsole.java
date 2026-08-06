@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetUrcbValuesConsole implements CommandHandler {
+public class GetUrcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-urcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "获取非缓存报告控制块值 (GetURCBValues)。用法: get-urcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetUrcbValuesConsole() {
+        super(CommandInfo.GET_URCB_VALS);
     }
 
     @Override

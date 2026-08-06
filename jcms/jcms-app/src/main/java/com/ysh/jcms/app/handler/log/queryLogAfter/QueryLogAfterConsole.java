@@ -9,18 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class QueryLogAfterConsole implements CommandHandler {
+public class QueryLogAfterConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "query-log-after";
-    }
-
-    @Override
-    public String description() {
-        return "查询指定条目之后的日志 (QueryLogAfter) [--json]。\n" + "  用法: query-log-after --ref <logRef> --entry <entryId> [--start <ms>]\n"
-                + "  案例:\n" + "    query-log-after --ref LD0/LLN0.lcb1 --entry \"000001\"\n"
-                + "    query-log-after --ref LD0/LLN0.lcb1 --entry \"000001\" --start 1700000000000";
+    public QueryLogAfterConsole() {
+        super(CommandInfo.QUERY_LOG_AFTER);
     }
 
     @Override

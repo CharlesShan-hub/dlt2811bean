@@ -13,16 +13,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class GetDataDefinitionConsole implements CommandHandler {
+public class GetDataDefinitionConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-data-def";
-    }
-
-    @Override
-    public String description() {
-        return "获取数据定义 (GetDataDefinition)。用法: get-data-def --refs \"<ref1> <ref2>...\" [--fc FC] [--json]";
+    public GetDataDefinitionConsole() {
+        super(CommandInfo.GET_DATA_DEF);
     }
 
     @Override

@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DeleteDataSetConsole implements CommandHandler {
+public class DeleteDataSetConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "delete-dataset";
-    }
-
-    @Override
-    public String description() {
-        return "删除数据集 (DeleteDataSet)。用法: delete-dataset --ds <ref> [--json]";
+    public DeleteDataSetConsole() {
+        super(CommandInfo.DELETE_DATASET);
     }
 
     @Override

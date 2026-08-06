@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class AbortConsole implements CommandHandler {
+public class AbortConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "abort";
-    }
-
-    @Override
-    public String description() {
-        return "异常中止关联 (Abort) [--json]";
+    public AbortConsole() {
+        super(CommandInfo.ABORT);
     }
 
     @Override

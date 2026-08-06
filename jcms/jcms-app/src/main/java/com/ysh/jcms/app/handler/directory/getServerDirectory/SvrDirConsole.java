@@ -9,16 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SvrDirConsole implements CommandHandler {
+public class SvrDirConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "server-dir";
-    }
-
-    @Override
-    public String description() {
-        return "获取逻辑设备目录 (GetServerDirectory)。用法: server-dir [--after REF] [--json]";
+    public SvrDirConsole() {
+        super(CommandInfo.SERVER_DIR);
     }
 
     @Override

@@ -9,11 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetBrcbValuesConsole implements CommandHandler {
+public class SetBrcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-brcb-vals";
+    public SetBrcbValuesConsole() {
+        super(CommandInfo.SET_BRCB_VALS);
     }
 
     @Override

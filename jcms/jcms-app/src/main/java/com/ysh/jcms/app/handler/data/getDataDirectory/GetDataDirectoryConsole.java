@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetDataDirectoryConsole implements CommandHandler {
+public class GetDataDirectoryConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "data-dir";
-    }
-
-    @Override
-    public String description() {
-        return "获取数据目录 (GetDataDirectory)。用法: data-dir --ref <ref> [--after REF] [--json]";
+    public GetDataDirectoryConsole() {
+        super(CommandInfo.DATA_DIR);
     }
 
     @Override

@@ -8,14 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcInterfaceDirectoryConsole implements CommandHandler {
-    @Override
-    public String name() {
-        return "rpc-iface-dir";
-    }
-    @Override
-    public String description() {
-        return "读RPC接口目录 (GetRpcInterfaceDirectory)。用法: rpc-iface-dir [--after <ref>] [--json]";
+public class GetRpcInterfaceDirectoryConsole extends CommandHandler {
+    public GetRpcInterfaceDirectoryConsole() {
+        super(CommandInfo.RPC_IFACE_DIR);
     }
     @Override
     public List<Param> params() {

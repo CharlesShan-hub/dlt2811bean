@@ -8,14 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcMethodDirectoryConsole implements CommandHandler {
-    @Override
-    public String name() {
-        return "rpc-method-dir";
-    }
-    @Override
-    public String description() {
-        return "读RPC方法目录 (GetRpcMethodDirectory)。用法: rpc-method-dir [--interface <name>] [--after <ref>] [--json]";
+public class GetRpcMethodDirectoryConsole extends CommandHandler {
+    public GetRpcMethodDirectoryConsole() {
+        super(CommandInfo.RPC_METHOD_DIR);
     }
     @Override
     public List<Param> params() {

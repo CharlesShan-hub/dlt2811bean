@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SetEditSgValueConsole implements CommandHandler {
+public class SetEditSgValueConsole extends CommandHandler {
 
     private static final Map<String, Integer> TYPE_MAP = buildTypeMap();
     private static Map<String, Integer> buildTypeMap() {
@@ -34,9 +34,8 @@ public class SetEditSgValueConsole implements CommandHandler {
         return Collections.unmodifiableMap(m);
     }
 
-    @Override
-    public String name() {
-        return "set-edit-sg";
+    public SetEditSgValueConsole() {
+        super(CommandInfo.SET_EDIT_SG);
     }
 
     @Override

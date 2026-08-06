@@ -8,14 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcInterfaceDefinitionConsole implements CommandHandler {
-    @Override
-    public String name() {
-        return "rpc-iface-def";
-    }
-    @Override
-    public String description() {
-        return "读RPC接口定义 (GetRpcInterfaceDefinition)。用法: rpc-iface-def --interface <name> [--after <ref>] [--json]";
+public class GetRpcInterfaceDefinitionConsole extends CommandHandler {
+    public GetRpcInterfaceDefinitionConsole() {
+        super(CommandInfo.RPC_IFACE_DEF);
     }
     @Override
     public List<Param> params() {

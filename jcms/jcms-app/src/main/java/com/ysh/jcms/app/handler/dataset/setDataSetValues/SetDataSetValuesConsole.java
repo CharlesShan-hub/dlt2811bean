@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetDataSetValuesConsole implements CommandHandler {
+public class SetDataSetValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-dataset-values";
-    }
-
-    @Override
-    public String description() {
-        return "设置数据集值 (SetDataSetValues)。用法: set-dataset-values --ds <ref> --values \"<val1> <val2>...\" [--after REF] [--json]";
+    public SetDataSetValuesConsole() {
+        super(CommandInfo.SET_DATASET_VALUES);
     }
 
     @Override

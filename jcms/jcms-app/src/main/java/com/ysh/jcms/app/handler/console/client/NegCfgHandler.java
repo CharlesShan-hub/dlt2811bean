@@ -18,16 +18,10 @@ import java.util.Map;
  * 运行时查看/修改协商（negotiate）参数（对齐 ap-cfg 的内存开关模式，改完即生效）。 影响后续 connect 时的默认协商值；也可被
  * connect --apdu/--asdu/--version 显式覆盖。
  */
-public class NegCfgHandler implements CommandHandler {
+public class NegCfgHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "neg-cfg";
-    }
-
-    @Override
-    public String description() {
-        return "查看/修改协商参数（运行时生效）。用法: neg-cfg [--apdu N] [--asdu N] [--version N] [--json]";
+    public NegCfgHandler() {
+        super(CommandInfo.NEG_CFG);
     }
 
     @Override

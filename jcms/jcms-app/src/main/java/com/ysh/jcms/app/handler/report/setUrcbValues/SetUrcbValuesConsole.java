@@ -9,11 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class SetUrcbValuesConsole implements CommandHandler {
+public class SetUrcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "set-urcb-vals";
+    public SetUrcbValuesConsole() {
+        super(CommandInfo.SET_URCB_VALS);
     }
 
     @Override

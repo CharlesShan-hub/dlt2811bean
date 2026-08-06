@@ -18,16 +18,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ConnectTlsHandler implements CommandHandler {
+public class ConnectTlsHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "connect-tls";
-    }
-
-    @Override
-    public String description() {
-        return "TLS 连接 CMS 服务器（默认端口 9102）。用法: connect-tls [--host ip] [--sap-ref IED/AP] [--apduSize N] [--asduSize N]";
+    public ConnectTlsHandler() {
+        super(CommandInfo.CONNECT_TLS);
     }
 
     @Override

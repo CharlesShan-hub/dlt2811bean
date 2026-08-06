@@ -14,16 +14,10 @@ import java.util.Map;
 
 import com.ysh.jcms.data.choice.CmsData;
 
-public class AllDataDefConsole implements CommandHandler {
+public class AllDataDefConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "all-def";
-    }
-
-    @Override
-    public String description() {
-        return "获取所有数据定义 (GetAllDataDefinition)。用法: all-def --ln <ldName|lnReference> [--fc FC] [--after REF] [--json]";
+    public AllDataDefConsole() {
+        super(CommandInfo.ALL_DEF);
     }
 
     @Override

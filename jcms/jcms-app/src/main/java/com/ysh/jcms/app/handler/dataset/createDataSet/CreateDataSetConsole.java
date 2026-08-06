@@ -10,16 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class CreateDataSetConsole implements CommandHandler {
+public class CreateDataSetConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "create-dataset";
-    }
-
-    @Override
-    public String description() {
-        return "创建数据集 (CreateDataSet)。用法: create-dataset --ds <ref> --members \"<ref1>,<fc1> <ref2>,<fc2>...\" [--json]";
+    public CreateDataSetConsole() {
+        super(CommandInfo.CREATE_DATASET);
     }
 
     @Override

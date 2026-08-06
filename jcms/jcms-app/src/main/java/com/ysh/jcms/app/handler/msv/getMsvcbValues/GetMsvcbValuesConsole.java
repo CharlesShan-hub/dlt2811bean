@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetMsvcbValuesConsole implements CommandHandler {
+public class GetMsvcbValuesConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "get-msvcb-vals";
-    }
-
-    @Override
-    public String description() {
-        return "读多播采样值控制块值 (GetMSVCBValues)。用法: get-msvcb-vals --refs \"<ref1> <ref2>...\" [--json]";
+    public GetMsvcbValuesConsole() {
+        super(CommandInfo.GET_MSVCB_VALS);
     }
 
     @Override

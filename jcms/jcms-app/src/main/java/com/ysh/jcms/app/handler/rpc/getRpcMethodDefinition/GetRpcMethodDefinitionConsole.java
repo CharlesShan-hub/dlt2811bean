@@ -8,14 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetRpcMethodDefinitionConsole implements CommandHandler {
-    @Override
-    public String name() {
-        return "rpc-method-def";
-    }
-    @Override
-    public String description() {
-        return "读RPC方法定义 (GetRpcMethodDefinition)。用法: rpc-method-def --refs \"<ref1> <ref2>...\" [--json]";
+public class GetRpcMethodDefinitionConsole extends CommandHandler {
+    public GetRpcMethodDefinitionConsole() {
+        super(CommandInfo.RPC_METHOD_DEF);
     }
     @Override
     public List<Param> params() {

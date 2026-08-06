@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class TestConsole implements CommandHandler {
+public class TestConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "test";
-    }
-
-    @Override
-    public String description() {
-        return "测试连接 (Test ping/pong) [--json]";
+    public TestConsole() {
+        super(CommandInfo.TEST);
     }
 
     @Override

@@ -8,16 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ReleaseConsole implements CommandHandler {
+public class ReleaseConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "release";
-    }
-
-    @Override
-    public String description() {
-        return "释放关联 (Release) [--json]";
+    public ReleaseConsole() {
+        super(CommandInfo.RELEASE);
     }
 
     @Override

@@ -8,16 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class ClearHandler implements CommandHandler {
+public class ClearHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "clear";
-    }
-
-    @Override
-    public String description() {
-        return "清空屏幕";
+    public ClearHandler() {
+        super(CommandInfo.CLEAR);
     }
 
     @Override

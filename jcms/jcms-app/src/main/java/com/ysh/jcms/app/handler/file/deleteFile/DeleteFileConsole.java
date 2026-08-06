@@ -9,16 +9,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class DeleteFileConsole implements CommandHandler {
+public class DeleteFileConsole extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "delete-file";
-    }
-
-    @Override
-    public String description() {
-        return "删除文件 (DeleteFile, 8.12.3)。\n" + "  用法: delete-file --file /path/to/file [--json]";
+    public DeleteFileConsole() {
+        super(CommandInfo.DELETE_FILE);
     }
 
     @Override

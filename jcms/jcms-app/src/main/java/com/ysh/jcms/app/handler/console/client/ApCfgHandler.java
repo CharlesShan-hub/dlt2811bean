@@ -21,11 +21,10 @@ import java.util.Map;
  * 运行时查看/修改 AP 来源配置（对齐 trace-pdu 的内存开关模式，改完即生效， 无需改 yaml 重启）。影响 {@code ap-dir}
  * 的读取来源。
  */
-public class ApCfgHandler implements CommandHandler {
+public class ApCfgHandler extends CommandHandler {
 
-    @Override
-    public String name() {
-        return "ap-cfg";
+    public ApCfgHandler() {
+        super(CommandInfo.AP_CFG);
     }
 
     @Override
