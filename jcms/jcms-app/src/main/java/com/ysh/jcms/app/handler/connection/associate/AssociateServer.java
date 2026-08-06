@@ -20,7 +20,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.AssociationIdGenerator;
 import com.ysh.jcms.utils.transport.session.Session;
 import com.ysh.jcms.utils.transport.session.SessionState;
-
 import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.util.Optional;
@@ -113,20 +112,18 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
         String iedName = slashIdx >= 0 ? sapRef.substring(0, slashIdx) : sapRef;
         String apName = slashIdx >= 0 ? sapRef.substring(slashIdx + 1) : "S1";
 
-        for (SclIED ied : scl.ieds()) {
-            if (ied.name().equals(iedName)) {
-                SclAccessPoint ap = ied.findAccessPointByName(apName);
-                if (ap != null) {
-                    ss.setSclAccessPoint(ap);
-                    ss.setSclIed(ied);
-                    ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
-                    log.info("Resolved SCL access point: IED={}, AP={}", iedName, apName);
-                    return true;
-                }
-                return false;
-            }
-        }
-        return false;
+        SclIED ied = scl.ied(iedName);
+        if (ied == null)
+            return false;
+        SclAccessPoint ap = ied.findAccessPointByName(apName);
+        if (ap == null)
+            return false;
+
+        ss.setSclAccessPoint(ap);
+        ss.setSclIed(ied);
+        ss.setSclDataTypeTemplates(scl.dataTypeTemplates());
+        log.info("Resolved SCL access point: IED={}, AP={}", iedName, apName);
+        return true;
     }
 
     private boolean resolveDefaultAccessPoint(Session session) {
