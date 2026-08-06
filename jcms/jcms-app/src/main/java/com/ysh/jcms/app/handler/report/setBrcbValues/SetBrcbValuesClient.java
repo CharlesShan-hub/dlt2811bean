@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SetBrcbValuesClient extends BaseClientHandler {
+public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
+    @Override
     public void execute(SetBrcbValuesDao dao) throws Exception {
         CmsSetBrcbValuesRequest req = dao.toRequest(nextReqId());
         send(ServiceName.SET_BRCB_VALUES, req);

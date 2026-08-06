@@ -11,8 +11,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class QueryLogAfterClient extends BaseClientHandler {
+public class QueryLogAfterClient extends BaseClientHandler<QueryLogAfterDao> {
 
+    @Override
     public void execute(QueryLogAfterDao dao) throws Exception {
         CmsQueryLogAfterRequest req = new CmsQueryLogAfterRequest().logReference(dao.logRef()).entry(entryIdBytes(dao.entryId()));
         if (dao.startTime() != null) {

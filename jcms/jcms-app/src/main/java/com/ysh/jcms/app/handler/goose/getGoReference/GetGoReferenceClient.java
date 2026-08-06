@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetGoReferenceClient extends BaseClientHandler {
+public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
 
     public static final class MemberDataEntry {
         public final String reference;
@@ -42,6 +42,7 @@ public class GetGoReferenceClient extends BaseClientHandler {
         return lastResult;
     }
 
+    @Override
     public void execute(GetGoReferenceDao dao) throws Exception {
         CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().gocbReference(dao.gocbReference());
         for (int offset : dao.memberOffsets()) {

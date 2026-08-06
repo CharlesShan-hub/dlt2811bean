@@ -9,9 +9,10 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
-public class RpcCallClient extends BaseClientHandler {
-    public void execute(String method) throws Exception {
-        CmsRpcCallRequest req = new CmsRpcCallRequest().method(method);
+public class RpcCallClient extends BaseClientHandler<RpcCallDao> {
+    @Override
+    public void execute(RpcCallDao dao) throws Exception {
+        CmsRpcCallRequest req = new CmsRpcCallRequest().method(dao.method());
         req.req(new CmsRpcCallReqChoice());
         send(ServiceName.RPC_CALL, req);
     }

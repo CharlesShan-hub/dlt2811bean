@@ -12,12 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LdDirClient extends BaseClientHandler {
+public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     /**
      * 获取逻辑设备目录。省略 ldName 时服务器可能分页（moreFollows=true）， 这里循环带上 referenceAfter
      * 续拉直到最后一页，合并全部结果。
      */
+    @Override
     public void execute(LdDirDao dao) throws Exception {
         List<String> all = new ArrayList<>();
         String after = dao.referenceAfter();

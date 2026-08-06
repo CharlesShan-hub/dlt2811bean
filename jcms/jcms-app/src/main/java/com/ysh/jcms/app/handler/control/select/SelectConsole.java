@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.control.selectWithValue.SelectWithValueClient;
+import com.ysh.jcms.app.handler.control.selectWithValue.SelectWithValueDao;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -41,11 +42,13 @@ public class SelectConsole implements CommandHandler {
         String value = args.get("value");
         if (value != null && !value.isEmpty()) {
             ConsolePrinter.info("Selecting (with value): " + ref);
-            console.getClient(SelectWithValueClient.class).execute(ref, args);
+            SelectWithValueDao dao = new SelectWithValueDao().ref(ref).args(args);
+            console.getClient(SelectWithValueClient.class).execute(dao);
             CmsConsole.outputMessage("Selected (with value) " + ref, args);
         } else {
             ConsolePrinter.info("Selecting: " + ref);
-            console.getClient(SelectClient.class).execute(ref);
+            SelectDao dao = new SelectDao().ref(ref);
+            console.getClient(SelectClient.class).execute(dao);
             CmsConsole.outputMessage("Selected " + ref, args);
         }
     }

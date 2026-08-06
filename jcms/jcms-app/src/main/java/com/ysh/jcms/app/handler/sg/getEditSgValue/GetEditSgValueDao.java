@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -9,7 +10,7 @@ import java.util.List;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class GetEditSgValueDao {
+public class GetEditSgValueDao extends BaseDao {
     private List<RefFcPair> refs = new ArrayList<>();
 
     @Setter

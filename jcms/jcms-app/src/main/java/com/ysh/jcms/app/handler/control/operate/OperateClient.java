@@ -12,11 +12,13 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.Map;
 
-public class OperateClient extends BaseClientHandler {
+public class OperateClient extends BaseClientHandler<OperateDao> {
 
-    public void execute(String ref, Map<String, String> args) throws Exception {
-        CmsOperateRequest req = new CmsOperateRequest().reference(ref);
+    @Override
+    public void execute(OperateDao dao) throws Exception {
+        CmsOperateRequest req = new CmsOperateRequest().reference(dao.ref());
 
+        Map<String, String> args = dao.args();
         // ctlVal — optional, from --value flag (boolean for SPC)
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {

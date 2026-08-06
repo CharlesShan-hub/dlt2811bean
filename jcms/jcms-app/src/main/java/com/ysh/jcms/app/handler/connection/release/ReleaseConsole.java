@@ -29,7 +29,7 @@ public class ReleaseConsole implements CommandHandler {
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.requireConnected(args))
             return;
-        console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute();
+        console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute(new ReleaseDao());
         CmsConsole.outputMessage("Released.", args);
     }
 }

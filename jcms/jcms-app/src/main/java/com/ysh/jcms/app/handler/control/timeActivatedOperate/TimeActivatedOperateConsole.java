@@ -39,7 +39,8 @@ public class TimeActivatedOperateConsole implements CommandHandler {
         String ref = args.get("ref").trim();
         long operTm = Long.parseLong(args.get("oper-tm"));
         ConsolePrinter.info("TimeActivatedOperate: " + ref + " at " + operTm);
-        console.getClient(TimeActivatedOperateClient.class).execute(ref, operTm, args);
+        TimeActivatedOperateDao dao = new TimeActivatedOperateDao().ref(ref).operTmEpochSeconds(operTm).args(args);
+        console.getClient(TimeActivatedOperateClient.class).execute(dao);
         CmsConsole.outputMessage("TimeActivatedOperate scheduled for " + ref, args);
     }
 }

@@ -13,12 +13,14 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.Map;
 
-public class TimeActivatedOperateClient extends BaseClientHandler {
+public class TimeActivatedOperateClient extends BaseClientHandler<TimeActivatedOperateDao> {
 
-    public void execute(String ref, long operTmEpochSeconds, Map<String, String> args) throws Exception {
-        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reference(ref)
-                .operTm(new CmsUtcTime().secondsSinceEpoch(operTmEpochSeconds));
+    @Override
+    public void execute(TimeActivatedOperateDao dao) throws Exception {
+        CmsTimeActivatedOperateRequest req = new CmsTimeActivatedOperateRequest().reference(dao.ref())
+                .operTm(new CmsUtcTime().secondsSinceEpoch(dao.operTmEpochSeconds()));
 
+        Map<String, String> args = dao.args();
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();

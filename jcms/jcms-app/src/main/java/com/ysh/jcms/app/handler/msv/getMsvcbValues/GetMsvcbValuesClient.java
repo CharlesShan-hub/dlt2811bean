@@ -8,13 +8,13 @@ import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
-import java.util.List;
 
-public class GetMsvcbValuesClient extends BaseClientHandler {
+public class GetMsvcbValuesClient extends BaseClientHandler<GetMsvcbValuesDao> {
 
-    public void execute(List<String> refs) throws Exception {
+    @Override
+    public void execute(GetMsvcbValuesDao dao) throws Exception {
         CmsGetMsvcbValuesRequest req = new CmsGetMsvcbValuesRequest();
-        for (String ref : refs) {
+        for (String ref : dao.refs()) {
             CmsObjectReference objRef = new CmsObjectReference();
             objRef.value(ref);
             req.reference.add(objRef);

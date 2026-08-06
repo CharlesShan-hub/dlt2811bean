@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,7 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class CreateDataSetDao {
+public class CreateDataSetDao extends BaseDao {
     private String datasetReference;
     private String referenceAfter;
     private List<MemberRef> members = new ArrayList<>();

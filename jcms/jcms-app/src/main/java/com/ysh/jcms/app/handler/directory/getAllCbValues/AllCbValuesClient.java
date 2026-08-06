@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllCbValuesClient extends BaseClientHandler {
+public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
     /** Last response entries (set after each success) */
     public static final class CbEntry {
@@ -31,6 +31,7 @@ public class AllCbValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(AllCbValuesDao dao) throws Exception {
         CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(dao.referenceAfter()).acsiClass(dao.acsiClass());
 

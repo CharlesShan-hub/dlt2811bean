@@ -28,7 +28,8 @@ public class GetRpcMethodDirectoryConsole implements CommandHandler {
         String iface = args.get("interface");
         String after = args.get("after");
         ConsolePrinter.info("Fetching RPC method directory" + (iface != null ? " for interface " + iface : ""));
-        console.getClient(GetRpcMethodDirectoryClient.class).execute(iface, after);
+        GetRpcMethodDirectoryDao dao = new GetRpcMethodDirectoryDao().iface(iface).after(after);
+        console.getClient(GetRpcMethodDirectoryClient.class).execute(dao);
         CmsConsole.outputMessage("RPC method directory fetched", args);
     }
 }

@@ -1,13 +1,14 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import lombok.Getter;
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class AllDataValuesDao {
+public class AllDataValuesDao extends BaseDao {
 
     /** ldName (e.g. "LD0") — alternative to lnReference */
     private String ldName;

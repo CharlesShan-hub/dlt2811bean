@@ -1,9 +1,17 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
+import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-public class SetUrcbValuesDao {
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class SetUrcbValuesDao extends BaseDao {
     private String ref;
     private String rptId;
     private Boolean rptEna;
@@ -13,44 +21,8 @@ public class SetUrcbValuesDao {
     private Boolean gi;
     private Boolean resv;
 
-    public SetUrcbValuesDao ref(String v) {
-        this.ref = v;
-        return this;
-    }
-    public SetUrcbValuesDao rptId(String v) {
-        this.rptId = v;
-        return this;
-    }
-    public SetUrcbValuesDao rptEna(Boolean v) {
-        this.rptEna = v;
-        return this;
-    }
-    public SetUrcbValuesDao datSet(String v) {
-        this.datSet = v;
-        return this;
-    }
-    public SetUrcbValuesDao bufTm(Integer v) {
-        this.bufTm = v;
-        return this;
-    }
-    public SetUrcbValuesDao intgPd(Integer v) {
-        this.intgPd = v;
-        return this;
-    }
-    public SetUrcbValuesDao gi(Boolean v) {
-        this.gi = v;
-        return this;
-    }
-    public SetUrcbValuesDao resv(Boolean v) {
-        this.resv = v;
-        return this;
-    }
-
-    public String ref() {
-        return ref;
-    }
-
-    CmsSetUrcbValuesRequest toRequest() {
+    @Override
+    public CmsType toRequest() {
         CmsSetUrcbValuesRequest req = new CmsSetUrcbValuesRequest();
         CmsSetUrcbEntry entry = new CmsSetUrcbEntry().reference(ref != null ? ref : "");
 

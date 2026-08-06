@@ -8,12 +8,12 @@ import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
-import java.util.List;
 
-public class GetRpcMethodDefinitionClient extends BaseClientHandler {
-    public void execute(List<String> refs) throws Exception {
+public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethodDefinitionDao> {
+    @Override
+    public void execute(GetRpcMethodDefinitionDao dao) throws Exception {
         CmsGetRpcMethodDefinitionRequest req = new CmsGetRpcMethodDefinitionRequest();
-        for (String ref : refs) {
+        for (String ref : dao.refs()) {
             req.reference.add(new CmsString(ref));
         }
         send(ServiceName.GET_RPC_METHOD_DEFINITION, req);

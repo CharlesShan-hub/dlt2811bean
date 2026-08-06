@@ -30,7 +30,8 @@ public class GetRpcInterfaceDefinitionConsole implements CommandHandler {
         String iface = args.get("interface").trim();
         String after = args.get("after");
         ConsolePrinter.info("Fetching RPC interface definition: " + iface);
-        console.getClient(GetRpcInterfaceDefinitionClient.class).execute(iface, after);
+        GetRpcInterfaceDefinitionDao dao = new GetRpcInterfaceDefinitionDao().iface(iface).after(after);
+        console.getClient(GetRpcInterfaceDefinitionClient.class).execute(dao);
         CmsConsole.outputMessage("RPC interface definition fetched for " + iface, args);
     }
 }

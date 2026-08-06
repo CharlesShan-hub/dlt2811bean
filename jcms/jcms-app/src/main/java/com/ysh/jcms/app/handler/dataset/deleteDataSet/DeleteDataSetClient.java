@@ -9,8 +9,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class DeleteDataSetClient extends BaseClientHandler {
+public class DeleteDataSetClient extends BaseClientHandler<DeleteDataSetDao> {
 
+    @Override
     public void execute(DeleteDataSetDao dao) throws Exception {
         CmsDeleteDataSetRequest req = new CmsDeleteDataSetRequest().datasetReference(dao.datasetReference());
 

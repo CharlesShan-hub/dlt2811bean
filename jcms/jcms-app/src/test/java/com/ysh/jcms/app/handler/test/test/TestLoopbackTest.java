@@ -21,6 +21,6 @@ public class TestLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void ping_pong() throws Exception {
-        clientNode().getClient(TestClient.class).execute();
+        clientNode().getClient(TestClient.class).execute(new TestDao());
     }
 }

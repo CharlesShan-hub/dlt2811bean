@@ -8,10 +8,11 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
-public class SelectClient extends BaseClientHandler {
+public class SelectClient extends BaseClientHandler<SelectDao> {
 
-    public void execute(String ref) throws Exception {
-        CmsSelectRequest req = new CmsSelectRequest().reference(ref);
+    @Override
+    public void execute(SelectDao dao) throws Exception {
+        CmsSelectRequest req = new CmsSelectRequest().reference(dao.ref());
         send(ServiceName.SELECT, req);
     }
 

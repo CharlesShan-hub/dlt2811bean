@@ -9,7 +9,7 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class GetFileAttributeValuesClient extends BaseClientHandler {
+public class GetFileAttributeValuesClient extends BaseClientHandler<GetFileAttributeValuesDao> {
 
     public static final class FileAttrResult {
         public final String fileName;
@@ -29,6 +29,7 @@ public class GetFileAttributeValuesClient extends BaseClientHandler {
         return lastResult;
     }
 
+    @Override
     public void execute(GetFileAttributeValuesDao dao) throws Exception {
         CmsGetFileAttributeValuesRequest req = new CmsGetFileAttributeValuesRequest().filename(dao.fileName());
 

@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class CreateDataSetClient extends BaseClientHandler {
+public class CreateDataSetClient extends BaseClientHandler<CreateDataSetDao> {
 
+    @Override
     public void execute(CreateDataSetDao dao) throws Exception {
         CmsCreateDataSetRequest req = new CmsCreateDataSetRequest().datasetReference(dao.datasetReference())
                 .referenceAfter(dao.referenceAfter());

@@ -10,7 +10,10 @@ import com.ysh.jcms.utils.transport.frame.FrameHeader;
 
 import java.io.IOException;
 
-public abstract class BaseClientHandler extends BaseHandler {
+public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
+
+    /** All client handlers must implement this as their entry point. */
+    public abstract void execute(D dao) throws Exception;
 
     protected CmsNode node;
 

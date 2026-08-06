@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SetLcbValuesClient extends BaseClientHandler {
+public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
 
+    @Override
     public void execute(SetLcbValuesDao dao) throws Exception {
         CmsSetLcbValuesRequest req = dao.toRequest(nextReqId());
         send(ServiceName.SET_LCB_VALUES, req);

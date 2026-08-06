@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetFileDirectoryClient extends BaseClientHandler {
+public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDao> {
 
     public static final class FileEntryResult {
         public final String fileName;
@@ -41,6 +41,7 @@ public class GetFileDirectoryClient extends BaseClientHandler {
         return lastResult;
     }
 
+    @Override
     public void execute(GetFileDirectoryDao dao) throws Exception {
         CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest();
 

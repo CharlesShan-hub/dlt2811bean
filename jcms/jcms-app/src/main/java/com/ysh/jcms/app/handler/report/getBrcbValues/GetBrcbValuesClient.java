@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetBrcbValuesClient extends BaseClientHandler {
+public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
 
     public static final class BrcbEntry {
         public final String desc;
@@ -28,6 +28,7 @@ public class GetBrcbValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetBrcbValuesDao dao) throws Exception {
         CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest();
         for (String ref : dao.refs()) {

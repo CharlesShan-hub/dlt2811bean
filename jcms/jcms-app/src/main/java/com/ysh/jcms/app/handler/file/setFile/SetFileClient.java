@@ -12,7 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class SetFileClient extends BaseClientHandler {
+public class SetFileClient extends BaseClientHandler<SetFileDao> {
 
     // Leave room for PER overhead
     private static final int CHUNK_SIZE = 64000;
@@ -21,6 +21,7 @@ public class SetFileClient extends BaseClientHandler {
      * Upload a local file to the server. Splits the file into chunks and sends
      * sequentially.
      */
+    @Override
     public void execute(SetFileDao dao) throws Exception {
         String remoteFile = dao.remoteFile();
         String localFile = dao.localFile();

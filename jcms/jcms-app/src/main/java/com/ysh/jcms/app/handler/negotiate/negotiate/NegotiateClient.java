@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.session.ClientSession;
 
 import java.io.IOException;
 
-public class NegotiateClient extends BaseClientHandler {
+public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
+    @Override
     public void execute(NegotiateClientDao dao) throws Exception {
         CmsNegotiateRequest req = new CmsNegotiateRequest().apduSize(dao.apduSize()).asduSize(dao.asduSize())
                 .protocolVersion(dao.protocolVersion());

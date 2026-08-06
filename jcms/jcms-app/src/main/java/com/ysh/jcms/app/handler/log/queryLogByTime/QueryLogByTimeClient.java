@@ -16,8 +16,9 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public class QueryLogByTimeClient extends BaseClientHandler {
+public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
+    @Override
     public void execute(QueryLogByTimeDao dao) throws Exception {
         CmsQueryLogByTimeRequest req = new CmsQueryLogByTimeRequest().logReference(dao.logRef());
         if (dao.startTime() != null) {

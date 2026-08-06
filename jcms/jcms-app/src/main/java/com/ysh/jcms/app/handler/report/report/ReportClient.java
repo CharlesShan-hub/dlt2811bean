@@ -7,7 +7,12 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 /**
  * ReportClient — 客户端接收服务端推送的 REPORT 帧。
  */
-public class ReportClient extends BaseClientHandler {
+public class ReportClient extends BaseClientHandler<ReportDao> {
+
+    @Override
+    public void execute(ReportDao dao) throws Exception {
+        // ReportClient is a server-push handler; no direct execute.
+    }
 
     public void handleReport(Frame frame) {
         try {

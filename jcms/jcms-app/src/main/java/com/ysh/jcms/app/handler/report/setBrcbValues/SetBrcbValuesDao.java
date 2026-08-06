@@ -1,9 +1,16 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-public class SetBrcbValuesDao {
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class SetBrcbValuesDao extends BaseDao {
     private String ref;
     private String rptId;
     private Boolean rptEna;
@@ -13,47 +20,6 @@ public class SetBrcbValuesDao {
     private Boolean gi;
     private Boolean purgeBuf;
     private Integer resvTms;
-
-    public SetBrcbValuesDao ref(String v) {
-        this.ref = v;
-        return this;
-    }
-    public SetBrcbValuesDao rptId(String v) {
-        this.rptId = v;
-        return this;
-    }
-    public SetBrcbValuesDao rptEna(Boolean v) {
-        this.rptEna = v;
-        return this;
-    }
-    public SetBrcbValuesDao datSet(String v) {
-        this.datSet = v;
-        return this;
-    }
-    public SetBrcbValuesDao bufTm(Integer v) {
-        this.bufTm = v;
-        return this;
-    }
-    public SetBrcbValuesDao intgPd(Integer v) {
-        this.intgPd = v;
-        return this;
-    }
-    public SetBrcbValuesDao gi(Boolean v) {
-        this.gi = v;
-        return this;
-    }
-    public SetBrcbValuesDao purgeBuf(Boolean v) {
-        this.purgeBuf = v;
-        return this;
-    }
-    public SetBrcbValuesDao resvTms(Integer v) {
-        this.resvTms = v;
-        return this;
-    }
-
-    public String ref() {
-        return ref;
-    }
 
     CmsSetBrcbValuesRequest toRequest(int reqId) {
         CmsSetBrcbValuesRequest req = new CmsSetBrcbValuesRequest();

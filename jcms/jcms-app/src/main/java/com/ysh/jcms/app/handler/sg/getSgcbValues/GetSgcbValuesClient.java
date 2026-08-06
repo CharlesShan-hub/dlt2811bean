@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetSgcbValuesClient extends BaseClientHandler {
+public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
 
     public static final class SgcbResult {
         public final boolean success;
@@ -36,6 +36,7 @@ public class GetSgcbValuesClient extends BaseClientHandler {
         return lastResults;
     }
 
+    @Override
     public void execute(GetSgcbValuesDao dao) throws Exception {
         CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest();
 

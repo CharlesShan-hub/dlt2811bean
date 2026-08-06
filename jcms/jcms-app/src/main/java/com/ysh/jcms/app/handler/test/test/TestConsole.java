@@ -29,7 +29,7 @@ public class TestConsole implements CommandHandler {
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.requireConnected(args))
             return;
-        console.getClient(TestClient.class).execute();
+        console.getClient(TestClient.class).execute(new TestDao());
         CmsConsole.outputMessage("Ping/pong OK", args);
     }
 }

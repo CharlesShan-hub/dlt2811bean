@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllDataValuesClient extends BaseClientHandler {
+public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
+    @Override
     public void execute(AllDataValuesDao dao) throws Exception {
         CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().referenceAfter(dao.referenceAfter());
 

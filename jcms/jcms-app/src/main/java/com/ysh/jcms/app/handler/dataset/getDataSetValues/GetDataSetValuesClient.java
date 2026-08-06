@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataSetValuesClient extends BaseClientHandler {
+public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDao> {
 
     public static final class DataSetValue {
         public final int choiceType;
@@ -30,6 +30,7 @@ public class GetDataSetValuesClient extends BaseClientHandler {
         return lastValues;
     }
 
+    @Override
     public void execute(GetDataSetValuesDao dao) throws Exception {
         CmsGetDataSetValuesRequest req = new CmsGetDataSetValuesRequest().datasetReference(dao.datasetReference())
                 .referenceAfter(dao.referenceAfter());

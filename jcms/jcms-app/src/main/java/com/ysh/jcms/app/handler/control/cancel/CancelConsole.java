@@ -36,7 +36,8 @@ public class CancelConsole implements CommandHandler {
 
         String ref = args.get("ref").trim();
         ConsolePrinter.info("Cancelling: " + ref);
-        console.getClient(CancelClient.class).execute(ref, args);
+        CancelDao dao = new CancelDao().ref(ref).args(args);
+        console.getClient(CancelClient.class).execute(dao);
         CmsConsole.outputMessage("Cancelled " + ref, args);
     }
 }

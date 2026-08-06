@@ -1,5 +1,10 @@
 package com.ysh.jcms.app.handler.sg.setEditSgValue;
 
+import com.ysh.jcms.app.handler.BaseDao;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,13 +12,12 @@ import java.util.List;
  * DAO for SetEditSGValue (8.6.3). Holds a list of (reference, value) pairs to
  * be sent to the server.
  */
-public class SetEditSgValueDao {
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class SetEditSgValueDao extends BaseDao {
 
     private final List<Entry> entries = new ArrayList<>();
-
-    public List<Entry> entries() {
-        return entries;
-    }
 
     public SetEditSgValueDao addEntry(String ref, byte[] valueBytes, int choiceType) {
         entries.add(new Entry(ref, valueBytes, choiceType));

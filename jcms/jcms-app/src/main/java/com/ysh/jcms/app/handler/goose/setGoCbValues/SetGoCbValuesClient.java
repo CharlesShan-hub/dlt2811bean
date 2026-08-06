@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SetGoCbValuesClient extends BaseClientHandler {
+public class SetGoCbValuesClient extends BaseClientHandler<SetGoCbValuesDao> {
 
+    @Override
     public void execute(SetGoCbValuesDao dao) throws Exception {
         CmsSetGoCbValuesRequest req = dao.toRequest(nextReqId());
         send(ServiceName.SET_GOCB_VALUES, req);

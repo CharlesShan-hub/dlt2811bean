@@ -1,11 +1,18 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-public class SetLcbValuesDao {
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class SetLcbValuesDao extends BaseDao {
     private String ref;
     private Boolean logEna;
     private String datSet;
@@ -14,43 +21,6 @@ public class SetLcbValuesDao {
     private String logRef;
     private Integer optFlds;
     private Integer bufTm;
-
-    public SetLcbValuesDao ref(String v) {
-        this.ref = v;
-        return this;
-    }
-    public SetLcbValuesDao logEna(Boolean v) {
-        this.logEna = v;
-        return this;
-    }
-    public SetLcbValuesDao datSet(String v) {
-        this.datSet = v;
-        return this;
-    }
-    public SetLcbValuesDao trgOps(Integer v) {
-        this.trgOps = v;
-        return this;
-    }
-    public SetLcbValuesDao intgPd(Integer v) {
-        this.intgPd = v;
-        return this;
-    }
-    public SetLcbValuesDao logRef(String v) {
-        this.logRef = v;
-        return this;
-    }
-    public SetLcbValuesDao optFlds(Integer v) {
-        this.optFlds = v;
-        return this;
-    }
-    public SetLcbValuesDao bufTm(Integer v) {
-        this.bufTm = v;
-        return this;
-    }
-
-    public String ref() {
-        return ref;
-    }
 
     CmsSetLcbValuesRequest toRequest(int reqId) {
         CmsSetLcbValuesRequest req = new CmsSetLcbValuesRequest();

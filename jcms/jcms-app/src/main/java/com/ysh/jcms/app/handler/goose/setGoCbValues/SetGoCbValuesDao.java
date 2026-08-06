@@ -1,34 +1,20 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesRequest;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-public class SetGoCbValuesDao {
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class SetGoCbValuesDao extends BaseDao {
     private String ref;
     private Boolean goEna;
     private String goID;
     private String datSet;
-
-    public SetGoCbValuesDao ref(String v) {
-        this.ref = v;
-        return this;
-    }
-    public SetGoCbValuesDao goEna(Boolean v) {
-        this.goEna = v;
-        return this;
-    }
-    public SetGoCbValuesDao goID(String v) {
-        this.goID = v;
-        return this;
-    }
-    public SetGoCbValuesDao datSet(String v) {
-        this.datSet = v;
-        return this;
-    }
-
-    public String ref() {
-        return ref;
-    }
 
     CmsSetGoCbValuesRequest toRequest(int reqId) {
         CmsSetGoCbValuesRequest req = new CmsSetGoCbValuesRequest();

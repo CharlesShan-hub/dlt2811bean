@@ -13,8 +13,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class SetEditSgValueClient extends BaseClientHandler {
+public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
+    @Override
     public void execute(SetEditSgValueDao dao) throws Exception {
         CmsSetEditSgValueRequest req = new CmsSetEditSgValueRequest();
 

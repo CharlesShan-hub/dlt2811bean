@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetUrcbValuesClient extends BaseClientHandler {
+public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
 
     public static final class UrcbEntry {
         public final String desc;
@@ -28,6 +28,7 @@ public class GetUrcbValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetUrcbValuesDao dao) throws Exception {
         CmsGetUrcbValuesRequest req = new CmsGetUrcbValuesRequest();
         for (String ref : dao.refs()) {

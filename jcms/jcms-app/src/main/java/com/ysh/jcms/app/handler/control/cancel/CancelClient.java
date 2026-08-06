@@ -11,11 +11,13 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.Map;
 
-public class CancelClient extends BaseClientHandler {
+public class CancelClient extends BaseClientHandler<CancelDao> {
 
-    public void execute(String ref, Map<String, String> args) throws Exception {
-        CmsCancelRequest req = new CmsCancelRequest().reference(ref);
+    @Override
+    public void execute(CancelDao dao) throws Exception {
+        CmsCancelRequest req = new CmsCancelRequest().reference(dao.ref());
 
+        Map<String, String> args = dao.args();
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();

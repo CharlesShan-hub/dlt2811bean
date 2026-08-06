@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetEditSgValueClient extends BaseClientHandler {
+public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
 
     public static final class ValueEntry {
         public final int choice;
@@ -29,6 +29,7 @@ public class GetEditSgValueClient extends BaseClientHandler {
         return lastValues;
     }
 
+    @Override
     public void execute(GetEditSgValueDao dao) throws Exception {
         CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest();
         for (GetEditSgValueDao.RefFcPair pair : dao.refs()) {

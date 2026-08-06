@@ -12,8 +12,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
  * Sends an Abort-RequestPDU and immediately closes the session. No response is
  * expected.
  */
-public class AbortClient extends BaseClientHandler {
+public class AbortClient extends BaseClientHandler<AbortClientDao> {
 
+    @Override
     public void execute(AbortClientDao dao) throws Exception {
         CmsAbort req = new CmsAbort().reason(dao.reason());
 

@@ -9,8 +9,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SelectEditSgClient extends BaseClientHandler {
+public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
 
+    @Override
     public void execute(SelectEditSgDao dao) throws Exception {
         CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().sgcbReference(dao.sgcbReference())
                 .settingGroupNumber(dao.settingGroupNumber());

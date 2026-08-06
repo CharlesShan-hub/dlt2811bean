@@ -20,13 +20,14 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 
-public class AssociateClient extends BaseClientHandler {
+public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
 
     /** The sapRef used in the current request, needed for response validation. */
     private String currentSapRef;
     /** Whether the current request uses application-layer security. */
     private boolean currentSecure;
 
+    @Override
     public void execute(AssociateClientDao dao) throws Exception {
         this.currentSapRef = dao.sapRef();
         this.currentSecure = dao.secure();

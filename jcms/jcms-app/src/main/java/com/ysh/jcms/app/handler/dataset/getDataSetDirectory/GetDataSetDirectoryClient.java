@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataSetDirectoryClient extends BaseClientHandler {
+public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirectoryDao> {
 
     public static final class DirEntry {
         public final String reference;
@@ -30,6 +30,7 @@ public class GetDataSetDirectoryClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
         CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().datasetReference(dao.datasetReference())
                 .referenceAfter(dao.referenceAfter());

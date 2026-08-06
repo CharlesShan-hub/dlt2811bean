@@ -36,7 +36,8 @@ public class SelectWithValueConsole implements CommandHandler {
 
         String ref = args.get("ref").trim();
         ConsolePrinter.info("Selecting with value: " + ref);
-        console.getClient(SelectWithValueClient.class).execute(ref, args);
+        SelectWithValueDao dao = new SelectWithValueDao().ref(ref).args(args);
+        console.getClient(SelectWithValueClient.class).execute(dao);
         CmsConsole.outputMessage("Selected (with value) " + ref, args);
     }
 }

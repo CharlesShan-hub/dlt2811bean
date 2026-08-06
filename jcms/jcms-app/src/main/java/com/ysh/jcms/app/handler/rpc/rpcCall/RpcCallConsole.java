@@ -29,7 +29,8 @@ public class RpcCallConsole implements CommandHandler {
             return;
         String method = args.get("method").trim();
         ConsolePrinter.info("RPC call: " + method);
-        console.getClient(RpcCallClient.class).execute(method);
+        RpcCallDao dao = new RpcCallDao().method(method);
+        console.getClient(RpcCallClient.class).execute(dao);
         CmsConsole.outputMessage("RPC call " + method + " completed", args);
     }
 }

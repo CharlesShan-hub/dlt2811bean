@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -10,7 +11,7 @@ import java.util.List;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class SetDataValuesDao {
+public class SetDataValuesDao extends BaseDao {
 
     /** Data value entries (reference + value string + optional fc) */
     private List<Entry> entries = new ArrayList<>();

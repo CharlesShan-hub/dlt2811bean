@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetLcbValuesClient extends BaseClientHandler {
+public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
 
     public static final class LcbEntry {
         public final String desc;
@@ -28,6 +28,7 @@ public class GetLcbValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetLcbValuesDao dao) throws Exception {
         CmsGetLcbValuesRequest req = new CmsGetLcbValuesRequest();
         for (String ref : dao.refs()) {

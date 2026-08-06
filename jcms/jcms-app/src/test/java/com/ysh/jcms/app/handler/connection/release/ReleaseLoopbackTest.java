@@ -36,7 +36,7 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
         assertNotNull(clientNode().getClient().getSession().getAssociationId());
 
         // Then release
-        clientNode().getClient(ReleaseClient.class).execute();
+        clientNode().getClient(ReleaseClient.class).execute(new ReleaseDao());
         assertEquals(SessionState.CONNECTED, clientNode().getClient().getSession().getState());
         assertNull(clientNode().getClient().getSession().getAssociationId());
     }
@@ -44,7 +44,7 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
     @Test
     public void release_without_associate_should_fail() throws Exception {
         try {
-            clientNode().getClient(ReleaseClient.class).execute();
+            clientNode().getClient(ReleaseClient.class).execute(new ReleaseDao());
             fail("Should throw when releasing without association");
         } catch (Exception e) {
             // Expected

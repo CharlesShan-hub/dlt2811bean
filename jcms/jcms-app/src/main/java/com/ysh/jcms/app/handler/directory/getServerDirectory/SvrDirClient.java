@@ -10,8 +10,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.List;
 
-public class SvrDirClient extends BaseClientHandler {
+public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
+    @Override
     public void execute(SvrDirDao dao) throws Exception {
         CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest().objectClass(dao.objectClass())
                 .referenceAfter(dao.referenceAfter());

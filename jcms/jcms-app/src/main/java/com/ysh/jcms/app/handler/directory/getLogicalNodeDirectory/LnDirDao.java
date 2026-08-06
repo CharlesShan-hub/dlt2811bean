@@ -1,13 +1,14 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import lombok.Getter;
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class LnDirDao {
+public class LnDirDao extends BaseDao {
 
     /** ldName (e.g. "C1") — alternative to lnReference */
     private String ldName;

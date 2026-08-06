@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.handler.connection.associate;
 
+import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
 import lombok.Getter;
 import lombok.experimental.Accessors;
@@ -14,7 +15,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class AssociateClientDao {
+public class AssociateClientDao extends BaseDao {
 
     /** Server access point reference (e.g. "IED1/AP1") */
     private String sapRef;

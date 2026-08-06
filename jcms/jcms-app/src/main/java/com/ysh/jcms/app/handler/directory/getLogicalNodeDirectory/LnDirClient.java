@@ -10,10 +10,11 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.List;
 
-public class LnDirClient extends BaseClientHandler {
+public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     private int acsiClass;
 
+    @Override
     public void execute(LnDirDao dao) throws Exception {
         this.acsiClass = dao.acsiClass();
         CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(dao.acsiClass())

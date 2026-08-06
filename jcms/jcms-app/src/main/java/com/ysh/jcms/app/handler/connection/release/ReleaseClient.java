@@ -11,9 +11,10 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 
 import java.io.IOException;
 
-public class ReleaseClient extends BaseClientHandler {
+public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
-    public void execute() throws Exception {
+    @Override
+    public void execute(ReleaseDao dao) throws Exception {
         CmsReleaseRequest req = new CmsReleaseRequest();
 
         byte[] assocId = node.getClient().getSession().getAssociationId();

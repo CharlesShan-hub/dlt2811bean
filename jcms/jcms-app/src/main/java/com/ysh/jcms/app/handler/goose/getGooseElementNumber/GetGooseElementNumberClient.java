@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetGooseElementNumberClient extends BaseClientHandler {
+public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseElementNumberDao> {
 
     public static final class MemberSpec {
         public final String reference;
@@ -42,6 +42,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler {
         return lastResult;
     }
 
+    @Override
     public void execute(GetGooseElementNumberDao dao) throws Exception {
         CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().gocbReference(dao.gocbReference());
         for (MemberSpec spec : dao.members()) {

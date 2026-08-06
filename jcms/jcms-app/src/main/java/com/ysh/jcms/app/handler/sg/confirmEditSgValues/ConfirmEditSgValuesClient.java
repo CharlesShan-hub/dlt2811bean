@@ -9,8 +9,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class ConfirmEditSgValuesClient extends BaseClientHandler {
+public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgValuesDao> {
 
+    @Override
     public void execute(ConfirmEditSgValuesDao dao) throws Exception {
         CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest().sgcbReference(dao.sgcbReference());
 

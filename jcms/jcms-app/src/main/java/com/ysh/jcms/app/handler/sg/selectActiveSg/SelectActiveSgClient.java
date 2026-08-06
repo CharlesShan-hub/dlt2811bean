@@ -2,20 +2,17 @@ package com.ysh.jcms.app.handler.sg.selectActiveSg;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.sg.CmsSelectActiveSgError;
-import com.ysh.jcms.pdu.sg.CmsSelectActiveSgRequest;
 import com.ysh.jcms.pdu.sg.CmsSelectActiveSgResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SelectActiveSgClient extends BaseClientHandler {
+public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
 
+    @Override
     public void execute(SelectActiveSgDao dao) throws Exception {
-        CmsSelectActiveSgRequest req = new CmsSelectActiveSgRequest().sgcbReference(dao.sgcbReference())
-                .settingGroupNumber(dao.settingGroupNumber());
-
-        send(ServiceName.SELECT_ACTIVE_SG, req);
+        send(ServiceName.SELECT_ACTIVE_SG, dao.toRequest());
     }
 
     @Override

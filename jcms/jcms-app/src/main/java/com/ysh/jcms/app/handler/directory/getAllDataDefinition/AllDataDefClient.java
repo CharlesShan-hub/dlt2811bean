@@ -13,8 +13,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllDataDefClient extends BaseClientHandler {
+public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
+    @Override
     public void execute(AllDataDefDao dao) throws Exception {
         CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().referenceAfter(dao.referenceAfter());
 

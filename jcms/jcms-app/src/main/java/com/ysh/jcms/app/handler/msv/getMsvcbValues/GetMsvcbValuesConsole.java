@@ -35,7 +35,8 @@ public class GetMsvcbValuesConsole implements CommandHandler {
 
         List<String> refs = Arrays.asList(args.get("refs").trim().split("\\s+"));
         ConsolePrinter.info("Fetching MSVCB values for " + refs.size() + " reference(s)");
-        console.getClient(GetMsvcbValuesClient.class).execute(refs);
+        GetMsvcbValuesDao dao = new GetMsvcbValuesDao().refs(refs);
+        console.getClient(GetMsvcbValuesClient.class).execute(dao);
         CmsConsole.outputMessage("MSVCB values fetched for " + refs.size() + " reference(s)", args);
     }
 }

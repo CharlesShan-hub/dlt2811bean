@@ -12,11 +12,13 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 import java.util.Map;
 
-public class SelectWithValueClient extends BaseClientHandler {
+public class SelectWithValueClient extends BaseClientHandler<SelectWithValueDao> {
 
-    public void execute(String ref, Map<String, String> args) throws Exception {
-        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reference(ref);
+    @Override
+    public void execute(SelectWithValueDao dao) throws Exception {
+        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reference(dao.ref());
 
+        Map<String, String> args = dao.args();
         String valueStr = args.get("value");
         if (valueStr != null && !valueStr.isEmpty()) {
             CmsData ctlVal = new CmsData();

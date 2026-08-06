@@ -1,13 +1,13 @@
 package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
 
-public class ConfirmEditSgValuesDao {
-    private String sgcbReference;
+import com.ysh.jcms.app.handler.BaseDao;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-    public String sgcbReference() {
-        return sgcbReference;
-    }
-    public ConfirmEditSgValuesDao sgcbReference(String v) {
-        this.sgcbReference = v;
-        return this;
-    }
+@Setter
+@Getter
+@Accessors(fluent = true)
+public class ConfirmEditSgValuesDao extends BaseDao {
+    private String sgcbReference;
 }

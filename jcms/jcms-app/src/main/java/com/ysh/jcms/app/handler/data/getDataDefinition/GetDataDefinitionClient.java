@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataDefinitionClient extends BaseClientHandler {
+public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinitionDao> {
 
     public static final class DefEntry {
         public final String cdcType;
@@ -31,6 +31,7 @@ public class GetDataDefinitionClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetDataDefinitionDao dao) throws Exception {
         CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest();
 

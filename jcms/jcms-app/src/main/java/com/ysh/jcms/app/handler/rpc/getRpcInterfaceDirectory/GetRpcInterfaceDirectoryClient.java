@@ -8,11 +8,12 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
-public class GetRpcInterfaceDirectoryClient extends BaseClientHandler {
-    public void execute(String after) throws Exception {
+public class GetRpcInterfaceDirectoryClient extends BaseClientHandler<GetRpcInterfaceDirectoryDao> {
+    @Override
+    public void execute(GetRpcInterfaceDirectoryDao dao) throws Exception {
         CmsGetRpcInterfaceDirectoryRequest req = new CmsGetRpcInterfaceDirectoryRequest();
-        if (after != null && !after.isEmpty())
-            req.referenceAfter(after);
+        if (dao.after() != null && !dao.after().isEmpty())
+            req.referenceAfter(dao.after());
         send(ServiceName.GET_RPC_INTERFACE_DIRECTORY, req);
     }
     @Override

@@ -11,8 +11,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class SetDataValuesClient extends BaseClientHandler {
+public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
 
+    @Override
     public void execute(SetDataValuesDao dao) throws Exception {
         CmsSetDataValuesRequest req = new CmsSetDataValuesRequest();
 

@@ -9,16 +9,17 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
-public class SetMsvcbValuesClient extends BaseClientHandler {
+public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
 
-    public void execute(String ref, String svEna, String msvId, String datSet) throws Exception {
-        CmsSetMsvcbEntry entry = new CmsSetMsvcbEntry().reference(ref);
-        if (svEna != null && !svEna.isEmpty())
-            entry.svEna(Boolean.parseBoolean(svEna));
-        if (msvId != null && !msvId.isEmpty())
-            entry.msvID(msvId);
-        if (datSet != null && !datSet.isEmpty())
-            entry.datSet(datSet);
+    @Override
+    public void execute(SetMsvcbValuesDao dao) throws Exception {
+        CmsSetMsvcbEntry entry = new CmsSetMsvcbEntry().reference(dao.ref());
+        if (dao.svEna() != null && !dao.svEna().isEmpty())
+            entry.svEna(Boolean.parseBoolean(dao.svEna()));
+        if (dao.msvId() != null && !dao.msvId().isEmpty())
+            entry.msvID(dao.msvId());
+        if (dao.datSet() != null && !dao.datSet().isEmpty())
+            entry.datSet(dao.datSet());
 
         CmsSetMsvcbValuesRequest req = new CmsSetMsvcbValuesRequest();
         req.msvcb.add(entry);

@@ -36,7 +36,8 @@ public class OperateConsole implements CommandHandler {
 
         String ref = args.get("ref").trim();
         ConsolePrinter.info("Operating: " + ref);
-        console.getClient(OperateClient.class).execute(ref, args);
+        OperateDao dao = new OperateDao().ref(ref).args(args);
+        console.getClient(OperateClient.class).execute(dao);
         CmsConsole.outputMessage("Operated " + ref, args);
     }
 }

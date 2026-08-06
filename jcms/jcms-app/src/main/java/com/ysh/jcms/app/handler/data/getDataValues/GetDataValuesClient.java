@@ -2,9 +2,7 @@ package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
-import com.ysh.jcms.pdu.data.CmsGetDataValuesRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -13,7 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetDataValuesClient extends BaseClientHandler {
+public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
 
     public static final class DataValue {
         public final int choiceType;
@@ -31,18 +29,9 @@ public class GetDataValuesClient extends BaseClientHandler {
         return lastValues;
     }
 
+    @Override
     public void execute(GetDataValuesDao dao) throws Exception {
-        CmsGetDataValuesRequest req = new CmsGetDataValuesRequest();
-
-        for (GetDataValuesDao.DataRef ref : dao.dataRefs()) {
-            CmsDataRefEntry entry = new CmsDataRefEntry().reference(ref.reference());
-            if (ref.fc() != null) {
-                entry.fc(ref.fc());
-            }
-            req.data.add(entry);
-        }
-
-        send(ServiceName.GET_DATA_VALUES, req);
+        send(ServiceName.GET_DATA_VALUES, dao.toRequest());
     }
 
     @Override

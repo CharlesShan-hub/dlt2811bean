@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetLogStatusValuesClient extends BaseClientHandler {
+public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValuesDao> {
 
     public static final class LogStatusEntry {
         public final String desc;
@@ -28,6 +28,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetLogStatusValuesDao dao) throws Exception {
         CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest();
         for (String ref : dao.refs()) {

@@ -8,13 +8,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
 
-public class GetRpcMethodDirectoryClient extends BaseClientHandler {
-    public void execute(String iface, String after) throws Exception {
+public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodDirectoryDao> {
+    @Override
+    public void execute(GetRpcMethodDirectoryDao dao) throws Exception {
         CmsGetRpcMethodDirectoryRequest req = new CmsGetRpcMethodDirectoryRequest();
-        if (iface != null && !iface.isEmpty())
-            req.interfaceName(iface);
-        if (after != null && !after.isEmpty())
-            req.referenceAfter(after);
+        if (dao.iface() != null && !dao.iface().isEmpty())
+            req.interfaceName(dao.iface());
+        if (dao.after() != null && !dao.after().isEmpty())
+            req.referenceAfter(dao.after());
         send(ServiceName.GET_RPC_METHOD_DIRECTORY, req);
     }
     @Override

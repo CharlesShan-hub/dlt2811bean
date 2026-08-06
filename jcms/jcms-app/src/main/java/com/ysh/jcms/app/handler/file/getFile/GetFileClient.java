@@ -15,12 +15,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetFileClient extends BaseClientHandler {
+public class GetFileClient extends BaseClientHandler<GetFileDao> {
 
     /**
      * Download a file from the server. The client loops, sending GetFile requests
      * with increasing startPosition until the server returns endOfFile=true.
      */
+    @Override
     public void execute(GetFileDao dao) throws Exception {
         String remoteFile = dao.fileName();
         String outputFile = dao.outputFile();

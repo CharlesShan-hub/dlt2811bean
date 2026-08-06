@@ -9,8 +9,9 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 
-public class DeleteFileClient extends BaseClientHandler {
+public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
 
+    @Override
     public void execute(DeleteFileDao dao) throws Exception {
         CmsDeleteFileRequest req = new CmsDeleteFileRequest().filename(dao.fileName());
 

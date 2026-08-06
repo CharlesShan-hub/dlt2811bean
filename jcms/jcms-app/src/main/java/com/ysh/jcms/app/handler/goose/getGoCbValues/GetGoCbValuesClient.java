@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GetGoCbValuesClient extends BaseClientHandler {
+public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
 
     public static final class GoCbEntry {
         public final String desc;
@@ -28,6 +28,7 @@ public class GetGoCbValuesClient extends BaseClientHandler {
         return lastEntries;
     }
 
+    @Override
     public void execute(GetGoCbValuesDao dao) throws Exception {
         CmsGetGoCbValuesRequest req = new CmsGetGoCbValuesRequest();
         for (String ref : dao.refs()) {
