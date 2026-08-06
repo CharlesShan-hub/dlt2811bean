@@ -203,17 +203,28 @@ export function useCommandForm(form, opts = {}) {
     if (row.sdo) ref += `.${row.sdo}`
     if (row.da) ref += `.${row.da}`
     try {
-      // 用 get-data-values 获取实际值类型（如 int32, boolean），
-      // 而非 get-data-def（返回的是 ASN.1 结构定义类型，如 structure）
-      const res = await executeJson(`get-data-values --refs "${ref}" --json`)
-      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
-        const item = res.data[0]
-        if (item && item.type) {
-          row._resolvedType = item.type
-          return
-        }
+      // 同时查 get-data-def（SCL 定义类型）和 get-data-values（实际值类型）
+      const [defRes, valRes] = await Promise.all([
+        executeJson(`get-data-def --refs "${ref}" --json`),
+        executeJson(`get-data-values --refs "${ref}" --json`),
+      ])
+
+      // 从 get-data-def 拿定义类型（SCL bType，始终准确）
+      let defType = ''
+      if (defRes.success && Array.isArray(defRes.data) && defRes.data.length > 0) {
+        const m = String(defRes.data[0]).match(/^\S+\s+\[(\w+)\]/)
+        if (m) defType = m[1]
       }
-      row._resolvedType = ''
+
+      // 从 get-data-values 拿实际值类型
+      let valType = ''
+      if (valRes.success && Array.isArray(valRes.data) && valRes.data.length > 0) {
+        const item = valRes.data[0]
+        if (item && item.type) valType = item.type
+      }
+
+      // 优先用定义类型；如果值类型不为 visible-string（说明值确实存在且类型正确），则用值类型
+      row._resolvedType = (valType && valType !== 'visible-string') ? valType : (defType || valType)
     } catch {
       row._resolvedType = ''
     }
