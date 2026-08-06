@@ -41,8 +41,8 @@ public class KeepAliveManager {
     public void start() {
         if (running)
             return;
-        com.ysh.jcms.utils.config.CmsConfig.Server.KeepAlive cfg = CmsConfigLoader.load().getServer().getKeepalive();
-        if (cfg.getIdleTimeoutMs() <= 0)
+        com.ysh.jcms.utils.config.CmsConfig.Server.KeepAlive cfg = CmsConfigLoader.load().server().keepalive();
+        if (cfg.idleTimeoutMs() <= 0)
             return;
 
         executor = Executors.newSingleThreadScheduledExecutor(r -> {
@@ -53,8 +53,8 @@ public class KeepAliveManager {
 
         running = true;
         executor.scheduleWithFixedDelay(this::check, 1, 1, TimeUnit.SECONDS);
-        log.info("Keepalive started: idleTimeout={}ms, retryInterval={}ms, maxRetries={}", cfg.getIdleTimeoutMs(), cfg.getRetryIntervalMs(),
-                cfg.getMaxRetries());
+        log.info("Keepalive started: idleTimeout={}ms, retryInterval={}ms, maxRetries={}", cfg.idleTimeoutMs(), cfg.retryIntervalMs(),
+                cfg.maxRetries());
     }
 
     /** Stop the keepalive checker. */
@@ -73,7 +73,7 @@ public class KeepAliveManager {
     // ── internal ──
 
     private void check() {
-        com.ysh.jcms.utils.config.CmsConfig.Server.KeepAlive cfg = CmsConfigLoader.load().getServer().getKeepalive();
+        com.ysh.jcms.utils.config.CmsConfig.Server.KeepAlive cfg = CmsConfigLoader.load().server().keepalive();
         long now = System.currentTimeMillis();
 
         for (InnerServer.ServerSession ss : sessions) {
@@ -83,8 +83,8 @@ public class KeepAliveManager {
             long idle = now - ss.getLastActivityTime();
             int retries = ss.getKeepaliveRetries();
 
-            if (idle > cfg.getIdleTimeoutMs() + (long) cfg.getRetryIntervalMs() * (retries + 1)) {
-                if (retries >= cfg.getMaxRetries()) {
+            if (idle > cfg.idleTimeoutMs() + (long) cfg.retryIntervalMs() * (retries + 1)) {
+                if (retries >= cfg.maxRetries()) {
                     log.warn("Keepalive: session {} max retries exceeded, disconnecting", ss.getSessionId());
                     ss.close();
                 } else {

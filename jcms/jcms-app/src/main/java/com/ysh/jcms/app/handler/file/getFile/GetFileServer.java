@@ -40,7 +40,7 @@ public class GetFileServer extends BaseServerHandler<CmsGetFileRequest, CmsGetFi
             return ok(new CmsGetFileResponse().fileData(new byte[0]).endOfFile(true), reqId);
         }
 
-        String root = CmsConfigLoader.load().getProtocol().getFile().getRootPath();
+        String root = CmsConfigLoader.load().protocol().file().rootPath();
         String safe = fileName.replaceAll("\\.\\./|\\.\\.\\\\", "");
         Path filePath = Paths.get(root, safe).normalize();
 

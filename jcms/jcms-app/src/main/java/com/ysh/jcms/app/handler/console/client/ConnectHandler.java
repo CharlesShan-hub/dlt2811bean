@@ -56,9 +56,13 @@ public class ConnectHandler extends CommandHandler {
         if (portStr != null && !portStr.isEmpty()) {
             port = Integer.parseInt(portStr);
         } else {
-            port = secure ? CmsConfigLoader.load().getServer().getSslPort() : CmsConfigLoader.load().getServer().getPort();
+            port = secure ? CmsConfigLoader.load().server().sslPort() : CmsConfigLoader.load().server().port();
         }
         String sapRef = args.get("ap");
+        // "--ap" 作布尔 flag 时（未指定具体 AP），使用默认 AP
+        if ("true".equals(sapRef)) {
+            sapRef = null;
+        }
 
         if (secure) {
             ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");

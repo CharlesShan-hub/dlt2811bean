@@ -117,7 +117,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     private static boolean isTraceEnabled() {
-        return CmsConfigLoader.load().getClient().getConsole().isTracePdu();
+        return CmsConfigLoader.load().client().console().tracePdu();
     }
 
     protected static void trace(String msg) {

@@ -23,8 +23,8 @@ import java.net.URLEncoder;
 public class CmsRemoteClient {
 
     public static void main(String[] args) {
-        String host = CmsConfigLoader.load().getClient().getConsole().getApiHost();
-        int port = CmsConfigLoader.load().getClient().getConsole().getApiPort();
+        String host = CmsConfigLoader.load().client().console().apiHost();
+        int port = CmsConfigLoader.load().client().console().apiPort();
 
         // Parse --port option
         int i = 0;

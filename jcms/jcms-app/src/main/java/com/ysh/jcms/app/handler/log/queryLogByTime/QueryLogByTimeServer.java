@@ -22,7 +22,7 @@ public class QueryLogByTimeServer extends BaseServerHandler<CmsQueryLogByTimeReq
 
     public QueryLogByTimeServer() {
         super(ServiceName.QUERY_LOG_BY_TIME, CmsQueryLogByTimeRequest.class, CmsQueryLogByTimeError.class);
-        this.logStorage = new LogStorage(CmsConfigLoader.load().getProtocol().getLog().getRootPath());
+        this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 
     @Override

@@ -105,9 +105,9 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
         serverCert.checkValidity();
 
         // 3. 如果配置了 CA，验证证书是否由 CA 签发
-        CmsConfig.Security sec = CmsConfigLoader.load().getSecurity();
-        if (sec.isEnabled()) {
-            X509Certificate caCert = loadCaCertificate(sec.getTruststore().getPath());
+        CmsConfig.Security sec = CmsConfigLoader.load().security();
+        if (sec.enabled()) {
+            X509Certificate caCert = loadCaCertificate(sec.truststore().path());
             try {
                 serverCert.verify(caCert.getPublicKey());
                 log.info("Server certificate verified against CA: {}", caCert.getSubjectX500Principal().getName());
@@ -117,7 +117,7 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
         }
 
         // 4. 验证签名时间（防重放）
-        long timeTolerance = sec.isEnabled() ? sec.getTimeTolerance() : 300;
+        long timeTolerance = sec.enabled() ? sec.timeTolerance() : 300;
         if (authParam.signedTime != null) {
             long signedTime = authParam.signedTime.secondsSinceEpoch.value();
             long diff = Math.abs(Instant.now().getEpochSecond() - signedTime);

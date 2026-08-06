@@ -99,6 +99,7 @@ export function useCommandForm(form, opts = {}) {
     row.da = ''
     row.fc = ''
     loadRowSdo(row)
+    loadRowType(row)
   }
   function onRowSdo(row) {
     row.da = ''
@@ -114,6 +115,7 @@ export function useCommandForm(form, opts = {}) {
     } else {
       row.fc = ''
     }
+    loadRowType(row)
   }
 
   // ── 级联 SDO 选项 ──
@@ -187,6 +189,33 @@ export function useCommandForm(form, opts = {}) {
       }
     } catch {
       rowDaRefs[key] = []
+    }
+  }
+
+  // ── 自动解析字段类型（供 set-data-values 显示） ──
+
+  async function loadRowType(row) {
+    if (!row.ld || !row.ln || !row.do) {
+      row._resolvedType = ''
+      return
+    }
+    let ref = `${row.ld}/${row.ln}.${row.do}`
+    if (row.sdo) ref += `.${row.sdo}`
+    if (row.da) ref += `.${row.da}`
+    try {
+      // 用 get-data-values 获取实际值类型（如 int32, boolean），
+      // 而非 get-data-def（返回的是 ASN.1 结构定义类型，如 structure）
+      const res = await executeJson(`get-data-values --refs "${ref}" --json`)
+      if (res.success && Array.isArray(res.data) && res.data.length > 0) {
+        const item = res.data[0]
+        if (item && item.type) {
+          row._resolvedType = item.type
+          return
+        }
+      }
+      row._resolvedType = ''
+    } catch {
+      row._resolvedType = ''
     }
   }
 

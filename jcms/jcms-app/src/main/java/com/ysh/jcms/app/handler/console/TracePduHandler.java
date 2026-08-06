@@ -33,13 +33,13 @@ public class TracePduHandler extends CommandHandler {
         boolean jsonMode = "true".equals(args.get("json"));
         String value = args.get("value");
         if (value == null || value.isEmpty()) {
-            boolean current = CmsConfigLoader.load().getClient().getConsole().isTracePdu();
+            boolean current = CmsConfigLoader.load().client().console().tracePdu();
             ConsolePrinter.info("trace-pdu = " + current);
             return;
         }
 
         boolean v = Boolean.parseBoolean(value);
-        CmsConfigLoader.load().getClient().getConsole().setTracePdu(v);
+        CmsConfigLoader.load().client().console().tracePdu(v);
         ConsolePrinter.info("trace-pdu = " + v);
     }
 }

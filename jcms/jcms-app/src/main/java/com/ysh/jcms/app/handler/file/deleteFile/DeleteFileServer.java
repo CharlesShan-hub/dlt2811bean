@@ -45,7 +45,7 @@ public class DeleteFileServer extends BaseServerHandler<CmsDeleteFileRequest, Cm
     }
 
     private static Path resolvePath(String fileName) {
-        String root = CmsConfigLoader.load().getProtocol().getFile().getRootPath();
+        String root = CmsConfigLoader.load().protocol().file().rootPath();
         // Sanitize: prevent path traversal
         String safe = fileName.replaceAll("\\.\\./|\\.\\.\\\\", "");
         return Paths.get(root, safe).normalize();

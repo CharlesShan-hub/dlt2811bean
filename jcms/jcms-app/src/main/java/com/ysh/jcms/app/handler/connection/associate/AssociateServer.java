@@ -43,7 +43,7 @@ public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsA
             this.authenticator = ctx.authenticator();
             this.serverCertificateBytes = ctx.certificate().getEncoded();
             this.serverPrivateKey = ctx.credentialManager().getPrivateKey();
-            String mode = CmsConfigLoader.load().getSecurity().isEnabled() ? "CA" : "self-signed";
+            String mode = CmsConfigLoader.load().security().enabled() ? "CA" : "self-signed";
             log.info("Server authentication initialized (mode={})", mode);
         } catch (Exception e) {
             log.error("Failed to initialize server authentication", e);

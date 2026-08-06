@@ -40,7 +40,7 @@ public class ConnectTlsHandler extends CommandHandler {
         }
 
         String host = args.get("host");
-        int port = CmsConfigLoader.load().getServer().getSslPort();
+        int port = CmsConfigLoader.load().server().sslPort();
         String sapRef = args.get("sap-ref");
 
         ConsolePrinter.info("TLS connecting to " + host + ":" + port + " ...");

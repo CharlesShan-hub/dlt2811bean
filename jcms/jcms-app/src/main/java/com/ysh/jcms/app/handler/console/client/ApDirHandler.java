@@ -46,7 +46,7 @@ public class ApDirHandler extends CommandHandler {
         // 解析 SCL：优先 --scd，其次配置里的 server.sclFiles
         String scd = args.get("scd");
         if (scd == null || scd.isEmpty()) {
-            scd = CmsConfigLoader.load().getServer().getResolvedSclFile();
+            scd = CmsConfigLoader.load().server().getResolvedSclFile();
         }
         if (scd == null || scd.isEmpty()) {
             String msg = "SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。";

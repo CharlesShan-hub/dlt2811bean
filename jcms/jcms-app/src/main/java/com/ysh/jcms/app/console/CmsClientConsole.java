@@ -137,8 +137,8 @@ public class CmsClientConsole extends CmsConsole {
         // Start embedded API server (for remote execution via cms.ps1)
         String apiEnabled = System.getProperty("cms.api.enabled", "true");
         if (!"false".equalsIgnoreCase(apiEnabled)) {
-            int apiPort = Integer.parseInt(
-                    System.getProperty("cms.api.port", String.valueOf(CmsConfigLoader.load().getClient().getConsole().getApiPort())));
+            int apiPort = Integer
+                    .parseInt(System.getProperty("cms.api.port", String.valueOf(CmsConfigLoader.load().client().console().apiPort())));
             try {
                 apiServer = new CliApiServer(apiPort, this);
                 apiServer.start();

@@ -22,7 +22,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler<CmsGetLogStatusV
 
     public GetLogStatusValuesServer() {
         super(ServiceName.GET_LOG_STATUS_VALUES, CmsGetLogStatusValuesRequest.class, CmsGetLogStatusValuesError.class);
-        this.logStorage = new LogStorage(CmsConfigLoader.load().getProtocol().getLog().getRootPath());
+        this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 
     @Override

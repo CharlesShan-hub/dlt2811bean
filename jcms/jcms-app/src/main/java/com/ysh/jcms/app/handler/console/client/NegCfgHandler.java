@@ -34,29 +34,29 @@ public class NegCfgHandler extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = "true".equals(args.get("json"));
-        CmsConfig.Protocol.Negotiate neg = CmsConfigLoader.load().getProtocol().getNegotiate();
+        CmsConfig.Protocol.Negotiate neg = CmsConfigLoader.load().protocol().negotiate();
 
         String apdu = args.get("apdu");
         String asdu = args.get("asdu");
         String version = args.get("version");
         if (apdu != null && !apdu.isEmpty())
-            neg.setApduSize(Integer.parseInt(apdu));
+            neg.apduSize(Integer.parseInt(apdu));
         if (asdu != null && !asdu.isEmpty())
-            neg.setAsduSize(Integer.parseInt(asdu));
+            neg.asduSize(Integer.parseInt(asdu));
         if (version != null && !version.isEmpty())
-            neg.setProtocolVersion(Integer.parseInt(version));
+            neg.protocolVersion(Integer.parseInt(version));
 
         if (jsonMode) {
-            String json = "{\"apduSize\":" + neg.getApduSize() + ",\"asduSize\":" + neg.getAsduSize() + ",\"protocolVersion\":"
-                    + neg.getProtocolVersion() + ",\"modelVersion\":\"" + neg.getModelVersion() + "\"}";
+            String json = "{\"apduSize\":" + neg.apduSize() + ",\"asduSize\":" + neg.asduSize() + ",\"protocolVersion\":"
+                    + neg.protocolVersion() + ",\"modelVersion\":\"" + neg.modelVersion() + "\"}";
             ConsolePrinter.raw("{\"success\":true,\"data\":" + json + "}");
             return;
         }
 
         ConsolePrinter.info("协商参数:");
-        ConsolePrinter.info("  apduSize: " + neg.getApduSize());
-        ConsolePrinter.info("  asduSize: " + neg.getAsduSize());
-        ConsolePrinter.info("  protocolVersion: " + neg.getProtocolVersion());
-        ConsolePrinter.info("  modelVersion: " + neg.getModelVersion());
+        ConsolePrinter.info("  apduSize: " + neg.apduSize());
+        ConsolePrinter.info("  asduSize: " + neg.asduSize());
+        ConsolePrinter.info("  protocolVersion: " + neg.protocolVersion());
+        ConsolePrinter.info("  modelVersion: " + neg.modelVersion());
     }
 }

@@ -27,7 +27,7 @@ public class SelectActiveSgServer extends BaseServerHandler<CmsSelectActiveSgReq
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        int numOfSG = CmsConfigLoader.load().getProtocol().getSetting().getNumOfSG();
+        int numOfSG = CmsConfigLoader.load().protocol().setting().numOfSG();
         if (sgNum < 1 || sgNum > numOfSG) {
             log.warn("SelectActiveSG: invalid group number {} (max={})", sgNum, numOfSG);
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

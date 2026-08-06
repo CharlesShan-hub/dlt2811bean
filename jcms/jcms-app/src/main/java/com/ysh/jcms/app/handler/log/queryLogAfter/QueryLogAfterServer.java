@@ -23,7 +23,7 @@ public class QueryLogAfterServer extends BaseServerHandler<CmsQueryLogAfterReque
 
     public QueryLogAfterServer() {
         super(ServiceName.QUERY_LOG_AFTER, CmsQueryLogAfterRequest.class, CmsQueryLogAfterError.class);
-        this.logStorage = new LogStorage(CmsConfigLoader.load().getProtocol().getLog().getRootPath());
+        this.logStorage = new LogStorage(CmsConfigLoader.load().protocol().log().rootPath());
     }
 
     @Override

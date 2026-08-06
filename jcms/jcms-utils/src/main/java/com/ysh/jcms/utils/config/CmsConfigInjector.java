@@ -51,18 +51,26 @@ public class CmsConfigInjector {
     }
 
     private static Object getProperty(Object obj, String name) {
+        // 1) fluent: method name = field name
+        try {
+            Method method = obj.getClass().getMethod(name);
+            return method.invoke(obj);
+        } catch (Exception ignored) {
+        }
+        // 2) Java Bean: getXxx
         try {
             String getter = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
             Method method = obj.getClass().getMethod(getter);
             return method.invoke(obj);
-        } catch (Exception e) {
-            try {
-                String booleanGetter = "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
-                Method method = obj.getClass().getMethod(booleanGetter);
-                return method.invoke(obj);
-            } catch (Exception e2) {
-                return null;
-            }
+        } catch (Exception ignored) {
+        }
+        // 3) boolean: isXxx
+        try {
+            String booleanGetter = "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1);
+            Method method = obj.getClass().getMethod(booleanGetter);
+            return method.invoke(obj);
+        } catch (Exception ignored) {
+            return null;
         }
     }
 

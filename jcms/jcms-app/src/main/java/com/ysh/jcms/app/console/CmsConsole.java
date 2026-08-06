@@ -160,7 +160,7 @@ public abstract class CmsConsole extends CmsNode {
         registerHandlers();
         onStart();
         // Auto-exec: config autoExec first, then CMS_AUTO_EXEC env var
-        String autoExec = CmsConfigLoader.load().getClient().getConsole().getAutoExec();
+        String autoExec = CmsConfigLoader.load().client().console().autoExec();
         String envAutoExec = System.getenv("CMS_AUTO_EXEC");
         if (envAutoExec != null && !envAutoExec.isEmpty()) {
             if (autoExec == null || autoExec.isEmpty()) {

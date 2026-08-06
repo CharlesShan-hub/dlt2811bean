@@ -103,7 +103,8 @@ public class CmsNode {
      */
     public void start(boolean test) throws IOException {
         if (server != null) {
-            CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
+            CmsConfig.Server cfg = CmsConfigLoader.load().server();
+            log.info("SCL config: sclFiles={}, testSclFiles={}", cfg.sclFiles(), cfg.testSclFiles());
             String sclFile = test ? cfg.getResolvedTestSclFile() : cfg.getResolvedSclFile();
             log.info("SCL file resolved: {} (test={})", sclFile, test);
             if (sclFile != null) {

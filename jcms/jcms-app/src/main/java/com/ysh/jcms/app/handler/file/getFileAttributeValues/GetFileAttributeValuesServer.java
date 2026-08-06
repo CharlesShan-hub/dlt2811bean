@@ -32,7 +32,7 @@ public class GetFileAttributeValuesServer extends BaseServerHandler<CmsGetFileAt
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
         }
 
-        String root = CmsConfigLoader.load().getProtocol().getFile().getRootPath();
+        String root = CmsConfigLoader.load().protocol().file().rootPath();
         String safe = fileName.replaceAll("\\.\\./|\\.\\.\\\\", "");
         Path filePath = Paths.get(root, safe).normalize();
 

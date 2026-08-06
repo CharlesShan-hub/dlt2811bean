@@ -103,8 +103,10 @@ function buildCmd() {
   const port = form.value.port || 8102
   const secure = form.value.secure ? ' --secure' : ''
   let cmd = `connect --ip ${ip} --port ${port}${secure}`
-  if (form.value.withAp && form.value.ap.trim()) {
-    cmd += ` --ap ${form.value.ap.trim()} --apdu ${form.value.apdu} --asdu ${form.value.asdu} --version ${form.value.version}`
+  if (form.value.withAp) {
+    const ap = form.value.ap.trim()
+    cmd += ap ? ` --ap ${ap}` : ' --ap'
+    cmd += ` --apdu ${form.value.apdu} --asdu ${form.value.asdu} --version ${form.value.version}`
     if (form.value.apsecure) {
       cmd += ' --apsecure'
     }

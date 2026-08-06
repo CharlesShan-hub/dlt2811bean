@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.introspector.BeanAccess;
+import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -88,15 +90,24 @@ public class CmsConfigLoader {
 
     private static CmsConfig parseYaml(InputStream in) {
         LoaderOptions options = new LoaderOptions();
-        Yaml yaml = new Yaml(new Constructor(CmsConfig.class, options));
-        return yaml.loadAs(in, CmsConfig.class);
+        Constructor constructor = new Constructor(CmsConfig.class, options);
+        PropertyUtils propertyUtils = new PropertyUtils();
+        propertyUtils.setBeanAccess(BeanAccess.FIELD);
+        constructor.setPropertyUtils(propertyUtils);
+        Yaml yaml = new Yaml(constructor);
+        CmsConfig config = yaml.loadAs(in, CmsConfig.class);
+        // 验证 YAML 加载结果
+        if (config != null && config.server() != null) {
+            log.info("[parseYaml] sclFiles={}, testSclFiles={}", config.server().sclFiles(), config.server().testSclFiles());
+        }
+        return config;
     }
 
     private static void applySystemProperties(CmsConfig config) {
         String port = System.getProperty(PROP_PREFIX + "server.port");
         if (port != null && !port.isEmpty()) {
             try {
-                config.getServer().setPort(Integer.parseInt(port));
+                config.server().port(Integer.parseInt(port));
                 log.info("Override server.port={} from system property", port);
             } catch (NumberFormatException e) {
                 log.warn("Invalid system property cms.server.port: {}", port);
@@ -104,7 +115,7 @@ public class CmsConfigLoader {
         }
         String sclFile = System.getProperty(PROP_PREFIX + "server.testSclFile");
         if (sclFile != null && !sclFile.isEmpty()) {
-            config.getServer().setTestSclFile(sclFile);
+            config.server().testSclFile(sclFile);
             log.info("Override server.testSclFile={} from system property", sclFile);
         }
     }

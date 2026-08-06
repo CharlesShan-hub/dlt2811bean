@@ -54,22 +54,22 @@ public class SecurityContext {
      * 加载 本地证书和私钥。启用真实 CA 验证（不信任自签名证书）。
      */
     public static SecurityContext fromConfig(CmsConfig config) throws Exception {
-        CmsConfig.Security sec = config.getSecurity();
-        if (!sec.isEnabled()) {
+        CmsConfig.Security sec = config.security();
+        if (!sec.enabled()) {
             return generateSelfSigned();
         }
 
         // 加载 CA 证书（truststore）
-        X509Certificate caCert = loadCertificate(sec.getTruststore().getPath());
+        X509Certificate caCert = loadCertificate(sec.truststore().path());
 
         // 构造信任管理器（加入 CA 证书）
         GmTrustManager trustManager = new GmTrustManager().addTrustedCertificate(caCert);
 
         // 加载本地证书和私钥（keystore）
-        GmCredentialManager cm = GmCredentialManager.forServer(sec.getKeystore().getPath(), sec.getKeystore().getPassword(), null);
+        GmCredentialManager cm = GmCredentialManager.forServer(sec.keystore().path(), sec.keystore().password(), null);
 
         // 构造认证器（CA 验证 + 时间检查）
-        long timeTolerance = sec.getTimeTolerance();
+        long timeTolerance = sec.timeTolerance();
         GmAuthenticator auth = new GmAuthenticator(trustManager, timeTolerance);
 
         return new SecurityContext(cm, auth, cm.getCertificate());

@@ -19,12 +19,12 @@ public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsN
 
     @Override
     protected Frame onDecodeSuccess(Session session, CmsNegotiateRequest req, int reqId) {
-        CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
+        CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().protocol().negotiate();
 
-        if (req.protocolVersion.value() > config.getProtocolVersion())
+        if (req.protocolVersion.value() > config.protocolVersion())
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        int negotiatedApduSize = Math.min(req.apduSize.value(), config.getApduSize());
+        int negotiatedApduSize = Math.min(req.apduSize.value(), config.apduSize());
 
         // 标准 b)：apduSize > asduSize → 支持分帧
         boolean fragSupported = negotiatedApduSize > req.asduSize.value();
@@ -39,9 +39,9 @@ public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsN
         session.getConnection().setPeerAsduSize((int) req.asduSize.value());
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", negotiatedApduSize,
-                config.getAsduSize(), config.getProtocolVersion(), config.getModelVersion());
+                config.asduSize(), config.protocolVersion(), config.modelVersion());
 
-        return buildSuccess(new CmsNegotiateResponse().apduSize(negotiatedApduSize).asduSize(config.getAsduSize())
-                .protocolVersion(config.getProtocolVersion()).modelVersion(config.getModelVersion()).encode(), reqId);
+        return buildSuccess(new CmsNegotiateResponse().apduSize(negotiatedApduSize).asduSize(config.asduSize())
+                .protocolVersion(config.protocolVersion()).modelVersion(config.modelVersion()).encode(), reqId);
     }
 }

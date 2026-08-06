@@ -1,6 +1,7 @@
 package com.ysh.jcms.utils.config;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
+@Accessors(fluent = true)
 public class CmsConfig {
 
     private Server server = new Server();
@@ -19,6 +21,7 @@ public class CmsConfig {
     // ───────── Server ─────────
 
     @Data
+    @Accessors(fluent = true)
     public static class Server {
         private int port = 8102;
         private int sslPort = 9102;
@@ -26,12 +29,13 @@ public class CmsConfig {
         private List<String> sclFiles = new ArrayList<>();
         private KeepAlive keepalive = new KeepAlive();
 
-        public String getTestSclFile() {
+        public String testSclFile() {
             return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
         }
 
-        public void setTestSclFile(String sclFile) {
+        public Server testSclFile(String sclFile) {
             this.testSclFiles = new ArrayList<>(Collections.singletonList(sclFile));
+            return this;
         }
 
         public String getResolvedTestSclFile() {
@@ -43,12 +47,13 @@ public class CmsConfig {
             return testSclFiles.isEmpty() ? null : testSclFiles.get(0);
         }
 
-        public String getSclFile() {
+        public String sclFile() {
             return sclFiles.isEmpty() ? null : sclFiles.get(0);
         }
 
-        public void setSclFile(String sclFile) {
+        public Server sclFile(String sclFile) {
             this.sclFiles = new ArrayList<>(Collections.singletonList(sclFile));
+            return this;
         }
 
         public String getResolvedSclFile() {
@@ -61,6 +66,7 @@ public class CmsConfig {
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class KeepAlive {
             private int idleTimeoutMs = 30000;
             private int retryIntervalMs = 5000;
@@ -71,6 +77,7 @@ public class CmsConfig {
     // ───────── Client ─────────
 
     @Data
+    @Accessors(fluent = true)
     public static class Client {
         private String defaultIedName = "E1Q1SB1";
         private String defaultAccessPoint = "S1";
@@ -81,6 +88,7 @@ public class CmsConfig {
         private Console console = new Console();
 
         @Data
+        @Accessors(fluent = true)
         public static class AccessPoint {
             /** AP 来源: true=从 SCD 读, false=从 defaultAps 列表读 */
             private boolean fromScd = true;
@@ -89,6 +97,7 @@ public class CmsConfig {
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class Console {
             private boolean tracePdu = false;
             private String autoExec = "";
@@ -103,6 +112,7 @@ public class CmsConfig {
     // ───────── Protocol ─────────
 
     @Data
+    @Accessors(fluent = true)
     public static class Protocol {
         private int maxArraySize = 1024;
         private boolean gbkToUtf8 = false;
@@ -113,6 +123,7 @@ public class CmsConfig {
         private Dataset dataset = new Dataset();
 
         @Data
+        @Accessors(fluent = true)
         public static class Negotiate {
             private int apduSize = 65535;
             private int asduSize = 65531;
@@ -121,16 +132,19 @@ public class CmsConfig {
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class File {
             private String rootPath = "config/files";
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class Log {
             private String rootPath = "config/logs";
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class Setting {
             private int numOfSG = 4;
             private boolean sgDefaultEnabled = true;
@@ -138,6 +152,7 @@ public class CmsConfig {
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class Dataset {
             private boolean setDataSetPersistent = false;
         }
@@ -146,6 +161,7 @@ public class CmsConfig {
     // ───────── Security ─────────
 
     @Data
+    @Accessors(fluent = true)
     public static class Security {
         private boolean enabled = false;
         private long timeTolerance = 300;
@@ -153,12 +169,14 @@ public class CmsConfig {
         private Truststore truststore = new Truststore();
 
         @Data
+        @Accessors(fluent = true)
         public static class Keystore {
             private String path = "certs/server.pfx";
             private String password = "changeit";
         }
 
         @Data
+        @Accessors(fluent = true)
         public static class Truststore {
             private String path = "certs/ca.cer";
             private String password = "changeit";
@@ -175,14 +193,14 @@ public class CmsConfig {
                 server.port = other.server.port;
             if (other.server.sslPort != 9102)
                 server.sslPort = other.server.sslPort;
-            if (other.server.getTestSclFiles() != null) {
-                List<String> otherFiles = other.server.getTestSclFiles();
+            if (other.server.testSclFiles() != null) {
+                List<String> otherFiles = other.server.testSclFiles();
                 if (otherFiles.size() > 1 || (otherFiles.size() == 1 && !"config/sample-scd-full.scd".equals(otherFiles.get(0)))) {
-                    server.setTestSclFiles(new ArrayList<>(otherFiles));
+                    server.testSclFiles(new ArrayList<>(otherFiles));
                 }
             }
-            if (other.server.getSclFiles() != null && !other.server.getSclFiles().isEmpty()) {
-                server.setSclFiles(new ArrayList<>(other.server.getSclFiles()));
+            if (other.server.sclFiles() != null && !other.server.sclFiles().isEmpty()) {
+                server.sclFiles(new ArrayList<>(other.server.sclFiles()));
             }
             if (other.server.keepalive != null) {
                 if (other.server.keepalive.idleTimeoutMs != 30000)

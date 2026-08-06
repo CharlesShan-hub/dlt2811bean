@@ -53,7 +53,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
-        boolean isPersistent = CmsConfigLoader.load().getProtocol().getDataset().isSetDataSetPersistent();
+        boolean isPersistent = CmsConfigLoader.load().protocol().dataset().setDataSetPersistent();
 
         SclDataSet dataSet;
         if (refAfter != null) {

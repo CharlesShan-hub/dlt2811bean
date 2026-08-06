@@ -18,10 +18,10 @@ public class NegotiateConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate cfg = CmsConfigLoader.load().getProtocol().getNegotiate();
-        return Arrays.asList(new Param("apduSize", "APDU 大小", String.valueOf(cfg.getApduSize())),
-                new Param("asduSize", "ASDU 大小", String.valueOf(cfg.getAsduSize())),
-                new Param("protocolVersion", "协议版本", String.valueOf(cfg.getProtocolVersion())), new Param("json", "JSON 格式输出", ""));
+        com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate cfg = CmsConfigLoader.load().protocol().negotiate();
+        return Arrays.asList(new Param("apduSize", "APDU 大小", String.valueOf(cfg.apduSize())),
+                new Param("asduSize", "ASDU 大小", String.valueOf(cfg.asduSize())),
+                new Param("protocolVersion", "协议版本", String.valueOf(cfg.protocolVersion())), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override

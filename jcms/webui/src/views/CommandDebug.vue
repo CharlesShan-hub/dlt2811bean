@@ -172,12 +172,9 @@
                           placeholder="值 value"
                           class="refs-value-input"
                         />
-                        <UiSelect
-                          v-model="r.type"
-                          :options="typeRowOptions"
-                          placeholder="类型 type"
-                          empty-label="（不选）"
-                        />
+                        <span class="type-hint" :class="{ 'type-hint--unknown': !r._resolvedType }" :title="r._resolvedType ? '类型已自动解析' : '请先选择数据引用'">
+                          {{ r._resolvedType || '（类型）' }}
+                        </span>
                       </div>
                     </div>
                   </template>
@@ -276,7 +273,7 @@ import { CONNECT_FLOW } from '../cmddefs/connect.js'
 import { pushTerminal } from '../terminalLog.js'
 import { ldCache, ldLns, allLnRefs, lnDirRefs, allDefRefs, allCbRefs, ensureLdLns, ensureAllLnRefs, ensureLnDirRefs, ensureAllDefRefs, ensureAllCbRefs } from '../ldCache.js'
 import { buildCmd, highlightCmdStr, syntaxHighlightJson, parseResult, parseCmd } from '../utils/cmdFormat.js'
-import { FC_OPTIONS, TYPE_OPTIONS } from '../cmddefs/common.js'
+import { FC_OPTIONS } from '../cmddefs/common.js'
 import { useSplitPane } from '../composables/useSplitPane.js'
 import { useCommandForm } from '../composables/useCommandForm.js'
 
@@ -363,9 +360,6 @@ const refsListOptions = computed(() => allLnRefs)
 
 /** 每行引用的 FC 选项 */
 const fcRowOptions = computed(() => FC_OPTIONS)
-
-/** 每行引用的类型选项 */
-const typeRowOptions = computed(() => TYPE_OPTIONS)
 
 /** 右侧卡片标题：connect 是流程状态图；有 ASN.1 报文则标 ASN.1，否则为服务说明。 */
 const rightTitle = computed(() => {
@@ -1070,6 +1064,30 @@ async function disconnect() {
 .refs-value-input {
   flex: 1;
   min-width: 0;
+}
+
+.type-hint {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary, #8b949e);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+  user-select: none;
+  cursor: default;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+.type-hint--unknown {
+  color: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.05);
+  background: transparent;
+  font-weight: 400;
 }
 
 /* ── 级联二选（ln-cascade：LD → LN） ── */

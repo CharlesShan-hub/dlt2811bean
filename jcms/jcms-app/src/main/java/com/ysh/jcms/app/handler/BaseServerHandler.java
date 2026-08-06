@@ -275,7 +275,7 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
      * services for pagination.
      */
     protected static int pageSize() {
-        return CmsConfigLoader.load().getProtocol().getMaxArraySize();
+        return CmsConfigLoader.load().protocol().maxArraySize();
     }
 
     /**
@@ -296,6 +296,6 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
     }
 
     private static boolean traceEnabled() {
-        return CmsConfigLoader.load().getClient().getConsole().isTracePdu();
+        return CmsConfigLoader.load().client().console().tracePdu();
     }
 }

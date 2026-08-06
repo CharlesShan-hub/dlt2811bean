@@ -28,17 +28,15 @@ public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesReque
 
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();
 
-        CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().getProtocol().getSetting();
-        int numOfSG = setting.getNumOfSG();
-        boolean sgEnabled = setting.isSgDefaultEnabled();
+        CmsConfig.Protocol.Setting setting = CmsConfigLoader.load().protocol().setting();
 
         for (CmsObjectReference refObj : req.sgcbReference) {
             String ref = str(refObj);
             CmsSgcbValueChoice choice;
-            if (!sgEnabled) {
+            if (!setting.sgDefaultEnabled()) {
                 choice = new CmsSgcbValueChoice().altError(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             } else {
-                choice = new CmsSgcbValueChoice().altValue(buildSgcb(ref, session, numOfSG));
+                choice = new CmsSgcbValueChoice().altValue(buildSgcb(ref, session, setting.numOfSG()));
             }
             resp.sgscb.add(choice);
         }

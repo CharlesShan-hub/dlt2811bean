@@ -139,20 +139,22 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
         }
       }
       if (refs.length) {
-        parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
-        const hasFc = fcs.some(f => f)
-        if (hasFc) {
-          parts.push('--fc', `"${fcs.join(' ')}"`)
-        }
-        // 仅 set-data-values 需要 --values 和 --type
+        // set-data-values 后端要求 --pairs "ref1=val1 ref2=val2" 格式
         if (cmd === 'set-data-values') {
-          const hasValue = values.some(v => v)
-          if (hasValue) {
-            parts.push('--values', `"${values.join(' ')}"`)
+          const pairs = []
+          for (let i = 0; i < refs.length; i++) {
+            if (refs[i] && values[i]) {
+              pairs.push(`${refs[i]}=${values[i]}`)
+            }
           }
-          const hasType = types.some(t => t)
-          if (hasType) {
-            parts.push('--type', `"${types.join(' ')}"`)
+          if (pairs.length) {
+            parts.push('--pairs', `"${pairs.join(' ')}"`)
+          }
+        } else {
+          parts.push(`--${p.key}`, `"${refs.join(' ')}"`)
+          const hasFc = fcs.some(f => f)
+          if (hasFc) {
+            parts.push('--fc', `"${fcs.join(' ')}"`)
           }
         }
       }

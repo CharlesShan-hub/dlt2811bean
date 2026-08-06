@@ -12,9 +12,9 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class NegotiateClientDao extends BaseDao {
-    private int apduSize = CmsConfigLoader.load().getProtocol().getNegotiate().getApduSize();
-    private long asduSize = CmsConfigLoader.load().getProtocol().getNegotiate().getAsduSize();
-    private long protocolVersion = CmsConfigLoader.load().getProtocol().getNegotiate().getProtocolVersion();
+    private int apduSize = CmsConfigLoader.load().protocol().negotiate().apduSize();
+    private long asduSize = CmsConfigLoader.load().protocol().negotiate().asduSize();
+    private long protocolVersion = CmsConfigLoader.load().protocol().negotiate().protocolVersion();
 
     @Override
     public CmsType toRequest() {

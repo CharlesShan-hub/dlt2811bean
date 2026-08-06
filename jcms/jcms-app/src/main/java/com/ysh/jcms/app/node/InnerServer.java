@@ -46,9 +46,9 @@ public class InnerServer implements ConnectionListener {
     private KeepAliveManager keepalive;
 
     public InnerServer() {
-        CmsConfig.Server cfg = CmsConfigLoader.load().getServer();
-        this.port = cfg.getPort();
-        this.sslPort = cfg.getSslPort();
+        CmsConfig.Server cfg = CmsConfigLoader.load().server();
+        this.port = cfg.port();
+        this.sslPort = cfg.sslPort();
         this.acceptor = new ServerAcceptor(port, this);
         configureTls();
     }

@@ -36,15 +36,15 @@ public class ApCfgHandler extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         boolean jsonMode = "true".equals(args.get("json"));
-        CmsConfig.Client.AccessPoint apCfg = CmsConfigLoader.load().getClient().getAccessPoint();
+        CmsConfig.Client.AccessPoint apCfg = CmsConfigLoader.load().client().accessPoint();
 
         // --source 只设置来源，输出简洁确认
         String source = args.get("source");
         if (source != null && !source.isEmpty()) {
             if ("scd".equalsIgnoreCase(source)) {
-                apCfg.setFromScd(true);
+                apCfg.fromScd(true);
             } else if ("list".equalsIgnoreCase(source)) {
-                apCfg.setFromScd(false);
+                apCfg.fromScd(false);
             } else {
                 String msg = "无效的 source: " + source + "（可选 scd|list）";
                 if (jsonMode) {
@@ -55,9 +55,9 @@ public class ApCfgHandler extends CommandHandler {
                 return;
             }
             if (jsonMode) {
-                CmsConsole.jsonMessage("AP 来源已设为: " + (apCfg.isFromScd() ? "scd" : "list"));
+                CmsConsole.jsonMessage("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
             } else {
-                ConsolePrinter.success("AP 来源已设为: " + (apCfg.isFromScd() ? "scd" : "list"));
+                ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
             }
             return;
         }
@@ -65,8 +65,8 @@ public class ApCfgHandler extends CommandHandler {
         // 无参数 → 查看当前来源（即上一次设置的结果）
         if (jsonMode) {
             StringBuilder sb = new StringBuilder();
-            sb.append("{\"fromScd\":").append(apCfg.isFromScd()).append(",\"defaultAps\":[");
-            List<String> aps = apCfg.getDefaultAps();
+            sb.append("{\"fromScd\":").append(apCfg.fromScd()).append(",\"defaultAps\":[");
+            List<String> aps = apCfg.defaultAps();
             for (int i = 0; i < aps.size(); i++) {
                 if (i > 0) {
                     sb.append(',');
@@ -78,9 +78,9 @@ public class ApCfgHandler extends CommandHandler {
             return;
         }
 
-        ConsolePrinter.info("AP 来源: " + (apCfg.isFromScd() ? "scd（从 SCD 文件读）" : "list（从 defaultAps 列表读）"));
-        if (apCfg.isFromScd()) {
-            String scl = CmsConfigLoader.load().getServer().getResolvedSclFile();
+        ConsolePrinter.info("AP 来源: " + (apCfg.fromScd() ? "scd（从 SCD 文件读）" : "list（从 defaultAps 列表读）"));
+        if (apCfg.fromScd()) {
+            String scl = CmsConfigLoader.load().server().getResolvedSclFile();
             if (scl != null && !scl.isEmpty()) {
                 ConsolePrinter.info("SCL: " + scl);
                 // 轻量扫描 SCD，拼出 IED/AP 完整引用列表
@@ -100,7 +100,7 @@ public class ApCfgHandler extends CommandHandler {
                 ConsolePrinter.info("SCL: （未配置 server.sclFiles）");
             }
         } else {
-            ConsolePrinter.listItems(apCfg.getDefaultAps(), s -> s);
+            ConsolePrinter.listItems(apCfg.defaultAps(), s -> s);
         }
     }
 }
