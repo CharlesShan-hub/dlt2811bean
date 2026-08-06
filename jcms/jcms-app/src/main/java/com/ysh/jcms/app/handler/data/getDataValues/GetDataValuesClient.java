@@ -10,7 +10,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,47 +57,10 @@ public class GetDataValuesClient extends BaseClientHandler {
 
         List<DataValue> values = new ArrayList<>();
         for (CmsData d : resp.value) {
-            values.add(new DataValue(d.choice(), extractValue(d)));
+            values.add(new DataValue(d.choice(), d.toValueString()));
         }
         this.lastValues = values;
         log.info("GetDataValues succeeded: {} values", values.size());
     }
 
-    private static String extractValue(CmsData d) {
-        int ct = d.choice();
-        switch (ct) {
-            case CmsData.CHOICE_BOOLEAN :
-                return Boolean.toString(d.alt_boolean.value());
-            case CmsData.CHOICE_INT8 :
-                return Integer.toString(d.alt_int8.value());
-            case CmsData.CHOICE_INT16 :
-                return Integer.toString(d.alt_int16.value());
-            case CmsData.CHOICE_INT32 :
-                return Integer.toString(d.alt_int32.value());
-            case CmsData.CHOICE_INT64 :
-                return Long.toString(d.alt_int64.value());
-            case CmsData.CHOICE_INT8U :
-                return Integer.toString(d.alt_int8u.value());
-            case CmsData.CHOICE_INT16U :
-                return Integer.toString(d.alt_int16u.value());
-            case CmsData.CHOICE_INT32U :
-                return Long.toString(d.alt_int32u.value());
-            case CmsData.CHOICE_INT64U :
-                return d.alt_int64u.value().toString();
-            case CmsData.CHOICE_FLOAT32 :
-                return Float.toString(d.alt_float32.value());
-            case CmsData.CHOICE_FLOAT64 :
-                return Double.toString(d.alt_float64.value());
-            case CmsData.CHOICE_VISIBLE_STRING :
-                return (String) d.alt_visible_string.toJsonValue();
-            case CmsData.CHOICE_UNICODE_STRING :
-                return (String) d.alt_unicode_string.toJsonValue();
-            case CmsData.CHOICE_OCTET_STRING :
-                return (String) d.alt_octet_string.toJsonValue();
-            case CmsData.CHOICE_BIT_STRING :
-                return new String(d.alt_bit_string, StandardCharsets.UTF_8);
-            default :
-                return "(choice=" + ct + ")";
-        }
-    }
 }

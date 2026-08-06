@@ -15,10 +15,6 @@ import java.util.Map;
 
 public class SetEditSgValueConsole implements CommandHandler {
 
-    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
-
     private static final Map<String, Integer> TYPE_MAP = buildTypeMap();
     private static Map<String, Integer> buildTypeMap() {
         Map<String, Integer> m = new HashMap<>();

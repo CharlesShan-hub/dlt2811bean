@@ -12,11 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class AllDataDefConsole implements CommandHandler {
+import com.ysh.jcms.data.choice.CmsData;
 
-    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
+public class AllDataDefConsole implements CommandHandler {
 
     @Override
     public String name() {
@@ -79,7 +77,9 @@ public class AllDataDefConsole implements CommandHandler {
                 if (i > 0)
                     sb.append(',');
                 ContentManager.DataDefEntry e = entries.get(i);
-                String typeName = e.choiceType >= 0 && e.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[e.choiceType] : "?";
+                String typeName = e.choiceType >= 0 && e.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[e.choiceType]
+                        : "?";
                 sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(e.reference)).append("\",\"type\":\"")
                         .append(CmsFormatUtil.escapeJson(typeName)).append("\",\"cdc\":\"").append(CmsFormatUtil.escapeJson(e.cdcType))
                         .append("\"}");
@@ -88,7 +88,9 @@ public class AllDataDefConsole implements CommandHandler {
             ConsolePrinter.raw(sb.toString());
         } else {
             ConsolePrinter.list("Data definitions (" + entries.size() + " items)", new java.util.ArrayList<>(entries), e -> {
-                String typeName = e.choiceType >= 0 && e.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[e.choiceType] : "?";
+                String typeName = e.choiceType >= 0 && e.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[e.choiceType]
+                        : "?";
                 String cdcPart = e.cdcType.isEmpty() ? "" : "  cdc=" + e.cdcType;
                 return e.reference + "  [" + typeName + "]" + cdcPart;
             });

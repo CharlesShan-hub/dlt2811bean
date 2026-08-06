@@ -10,11 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetDataSetValuesConsole implements CommandHandler {
+import com.ysh.jcms.data.choice.CmsData;
 
-    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
+public class GetDataSetValuesConsole implements CommandHandler {
 
     @Override
     public String name() {
@@ -73,7 +71,9 @@ public class GetDataSetValuesConsole implements CommandHandler {
                 if (i > 0)
                     sb.append(',');
                 GetDataSetValuesClient.DataSetValue v = values.get(i);
-                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[v.choiceType]
+                        : "?";
                 sb.append("{\"type\":\"").append(CmsFormatUtil.escapeJson(typeName)).append("\",\"value\":\"")
                         .append(CmsFormatUtil.escapeJson(v.valueString)).append("\"}");
             }
@@ -81,7 +81,9 @@ public class GetDataSetValuesConsole implements CommandHandler {
             ConsolePrinter.raw(sb.toString());
         } else {
             ConsolePrinter.list("DataSet values (" + values.size() + " items)", new java.util.ArrayList<>(values), v -> {
-                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[v.choiceType]
+                        : "?";
                 return "[" + typeName + "] " + v.valueString;
             });
         }

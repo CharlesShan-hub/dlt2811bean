@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.setDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.data.CmsDataRefValueEntry;
@@ -42,7 +41,7 @@ public class SetDataValuesServer extends BaseServerHandler {
             if (ref == null)
                 continue;
 
-            String valueStr = extractValue(entry.value);
+            String valueStr = entry.value.toValueString();
             if (valueStr == null)
                 continue;
 
@@ -70,38 +69,4 @@ public class SetDataValuesServer extends BaseServerHandler {
         return ok(new CmsSetDataValuesResponse(), reqId);
     }
 
-    private static String extractValue(CmsData data) {
-        switch (data.choice()) {
-            case CmsData.CHOICE_BOOLEAN :
-                return Boolean.toString(data.alt_boolean.value());
-            case CmsData.CHOICE_INT8 :
-                return Integer.toString(data.alt_int8.value());
-            case CmsData.CHOICE_INT16 :
-                return Integer.toString(data.alt_int16.value());
-            case CmsData.CHOICE_INT32 :
-                return Integer.toString(data.alt_int32.value());
-            case CmsData.CHOICE_INT64 :
-                return Long.toString(data.alt_int64.value());
-            case CmsData.CHOICE_INT8U :
-                return Integer.toString(data.alt_int8u.value());
-            case CmsData.CHOICE_INT16U :
-                return Integer.toString(data.alt_int16u.value());
-            case CmsData.CHOICE_INT32U :
-                return Long.toString(data.alt_int32u.value());
-            case CmsData.CHOICE_INT64U :
-                return data.alt_int64u.value().toString();
-            case CmsData.CHOICE_FLOAT32 :
-                return Float.toString(data.alt_float32.value());
-            case CmsData.CHOICE_FLOAT64 :
-                return Double.toString(data.alt_float64.value());
-            case CmsData.CHOICE_VISIBLE_STRING :
-                return (String) data.alt_visible_string.toJsonValue();
-            case CmsData.CHOICE_UNICODE_STRING :
-                return (String) data.alt_unicode_string.toJsonValue();
-            case CmsData.CHOICE_OCTET_STRING :
-                return str(com.ysh.jcms.data.InnerBase.unhex((String) data.alt_octet_string.toJsonValue()));
-            default :
-                return null;
-        }
-    }
 }

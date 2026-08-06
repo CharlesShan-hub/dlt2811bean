@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -21,11 +20,9 @@ public class LnDirClient extends BaseClientHandler {
                 .referenceAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
-            req.reference.choice(CmsReferenceChoice.LD_NAME);
-            req.reference.altLdName.value(dao.ldName());
+            req.reference.altLdName(dao.ldName());
         } else if (dao.lnReference() != null) {
-            req.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-            req.reference.altLnReference.value(dao.lnReference());
+            req.reference.altLnReference(dao.lnReference());
         }
 
         send(ServiceName.GET_LOGIC_NODE_DIRECTORY, req);

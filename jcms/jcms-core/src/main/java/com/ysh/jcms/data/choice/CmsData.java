@@ -16,6 +16,7 @@ import com.ysh.jcms.data.scalar.*;
 import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -486,6 +487,59 @@ public class CmsData extends CmsChoice {
 
         // Let base class handle the rest (via @Choice dispatch)
         super.syncToInner();
+    }
+
+    /**
+     * Choice type name strings, indexed by choice() value.
+     *
+     * <pre>
+     * CHOICE_NAMES[3] = "boolean", CHOICE_NAMES[6] = "int32", etc.
+     * </pre>
+     */
+    public static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
+            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
+            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
+
+    /**
+     * Convert the value of this CmsData to a human-readable string, based on the
+     * current choice() index.
+     */
+    public String toValueString() {
+        int ct = choice();
+        switch (ct) {
+            case CHOICE_BOOLEAN :
+                return Boolean.toString(alt_boolean.value());
+            case CHOICE_INT8 :
+                return Integer.toString(alt_int8.value());
+            case CHOICE_INT16 :
+                return Integer.toString(alt_int16.value());
+            case CHOICE_INT32 :
+                return Integer.toString(alt_int32.value());
+            case CHOICE_INT64 :
+                return Long.toString(alt_int64.value());
+            case CHOICE_INT8U :
+                return Integer.toString(alt_int8u.value());
+            case CHOICE_INT16U :
+                return Integer.toString(alt_int16u.value());
+            case CHOICE_INT32U :
+                return Long.toString(alt_int32u.value());
+            case CHOICE_INT64U :
+                return alt_int64u.value().toString();
+            case CHOICE_FLOAT32 :
+                return Float.toString(alt_float32.value());
+            case CHOICE_FLOAT64 :
+                return Double.toString(alt_float64.value());
+            case CHOICE_VISIBLE_STRING :
+                return (String) alt_visible_string.toJsonValue();
+            case CHOICE_UNICODE_STRING :
+                return (String) alt_unicode_string.toJsonValue();
+            case CHOICE_OCTET_STRING :
+                return (String) alt_octet_string.toJsonValue();
+            case CHOICE_BIT_STRING :
+                return new String(alt_bit_string, StandardCharsets.UTF_8);
+            default :
+                return "(choice=" + ct + ")";
+        }
     }
 
     @Override

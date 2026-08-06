@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.ContentManager;
-import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesRequest;
@@ -63,44 +62,7 @@ public class AllDataValuesClient extends BaseClientHandler {
             this.reference = e.reference.value();
             int ct = e.value.choice();
             this.choiceType = ct;
-            this.valueString = extractValue(e.value, ct);
-        }
-
-        private static String extractValue(CmsData d, int ct) {
-            switch (ct) {
-                case CmsData.CHOICE_BOOLEAN :
-                    return Boolean.toString(d.alt_boolean.value());
-                case CmsData.CHOICE_INT8 :
-                    return Integer.toString(d.alt_int8.value());
-                case CmsData.CHOICE_INT16 :
-                    return Integer.toString(d.alt_int16.value());
-                case CmsData.CHOICE_INT32 :
-                    return Integer.toString(d.alt_int32.value());
-                case CmsData.CHOICE_INT64 :
-                    return Long.toString(d.alt_int64.value());
-                case CmsData.CHOICE_INT8U :
-                    return Integer.toString(d.alt_int8u.value());
-                case CmsData.CHOICE_INT16U :
-                    return Integer.toString(d.alt_int16u.value());
-                case CmsData.CHOICE_INT32U :
-                    return Long.toString(d.alt_int32u.value());
-                case CmsData.CHOICE_INT64U :
-                    return d.alt_int64u.value().toString();
-                case CmsData.CHOICE_FLOAT32 :
-                    return Float.toString(d.alt_float32.value());
-                case CmsData.CHOICE_FLOAT64 :
-                    return Double.toString(d.alt_float64.value());
-                case CmsData.CHOICE_VISIBLE_STRING :
-                    return (String) d.alt_visible_string.toJsonValue();
-                case CmsData.CHOICE_UNICODE_STRING :
-                    return (String) d.alt_unicode_string.toJsonValue();
-                case CmsData.CHOICE_OCTET_STRING :
-                    return (String) d.alt_octet_string.toJsonValue();
-                case CmsData.CHOICE_BIT_STRING :
-                    return new String(d.alt_bit_string, java.nio.charset.StandardCharsets.UTF_8);
-                default :
-                    return "(choice=" + ct + ")";
-            }
+            this.valueString = e.value.toValueString();
         }
 
         // private static String bytesToHex(byte[] bytes) {

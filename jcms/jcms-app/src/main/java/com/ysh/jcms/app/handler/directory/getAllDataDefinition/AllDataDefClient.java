@@ -6,7 +6,6 @@ import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionResponse;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -20,11 +19,9 @@ public class AllDataDefClient extends BaseClientHandler {
         CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().referenceAfter(dao.referenceAfter());
 
         if (dao.ldName() != null) {
-            req.reference.choice(CmsReferenceChoice.LD_NAME);
-            req.reference.altLdName.value(dao.ldName());
+            req.reference.altLdName(dao.ldName());
         } else if (dao.lnReference() != null) {
-            req.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-            req.reference.altLnReference.value(dao.lnReference());
+            req.reference.altLnReference(dao.lnReference());
         }
 
         if (dao.fc() != null) {

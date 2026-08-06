@@ -11,11 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetDataValuesConsole implements CommandHandler {
+import com.ysh.jcms.data.choice.CmsData;
 
-    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
+public class GetDataValuesConsole implements CommandHandler {
 
     @Override
     public String name() {
@@ -83,7 +81,9 @@ public class GetDataValuesConsole implements CommandHandler {
                 if (i > 0)
                     sb.append(',');
                 GetDataValuesClient.DataValue v = values.get(i);
-                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[v.choiceType]
+                        : "?";
                 String ref = i < refs.length ? refs[i] : "#" + i;
                 sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(ref)).append("\",\"type\":\"")
                         .append(CmsFormatUtil.escapeJson(typeName)).append("\",\"value\":\"")
@@ -95,7 +95,9 @@ public class GetDataValuesConsole implements CommandHandler {
             List<RefValuePair> displayPairs = new java.util.ArrayList<>();
             for (int i = 0; i < values.size(); i++) {
                 GetDataValuesClient.DataValue v = values.get(i);
-                String typeName = v.choiceType >= 0 && v.choiceType < CHOICE_NAMES.length ? CHOICE_NAMES[v.choiceType] : "?";
+                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
+                        ? CmsData.CHOICE_NAMES[v.choiceType]
+                        : "?";
                 String ref = i < refs.length ? refs[i] : "#" + i;
                 displayPairs.add(new RefValuePair(ref, typeName, v.valueString));
             }

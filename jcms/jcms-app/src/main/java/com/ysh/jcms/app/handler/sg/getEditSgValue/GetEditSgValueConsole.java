@@ -11,11 +11,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetEditSgValueConsole implements CommandHandler {
+import com.ysh.jcms.data.choice.CmsData;
 
-    private static final String[] CHOICE_NAMES = {"error", "array", "structure", "boolean", "int8", "int16", "int32", "int64", "int8u",
-            "int16u", "int32u", "int64u", "float32", "float64", "bit-string", "octet-string", "visible-string", "unicode-string",
-            "utc-time", "binary-time", "quality", "dbpos", "tcmd", "check"};
+public class GetEditSgValueConsole implements CommandHandler {
 
     @Override
     public String name() {
@@ -78,7 +76,7 @@ public class GetEditSgValueConsole implements CommandHandler {
             for (int i = 0; i < values.size(); i++) {
                 GetEditSgValueClient.ValueEntry v = values.get(i);
                 String ref = i < refs.length ? refs[i] : "#" + i;
-                String typeName = v.choice >= 0 && v.choice < CHOICE_NAMES.length ? CHOICE_NAMES[v.choice] : "?";
+                String typeName = v.choice >= 0 && v.choice < CmsData.CHOICE_NAMES.length ? CmsData.CHOICE_NAMES[v.choice] : "?";
                 if (i > 0)
                     sb.append(',');
                 sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(ref)).append("\"");
@@ -93,7 +91,7 @@ public class GetEditSgValueConsole implements CommandHandler {
             for (int i = 0; i < values.size(); i++) {
                 GetEditSgValueClient.ValueEntry v = values.get(i);
                 String ref = i < refs.length ? refs[i] : "#" + i;
-                String typeName = v.choice >= 0 && v.choice < CHOICE_NAMES.length ? CHOICE_NAMES[v.choice] : "?";
+                String typeName = v.choice >= 0 && v.choice < CmsData.CHOICE_NAMES.length ? CmsData.CHOICE_NAMES[v.choice] : "?";
                 display.add(new RefValPair(ref, "[" + typeName + "] " + v.text));
             }
             ConsolePrinter.list("Edit SG values (" + values.size() + " items)", display, p -> p.ref + "  " + p.val);

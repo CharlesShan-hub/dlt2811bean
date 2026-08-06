@@ -5,7 +5,6 @@ import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
-import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -33,17 +32,13 @@ public class AllCbValuesClient extends BaseClientHandler {
     }
 
     public void execute(AllCbValuesDao dao) throws Exception {
-        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(dao.referenceAfter());
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(dao.referenceAfter()).acsiClass(dao.acsiClass());
 
         if (dao.ldName() != null) {
-            req.reference.choice(CmsReferenceChoice.LD_NAME);
-            req.reference.altLdName.value(dao.ldName());
+            req.reference.altLdName(dao.ldName());
         } else if (dao.lnReference() != null) {
-            req.reference.choice(CmsReferenceChoice.LN_REFERENCE);
-            req.reference.altLnReference.value(dao.lnReference());
+            req.reference.altLnReference(dao.lnReference());
         }
-
-        req.acsiClass(dao.acsiClass());
 
         send(ServiceName.GET_ALL_CB_VALUES, req);
     }
