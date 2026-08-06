@@ -39,7 +39,7 @@ public abstract class CommandHandler {
 
     /** Command name used as the lookup key in {@link CmsConsole}. */
     public final String name() {
-        return info.name();
+        return info.commandName();
     }
 
     /** Short description shown in help output. */

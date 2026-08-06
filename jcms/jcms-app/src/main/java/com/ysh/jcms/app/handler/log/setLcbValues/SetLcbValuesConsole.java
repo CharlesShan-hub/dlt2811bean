@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.log.setLcbValues;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 
 import java.util.Arrays;
@@ -15,15 +16,16 @@ public class SetLcbValuesConsole extends CommandHandler {
         super(CommandInfo.SET_LCB_VALS);
     }
 
-    @Override
-    public String description() {
-        return "设置日志控制块值 (SetLCBValues) [--json]。\n" + "  案例:\n"
-                + "    set-lcb-vals --ref LD0/LLN0.lcb1                               # 仅引用（无字段修改）\n"
-                + "    set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena true                 # 启用日志\n"
-                + "    set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena false                # 停用日志\n"
-                + "    set-lcb-vals --ref LD0/LLN0.lcb1 --dat-set \"dsLog\"             # 改数据集\n"
-                + "    set-lcb-vals --ref LD0/LLN0.lcb1 --intg-pd 10000 --buf-tm 2000  # 改完整性和缓存";
-    }
+    // @Override
+    // public String description() {
+    // return "设置日志控制块值 (SetLCBValues) [--json]。\n" + " 案例:\n"
+    // + " set-lcb-vals --ref LD0/LLN0.lcb1 # 仅引用（无字段修改）\n"
+    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena true # 启用日志\n"
+    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena false # 停用日志\n"
+    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --dat-set \"dsLog\" # 改数据集\n"
+    // + " set-lcb-vals --ref LD0/LLN0.lcb1 --intg-pd 10000 --buf-tm 2000 #
+    // 改完整性和缓存";
+    // }
 
     @Override
     public List<Param> params() {

@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.console.client;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;

@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.report.setUrcbValues;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 
 import java.util.Arrays;
@@ -13,15 +14,6 @@ public class SetUrcbValuesConsole extends CommandHandler {
 
     public SetUrcbValuesConsole() {
         super(CommandInfo.SET_URCB_VALS);
-    }
-
-    @Override
-    public String description() {
-        return "设置非缓存报告控制块值 (SetURCBValues)。\n" + "  案例:\n"
-                + "    set-urcb-vals --ref LD0/LLN0.urcb1                                # 仅引用（无字段修改）\n"
-                + "    set-urcb-vals --ref LD0/LLN0.urcb1 --rpt-ena true                  # 启用报告\n"
-                + "    set-urcb-vals --ref LD0/LLN0.urcb1 --rpt-id \"MyRptID\" --gi true   # 改标识+触发总召唤\n"
-                + "    set-urcb-vals --ref LD0/LLN0.urcb1 --buf-tm 1000 --intg-pd 10000  # 缓存时间和完整性 [--json]";
     }
 
     @Override

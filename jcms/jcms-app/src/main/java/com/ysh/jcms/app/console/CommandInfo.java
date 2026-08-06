@@ -78,7 +78,7 @@ public enum CommandInfo {
     }
 
     /** Command name used as the lookup key in {@link CmsConsole}. */
-    public String name() {
+    public String commandName() {
         return name;
     }
 

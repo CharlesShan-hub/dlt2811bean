@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.goose.setGoCbValues;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 
 import java.util.Arrays;
@@ -15,15 +16,15 @@ public class SetGoCbValuesConsole extends CommandHandler {
         super(CommandInfo.SET_GOCB_VALS);
     }
 
-    @Override
-    public String description() {
-        return "设置 GOOSE 控制块值 (SetGoCBValues) [--json]。\n" + "  案例:\n"
-                + "    set-gocb-vals --ref LD0/LLN0.gocb1                               # 仅引用（无字段修改）\n"
-                + "    set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena true                 # 启用GOOSE\n"
-                + "    set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena false                # 停用GOOSE\n"
-                + "    set-gocb-vals --ref LD0/LLN0.gocb1 --go-id \"MyGoCB\"            # 改 GO ID\n"
-                + "    set-gocb-vals --ref LD0/LLN0.gocb1 --dat-set \"dsGOOSE\"         # 改数据集";
-    }
+    // @Override
+    // public String description() {
+    // return "设置 GOOSE 控制块值 (SetGoCBValues) [--json]。\n" + " 案例:\n"
+    // + " set-gocb-vals --ref LD0/LLN0.gocb1 # 仅引用（无字段修改）\n"
+    // + " set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena true # 启用GOOSE\n"
+    // + " set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena false # 停用GOOSE\n"
+    // + " set-gocb-vals --ref LD0/LLN0.gocb1 --go-id \"MyGoCB\" # 改 GO ID\n"
+    // + " set-gocb-vals --ref LD0/LLN0.gocb1 --dat-set \"dsGOOSE\" # 改数据集";
+    // }
 
     @Override
     public List<Param> params() {

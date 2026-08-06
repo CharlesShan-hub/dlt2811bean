@@ -1,8 +1,9 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
@@ -25,11 +26,6 @@ public class ApCfgHandler extends CommandHandler {
 
     public ApCfgHandler() {
         super(CommandInfo.AP_CFG);
-    }
-
-    @Override
-    public String description() {
-        return "查看/修改 AP 来源配置（运行时生效）。用法: ap-cfg [--source scd|list] [--json]";
     }
 
     @Override

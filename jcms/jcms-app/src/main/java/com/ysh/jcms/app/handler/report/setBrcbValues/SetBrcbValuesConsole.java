@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.report.setBrcbValues;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 
 import java.util.Arrays;
@@ -13,18 +14,6 @@ public class SetBrcbValuesConsole extends CommandHandler {
 
     public SetBrcbValuesConsole() {
         super(CommandInfo.SET_BRCB_VALS);
-    }
-
-    @Override
-    public String description() {
-        return "设置缓存报告控制块值 (SetBRCBValues)。\n" + "  案例:\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1                               # 仅引用（无字段修改）\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --rpt-ena true                 # 启用报告\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --rpt-id \"MyRptID\" --dat-set \"dsAlarm\"  # 改标识和数据集\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --buf-tm 2000 --intg-pd 5000   # 改缓存时间和完整性周期\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --gi true                       # 总召唤\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --purge-buf true                # 清空缓存\n"
-                + "    set-brcb-vals --ref LD0/LLN0.brcb1 --rpt-ena false --resv-tms 10   # 关闭报告+保留时间 [--json]";
     }
 
     @Override

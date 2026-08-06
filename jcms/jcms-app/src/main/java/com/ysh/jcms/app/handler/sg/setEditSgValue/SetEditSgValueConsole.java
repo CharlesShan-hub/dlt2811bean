@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.sg.setEditSgValue;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.data.choice.CmsData;
 
@@ -36,12 +37,6 @@ public class SetEditSgValueConsole extends CommandHandler {
 
     public SetEditSgValueConsole() {
         super(CommandInfo.SET_EDIT_SG);
-    }
-
-    @Override
-    public String description() {
-        return "设置编辑定值组值 (SetEditSGValue)。"
-                + "用法: set-edit-sg --refs \"<ref1> <ref2>...\" --values \"<val1> <val2>...\" [--type visible-string|int32|float32|...] [--json]";
     }
 
     @Override

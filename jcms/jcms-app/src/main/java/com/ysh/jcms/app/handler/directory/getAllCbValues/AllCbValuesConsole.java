@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.directory.getAllCbValues;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
+import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.util.CmsFormatUtil;
 
@@ -34,11 +35,6 @@ public class AllCbValuesConsole extends CommandHandler {
 
     public AllCbValuesConsole() {
         super(CommandInfo.ALL_CB);
-    }
-
-    @Override
-    public String description() {
-        return "获取所有控制块值 (GetAllCBValues)。用法: all-cb --ln <ldName|lnReference> --acsi <type> [--after REF] [--json]";
     }
 
     @Override
