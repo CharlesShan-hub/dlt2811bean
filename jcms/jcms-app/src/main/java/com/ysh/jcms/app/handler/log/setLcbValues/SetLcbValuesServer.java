@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.setLcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.data.sequence.log.CmsSetLcbResult;
@@ -21,16 +20,14 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetLcbValuesServer extends BaseServerHandler {
+public class SetLcbValuesServer extends BaseServerHandler<CmsSetLcbValuesRequest, CmsSetLcbValuesError> {
 
     public SetLcbValuesServer() {
         super(ServiceName.SET_LCB_VALUES, CmsSetLcbValuesRequest.class, CmsSetLcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetLcbValuesRequest req = (CmsSetLcbValuesRequest) rawReq;
-
+    protected Frame onDecodeSuccess(Session session, CmsSetLcbValuesRequest req, int reqId) {
         log.info("SetLCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.lcb.size());
 
         // 8.8.3.2.c) Empty sequence → Response+

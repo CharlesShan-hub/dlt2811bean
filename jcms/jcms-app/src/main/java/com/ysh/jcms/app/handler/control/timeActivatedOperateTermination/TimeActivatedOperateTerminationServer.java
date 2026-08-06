@@ -7,15 +7,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class TimeActivatedOperateTerminationServer extends BaseServerHandler {
+public class TimeActivatedOperateTerminationServer extends BaseServerHandler<CmsTimeActivatedOperateTermination, CmsType> {
 
     public TimeActivatedOperateTerminationServer() {
         super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION, CmsTimeActivatedOperateTermination.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsTimeActivatedOperateTermination req = (CmsTimeActivatedOperateTermination) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsTimeActivatedOperateTermination req, int reqId) {
         String ref = str(req.reference);
         log.info("TimeActivatedOperateTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);
         return noResponse();

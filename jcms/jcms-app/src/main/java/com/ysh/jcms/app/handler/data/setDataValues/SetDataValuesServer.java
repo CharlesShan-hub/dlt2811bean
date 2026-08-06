@@ -15,7 +15,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class SetDataValuesServer extends BaseServerHandler {
+public class SetDataValuesServer extends BaseServerHandler<CmsSetDataValuesRequest, CmsSetDataValuesError> {
 
     public SetDataValuesServer() {
         super(ServiceName.SET_DATA_VALUES, CmsSetDataValuesRequest.class, CmsSetDataValuesError.class);
@@ -28,8 +28,7 @@ public class SetDataValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetDataValuesRequest req = (CmsSetDataValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetDataValuesRequest req, int reqId) {
         log.info("SetDataValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);

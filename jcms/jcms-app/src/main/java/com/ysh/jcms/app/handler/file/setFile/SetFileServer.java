@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.setFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsSetFileError;
 import com.ysh.jcms.pdu.file.CmsSetFileRequest;
@@ -16,15 +15,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-public class SetFileServer extends BaseServerHandler {
+public class SetFileServer extends BaseServerHandler<CmsSetFileRequest, CmsSetFileError> {
 
     public SetFileServer() {
         super(ServiceName.SET_FILE, CmsSetFileRequest.class, CmsSetFileError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetFileRequest req = (CmsSetFileRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetFileRequest req, int reqId) {
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
         byte[] fileData = req.fileData.value();

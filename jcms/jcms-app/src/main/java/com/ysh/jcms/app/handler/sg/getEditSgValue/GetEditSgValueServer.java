@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
@@ -18,15 +17,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetEditSgValueServer extends BaseServerHandler {
+public class GetEditSgValueServer extends BaseServerHandler<CmsGetEditSgValueRequest, CmsGetEditSgValueError> {
 
     public GetEditSgValueServer() {
         super(ServiceName.GET_EDIT_SG_VALUE, CmsGetEditSgValueRequest.class, CmsGetEditSgValueError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetEditSgValueRequest req = (CmsGetEditSgValueRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetEditSgValueRequest req, int reqId) {
         log.info("GetEditSGValue from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SgcState state = SgSessionState.getState(session.getSessionId());

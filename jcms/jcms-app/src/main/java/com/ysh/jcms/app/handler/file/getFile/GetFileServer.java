@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsGetFileError;
 import com.ysh.jcms.pdu.file.CmsGetFileRequest;
@@ -15,7 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class GetFileServer extends BaseServerHandler {
+public class GetFileServer extends BaseServerHandler<CmsGetFileRequest, CmsGetFileError> {
 
     // Leave room for PER overhead: reqId(2) + filename(1+max255) + startPosition(4)
     private static final int CHUNK_SIZE = 64000;
@@ -25,8 +24,7 @@ public class GetFileServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetFileRequest req = (CmsGetFileRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetFileRequest req, int reqId) {
         String fileName = str(req.filename);
         long startPosition = req.startPosition.value();
 

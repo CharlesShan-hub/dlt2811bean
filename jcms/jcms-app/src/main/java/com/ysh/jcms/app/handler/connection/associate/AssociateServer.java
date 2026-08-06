@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.connection.associate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.node.InnerServer;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
@@ -26,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 import java.util.Optional;
 
-public class AssociateServer extends BaseServerHandler {
+public class AssociateServer extends BaseServerHandler<CmsAssociateRequest, CmsAssociateError> {
 
     private GmAuthenticator authenticator;
     private PrivateKey serverPrivateKey;
@@ -52,8 +51,7 @@ public class AssociateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsAssociateRequest req = (CmsAssociateRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsAssociateRequest req, int reqId) {
         String sapRef = req.isPresent("serverAccessPointReference") ? req.serverAccessPointReference.value() : null;
         log.info("Associate request from {}: reqId={}, sapRef={}", session.getSessionId(), reqId, sapRef);
 

@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
@@ -17,15 +16,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetDataValuesServer extends BaseServerHandler {
+public class GetDataValuesServer extends BaseServerHandler<CmsGetDataValuesRequest, CmsGetDataValuesError> {
 
     public GetDataValuesServer() {
         super(ServiceName.GET_DATA_VALUES, CmsGetDataValuesRequest.class, CmsGetDataValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetDataValuesRequest req = (CmsGetDataValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetDataValuesRequest req, int reqId) {
         log.info("GetDataValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SclIED ied = requireIed(session, reqId);

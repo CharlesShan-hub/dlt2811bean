@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.queryLogAfter;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogAfterError;
 import com.ysh.jcms.pdu.log.CmsQueryLogAfterRequest;
@@ -18,7 +17,7 @@ import java.util.List;
 /**
  * QueryLogAfter — 8.8.5 查询指定条目之后的日志服务。
  */
-public class QueryLogAfterServer extends BaseServerHandler {
+public class QueryLogAfterServer extends BaseServerHandler<CmsQueryLogAfterRequest, CmsQueryLogAfterError> {
 
     private final LogStorage logStorage;
 
@@ -28,8 +27,7 @@ public class QueryLogAfterServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsQueryLogAfterRequest req = (CmsQueryLogAfterRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsQueryLogAfterRequest req, int reqId) {
         String logRef = str(req.logReference);
 
         log.info("QueryLogAfter from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);

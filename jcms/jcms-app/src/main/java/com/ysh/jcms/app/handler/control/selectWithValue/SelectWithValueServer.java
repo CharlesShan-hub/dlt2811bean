@@ -17,7 +17,7 @@ import com.ysh.jcms.utils.transport.session.Session;
  * <p>
  * Locks a control object and echoes back the target value (ctlVal).
  */
-public class SelectWithValueServer extends BaseServerHandler {
+public class SelectWithValueServer extends BaseServerHandler<CmsSelectWithValueRequest, CmsSelectWithValueError> {
 
     public SelectWithValueServer() {
         super(ServiceName.SELECT_WITH_VALUE, CmsSelectWithValueRequest.class, CmsSelectWithValueError.class);
@@ -28,8 +28,7 @@ public class SelectWithValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSelectWithValueRequest req = (CmsSelectWithValueRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSelectWithValueRequest req, int reqId) {
         String ref = str(req.reference);
         String sid = session.getSessionId();
 

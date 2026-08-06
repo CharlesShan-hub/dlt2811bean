@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileAttributeValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.file.CmsGetFileAttributeValuesError;
@@ -18,15 +17,14 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.zip.CRC32;
 
-public class GetFileAttributeValuesServer extends BaseServerHandler {
+public class GetFileAttributeValuesServer extends BaseServerHandler<CmsGetFileAttributeValuesRequest, CmsGetFileAttributeValuesError> {
 
     public GetFileAttributeValuesServer() {
         super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetFileAttributeValuesRequest req = (CmsGetFileAttributeValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetFileAttributeValuesRequest req, int reqId) {
         String fileName = str(req.filename);
         log.info("GetFileAttributeValues from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
 

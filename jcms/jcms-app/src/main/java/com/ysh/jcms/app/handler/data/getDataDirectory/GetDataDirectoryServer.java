@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
@@ -34,7 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GetDataDirectoryServer extends BaseServerHandler {
+public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirectoryRequest, CmsGetDataDirectoryError> {
 
     /** Simple directory entry with ref name and optional fc. */
     private static final class DirEntry {
@@ -51,8 +50,7 @@ public class GetDataDirectoryServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetDataDirectoryRequest req = (CmsGetDataDirectoryRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetDataDirectoryRequest req, int reqId) {
         log.info("GetDataDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);

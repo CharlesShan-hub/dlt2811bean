@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.report.setUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
@@ -24,16 +23,14 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetUrcbValuesServer extends BaseServerHandler {
+public class SetUrcbValuesServer extends BaseServerHandler<CmsSetUrcbValuesRequest, CmsSetUrcbValuesError> {
 
     public SetUrcbValuesServer() {
         super(ServiceName.SET_URCB_VALUES, CmsSetUrcbValuesRequest.class, CmsSetUrcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetUrcbValuesRequest req = (CmsSetUrcbValuesRequest) rawReq;
-
+    protected Frame onDecodeSuccess(Session session, CmsSetUrcbValuesRequest req, int reqId) {
         log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.size());
 
         // 8.7.5.2.c) Empty sequence → Response+

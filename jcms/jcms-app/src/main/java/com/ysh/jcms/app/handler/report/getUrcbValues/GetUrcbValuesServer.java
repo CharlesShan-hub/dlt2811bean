@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.choice.CmsUrcbValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.sequence.block.CmsUrcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
@@ -20,15 +19,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetUrcbValuesServer extends BaseServerHandler {
+public class GetUrcbValuesServer extends BaseServerHandler<CmsGetUrcbValuesRequest, CmsGetUrcbValuesError> {
 
     public GetUrcbValuesServer() {
         super(ServiceName.GET_URCB_VALUES, CmsGetUrcbValuesRequest.class, CmsGetUrcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetUrcbValuesRequest req = (CmsGetUrcbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetUrcbValuesRequest req, int reqId) {
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);

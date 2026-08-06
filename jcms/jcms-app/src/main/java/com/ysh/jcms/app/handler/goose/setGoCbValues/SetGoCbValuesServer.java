@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.goose.setGoCbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.goose.GetGoCbValuesUtil;
 import com.ysh.jcms.app.handler.goose.GoCbCache;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesError;
@@ -21,15 +20,14 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Updates the GOOSE control block configuration in memory. Persistence to SCL
  * is not supported — changes are lost on restart.
  */
-public class SetGoCbValuesServer extends BaseServerHandler {
+public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesRequest, CmsSetGoCbValuesError> {
 
     public SetGoCbValuesServer() {
         super(ServiceName.SET_GOCB_VALUES, CmsSetGoCbValuesRequest.class, CmsSetGoCbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetGoCbValuesRequest req = (CmsSetGoCbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetGoCbValuesRequest req, int reqId) {
         log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.size());
 
         SclIED ied = getSclIed(session);

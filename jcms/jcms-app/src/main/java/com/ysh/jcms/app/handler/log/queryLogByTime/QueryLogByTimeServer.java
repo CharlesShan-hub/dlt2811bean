@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.log.CmsLogEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeError;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeRequest;
@@ -17,7 +16,7 @@ import java.util.List;
 /**
  * QueryLogByTime — 8.8.4 按时间查询日志服务。
  */
-public class QueryLogByTimeServer extends BaseServerHandler {
+public class QueryLogByTimeServer extends BaseServerHandler<CmsQueryLogByTimeRequest, CmsQueryLogByTimeError> {
 
     private final LogStorage logStorage;
 
@@ -27,8 +26,7 @@ public class QueryLogByTimeServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsQueryLogByTimeRequest req = (CmsQueryLogByTimeRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsQueryLogByTimeRequest req, int reqId) {
         String logRef = str(req.logReference);
 
         log.info("QueryLogByTime from {}: reqId={}, logRef={}", session.getSessionId(), reqId, logRef);

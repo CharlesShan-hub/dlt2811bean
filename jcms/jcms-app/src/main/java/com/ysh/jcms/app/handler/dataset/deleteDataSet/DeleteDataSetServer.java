@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.deleteDataSet;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetRequest;
@@ -16,15 +15,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class DeleteDataSetServer extends BaseServerHandler {
+public class DeleteDataSetServer extends BaseServerHandler<CmsDeleteDataSetRequest, CmsDeleteDataSetError> {
 
     public DeleteDataSetServer() {
         super(ServiceName.DELETE_DATA_SET, CmsDeleteDataSetRequest.class, CmsDeleteDataSetError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsDeleteDataSetRequest req = (CmsDeleteDataSetRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsDeleteDataSetRequest req, int reqId) {
         log.info("DeleteDataSet from {}: reqId={}", session.getSessionId(), reqId);
 
         SclIED ied = requireIed(session, reqId);

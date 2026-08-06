@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
 import com.ysh.jcms.data.choice.CmsLcbValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsLcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
@@ -21,15 +20,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetLcbValuesServer extends BaseServerHandler {
+public class GetLcbValuesServer extends BaseServerHandler<CmsGetLcbValuesRequest, CmsGetLcbValuesError> {
 
     public GetLcbValuesServer() {
         super(ServiceName.GET_LCB_VALUES, CmsGetLcbValuesRequest.class, CmsGetLcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetLcbValuesRequest req = (CmsGetLcbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetLcbValuesRequest req, int reqId) {
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);

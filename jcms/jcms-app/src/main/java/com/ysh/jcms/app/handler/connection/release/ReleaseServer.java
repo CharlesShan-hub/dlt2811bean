@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.connection.release;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.connection.CmsReleaseError;
 import com.ysh.jcms.pdu.connection.CmsReleaseRequest;
@@ -14,15 +13,14 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 /**
  * Server-side handler for incoming Release-RequestPDU.
  */
-public class ReleaseServer extends BaseServerHandler {
+public class ReleaseServer extends BaseServerHandler<CmsReleaseRequest, CmsReleaseError> {
 
     public ReleaseServer() {
         super(ServiceName.RELEASE, CmsReleaseRequest.class, CmsReleaseError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsReleaseRequest req = (CmsReleaseRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsReleaseRequest req, int reqId) {
         log.info("Release request from {}: reqId={}", session.getSessionId(), reqId);
 
         if (!session.isAssociated()) {

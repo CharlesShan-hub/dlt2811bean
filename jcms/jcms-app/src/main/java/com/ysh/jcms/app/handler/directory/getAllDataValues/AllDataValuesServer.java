@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
@@ -29,15 +28,14 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllDataValuesServer extends BaseServerHandler {
+public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRequest, CmsGetAllDataValuesError> {
 
     public AllDataValuesServer() {
         super(ServiceName.GET_ALL_DATA_VALUES, CmsGetAllDataValuesRequest.class, CmsGetAllDataValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetAllDataValuesRequest req = (CmsGetAllDataValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetAllDataValuesRequest req, int reqId) {
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
         log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);
 

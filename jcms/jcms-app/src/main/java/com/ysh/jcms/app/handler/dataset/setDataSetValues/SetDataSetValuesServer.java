@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesError;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesRequest;
@@ -20,15 +19,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class SetDataSetValuesServer extends BaseServerHandler {
+public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValuesRequest, CmsSetDataSetValuesError> {
 
     public SetDataSetValuesServer() {
         super(ServiceName.SET_DATA_SET_VALUES, CmsSetDataSetValuesRequest.class, CmsSetDataSetValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetDataSetValuesRequest req = (CmsSetDataSetValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetDataSetValuesRequest req, int reqId) {
         log.info("SetDataSetValues from {}: reqId={}, {} values", session.getSessionId(), reqId, req.value.size());
 
         SclDocument doc = requireScl(session, reqId);

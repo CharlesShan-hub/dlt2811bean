@@ -12,7 +12,7 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class SetEditSgValueServer extends BaseServerHandler {
+public class SetEditSgValueServer extends BaseServerHandler<CmsSetEditSgValueRequest, CmsSetEditSgValueError> {
 
     public SetEditSgValueServer() {
         super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSgValueRequest.class, CmsSetEditSgValueError.class);
@@ -28,8 +28,7 @@ public class SetEditSgValueServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetEditSgValueRequest req = (CmsSetEditSgValueRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetEditSgValueRequest req, int reqId) {
         log.info("SetEditSGValue from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.data.size());
 
         if (req.data == null || req.data.size() == 0)

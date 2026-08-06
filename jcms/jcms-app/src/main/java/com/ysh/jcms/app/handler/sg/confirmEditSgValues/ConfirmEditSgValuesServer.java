@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesError;
 import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesRequest;
@@ -12,15 +11,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class ConfirmEditSgValuesServer extends BaseServerHandler {
+public class ConfirmEditSgValuesServer extends BaseServerHandler<CmsConfirmEditSgValuesRequest, CmsConfirmEditSgValuesError> {
 
     public ConfirmEditSgValuesServer() {
         super(ServiceName.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSgValuesRequest.class, CmsConfirmEditSgValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsConfirmEditSgValuesRequest req = (CmsConfirmEditSgValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsConfirmEditSgValuesRequest req, int reqId) {
 
         String ref = str(req.sgcbReference);
         log.info("ConfirmEditSGValues from {}: reqId={}, sgcbRef={}", session.getSessionId(), reqId, ref);

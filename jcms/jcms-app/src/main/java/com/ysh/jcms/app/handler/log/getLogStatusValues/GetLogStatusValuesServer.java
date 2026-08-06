@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
@@ -17,7 +16,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 /**
  * GetLogStatusValues — 8.8.6 读日志状态值服务。
  */
-public class GetLogStatusValuesServer extends BaseServerHandler {
+public class GetLogStatusValuesServer extends BaseServerHandler<CmsGetLogStatusValuesRequest, CmsGetLogStatusValuesError> {
 
     private final LogStorage logStorage;
 
@@ -27,9 +26,7 @@ public class GetLogStatusValuesServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetLogStatusValuesRequest req = (CmsGetLogStatusValuesRequest) rawReq;
-
+    protected Frame onDecodeSuccess(Session session, CmsGetLogStatusValuesRequest req, int reqId) {
         log.info("GetLogStatusValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.logReference.size());
 
         CmsGetLogStatusValuesResponse resp = new CmsGetLogStatusValuesResponse();

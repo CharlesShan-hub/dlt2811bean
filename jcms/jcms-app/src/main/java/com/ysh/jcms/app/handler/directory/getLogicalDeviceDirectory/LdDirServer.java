@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
@@ -18,15 +17,14 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LdDirServer extends BaseServerHandler {
+public class LdDirServer extends BaseServerHandler<CmsGetLogicalDeviceDirectoryRequest, CmsGetLogicalDeviceDirectoryError> {
 
     public LdDirServer() {
         super(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, CmsGetLogicalDeviceDirectoryRequest.class, CmsGetLogicalDeviceDirectoryError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetLogicalDeviceDirectoryRequest req = (CmsGetLogicalDeviceDirectoryRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetLogicalDeviceDirectoryRequest req, int reqId) {
         String ldName = req.isPresent("ldName") ? req.ldName.value() : null;
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
         log.info("GetLogicalDeviceDirectory from {}: reqId={}, ldName={}, referenceAfter={}", session.getSessionId(), reqId, ldName,

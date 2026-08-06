@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
@@ -36,16 +35,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
-public class LnDirServer extends BaseServerHandler {
+public class LnDirServer extends BaseServerHandler<CmsGetLogicalNodeDirectoryRequest, CmsGetLogicalNodeDirectoryError> {
 
     public LnDirServer() {
         super(ServiceName.GET_LOGIC_NODE_DIRECTORY, CmsGetLogicalNodeDirectoryRequest.class, CmsGetLogicalNodeDirectoryError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
+    protected Frame onDecodeSuccess(Session session, CmsGetLogicalNodeDirectoryRequest req, int reqId) {
         long t0 = System.currentTimeMillis();
-        CmsGetLogicalNodeDirectoryRequest req = (CmsGetLogicalNodeDirectoryRequest) rawReq;
         int acsiClass = req.acsiClass.value();
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 

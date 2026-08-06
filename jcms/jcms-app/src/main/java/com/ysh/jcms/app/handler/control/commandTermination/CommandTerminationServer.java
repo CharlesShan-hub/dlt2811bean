@@ -7,15 +7,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class CommandTerminationServer extends BaseServerHandler {
+public class CommandTerminationServer extends BaseServerHandler<CmsCommandTermination, CmsType> {
 
     public CommandTerminationServer() {
         super(ServiceName.COMMAND_TERMINATION, CmsCommandTermination.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsCommandTermination req = (CmsCommandTermination) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsCommandTermination req, int reqId) {
         String ref = str(req.reference);
         log.info("CommandTermination from {}: reqId={}, ref={}", session.getSessionId(), reqId, ref);
         // Unconfirmed service — no response

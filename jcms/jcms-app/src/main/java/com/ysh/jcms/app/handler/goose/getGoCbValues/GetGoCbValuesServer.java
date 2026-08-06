@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.goose.getGoCbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.goose.GetGoCbValuesUtil;
 import com.ysh.jcms.data.choice.CmsGocbValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
@@ -14,15 +13,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetGoCbValuesServer extends BaseServerHandler {
+public class GetGoCbValuesServer extends BaseServerHandler<CmsGetGoCbValuesRequest, CmsGetGoCbValuesError> {
 
     public GetGoCbValuesServer() {
         super(ServiceName.GET_GOCB_VALUES, CmsGetGoCbValuesRequest.class, CmsGetGoCbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetGoCbValuesRequest req = (CmsGetGoCbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetGoCbValuesRequest req, int reqId) {
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);

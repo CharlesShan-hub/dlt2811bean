@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
@@ -19,15 +18,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetDataSetDirectoryServer extends BaseServerHandler {
+public class GetDataSetDirectoryServer extends BaseServerHandler<CmsGetDataSetDirectoryRequest, CmsGetDataSetDirectoryError> {
 
     public GetDataSetDirectoryServer() {
         super(ServiceName.GET_DATA_SET_DIRECTORY, CmsGetDataSetDirectoryRequest.class, CmsGetDataSetDirectoryError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetDataSetDirectoryRequest req = (CmsGetDataSetDirectoryRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetDataSetDirectoryRequest req, int reqId) {
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         SclIED ied = requireIed(session, reqId);

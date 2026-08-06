@@ -11,15 +11,14 @@ import com.ysh.jcms.utils.transport.session.SessionState;
 /**
  * Server-side handler for incoming Abort-RequestPDU (one-way, no response).
  */
-public class AbortServer extends BaseServerHandler {
+public class AbortServer extends BaseServerHandler<CmsAbort, CmsType> {
 
     public AbortServer() {
         super(ServiceName.ABORT, CmsAbort.class, null);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsAbort req = (CmsAbort) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsAbort req, int reqId) {
         log.warn("Abort received: session={}, reason={}", session.getSessionId(), req.reason.value());
 
         session.clear();

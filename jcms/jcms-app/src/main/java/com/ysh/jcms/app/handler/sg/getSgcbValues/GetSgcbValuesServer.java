@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.sg.SgSessionState;
 import com.ysh.jcms.app.handler.sg.SgSessionState.SgcState;
 import com.ysh.jcms.data.choice.CmsSgcbValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
@@ -17,15 +16,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetSgcbValuesServer extends BaseServerHandler {
+public class GetSgcbValuesServer extends BaseServerHandler<CmsGetSgcbValuesRequest, CmsGetSgcbValuesError> {
 
     public GetSgcbValuesServer() {
         super(ServiceName.GET_SGCB_VALUES, CmsGetSgcbValuesRequest.class, CmsGetSgcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetSgcbValuesRequest req = (CmsGetSgcbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetSgcbValuesRequest req, int reqId) {
         log.info("GetSGCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.sgcbReference.size());
 
         CmsGetSgcbValuesResponse resp = new CmsGetSgcbValuesResponse();

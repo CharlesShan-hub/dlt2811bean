@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
@@ -12,15 +11,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class NegotiateServer extends BaseServerHandler {
+public class NegotiateServer extends BaseServerHandler<CmsNegotiateRequest, CmsNegotiateError> {
 
     public NegotiateServer() {
         super(ServiceName.ASSOCIATE_NEGOTIATE, CmsNegotiateRequest.class, CmsNegotiateError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsNegotiateRequest req = (CmsNegotiateRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsNegotiateRequest req, int reqId) {
         CmsConfig.Protocol.Negotiate config = CmsConfigLoader.load().getProtocol().getNegotiate();
 
         if (req.protocolVersion.value() > config.getProtocolVersion())

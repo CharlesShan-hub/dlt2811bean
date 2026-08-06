@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.data.CmsDataDefResultEntry;
 import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
@@ -16,15 +15,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetDataDefinitionServer extends BaseServerHandler {
+public class GetDataDefinitionServer extends BaseServerHandler<CmsGetDataDefinitionRequest, CmsGetDataDefinitionError> {
 
     public GetDataDefinitionServer() {
         super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinitionRequest.class, CmsGetDataDefinitionError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetDataDefinitionRequest req = (CmsGetDataDefinitionRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetDataDefinitionRequest req, int reqId) {
         log.info("GetDataDefinition from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.data.size());
 
         SclDocument doc = requireScl(session, reqId);

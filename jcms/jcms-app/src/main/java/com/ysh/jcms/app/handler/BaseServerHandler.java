@@ -34,21 +34,21 @@ import java.util.List;
  * it will be caught and converted to an error frame by {@code handleRequest},
  * eliminating repetitive null-check boilerplate.
  */
-public abstract class BaseServerHandler extends BaseHandler implements ServiceHandler {
+public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> extends BaseHandler implements ServiceHandler {
 
     private final ServiceName serviceName;
-    private final Class<? extends CmsType> requestType;
-    private final Class<? extends CmsType> errorType;
+    private final Class<R> requestType;
+    private final Class<E> errorType;
 
     /** Full constructor: request PDU + error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType, Class<? extends CmsType> errorType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<R> requestType, Class<E> errorType) {
         this.serviceName = serviceName;
         this.requestType = requestType;
         this.errorType = errorType;
     }
 
     /** For services with a request PDU but no distinct error PDU. */
-    protected BaseServerHandler(ServiceName serviceName, Class<? extends CmsType> requestType) {
+    protected BaseServerHandler(ServiceName serviceName, Class<R> requestType) {
         this(serviceName, requestType, null);
     }
 
@@ -83,7 +83,8 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
             decoded = null;
         }
         try {
-            Frame response = onDecodeSuccess(session, decoded, reqId);
+            @SuppressWarnings("unchecked")
+            Frame response = onDecodeSuccess(session, (R) decoded, reqId);
             if (response != null && traceEnabled()) {
                 log.info("[TRACE] >>> {} resp reqId={} err={} ({} bytes)", serviceName, response.reqId(), response.header().err(),
                         response.asduBytes() != null ? response.asduBytes().length : 0);
@@ -111,15 +112,14 @@ public abstract class BaseServerHandler extends BaseHandler implements ServiceHa
      * @param session
      *            the session context
      * @param req
-     *            the decoded request PDU, or {@code null} for PDU-less services;
-     *            cast to the concrete type known by the subclass
+     *            the decoded request PDU, or {@code null} for PDU-less services
      * @param reqId
      *            request ID extracted from the frame header
      * @return response frame, or {@code null} for one-way messages
      * @throws ServiceException
      *             to abort processing and return an error frame
      */
-    protected abstract Frame onDecodeSuccess(Session session, CmsType req, int reqId);
+    protected abstract Frame onDecodeSuccess(Session session, R req, int reqId);
 
     /**
      * Build an error response frame.

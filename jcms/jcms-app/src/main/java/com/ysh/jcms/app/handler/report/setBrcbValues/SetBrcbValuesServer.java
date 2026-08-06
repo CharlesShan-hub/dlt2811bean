@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
@@ -24,16 +23,14 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SetBrcbValuesServer extends BaseServerHandler {
+public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError> {
 
     public SetBrcbValuesServer() {
         super(ServiceName.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetBrcbValuesRequest req = (CmsSetBrcbValuesRequest) rawReq;
-
+    protected Frame onDecodeSuccess(Session session, CmsSetBrcbValuesRequest req, int reqId) {
         log.info("SetBRCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.brcb.size());
 
         // 8.7.3.2.c) Empty sequence → Response+

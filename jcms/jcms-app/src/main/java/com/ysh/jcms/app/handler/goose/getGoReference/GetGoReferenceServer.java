@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
@@ -16,15 +15,14 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Given a GoCB reference and member offsets, resolves each offset to the
  * corresponding (reference, fc) pair from the GoCB's dataset.
  */
-public class GetGoReferenceServer extends BaseServerHandler {
+public class GetGoReferenceServer extends BaseServerHandler<CmsGetGoReferenceRequest, CmsGetGoReferenceError> {
 
     public GetGoReferenceServer() {
         super(ServiceName.GET_GO_REFERENCE, CmsGetGoReferenceRequest.class, CmsGetGoReferenceError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetGoReferenceRequest req = (CmsGetGoReferenceRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetGoReferenceRequest req, int reqId) {
         String gocbRef = str(req.gocbReference);
         log.info("GetGoReference from {}: reqId={}, gocbRef={}, {} offsets", session.getSessionId(), reqId, gocbRef, req.memberOfs.size());
 

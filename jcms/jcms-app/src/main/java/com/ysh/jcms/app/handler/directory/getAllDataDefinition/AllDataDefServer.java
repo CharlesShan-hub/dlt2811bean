@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.data.choice.CmsDataDefinition;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
@@ -32,7 +31,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AllDataDefServer extends BaseServerHandler {
+public class AllDataDefServer extends BaseServerHandler<CmsGetAllDataDefinitionRequest, CmsGetAllDataDefinitionError> {
 
     private static final int SEL_STRUCTURE = CmsDataDefinition.CHOICE_STRUCTURE;
     private static final int SEL_BOOLEAN = CmsDataDefinition.CHOICE_BOOLEAN;
@@ -61,8 +60,7 @@ public class AllDataDefServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetAllDataDefinitionRequest req = (CmsGetAllDataDefinitionRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetAllDataDefinitionRequest req, int reqId) {
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         log.info("GetAllDataDefinition from {}: reqId={}", session.getSessionId(), reqId);

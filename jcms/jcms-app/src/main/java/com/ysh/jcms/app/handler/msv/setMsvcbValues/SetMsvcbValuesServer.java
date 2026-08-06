@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.msv.GetMsvcbValuesUtil;
 import com.ysh.jcms.app.handler.msv.MsvcbCache;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
@@ -21,15 +20,14 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Updates the MSV control block configuration in memory. Persistence to SCL is
  * not supported — changes are lost on restart.
  */
-public class SetMsvcbValuesServer extends BaseServerHandler {
+public class SetMsvcbValuesServer extends BaseServerHandler<CmsSetMsvcbValuesRequest, CmsSetMsvcbValuesError> {
 
     public SetMsvcbValuesServer() {
         super(ServiceName.SET_MSVCB_VALUES, CmsSetMsvcbValuesRequest.class, CmsSetMsvcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSetMsvcbValuesRequest req = (CmsSetMsvcbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSetMsvcbValuesRequest req, int reqId) {
         log.info("SetMSVCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.msvcb.size());
 
         SclIED ied = getSclIed(session);

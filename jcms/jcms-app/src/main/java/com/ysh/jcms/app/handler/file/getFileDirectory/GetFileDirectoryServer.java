@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.getFileDirectory;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
@@ -23,15 +22,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 
-public class GetFileDirectoryServer extends BaseServerHandler {
+public class GetFileDirectoryServer extends BaseServerHandler<CmsGetFileDirectoryRequest, CmsGetFileDirectoryError> {
 
     public GetFileDirectoryServer() {
         super(ServiceName.GET_FILE_DIRECTORY, CmsGetFileDirectoryRequest.class, CmsGetFileDirectoryError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetFileDirectoryRequest req = (CmsGetFileDirectoryRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetFileDirectoryRequest req, int reqId) {
         log.info("GetFileDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         String root = CmsConfigLoader.load().getProtocol().getFile().getRootPath();

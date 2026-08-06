@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
 import com.ysh.jcms.data.choice.CmsRpcMethodDefChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.data.sequence.rpc.CmsRpcMethodDef;
 import com.ysh.jcms.pdu.rpc.*;
@@ -11,13 +10,12 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetRpcMethodDefinitionServer extends BaseServerHandler {
+public class GetRpcMethodDefinitionServer extends BaseServerHandler<CmsGetRpcMethodDefinitionRequest, CmsGetRpcMethodDefinitionError> {
     public GetRpcMethodDefinitionServer() {
         super(ServiceName.GET_RPC_METHOD_DEFINITION, CmsGetRpcMethodDefinitionRequest.class, CmsGetRpcMethodDefinitionError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetRpcMethodDefinitionRequest req = (CmsGetRpcMethodDefinitionRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetRpcMethodDefinitionRequest req, int reqId) {
         log.info("GetRpcMethodDefinition from {}: {} refs", session.getSessionId(), req.reference.size());
         CmsGetRpcMethodDefinitionResponse resp = new CmsGetRpcMethodDefinitionResponse();
         for (CmsString refObj : req.reference) {

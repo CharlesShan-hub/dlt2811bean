@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.msv.GetMsvcbValuesUtil;
 import com.ysh.jcms.data.choice.CmsMsvcbValueChoice;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
@@ -22,15 +21,14 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Reads MSVCB control block values from SCL (or in-memory cache if previously
  * modified via SetMSVCBValues).
  */
-public class GetMsvcbValuesServer extends BaseServerHandler {
+public class GetMsvcbValuesServer extends BaseServerHandler<CmsGetMsvcbValuesRequest, CmsGetMsvcbValuesError> {
 
     public GetMsvcbValuesServer() {
         super(ServiceName.GET_MSVCB_VALUES, CmsGetMsvcbValuesRequest.class, CmsGetMsvcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetMsvcbValuesRequest req = (CmsGetMsvcbValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetMsvcbValuesRequest req, int reqId) {
         log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);

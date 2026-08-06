@@ -18,7 +18,7 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Executes a control operation. The control object should have been previously
  * selected via Select or SelectWithValue.
  */
-public class OperateServer extends BaseServerHandler {
+public class OperateServer extends BaseServerHandler<CmsOperateRequest, CmsOperateError> {
 
     public OperateServer() {
         super(ServiceName.OPERATE, CmsOperateRequest.class, CmsOperateError.class);
@@ -29,8 +29,7 @@ public class OperateServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsOperateRequest req = (CmsOperateRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsOperateRequest req, int reqId) {
         String ref = str(req.reference);
         String sid = session.getSessionId();
 

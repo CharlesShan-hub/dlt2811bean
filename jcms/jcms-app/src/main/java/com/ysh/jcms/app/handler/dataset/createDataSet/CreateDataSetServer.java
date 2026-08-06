@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.createDataSet;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetError;
@@ -19,15 +18,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class CreateDataSetServer extends BaseServerHandler {
+public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetRequest, CmsCreateDataSetError> {
 
     public CreateDataSetServer() {
         super(ServiceName.CREATE_DATA_SET, CmsCreateDataSetRequest.class, CmsCreateDataSetError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsCreateDataSetRequest req = (CmsCreateDataSetRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsCreateDataSetRequest req, int reqId) {
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.size());
 
         SclIED ied = requireIed(session, reqId);

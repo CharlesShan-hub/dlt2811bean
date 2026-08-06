@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.rpc.getRpcInterfaceDefinition;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionError;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcInterfaceDefinitionRequest;
@@ -12,13 +11,14 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetRpcInterfaceDefinitionServer extends BaseServerHandler {
+public class GetRpcInterfaceDefinitionServer
+        extends
+            BaseServerHandler<CmsGetRpcInterfaceDefinitionRequest, CmsGetRpcInterfaceDefinitionError> {
     public GetRpcInterfaceDefinitionServer() {
         super(ServiceName.GET_RPC_INTERFACE_DEFINITION, CmsGetRpcInterfaceDefinitionRequest.class, CmsGetRpcInterfaceDefinitionError.class);
     }
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetRpcInterfaceDefinitionRequest req = (CmsGetRpcInterfaceDefinitionRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetRpcInterfaceDefinitionRequest req, int reqId) {
         String iface = str(req.interfaceName);
         if (iface == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

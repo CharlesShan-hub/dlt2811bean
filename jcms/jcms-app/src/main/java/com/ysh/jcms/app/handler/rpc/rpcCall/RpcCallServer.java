@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.rpc.rpcCall;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 import com.ysh.jcms.app.handler.rpc.RpcRegistry;
 import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallError;
 import com.ysh.jcms.pdu.rpc.CmsRpcCallRequest;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public class RpcCallServer extends BaseServerHandler {
+public class RpcCallServer extends BaseServerHandler<CmsRpcCallRequest, CmsRpcCallError> {
 
     /** Registered method implementations. */
     private static final Map<String, Function<Void, String>> methods = new HashMap<>();
@@ -30,8 +29,7 @@ public class RpcCallServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsRpcCallRequest req = (CmsRpcCallRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsRpcCallRequest req, int reqId) {
         String method = str(req.method);
         if (method == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);

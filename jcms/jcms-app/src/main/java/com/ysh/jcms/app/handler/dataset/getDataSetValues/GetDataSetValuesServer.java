@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetValuesRequest;
@@ -21,15 +20,14 @@ import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-public class GetDataSetValuesServer extends BaseServerHandler {
+public class GetDataSetValuesServer extends BaseServerHandler<CmsGetDataSetValuesRequest, CmsGetDataSetValuesError> {
 
     public GetDataSetValuesServer() {
         super(ServiceName.GET_DATA_SET_VALUES, CmsGetDataSetValuesRequest.class, CmsGetDataSetValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetDataSetValuesRequest req = (CmsGetDataSetValuesRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetDataSetValuesRequest req, int reqId) {
         log.info("GetDataSetValues from {}: reqId={}", session.getSessionId(), reqId);
 
         SclDocument doc = requireScl(session, reqId);

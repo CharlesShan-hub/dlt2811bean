@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
@@ -16,15 +15,14 @@ import com.ysh.jcms.utils.transport.session.Session;
  * Given a GoCB reference and member (reference, fc) pairs, finds the offset of
  * each member in the GoCB's dataset. The inverse of GetGoReference.
  */
-public class GetGooseElementNumberServer extends BaseServerHandler {
+public class GetGooseElementNumberServer extends BaseServerHandler<CmsGetGooseElementNumberRequest, CmsGetGooseElementNumberError> {
 
     public GetGooseElementNumberServer() {
         super(ServiceName.GET_GOOSE_ELEMENT_NUMBER, CmsGetGooseElementNumberRequest.class, CmsGetGooseElementNumberError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsGetGooseElementNumberRequest req = (CmsGetGooseElementNumberRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsGetGooseElementNumberRequest req, int reqId) {
         String gocbRef = str(req.gocbReference);
         log.info("GetGOOSEElementNumber from {}: reqId={}, gocbRef={}, {} members", session.getSessionId(), reqId, gocbRef,
                 req.memberData.size());

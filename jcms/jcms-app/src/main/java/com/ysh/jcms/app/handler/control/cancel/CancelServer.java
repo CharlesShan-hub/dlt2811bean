@@ -17,7 +17,7 @@ import com.ysh.jcms.utils.transport.session.Session;
  * <p>
  * Cancels a previous selection, releasing the lock on the control object.
  */
-public class CancelServer extends BaseServerHandler {
+public class CancelServer extends BaseServerHandler<CmsCancelRequest, CmsCancelError> {
 
     public CancelServer() {
         super(ServiceName.CANCEL, CmsCancelRequest.class, CmsCancelError.class);
@@ -28,8 +28,7 @@ public class CancelServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsCancelRequest req = (CmsCancelRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsCancelRequest req, int reqId) {
         String ref = str(req.reference);
         String sid = session.getSessionId();
 

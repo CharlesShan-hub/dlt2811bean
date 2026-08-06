@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.file.deleteFile;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.file.CmsDeleteFileError;
 import com.ysh.jcms.pdu.file.CmsDeleteFileRequest;
@@ -15,15 +14,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class DeleteFileServer extends BaseServerHandler {
+public class DeleteFileServer extends BaseServerHandler<CmsDeleteFileRequest, CmsDeleteFileError> {
 
     public DeleteFileServer() {
         super(ServiceName.DELETE_FILE, CmsDeleteFileRequest.class, CmsDeleteFileError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsDeleteFileRequest req = (CmsDeleteFileRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsDeleteFileRequest req, int reqId) {
         String fileName = str(req.filename);
         log.info("DeleteFile from {}: reqId={}, file={}", session.getSessionId(), reqId, fileName);
 

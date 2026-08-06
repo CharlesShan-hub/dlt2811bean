@@ -17,7 +17,7 @@ import com.ysh.jcms.utils.transport.session.Session;
  * <p>
  * Locks a control object for exclusive access by the requesting session.
  */
-public class SelectServer extends BaseServerHandler {
+public class SelectServer extends BaseServerHandler<CmsSelectRequest, CmsSelectError> {
 
     public SelectServer() {
         super(ServiceName.SELECT, CmsSelectRequest.class, CmsSelectError.class);
@@ -28,8 +28,7 @@ public class SelectServer extends BaseServerHandler {
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsType rawReq, int reqId) {
-        CmsSelectRequest req = (CmsSelectRequest) rawReq;
+    protected Frame onDecodeSuccess(Session session, CmsSelectRequest req, int reqId) {
         String ref = str(req.reference);
         String sid = session.getSessionId();
 
