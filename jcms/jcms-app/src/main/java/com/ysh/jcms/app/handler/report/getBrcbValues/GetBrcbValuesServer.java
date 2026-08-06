@@ -15,10 +15,11 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetBrcbValuesServer extends BaseServerHandler {
-
 
     public GetBrcbValuesServer() {
         super(ServiceName.GET_BRCB_VALUES, CmsGetBrcbValuesRequest.class, CmsGetBrcbValuesError.class);
@@ -51,14 +52,14 @@ public class GetBrcbValuesServer extends BaseServerHandler {
 
     /** 按 ref 查找 LD/LN 下的 buffered ReportControl。 */
     static CmsBrcb resolveBrcb(SclIED ied, String ref) {
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+        if (!SclRefParser.isValid(ref))
             return null;
-
-        String ldName = ref.substring(0, slashIdx);
-        String lnName = ref.substring(slashIdx + 1, dotIdx);
-        String cbName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnName = sclRef.lnName();
+        String cbName = sclRef.doName();
+        if (cbName == null)
+            return null;
 
         SclLN ln = findLn(ied, ldName, lnName);
         if (ln == null)

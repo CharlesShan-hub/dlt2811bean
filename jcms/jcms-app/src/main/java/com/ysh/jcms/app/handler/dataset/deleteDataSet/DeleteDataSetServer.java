@@ -12,10 +12,11 @@ import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class DeleteDataSetServer extends BaseServerHandler {
-
 
     public DeleteDataSetServer() {
         super(ServiceName.DELETE_DATA_SET, CmsDeleteDataSetRequest.class, CmsDeleteDataSetError.class);
@@ -33,13 +34,14 @@ public class DeleteDataSetServer extends BaseServerHandler {
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         // Parse "LD0/LLN0.dsName"
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+        if (!SclRefParser.isValid(ref))
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        String ldName = ref.substring(0, slashIdx);
-        String lnName = ref.substring(slashIdx + 1, dotIdx);
-        String dsName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnName = sclRef.lnName();
+        String dsName = sclRef.doName();
+        if (dsName == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         SclLDevice device = findLd(ied, ldName);
         if (device == null)

@@ -18,7 +18,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class GetGoReferenceServer extends BaseServerHandler {
 
-
     public GetGoReferenceServer() {
         super(ServiceName.GET_GO_REFERENCE, CmsGetGoReferenceRequest.class, CmsGetGoReferenceError.class);
     }

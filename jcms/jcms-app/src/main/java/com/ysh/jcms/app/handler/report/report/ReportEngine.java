@@ -20,6 +20,8 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
 import com.ysh.jcms.utils.transport.session.Session;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.app.node.InnerServer.ServerSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -195,9 +197,6 @@ public class ReportEngine {
 
         report.entry.timeOfEntry(new CmsBinaryTime().msOfDay(msOfDay).daysSince1984(daysSince1984));
 
-        // Pre-allocate entryData array
-        int totalFcdas = dataSet.fcDas().size();
-
         // entryData — for each FCDA in DataSet
         int entryId = 1;
         for (SclFCDA fcda : dataSet.fcDas()) {
@@ -274,13 +273,14 @@ public class ReportEngine {
 
     /** Resolve the SCL ReportControl by reference. */
     private SclReportControl resolveReportControl(String ref) {
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+        if (!SclRefParser.isValid(ref))
             return null;
-        String ldName = ref.substring(0, slashIdx);
-        String lnName = ref.substring(slashIdx + 1, dotIdx);
-        String cbName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnName = sclRef.lnName();
+        String cbName = sclRef.doName();
+        if (cbName == null)
+            return null;
         SclLN ln = findLnByLdRef(ldName, lnName);
         if (ln == null)
             return null;
@@ -298,12 +298,11 @@ public class ReportEngine {
         if (rc == null || rc.datSet() == null)
             return null;
         // Parse the RCB ref to find the owning LN: e.g. "LD0/LLN0.brcbAlarm"
-        int slashIdx = rcbRef.indexOf('/');
-        int dotIdx = rcbRef.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+        if (!SclRefParser.isValid(rcbRef))
             return null;
-        String ldName = rcbRef.substring(0, slashIdx);
-        String lnRef = rcbRef.substring(slashIdx + 1, dotIdx); // "LLN0"
+        SclRef sclRef = SclRefParser.parse(rcbRef);
+        String ldName = sclRef.ldInst();
+        String lnRef = sclRef.lnName();
         SclLN ln = findLnByLdRef(ldName, lnRef);
         if (ln == null)
             return null;

@@ -14,7 +14,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class ConfirmEditSgValuesServer extends BaseServerHandler {
 
-
     public ConfirmEditSgValuesServer() {
         super(ServiceName.CONFIRM_EDIT_SG_VALUES, CmsConfirmEditSgValuesRequest.class, CmsConfirmEditSgValuesError.class);
     }

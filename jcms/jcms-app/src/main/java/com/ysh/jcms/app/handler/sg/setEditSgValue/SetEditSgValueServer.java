@@ -14,7 +14,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class SetEditSgValueServer extends BaseServerHandler {
 
-
     public SetEditSgValueServer() {
         super(ServiceName.SET_EDIT_SG_VALUE, CmsSetEditSgValueRequest.class, CmsSetEditSgValueError.class);
     }

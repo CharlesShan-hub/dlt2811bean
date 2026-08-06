@@ -18,7 +18,6 @@ import java.nio.file.StandardOpenOption;
 
 public class SetFileServer extends BaseServerHandler {
 
-
     public SetFileServer() {
         super(ServiceName.SET_FILE, CmsSetFileRequest.class, CmsSetFileError.class);
     }

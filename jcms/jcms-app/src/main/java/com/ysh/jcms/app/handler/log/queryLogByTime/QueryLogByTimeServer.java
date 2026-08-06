@@ -19,7 +19,6 @@ import java.util.List;
  */
 public class QueryLogByTimeServer extends BaseServerHandler {
 
-
     private final LogStorage logStorage;
 
     public QueryLogByTimeServer() {

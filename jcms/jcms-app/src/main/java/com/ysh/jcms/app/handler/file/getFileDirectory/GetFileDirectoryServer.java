@@ -25,7 +25,6 @@ import java.util.zip.CRC32;
 
 public class GetFileDirectoryServer extends BaseServerHandler {
 
-
     public GetFileDirectoryServer() {
         super(ServiceName.GET_FILE_DIRECTORY, CmsGetFileDirectoryRequest.class, CmsGetFileDirectoryError.class);
     }

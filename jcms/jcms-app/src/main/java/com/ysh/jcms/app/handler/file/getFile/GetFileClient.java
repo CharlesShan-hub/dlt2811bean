@@ -17,7 +17,6 @@ import java.util.List;
 
 public class GetFileClient extends BaseClientHandler {
 
-
     /**
      * Download a file from the server. The client loops, sending GetFile requests
      * with increasing startPosition until the server returns endOfFile=true.

@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 
 public class SetFileClient extends BaseClientHandler {
 
-
     // Leave room for PER overhead
     private static final int CHUNK_SIZE = 64000;
 

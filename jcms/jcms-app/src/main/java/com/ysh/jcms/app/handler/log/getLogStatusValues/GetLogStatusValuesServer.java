@@ -19,7 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class GetLogStatusValuesServer extends BaseServerHandler {
 
-
     private final LogStorage logStorage;
 
     public GetLogStatusValuesServer() {

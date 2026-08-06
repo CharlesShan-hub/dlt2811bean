@@ -14,13 +14,14 @@ import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SetLcbValuesServer extends BaseServerHandler {
-
 
     public SetLcbValuesServer() {
         super(ServiceName.SET_LCB_VALUES, CmsSetLcbValuesRequest.class, CmsSetLcbValuesError.class);
@@ -105,17 +106,20 @@ public class SetLcbValuesServer extends BaseServerHandler {
         CmsSetLcbResult result = new CmsSetLcbResult();
 
         // Validate ref format
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
+        if (!SclRefParser.isValid(ref)) {
             log.warn("SetLCBValues: invalid ref format {}", ref);
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
-
-        String ldName = ref.substring(0, slashIdx);
-        String lnName = ref.substring(slashIdx + 1, dotIdx);
-        String cbName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnName = sclRef.lnName();
+        String cbName = sclRef.doName();
+        if (cbName == null) {
+            log.warn("SetLCBValues: invalid ref format {} (no CB name)", ref);
+            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
+            return result;
+        }
 
         // Validate LN exists
         SclLN ln = findLn(ied, ldName, lnName);

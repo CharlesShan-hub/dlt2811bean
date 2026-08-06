@@ -22,6 +22,8 @@ import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
 import com.ysh.jcms.utils.scl.model.template.SclDO;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.ArrayList;
@@ -105,19 +107,15 @@ public class AllDataValuesServer extends BaseServerHandler {
             }
             return null;
         }
-        if (lnReference == null || lnReference.isEmpty())
+        if (lnReference == null || lnReference.isEmpty() || !SclRefParser.isValid(lnReference))
             return null;
-        int slashIdx = lnReference.indexOf('/');
-        if (slashIdx < 0)
-            return null;
-        String refLd = lnReference.substring(0, slashIdx);
-        String refLn = lnReference.substring(slashIdx + 1);
+        SclRef sclRef = SclRefParser.parse(lnReference);
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
-                SclLDevice device = srv.findLDeviceByInst(refLd);
+                SclLDevice device = srv.findLDeviceByInst(sclRef.ldInst());
                 if (device != null) {
-                    SclLN ln = device.findLnByFullName(refLn);
+                    SclLN ln = device.findLnByFullName(sclRef.lnName());
                     if (ln != null) {
                         result.add(ln);
                         return result;

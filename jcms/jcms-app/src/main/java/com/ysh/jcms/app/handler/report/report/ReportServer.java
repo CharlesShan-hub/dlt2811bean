@@ -9,7 +9,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class ReportServer extends BaseServerHandler {
 
-
     public ReportServer() {
         super(ServiceName.REPORT, CmsReport.class, null);
     }

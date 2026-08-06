@@ -23,7 +23,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class SetGoCbValuesServer extends BaseServerHandler {
 
-
     public SetGoCbValuesServer() {
         super(ServiceName.SET_GOCB_VALUES, CmsSetGoCbValuesRequest.class, CmsSetGoCbValuesError.class);
     }

@@ -18,7 +18,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetDataDefinitionServer extends BaseServerHandler {
 
-
     public GetDataDefinitionServer() {
         super(ServiceName.GET_DATA_DEFINITION, CmsGetDataDefinitionRequest.class, CmsGetDataDefinitionError.class);
     }

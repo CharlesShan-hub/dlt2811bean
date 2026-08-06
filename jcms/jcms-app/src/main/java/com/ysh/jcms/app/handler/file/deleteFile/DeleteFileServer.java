@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 
 public class DeleteFileServer extends BaseServerHandler {
 
-
     public DeleteFileServer() {
         super(ServiceName.DELETE_FILE, CmsDeleteFileRequest.class, CmsDeleteFileError.class);
     }

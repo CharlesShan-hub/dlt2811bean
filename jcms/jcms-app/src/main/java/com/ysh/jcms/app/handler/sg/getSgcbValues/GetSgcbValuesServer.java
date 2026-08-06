@@ -19,7 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetSgcbValuesServer extends BaseServerHandler {
 
-
     public GetSgcbValuesServer() {
         super(ServiceName.GET_SGCB_VALUES, CmsGetSgcbValuesRequest.class, CmsGetSgcbValuesError.class);
     }

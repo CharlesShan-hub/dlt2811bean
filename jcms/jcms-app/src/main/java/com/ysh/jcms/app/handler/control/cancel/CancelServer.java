@@ -19,7 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class CancelServer extends BaseServerHandler {
 
-
     public CancelServer() {
         super(ServiceName.CANCEL, CmsCancelRequest.class, CmsCancelError.class);
     }

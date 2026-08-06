@@ -23,7 +23,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class SetMsvcbValuesServer extends BaseServerHandler {
 
-
     public SetMsvcbValuesServer() {
         super(ServiceName.SET_MSVCB_VALUES, CmsSetMsvcbValuesRequest.class, CmsSetMsvcbValuesError.class);
     }

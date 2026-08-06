@@ -5,6 +5,8 @@ import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,8 +24,8 @@ public final class GetGoCbValuesUtil {
     }
 
     /**
-     * Resolves a GoCB reference to its current value. Checks in-memory cache
-     * first, then falls back to SCL.
+     * Resolves a GoCB reference to its current value. Checks in-memory cache first,
+     * then falls back to SCL.
      */
     public static CmsGoCb resolveGocb(SclIED ied, String ref) {
         // Check in-memory cache first (written by SetGoCBValues)
@@ -33,16 +35,18 @@ public final class GetGoCbValuesUtil {
             return cached;
         }
 
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx) {
+        if (!SclRefParser.isValid(ref)) {
             log.warn("resolveGocb: invalid ref format '{}'", ref);
             return null;
         }
-
-        String ldName = ref.substring(0, slashIdx);
-        String lnPart = ref.substring(slashIdx + 1, dotIdx);
-        String cbName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnPart = sclRef.lnName();
+        String cbName = sclRef.doName();
+        if (cbName == null) {
+            log.warn("resolveGocb: invalid ref format '{}' (no CB name)", ref);
+            return null;
+        }
         log.debug("resolveGocb: ldName={}, lnPart={}, cbName={}", ldName, lnPart, cbName);
 
         SclLDevice device = findLd(ied, ldName);

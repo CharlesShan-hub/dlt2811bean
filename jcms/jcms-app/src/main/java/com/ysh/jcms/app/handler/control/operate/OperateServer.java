@@ -20,7 +20,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class OperateServer extends BaseServerHandler {
 
-
     public OperateServer() {
         super(ServiceName.OPERATE, CmsOperateRequest.class, CmsOperateError.class);
     }

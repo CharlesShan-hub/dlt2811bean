@@ -15,10 +15,11 @@ import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class CreateDataSetServer extends BaseServerHandler {
-
 
     public CreateDataSetServer() {
         super(ServiceName.CREATE_DATA_SET, CmsCreateDataSetRequest.class, CmsCreateDataSetError.class);
@@ -35,14 +36,15 @@ public class CreateDataSetServer extends BaseServerHandler {
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        // Parse "LD0/LLN0.dsName" — the dsName is the last dot-segment
-        int slashIdx = ref.indexOf('/');
-        int dotIdx = ref.indexOf('.');
-        if (slashIdx < 0 || dotIdx < 0 || dotIdx <= slashIdx)
+        // Parse "LD0/LLN0.dsName"
+        if (!SclRefParser.isValid(ref))
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        String ldName = ref.substring(0, slashIdx);
-        String lnNamePart = ref.substring(slashIdx + 1, dotIdx);
-        String dsName = ref.substring(dotIdx + 1);
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnNamePart = sclRef.lnName();
+        String dsName = sclRef.doName();
+        if (dsName == null)
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
         // Resolve LN first (DataSet may not exist yet since we're creating it)
         SclLDevice device = findLd(ied, ldName);
@@ -96,41 +98,25 @@ public class CreateDataSetServer extends BaseServerHandler {
     }
 
     private static SclFCDA parseRefToFcda(SclIED ied, String ref) {
-        if (ref == null || ref.isEmpty())
+        if (ref == null || ref.isEmpty() || !SclRefParser.isValid(ref))
             return null;
 
-        int slashIdx = ref.indexOf('/');
-        if (slashIdx < 0)
-            return null;
-        String ldName = ref.substring(0, slashIdx);
-        String rest = ref.substring(slashIdx + 1);
-        int dotIdx = rest.indexOf('.');
-        if (dotIdx < 0)
-            return null;
-        String lnPart = rest.substring(0, dotIdx);
-        String doDaPart = rest.substring(dotIdx + 1);
-
-        SclLDevice device = findLd(ied, ldName);
+        SclRef sclRef = SclRefParser.parse(ref);
+        SclLDevice device = findLd(ied, sclRef.ldInst());
         if (device == null)
             return null;
 
-        SclLN ln = device.findLnByFullName(lnPart);
+        SclLN ln = device.findLnByFullName(sclRef.lnName());
         if (ln == null)
             return null;
 
         SclFCDA fcda = new SclFCDA();
-        fcda.ldInst(ldName);
+        fcda.ldInst(sclRef.ldInst());
         fcda.lnClass(ln.lnClass());
         fcda.lnInst(ln.inst());
         fcda.prefix(ln.prefix() != null ? ln.prefix() : "");
-
-        int daDotIdx = doDaPart.indexOf('.');
-        if (daDotIdx >= 0) {
-            fcda.doName(doDaPart.substring(0, daDotIdx));
-            fcda.daName(doDaPart.substring(daDotIdx + 1));
-        } else {
-            fcda.doName(doDaPart);
-        }
+        fcda.doName(sclRef.doName());
+        fcda.daName(sclRef.daName());
 
         return fcda;
     }

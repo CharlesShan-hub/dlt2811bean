@@ -153,8 +153,8 @@ public class InnerClient implements ConnectionListener {
 
             // Response frame that matched no pending request — diagnose timeouts
             if (frame.header().resp()) {
-                log.warn("Unmatched response: service={}, reqId={}, asduLen={}, pending={}", frame.header().serviceCode(),
-                        frame.reqId(), frame.asduBytes() != null ? frame.asduBytes().length : 0, session.pendingCount());
+                log.warn("Unmatched response: service={}, reqId={}, asduLen={}, pending={}", frame.header().serviceCode(), frame.reqId(),
+                        frame.asduBytes() != null ? frame.asduBytes().length : 0, session.pendingCount());
             }
         } catch (Exception e) {
             log.warn("Unhandled exception in onFrameReceived: {}", e.getMessage(), e);

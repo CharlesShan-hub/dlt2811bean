@@ -9,7 +9,6 @@ import com.ysh.jcms.utils.transport.frame.Frame;
  */
 public class ReportClient extends BaseClientHandler {
 
-
     public void handleReport(Frame frame) {
         try {
             CmsReport report = new CmsReport();

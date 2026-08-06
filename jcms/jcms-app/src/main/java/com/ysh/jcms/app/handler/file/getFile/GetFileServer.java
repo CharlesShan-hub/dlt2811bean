@@ -17,7 +17,6 @@ import java.nio.file.Paths;
 
 public class GetFileServer extends BaseServerHandler {
 
-
     // Leave room for PER overhead: reqId(2) + filename(1+max255) + startPosition(4)
     private static final int CHUNK_SIZE = 64000;
 

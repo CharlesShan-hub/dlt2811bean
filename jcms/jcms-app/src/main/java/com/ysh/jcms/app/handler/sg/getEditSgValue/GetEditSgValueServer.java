@@ -20,7 +20,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class GetEditSgValueServer extends BaseServerHandler {
 
-
     public GetEditSgValueServer() {
         super(ServiceName.GET_EDIT_SG_VALUE, CmsGetEditSgValueRequest.class, CmsGetEditSgValueError.class);
     }

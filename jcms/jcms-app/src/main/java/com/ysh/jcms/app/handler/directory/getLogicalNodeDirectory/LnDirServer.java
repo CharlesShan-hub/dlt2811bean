@@ -28,6 +28,8 @@ import com.ysh.jcms.utils.scl.model.template.SclDO;
 import com.ysh.jcms.utils.scl.model.template.SclSDO;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
+import com.ysh.jcms.utils.scl.ref.SclRef;
+import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.ArrayList;
@@ -69,7 +71,7 @@ public class LnDirServer extends BaseServerHandler {
         log.info("TIMING: resolved {} LNs in {}ms", lns.size(), System.currentTimeMillis() - t0);
 
         // 获取有效 LD 名：ldName 或从 lnReference 中提取
-        String effectiveLd = ldName != null ? ldName : (lnReference != null ? lnReference.substring(0, lnReference.indexOf('/')) : null);
+        String effectiveLd = ldName != null ? ldName : (lnReference != null ? SclRefParser.parse(lnReference).ldName() : null);
 
         List<String> names = collectNamesByAcsiClass(lns, effectiveLd, acsiClass, templates, refAfter, t0);
         if (names == null) {
@@ -104,19 +106,15 @@ public class LnDirServer extends BaseServerHandler {
             }
             return null;
         }
-        if (lnReference == null || lnReference.isEmpty())
+        if (lnReference == null || lnReference.isEmpty() || !SclRefParser.isValid(lnReference))
             return null;
-        int slashIdx = lnReference.indexOf('/');
-        if (slashIdx < 0)
-            return null;
-        String refLd = lnReference.substring(0, slashIdx);
-        String refLn = lnReference.substring(slashIdx + 1);
+        SclRef sclRef = SclRefParser.parse(lnReference);
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer srv = ap.server();
             if (srv != null) {
-                SclLDevice device = srv.findLDeviceByInst(refLd);
+                SclLDevice device = srv.findLDeviceByInst(sclRef.ldInst());
                 if (device != null) {
-                    SclLN ln = device.findLnByFullName(refLn);
+                    SclLN ln = device.findLnByFullName(sclRef.lnName());
                     if (ln != null) {
                         List<SclLN> result = new ArrayList<>();
                         result.add(ln);

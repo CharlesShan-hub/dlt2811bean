@@ -14,7 +14,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class SelectEditSgServer extends BaseServerHandler {
 
-
     public SelectEditSgServer() {
         super(ServiceName.SELECT_EDIT_SG, CmsSelectEditSgRequest.class, CmsSelectEditSgError.class);
     }

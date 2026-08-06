@@ -20,7 +20,6 @@ import java.util.zip.CRC32;
 
 public class GetFileAttributeValuesServer extends BaseServerHandler {
 
-
     public GetFileAttributeValuesServer() {
         super(ServiceName.GET_FILE_ATTRIBUTE_VALUES, CmsGetFileAttributeValuesRequest.class, CmsGetFileAttributeValuesError.class);
     }

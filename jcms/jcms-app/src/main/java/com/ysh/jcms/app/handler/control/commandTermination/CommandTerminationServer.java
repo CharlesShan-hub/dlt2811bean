@@ -9,7 +9,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class CommandTerminationServer extends BaseServerHandler {
 
-
     public CommandTerminationServer() {
         super(ServiceName.COMMAND_TERMINATION, CmsCommandTermination.class);
     }

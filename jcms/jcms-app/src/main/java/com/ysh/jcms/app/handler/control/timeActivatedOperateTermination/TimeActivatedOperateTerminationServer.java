@@ -9,7 +9,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class TimeActivatedOperateTerminationServer extends BaseServerHandler {
 
-
     public TimeActivatedOperateTerminationServer() {
         super(ServiceName.TIME_ACTIVATED_OPERATE_TERMINATION, CmsTimeActivatedOperateTermination.class);
     }

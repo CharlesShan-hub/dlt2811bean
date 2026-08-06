@@ -12,7 +12,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class TimeActivatedOperateServer extends BaseServerHandler {
 
-
     public TimeActivatedOperateServer() {
         super(ServiceName.TIME_ACTIVATED_OPERATE, CmsTimeActivatedOperateRequest.class, CmsTimeActivatedOperateError.class);
     }

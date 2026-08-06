@@ -18,7 +18,6 @@ import java.util.function.Function;
 
 public class RpcCallServer extends BaseServerHandler {
 
-
     /** Registered method implementations. */
     private static final Map<String, Function<Void, String>> methods = new HashMap<>();
 

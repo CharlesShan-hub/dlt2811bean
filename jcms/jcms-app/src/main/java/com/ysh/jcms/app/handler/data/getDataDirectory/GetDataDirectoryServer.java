@@ -36,7 +36,6 @@ import java.util.Set;
 
 public class GetDataDirectoryServer extends BaseServerHandler {
 
-
     /** Simple directory entry with ref name and optional fc. */
     private static final class DirEntry {
         final String ref;

@@ -19,7 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class SelectWithValueServer extends BaseServerHandler {
 
-
     public SelectWithValueServer() {
         super(ServiceName.SELECT_WITH_VALUE, CmsSelectWithValueRequest.class, CmsSelectWithValueError.class);
     }

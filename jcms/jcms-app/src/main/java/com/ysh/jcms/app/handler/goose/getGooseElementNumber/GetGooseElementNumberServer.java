@@ -18,7 +18,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class GetGooseElementNumberServer extends BaseServerHandler {
 
-
     public GetGooseElementNumberServer() {
         super(ServiceName.GET_GOOSE_ELEMENT_NUMBER, CmsGetGooseElementNumberRequest.class, CmsGetGooseElementNumberError.class);
     }

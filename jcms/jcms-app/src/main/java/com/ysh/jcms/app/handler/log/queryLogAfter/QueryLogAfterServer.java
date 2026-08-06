@@ -20,7 +20,6 @@ import java.util.List;
  */
 public class QueryLogAfterServer extends BaseServerHandler {
 
-
     private final LogStorage logStorage;
 
     public QueryLogAfterServer() {

@@ -19,7 +19,6 @@ import com.ysh.jcms.utils.transport.session.Session;
  */
 public class SelectServer extends BaseServerHandler {
 
-
     public SelectServer() {
         super(ServiceName.SELECT, CmsSelectRequest.class, CmsSelectError.class);
     }

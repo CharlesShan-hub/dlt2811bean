@@ -14,7 +14,6 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 public class SelectActiveSgServer extends BaseServerHandler {
 
-
     public SelectActiveSgServer() {
         super(ServiceName.SELECT_ACTIVE_SG, CmsSelectActiveSgRequest.class, CmsSelectActiveSgError.class);
     }
