@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.negotiate.negotiate;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateError;
-import com.ysh.jcms.pdu.negotiate.CmsNegotiateRequest;
 import com.ysh.jcms.pdu.negotiate.CmsNegotiateResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,10 +13,7 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
     @Override
     public void execute(NegotiateClientDao dao) throws Exception {
-        CmsNegotiateRequest req = new CmsNegotiateRequest().apduSize(dao.apduSize()).asduSize(dao.asduSize())
-                .protocolVersion(dao.protocolVersion());
-
-        send(ServiceName.ASSOCIATE_NEGOTIATE, req);
+        send(ServiceName.ASSOCIATE_NEGOTIATE, dao.toRequest());
     }
 
     @Override

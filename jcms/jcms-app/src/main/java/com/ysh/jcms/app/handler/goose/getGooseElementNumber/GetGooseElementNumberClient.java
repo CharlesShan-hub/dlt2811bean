@@ -2,9 +2,7 @@ package com.ysh.jcms.app.handler.goose.getGooseElementNumber;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.scalar.CmsInt16U;
-import com.ysh.jcms.data.sequence.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberError;
-import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGooseElementNumberResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,15 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseElementNumberDao> {
-
-    public static final class MemberSpec {
-        public final String reference;
-        public final int fc;
-        public MemberSpec(String reference, int fc) {
-            this.reference = reference;
-            this.fc = fc;
-        }
-    }
 
     public static final class ElementNumberResult {
         public final String gocbReference;
@@ -44,12 +33,7 @@ public class GetGooseElementNumberClient extends BaseClientHandler<GetGooseEleme
 
     @Override
     public void execute(GetGooseElementNumberDao dao) throws Exception {
-        CmsGetGooseElementNumberRequest req = new CmsGetGooseElementNumberRequest().gocbReference(dao.gocbReference());
-        for (MemberSpec spec : dao.members()) {
-            CmsGoRefFcEntry entry = new CmsGoRefFcEntry().reference(spec.reference).fc(spec.fc);
-            req.memberData.add(entry);
-        }
-        send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, req);
+        send(ServiceName.GET_GOOSE_ELEMENT_NUMBER, dao.toRequest());
     }
 
     @Override

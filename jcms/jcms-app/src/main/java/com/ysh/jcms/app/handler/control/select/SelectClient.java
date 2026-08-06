@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.control.select;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.control.CmsSelectError;
-import com.ysh.jcms.pdu.control.CmsSelectRequest;
 import com.ysh.jcms.pdu.control.CmsSelectResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -12,8 +11,7 @@ public class SelectClient extends BaseClientHandler<SelectDao> {
 
     @Override
     public void execute(SelectDao dao) throws Exception {
-        CmsSelectRequest req = new CmsSelectRequest().reference(dao.ref());
-        send(ServiceName.SELECT, req);
+        send(ServiceName.SELECT, dao.toRequest());
     }
 
     @Override

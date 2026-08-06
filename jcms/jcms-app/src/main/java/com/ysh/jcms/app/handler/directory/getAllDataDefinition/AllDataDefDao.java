@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
@@ -18,4 +20,18 @@ public class AllDataDefDao extends BaseDao {
     private Integer fc;
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
+
+    @Override
+    public CmsType toRequest() {
+        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().referenceAfter(referenceAfter);
+        if (ldName != null) {
+            req.reference.altLdName(ldName);
+        } else if (lnReference != null) {
+            req.reference.altLnReference(lnReference);
+        }
+        if (fc != null) {
+            req.fc(fc);
+        }
+        return req;
+    }
 }

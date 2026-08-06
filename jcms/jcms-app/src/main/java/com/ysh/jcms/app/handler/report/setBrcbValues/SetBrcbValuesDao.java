@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
 import lombok.Getter;
@@ -21,7 +22,8 @@ public class SetBrcbValuesDao extends BaseDao {
     private Boolean purgeBuf;
     private Integer resvTms;
 
-    CmsSetBrcbValuesRequest toRequest(int reqId) {
+    @Override
+    public CmsType toRequest() {
         CmsSetBrcbValuesRequest req = new CmsSetBrcbValuesRequest();
         CmsSetBrcbEntry entry = new CmsSetBrcbEntry().reference(ref != null ? ref : "");
 

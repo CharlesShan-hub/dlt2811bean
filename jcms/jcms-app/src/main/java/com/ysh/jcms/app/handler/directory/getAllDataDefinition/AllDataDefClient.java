@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -17,19 +16,7 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     public void execute(AllDataDefDao dao) throws Exception {
-        CmsGetAllDataDefinitionRequest req = new CmsGetAllDataDefinitionRequest().referenceAfter(dao.referenceAfter());
-
-        if (dao.ldName() != null) {
-            req.reference.altLdName(dao.ldName());
-        } else if (dao.lnReference() != null) {
-            req.reference.altLnReference(dao.lnReference());
-        }
-
-        if (dao.fc() != null) {
-            req.fc(dao.fc());
-        }
-
-        send(ServiceName.GET_ALL_DATA_DEFINITION, req);
+        send(ServiceName.GET_ALL_DATA_DEFINITION, dao.toRequest());
     }
 
     @Override

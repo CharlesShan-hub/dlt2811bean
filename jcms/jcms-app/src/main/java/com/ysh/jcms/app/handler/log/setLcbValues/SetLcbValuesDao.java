@@ -3,6 +3,7 @@ package com.ysh.jcms.app.handler.log.setLcbValues;
 import com.ysh.jcms.data.bitarray.CmsLcbOptFlds;
 import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.data.bitarray.CmsTriggerConditions;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.log.CmsSetLcbEntry;
 import com.ysh.jcms.pdu.log.CmsSetLcbValuesRequest;
 import lombok.Getter;
@@ -22,7 +23,8 @@ public class SetLcbValuesDao extends BaseDao {
     private Integer optFlds;
     private Integer bufTm;
 
-    CmsSetLcbValuesRequest toRequest(int reqId) {
+    @Override
+    public CmsType toRequest() {
         CmsSetLcbValuesRequest req = new CmsSetLcbValuesRequest();
         CmsSetLcbEntry entry = new CmsSetLcbEntry().reference(ref != null ? ref : "");
 

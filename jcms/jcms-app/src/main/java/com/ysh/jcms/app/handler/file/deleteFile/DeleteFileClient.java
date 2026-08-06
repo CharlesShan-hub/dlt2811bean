@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.file.deleteFile;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.file.CmsDeleteFileError;
-import com.ysh.jcms.pdu.file.CmsDeleteFileRequest;
 import com.ysh.jcms.pdu.file.CmsDeleteFileResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -13,9 +12,7 @@ public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
 
     @Override
     public void execute(DeleteFileDao dao) throws Exception {
-        CmsDeleteFileRequest req = new CmsDeleteFileRequest().filename(dao.fileName());
-
-        send(ServiceName.DELETE_FILE, req);
+        send(ServiceName.DELETE_FILE, dao.toRequest());
     }
 
     @Override

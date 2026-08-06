@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
@@ -18,4 +20,15 @@ public class LnDirDao extends BaseDao {
     private int acsiClass = 1;
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
+
+    @Override
+    public CmsType toRequest() {
+        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(acsiClass).referenceAfter(referenceAfter);
+        if (ldName != null) {
+            req.reference.altLdName(ldName);
+        } else if (lnReference != null) {
+            req.reference.altLnReference(lnReference);
+        }
+        return req;
+    }
 }

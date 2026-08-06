@@ -2,10 +2,8 @@ package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
-import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -30,11 +28,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
 
     @Override
     public void execute(GetLogStatusValuesDao dao) throws Exception {
-        CmsGetLogStatusValuesRequest req = new CmsGetLogStatusValuesRequest();
-        for (String ref : dao.refs()) {
-            req.logReference.add(new CmsObjectReference(ref));
-        }
-        send(ServiceName.GET_LOG_STATUS_VALUES, req);
+        send(ServiceName.GET_LOG_STATUS_VALUES, dao.toRequest());
     }
 
     @Override

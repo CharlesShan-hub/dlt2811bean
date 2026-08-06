@@ -2,10 +2,8 @@ package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsGocbValueChoice;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
-import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -30,11 +28,7 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
 
     @Override
     public void execute(GetGoCbValuesDao dao) throws Exception {
-        CmsGetGoCbValuesRequest req = new CmsGetGoCbValuesRequest();
-        for (String ref : dao.refs()) {
-            req.reference.add(new CmsObjectReference(ref));
-        }
-        send(ServiceName.GET_GOCB_VALUES, req);
+        send(ServiceName.GET_GOCB_VALUES, dao.toRequest());
     }
 
     @Override

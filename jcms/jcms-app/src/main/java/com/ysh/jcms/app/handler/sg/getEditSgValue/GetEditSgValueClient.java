@@ -3,9 +3,7 @@ package com.ysh.jcms.app.handler.sg.getEditSgValue;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
-import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
-import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
@@ -31,11 +29,7 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
 
     @Override
     public void execute(GetEditSgValueDao dao) throws Exception {
-        CmsGetEditSgValueRequest req = new CmsGetEditSgValueRequest();
-        for (GetEditSgValueDao.RefFcPair pair : dao.refs()) {
-            req.data.add(new CmsSgRefFcEntry().reference(pair.reference()).fc(pair.fc()));
-        }
-        send(ServiceName.GET_EDIT_SG_VALUE, req);
+        send(ServiceName.GET_EDIT_SG_VALUE, dao.toRequest());
     }
 
     @Override

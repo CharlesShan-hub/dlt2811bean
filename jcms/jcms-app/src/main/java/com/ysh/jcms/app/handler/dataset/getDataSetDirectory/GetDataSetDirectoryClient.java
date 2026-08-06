@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
-import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -32,10 +31,7 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
 
     @Override
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        CmsGetDataSetDirectoryRequest req = new CmsGetDataSetDirectoryRequest().datasetReference(dao.datasetReference())
-                .referenceAfter(dao.referenceAfter());
-
-        send(ServiceName.GET_DATA_SET_DIRECTORY, req);
+        send(ServiceName.GET_DATA_SET_DIRECTORY, dao.toRequest());
     }
 
     @Override

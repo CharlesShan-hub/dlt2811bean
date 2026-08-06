@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
-import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,9 +13,7 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
     @Override
     public void execute(SvrDirDao dao) throws Exception {
-        CmsGetServerDirectoryRequest req = new CmsGetServerDirectoryRequest().objectClass(dao.objectClass())
-                .referenceAfter(dao.referenceAfter());
-        send(ServiceName.GET_SERVER_DIRECTORY, req);
+        send(ServiceName.GET_SERVER_DIRECTORY, dao.toRequest());
     }
 
     @Override

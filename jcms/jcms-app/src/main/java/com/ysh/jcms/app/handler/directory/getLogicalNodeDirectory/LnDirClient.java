@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -17,16 +16,7 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     @Override
     public void execute(LnDirDao dao) throws Exception {
         this.acsiClass = dao.acsiClass();
-        CmsGetLogicalNodeDirectoryRequest req = new CmsGetLogicalNodeDirectoryRequest().acsiClass(dao.acsiClass())
-                .referenceAfter(dao.referenceAfter());
-
-        if (dao.ldName() != null) {
-            req.reference.altLdName(dao.ldName());
-        } else if (dao.lnReference() != null) {
-            req.reference.altLnReference(dao.lnReference());
-        }
-
-        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, req);
+        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao.toRequest());
     }
 
     @Override

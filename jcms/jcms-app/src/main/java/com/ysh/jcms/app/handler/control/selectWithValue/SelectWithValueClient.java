@@ -1,58 +1,17 @@
 package com.ysh.jcms.app.handler.control.selectWithValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.choice.CmsData;
-import com.ysh.jcms.data.bitarray.CmsCheck;
-import com.ysh.jcms.data.sequence.common.CmsOriginator;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueError;
-import com.ysh.jcms.pdu.control.CmsSelectWithValueRequest;
 import com.ysh.jcms.pdu.control.CmsSelectWithValueResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import java.io.IOException;
-import java.util.Map;
 
 public class SelectWithValueClient extends BaseClientHandler<SelectWithValueDao> {
 
     @Override
     public void execute(SelectWithValueDao dao) throws Exception {
-        CmsSelectWithValueRequest req = new CmsSelectWithValueRequest().reference(dao.ref());
-
-        Map<String, String> args = dao.args();
-        String valueStr = args.get("value");
-        if (valueStr != null && !valueStr.isEmpty()) {
-            CmsData ctlVal = new CmsData();
-            ctlVal.alt_boolean(Boolean.parseBoolean(valueStr));
-            req.ctlVal(ctlVal);
-        }
-
-        String originStr = args.get("origin");
-        if (originStr != null && !originStr.isEmpty()) {
-            req.origin(new CmsOriginator().orCat(Integer.parseInt(originStr)));
-        }
-
-        String ctlNumStr = args.get("ctlNum");
-        if (ctlNumStr != null && !ctlNumStr.isEmpty()) {
-            req.ctlNum(Integer.parseInt(ctlNumStr));
-        }
-
-        String testStr = args.get("test");
-        if (testStr != null)
-            req.test(Boolean.parseBoolean(testStr));
-
-        String checkStr = args.get("check");
-        if (checkStr != null && !checkStr.isEmpty()) {
-            CmsCheck check = new CmsCheck();
-            for (String flag : checkStr.split(",")) {
-                if ("syncheck".equalsIgnoreCase(flag.trim()))
-                    check.syncheck(true);
-                if ("interlock".equalsIgnoreCase(flag.trim()))
-                    check.interlock_check(true);
-            }
-            req.check(check);
-        }
-
-        send(ServiceName.SELECT_WITH_VALUE, req);
+        send(ServiceName.SELECT_WITH_VALUE, dao.toRequest());
     }
 
     @Override

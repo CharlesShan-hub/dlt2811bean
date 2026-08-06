@@ -2,9 +2,7 @@ package com.ysh.jcms.app.handler.data.getDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.data.CmsDataDefResultEntry;
-import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionError;
-import com.ysh.jcms.pdu.data.CmsGetDataDefinitionRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -33,17 +31,7 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
 
     @Override
     public void execute(GetDataDefinitionDao dao) throws Exception {
-        CmsGetDataDefinitionRequest req = new CmsGetDataDefinitionRequest();
-
-        for (GetDataDefinitionDao.DataRef ref : dao.dataRefs()) {
-            CmsDataRefEntry entry = new CmsDataRefEntry().reference(ref.reference());
-            if (ref.fc() != null) {
-                entry.fc(ref.fc());
-            }
-            req.data.add(entry);
-        }
-
-        send(ServiceName.GET_DATA_DEFINITION, req);
+        send(ServiceName.GET_DATA_DEFINITION, dao.toRequest());
     }
 
     @Override

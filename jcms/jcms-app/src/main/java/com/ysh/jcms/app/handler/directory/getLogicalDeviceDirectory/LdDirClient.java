@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
-import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -24,12 +23,8 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
         String after = dao.referenceAfter();
 
         while (true) {
-            CmsGetLogicalDeviceDirectoryRequest req = new CmsGetLogicalDeviceDirectoryRequest().referenceAfter(after);
-            if (dao.ldName() != null) {
-                req.ldName(dao.ldName());
-            }
-
-            Frame frame = send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, req);
+            dao.referenceAfter(after);
+            Frame frame = send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao.toRequest());
             CmsGetLogicalDeviceDirectoryResponse resp = decodeFrame(frame, new CmsGetLogicalDeviceDirectoryResponse());
 
             for (CmsSubReference ref : resp.lnReference) {

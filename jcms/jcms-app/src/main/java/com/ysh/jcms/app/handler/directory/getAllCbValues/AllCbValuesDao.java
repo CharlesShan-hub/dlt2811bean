@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
 import lombok.Setter;
@@ -18,4 +20,15 @@ public class AllCbValuesDao extends BaseDao {
     private int acsiClass;
     /** Optional pagination: return items after this reference */
     private String referenceAfter;
+
+    @Override
+    public CmsType toRequest() {
+        CmsGetAllCbValuesRequest req = new CmsGetAllCbValuesRequest().referenceAfter(referenceAfter).acsiClass(acsiClass);
+        if (ldName != null) {
+            req.reference.altLdName(ldName);
+        } else if (lnReference != null) {
+            req.reference.altLnReference(lnReference);
+        }
+        return req;
+    }
 }

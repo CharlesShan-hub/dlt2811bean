@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
-import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -17,19 +16,7 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
     @Override
     public void execute(AllDataValuesDao dao) throws Exception {
-        CmsGetAllDataValuesRequest req = new CmsGetAllDataValuesRequest().referenceAfter(dao.referenceAfter());
-
-        if (dao.ldName() != null) {
-            req.reference.altLdName(dao.ldName());
-        } else if (dao.lnReference() != null) {
-            req.reference.altLnReference(dao.lnReference());
-        }
-
-        if (dao.fc() != null) {
-            req.fc(dao.fc());
-        }
-
-        send(ServiceName.GET_ALL_DATA_VALUES, req);
+        send(ServiceName.GET_ALL_DATA_VALUES, dao.toRequest());
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.ysh.jcms.app.handler.dataset.setDataSetValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesError;
-import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,14 +12,7 @@ public class SetDataSetValuesClient extends BaseClientHandler<SetDataSetValuesDa
 
     @Override
     public void execute(SetDataSetValuesDao dao) throws Exception {
-        CmsSetDataSetValuesRequest req = new CmsSetDataSetValuesRequest().datasetReference(dao.datasetReference())
-                .referenceAfter(dao.referenceAfter());
-
-        for (String val : dao.values()) {
-            req.value.add(new CmsData().alt_visible_string(val));
-        }
-
-        send(ServiceName.SET_DATA_SET_VALUES, req);
+        send(ServiceName.SET_DATA_SET_VALUES, dao.toRequest());
     }
 
     @Override

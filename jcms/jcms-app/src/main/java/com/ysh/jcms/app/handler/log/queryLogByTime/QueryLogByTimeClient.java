@@ -2,10 +2,8 @@ package com.ysh.jcms.app.handler.log.queryLogByTime;
 
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.sequence.common.CmsBinaryTime;
 import com.ysh.jcms.data.sequence.log.CmsLogDataEntry;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeError;
-import com.ysh.jcms.pdu.log.CmsQueryLogByTimeRequest;
 import com.ysh.jcms.pdu.log.CmsQueryLogByTimeResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -20,16 +18,7 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
     @Override
     public void execute(QueryLogByTimeDao dao) throws Exception {
-        CmsQueryLogByTimeRequest req = new CmsQueryLogByTimeRequest().logReference(dao.logRef());
-        if (dao.startTime() != null) {
-            req.startTime(new CmsBinaryTime().msOfDay(dao.startTime() % 86400000L)
-                    .daysSince1984((int) (dao.startTime().longValue() / 86400000L)));
-        }
-        if (dao.stopTime() != null) {
-            req.stopTime(
-                    new CmsBinaryTime().msOfDay(dao.stopTime() % 86400000L).daysSince1984((int) (dao.stopTime().longValue() / 86400000L)));
-        }
-        send(ServiceName.QUERY_LOG_BY_TIME, req);
+        send(ServiceName.QUERY_LOG_BY_TIME, dao.toRequest());
     }
 
     @Override

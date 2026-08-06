@@ -3,9 +3,7 @@ package com.ysh.jcms.app.handler.sg.getSgcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsSgcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
-import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesRequest;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -38,14 +36,7 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
 
     @Override
     public void execute(GetSgcbValuesDao dao) throws Exception {
-        CmsGetSgcbValuesRequest req = new CmsGetSgcbValuesRequest();
-
-        for (String ref : dao.references()) {
-            CmsObjectReference objRef = new CmsObjectReference(ref);
-            req.sgcbReference.add(objRef);
-        }
-
-        send(ServiceName.GET_SGCB_VALUES, req);
+        send(ServiceName.GET_SGCB_VALUES, dao.toRequest());
     }
 
     @Override

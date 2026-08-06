@@ -1,6 +1,8 @@
 package com.ysh.jcms.app.handler.dataset.getDataSetDirectory;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.data.core.CmsType;
+import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -11,4 +13,9 @@ import lombok.experimental.Accessors;
 public class GetDataSetDirectoryDao extends BaseDao {
     private String datasetReference;
     private String referenceAfter;
+
+    @Override
+    public CmsType toRequest() {
+        return new CmsGetDataSetDirectoryRequest().datasetReference(datasetReference).referenceAfter(referenceAfter);
+    }
 }

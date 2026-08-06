@@ -3,9 +3,7 @@ package com.ysh.jcms.app.handler.report.getBrcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.choice.CmsRcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
-import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesError;
-import com.ysh.jcms.pdu.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -30,11 +28,7 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
 
     @Override
     public void execute(GetBrcbValuesDao dao) throws Exception {
-        CmsGetBrcbValuesRequest req = new CmsGetBrcbValuesRequest();
-        for (String ref : dao.refs()) {
-            req.reference.add(new CmsObjectReference(ref));
-        }
-        send(ServiceName.GET_BRCB_VALUES, req);
+        send(ServiceName.GET_BRCB_VALUES, dao.toRequest());
     }
 
     @Override

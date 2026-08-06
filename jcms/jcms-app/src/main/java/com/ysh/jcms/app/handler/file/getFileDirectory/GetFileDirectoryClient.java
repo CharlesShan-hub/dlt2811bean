@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.file.getFileDirectory;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.common.CmsFileEntry;
 import com.ysh.jcms.pdu.file.CmsGetFileDirectoryError;
-import com.ysh.jcms.pdu.file.CmsGetFileDirectoryRequest;
 import com.ysh.jcms.pdu.file.CmsGetFileDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -43,17 +42,7 @@ public class GetFileDirectoryClient extends BaseClientHandler<GetFileDirectoryDa
 
     @Override
     public void execute(GetFileDirectoryDao dao) throws Exception {
-        CmsGetFileDirectoryRequest req = new CmsGetFileDirectoryRequest();
-
-        if (dao.pathName() != null && !dao.pathName().isEmpty()) {
-            req.pathName(dao.pathName());
-        }
-        if (dao.fileAfter() != null && !dao.fileAfter().isEmpty()) {
-            req.fileAfter(dao.fileAfter());
-        }
-        // startTime/stopTime would need parsing — skipped for CLI simplicity
-
-        send(ServiceName.GET_FILE_DIRECTORY, req);
+        send(ServiceName.GET_FILE_DIRECTORY, dao.toRequest());
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
-import com.ysh.jcms.pdu.data.CmsGetDataDirectoryRequest;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -33,10 +32,7 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
 
     @Override
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        CmsGetDataDirectoryRequest req = new CmsGetDataDirectoryRequest().dataReference(dao.dataReference())
-                .referenceAfter(dao.referenceAfter());
-
-        send(ServiceName.GET_DATA_DIRECTORY, req);
+        send(ServiceName.GET_DATA_DIRECTORY, dao.toRequest());
     }
 
     @Override

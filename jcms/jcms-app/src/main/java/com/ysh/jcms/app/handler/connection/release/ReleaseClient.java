@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.connection.release;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.connection.CmsReleaseError;
-import com.ysh.jcms.pdu.connection.CmsReleaseRequest;
 import com.ysh.jcms.pdu.connection.CmsReleaseResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -15,14 +14,11 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
 
     @Override
     public void execute(ReleaseDao dao) throws Exception {
-        CmsReleaseRequest req = new CmsReleaseRequest();
-
         byte[] assocId = node.getClient().getSession().getAssociationId();
         if (assocId != null && assocId.length > 0) {
-            req.associationId(assocId);
+            dao.associationId(assocId);
         }
-
-        send(ServiceName.RELEASE, req);
+        send(ServiceName.RELEASE, dao.toRequest());
     }
 
     @Override

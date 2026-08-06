@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.sg.confirmEditSgValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesError;
-import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesRequest;
 import com.ysh.jcms.pdu.sg.CmsConfirmEditSgValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -13,9 +12,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgVa
 
     @Override
     public void execute(ConfirmEditSgValuesDao dao) throws Exception {
-        CmsConfirmEditSgValuesRequest req = new CmsConfirmEditSgValuesRequest().sgcbReference(dao.sgcbReference());
-
-        send(ServiceName.CONFIRM_EDIT_SG_VALUES, req);
+        send(ServiceName.CONFIRM_EDIT_SG_VALUES, dao.toRequest());
     }
 
     @Override

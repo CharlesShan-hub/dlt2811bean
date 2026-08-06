@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.sg.selectEditSg;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.sg.CmsSelectEditSgError;
-import com.ysh.jcms.pdu.sg.CmsSelectEditSgRequest;
 import com.ysh.jcms.pdu.sg.CmsSelectEditSgResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -13,10 +12,7 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
 
     @Override
     public void execute(SelectEditSgDao dao) throws Exception {
-        CmsSelectEditSgRequest req = new CmsSelectEditSgRequest().sgcbReference(dao.sgcbReference())
-                .settingGroupNumber(dao.settingGroupNumber());
-
-        send(ServiceName.SELECT_EDIT_SG, req);
+        send(ServiceName.SELECT_EDIT_SG, dao.toRequest());
     }
 
     @Override

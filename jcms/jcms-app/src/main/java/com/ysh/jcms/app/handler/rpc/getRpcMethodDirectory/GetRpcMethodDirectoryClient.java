@@ -2,7 +2,6 @@ package com.ysh.jcms.app.handler.rpc.getRpcMethodDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDirectoryError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDirectoryRequest;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -11,12 +10,7 @@ import java.io.IOException;
 public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodDirectoryDao> {
     @Override
     public void execute(GetRpcMethodDirectoryDao dao) throws Exception {
-        CmsGetRpcMethodDirectoryRequest req = new CmsGetRpcMethodDirectoryRequest();
-        if (dao.iface() != null && !dao.iface().isEmpty())
-            req.interfaceName(dao.iface());
-        if (dao.after() != null && !dao.after().isEmpty())
-            req.referenceAfter(dao.after());
-        send(ServiceName.GET_RPC_METHOD_DIRECTORY, req);
+        send(ServiceName.GET_RPC_METHOD_DIRECTORY, dao.toRequest());
     }
     @Override
     protected void onError(Frame frame) throws IOException {

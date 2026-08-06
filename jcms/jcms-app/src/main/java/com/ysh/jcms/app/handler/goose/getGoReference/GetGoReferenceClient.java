@@ -1,10 +1,8 @@
 package com.ysh.jcms.app.handler.goose.getGoReference;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.scalar.CmsInt16U;
 import com.ysh.jcms.data.sequence.goose.CmsGoRefFcEntry;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceError;
-import com.ysh.jcms.pdu.goose.CmsGetGoReferenceRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoReferenceResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -44,11 +42,7 @@ public class GetGoReferenceClient extends BaseClientHandler<GetGoReferenceDao> {
 
     @Override
     public void execute(GetGoReferenceDao dao) throws Exception {
-        CmsGetGoReferenceRequest req = new CmsGetGoReferenceRequest().gocbReference(dao.gocbReference());
-        for (int offset : dao.memberOffsets()) {
-            req.memberOfs.add(new CmsInt16U(offset));
-        }
-        send(ServiceName.GET_GO_REFERENCE, req);
+        send(ServiceName.GET_GO_REFERENCE, dao.toRequest());
     }
 
     @Override

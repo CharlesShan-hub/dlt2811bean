@@ -3,7 +3,6 @@ package com.ysh.jcms.app.handler.report.setBrcbValues;
 import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.pdu.report.CmsSetBrcbResult;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesError;
-import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -14,8 +13,7 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
     @Override
     public void execute(SetBrcbValuesDao dao) throws Exception {
-        CmsSetBrcbValuesRequest req = dao.toRequest(nextReqId());
-        send(ServiceName.SET_BRCB_VALUES, req);
+        send(ServiceName.SET_BRCB_VALUES, dao.toRequest());
     }
 
     @Override

@@ -1,9 +1,7 @@
 package com.ysh.jcms.app.handler.rpc.getRpcMethodDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
-import com.ysh.jcms.data.scalar.CmsString;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionError;
-import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionRequest;
 import com.ysh.jcms.pdu.rpc.CmsGetRpcMethodDefinitionResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -12,11 +10,7 @@ import java.io.IOException;
 public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethodDefinitionDao> {
     @Override
     public void execute(GetRpcMethodDefinitionDao dao) throws Exception {
-        CmsGetRpcMethodDefinitionRequest req = new CmsGetRpcMethodDefinitionRequest();
-        for (String ref : dao.refs()) {
-            req.reference.add(new CmsString(ref));
-        }
-        send(ServiceName.GET_RPC_METHOD_DEFINITION, req);
+        send(ServiceName.GET_RPC_METHOD_DEFINITION, dao.toRequest());
     }
     @Override
     protected void onError(Frame frame) throws IOException {
