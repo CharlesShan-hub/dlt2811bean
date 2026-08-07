@@ -16,6 +16,17 @@ import com.ysh.jcms.data.core.CmsType;
  */
 public abstract class BaseDao {
 
+    /** Whether the client should automatically follow moreFollows pagination. */
+    private boolean autoPull = false;
+
+    public boolean autoPull() {
+        return autoPull;
+    }
+
+    public void autoPull(boolean autoPull) {
+        this.autoPull = autoPull;
+    }
+
     /**
      * Build a request object from this DAO's parameters.
      *
