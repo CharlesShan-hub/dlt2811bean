@@ -1,10 +1,12 @@
 package com.ysh.jcms.utils.scl.service;
 
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 
@@ -28,6 +30,45 @@ public class SclDatasetService {
             this.ln = ln;
             this.dataSet = dataSet;
         }
+    }
+
+    /**
+     * 解析数据集引用字符串 {@code "LD0/LLN0.dsName"}，返回 LD/LN/DataSet 三元组。
+     * <p>
+     * 在指定 AP 作用域内查找。
+     *
+     * @param ied
+     *            IED 模型
+     * @param ap
+     *            当前关联的访问点
+     * @param ref
+     *            引用字符串，格式为 {@code ldInst/lnName.dsName}
+     * @return 解析结果，若任一环节失败则返回 {@code null}
+     */
+    public static DataSetResolution resolveDataSet(SclIED ied, SclAccessPoint ap, String ref) {
+        if (ref == null || !SclRefParser.isValid(ref))
+            return null;
+
+        SclRef sclRef = SclRefParser.parse(ref);
+        String ldName = sclRef.ldInst();
+        String lnName = sclRef.lnName();
+        String dsName = sclRef.doName();
+        if (dsName == null)
+            return null;
+
+        SclLDevice device = resolveLd(ap, ldName);
+        if (device == null)
+            return null;
+
+        SclLN ln = resolveLn(device, lnName);
+        if (ln == null)
+            return null;
+
+        SclDataSet dataSet = ln.findDataSetByName(dsName);
+        if (dataSet == null)
+            return null;
+
+        return new DataSetResolution(device, ln, dataSet);
     }
 
     /**
@@ -67,14 +108,18 @@ public class SclDatasetService {
 
     /**
      * 解析数据集引用字符串，仅返回 LN（DataSet 可能不存在，用于创建场景）。
+     * <p>
+     * 在指定 AP 作用域内查找。
      *
      * @param ied
      *            IED 模型
+     * @param ap
+     *            当前关联的访问点
      * @param ref
      *            引用字符串，格式为 {@code ldInst/lnName.dsName}
      * @return LN，若任一环节失败则返回 {@code null}
      */
-    public static SclLN resolveLn(SclIED ied, String ref) {
+    public static SclLN resolveLn(SclIED ied, SclAccessPoint ap, String ref) {
         if (ref == null || !SclRefParser.isValid(ref))
             return null;
 
@@ -82,7 +127,7 @@ public class SclDatasetService {
         String ldName = sclRef.ldInst();
         String lnName = sclRef.lnName();
 
-        SclLDevice device = resolveLd(ied, ldName);
+        SclLDevice device = resolveLd(ap, ldName);
         if (device == null)
             return null;
 
@@ -100,6 +145,43 @@ public class SclDatasetService {
         if (ref == null || !SclRefParser.isValid(ref))
             return null;
         return SclRefParser.parse(ref).doName();
+    }
+
+    /**
+     * 将引用字符串解析为 FCDA。
+     * <p>
+     * 在指定 AP 作用域内查找。
+     *
+     * @param ied
+     *            IED 模型
+     * @param ap
+     *            当前关联的访问点
+     * @param ref
+     *            成员引用，格式为 {@code ldInst/lnClass.lnInst/doName.daName}
+     * @return FCDA，若解析失败则返回 {@code null}
+     */
+    public static SclFCDA parseRefToFcda(SclIED ied, SclAccessPoint ap, String ref) {
+        if (ref == null || ref.isEmpty() || !SclRefParser.isValid(ref))
+            return null;
+
+        SclRef sclRef = SclRefParser.parse(ref);
+        SclLDevice device = resolveLd(ap, sclRef.ldInst());
+        if (device == null)
+            return null;
+
+        SclLN ln = resolveLn(device, sclRef.lnName());
+        if (ln == null)
+            return null;
+
+        SclFCDA fcda = new SclFCDA();
+        fcda.ldInst(sclRef.ldInst());
+        fcda.lnClass(ln.lnClass());
+        fcda.lnInst(ln.inst());
+        fcda.prefix(ln.prefix() != null ? ln.prefix() : "");
+        fcda.doName(sclRef.doName());
+        fcda.daName(sclRef.daName());
+
+        return fcda;
     }
 
     /**
@@ -137,6 +219,10 @@ public class SclDatasetService {
 
     private static SclLDevice resolveLd(SclIED ied, String ldName) {
         return ied.lDevice(ldName);
+    }
+
+    private static SclLDevice resolveLd(SclAccessPoint ap, String ldName) {
+        return Navigator.findLd(ap, ldName);
     }
 
     private static SclLN resolveLn(SclLDevice device, String lnName) {

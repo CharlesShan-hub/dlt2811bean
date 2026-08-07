@@ -8,6 +8,7 @@ import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesError;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesRequest;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
@@ -31,6 +32,7 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
         log.info("SetGoCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.gocb.size());
 
         SclIED ied = getSclIed(session);
+        SclAccessPoint ap = getSclAccessPoint(session);
 
         for (int i = 0; i < req.gocb.size(); i++) {
             CmsSetGoCbEntry entry = req.gocb.get(i);
@@ -39,8 +41,8 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
 
             // Get baseline from cache or SCL
             CmsGoCb baseline = GoCbCache.get(ref);
-            if (baseline == null && ied != null) {
-                baseline = SclControlBlockService.resolveGocb(ied, ref);
+            if (baseline == null && ied != null && ap != null) {
+                baseline = SclControlBlockService.resolveGocb(ied, ap, ref);
             }
 
             if (baseline == null) {

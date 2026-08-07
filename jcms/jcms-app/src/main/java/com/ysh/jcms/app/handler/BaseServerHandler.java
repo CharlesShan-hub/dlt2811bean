@@ -92,6 +92,9 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
             return response;
         } catch (ServiceException e) {
             return onDecodeError(e.reqId(), e.serviceError());
+        } catch (Exception e) {
+            log.error("Unhandled exception in {} reqId={}", serviceName, reqId, e);
+            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
     }
 
@@ -235,6 +238,22 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
     protected com.ysh.jcms.utils.scl.model.ied.SclIED getSclIed(Session session) {
         try {
             return ((InnerServer.ServerSession) session).getSclIed();
+        } catch (ClassCastException e) {
+            return null;
+        }
+    }
+
+    /** Resolve current SCL AccessPoint from session, or throw if unavailable. */
+    protected com.ysh.jcms.utils.scl.model.ied.SclAccessPoint requireAp(Session session, int reqId) {
+        com.ysh.jcms.utils.scl.model.ied.SclAccessPoint ap = getSclAccessPoint(session);
+        if (ap == null)
+            throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        return ap;
+    }
+
+    protected com.ysh.jcms.utils.scl.model.ied.SclAccessPoint getSclAccessPoint(Session session) {
+        try {
+            return ((InnerServer.ServerSession) session).getSclAccessPoint();
         } catch (ClassCastException e) {
             return null;
         }

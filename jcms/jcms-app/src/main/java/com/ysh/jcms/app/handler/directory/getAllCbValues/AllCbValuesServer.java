@@ -10,6 +10,7 @@ import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
@@ -33,6 +34,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
         log.info("GetAllCBValues from {}: reqId={}, acsiClass={}", session.getSessionId(), reqId, acsiClass);
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         // Validate ACSI class
         if (!isValidAcsiClass(acsiClass)) {
@@ -48,7 +50,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
             lnReference = req.reference.altLnReference.value();
         }
 
-        List<SclLN> lns = Navigator.resolveLns(ied, ldName, lnReference);
+        List<SclLN> lns = Navigator.resolveLns(ied, ap, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }

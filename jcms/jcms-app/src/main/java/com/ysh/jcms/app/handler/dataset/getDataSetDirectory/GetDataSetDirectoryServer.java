@@ -7,6 +7,7 @@ import com.ysh.jcms.data.sequence.dataset.CmsDataRefFcEntry;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryError;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryRequest;
 import com.ysh.jcms.pdu.dataset.CmsGetDataSetDirectoryResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
@@ -27,12 +28,13 @@ public class GetDataSetDirectoryServer extends BaseServerHandler<CmsGetDataSetDi
         log.info("GetDataSetDirectory from {}: reqId={}", session.getSessionId(), reqId);
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ref);
+        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ap, ref);
         if (dsr == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 

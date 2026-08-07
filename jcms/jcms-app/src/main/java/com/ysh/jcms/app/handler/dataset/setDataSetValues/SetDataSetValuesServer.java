@@ -7,6 +7,7 @@ import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataWriterResolver;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
@@ -29,12 +30,13 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ref);
+        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ap, ref);
         if (dsr == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 

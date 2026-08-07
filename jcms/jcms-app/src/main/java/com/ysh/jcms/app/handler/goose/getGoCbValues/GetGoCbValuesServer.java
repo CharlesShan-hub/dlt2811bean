@@ -7,6 +7,7 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesRequest;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -24,13 +25,14 @@ public class GetGoCbValuesServer extends BaseServerHandler<CmsGetGoCbValuesReque
         log.info("GetGoCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         CmsGetGoCbValuesResponse resp = new CmsGetGoCbValuesResponse();
 
         for (int i = 0; i < req.reference.size(); i++) {
             String ref = str(req.reference.get(i));
             CmsGocbValueChoice choice = new CmsGocbValueChoice();
-            CmsGoCb gocb = SclControlBlockService.resolveGocb(ied, ref);
+            CmsGoCb gocb = SclControlBlockService.resolveGocb(ied, ap, ref);
             if (gocb != null) {
                 choice.altValue(gocb);
             } else {

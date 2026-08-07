@@ -7,6 +7,7 @@ import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.data.enumerate.CmsObjectClass;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -30,7 +31,8 @@ public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
         SclIED ied = requireIed(session, reqId);
-        List<String> ldNames = SclDirectoryService.getServerDirectory(ied);
+        SclAccessPoint ap = requireAp(session, reqId);
+        List<String> ldNames = SclDirectoryService.getServerDirectory(ap);
 
         List<String> afterList = after(ldNames, req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 

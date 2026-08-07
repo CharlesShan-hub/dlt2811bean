@@ -6,6 +6,8 @@ import com.ysh.jcms.utils.transport.session.Session;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,6 +15,8 @@ import java.util.Map;
  * Dispatcher — routes incoming frames to registered {@link ServiceHandler}s.
  */
 public class Dispatcher {
+
+    private static final Logger log = LoggerFactory.getLogger(Dispatcher.class);
 
     private final Map<ServiceName, ServiceHandler> handlers = new HashMap<>();
 
@@ -44,6 +48,7 @@ public class Dispatcher {
             Frame response = handler.handleRequest(session, request);
             return new DispatchOutcome(DispatchResult.HANDLED, response);
         } catch (Exception e) {
+            log.error("Handler {} threw unexpected exception for service {}", handler.getClass().getSimpleName(), sc, e);
             return new DispatchOutcome(DispatchResult.ERROR_OCCURRED, null);
         }
     }

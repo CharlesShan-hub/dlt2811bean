@@ -7,6 +7,7 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -24,13 +25,14 @@ public class GetBrcbValuesServer extends BaseServerHandler<CmsGetBrcbValuesReque
         log.info("GetBRCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         CmsGetBrcbValuesResponse resp = new CmsGetBrcbValuesResponse();
 
         for (int i = 0; i < req.reference.size(); i++) {
             String ref = str(req.reference.get(i));
             CmsRcbValueChoice choice = new CmsRcbValueChoice();
-            CmsBrcb brcb = SclControlBlockService.resolveBrcb(ied, ref);
+            CmsBrcb brcb = SclControlBlockService.resolveBrcb(ied, ap, ref);
             if (brcb != null) {
                 choice.altValue(brcb);
             } else {

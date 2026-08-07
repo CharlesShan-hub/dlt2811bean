@@ -7,6 +7,7 @@ import com.ysh.jcms.pdu.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
@@ -27,6 +28,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
         log.info("CreateDataSet from {}: reqId={}, {} members", session.getSessionId(), reqId, req.memberData.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         String ref = str(req.datasetReference);
         if (ref == null)
@@ -36,7 +38,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
         if (dsName == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLN ln = SclDatasetService.resolveLn(ied, ref);
+        SclLN ln = SclDatasetService.resolveLn(ied, ap, ref);
         if (ln == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
@@ -63,7 +65,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
                 continue;
             }
 
-            SclFCDA fcda = SclDatasetService.parseRefToFcda(ied, memberRef);
+            SclFCDA fcda = SclDatasetService.parseRefToFcda(ied, ap, memberRef);
             if (fcda == null) {
                 log.warn("CreateDataSet: cannot resolve {}", memberRef);
                 failed++;

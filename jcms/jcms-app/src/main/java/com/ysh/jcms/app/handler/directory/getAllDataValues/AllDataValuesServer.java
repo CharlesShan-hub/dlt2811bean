@@ -10,6 +10,7 @@ import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
@@ -28,10 +29,11 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
     @Override
     protected Frame onDecodeSuccess(Session session, CmsGetAllDataValuesRequest req, int reqId) {
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
-        log.info("GetAllDataValues from {}: reqId={}", session.getSessionId(), reqId);
+        log.info("GetAllDataValues from {}: reqId={}, refAfter={}", session.getSessionId(), reqId, refAfter);
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         String ldName = null, lnReference = null;
         if (req.reference.choice() == CmsReferenceChoice.LD_NAME)
@@ -39,7 +41,7 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
         else if (req.reference.choice() == CmsReferenceChoice.LN_REFERENCE)
             lnReference = str(req.reference.altLnReference);
 
-        List<SclLN> lns = Navigator.resolveLns(ied, ldName, lnReference);
+        List<SclLN> lns = Navigator.resolveLns(ied, ap, ldName, lnReference);
         if (lns == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
@@ -60,7 +62,7 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
         for (int i = 0; i < limit; i++)
             resp.data.add(entries.get(i));
         resp.moreFollows(more);
-        log.info("GetAllDataValues: returning {} entries", limit);
+        log.info("GetAllDataValues: returning {} entries (total={}, moreFollows={})", limit, allEntries.size(), more);
         return ok(resp, reqId);
     }
 

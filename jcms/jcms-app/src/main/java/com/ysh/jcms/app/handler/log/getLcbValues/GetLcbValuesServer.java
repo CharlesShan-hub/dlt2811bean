@@ -8,6 +8,7 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesRequest;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -25,13 +26,14 @@ public class GetLcbValuesServer extends BaseServerHandler<CmsGetLcbValuesRequest
         log.info("GetLCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         CmsGetLcbValuesResponse resp = new CmsGetLcbValuesResponse();
 
         for (CmsObjectReference refObj : req.reference) {
             String ref = str(refObj);
             CmsLcbValueChoice choice;
-            CmsLcb lcb = SclControlBlockService.resolveLcb(ied, ref);
+            CmsLcb lcb = SclControlBlockService.resolveLcb(ied, ap, ref);
             if (lcb != null) {
                 choice = new CmsLcbValueChoice().altValue(lcb);
             } else {

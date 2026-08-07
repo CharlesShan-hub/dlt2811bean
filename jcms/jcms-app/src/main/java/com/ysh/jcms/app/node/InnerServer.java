@@ -195,7 +195,13 @@ public class InnerServer implements ConnectionListener {
                 }
                 break;
             case ERROR_OCCURRED :
-                log.error("Handler error for service: {}", frame.header().serviceCode());
+                log.error("Handler error for service: {}, sending error response", frame.header().serviceCode());
+                try {
+                    connection.send(new Frame(new FrameHeader().serviceCode(frame.header().serviceCode()).resp(true).err(true),
+                            new byte[]{0, 0}, frame.reqId()));
+                } catch (IOException e) {
+                    log.error("Failed to send ERROR_OCCURRED response", e);
+                }
                 break;
         }
     }

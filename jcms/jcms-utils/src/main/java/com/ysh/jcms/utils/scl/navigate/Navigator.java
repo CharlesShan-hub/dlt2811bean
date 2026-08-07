@@ -5,6 +5,8 @@ import com.ysh.jcms.utils.scl.model.ied.*;
 import com.ysh.jcms.utils.scl.model.instance.*;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +84,20 @@ public class Navigator {
         return navigate(ied, SclRefParser.parse(ref), doc);
     }
 
+    /** AP 作用域：在文档 + 指定 AP 内按字符串导航 */
+    public static Navigator go(SclDocument doc, SclAccessPoint ap, String ref) {
+        if (doc == null || ap == null || ref == null || !SclRefParser.isValid(ref))
+            return empty();
+        return navigate(ap, SclRefParser.parse(ref), doc);
+    }
+
+    /** AP 作用域：在指定 IED + AP 内按字符串导航 */
+    public static Navigator go(SclIED ied, SclAccessPoint ap, String ref) {
+        if (ied == null || ap == null || ref == null || !SclRefParser.isValid(ref))
+            return empty();
+        return navigate(ap, SclRefParser.parse(ref), null);
+    }
+
     // ==================== 导航逻辑 ====================
 
     private static Navigator navigate(SclIED ied, SclRef sclRef, SclDocument doc) {
@@ -136,6 +152,51 @@ public class Navigator {
         return new Navigator(doc, ied, ld, ln, doi, currentSdi, dai, sclRef);
     }
 
+    /** AP 作用域导航：只在指定 AP 下查找 LD。 */
+    private static Navigator navigate(SclAccessPoint ap, SclRef sclRef, SclDocument doc) {
+        SclLDevice ld = findLd(ap, sclRef.ldInst());
+        if (ld == null)
+            return empty();
+
+        SclLN ln = findLn(ld, sclRef.lnName());
+        if (ln == null)
+            return empty();
+
+        if (sclRef.isLnLevel()) {
+            return new Navigator(doc, null, ld, ln, null, null, null, sclRef);
+        }
+
+        SclDOI doi = ln.findDoiByName(sclRef.doName());
+        if (doi == null)
+            return empty();
+
+        if (sclRef.isDoLevel()) {
+            return new Navigator(doc, null, ld, ln, doi, null, null, sclRef);
+        }
+
+        SclSDI currentSdi = null;
+        boolean sdiFound = true;
+        for (String sdiName : sclRef.sdiChain()) {
+            SclSDI next = (currentSdi == null) ? doi.findSdiByName(sdiName) : currentSdi.findSdiByName(sdiName);
+            if (next == null) {
+                sdiFound = false;
+                break;
+            }
+            currentSdi = next;
+        }
+
+        if (!sdiFound) {
+            return new Navigator(doc, null, ld, ln, doi, null, null, sclRef);
+        }
+
+        SclDAI dai = (currentSdi != null) ? currentSdi.findDaiByName(sclRef.daName()) : doi.findDaiByName(sclRef.daName());
+        if (dai == null) {
+            return new Navigator(doc, null, ld, ln, doi, currentSdi, null, sclRef);
+        }
+
+        return new Navigator(doc, null, ld, ln, doi, currentSdi, dai, sclRef);
+    }
+
     private static SclLDevice findLd(SclIED ied, String ldInst) {
         for (SclAccessPoint ap : ied.accessPoints()) {
             SclServer server = ap.server();
@@ -144,6 +205,15 @@ public class Navigator {
                 if (ld != null)
                     return ld;
             }
+        }
+        return null;
+    }
+
+    /** AP 作用域查找：只在指定 AP 下找 LD。 */
+    public static SclLDevice findLd(SclAccessPoint ap, String ldInst) {
+        SclServer server = ap.server();
+        if (server != null) {
+            return server.findLDeviceByInst(ldInst);
         }
         return null;
     }
@@ -157,7 +227,44 @@ public class Navigator {
     }
 
     /**
-     * 按 LD 名称或 LN 引用解析逻辑节点列表。
+     * 按 LD 名称或 LN 引用解析逻辑节点列表（AP 作用域）。
+     *
+     * @param ied
+     *            IED 对象
+     * @param ap
+     *            当前关联的访问点（非 null 时限定在该 AP 下查找）
+     * @param ldName
+     *            LD 名称（非空时返回该 LD 下所有 LN）
+     * @param lnReference
+     *            LN 引用（LD/LN 格式，ldName 为空时使用）
+     * @return LN 列表，未找到时返回 null
+     */
+    public static List<SclLN> resolveLns(SclIED ied, SclAccessPoint ap, String ldName, String lnReference) {
+        List<SclLN> result = new ArrayList<>();
+        if (ldName != null && !ldName.isEmpty()) {
+            SclLDevice device = findLd(ap, ldName);
+            if (device != null) {
+                result.addAll(device.lns());
+                return result;
+            }
+            return null;
+        }
+        if (lnReference == null || lnReference.isEmpty() || !SclRefParser.isValid(lnReference))
+            return null;
+        SclRef sclRef = SclRefParser.parse(lnReference);
+        SclLDevice device = findLd(ap, sclRef.ldInst());
+        if (device != null) {
+            SclLN ln = findLn(device, sclRef.lnName());
+            if (ln != null) {
+                result.add(ln);
+                return result;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 按 LD 名称或 LN 引用解析逻辑节点列表（跨所有 AP）。
      *
      * @param ied
      *            IED 对象

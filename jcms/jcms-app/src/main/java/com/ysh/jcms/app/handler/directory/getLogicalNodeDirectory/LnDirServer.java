@@ -8,6 +8,7 @@ import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
@@ -34,6 +35,7 @@ public class LnDirServer extends BaseServerHandler<CmsGetLogicalNodeDirectoryReq
 
         SclDocument doc = requireScl(session, reqId);
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         String ldName = null;
         String lnReference = null;
@@ -43,7 +45,7 @@ public class LnDirServer extends BaseServerHandler<CmsGetLogicalNodeDirectoryReq
             lnReference = str(req.reference.altLnReference);
         }
 
-        List<SclLN> lns = Navigator.resolveLns(ied, ldName, lnReference);
+        List<SclLN> lns = Navigator.resolveLns(ied, ap, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }

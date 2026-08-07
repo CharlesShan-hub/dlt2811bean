@@ -7,6 +7,7 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -24,13 +25,14 @@ public class GetUrcbValuesServer extends BaseServerHandler<CmsGetUrcbValuesReque
         log.info("GetURCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         CmsGetUrcbValuesResponse resp = new CmsGetUrcbValuesResponse();
 
         for (int i = 0; i < req.reference.size(); i++) {
             String ref = str(req.reference.get(i));
             CmsUrcbValueChoice choice = new CmsUrcbValueChoice();
-            CmsUrcb urcb = SclControlBlockService.resolveUrcb(ied, ref);
+            CmsUrcb urcb = SclControlBlockService.resolveUrcb(ied, ap, ref);
             if (urcb != null) {
                 choice.altValue(urcb);
             } else {

@@ -22,6 +22,8 @@ import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
+import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
@@ -56,16 +58,19 @@ public final class SclDirectoryService {
     // ==================== 服务器目录（8.2.5） ====================
 
     /**
-     * 获取指定 IED 下所有逻辑设备实例名。
+     * 获取指定 IED 下、指定 AP 作用域内的所有逻辑设备实例名。
      *
-     * @param ied
-     *            当前关联的 IED
+     * @param ap
+     *            当前关联的访问点（限定在该 AP 下查找）
      * @return 逻辑设备实例名列表
      */
-    public static List<String> getServerDirectory(SclIED ied) {
+    public static List<String> getServerDirectory(SclAccessPoint ap) {
         List<String> names = new ArrayList<>();
-        for (SclLDevice ld : ied.lDevices()) {
-            names.add(ld.inst());
+        SclServer srv = ap.server();
+        if (srv != null) {
+            for (SclLDevice ld : srv.lDevices()) {
+                names.add(ld.inst());
+            }
         }
         return names;
     }
@@ -76,23 +81,31 @@ public final class SclDirectoryService {
      * 获取逻辑设备目录（LN 名称列表）。
      * <p>
      * 当 {@code ldName} 非空时，返回该 LD 下所有 LN 的短名称（如 {@code LLN0}、{@code PIOC1}）； 当
-     * {@code ldName} 为空时，返回所有 LD 下所有 LN 的完整引用（如
+     * {@code ldName} 为空时，返回指定 AP 下所有 LD 的所有 LN 的完整引用（如
      * {@code LD0/LLN0}、{@code LD0/PIOC1}）。
      *
-     * @param ied
-     *            当前关联的 IED
+     * @param ap
+     *            当前关联的访问点（限定在该 AP 下查找）
      * @param ldName
      *            逻辑设备实例名，为空时返回全站 LN
      * @return LN 名称列表，LD 不存在时返回 null
      */
-    public static List<String> getLogicalDeviceDirectory(SclIED ied, String ldName) {
+    public static List<String> getLogicalDeviceDirectory(SclAccessPoint ap, String ldName) {
         if (ldName != null) {
-            SclLDevice device = ied.lDevice(ldName);
+            SclLDevice device = findLdInAp(ap, ldName);
             if (device == null)
                 return null;
             return getLnNames(device);
         }
-        return getAllLnNames(ied);
+        return getAllLnNames(ap);
+    }
+
+    private static SclLDevice findLdInAp(SclAccessPoint ap, String ldName) {
+        SclServer srv = ap.server();
+        if (srv != null) {
+            return srv.findLDeviceByInst(ldName);
+        }
+        return null;
     }
 
     private static List<String> getLnNames(SclLDevice device) {
@@ -110,11 +123,14 @@ public final class SclDirectoryService {
         return names;
     }
 
-    private static List<String> getAllLnNames(SclIED ied) {
+    private static List<String> getAllLnNames(SclAccessPoint ap) {
         List<String> names = new ArrayList<>();
-        for (SclLDevice ld : ied.lDevices()) {
-            for (String n : getLnNames(ld)) {
-                names.add(ld.inst() + "/" + n);
+        SclServer srv = ap.server();
+        if (srv != null) {
+            for (SclLDevice ld : srv.lDevices()) {
+                for (String n : getLnNames(ld)) {
+                    names.add(ld.inst() + "/" + n);
+                }
             }
         }
         return names;
@@ -263,7 +279,7 @@ public final class SclDirectoryService {
                 String fullRef = ied.name() + "/" + ldInst + "/" + ln.getFullName() + "." + doName;
                 DataValueEntry dv = DataValueResolver.resolve(doc, fullRef, fc);
                 if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
-                    entries.add(new CmsDataValueEntry().reference(doName).value(DataConverter.toCmsData(dv)));
+                    entries.add(new CmsDataValueEntry().reference(fullRef).value(DataConverter.toCmsData(dv)));
                 }
             }
         }

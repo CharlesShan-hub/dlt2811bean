@@ -46,6 +46,9 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      */
     protected String lastReference = null;
 
+    /** Max auto-pull iterations to prevent infinite loops. */
+    private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
+
     /**
      * Send a request built from the DAO. If {@link BaseDao#autoPull()} is true,
      * automatically follows {@code moreFollows} pagination: calls
@@ -59,15 +62,25 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         lastMoreFollows = false;
         lastReference = null;
         Frame frame = null;
+        int iterations = 0;
         do {
+            if (++iterations > MAX_AUTO_PULL_ITERATIONS) {
+                log.warn("Auto-pull exceeded {} iterations for {}, aborting", MAX_AUTO_PULL_ITERATIONS, sc);
+                break;
+            }
             byte[] pdu = dao.toRequest().encode();
             trace(">>>\n" + dao.toRequest());
             frame = send(sc, pdu);
             if (frame == null || frame.header().err())
                 break;
             if (dao.autoPull() && lastMoreFollows) {
-                if (lastReference == null || lastReference.isEmpty())
-                    break; // 防死循环
+                if (lastReference == null || lastReference.isEmpty()) {
+                    log.warn("Auto-pull: lastReference is null/empty for {}, stopping", sc);
+                    break;
+                }
+                if (iterations > 1) {
+                    log.debug("Auto-pull iteration {}: lastReference={}", iterations, lastReference);
+                }
                 setPaginationCursor(dao, lastReference);
             } else {
                 break;

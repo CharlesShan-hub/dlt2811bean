@@ -8,6 +8,7 @@ import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesRequest;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -32,13 +33,14 @@ public class GetMsvcbValuesServer extends BaseServerHandler<CmsGetMsvcbValuesReq
         log.info("GetMSVCBValues from {}: reqId={}, {} refs", session.getSessionId(), reqId, req.reference.size());
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
         CmsGetMsvcbValuesResponse resp = new CmsGetMsvcbValuesResponse();
 
         for (CmsObjectReference refObj : req.reference) {
             String ref = str(refObj);
             CmsMsvcbValueChoice choice;
-            CmsMsvcb msvcb = SclControlBlockService.resolveMsvcb(ied, ref);
+            CmsMsvcb msvcb = SclControlBlockService.resolveMsvcb(ied, ap, ref);
             if (msvcb != null) {
                 choice = new CmsMsvcbValueChoice().altValue(msvcb);
             } else {

@@ -6,6 +6,7 @@ import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
+import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.service.SclDirectoryService;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -28,8 +29,9 @@ public class LdDirServer extends BaseServerHandler<CmsGetLogicalDeviceDirectoryR
                 refAfter);
 
         SclIED ied = requireIed(session, reqId);
+        SclAccessPoint ap = requireAp(session, reqId);
 
-        List<String> lnNames = SclDirectoryService.getLogicalDeviceDirectory(ied, ldName);
+        List<String> lnNames = SclDirectoryService.getLogicalDeviceDirectory(ap, ldName);
         if (lnNames == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
