@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsLcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsLcb;
 import com.ysh.jcms.pdu.log.CmsGetLcbValuesError;
@@ -21,14 +22,14 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
         }
     }
 
-    private List<LcbEntry> lastEntries = new ArrayList<>();
-    public List<LcbEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetLcbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetLcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_LCB_VALUES, dao.toRequest());
+    public void execute(GetLcbValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_LCB_VALUES, dao, ctx);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();
@@ -58,6 +59,6 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
                 entries.add(new LcbEntry("error=" + choice.altError.value()));
             }
         }
-        lastEntries = entries;
+        ctx.setResult(entries);
     }
 }

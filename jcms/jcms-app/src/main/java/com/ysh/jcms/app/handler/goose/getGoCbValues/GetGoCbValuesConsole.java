@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -44,9 +45,11 @@ public class GetGoCbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching GoCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        console.getClient(GetGoCbValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetGoCbValuesClient.class).execute(dao, ctx);
 
-        List<GetGoCbValuesClient.GoCbEntry> entries = console.getClient(GetGoCbValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetGoCbValuesClient.GoCbEntry> entries = (List<GetGoCbValuesClient.GoCbEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             if (jsonMode) {

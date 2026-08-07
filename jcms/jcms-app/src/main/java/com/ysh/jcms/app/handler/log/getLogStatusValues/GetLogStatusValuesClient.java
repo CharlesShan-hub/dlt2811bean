@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.log.getLogStatusValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsLogStatusValueChoice;
 import com.ysh.jcms.data.sequence.log.CmsLogStatusValue;
 import com.ysh.jcms.pdu.log.CmsGetLogStatusValuesError;
@@ -21,14 +22,14 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
         }
     }
 
-    private List<LogStatusEntry> lastEntries = new ArrayList<>();
-    public List<LogStatusEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetLogStatusValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetLogStatusValuesDao dao) throws Exception {
-        send(ServiceName.GET_LOG_STATUS_VALUES, dao.toRequest());
+    public void execute(GetLogStatusValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_LOG_STATUS_VALUES, dao, ctx);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();
@@ -51,6 +52,6 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
                 entries.add(new LogStatusEntry("error=" + ch.altError.value()));
             }
         }
-        lastEntries = entries;
+        ctx.setResult(entries);
     }
 }

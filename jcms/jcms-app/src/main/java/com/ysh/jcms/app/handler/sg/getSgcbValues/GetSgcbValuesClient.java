@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.sg.getSgcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsSgcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsSgcb;
 import com.ysh.jcms.pdu.sg.CmsGetSgcbValuesError;
@@ -28,15 +29,14 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
         }
     }
 
-    private List<SgcbResult> lastResults = new ArrayList<>();
-
-    public List<SgcbResult> getLastResults() {
-        return lastResults;
+    @Override
+    public void execute(GetSgcbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetSgcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_SGCB_VALUES, dao.toRequest());
+    public void execute(GetSgcbValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_SGCB_VALUES, dao, ctx);
     }
 
     @Override
@@ -46,7 +46,7 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetSgcbValuesResponse resp = decodeResp(frame, new CmsGetSgcbValuesResponse());
 
         List<SgcbResult> results = new ArrayList<>();
@@ -59,7 +59,7 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
                 results.add(new SgcbResult(false, 0, 0, 0));
             }
         }
-        this.lastResults = results;
+        ctx.setResult(results);
         log.info("GetSGCBValues succeeded: {} entries", results.size());
     }
 }

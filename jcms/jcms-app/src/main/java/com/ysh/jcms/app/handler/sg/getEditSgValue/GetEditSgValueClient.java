@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueError;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueResponse;
@@ -22,14 +23,14 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
         }
     }
 
-    private List<ValueEntry> lastValues = new ArrayList<>();
-    public List<ValueEntry> getLastValues() {
-        return lastValues;
+    @Override
+    public void execute(GetEditSgValueDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetEditSgValueDao dao) throws Exception {
-        send(ServiceName.GET_EDIT_SG_VALUE, dao.toRequest());
+    public void execute(GetEditSgValueDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_EDIT_SG_VALUE, dao, ctx);
     }
 
     @Override
@@ -39,14 +40,14 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetEditSgValueResponse resp = decodeResp(frame, new CmsGetEditSgValueResponse());
 
         List<ValueEntry> values = new ArrayList<>();
         for (CmsData data : resp.value) {
             values.add(new ValueEntry(data.choice(), describeValue(data)));
         }
-        this.lastValues = values;
+        ctx.setResult(values);
         log.info("GetEditSGValue succeeded: {} values", values.size());
     }
 

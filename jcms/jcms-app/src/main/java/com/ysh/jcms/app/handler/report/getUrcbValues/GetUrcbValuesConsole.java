@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -43,9 +44,11 @@ public class GetUrcbValuesConsole extends CommandHandler {
         if (!jsonMode) {
             ConsolePrinter.info("Fetching URCB values for " + dao.refs().size() + " reference(s)");
         }
-        console.getClient(GetUrcbValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetUrcbValuesClient.class).execute(dao, ctx);
 
-        List<GetUrcbValuesClient.UrcbEntry> entries = console.getClient(GetUrcbValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetUrcbValuesClient.UrcbEntry> entries = (List<GetUrcbValuesClient.UrcbEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             if (jsonMode) {

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -44,9 +45,11 @@ public class GetSgcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching SGCB values for " + dao.references().size() + " reference(s)");
         }
 
-        console.getClient(GetSgcbValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetSgcbValuesClient.class).execute(dao, ctx);
 
-        List<GetSgcbValuesClient.SgcbResult> results = console.getClient(GetSgcbValuesClient.class).getLastResults();
+        @SuppressWarnings("unchecked")
+        List<GetSgcbValuesClient.SgcbResult> results = (List<GetSgcbValuesClient.SgcbResult>) ctx.getResult();
 
         if (results.isEmpty()) {
             if (jsonMode) {

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.util.CmsFormatUtil;
 
@@ -58,9 +59,11 @@ public class GetDataDefinitionConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data definitions for " + dao.dataRefs().size() + " reference(s)");
         }
 
-        console.getClient(GetDataDefinitionClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetDataDefinitionClient.class).execute(dao, ctx);
 
-        List<GetDataDefinitionClient.DefEntry> entries = console.getClient(GetDataDefinitionClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetDataDefinitionClient.DefEntry> entries = (List<GetDataDefinitionClient.DefEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             ConsolePrinter.info("No data definitions returned");

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -44,9 +45,11 @@ public class GetLcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching LCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        console.getClient(GetLcbValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetLcbValuesClient.class).execute(dao, ctx);
 
-        List<GetLcbValuesClient.LcbEntry> entries = console.getClient(GetLcbValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetLcbValuesClient.LcbEntry> entries = (List<GetLcbValuesClient.LcbEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             if (jsonMode) {

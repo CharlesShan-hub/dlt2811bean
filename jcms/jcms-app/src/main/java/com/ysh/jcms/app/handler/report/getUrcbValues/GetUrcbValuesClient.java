@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsUrcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsUrcb;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesError;
@@ -21,14 +22,14 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
         }
     }
 
-    private List<UrcbEntry> lastEntries = new ArrayList<>();
-    public List<UrcbEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetUrcbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetUrcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_URCB_VALUES, dao.toRequest());
+    public void execute(GetUrcbValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_URCB_VALUES, dao, ctx);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetUrcbValuesResponse resp = decodeResp(frame, new CmsGetUrcbValuesResponse());
 
         List<UrcbEntry> entries = new ArrayList<>();
@@ -58,7 +59,7 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
                 entries.add(new UrcbEntry("(error)"));
             }
         }
-        this.lastEntries = entries;
+        ctx.setResult(entries);
         log.info("GetURCBValues succeeded: {} entries", entries.size());
     }
 }

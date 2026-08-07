@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -44,9 +45,11 @@ public class GetLogStatusValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching log status for " + dao.refs().size() + " reference(s)");
         }
 
-        console.getClient(GetLogStatusValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetLogStatusValuesClient.class).execute(dao, ctx);
 
-        List<GetLogStatusValuesClient.LogStatusEntry> entries = console.getClient(GetLogStatusValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetLogStatusValuesClient.LogStatusEntry> entries = (List<GetLogStatusValuesClient.LogStatusEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             if (jsonMode) {

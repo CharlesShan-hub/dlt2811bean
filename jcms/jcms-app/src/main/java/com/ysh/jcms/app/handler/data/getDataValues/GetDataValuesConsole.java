@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.util.CmsFormatUtil;
 
@@ -58,9 +59,11 @@ public class GetDataValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data values for " + dao.dataRefs().size() + " reference(s)");
         }
 
-        console.getClient(GetDataValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetDataValuesClient.class).execute(dao, ctx);
 
-        List<GetDataValuesClient.DataValue> values = console.getClient(GetDataValuesClient.class).getLastValues();
+        @SuppressWarnings("unchecked")
+        List<GetDataValuesClient.DataValue> values = (List<GetDataValuesClient.DataValue>) ctx.getResult();
         if (values.isEmpty()) {
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":true,\"data\":[]}");

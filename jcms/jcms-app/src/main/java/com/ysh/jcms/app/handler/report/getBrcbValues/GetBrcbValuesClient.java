@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsRcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesError;
@@ -21,14 +22,14 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
         }
     }
 
-    private List<BrcbEntry> lastEntries = new ArrayList<>();
-    public List<BrcbEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetBrcbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetBrcbValuesDao dao) throws Exception {
-        send(ServiceName.GET_BRCB_VALUES, dao.toRequest());
+    public void execute(GetBrcbValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_BRCB_VALUES, dao, ctx);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetBrcbValuesResponse resp = decodeResp(frame, new CmsGetBrcbValuesResponse());
 
         List<BrcbEntry> entries = new ArrayList<>();
@@ -59,7 +60,7 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
                 entries.add(new BrcbEntry("(error)"));
             }
         }
-        this.lastEntries = entries;
+        ctx.setResult(entries);
         log.info("GetBRCBValues succeeded: {} entries", entries.size());
     }
 }

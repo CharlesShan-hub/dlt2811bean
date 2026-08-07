@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsGocbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesError;
@@ -21,14 +22,14 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
         }
     }
 
-    private List<GoCbEntry> lastEntries = new ArrayList<>();
-    public List<GoCbEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetGoCbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetGoCbValuesDao dao) throws Exception {
-        send(ServiceName.GET_GOCB_VALUES, dao.toRequest());
+    public void execute(GetGoCbValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_GOCB_VALUES, dao, ctx);
     }
 
     @Override
@@ -38,7 +39,7 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetGoCbValuesResponse resp = decodeResp(frame, new CmsGetGoCbValuesResponse());
 
         List<GoCbEntry> entries = new ArrayList<>();
@@ -56,6 +57,6 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
                 entries.add(new GoCbEntry("error=" + choice.altError.value()));
             }
         }
-        lastEntries = entries;
+        ctx.setResult(entries);
     }
 }

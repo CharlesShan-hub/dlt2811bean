@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.choice.CmsData;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesError;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesResponse;
@@ -23,15 +24,14 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
         }
     }
 
-    private List<DataValue> lastValues = new ArrayList<>();
-
-    public List<DataValue> getLastValues() {
-        return lastValues;
+    @Override
+    public void execute(GetDataValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetDataValuesDao dao) throws Exception {
-        send(ServiceName.GET_DATA_VALUES, dao.toRequest());
+    public void execute(GetDataValuesDao dao, PaginationContext ctx) throws Exception {
+        send(ServiceName.GET_DATA_VALUES, dao, ctx);
     }
 
     @Override
@@ -41,14 +41,14 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
 
         List<DataValue> values = new ArrayList<>();
         for (CmsData d : resp.value) {
             values.add(new DataValue(d.choice(), d.toValueString()));
         }
-        this.lastValues = values;
+        ctx.setResult(values);
         log.info("GetDataValues succeeded: {} values", values.size());
     }
 

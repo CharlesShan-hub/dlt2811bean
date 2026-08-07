@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -44,9 +45,11 @@ public class GetBrcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching BRCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        console.getClient(GetBrcbValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetBrcbValuesClient.class).execute(dao, ctx);
 
-        List<GetBrcbValuesClient.BrcbEntry> entries = console.getClient(GetBrcbValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetBrcbValuesClient.BrcbEntry> entries = (List<GetBrcbValuesClient.BrcbEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
             if (jsonMode) {

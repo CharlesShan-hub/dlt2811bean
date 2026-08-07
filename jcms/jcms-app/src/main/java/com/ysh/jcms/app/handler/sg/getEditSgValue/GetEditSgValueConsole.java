@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.data.scalar.CmsFC;
 
@@ -53,9 +54,11 @@ public class GetEditSgValueConsole extends CommandHandler {
             ConsolePrinter.info("Fetching edit SG values (" + fcStr + ") for " + dao.refs().size() + " ref(s)");
         }
 
-        console.getClient(GetEditSgValueClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetEditSgValueClient.class).execute(dao, ctx);
 
-        List<GetEditSgValueClient.ValueEntry> values = console.getClient(GetEditSgValueClient.class).getLastValues();
+        @SuppressWarnings("unchecked")
+        List<GetEditSgValueClient.ValueEntry> values = (List<GetEditSgValueClient.ValueEntry>) ctx.getResult();
 
         if (values.isEmpty()) {
             if (jsonMode) {
