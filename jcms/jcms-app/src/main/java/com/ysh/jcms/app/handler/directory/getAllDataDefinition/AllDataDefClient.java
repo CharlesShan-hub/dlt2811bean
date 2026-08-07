@@ -40,11 +40,11 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
         node.getContentManager().addDataDef(entries);
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.data.isEmpty()) {
-            lastReference = resp.data.get(resp.data.size() - 1).reference.value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.data.size() > 0) {
+            lastReference(resp.data.get(resp.data.size() - 1).reference.value());
         }
-        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

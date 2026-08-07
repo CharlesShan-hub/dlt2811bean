@@ -50,11 +50,11 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
             entries.add(new DirEntry(e.reference.value(), null));
         }
         lastEntries.addAll(entries);
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.memberData.isEmpty()) {
-            lastReference = resp.memberData.get(resp.memberData.size() - 1).reference.value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.memberData.size() > 0) {
+            lastReference(resp.memberData.get(resp.memberData.size() - 1).reference.value());
         }
-        log.info("GetDataSetDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetDataSetDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

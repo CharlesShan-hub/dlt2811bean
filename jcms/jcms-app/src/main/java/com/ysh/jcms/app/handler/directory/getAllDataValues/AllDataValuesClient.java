@@ -38,11 +38,11 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
             entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
         }
         node.getContentManager().addAllData(entries);
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.data.isEmpty()) {
-            lastReference = resp.data.get(resp.data.size() - 1).reference.value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.data.size() > 0) {
+            lastReference(resp.data.get(resp.data.size() - 1).reference.value());
         }
-        log.info("GetAllDataValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetAllDataValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

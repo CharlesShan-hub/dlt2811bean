@@ -26,17 +26,17 @@ public class ContentManager {
         }
     }
 
-    public void initAllData(List<AllDataEntry> entries) {
+    public synchronized void initAllData(List<AllDataEntry> entries) {
         this.allDataEntries = entries;
     }
 
     /** Append all-data entries (for auto-pull pagination). */
-    public void addAllData(List<AllDataEntry> entries) {
+    public synchronized void addAllData(List<AllDataEntry> entries) {
         this.allDataEntries.addAll(entries);
     }
 
-    public List<AllDataEntry> getAllDataEntries() {
-        return Collections.unmodifiableList(allDataEntries);
+    public synchronized List<AllDataEntry> getAllDataEntries() {
+        return Collections.unmodifiableList(new ArrayList<>(allDataEntries));
     }
 
     // ── all-def entry ──
@@ -53,64 +53,64 @@ public class ContentManager {
         }
     }
 
-    public void initDataDef(List<DataDefEntry> entries) {
+    public synchronized void initDataDef(List<DataDefEntry> entries) {
         this.dataDefEntries = entries;
     }
 
     /** Append data-def entries (for auto-pull pagination). */
-    public void addDataDef(List<DataDefEntry> entries) {
+    public synchronized void addDataDef(List<DataDefEntry> entries) {
         this.dataDefEntries.addAll(entries);
     }
 
-    public List<DataDefEntry> getDataDefEntries() {
-        return Collections.unmodifiableList(dataDefEntries);
+    public synchronized List<DataDefEntry> getDataDefEntries() {
+        return Collections.unmodifiableList(new ArrayList<>(dataDefEntries));
     }
 
-    public void initServerDir(List<String> ldNames) {
+    public synchronized void initServerDir(List<String> ldNames) {
         this.ldNames.clear();
         this.ldNames.addAll(ldNames);
     }
 
-    public void initLdDir(List<String> lnNames) {
+    public synchronized void initLdDir(List<String> lnNames) {
         this.lnNames.clear();
         this.lnNames.addAll(lnNames);
     }
 
-    public void initDataRefs(List<String> refs) {
+    public synchronized void initDataRefs(List<String> refs) {
         this.dataRefs.clear();
         this.dataRefs.addAll(refs);
     }
 
-    public void initDataSets(List<String> refs) {
+    public synchronized void initDataSets(List<String> refs) {
         this.dataSetRefs.clear();
         this.dataSetRefs.addAll(refs);
     }
 
-    public void initNodeDir(int acsiClass, List<String> refs) {
+    public synchronized void initNodeDir(int acsiClass, List<String> refs) {
         Set<String> set = lnRefsByAcsiClass.computeIfAbsent(acsiClass, k -> new LinkedHashSet<>());
         set.clear();
         set.addAll(refs);
     }
 
-    public Set<String> getLdNames() {
-        return Collections.unmodifiableSet(ldNames);
+    public synchronized Set<String> getLdNames() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(ldNames));
     }
-    public Set<String> getLnNames() {
-        return Collections.unmodifiableSet(lnNames);
+    public synchronized Set<String> getLnNames() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(lnNames));
     }
-    public Set<String> getDataRefs() {
-        return Collections.unmodifiableSet(dataRefs);
+    public synchronized Set<String> getDataRefs() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(dataRefs));
     }
-    public Set<String> getDataSetRefs() {
-        return Collections.unmodifiableSet(dataSetRefs);
+    public synchronized Set<String> getDataSetRefs() {
+        return Collections.unmodifiableSet(new LinkedHashSet<>(dataSetRefs));
     }
 
     /**
      * Get references by ACSIClass (from GetLogicalNodeDirectory results). Returns
      * empty set if no results for the given class.
      */
-    public Set<String> getNodeRefs(int acsiClass) {
+    public synchronized Set<String> getNodeRefs(int acsiClass) {
         Set<String> set = lnRefsByAcsiClass.get(acsiClass);
-        return set != null ? Collections.unmodifiableSet(set) : Collections.emptySet();
+        return set != null ? Collections.unmodifiableSet(new LinkedHashSet<>(set)) : Collections.emptySet();
     }
 }

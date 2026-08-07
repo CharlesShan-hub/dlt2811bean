@@ -36,11 +36,11 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
         for (CmsSubReference ref : resp.lnReference) {
             accumulatedRefs.add(ref.value());
         }
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.lnReference.isEmpty()) {
-            lastReference = resp.lnReference.get(resp.lnReference.size() - 1).value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.lnReference.size() > 0) {
+            lastReference(resp.lnReference.get(resp.lnReference.size() - 1).value());
         }
-        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), lastMoreFollows);
+        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), lastMoreFollows());
     }
 
     @Override

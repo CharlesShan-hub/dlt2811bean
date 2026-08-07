@@ -51,11 +51,11 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
             entries.add(new DirEntry(e.reference.value(), fcCode(e)));
         }
         lastEntries.addAll(entries);
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.dataAttribute.isEmpty()) {
-            lastReference = resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.dataAttribute.size() > 0) {
+            lastReference(resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value());
         }
-        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

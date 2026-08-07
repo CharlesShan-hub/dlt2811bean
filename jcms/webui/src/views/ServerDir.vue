@@ -73,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import { executeJson } from '../api/cms.js'
 import TreeNode from '../components/TreeNode.vue'
 import { ldCache, refreshLds } from '../ldCache.js'
@@ -208,57 +208,50 @@ async function onToggle(node) {
 
   try {
     if (node.type === 'ld') {
-      const res = await executeJson(`ld-dir --ld ${node.name} --json`)
+      const res = await executeJson(`ld-dir --ld ${node.name} --auto-pull true --json`)
       if (res.success) {
-        node.children = res.data.map(name => ({
-          name: `${node.name}/${name}`,
-          type: 'ln',
-          label: name,
-          parentLd: node.name,
-          children: null,
-          loading: false,
-          expanded: false,
-          emptyAcsis: [],   // 已确认无内容
-          contentAcsis: [], // 已确认有内容
-        }))
+        node.children = res.data.map(name => {
+          const lnNode = reactive({
+            name: `${node.name}/${name}`,
+            type: 'ln',
+            label: name,
+            parentLd: node.name,
+            children: null,
+            loading: false,
+            expanded: false,
+            emptyAcsis: [],
+            contentAcsis: [],
+          })
+          // 并发预检所有 ACSI 分类（不阻塞，标记圆点有无内容）
+          preCheckLnAcsis(lnNode)
+          return lnNode
+        })
       }
     } else if (node.type === 'ln') {
-      // LN 内容由右侧 ACSI 圆点单选驱动，行点击不做事
+      // 首次点击 LN 滚动到该行（预检已在 LD 展开时触发）
     }
   } finally {
     node.loading = false
   }
-
-  // 展开 LD 后，自动预检所有 LN 子节点的 ACSI 内容
-  if (node.type === 'ld' && node.children) {
-    node.children.forEach(preCheckLnAcsis)
-  }
 }
 
-/** 预检一个 LN 的所有 ACSI 分类，标记哪些有内容/无内容。串行执行避免并发超时。 */
-async function preCheckLnAcsis(lnNode) {
-  const acsiList = ACSI_DEFS.map(d => d.key)
-  for (const acsi of acsiList) {
-    // 每个请求间隔 50ms，避免打满服务器
-    await new Promise(r => setTimeout(r, 50))
-    try {
-      const res = await executeJson(`ln-dir --ln ${lnNode.name} --acsi ${acsi} --json`)
-      if (res.success && res.data.length > 0) {
-        if (!lnNode.contentAcsis.includes(acsi)) {
-          lnNode.contentAcsis.push(acsi)
-        }
+/** 并发预检 LN 的所有 9 个 ACSI 分类，标记有/无内容的圆点。不阻塞 UI。 */
+function preCheckLnAcsis(node) {
+  Promise.allSettled(
+    ACSI_DEFS.map(d =>
+      executeJson(`ln-dir --ln ${node.name} --acsi ${d.key} --auto-pull true --json`)
+    )
+  ).then(results => {
+    for (let i = 0; i < ACSI_DEFS.length; i++) {
+      const d = ACSI_DEFS[i]
+      const res = results[i]
+      if (res.status === 'fulfilled' && res.value.success && res.value.data?.length > 0) {
+        if (!node.contentAcsis.includes(d.key)) node.contentAcsis.push(d.key)
       } else {
-        if (!lnNode.emptyAcsis.includes(acsi)) {
-          lnNode.emptyAcsis.push(acsi)
-        }
-      }
-    } catch {
-      // 请求失败视为无内容
-      if (!lnNode.emptyAcsis.includes(acsi)) {
-        lnNode.emptyAcsis.push(acsi)
+        if (!node.emptyAcsis.includes(d.key)) node.emptyAcsis.push(d.key)
       }
     }
-  }
+  })
 }
 
 /** LN 行上的 ACSI 圆点：单选切换视图，懒加载分类成员直接展示在 LN 下方（无中间分类层）。 */
@@ -272,7 +265,7 @@ async function onToggleAcsi({ node, acsi }) {
   node.activeAcsi = acsi
   node.loading = true
   try {
-    const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --json`)
+    const res = await executeJson(`ln-dir --ln ${node.name} --acsi ${acsi} --auto-pull true --json`)
     if (res.success && res.data.length > 0) {
       // 有内容：记录到 contentAcsis
       if (!node.contentAcsis.includes(acsi)) {

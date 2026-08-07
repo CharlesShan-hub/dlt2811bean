@@ -54,11 +54,11 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
             entries.add(new DataSetValue(ct, val));
         }
         lastValues.addAll(entries);
-        lastMoreFollows = resp.moreFollows.value();
+        lastMoreFollows(resp.moreFollows.value());
         // GetDataSetValuesResponse's value is List<CmsData> (no reference field),
         // so we use the index-based approach: lastReference is not applicable
         // for this response type. Auto-pull will not function for this service.
-        log.info("GetDataSetValues page: {} values (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetDataSetValues page: {} values (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

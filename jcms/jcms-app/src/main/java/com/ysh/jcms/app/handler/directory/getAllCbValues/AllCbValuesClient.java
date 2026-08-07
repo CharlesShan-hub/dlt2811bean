@@ -54,11 +54,11 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
             entries.add(new CbEntry(ref, src.value.choice()));
         }
         lastEntries.addAll(entries);
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.cbValue.isEmpty()) {
-            lastReference = resp.cbValue.get(resp.cbValue.size() - 1).reference.value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.cbValue.size() > 0) {
+            lastReference(resp.cbValue.get(resp.cbValue.size() - 1).reference.value());
         }
-        log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+        log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
     }
 
     @Override

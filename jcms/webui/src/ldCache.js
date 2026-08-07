@@ -96,7 +96,7 @@ export async function ensureLnDirRefs(lnRef, acsi) {
   const key = `${lnRef}|${acsi}`
   if (lnDirRefsKey === key && lnDirRefs.length > 0) return lnDirRefs
   try {
-    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${acsi} --json`)
+    const res = await executeJson(`ln-dir --ln ${lnRef} --acsi ${acsi} --auto-pull true --json`)
     lnDirRefs.splice(0, lnDirRefs.length, ...(res.success && Array.isArray(res.data) ? res.data : []))
     lnDirRefsKey = key
   } catch {
@@ -117,7 +117,7 @@ export function setLds(list) {
 /** 从服务器拉取逻辑设备列表并写入缓存。 */
 export async function refreshLds() {
   try {
-    const res = await executeJson('server-dir --json')
+    const res = await executeJson('server-dir --auto-pull true --json')
     if (res.success && Array.isArray(res.data)) {
       setLds(res.data)
     } else {
@@ -133,7 +133,7 @@ export async function ensureLdLns(ldName) {
   if (!ldName) return []
   if (ldLns[ldName]) return ldLns[ldName]
   try {
-    const res = await executeJson(`ld-dir --ld ${ldName} --json`)
+    const res = await executeJson(`ld-dir --ld ${ldName} --auto-pull true --json`)
     ldLns[ldName] = res.success && Array.isArray(res.data) ? res.data : []
   } catch {
     ldLns[ldName] = []
@@ -144,11 +144,10 @@ export async function ensureLdLns(ldName) {
 /** 全量 LN 完整引用：由 ldCache + ldLns 拼接（LD/LN），无需额外请求裸 ld-dir。 */
 export async function ensureAllLnRefs() {
   if (allLnRefs.length > 0) return allLnRefs
+  // 并发拉取所有未缓存的 LD 的 LN 列表
+  await Promise.all(ldCache.filter(ld => !ldLns[ld]).map(ld => ensureLdLns(ld)))
   const refs = []
   for (const ld of ldCache) {
-    if (!ldLns[ld]) {
-      await ensureLdLns(ld) // 未缓存的 LD 顺带补齐
-    }
     for (const ln of ldLns[ld] || []) {
       refs.push(`${ld}/${ln}`)
     }

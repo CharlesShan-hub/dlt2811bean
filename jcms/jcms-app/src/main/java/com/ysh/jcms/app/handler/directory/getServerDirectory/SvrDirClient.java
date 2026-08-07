@@ -36,11 +36,11 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
         for (CmsObjectReference ref : resp.reference) {
             accumulatedRefs.add(ref.value());
         }
-        lastMoreFollows = resp.moreFollows.value();
-        if (!resp.reference.isEmpty()) {
-            lastReference = resp.reference.get(resp.reference.size() - 1).value();
+        lastMoreFollows(resp.moreFollows.value());
+        if (resp.reference.size() > 0) {
+            lastReference(resp.reference.get(resp.reference.size() - 1).value());
         }
-        log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), lastMoreFollows);
+        log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), lastMoreFollows());
     }
 
     @Override

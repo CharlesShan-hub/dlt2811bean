@@ -34,22 +34,33 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         return node.getClient().getSession().nextReqId();
     }
 
-    // ────────── Auto-pull pagination support ──────────
+    // ────────── Auto-pull pagination support (ThreadLocal for concurrency)
+    // ──────────
 
-    /**
-     * Set by {@link #onSuccess(Frame)}: whether the last response has more pages.
-     */
-    protected boolean lastMoreFollows = false;
+    private final ThreadLocal<Boolean> tlLastMoreFollows = ThreadLocal.withInitial(() -> false);
+    private final ThreadLocal<String> tlLastReference = new ThreadLocal<>();
 
     /** @return whether the last response has more pages. */
     public boolean isLastMoreFollows() {
-        return lastMoreFollows;
+        return tlLastMoreFollows.get();
     }
-    /**
-     * Set by {@link #onSuccess(Frame)}: the last reference on the last page, for
-     * pagination.
-     */
-    protected String lastReference = null;
+
+    /** Fluent getter — used by subclasses in log statements. */
+    protected boolean lastMoreFollows() {
+        return tlLastMoreFollows.get();
+    }
+
+    protected void lastMoreFollows(boolean v) {
+        tlLastMoreFollows.set(v);
+    }
+
+    protected String lastReference() {
+        return tlLastReference.get();
+    }
+
+    protected void lastReference(String v) {
+        tlLastReference.set(v);
+    }
 
     /** Max auto-pull iterations to prevent infinite loops. */
     private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
@@ -57,15 +68,15 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /**
      * Send a request built from the DAO. If {@link BaseDao#autoPull()} is true,
      * automatically follows {@code moreFollows} pagination: calls
-     * {@link #onSuccess(Frame)} for each page and sets {@link #lastMoreFollows} /
-     * {@link #lastReference} on each page.
+     * {@link #onSuccess(Frame)} for each page.
      * <p>
-     * Subclasses <b>must</b> set {@code lastMoreFollows} and {@code lastReference}
-     * inside their {@link #onSuccess(Frame)} override for auto-pull to work.
+     * Subclasses <b>must</b> call {@link #lastMoreFollows(boolean)} and
+     * {@link #lastReference(String)} inside their {@link #onSuccess(Frame)}
+     * override for auto-pull to work.
      */
     protected Frame send(ServiceName sc, D dao) throws IOException {
-        lastMoreFollows = false;
-        lastReference = null;
+        lastMoreFollows(false);
+        lastReference(null);
         Frame frame = null;
         int iterations = 0;
         do {
@@ -78,15 +89,16 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             frame = send(sc, pdu);
             if (frame == null || frame.header().err())
                 break;
-            if (dao.autoPull() && lastMoreFollows) {
-                if (lastReference == null || lastReference.isEmpty()) {
+            if (dao.autoPull() && lastMoreFollows()) {
+                String ref = lastReference();
+                if (ref == null || ref.isEmpty()) {
                     log.warn("Auto-pull: lastReference is null/empty for {}, stopping", sc);
                     break;
                 }
                 if (iterations > 1) {
-                    log.debug("Auto-pull iteration {}: lastReference={}", iterations, lastReference);
+                    log.debug("Auto-pull iteration {}: lastReference={}", iterations, ref);
                 }
-                setPaginationCursor(dao, lastReference);
+                setPaginationCursor(dao, ref);
             } else {
                 break;
             }
