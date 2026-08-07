@@ -60,11 +60,12 @@ public class AllDataDefConsole extends CommandHandler {
         }
 
         console.getClient(AllDataDefClient.class).execute(dao);
+        boolean moreFollows = console.getClient(AllDataDefClient.class).isLastMoreFollows();
 
         List<ContentManager.DataDefEntry> entries = console.getContentManager().getDataDefEntries();
         if (entries.isEmpty()) {
             if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
+                ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
             } else {
                 ConsolePrinter.info("No data definitions returned");
             }
@@ -72,7 +73,7 @@ public class AllDataDefConsole extends CommandHandler {
         }
 
         if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+            StringBuilder sb = new StringBuilder("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[");
             for (int i = 0; i < entries.size(); i++) {
                 if (i > 0)
                     sb.append(',');

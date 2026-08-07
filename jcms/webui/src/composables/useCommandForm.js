@@ -34,6 +34,8 @@ export function useCommandForm(form, opts = {}) {
         form[p.key] = ''
       } else if (p.type === 'ld-select') {
         form[p.key] = p.required && ldCache.length ? ldCache[0] : ''
+      } else if (p.type === 'auto-pull-switch') {
+        form[p.key] = true
       } else if (p.type === 'ln-cascade') {
         form[p.key] = { ld: '', ln: '' }
       } else if (p.type === 'refs-list') {
@@ -74,7 +76,7 @@ export function useCommandForm(form, opts = {}) {
     if (rowDoRefs[key]) return
     const fc = String(form.fc || '').split(':')[0] || 'XX'
     try {
-      const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --json`)
+      const res = await executeJson(`all-def --ln ${row.ld}/${row.ln} --fc ${fc} --auto-pull true --json`)
       rowDoRefs[key] = res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []
     } catch {
       rowDoRefs[key] = []

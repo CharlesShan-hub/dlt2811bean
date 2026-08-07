@@ -50,5 +50,6 @@ GetLogicalDeviceDirectory-ErrorPDU ::= ServiceError — 8.3.2`,
   params: [
     { key: 'ld', label: '逻辑设备 ld', type: 'ld-select', placeholder: '选择逻辑设备（可选，省略则返回所有 LD 的完整引用）' },
     { key: 'after', label: '起始引用 after', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（上面选 ld 后自动跟随，只选 LN）' },
+    { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

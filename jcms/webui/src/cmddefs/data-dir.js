@@ -45,5 +45,6 @@ GetDataDirectory-ErrorPDU ::= ServiceError — 8.4.3`,
   params: [
     { key: 'ref', label: '数据引用 ref', type: 'text', placeholder: 'LD/LN.DO 或 LD/LN.DO.DA' },
     { key: 'after', label: '起始引用 after', type: 'text', placeholder: '可选：起始引用' },
+    { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

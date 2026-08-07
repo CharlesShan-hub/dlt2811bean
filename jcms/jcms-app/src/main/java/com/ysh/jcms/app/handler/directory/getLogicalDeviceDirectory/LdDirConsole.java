@@ -41,7 +41,8 @@ public class LdDirConsole extends CommandHandler {
             dao.autoPull(true);
         }
         console.getClient(LdDirClient.class).execute(dao);
+        boolean moreFollows = console.getClient(LdDirClient.class).isLastMoreFollows();
         List<String> items = new ArrayList<>(console.getContentManager().getLnNames());
-        CmsConsole.outputList("Logical Nodes", items, s -> s, args);
+        CmsConsole.outputList("Logical Nodes", items, s -> s, args, moreFollows);
     }
 }

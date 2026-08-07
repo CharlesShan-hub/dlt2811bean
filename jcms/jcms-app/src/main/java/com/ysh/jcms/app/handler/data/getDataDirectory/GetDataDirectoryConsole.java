@@ -49,11 +49,12 @@ public class GetDataDirectoryConsole extends CommandHandler {
 
         console.getClient(GetDataDirectoryClient.class).execute(dao);
 
+        boolean moreFollows = console.getClient(GetDataDirectoryClient.class).isLastMoreFollows();
         List<GetDataDirectoryClient.DirEntry> entries = console.getClient(GetDataDirectoryClient.class).getLastEntries();
 
         if (entries.isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonArray("");
+                ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
             } else {
                 ConsolePrinter.info("No data directory entries");
             }
@@ -64,6 +65,6 @@ public class GetDataDirectoryConsole extends CommandHandler {
             if (e.fc != null)
                 return "[" + e.fc + "]  " + e.reference;
             return e.reference;
-        }, args);
+        }, args, moreFollows);
     }
 }

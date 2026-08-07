@@ -44,7 +44,8 @@ public class SvrDirConsole extends CommandHandler {
             dao.autoPull(true);
         }
         console.getClient(SvrDirClient.class).execute(dao);
+        boolean moreFollows = console.getClient(SvrDirClient.class).isLastMoreFollows();
         List<String> ldNames = new ArrayList<>(console.getContentManager().getLdNames());
-        CmsConsole.outputList("Logical Devices", ldNames, s -> s, args);
+        CmsConsole.outputList("Logical Devices", ldNames, s -> s, args, moreFollows);
     }
 }

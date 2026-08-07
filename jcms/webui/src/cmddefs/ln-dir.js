@@ -81,5 +81,6 @@ GetLogicalNodeDirectory-ErrorPDU ::= ServiceError — 8.3.3`,
       options: ACSI_DEFS.map((a) => ({ value: a.key, label: `${a.label}（${a.key}）`, color: a.color })),
     },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
+    { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

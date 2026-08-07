@@ -57,5 +57,6 @@ GetAllDataDefinition-ErrorPDU ::= ServiceError — 8.3.5`,
     { key: 'ln', label: '逻辑设备/节点 ln', type: 'ln-cascade', placeholder: 'LD → LN 逐级选择（必填）', required: true },
     { key: 'fc', label: '功能约束 fc', type: 'select', options: FC_OPTIONS },
     { key: 'after', label: '起始引用 after', type: 'ln-ref-select', placeholder: '可选：该 LN 下的引用' },
+    { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

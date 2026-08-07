@@ -59,7 +59,7 @@
                 v-for="p in row.items"
                 :key="p.key"
                 class="field"
-                :class="{ 'switch-field': p.type === 'switch' }"
+                :class="{ 'switch-field': p.type === 'switch' || p.type === 'auto-pull-switch' }"
               >
                 <label class="field-label">{{ p.label }}</label>
                 <UiInput
@@ -192,6 +192,7 @@
                   <button type="button" class="glass glass-accent refs-add" @click="addRefs">＋ 添加引用</button>
                 </div>
                 <UiSwitch v-else-if="p.type === 'switch'" v-model="form[p.key]" />
+                <UiSwitch v-else-if="p.type === 'auto-pull-switch'" v-model="form[p.key]" />
               </div>
             </div>
           </template>

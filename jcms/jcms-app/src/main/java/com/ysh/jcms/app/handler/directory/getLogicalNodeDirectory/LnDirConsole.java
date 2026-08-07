@@ -85,7 +85,8 @@ public class LnDirConsole extends CommandHandler {
         }
 
         console.getClient(LnDirClient.class).execute(dao);
+        boolean moreFollows = console.getClient(LnDirClient.class).isLastMoreFollows();
         List<String> items = new ArrayList<>(console.getContentManager().getNodeRefs(acsi));
-        CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args);
+        CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args, moreFollows);
     }
 }

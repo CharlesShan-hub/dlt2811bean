@@ -83,6 +83,10 @@ export function buildCmd(cmd, params, form, jsonMode, opts = {}) {
       if (v) {
         parts.push(`--${p.key}`)
       }
+    } else if (p.type === 'auto-pull-switch') {
+      if (v) {
+        parts.push(`--${p.key}`)
+      }
     } else if (p.type === 'select') {
       if (p.disabled) continue
       if (v) {

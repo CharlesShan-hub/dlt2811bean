@@ -61,5 +61,6 @@ server-dir 是连接后自动巡检的第一步：关联建立后依次拉取 se
     // 协议固定为 logical-device，仅展示不可修改
     { key: 'objectClass', label: '对象类型 objectClass', type: 'select', options: ['1: 逻辑设备（logical-device）', '0: 保留（reserved）'], disabled: true },
     { key: 'after', label: '起始引用 after', type: 'ld-select', placeholder: '选择起始 LD（可选，不选则从头开始）' },
+    { key: 'auto-pull', label: '自动续拉 auto-pull', type: 'auto-pull-switch' },
   ],
 }

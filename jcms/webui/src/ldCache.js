@@ -45,7 +45,7 @@ export async function ensureAllDefRefs(lnRef, fc) {
   const key = `${lnRef}|${fc}`
   if (allDefRefsKey === key && allDefRefs.length > 0) return allDefRefs
   try {
-    const res = await executeJson(`all-def --ln ${lnRef} --fc ${fc} --json`)
+    const res = await executeJson(`all-def --ln ${lnRef} --fc ${fc} --auto-pull true --json`)
     allDefRefs.splice(0, allDefRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.ref).filter(Boolean) : []))
     allDefRefsKey = key
   } catch {
@@ -73,7 +73,7 @@ export async function ensureAllCbRefs(lnRef, acsi) {
   const key = `${lnRef}|${acsi}`
   if (allCbRefsKey === key && allCbRefs.length > 0) return allCbRefs
   try {
-    const res = await executeJson(`all-cb --ln ${lnRef} --acsi ${acsi} --json`)
+    const res = await executeJson(`all-cb --ln ${lnRef} --acsi ${acsi} --auto-pull true --json`)
     allCbRefs.splice(0, allCbRefs.length, ...(res.success && Array.isArray(res.data) ? res.data.map((d) => d.reference).filter(Boolean) : []))
     allCbRefsKey = key
   } catch {

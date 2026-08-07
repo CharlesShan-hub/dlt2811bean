@@ -130,8 +130,9 @@ public abstract class CmsConsole extends CmsNode {
         ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
 
-    /** Output items as list (text) or JSON array (json mode). */
-    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args) {
+    /** Output items as list (text) or JSON array (json mode), with moreFollows. */
+    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args,
+            boolean moreFollows) {
         if (isJsonMode(args)) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < items.size(); i++) {
@@ -139,10 +140,17 @@ public abstract class CmsConsole extends CmsNode {
                     sb.append(',');
                 sb.append('"').append(CmsFormatUtil.escapeJson(fmt.apply(items.get(i)))).append('"');
             }
-            jsonArray(sb.toString());
+            ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[" + sb.toString() + "]}");
         } else {
             ConsolePrinter.list(title, items, fmt);
         }
+    }
+
+    /**
+     * Output items as list (text) or JSON array (json mode), without moreFollows.
+     */
+    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args) {
+        outputList(title, items, fmt, args, false);
     }
 
     /** Output a message as text (success) or JSON. */

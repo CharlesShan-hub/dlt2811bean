@@ -40,6 +40,11 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      * Set by {@link #onSuccess(Frame)}: whether the last response has more pages.
      */
     protected boolean lastMoreFollows = false;
+
+    /** @return whether the last response has more pages. */
+    public boolean isLastMoreFollows() {
+        return lastMoreFollows;
+    }
     /**
      * Set by {@link #onSuccess(Frame)}: the last reference on the last page, for
      * pagination.
