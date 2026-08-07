@@ -9,10 +9,7 @@ import com.ysh.jcms.pdu.data.CmsGetDataDirectoryResponse;
 import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.instance.SclDOI;
 import com.ysh.jcms.utils.scl.model.instance.SclDAI;
 import com.ysh.jcms.utils.scl.model.instance.SclSDI;
@@ -22,6 +19,8 @@ import com.ysh.jcms.utils.scl.model.template.SclDO;
 import com.ysh.jcms.utils.scl.model.template.SclDOType;
 import com.ysh.jcms.utils.scl.model.template.SclDA;
 import com.ysh.jcms.utils.scl.model.template.SclSDO;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
+import com.ysh.jcms.utils.scl.navigate.TypeChain;
 import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.ServiceName;
@@ -65,29 +64,26 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
 
         // Parse reference
         SclRef parsed = SclRefParser.parse(ref);
-        boolean isDoLevel = parsed.doName() != null;
+        Navigator nav = Navigator.go(ied, parsed);
+        if (!nav.isValid())
+            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLN ln;
+        SclLN ln = nav.ln();
         List<DirEntry> allEntries;
 
-        if (isDoLevel) {
-            // DO level: resolve DOI and collect DA/SDI directory
-            SclDOI doi = resolveDoi(ied, parsed);
-            ln = resolveLn(ied, parsed);
-            if (ln == null) {
-                log.debug("GetDataDirectory: ln not found for ref='{}'", ref);
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            }
-
-            // 检查是否有 SDO 层级需要进一步穿透（如 ref=LD/LN.DO.SDO）
+        if (parsed.doName() != null) {
+            // DO level or deeper
             String sdoName = parsed.daName();
             if (sdoName != null) {
+                // SDO level: ref = LD/LN.DO.SDO
                 allEntries = collectSdoDirectory(doc, ln, parsed.doName(), sdoName);
                 if (allEntries == null) {
                     log.debug("GetDataDirectory: '{}' is not an SDO, returning empty", sdoName);
                     allEntries = new ArrayList<>();
                 }
             } else {
+                // DO level: list DA/SDI
+                SclDOI doi = nav.doi();
                 if (doi != null) {
                     allEntries = collectDoDirectory(doc, doi, ln);
                 } else {
@@ -97,9 +93,6 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
             }
         } else {
             // LN level: collect DO directory
-            ln = resolveLn(ied, parsed);
-            if (ln == null)
-                return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
             allEntries = collectLnDirectory(doc, ln);
         }
 
@@ -123,40 +116,6 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
         resp.moreFollows(allEntries.size() > startIdx + ps);
         log.info("GetDataDirectory: '{}' -> {} entries (pageSize={})", ref, count, ps);
         return ok(resp, reqId);
-    }
-
-    /** Resolve LN within the current IED. */
-    private static SclLN resolveLn(SclIED ied, SclRef parsed) {
-        String ldInst = parsed.ldInst();
-        String lnName = parsed.lnName();
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldInst);
-                if (ld != null)
-                    return ld.findLnByFullName(lnName);
-            }
-        }
-        return null;
-    }
-
-    /** Resolve DOI within the current IED. */
-    private static SclDOI resolveDoi(SclIED ied, SclRef parsed) {
-        String ldInst = parsed.ldInst();
-        String lnName = parsed.lnName();
-        String doName = parsed.doName();
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice ld = srv.findLDeviceByInst(ldInst);
-                if (ld != null) {
-                    SclLN ln = ld.findLnByFullName(lnName);
-                    if (ln != null)
-                        return ln.findDoiByName(doName);
-                }
-            }
-        }
-        return null;
     }
 
     /** Collect DO names at LN level: merge instance DOIs with type template DOs. */
@@ -229,13 +188,7 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
             return;
-        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-        if (lnt == null)
-            return;
-        SclDO doDef = lnt.findDoByName(doName);
-        if (doDef == null || doDef.type() == null)
-            return;
-        SclDOType doType = templates.findDoTypeById(doDef.type());
+        SclDOType doType = TypeChain.of(templates).from(ln.lnType()).doDef(doName).doType();
         if (doType == null)
             return;
         for (SclDA da : doType.das()) {
@@ -262,23 +215,15 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
             return null;
-        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-        if (lnt == null)
-            return null;
-        SclDO doDef = lnt.findDoByName(doName);
-        if (doDef == null || doDef.type() == null)
-            return null;
-        SclDOType doType = templates.findDoTypeById(doDef.type());
+        SclDOType doType = TypeChain.of(templates).from(ln.lnType()).doDef(doName).doType();
         if (doType == null)
             return null;
-
         SclSDO sdo = doType.findSdoByName(sdoName);
         if (sdo == null || sdo.type() == null)
             return null;
         SclDOType sdoType = templates.findDoTypeById(sdo.type());
         if (sdoType == null)
             return null;
-
         List<DirEntry> entries = new ArrayList<>();
         for (SclDA da : sdoType.das()) {
             entries.add(new DirEntry(da.name(), da.fc()));
@@ -291,17 +236,8 @@ public class GetDataDirectoryServer extends BaseServerHandler<CmsGetDataDirector
         SclDataTypeTemplates templates = doc.dataTypeTemplates();
         if (templates == null || ln.lnType() == null)
             return null;
-        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
-        if (lnt == null)
-            return null;
-        SclDO doDef = lnt.findDoByName(doName);
-        if (doDef == null || doDef.type() == null)
-            return null;
-        SclDOType doType = templates.findDoTypeById(doDef.type());
-        if (doType == null)
-            return null;
-        SclDA da = doType.findDaByName(daName);
-        return da != null ? da.fc() : null;
+        TypeChain.DaStep daStep = TypeChain.of(templates).from(ln.lnType()).doDef(doName).daDef(daName);
+        return daStep != null ? daStep.fc() : null;
     }
 
     /** Compute starting index for referenceAfter pagination. */

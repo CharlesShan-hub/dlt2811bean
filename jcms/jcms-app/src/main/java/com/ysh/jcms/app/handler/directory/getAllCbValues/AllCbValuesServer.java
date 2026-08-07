@@ -11,18 +11,14 @@ import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
 import com.ysh.jcms.utils.scl.convert.CbConverter;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
-import com.ysh.jcms.utils.scl.model.ied.SclServer;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclAccessPoint;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
 import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
 import com.ysh.jcms.utils.scl.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.ArrayList;
@@ -51,7 +47,7 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
             lnReference = req.reference.altLnReference.value();
         }
 
-        List<SclLN> lns = resolveLns(ied, ldName, lnReference);
+        List<SclLN> lns = Navigator.resolveLns(ied, ldName, lnReference);
         if (lns == null) {
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
@@ -100,41 +96,6 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
             log.error("Failed to encode GetAllCBValuesResponse", e);
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
         }
-    }
-
-    /** Resolve LNs within the current IED. */
-    private static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
-        List<SclLN> result = new ArrayList<>();
-        if (ldName != null && !ldName.isEmpty()) {
-            for (SclAccessPoint ap : ied.accessPoints()) {
-                SclServer srv = ap.server();
-                if (srv != null) {
-                    SclLDevice device = srv.findLDeviceByInst(ldName);
-                    if (device != null) {
-                        result.addAll(device.lns());
-                        return result;
-                    }
-                }
-            }
-            return null;
-        }
-        if (lnReference == null || lnReference.isEmpty() || !SclRefParser.isValid(lnReference))
-            return null;
-        SclRef sclRef = SclRefParser.parse(lnReference);
-        for (SclAccessPoint ap : ied.accessPoints()) {
-            SclServer srv = ap.server();
-            if (srv != null) {
-                SclLDevice device = srv.findLDeviceByInst(sclRef.ldInst());
-                if (device != null) {
-                    SclLN ln = device.findLnByFullName(sclRef.lnName());
-                    if (ln != null) {
-                        result.add(ln);
-                        return result;
-                    }
-                }
-            }
-        }
-        return null;
     }
 
     /** Simple pair of CB ref string and CmsCbValueChoice. */

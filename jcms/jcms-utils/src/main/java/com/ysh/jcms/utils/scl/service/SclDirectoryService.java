@@ -1,0 +1,418 @@
+package com.ysh.jcms.utils.scl.service;
+
+import com.ysh.jcms.data.choice.CmsCbValueChoice;
+import com.ysh.jcms.data.choice.CmsDataDefinition;
+import com.ysh.jcms.data.enumerate.CmsAcsiClass;
+import com.ysh.jcms.data.scalar.CmsFC;
+import com.ysh.jcms.data.sequence.common.CmsDataDefinitionStructElem;
+import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
+import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
+import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
+import com.ysh.jcms.utils.scl.SclDocument;
+import com.ysh.jcms.utils.scl.convert.CbConverter;
+import com.ysh.jcms.utils.scl.convert.DataConverter;
+import com.ysh.jcms.utils.scl.convert.DataDefinitionResolver;
+import com.ysh.jcms.utils.scl.convert.DataValueResolver;
+import com.ysh.jcms.utils.scl.convert.DataValueEntry;
+import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
+import com.ysh.jcms.utils.scl.model.control.SclLogControl;
+import com.ysh.jcms.utils.scl.model.control.SclReportControl;
+import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
+import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
+import com.ysh.jcms.utils.scl.model.template.SclDA;
+import com.ysh.jcms.utils.scl.model.template.SclDOType;
+import com.ysh.jcms.utils.scl.model.template.SclDataTypeTemplates;
+import com.ysh.jcms.utils.scl.model.template.SclDO;
+import com.ysh.jcms.utils.scl.model.template.SclLNodeType;
+import com.ysh.jcms.utils.scl.model.template.SclSDO;
+import com.ysh.jcms.utils.scl.navigate.Navigator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+/**
+ * 目录服务 —— 封装所有目录相关 SCL 操作，向 handler 层提供统一的调用接口。
+ * <p>
+ * 各方法返回完整结果列表，分页（referenceAfter / pageSize）由 handler 层处理。
+ */
+public final class SclDirectoryService {
+
+    private static final Logger log = LoggerFactory.getLogger(SclDirectoryService.class);
+
+    private SclDirectoryService() {
+    }
+
+    // ==================== 服务器目录（8.2.5） ====================
+
+    /**
+     * 获取指定 IED 下所有逻辑设备实例名。
+     *
+     * @param ied 当前关联的 IED
+     * @return 逻辑设备实例名列表
+     */
+    public static List<String> getServerDirectory(SclIED ied) {
+        List<String> names = new ArrayList<>();
+        for (SclLDevice ld : ied.lDevices()) {
+            names.add(ld.inst());
+        }
+        return names;
+    }
+
+    // ==================== 逻辑设备目录（8.3.2） ====================
+
+    /**
+     * 获取逻辑设备目录（LN 名称列表）。
+     * <p>
+     * 当 {@code ldName} 非空时，返回该 LD 下所有 LN 的短名称（如 {@code LLN0}、{@code PIOC1}）；
+     * 当 {@code ldName} 为空时，返回所有 LD 下所有 LN 的完整引用（如 {@code LD0/LLN0}、{@code LD0/PIOC1}）。
+     *
+     * @param ied    当前关联的 IED
+     * @param ldName 逻辑设备实例名，为空时返回全站 LN
+     * @return LN 名称列表，LD 不存在时返回 null
+     */
+    public static List<String> getLogicalDeviceDirectory(SclIED ied, String ldName) {
+        if (ldName != null) {
+            SclLDevice device = ied.lDevice(ldName);
+            if (device == null)
+                return null;
+            return getLnNames(device);
+        }
+        return getAllLnNames(ied);
+    }
+
+    private static List<String> getLnNames(SclLDevice device) {
+        List<String> names = new ArrayList<>();
+        SclLN ln0 = null;
+        for (SclLN ln : device.lns()) {
+            if ("LLN0".equals(ln.lnClass())) {
+                ln0 = ln;
+            } else {
+                names.add(ln.getFullName());
+            }
+        }
+        if (ln0 != null)
+            names.add(0, ln0.getFullName());
+        return names;
+    }
+
+    private static List<String> getAllLnNames(SclIED ied) {
+        List<String> names = new ArrayList<>();
+        for (SclLDevice ld : ied.lDevices()) {
+            for (String n : getLnNames(ld)) {
+                names.add(ld.inst() + "/" + n);
+            }
+        }
+        return names;
+    }
+
+    // ==================== 逻辑节点目录（8.4.3） ====================
+
+    /**
+     * 获取逻辑节点目录（按 ACSI 类收集名称）。
+     * <p>
+     * 各 ACSI 类返回内容：
+     * <ul>
+     *   <li>{@code DATA_OBJECT} — 完整 DO 引用（{@code ldName/lnFullName.doName}），含 SDO 递归</li>
+     *   <li>{@code DATA_SET} — 数据集名称</li>
+     *   <li>{@code BRCB} / {@code URCB} / {@code LCB} / {@code GOCB} / {@code MSVCB} — 控制块名称</li>
+     *   <li>{@code LOG} — 日志引用名</li>
+     * </ul>
+     *
+     * @param doc       SCL 文档（可为 null）
+     * @param lns       已解析的 LN 列表
+     * @param ldName    逻辑设备名（DO 类型需要以此作为前缀）
+     * @param acsiClass ACSI 类（见 {@link CmsAcsiClass}）
+     * @return 名称列表（未找到时返回空列表而非 null）
+     */
+    public static List<String> getLogicalNodeDirectory(SclDocument doc, List<SclLN> lns, String ldName, int acsiClass) {
+        SclDataTypeTemplates templates = doc != null ? doc.dataTypeTemplates() : null;
+        List<String> all = new ArrayList<>();
+        for (SclLN ln : lns) {
+            switch (acsiClass) {
+                case CmsAcsiClass.DATA_OBJECT:
+                    if (templates != null) {
+                        all.addAll(getDataObjectNames(ldName, ln, templates));
+                    } else {
+                        for (com.ysh.jcms.utils.scl.model.instance.SclDOI doi : ln.dois()) {
+                            all.add(ldName + "/" + ln.getFullName() + "." + doi.name());
+                        }
+                    }
+                    break;
+                case CmsAcsiClass.DATA_SET:
+                    for (com.ysh.jcms.utils.scl.model.input.SclDataSet ds : ln.dataSets()) {
+                        all.add(ds.name());
+                    }
+                    break;
+                case CmsAcsiClass.BRCB:
+                    for (SclReportControl rc : ln.reportControls()) {
+                        if ("true".equals(rc.buffered()))
+                            all.add(rc.name());
+                    }
+                    break;
+                case CmsAcsiClass.URCB:
+                    for (SclReportControl rc : ln.reportControls()) {
+                        if (!"true".equals(rc.buffered()))
+                            all.add(rc.name());
+                    }
+                    break;
+                case CmsAcsiClass.LCB:
+                    for (SclLogControl lc : ln.logControls()) {
+                        all.add(lc.name());
+                    }
+                    break;
+                case CmsAcsiClass.LOG:
+                    for (SclLogControl lc : ln.logControls()) {
+                        String logName = lc.logName();
+                        if (logName != null && !logName.isEmpty()) {
+                            all.add(logName);
+                        }
+                    }
+                    break;
+                case CmsAcsiClass.GOCB:
+                    for (SclGSEControl gc : ln.gseControls()) {
+                        all.add(gc.name());
+                    }
+                    break;
+                case CmsAcsiClass.MSVCB:
+                    for (SclSampledValueControl sv : ln.svControls()) {
+                        all.add(sv.name());
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        return all;
+    }
+
+    private static List<String> getDataObjectNames(String ldName, SclLN ln, SclDataTypeTemplates templates) {
+        List<String> names = new ArrayList<>();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return names;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null)
+            return names;
+        String lnPrefix = ldName + "/" + ln.getFullName() + ".";
+        for (SclDO doDef : lnt.dos()) {
+            names.add(lnPrefix + doDef.name());
+            collectSdoNames(lnPrefix + doDef.name(), doDef.type(), templates, names, new HashSet<>());
+        }
+        return names;
+    }
+
+    private static void collectSdoNames(String parentRef, String doTypeId, SclDataTypeTemplates templates, List<String> names,
+            HashSet<String> visited) {
+        if (doTypeId == null || doTypeId.isEmpty() || !visited.add(doTypeId))
+            return;
+        SclDOType doType = templates.findDoTypeById(doTypeId);
+        if (doType == null)
+            return;
+        for (SclSDO sdo : doType.sdos()) {
+            String ref = parentRef + "." + sdo.name();
+            names.add(ref);
+            collectSdoNames(ref, sdo.type(), templates, names, visited);
+        }
+    }
+
+    // ==================== 全部数据值（8.5.2） ====================
+
+    /**
+     * 获取全部数据值。
+     *
+     * @param doc  SCL 文档
+     * @param ied  当前关联的 IED
+     * @param lns 已解析的 LN 列表
+     * @param fc  FC 过滤码（null 或空表示不过滤）
+     * @return 数据值条目列表
+     */
+    public static List<CmsDataValueEntry> getAllDataValues(SclDocument doc, SclIED ied, List<SclLN> lns, String fc) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        List<CmsDataValueEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            String ldInst = Navigator.findLdInst(ied, ln);
+            if (ldInst == null)
+                continue;
+
+            List<String> doNames = getDoNames(ln, templates);
+            for (String doName : doNames) {
+                String fullRef = ied.name() + "/" + ldInst + "/" + ln.getFullName() + "." + doName;
+                DataValueEntry dv = DataValueResolver.resolve(doc, fullRef, fc);
+                if (dv != null && dv.val() != null && !dv.val().isEmpty() && dv.bType() != null && !dv.bType().isEmpty()) {
+                    entries.add(new CmsDataValueEntry().reference(doName).value(DataConverter.toCmsData(dv)));
+                }
+            }
+        }
+        return entries;
+    }
+
+    private static List<String> getDoNames(SclLN ln, SclDataTypeTemplates templates) {
+        List<String> names = new ArrayList<>();
+        if (templates == null || ln.lnType() == null || ln.lnType().isEmpty())
+            return names;
+        SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+        if (lnt == null)
+            return names;
+        for (SclDO doDef : lnt.dos()) {
+            names.add(doDef.name());
+        }
+        return names;
+    }
+
+    // ==================== 全部数据定义（8.5.4） ====================
+
+    /**
+     * 获取全部数据定义。
+     *
+     * @param doc  SCL 文档
+     * @param lns 已解析的 LN 列表
+     * @param fc  FC 过滤码（null 或空表示不过滤）
+     * @return 数据定义条目列表
+     */
+    public static List<CmsDataDefinitionEntry> getAllDataDefinition(SclDocument doc, List<SclLN> lns, String fc) {
+        SclDataTypeTemplates templates = doc.dataTypeTemplates();
+        List<CmsDataDefinitionEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            if (templates == null || ln.lnType() == null)
+                continue;
+            SclLNodeType lnt = templates.findLNodeTypeById(ln.lnType());
+            if (lnt == null)
+                continue;
+
+            for (SclDO doDef : lnt.dos()) {
+                // FC 过滤
+                if (fc != null) {
+                    SclDOType doType = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
+                    if (doType == null)
+                        continue;
+                    boolean hasFc = false;
+                    for (SclDA da : doType.das()) {
+                        if (fc.equalsIgnoreCase(da.fc())) {
+                            hasFc = true;
+                            break;
+                        }
+                    }
+                    if (!hasFc)
+                        continue;
+                }
+
+                CmsDataDefinition def = buildDoDefinition(templates, doDef);
+                if (def == null)
+                    continue;
+
+                SclDOType doType2 = doDef.type() != null ? templates.findDoTypeById(doDef.type()) : null;
+                String cdc = doType2 != null ? doType2.cdc() : null;
+
+                CmsDataDefinitionEntry entry = new CmsDataDefinitionEntry().reference(doDef.name());
+                if (cdc != null)
+                    entry.cdcType(cdc);
+                entry.definition = def;
+                entries.add(entry);
+            }
+        }
+        return entries;
+    }
+
+    private static CmsDataDefinition buildDoDefinition(SclDataTypeTemplates templates, SclDO doDef) {
+        if (doDef.type() == null)
+            return null;
+        SclDOType doType = templates.findDoTypeById(doDef.type());
+        if (doType == null)
+            return null;
+
+        List<CmsDataDefinitionStructElem> arr = new ArrayList<>();
+        for (SclDA da : doType.das()) {
+            String bType = da.bType();
+            if (bType == null)
+                bType = "BOOLEAN";
+            CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem().name(da.name())
+                    .fc(da.fc() != null ? CmsFC.fromCodeOr(da.fc(), CmsFC.XX) : 0)
+                    .type(DataDefinitionResolver.toDataDefinition(bType));
+            arr.add(elem);
+        }
+        for (SclSDO sdo : doType.sdos()) {
+            CmsDataDefinitionStructElem elem = new CmsDataDefinitionStructElem().name(sdo.name());
+            elem.type(DataDefinitionResolver.toDataDefinition(null));
+            arr.add(elem);
+        }
+
+        CmsDataDefinition def = new CmsDataDefinition();
+        def.choice(CmsDataDefinition.CHOICE_STRUCTURE);
+        def.alt_structure = arr;
+        return def;
+    }
+
+    // ==================== 全部控制块值（8.5.6） ====================
+
+    /**
+     * 获取全部控制块值。
+     *
+     * @param lns       已解析的 LN 列表
+     * @param acsiClass ACSI 类（BRCB、URCB、LCB、GOCB、MSVCB）
+     * @return 控制块值条目列表
+     */
+    public static List<CmsCbValueEntry> getAllCbValues(List<SclLN> lns, int acsiClass) {
+        List<CmsCbValueEntry> entries = new ArrayList<>();
+        for (SclLN ln : lns) {
+            List<CbPair> cbPairs = collectCbValues(ln, acsiClass);
+            for (CbPair cb : cbPairs) {
+                entries.add(new CmsCbValueEntry().reference(ln.getFullName() + "." + cb.ref).value(cb.value));
+            }
+        }
+        return entries;
+    }
+
+    private static List<CbPair> collectCbValues(SclLN ln, int acsiClass) {
+        List<CbPair> result = new ArrayList<>();
+        switch (acsiClass) {
+            case CmsAcsiClass.BRCB:
+                for (SclReportControl rc : ln.reportControls()) {
+                    if ("true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), CbConverter.brcbFrom(rc)));
+                    }
+                }
+                break;
+            case CmsAcsiClass.URCB:
+                for (SclReportControl rc : ln.reportControls()) {
+                    if (!"true".equals(rc.buffered())) {
+                        result.add(new CbPair(rc.name(), CbConverter.urcbFrom(rc)));
+                    }
+                }
+                break;
+            case CmsAcsiClass.LCB:
+                for (SclLogControl lc : ln.logControls()) {
+                    result.add(new CbPair(lc.name(), CbConverter.lcbFrom(lc)));
+                }
+                break;
+            case CmsAcsiClass.GOCB:
+                for (SclGSEControl gc : ln.gseControls()) {
+                    result.add(new CbPair(gc.name(), CbConverter.gocbFrom(gc)));
+                }
+                break;
+            case CmsAcsiClass.MSVCB:
+                for (SclSampledValueControl sv : ln.svControls()) {
+                    result.add(new CbPair(sv.name(), CbConverter.msvcbFrom(sv)));
+                }
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
+
+    // ==================== 内部数据结构 ====================
+
+    private static final class CbPair {
+        final String ref;
+        final CmsCbValueChoice value;
+
+        CbPair(String ref, CmsCbValueChoice value) {
+            this.ref = ref;
+            this.value = value;
+        }
+    }
+}

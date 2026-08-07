@@ -8,13 +8,12 @@ import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
+import com.ysh.jcms.utils.scl.service.SclDirectoryService;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest, CmsGetServerDirectoryError> {
 
@@ -30,9 +29,8 @@ public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest
         if (req.getObjectClass() != CmsObjectClass.LOGICAL_DEVICE)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        // 只返回当前关联 IED（访问点）下的逻辑设备，而非全站所有 IED
         SclIED ied = requireIed(session, reqId);
-        List<String> ldNames = ied.lDevices().stream().map(SclLDevice::inst).collect(Collectors.toList());
+        List<String> ldNames = SclDirectoryService.getServerDirectory(ied);
 
         List<String> afterList = after(ldNames, req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 
