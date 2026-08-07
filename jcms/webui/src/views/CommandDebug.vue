@@ -14,7 +14,10 @@
             <span class="desc-text">TCP → 协商 → 关联</span>
             <span class="sep">·</span>
             <code class="glass cmd-chip">disconnect</code>
-            <span class="desc-text">断开 TCP 连接</span>
+            <span class="desc-text">断开 TCP</span>
+            <span class="sep">·</span>
+            <code class="glass cmd-chip">release</code>
+            <span class="desc-text">断开 AP</span>
           </template>
           <template v-else>
             <code class="glass cmd-chip">{{ props.cmd }}</code>
@@ -39,7 +42,8 @@
         <!-- connect 专属：使用共享连接表单 + 断开按钮 + 结果消息 -->
         <ConnectForm v-if="isConnect" :busy="busy" submit-label="连接" @submit="runCmd" @update:cmd="connectCmd = $event">
           <template #extra>
-            <UiButton v-if="connected" @click="disconnect">断开</UiButton>
+            <UiButton v-if="tcpConnected || connected" variant="danger" @click="disconnectTcp">断开 TCP</UiButton>
+            <UiButton v-if="connected" variant="danger" @click="releaseAp">断开 AP</UiButton>
           </template>
         </ConnectForm>
         <transition name="fade">
@@ -563,8 +567,13 @@ async function runCmd(cmdLine) {
 }
 
 /** 连接管理页：断开 TCP 连接。 */
-async function disconnect() {
+async function disconnectTcp() {
   await runCmd('disconnect')
+}
+
+/** 连接管理页：断开 AP 关联（release）。 */
+async function releaseAp() {
+  await runCmd('release')
 }
 </script>
 

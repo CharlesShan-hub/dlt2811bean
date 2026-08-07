@@ -16,6 +16,12 @@ public class NegotiateClientDao extends BaseDao {
     private long asduSize = CmsConfigLoader.load().protocol().negotiate().asduSize();
     private long protocolVersion = CmsConfigLoader.load().protocol().negotiate().protocolVersion();
 
+    // 响应值（协商后由客户端填充）
+    private int negotiatedApduSize;
+    private long negotiatedAsduSize;
+    private long negotiatedProtocolVersion;
+    private String modelVersion;
+
     @Override
     public CmsType toRequest() {
         return new CmsNegotiateRequest().apduSize(apduSize).asduSize(asduSize).protocolVersion(protocolVersion);

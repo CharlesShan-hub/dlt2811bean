@@ -15,6 +15,24 @@
         <span class="lock">{{ apSecure ? '🔒' : '🔓' }}</span>
         {{ ap || '未关联' }}
       </span>
+      <!-- 主题切换 -->
+      <div class="theme-wrap" ref="themeWrapRef">
+        <button class="topbar-btn theme-btn" :title="'主题：' + themeLabel" @click="toggleThemeMenu">
+          <span class="tb-icon">◈</span>
+        </button>
+        <div v-if="themeOpen" class="theme-dropdown">
+          <button
+            v-for="t in themes"
+            :key="t.id"
+            class="theme-option"
+            :class="{ active: t.id === theme }"
+            @click="selectTheme(t.id)"
+          >
+            <span class="theme-dot" :style="{ background: t.color }"></span>
+            <span class="theme-name">{{ t.label }}</span>
+          </button>
+        </div>
+      </div>
       <!-- 终端面板开关（调试窗口） -->
       <button class="topbar-btn" :class="{ active: terminalOpen }" title="打开/关闭终端" @click="$emit('toggle-terminal')">
         <span class="tb-icon">⊢</span>
@@ -25,7 +43,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref, computed } from 'vue'
+
+const props = defineProps({
   /** TCP 层是否已连接 */
   tcpConnected: Boolean,
   /** 已关联的访问点引用（IED/AP），空 = 未关联 */
@@ -36,9 +56,46 @@ defineProps({
   apSecure: Boolean,
   /** 底部终端面板是否打开 */
   terminalOpen: Boolean,
+  /** 当前主题 id */
+  theme: { type: String, default: 'blue' },
 })
 
-defineEmits(['toggle-terminal'])
+const emit = defineEmits(['toggle-terminal', 'set-theme'])
+
+const themes = [
+  { id: 'blue', label: '蓝色', color: '#5b8def' },
+  { id: 'green', label: '绿色', color: '#4caf7d' },
+  { id: 'orange', label: '橙色', color: '#e8893c' },
+  { id: 'red', label: '红色', color: '#e5555a' },
+  { id: 'purple', label: '紫色', color: '#8a5ce0' },
+  { id: 'cyan', label: '青色', color: '#5bc0de' },
+  { id: 'pink', label: '粉色', color: '#ff7eb6' },
+]
+
+const themeLabel = computed(() => themes.find(t => t.id === props.theme)?.label || '蓝色')
+
+const themeOpen = ref(false)
+const themeWrapRef = ref(null)
+
+function toggleThemeMenu() {
+  themeOpen.value = !themeOpen.value
+}
+
+function selectTheme(id) {
+  emit('set-theme', id)
+  themeOpen.value = false
+}
+
+// 点击外部关闭下拉
+function onDocClick(e) {
+  if (themeWrapRef.value && !themeWrapRef.value.contains(e.target)) {
+    themeOpen.value = false
+  }
+}
+
+if (typeof window !== 'undefined') {
+  document.addEventListener('click', onDocClick)
+}
 </script>
 
 <style scoped>
@@ -127,4 +184,76 @@ defineEmits(['toggle-terminal'])
   background: var(--accent-muted);
 }
 
+/* ── 主题切换 ── */
+.theme-wrap {
+  position: relative;
+}
+
+.theme-btn .tb-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.theme-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 100;
+  min-width: 110px;
+  padding: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.12s;
+  text-align: left;
+  width: 100%;
+}
+
+.theme-option:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.theme-option.active {
+  color: var(--text-primary);
+  background: var(--accent-muted);
+}
+
+.theme-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  transition: transform 0.12s;
+}
+
+.theme-option:hover .theme-dot {
+  transform: scale(1.15);
+}
+
+.theme-option.active .theme-dot {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-name {
+  white-space: nowrap;
+}
 </style>

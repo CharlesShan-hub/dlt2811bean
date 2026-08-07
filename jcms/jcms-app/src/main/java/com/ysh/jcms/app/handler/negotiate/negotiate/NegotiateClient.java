@@ -11,9 +11,16 @@ import java.io.IOException;
 
 public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
+    private NegotiateClientDao currentDao;
+
     @Override
     public void execute(NegotiateClientDao dao) throws Exception {
-        send(ServiceName.ASSOCIATE_NEGOTIATE, dao.toRequest());
+        this.currentDao = dao;
+        try {
+            send(ServiceName.ASSOCIATE_NEGOTIATE, dao.toRequest());
+        } finally {
+            this.currentDao = null;
+        }
     }
 
     @Override
@@ -38,6 +45,14 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         session.getConnection().setFragmentationSupported(fragSupported);
         session.getConnection().setMaxFrameSize(resp.apduSize.value());
         session.getConnection().setPeerAsduSize((int) resp.asduSize.value());
+
+        // 回填响应值到 DAO，供 Console 输出
+        if (currentDao != null) {
+            currentDao.negotiatedApduSize(resp.apduSize.value());
+            currentDao.negotiatedAsduSize(resp.asduSize.value());
+            currentDao.negotiatedProtocolVersion(resp.protocolVersion.value());
+            currentDao.modelVersion(resp.modelVersion.value());
+        }
 
         log.info("Negotiate completed: apduSize={}, asduSize={}, protocolVersion={}, modelVersion={}", resp.apduSize.value(),
                 resp.asduSize.value(), resp.protocolVersion.value(), resp.modelVersion.value());

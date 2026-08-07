@@ -21,6 +21,78 @@
   --font-mono: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
 }
 
+/* ── 色彩主题（data-theme 属性切换） ── */
+[data-theme="blue"] {
+  --bg-primary: #0f1117;
+  --bg-secondary: #161822;
+  --bg-tertiary: #1e2030;
+  --bg-hover: #252840;
+  --border: #2a2d3e;
+  --accent: #5b8def;
+  --accent-hover: #7aa3ff;
+  --accent-muted: rgba(91, 141, 239, 0.15);
+}
+[data-theme="green"] {
+  --bg-primary: #0e1412;
+  --bg-secondary: #131e1a;
+  --bg-tertiary: #182a22;
+  --bg-hover: #1f382e;
+  --border: #254233;
+  --accent: #4caf7d;
+  --accent-hover: #6bcb9a;
+  --accent-muted: rgba(76, 175, 125, 0.15);
+}
+[data-theme="orange"] {
+  --bg-primary: #16120e;
+  --bg-secondary: #201a14;
+  --bg-tertiary: #2a2018;
+  --bg-hover: #352a1e;
+  --border: #3f3324;
+  --accent: #e8893c;
+  --accent-hover: #f5a45a;
+  --accent-muted: rgba(232, 137, 60, 0.15);
+}
+[data-theme="red"] {
+  --bg-primary: #160f0f;
+  --bg-secondary: #201616;
+  --bg-tertiary: #2a1a1a;
+  --bg-hover: #352020;
+  --border: #3f2626;
+  --accent: #e5555a;
+  --accent-hover: #f07175;
+  --accent-muted: rgba(229, 85, 90, 0.15);
+}
+[data-theme="purple"] {
+  --bg-primary: #110f17;
+  --bg-secondary: #181624;
+  --bg-tertiary: #1e1a30;
+  --bg-hover: #26203e;
+  --border: #2e2648;
+  --accent: #8a5ce0;
+  --accent-hover: #a67cff;
+  --accent-muted: rgba(138, 92, 224, 0.15);
+}
+[data-theme="cyan"] {
+  --bg-primary: #0e1215;
+  --bg-secondary: #131c20;
+  --bg-tertiary: #18262c;
+  --bg-hover: #1e323a;
+  --border: #243b44;
+  --accent: #5bc0de;
+  --accent-hover: #7dd3f0;
+  --accent-muted: rgba(91, 192, 222, 0.15);
+}
+[data-theme="pink"] {
+  --bg-primary: #150f12;
+  --bg-secondary: #1f161b;
+  --bg-tertiary: #2a1a22;
+  --bg-hover: #34202a;
+  --border: #3e2632;
+  --accent: #ff7eb6;
+  --accent-hover: #ff9ec8;
+  --accent-muted: rgba(255, 126, 182, 0.15);
+}
+
 * {
   margin: 0;
   padding: 0;

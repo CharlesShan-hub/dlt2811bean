@@ -6,7 +6,9 @@
       :tls="tlsConnected"
       :ap-secure="apSecure"
       :terminal-open="showTerminal"
+      :theme="theme"
       @toggle-terminal="showTerminal = !showTerminal"
+      @set-theme="setTheme"
     />
     <div class="app-body">
       <Sidebar
@@ -138,6 +140,16 @@ const tlsConnected = ref(false)
 const apSecure = ref(false)
 const showTerminal = ref(false)
 
+// 主题（默认蓝色，存 localStorage 持久化）
+const savedTheme = localStorage.getItem('cms-theme')
+const theme = ref(savedTheme || 'blue')
+
+function setTheme(id) {
+  theme.value = id
+  document.documentElement.setAttribute('data-theme', id)
+  localStorage.setItem('cms-theme', id)
+}
+
 // 当前年份（空状态版权）
 const currentYear = new Date().getFullYear()
 
@@ -248,6 +260,8 @@ async function pollStatus() {
 }
 
 onMounted(() => {
+  // 初始化主题
+  document.documentElement.setAttribute('data-theme', theme.value)
   pollStatus()
   timer = setInterval(pollStatus, 3000)
 })

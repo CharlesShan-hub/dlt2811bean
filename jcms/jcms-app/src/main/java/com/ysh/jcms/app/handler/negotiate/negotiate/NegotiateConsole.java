@@ -3,7 +3,9 @@ package com.ysh.jcms.app.handler.negotiate.negotiate;
 import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
+import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
@@ -44,7 +46,22 @@ public class NegotiateConsole extends CommandHandler {
             dao.protocolVersion(Long.parseLong(protoStr));
 
         console.getClient(NegotiateClient.class).execute(dao);
-        CmsConsole.outputMessage("Negotiate completed.", args);
+
+        if (CmsConsole.isJsonMode(args)) {
+            String json = "{\"success\":true,\"data\":{"
+                    + "\"apduSize\":" + dao.negotiatedApduSize() + ","
+                    + "\"asduSize\":" + dao.negotiatedAsduSize() + ","
+                    + "\"protocolVersion\":" + dao.negotiatedProtocolVersion() + ","
+                    + "\"modelVersion\":\"" + CmsFormatUtil.escapeJson(dao.modelVersion()) + "\""
+                    + "}}";
+            ConsolePrinter.raw(json);
+        } else {
+            ConsolePrinter.success("Negotiate completed.");
+            ConsolePrinter.info("  apduSize: " + dao.negotiatedApduSize());
+            ConsolePrinter.info("  asduSize: " + dao.negotiatedAsduSize());
+            ConsolePrinter.info("  protocolVersion: " + dao.negotiatedProtocolVersion());
+            ConsolePrinter.info("  modelVersion: " + dao.modelVersion());
+        }
     }
 
     private static String firstNonEmpty(String a, String b) {
