@@ -5,14 +5,12 @@ import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetRequest;
 import com.ysh.jcms.pdu.dataset.CmsDeleteDataSetResponse;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
+import com.ysh.jcms.utils.scl.service.SclDatasetService;
+import com.ysh.jcms.utils.scl.service.SclDatasetService.DataSetResolution;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class DeleteDataSetServer extends BaseServerHandler<CmsDeleteDataSetRequest, CmsDeleteDataSetError> {
@@ -31,34 +29,16 @@ public class DeleteDataSetServer extends BaseServerHandler<CmsDeleteDataSetReque
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        // Parse "LD0/LLN0.dsName"
-        if (!SclRefParser.isValid(ref))
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String dsName = sclRef.doName();
-        if (dsName == null)
+        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ref);
+        if (dsr == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLDevice device = findLd(ied, ldName);
-        if (device == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataSet ds = ln.findDataSetByName(dsName);
-        if (ds == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
+        SclDataSet ds = dsr.dataSet;
         if (!ds.dynamic())
             return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
 
-        ln.dataSets().remove(ds);
+        dsr.ln.dataSets().remove(ds);
         log.info("DeleteDataSet: removed '{}'", ref);
         return ok(new CmsDeleteDataSetResponse(), reqId);
-    }
-
-    private static SclLDevice findLd(SclIED ied, String ldName) {
-        return ied.lDevice(ldName);
     }
 }

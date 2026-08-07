@@ -7,15 +7,13 @@ import com.ysh.jcms.pdu.dataset.CmsCreateDataSetError;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetRequest;
 import com.ysh.jcms.pdu.dataset.CmsCreateDataSetResponse;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
+import com.ysh.jcms.utils.scl.service.SclDatasetService;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetRequest, CmsCreateDataSetError> {
@@ -34,21 +32,11 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        // Parse "LD0/LLN0.dsName"
-        if (!SclRefParser.isValid(ref))
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnNamePart = sclRef.lnName();
-        String dsName = sclRef.doName();
+        String dsName = SclDatasetService.extractDsName(ref);
         if (dsName == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        // Resolve LN first (DataSet may not exist yet since we're creating it)
-        SclLDevice device = findLd(ied, ldName);
-        if (device == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclLN ln = device.findLnByFullName(lnNamePart);
+        SclLN ln = SclDatasetService.resolveLn(ied, ref);
         if (ln == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
@@ -75,7 +63,7 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
                 continue;
             }
 
-            SclFCDA fcda = parseRefToFcda(ied, memberRef);
+            SclFCDA fcda = SclDatasetService.parseRefToFcda(ied, memberRef);
             if (fcda == null) {
                 log.warn("CreateDataSet: cannot resolve {}", memberRef);
                 failed++;
@@ -93,33 +81,5 @@ public class CreateDataSetServer extends BaseServerHandler<CmsCreateDataSetReque
 
         log.info("CreateDataSet: '{}' -> {} members ({} failed, dynamic={})", ref, dataSet.fcDas().size(), failed, dataSet.dynamic());
         return ok(new CmsCreateDataSetResponse(), reqId);
-    }
-
-    private static SclFCDA parseRefToFcda(SclIED ied, String ref) {
-        if (ref == null || ref.isEmpty() || !SclRefParser.isValid(ref))
-            return null;
-
-        SclRef sclRef = SclRefParser.parse(ref);
-        SclLDevice device = findLd(ied, sclRef.ldInst());
-        if (device == null)
-            return null;
-
-        SclLN ln = device.findLnByFullName(sclRef.lnName());
-        if (ln == null)
-            return null;
-
-        SclFCDA fcda = new SclFCDA();
-        fcda.ldInst(sclRef.ldInst());
-        fcda.lnClass(ln.lnClass());
-        fcda.lnInst(ln.inst());
-        fcda.prefix(ln.prefix() != null ? ln.prefix() : "");
-        fcda.doName(sclRef.doName());
-        fcda.daName(sclRef.daName());
-
-        return fcda;
-    }
-
-    private static SclLDevice findLd(SclIED ied, String ldName) {
-        return ied.lDevice(ldName);
     }
 }

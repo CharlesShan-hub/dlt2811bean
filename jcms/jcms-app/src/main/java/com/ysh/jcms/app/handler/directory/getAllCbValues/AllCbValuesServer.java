@@ -1,27 +1,22 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.ServiceException;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.enumerate.CmsAcsiClass;
-import com.ysh.jcms.data.choice.CmsCbValueChoice;
 import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesRequest;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.choice.CmsReferenceChoice;
-import com.ysh.jcms.utils.scl.convert.CbConverter;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
-import com.ysh.jcms.utils.scl.model.control.SclReportControl;
-import com.ysh.jcms.utils.scl.model.control.SclGSEControl;
-import com.ysh.jcms.utils.scl.model.control.SclSampledValueControl;
-import com.ysh.jcms.utils.scl.model.control.SclLogControl;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
+import com.ysh.jcms.utils.scl.service.SclDirectoryService;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesRequest, CmsGetAllCbValuesError> {
@@ -39,6 +34,12 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
 
         SclIED ied = requireIed(session, reqId);
 
+        // Validate ACSI class
+        if (!isValidAcsiClass(acsiClass)) {
+            log.warn("GetAllCBValues: invalid acsiClass={}", acsiClass);
+            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
+        }
+
         String ldName = null;
         String lnReference = null;
         if (req.reference.choice() == CmsReferenceChoice.LD_NAME) {
@@ -52,43 +53,24 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
         }
 
-        // Validate ACSI class
-        if (!isValidAcsiClass(acsiClass)) {
-            log.warn("GetAllCBValues: invalid acsiClass={}", acsiClass);
-            return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
-        }
+        // Get all entries from service
+        List<CmsCbValueEntry> allEntries = SclDirectoryService.getAllCbValues(lns, acsiClass);
 
-        // Collect CB entries
-        List<CmsCbValueEntry> entries = new ArrayList<>();
-        int pageSize = pageSize();
-        outer : for (SclLN ln : lns) {
-            List<CbPair> cbPairs = collectCbValues(ln, acsiClass);
+        // Apply referenceAfter pagination
+        List<CmsCbValueEntry> entries = afterEntries(allEntries, refAfter, reqId);
 
-            for (CbPair cb : cbPairs) {
-                String fullRef = ln.getFullName() + "." + cb.ref;
-
-                // referenceAfter pagination
-                if (refAfter != null) {
-                    if (fullRef.equals(refAfter)) {
-                        refAfter = null;
-                    }
-                    continue;
-                }
-
-                entries.add(new CmsCbValueEntry().reference(fullRef).value(cb.value));
-
-                if (entries.size() >= pageSize)
-                    break outer;
-            }
-        }
+        // Apply pageSize
+        int ps = pageSize();
+        boolean more = entries.size() > ps;
+        int limit = more ? ps : entries.size();
 
         CmsGetAllCbValuesResponse resp = new CmsGetAllCbValuesResponse();
-        for (CmsCbValueEntry e : entries) {
-            resp.cbValue.add(e);
+        for (int i = 0; i < limit; i++) {
+            resp.cbValue.add(entries.get(i));
         }
-        resp.moreFollows(entries.size() >= pageSize());
+        resp.moreFollows(more);
 
-        log.info("GetAllCBValues: returning {} entries", entries.size());
+        log.info("GetAllCBValues: returning {} entries", limit);
 
         try {
             return buildSuccess(resp.encode(), reqId);
@@ -98,53 +80,17 @@ public class AllCbValuesServer extends BaseServerHandler<CmsGetAllCbValuesReques
         }
     }
 
-    /** Simple pair of CB ref string and CmsCbValueChoice. */
-    private static final class CbPair {
-        final String ref;
-        final CmsCbValueChoice value;
-        CbPair(String ref, CmsCbValueChoice value) {
-            this.ref = ref;
-            this.value = value;
+    /** Apply referenceAfter pagination to a list of CmsCbValueEntry. */
+    private static List<CmsCbValueEntry> afterEntries(List<CmsCbValueEntry> items, String refAfter, int reqId) {
+        if (refAfter == null || refAfter.isEmpty())
+            return items;
+        for (int i = 0; i < items.size(); i++) {
+            String ref = items.get(i).reference.value();
+            if (refAfter.equals(ref)) {
+                return items.subList(i + 1, items.size());
+            }
         }
-    }
-
-    /** Collect CB value entries for a given LN and ACSI class. */
-    private static List<CbPair> collectCbValues(SclLN ln, int acsiClass) {
-        List<CbPair> result = new ArrayList<>();
-        switch (acsiClass) {
-            case CmsAcsiClass.BRCB :
-                for (SclReportControl rc : ln.reportControls()) {
-                    if ("true".equals(rc.buffered())) {
-                        result.add(new CbPair(rc.name(), CbConverter.brcbFrom(rc)));
-                    }
-                }
-                break;
-            case CmsAcsiClass.URCB :
-                for (SclReportControl rc : ln.reportControls()) {
-                    if (!"true".equals(rc.buffered())) {
-                        result.add(new CbPair(rc.name(), CbConverter.urcbFrom(rc)));
-                    }
-                }
-                break;
-            case CmsAcsiClass.LCB :
-                for (SclLogControl lc : ln.logControls()) {
-                    result.add(new CbPair(lc.name(), CbConverter.lcbFrom(lc)));
-                }
-                break;
-            case CmsAcsiClass.GOCB :
-                for (SclGSEControl gc : ln.gseControls()) {
-                    result.add(new CbPair(gc.name(), CbConverter.gocbFrom(gc)));
-                }
-                break;
-            case CmsAcsiClass.MSVCB :
-                for (SclSampledValueControl sv : ln.svControls()) {
-                    result.add(new CbPair(sv.name(), CbConverter.msvcbFrom(sv)));
-                }
-                break;
-            default :
-                break;
-        }
-        return result;
+        throw new ServiceException(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
     }
 
     private static boolean isValidAcsiClass(int acsiClass) {

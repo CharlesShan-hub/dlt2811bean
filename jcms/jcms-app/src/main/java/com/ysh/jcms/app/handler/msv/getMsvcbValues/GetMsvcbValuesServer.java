@@ -1,7 +1,6 @@
 package com.ysh.jcms.app.handler.msv.getMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.msv.GetMsvcbValuesUtil;
 import com.ysh.jcms.data.choice.CmsMsvcbValueChoice;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
@@ -10,6 +9,7 @@ import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesError;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesRequest;
 import com.ysh.jcms.pdu.msv.CmsGetMsvcbValuesResponse;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.service.SclControlBlockService;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
@@ -38,7 +38,7 @@ public class GetMsvcbValuesServer extends BaseServerHandler<CmsGetMsvcbValuesReq
         for (CmsObjectReference refObj : req.reference) {
             String ref = str(refObj);
             CmsMsvcbValueChoice choice;
-            CmsMsvcb msvcb = GetMsvcbValuesUtil.resolveMsvcb(ied, ref);
+            CmsMsvcb msvcb = SclControlBlockService.resolveMsvcb(ied, ref);
             if (msvcb != null) {
                 choice = new CmsMsvcbValueChoice().altValue(msvcb);
             } else {

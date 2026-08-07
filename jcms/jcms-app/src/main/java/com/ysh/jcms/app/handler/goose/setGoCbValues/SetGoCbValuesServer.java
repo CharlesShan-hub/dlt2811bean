@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.goose.setGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.goose.GetGoCbValuesUtil;
-import com.ysh.jcms.app.handler.goose.GoCbCache;
+import com.ysh.jcms.utils.scl.service.SclControlBlockService;
+import com.ysh.jcms.utils.scl.state.GoCbCache;
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import com.ysh.jcms.data.sequence.goose.CmsSetGoCbEntry;
 import com.ysh.jcms.pdu.goose.CmsSetGoCbValuesError;
@@ -40,7 +40,7 @@ public class SetGoCbValuesServer extends BaseServerHandler<CmsSetGoCbValuesReque
             // Get baseline from cache or SCL
             CmsGoCb baseline = GoCbCache.get(ref);
             if (baseline == null && ied != null) {
-                baseline = GetGoCbValuesUtil.resolveGocb(ied, ref);
+                baseline = SclControlBlockService.resolveGocb(ied, ref);
             }
 
             if (baseline == null) {

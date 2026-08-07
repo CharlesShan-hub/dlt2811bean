@@ -1,4 +1,4 @@
-package com.ysh.jcms.app.handler.goose;
+package com.ysh.jcms.utils.scl.state;
 
 import com.ysh.jcms.data.sequence.block.CmsGoCb;
 import java.util.concurrent.ConcurrentHashMap;

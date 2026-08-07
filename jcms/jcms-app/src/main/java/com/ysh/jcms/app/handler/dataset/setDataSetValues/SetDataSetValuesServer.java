@@ -7,16 +7,14 @@ import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesRequest;
 import com.ysh.jcms.pdu.dataset.CmsSetDataSetValuesResponse;
 import com.ysh.jcms.utils.scl.SclDocument;
 import com.ysh.jcms.utils.scl.convert.DataWriterResolver;
-import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 import com.ysh.jcms.utils.scl.model.input.SclDataSet;
 import com.ysh.jcms.utils.scl.model.input.SclFCDA;
 import com.ysh.jcms.utils.scl.navigate.Navigator;
+import com.ysh.jcms.utils.scl.service.SclDatasetService;
+import com.ysh.jcms.utils.scl.service.SclDatasetService.DataSetResolution;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
 public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValuesRequest, CmsSetDataSetValuesError> {
@@ -36,26 +34,11 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
         if (ref == null)
             return onDecodeError(reqId, CmsServiceError.PARAMETER_VALUE_INAPPROPRIATE);
 
-        // Parse "LD0/LLN0.dsName"
-        if (!SclRefParser.isValid(ref))
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String dsName = sclRef.doName();
-        if (dsName == null)
+        DataSetResolution dsr = SclDatasetService.resolveDataSet(ied, ref);
+        if (dsr == null)
             return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
 
-        SclLDevice device = findLd(ied, ldName);
-        if (device == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclLN ln = device.findLnByFullName(lnName);
-        if (ln == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-        SclDataSet dataSet = ln.findDataSetByName(dsName);
-        if (dataSet == null)
-            return onDecodeError(reqId, CmsServiceError.INSTANCE_NOT_AVAILABLE);
-
+        SclDataSet dataSet = dsr.dataSet;
         String refAfter = req.isPresent("referenceAfter") ? req.referenceAfter.value() : null;
 
         int successCount = 0, valueIdx = 0;
@@ -86,9 +69,5 @@ public class SetDataSetValuesServer extends BaseServerHandler<CmsSetDataSetValue
         }
         log.warn("SetDataSetValues: {}/{} succeeded", successCount, req.value.size());
         return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-    }
-
-    private static SclLDevice findLd(SclIED ied, String ldName) {
-        return ied.lDevice(ldName);
     }
 }

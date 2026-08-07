@@ -1,8 +1,8 @@
 package com.ysh.jcms.app.handler.msv.setMsvcbValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
-import com.ysh.jcms.app.handler.msv.GetMsvcbValuesUtil;
-import com.ysh.jcms.app.handler.msv.MsvcbCache;
+import com.ysh.jcms.utils.scl.service.SclControlBlockService;
+import com.ysh.jcms.utils.scl.state.MsvcbCache;
 import com.ysh.jcms.data.sequence.block.CmsMsvcb;
 import com.ysh.jcms.data.sequence.msv.CmsSetMsvcbEntry;
 import com.ysh.jcms.pdu.msv.CmsSetMsvcbValuesError;
@@ -41,7 +41,7 @@ public class SetMsvcbValuesServer extends BaseServerHandler<CmsSetMsvcbValuesReq
             // Get baseline from cache or SCL
             CmsMsvcb baseline = MsvcbCache.get(ref);
             if (baseline == null && ied != null) {
-                baseline = GetMsvcbValuesUtil.resolveMsvcb(ied, ref);
+                baseline = SclControlBlockService.resolveMsvcb(ied, ref);
             }
 
             if (baseline == null) {

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataValues;
 
 import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.ServiceException;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.directory.CmsDataValueEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataValuesError;
@@ -16,7 +17,6 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRequest, CmsGetAllDataValuesError> {
@@ -64,16 +64,13 @@ public class AllDataValuesServer extends BaseServerHandler<CmsGetAllDataValuesRe
         return ok(resp, reqId);
     }
 
-    /** Apply referenceAfter pagination to a list of entries. */
-    private static <T> List<T> afterEntries(List<T> items, String refAfter, int reqId) {
+    /** Apply referenceAfter pagination to a list of CmsDataValueEntry. */
+    private static List<CmsDataValueEntry> afterEntries(List<CmsDataValueEntry> items, String refAfter, int reqId) {
         if (refAfter == null || refAfter.isEmpty())
             return items;
         for (int i = 0; i < items.size(); i++) {
-            // CmsDataValueEntry has a reference() method
-            Object ref = items.get(i) instanceof CmsDataValueEntry
-                    ? ((CmsDataValueEntry) items.get(i)).reference()
-                    : null;
-            if (ref instanceof String && refAfter.equals(ref)) {
+            String ref = items.get(i).reference.value();
+            if (refAfter.equals(ref)) {
                 return items.subList(i + 1, items.size());
             }
         }

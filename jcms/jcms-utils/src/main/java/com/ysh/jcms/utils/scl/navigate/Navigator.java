@@ -159,9 +159,12 @@ public class Navigator {
     /**
      * 按 LD 名称或 LN 引用解析逻辑节点列表。
      *
-     * @param ied         IED 对象
-     * @param ldName      LD 名称（非空时返回该 LD 下所有 LN）
-     * @param lnReference LN 引用（LD/LN 格式，ldName 为空时使用）
+     * @param ied
+     *            IED 对象
+     * @param ldName
+     *            LD 名称（非空时返回该 LD 下所有 LN）
+     * @param lnReference
+     *            LN 引用（LD/LN 格式，ldName 为空时使用）
      * @return LN 列表，未找到时返回 null
      */
     public static List<SclLN> resolveLns(SclIED ied, String ldName, String lnReference) {
@@ -191,8 +194,10 @@ public class Navigator {
     /**
      * 反向查找：在指定 IED 中查找包含给定 LN 的 LD 实例名。
      *
-     * @param ied IED 对象
-     * @param ln  要查找的 LN
+     * @param ied
+     *            IED 对象
+     * @param ln
+     *            要查找的 LN
      * @return LD 的 inst 值，未找到时返回 null
      */
     public static String findLdInst(SclIED ied, SclLN ln) {
