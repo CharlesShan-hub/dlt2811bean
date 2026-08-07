@@ -16,7 +16,8 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     public void execute(AllDataDefDao dao) throws Exception {
-        send(ServiceName.GET_ALL_DATA_DEFINITION, dao.toRequest());
+        node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
+        send(ServiceName.GET_ALL_DATA_DEFINITION, dao);
     }
 
     @Override
@@ -38,7 +39,16 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
             String cdc = src.isPresent("cdcType") ? src.cdcType.value() : "";
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
-        node.getContentManager().initDataDef(entries);
-        log.info("GetAllDataDefinition succeeded: {} entries", entries.size());
+        node.getContentManager().addDataDef(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.data.isEmpty()) {
+            lastReference = resp.data.get(resp.data.size() - 1).reference.value();
+        }
+        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(AllDataDefDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 }

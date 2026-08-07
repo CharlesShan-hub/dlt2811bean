@@ -18,7 +18,8 @@ public class SvrDirConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return java.util.Arrays.asList(new Param("after", "起始引用（分页截取，不传则从头开始）", ""), new Param("json", "JSON 格式输出（不传则输出人类可读文本）", ""));
+        return java.util.Arrays.asList(new Param("after", "起始引用（分页截取，不传则从头开始）", ""), new Param("auto-pull", "自动续拉分页（true/false）", "false"),
+                new Param("json", "JSON 格式输出（不传则输出人类可读文本）", ""));
     }
 
     @Override
@@ -37,6 +38,10 @@ public class SvrDirConsole extends CommandHandler {
         String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
+        }
+        String autoPull = args.get("auto-pull");
+        if ("true".equalsIgnoreCase(autoPull)) {
+            dao.autoPull(true);
         }
         console.getClient(SvrDirClient.class).execute(dao);
         List<String> ldNames = new ArrayList<>(console.getContentManager().getLdNames());

@@ -19,7 +19,7 @@ public class LdDirConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ld", "逻辑设备名（不传则返回所有逻辑设备的完整引用）", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -35,6 +35,10 @@ public class LdDirConsole extends CommandHandler {
         String after = args.get("after");
         if (after != null && !after.isEmpty()) {
             dao.referenceAfter(after);
+        }
+        String autoPull = args.get("auto-pull");
+        if ("true".equalsIgnoreCase(autoPull)) {
+            dao.autoPull(true);
         }
         console.getClient(LdDirClient.class).execute(dao);
         List<String> items = new ArrayList<>(console.getContentManager().getLnNames());

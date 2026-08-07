@@ -30,6 +30,11 @@ public class ContentManager {
         this.allDataEntries = entries;
     }
 
+    /** Append all-data entries (for auto-pull pagination). */
+    public void addAllData(List<AllDataEntry> entries) {
+        this.allDataEntries.addAll(entries);
+    }
+
     public List<AllDataEntry> getAllDataEntries() {
         return Collections.unmodifiableList(allDataEntries);
     }
@@ -50,6 +55,11 @@ public class ContentManager {
 
     public void initDataDef(List<DataDefEntry> entries) {
         this.dataDefEntries = entries;
+    }
+
+    /** Append data-def entries (for auto-pull pagination). */
+    public void addDataDef(List<DataDefEntry> entries) {
+        this.dataDefEntries.addAll(entries);
     }
 
     public List<DataDefEntry> getDataDefEntries() {

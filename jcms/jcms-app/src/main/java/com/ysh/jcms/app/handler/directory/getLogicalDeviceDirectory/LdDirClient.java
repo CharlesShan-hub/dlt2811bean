@@ -13,37 +13,38 @@ import java.util.List;
 
 public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
-    /**
-     * 获取逻辑设备目录。省略 ldName 时服务器可能分页（moreFollows=true）， 这里循环带上 referenceAfter
-     * 续拉直到最后一页，合并全部结果。
-     */
+    private final List<String> accumulatedRefs = new ArrayList<>();
+
     @Override
     public void execute(LdDirDao dao) throws Exception {
-        List<String> all = new ArrayList<>();
-        String after = dao.referenceAfter();
-
-        while (true) {
-            dao.referenceAfter(after);
-            Frame frame = send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao.toRequest());
-            CmsGetLogicalDeviceDirectoryResponse resp = decodeFrame(frame, new CmsGetLogicalDeviceDirectoryResponse());
-
-            for (CmsSubReference ref : resp.lnReference) {
-                all.add(ref.value());
-            }
-            if (!resp.moreFollows.value())
-                break;
-            if (resp.lnReference.isEmpty())
-                break; // 防死循环：服务器说还有但没给数据
-            after = all.get(all.size() - 1); // 从上一页最后一个引用续拉
-        }
-
-        node.getContentManager().initLdDir(all);
-        log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", all.size());
+        accumulatedRefs.clear();
+        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao);
+        node.getContentManager().initLdDir(new ArrayList<>(accumulatedRefs));
+        log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", accumulatedRefs.size());
     }
 
     @Override
     protected void onError(Frame frame) throws IOException {
         CmsGetLogicalDeviceDirectoryError err = decodeErr(frame, new CmsGetLogicalDeviceDirectoryError());
         throw new IOException("GetLogicalDeviceDirectory rejected: " + err.value());
+    }
+
+    @Override
+    protected void onSuccess(Frame frame) throws IOException {
+        CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
+
+        for (CmsSubReference ref : resp.lnReference) {
+            accumulatedRefs.add(ref.value());
+        }
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.lnReference.isEmpty()) {
+            lastReference = resp.lnReference.get(resp.lnReference.size() - 1).value();
+        }
+        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(LdDirDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 }

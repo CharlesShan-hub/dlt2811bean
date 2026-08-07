@@ -32,7 +32,8 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
 
     @Override
     public void execute(GetDataDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_DATA_DIRECTORY, dao.toRequest());
+        lastEntries.clear();
+        send(ServiceName.GET_DATA_DIRECTORY, dao);
     }
 
     @Override
@@ -49,8 +50,17 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
         for (CmsSubRefEntry e : resp.dataAttribute) {
             entries.add(new DirEntry(e.reference.value(), fcCode(e)));
         }
-        this.lastEntries = entries;
-        log.info("GetDataDirectory succeeded: {} entries", entries.size());
+        lastEntries.addAll(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.dataAttribute.isEmpty()) {
+            lastReference = resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value();
+        }
+        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(GetDataDirectoryDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 
     /** FC 码值转 2 字符码；条目无 fc 或为 XX 时返回 null。 */

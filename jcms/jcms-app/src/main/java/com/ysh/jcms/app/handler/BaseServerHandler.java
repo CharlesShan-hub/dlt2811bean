@@ -271,11 +271,29 @@ public abstract class BaseServerHandler<R extends CmsType, E extends CmsType> ex
     // ──────────────────────────────────────────────
 
     /**
+     * Override for {@link #pageSize()}. When set to a positive value, all paginated
+     * server handlers will use this instead of the config value. Set to 0 or
+     * negative to restore the default.
+     */
+    private static volatile int maxPageSize = 0;
+
+    /**
      * Maximum number of elements to return in one response page. Used by directory
      * services for pagination.
      */
     protected static int pageSize() {
-        return CmsConfigLoader.load().protocol().maxArraySize();
+        int override = maxPageSize;
+        return override > 0 ? override : CmsConfigLoader.load().protocol().maxArraySize();
+    }
+
+    /** Set the max page size override (0 to restore default). */
+    public static void setMaxPageSize(int size) {
+        maxPageSize = size;
+    }
+
+    /** Get the current max page size override (0 means default). */
+    public static int getMaxPageSize() {
+        return maxPageSize;
     }
 
     /**

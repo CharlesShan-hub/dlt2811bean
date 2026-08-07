@@ -34,10 +34,15 @@ public class SvrDirServer extends BaseServerHandler<CmsGetServerDirectoryRequest
 
         List<String> afterList = after(ldNames, req.isPresent("referenceAfter") ? req.referenceAfter.value() : null, reqId);
 
+        int ps = pageSize();
+        boolean more = afterList.size() > ps;
+        int limit = more ? ps : afterList.size();
+
         CmsGetServerDirectoryResponse resp = new CmsGetServerDirectoryResponse();
-        for (String name : afterList)
-            resp.reference.add(new CmsObjectReference(name));
-        resp.moreFollows(false);
+        for (int i = 0; i < limit; i++)
+            resp.reference.add(new CmsObjectReference(afterList.get(i)));
+        resp.moreFollows(more);
+        log.info("GetServerDirectory: returning {} entries (pageSize={}, moreFollows={})", limit, ps, more);
         return ok(resp, reqId);
     }
 }

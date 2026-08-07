@@ -16,7 +16,8 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
     @Override
     public void execute(AllDataValuesDao dao) throws Exception {
-        send(ServiceName.GET_ALL_DATA_VALUES, dao.toRequest());
+        node.getContentManager().initAllData(new ArrayList<>()); // clear before fresh pull
+        send(ServiceName.GET_ALL_DATA_VALUES, dao);
     }
 
     @Override
@@ -36,8 +37,17 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
                 continue; // skip error/empty entries
             entries.add(new ContentManager.AllDataEntry(entry.reference, entry.choiceType, entry.valueString));
         }
-        node.getContentManager().initAllData(entries);
-        log.info("GetAllDataValues succeeded: {} entries", entries.size());
+        node.getContentManager().addAllData(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.data.isEmpty()) {
+            lastReference = resp.data.get(resp.data.size() - 1).reference.value();
+        }
+        log.info("GetAllDataValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(AllDataValuesDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 
     /** Wraps CmsDataValueEntry to extract readable values after native decode. */
@@ -52,11 +62,5 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
             this.choiceType = ct;
             this.valueString = e.value.toValueString();
         }
-
-        // private static String bytesToHex(byte[] bytes) {
-        // StringBuilder sb = new StringBuilder(bytes.length * 2);
-        // for (byte b : bytes) sb.append(String.format("%02X", b & 0xFF));
-        // return sb.toString();
-        // }
     }
 }

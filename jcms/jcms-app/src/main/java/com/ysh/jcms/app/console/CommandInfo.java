@@ -66,8 +66,8 @@ public enum CommandInfo {
             "读 RPC 接口定义"), RPC_METHOD_DEF("rpc-method-def", "读 RPC 方法定义"), RPC_CALL("rpc-call", "远程过程调用"),
 
     // ── 其他 ──
-    TEST("test", "测试连接"), TRACE_PDU("trace-pdu", "开启/关闭 PDU 跟踪"), CLEAR("clear", "清空屏幕"), LIST_AP("list-ap", "列出全部访问点"), HELP("help",
-            "显示帮助信息");
+    TEST("test", "测试连接"), TRACE_PDU("trace-pdu", "开启/关闭 PDU 跟踪"), MAX_ENTRIES("max-entries", "设置服务端最大返回条数（用于测试分页）"), CLEAR("clear",
+            "清空屏幕"), LIST_AP("list-ap", "列出全部访问点"), HELP("help", "显示帮助信息");
 
     private final String name;
     private final String description;

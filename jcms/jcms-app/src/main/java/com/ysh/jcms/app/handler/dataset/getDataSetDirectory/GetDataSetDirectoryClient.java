@@ -31,7 +31,8 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
 
     @Override
     public void execute(GetDataSetDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_DATA_SET_DIRECTORY, dao.toRequest());
+        lastEntries.clear();
+        send(ServiceName.GET_DATA_SET_DIRECTORY, dao);
     }
 
     @Override
@@ -48,7 +49,16 @@ public class GetDataSetDirectoryClient extends BaseClientHandler<GetDataSetDirec
         for (CmsDataRefFcEntry e : resp.memberData) {
             entries.add(new DirEntry(e.reference.value(), null));
         }
-        this.lastEntries = entries;
-        log.info("GetDataSetDirectory succeeded: {} entries", entries.size());
+        lastEntries.addAll(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.memberData.isEmpty()) {
+            lastReference = resp.memberData.get(resp.memberData.size() - 1).reference.value();
+        }
+        log.info("GetDataSetDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(GetDataSetDirectoryDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 }

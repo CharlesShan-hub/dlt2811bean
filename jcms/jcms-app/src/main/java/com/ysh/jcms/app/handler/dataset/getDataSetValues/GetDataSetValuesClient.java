@@ -31,7 +31,8 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
 
     @Override
     public void execute(GetDataSetValuesDao dao) throws Exception {
-        send(ServiceName.GET_DATA_SET_VALUES, dao.toRequest());
+        lastValues.clear();
+        send(ServiceName.GET_DATA_SET_VALUES, dao);
     }
 
     @Override
@@ -52,8 +53,16 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
             String val = src.toValueString();
             entries.add(new DataSetValue(ct, val));
         }
-        this.lastValues = entries;
-        log.info("GetDataSetValues succeeded: {} values", entries.size());
+        lastValues.addAll(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        // GetDataSetValuesResponse's value is List<CmsData> (no reference field),
+        // so we use the index-based approach: lastReference is not applicable
+        // for this response type. Auto-pull will not function for this service.
+        log.info("GetDataSetValues page: {} values (moreFollows={})", entries.size(), lastMoreFollows);
     }
 
+    @Override
+    protected void setPaginationCursor(GetDataSetValuesDao dao, String cursor) {
+        dao.referenceAfter(cursor);
+    }
 }

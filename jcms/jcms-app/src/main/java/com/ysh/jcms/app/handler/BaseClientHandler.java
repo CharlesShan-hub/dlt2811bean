@@ -34,9 +34,61 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         return node.getClient().getSession().nextReqId();
     }
 
+    // ────────── Auto-pull pagination support ──────────
+
+    /**
+     * Set by {@link #onSuccess(Frame)}: whether the last response has more pages.
+     */
+    protected boolean lastMoreFollows = false;
+    /**
+     * Set by {@link #onSuccess(Frame)}: the last reference on the last page, for
+     * pagination.
+     */
+    protected String lastReference = null;
+
+    /**
+     * Send a request built from the DAO. If {@link BaseDao#autoPull()} is true,
+     * automatically follows {@code moreFollows} pagination: calls
+     * {@link #onSuccess(Frame)} for each page and sets {@link #lastMoreFollows} /
+     * {@link #lastReference} on each page.
+     * <p>
+     * Subclasses <b>must</b> set {@code lastMoreFollows} and {@code lastReference}
+     * inside their {@link #onSuccess(Frame)} override for auto-pull to work.
+     */
+    protected Frame send(ServiceName sc, D dao) throws IOException {
+        lastMoreFollows = false;
+        lastReference = null;
+        Frame frame = null;
+        do {
+            byte[] pdu = dao.toRequest().encode();
+            trace(">>>\n" + dao.toRequest());
+            frame = send(sc, pdu);
+            if (frame == null || frame.header().err())
+                break;
+            if (dao.autoPull() && lastMoreFollows) {
+                if (lastReference == null || lastReference.isEmpty())
+                    break; // 防死循环
+                setPaginationCursor(dao, lastReference);
+            } else {
+                break;
+            }
+        } while (true);
+        return frame;
+    }
+
+    /**
+     * Bridge method for subclasses to set the pagination cursor on their specific
+     * DAO type. Default is no-op; subclasses that support auto-pull must override
+     * to call {@code dao.referenceAfter(cursor)}.
+     */
+    @SuppressWarnings("unchecked")
+    protected void setPaginationCursor(D dao, String cursor) {
+        // default no-op — override in subclasses that support pagination
+    }
+
     /**
      * Send a request (encoded bytes). Subclasses should prefer
-     * {@link #send(ServiceName, CmsTypeOld)} for automatic PDU tracing.
+     * {@link #send(ServiceName, CmsType)} for automatic PDU tracing.
      */
     protected Frame send(ServiceName sc, byte[] pduBytes) throws IOException {
         if (node == null)

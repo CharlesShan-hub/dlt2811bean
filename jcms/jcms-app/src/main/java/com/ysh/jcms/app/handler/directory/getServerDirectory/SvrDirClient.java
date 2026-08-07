@@ -1,19 +1,26 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
+    private final List<String> accumulatedRefs = new ArrayList<>();
+
     @Override
     public void execute(SvrDirDao dao) throws Exception {
-        send(ServiceName.GET_SERVER_DIRECTORY, dao.toRequest());
+        accumulatedRefs.clear();
+        send(ServiceName.GET_SERVER_DIRECTORY, dao);
+        node.getContentManager().initServerDir(new ArrayList<>(accumulatedRefs));
+        log.info("GetServerDirectory succeeded: {} logical devices", accumulatedRefs.size());
     }
 
     @Override
@@ -25,8 +32,19 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
     @Override
     protected void onSuccess(Frame frame) throws IOException {
         CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
-        List<String> names = resp.ldNames();
-        node.getContentManager().initServerDir(names);
-        log.info("GetServerDirectory succeeded: {} logical devices", names.size());
+
+        for (CmsObjectReference ref : resp.reference) {
+            accumulatedRefs.add(ref.value());
+        }
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.reference.isEmpty()) {
+            lastReference = resp.reference.get(resp.reference.size() - 1).value();
+        }
+        log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(SvrDirDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 }

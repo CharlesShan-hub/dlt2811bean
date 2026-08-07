@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
-    /** Last response entries (set after each success) */
+    /** Last response entries (accumulated across auto-pull pages). */
     public static final class CbEntry {
         public final String reference;
         public final int cbType;
@@ -32,7 +32,8 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
     @Override
     public void execute(AllCbValuesDao dao) throws Exception {
-        send(ServiceName.GET_ALL_CB_VALUES, dao.toRequest());
+        lastEntries.clear(); // clear before fresh pull
+        send(ServiceName.GET_ALL_CB_VALUES, dao);
     }
 
     @Override
@@ -52,7 +53,16 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
                 continue; // skip empty entries
             entries.add(new CbEntry(ref, src.value.choice()));
         }
-        this.lastEntries = entries;
-        log.info("GetAllCBValues succeeded: {} entries", entries.size());
+        lastEntries.addAll(entries);
+        lastMoreFollows = resp.moreFollows.value();
+        if (!resp.cbValue.isEmpty()) {
+            lastReference = resp.cbValue.get(resp.cbValue.size() - 1).reference.value();
+        }
+        log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows);
+    }
+
+    @Override
+    protected void setPaginationCursor(AllCbValuesDao dao, String cursor) {
+        dao.referenceAfter(cursor);
     }
 }

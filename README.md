@@ -144,6 +144,24 @@ help
 # 设置显示报文具体信息，可以用来调试
 trace-pdu --value true
 trace-pdu --value false
+# 设置服务端每页最大返回条数（用于测试自动续拉分页）
+# 服务端开启后，客户端搭配 --auto-pull true 即可测试分页续拉逻辑
+max-entries 5
+# 恢复默认
+max-entries 0
+# 查看当前值
+max-entries
+```
+
+### 自动续拉分页（`--auto-pull`）
+
+部分支持分页的命令（`server-dir`、`ld-dir`、`ln-dir`、`all-data`、`all-def`、`all-cb`、`data-dir`、`get-dataset-dir`、`get-dataset-values`）支持 `--auto-pull` 参数。启用后客户端会自动跟随 `moreFollows` 标志拉取所有分页数据，无需手动传 `--after`：
+
+```bash
+# 自动拉取所有逻辑设备
+cms server-dir --auto-pull true
+# 自动拉取所有数据值（配合服务端 max-entries 可以测试分页）
+cms all-data --ln LD0 --auto-pull true
 ```
 
 ### 8.1 连接

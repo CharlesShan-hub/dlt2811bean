@@ -41,7 +41,7 @@ public class AllCbValuesConsole extends CommandHandler {
     public List<Param> params() {
         return Arrays.asList(new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
                 new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgcb/gocb/msvcb 或数字", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
     }
 
     @Override
@@ -78,6 +78,11 @@ public class AllCbValuesConsole extends CommandHandler {
         String after = args.get("after");
         if (after != null && !after.isEmpty() && !after.equals("0")) {
             dao.referenceAfter(after);
+        }
+
+        String autoPull = args.get("auto-pull");
+        if ("true".equalsIgnoreCase(autoPull)) {
+            dao.autoPull(true);
         }
 
         String cbTypeName = acsiClass >= 3 && acsiClass <= 10
