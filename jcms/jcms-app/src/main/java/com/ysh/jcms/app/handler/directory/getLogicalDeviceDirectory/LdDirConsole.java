@@ -4,6 +4,7 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,9 +41,10 @@ public class LdDirConsole extends CommandHandler {
         if ("true".equalsIgnoreCase(autoPull)) {
             dao.autoPull(true);
         }
-        console.getClient(LdDirClient.class).execute(dao);
-        boolean moreFollows = console.getClient(LdDirClient.class).isLastMoreFollows();
-        List<String> items = new ArrayList<>(console.getContentManager().getLnNames());
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(LdDirClient.class).execute(dao, ctx);
+        boolean moreFollows = ctx.isLastMoreFollows();
+        List<String> items = new ArrayList<>(ctx.getAccumulatedRefs());
         CmsConsole.outputList("Logical Nodes", items, s -> s, args, moreFollows);
     }
 }

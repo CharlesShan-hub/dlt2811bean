@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -52,9 +53,14 @@ public class GetDataSetValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching dataset values for " + dsRef);
         }
 
-        console.getClient(GetDataSetValuesClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetDataSetValuesClient.class).execute(dao, ctx);
 
-        List<GetDataSetValuesClient.DataSetValue> values = console.getClient(GetDataSetValuesClient.class).getLastValues();
+        @SuppressWarnings("unchecked")
+        List<GetDataSetValuesClient.DataSetValue> values = (List<GetDataSetValuesClient.DataSetValue>) ctx.getResult();
+        if (values == null) {
+            values = java.util.Collections.emptyList();
+        }
 
         if (values.isEmpty()) {
             if (jsonMode) {

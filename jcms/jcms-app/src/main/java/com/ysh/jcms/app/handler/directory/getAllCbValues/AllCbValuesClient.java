@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllCbValues;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesError;
 import com.ysh.jcms.pdu.directory.CmsGetAllCbValuesResponse;
 import com.ysh.jcms.data.sequence.directory.CmsCbValueEntry;
@@ -24,16 +25,16 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
         }
     }
 
-    private List<CbEntry> lastEntries = new ArrayList<>();
-
-    public List<CbEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(AllCbValuesDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(AllCbValuesDao dao) throws Exception {
-        lastEntries.clear(); // clear before fresh pull
-        send(ServiceName.GET_ALL_CB_VALUES, dao);
+    @SuppressWarnings("unchecked")
+    public void execute(AllCbValuesDao dao, PaginationContext ctx) throws Exception {
+        ctx.setResult(new ArrayList<CbEntry>());
+        send(ServiceName.GET_ALL_CB_VALUES, dao, ctx);
     }
 
     @Override
@@ -43,7 +44,8 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    @SuppressWarnings("unchecked")
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetAllCbValuesResponse resp = decodeResp(frame, new CmsGetAllCbValuesResponse());
 
         List<CbEntry> entries = new ArrayList<>();
@@ -53,12 +55,13 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
                 continue; // skip empty entries
             entries.add(new CbEntry(ref, src.value.choice()));
         }
-        lastEntries.addAll(entries);
-        lastMoreFollows(resp.moreFollows.value());
+        List<CbEntry> all = (List<CbEntry>) ctx.getResult();
+        all.addAll(entries);
+        ctx.setLastMoreFollows(resp.moreFollows.value());
         if (resp.cbValue.size() > 0) {
-            lastReference(resp.cbValue.get(resp.cbValue.size() - 1).reference.value());
+            ctx.setLastReference(resp.cbValue.get(resp.cbValue.size() - 1).reference.value());
         }
-        log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
+        log.info("GetAllCBValues page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
     }
 
     @Override

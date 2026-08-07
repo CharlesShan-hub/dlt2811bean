@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getAllDataDefinition;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.sequence.directory.CmsDataDefinitionEntry;
 import com.ysh.jcms.pdu.directory.CmsGetAllDataDefinitionError;
@@ -16,8 +17,15 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
     public void execute(AllDataDefDao dao) throws Exception {
+        execute(dao, new PaginationContext());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public void execute(AllDataDefDao dao, PaginationContext ctx) throws Exception {
+        ctx.setResult(new ArrayList<ContentManager.DataDefEntry>());
         node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
-        send(ServiceName.GET_ALL_DATA_DEFINITION, dao);
+        send(ServiceName.GET_ALL_DATA_DEFINITION, dao, ctx);
     }
 
     @Override
@@ -27,7 +35,7 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetAllDataDefinitionResponse resp = decodeResp(frame, new CmsGetAllDataDefinitionResponse());
 
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();
@@ -40,11 +48,16 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
             entries.add(new ContentManager.DataDefEntry(ref, cdc, choice));
         }
         node.getContentManager().addDataDef(entries);
-        lastMoreFollows(resp.moreFollows.value());
-        if (resp.data.size() > 0) {
-            lastReference(resp.data.get(resp.data.size() - 1).reference.value());
+        // also accumulate in ctx for thread-safe API responses
+        List<ContentManager.DataDefEntry> all = (List<ContentManager.DataDefEntry>) ctx.getResult();
+        if (all != null) {
+            all.addAll(entries);
         }
-        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
+        ctx.setLastMoreFollows(resp.moreFollows.value());
+        if (resp.data.size() > 0) {
+            ctx.setLastReference(resp.data.get(resp.data.size() - 1).reference.value());
+        }
+        log.info("GetAllDataDefinition page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
 import java.util.Arrays;
@@ -92,10 +93,15 @@ public class AllCbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching CB values: target=" + target + " type=" + cbTypeName);
         }
 
-        console.getClient(AllCbValuesClient.class).execute(dao);
-        boolean moreFollows = console.getClient(AllCbValuesClient.class).isLastMoreFollows();
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(AllCbValuesClient.class).execute(dao, ctx);
+        boolean moreFollows = ctx.isLastMoreFollows();
 
-        List<AllCbValuesClient.CbEntry> entries = console.getClient(AllCbValuesClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<AllCbValuesClient.CbEntry> entries = (List<AllCbValuesClient.CbEntry>) ctx.getResult();
+        if (entries == null) {
+            entries = java.util.Collections.emptyList();
+        }
         if (entries.isEmpty()) {
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");

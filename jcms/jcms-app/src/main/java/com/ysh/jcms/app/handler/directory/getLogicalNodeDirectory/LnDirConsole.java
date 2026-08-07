@@ -84,9 +84,10 @@ public class LnDirConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        console.getClient(LnDirClient.class).execute(dao);
-        boolean moreFollows = console.getClient(LnDirClient.class).isLastMoreFollows();
-        List<String> items = new ArrayList<>(console.getContentManager().getNodeRefs(acsi));
+        LnDirContext ctx = new LnDirContext();
+        console.getClient(LnDirClient.class).execute(dao, ctx);
+        boolean moreFollows = ctx.isLastMoreFollows();
+        List<String> items = new ArrayList<>(ctx.getAccumulatedRefs());
         CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args, moreFollows);
     }
 }

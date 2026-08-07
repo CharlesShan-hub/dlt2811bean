@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalDeviceDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryResponse;
@@ -9,18 +10,20 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
-    private final List<String> accumulatedRefs = new ArrayList<>();
-
     @Override
     public void execute(LdDirDao dao) throws Exception {
-        accumulatedRefs.clear();
-        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao);
-        node.getContentManager().initLdDir(new ArrayList<>(accumulatedRefs));
-        log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", accumulatedRefs.size());
+        execute(dao, new PaginationContext());
+    }
+
+    @Override
+    public void execute(LdDirDao dao, PaginationContext ctx) throws Exception {
+        ctx.getAccumulatedRefs().clear();
+        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao, ctx);
+        node.getContentManager().initLdDir(new ArrayList<>(ctx.getAccumulatedRefs()));
+        log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", ctx.getAccumulatedRefs().size());
     }
 
     @Override
@@ -30,17 +33,17 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
 
         for (CmsSubReference ref : resp.lnReference) {
-            accumulatedRefs.add(ref.value());
+            ctx.getAccumulatedRefs().add(ref.value());
         }
-        lastMoreFollows(resp.moreFollows.value());
+        ctx.setLastMoreFollows(resp.moreFollows.value());
         if (resp.lnReference.size() > 0) {
-            lastReference(resp.lnReference.get(resp.lnReference.size() - 1).value());
+            ctx.setLastReference(resp.lnReference.get(resp.lnReference.size() - 1).value());
         }
-        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), lastMoreFollows());
+        log.info("GetLogicalDeviceDirectory page: {} lnRefs (moreFollows={})", resp.lnReference.size(), ctx.isLastMoreFollows());
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getServerDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryResponse;
@@ -8,19 +9,20 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
-    private final List<String> accumulatedRefs = new ArrayList<>();
-
     @Override
     public void execute(SvrDirDao dao) throws Exception {
-        accumulatedRefs.clear();
-        send(ServiceName.GET_SERVER_DIRECTORY, dao);
-        node.getContentManager().initServerDir(new ArrayList<>(accumulatedRefs));
-        log.info("GetServerDirectory succeeded: {} logical devices", accumulatedRefs.size());
+        execute(dao, new PaginationContext());
+    }
+
+    @Override
+    public void execute(SvrDirDao dao, PaginationContext ctx) throws Exception {
+        ctx.getAccumulatedRefs().clear();
+        send(ServiceName.GET_SERVER_DIRECTORY, dao, ctx);
+        node.getContentManager().initServerDir(new java.util.ArrayList<>(ctx.getAccumulatedRefs()));
+        log.info("GetServerDirectory succeeded: {} logical devices", ctx.getAccumulatedRefs().size());
     }
 
     @Override
@@ -30,17 +32,17 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
 
         for (CmsObjectReference ref : resp.reference) {
-            accumulatedRefs.add(ref.value());
+            ctx.getAccumulatedRefs().add(ref.value());
         }
-        lastMoreFollows(resp.moreFollows.value());
+        ctx.setLastMoreFollows(resp.moreFollows.value());
         if (resp.reference.size() > 0) {
-            lastReference(resp.reference.get(resp.reference.size() - 1).value());
+            ctx.setLastReference(resp.reference.get(resp.reference.size() - 1).value());
         }
-        log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), lastMoreFollows());
+        log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), ctx.isLastMoreFollows());
     }
 
     @Override

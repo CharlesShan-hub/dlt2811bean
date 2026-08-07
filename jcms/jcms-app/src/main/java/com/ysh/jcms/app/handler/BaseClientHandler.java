@@ -1,9 +1,7 @@
 package com.ysh.jcms.app.handler;
 
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.core.CmsType;
-import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.frame.FrameHeader;
@@ -14,6 +12,15 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     /** All client handlers must implement this as their entry point. */
     public abstract void execute(D dao) throws Exception;
+
+    /**
+     * Execute with a pagination context. Default implementation delegates to
+     * {@link #execute(BaseDao)}. Subclasses that support pagination should override
+     * this and use the context for state passing.
+     */
+    public void execute(D dao, PaginationContext ctx) throws Exception {
+        execute(dao);
+    }
 
     protected CmsNode node;
 
@@ -34,49 +41,21 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         return node.getClient().getSession().nextReqId();
     }
 
-    // ────────── Auto-pull pagination support (ThreadLocal for concurrency)
-    // ──────────
-
-    private final ThreadLocal<Boolean> tlLastMoreFollows = ThreadLocal.withInitial(() -> false);
-    private final ThreadLocal<String> tlLastReference = new ThreadLocal<>();
-
-    /** @return whether the last response has more pages. */
-    public boolean isLastMoreFollows() {
-        return tlLastMoreFollows.get();
-    }
-
-    /** Fluent getter — used by subclasses in log statements. */
-    protected boolean lastMoreFollows() {
-        return tlLastMoreFollows.get();
-    }
-
-    protected void lastMoreFollows(boolean v) {
-        tlLastMoreFollows.set(v);
-    }
-
-    protected String lastReference() {
-        return tlLastReference.get();
-    }
-
-    protected void lastReference(String v) {
-        tlLastReference.set(v);
-    }
-
     /** Max auto-pull iterations to prevent infinite loops. */
     private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
 
     /**
-     * Send a request built from the DAO. If {@link BaseDao#autoPull()} is true,
-     * automatically follows {@code moreFollows} pagination: calls
-     * {@link #onSuccess(Frame)} for each page.
+     * Send a request built from the DAO with a pagination context for state
+     * passing. If {@link BaseDao#autoPull()} is true, automatically follows
+     * {@code moreFollows} pagination.
      * <p>
-     * Subclasses <b>must</b> call {@link #lastMoreFollows(boolean)} and
-     * {@link #lastReference(String)} inside their {@link #onSuccess(Frame)}
-     * override for auto-pull to work.
+     * Subclasses <b>must</b> call {@link PaginationContext#setLastMoreFollows} and
+     * {@link PaginationContext#setLastReference} inside their
+     * {@link #onSuccess(Frame, PaginationContext)} override for auto-pull to work.
      */
-    protected Frame send(ServiceName sc, D dao) throws IOException {
-        lastMoreFollows(false);
-        lastReference(null);
+    protected Frame send(ServiceName sc, D dao, PaginationContext ctx) throws IOException {
+        ctx.setLastMoreFollows(false);
+        ctx.setLastReference(null);
         Frame frame = null;
         int iterations = 0;
         do {
@@ -86,11 +65,11 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             }
             byte[] pdu = dao.toRequest().encode();
             trace(">>>\n" + dao.toRequest());
-            frame = send(sc, pdu);
+            frame = sendPdu(sc, pdu, ctx);
             if (frame == null || frame.header().err())
                 break;
-            if (dao.autoPull() && lastMoreFollows()) {
-                String ref = lastReference();
+            if (dao.autoPull() && ctx.isLastMoreFollows()) {
+                String ref = ctx.getLastReference();
                 if (ref == null || ref.isEmpty()) {
                     log.warn("Auto-pull: lastReference is null/empty for {}, stopping", sc);
                     break;
@@ -107,11 +86,37 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
+     * Send raw PDU bytes and invoke the ctx-aware callback instead of the no-arg
+     * {@link #onSuccess(Frame)}.
+     */
+    private Frame sendPdu(ServiceName sc, byte[] pduBytes, PaginationContext ctx) throws IOException {
+        if (node == null)
+            throw new IOException("BaseClientHandler node not set");
+        Frame frame = node.sendRequest(sc, pduBytes);
+        if (frame == null)
+            throw new IOException("Request timed out for " + sc);
+        if (frame.header().err())
+            onError(frame);
+        onSuccess(frame, ctx);
+        return frame;
+    }
+
+    /**
+     * Send a request without a pagination context. Creates an internal context and
+     * calls {@link #send(ServiceName, BaseDao, PaginationContext)}.
+     * <p>
+     * Note: without a context, auto-pull state is not accessible to the caller.
+     * Prefer using the ctx-parameterized version for paginated services.
+     */
+    protected Frame send(ServiceName sc, D dao) throws IOException {
+        return send(sc, dao, new PaginationContext());
+    }
+
+    /**
      * Bridge method for subclasses to set the pagination cursor on their specific
      * DAO type. Default is no-op; subclasses that support auto-pull must override
      * to call {@code dao.referenceAfter(cursor)}.
      */
-    @SuppressWarnings("unchecked")
     protected void setPaginationCursor(D dao, String cursor) {
         // default no-op — override in subclasses that support pagination
     }
@@ -134,8 +139,6 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     /**
      * Encode and send a request (object form), with PDU trace when enabled.
-     * Response is NOT automatically traced here — each subclass calls
-     * {@link #traceResp(CmsType)} inside {@link #onSuccess(Frame)} after decoding.
      */
     protected Frame send(ServiceName sc, CmsType requestObject) throws IOException {
         trace(">>>\n" + requestObject);
@@ -143,8 +146,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
-     * Send a one-way (fire-and-forget) frame. No response expected. PDU is traced
-     * when enabled.
+     * Send a one-way (fire-and-forget) frame. No response expected.
      */
     protected void sendOneWay(ServiceName sc, byte[] pduBytes) throws IOException {
         if (node == null)
@@ -160,12 +162,22 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         sendOneWay(sc, requestObject.encode());
     }
 
-    /** Trace a decoded response PDU. Call from {@link #onSuccess(Frame)}. */
+    /** Trace a decoded response PDU. */
     protected static void traceResp(CmsType resp) {
         trace("<<<\n" + resp);
     }
 
     protected void onSuccess(Frame frame) throws IOException {
+    }
+
+    /**
+     * Callback invoked after each successful response during auto-pull. Default
+     * implementation delegates to {@link #onSuccess(Frame)}. Subclasses that use a
+     * pagination context should override this to populate the context with
+     * accumulated data and pagination state.
+     */
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+        onSuccess(frame);
     }
 
     protected void onError(Frame frame) throws IOException {
@@ -196,15 +208,5 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     protected static <T extends CmsType> T decodeErr(Frame frame, T err) throws IOException {
         err.decode(frame.asduBytes());
         return err;
-    }
-
-    private static boolean isTraceEnabled() {
-        return CmsConfigLoader.load().client().console().tracePdu();
-    }
-
-    protected static void trace(String msg) {
-        if (isTraceEnabled()) {
-            ConsolePrinter.gray("[TRACE] " + msg);
-        }
     }
 }

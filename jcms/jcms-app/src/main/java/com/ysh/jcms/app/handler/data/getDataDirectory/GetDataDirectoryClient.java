@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.sequence.data.CmsSubRefEntry;
 import com.ysh.jcms.info.FunctionalConstraint;
 import com.ysh.jcms.pdu.data.CmsGetDataDirectoryError;
@@ -24,16 +25,16 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
         }
     }
 
-    private List<DirEntry> lastEntries = new ArrayList<>();
-
-    public List<DirEntry> getLastEntries() {
-        return lastEntries;
+    @Override
+    public void execute(GetDataDirectoryDao dao) throws Exception {
+        execute(dao, new PaginationContext());
     }
 
     @Override
-    public void execute(GetDataDirectoryDao dao) throws Exception {
-        lastEntries.clear();
-        send(ServiceName.GET_DATA_DIRECTORY, dao);
+    @SuppressWarnings("unchecked")
+    public void execute(GetDataDirectoryDao dao, PaginationContext ctx) throws Exception {
+        ctx.setResult(new ArrayList<DirEntry>());
+        send(ServiceName.GET_DATA_DIRECTORY, dao, ctx);
     }
 
     @Override
@@ -43,19 +44,21 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    @SuppressWarnings("unchecked")
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
         CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();
         for (CmsSubRefEntry e : resp.dataAttribute) {
             entries.add(new DirEntry(e.reference.value(), fcCode(e)));
         }
-        lastEntries.addAll(entries);
-        lastMoreFollows(resp.moreFollows.value());
+        List<DirEntry> all = (List<DirEntry>) ctx.getResult();
+        all.addAll(entries);
+        ctx.setLastMoreFollows(resp.moreFollows.value());
         if (resp.dataAttribute.size() > 0) {
-            lastReference(resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value());
+            ctx.setLastReference(resp.dataAttribute.get(resp.dataAttribute.size() - 1).reference.value());
         }
-        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), lastMoreFollows());
+        log.info("GetDataDirectory page: {} entries (moreFollows={})", entries.size(), ctx.isLastMoreFollows());
     }
 
     @Override

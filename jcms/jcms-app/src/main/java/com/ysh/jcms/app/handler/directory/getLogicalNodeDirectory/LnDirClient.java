@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.directory.getLogicalNodeDirectory;
 
 import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.scalar.CmsSubReference;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryError;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalNodeDirectoryResponse;
@@ -13,21 +14,22 @@ import java.util.List;
 
 public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
-    // ThreadLocal for concurrency safety — each thread has its own accumulator
-    private final ThreadLocal<List<String>> tlAccumulatedRefs = ThreadLocal.withInitial(ArrayList::new);
-    private final ThreadLocal<Integer> tlAcsiClass = new ThreadLocal<>();
-
     @Override
     public void execute(LnDirDao dao) throws Exception {
-        tlAcsiClass.set(dao.acsiClass());
-        tlAccumulatedRefs.get().clear();
-        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao);
-        int acsiClass = tlAcsiClass.get();
-        List<String> refs = new ArrayList<>(tlAccumulatedRefs.get());
-        node.getContentManager().initNodeDir(acsiClass, refs);
-        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", refs.size(), acsiClass);
-        tlAccumulatedRefs.remove();
-        tlAcsiClass.remove();
+        LnDirContext ctx = new LnDirContext();
+        ctx.setAcsiClass(dao.acsiClass());
+        execute(dao, ctx);
+    }
+
+    @Override
+    public void execute(LnDirDao dao, PaginationContext ctx) throws Exception {
+        LnDirContext lnCtx = (LnDirContext) ctx;
+        lnCtx.setAcsiClass(dao.acsiClass());
+        lnCtx.getAccumulatedRefs().clear();
+        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao, lnCtx);
+        List<String> refs = new ArrayList<>(lnCtx.getAccumulatedRefs());
+        node.getContentManager().initNodeDir(lnCtx.getAcsiClass(), refs);
+        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", refs.size(), lnCtx.getAcsiClass());
     }
 
     @Override
@@ -37,18 +39,18 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame) throws IOException {
+    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+        LnDirContext lnCtx = (LnDirContext) ctx;
         CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
 
-        List<String> acc = tlAccumulatedRefs.get();
         for (CmsSubReference ref : resp.reference) {
-            acc.add(ref.value());
+            lnCtx.getAccumulatedRefs().add(ref.value());
         }
-        lastMoreFollows(resp.moreFollows.value());
+        lnCtx.setLastMoreFollows(resp.moreFollows.value());
         if (resp.reference.size() > 0) {
-            lastReference(resp.reference.get(resp.reference.size() - 1).value());
+            lnCtx.setLastReference(resp.reference.get(resp.reference.size() - 1).value());
         }
-        log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), lastMoreFollows());
+        log.info("GetLogicalNodeDirectory page: {} refs (moreFollows={})", resp.reference.size(), lnCtx.isLastMoreFollows());
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.app.node.ContentManager;
 import com.ysh.jcms.data.scalar.CmsFC;
 import com.ysh.jcms.util.CmsFormatUtil;
@@ -59,10 +60,15 @@ public class AllDataValuesConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        console.getClient(AllDataValuesClient.class).execute(dao);
-        boolean moreFollows = console.getClient(AllDataValuesClient.class).isLastMoreFollows();
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(AllDataValuesClient.class).execute(dao, ctx);
+        boolean moreFollows = ctx.isLastMoreFollows();
 
-        List<ContentManager.AllDataEntry> entries = console.getContentManager().getAllDataEntries();
+        @SuppressWarnings("unchecked")
+        List<ContentManager.AllDataEntry> entries = (List<ContentManager.AllDataEntry>) ctx.getResult();
+        if (entries == null) {
+            entries = java.util.Collections.emptyList();
+        }
         if (entries.isEmpty()) {
             if (jsonMode) {
                 ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");

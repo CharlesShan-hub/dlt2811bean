@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +44,10 @@ public class SvrDirConsole extends CommandHandler {
         if ("true".equalsIgnoreCase(autoPull)) {
             dao.autoPull(true);
         }
-        console.getClient(SvrDirClient.class).execute(dao);
-        boolean moreFollows = console.getClient(SvrDirClient.class).isLastMoreFollows();
-        List<String> ldNames = new ArrayList<>(console.getContentManager().getLdNames());
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(SvrDirClient.class).execute(dao, ctx);
+        boolean moreFollows = ctx.isLastMoreFollows();
+        List<String> ldNames = new ArrayList<>(ctx.getAccumulatedRefs());
         CmsConsole.outputList("Logical Devices", ldNames, s -> s, args, moreFollows);
     }
 }

@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,10 +48,15 @@ public class GetDataDirectoryConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data directory for " + ref);
         }
 
-        console.getClient(GetDataDirectoryClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetDataDirectoryClient.class).execute(dao, ctx);
 
-        boolean moreFollows = console.getClient(GetDataDirectoryClient.class).isLastMoreFollows();
-        List<GetDataDirectoryClient.DirEntry> entries = console.getClient(GetDataDirectoryClient.class).getLastEntries();
+        boolean moreFollows = ctx.isLastMoreFollows();
+        @SuppressWarnings("unchecked")
+        List<GetDataDirectoryClient.DirEntry> entries = (List<GetDataDirectoryClient.DirEntry>) ctx.getResult();
+        if (entries == null) {
+            entries = java.util.Collections.emptyList();
+        }
 
         if (entries.isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {

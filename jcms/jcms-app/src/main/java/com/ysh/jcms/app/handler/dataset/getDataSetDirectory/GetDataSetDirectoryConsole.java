@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.PaginationContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,9 +48,14 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
             ConsolePrinter.info("Fetching dataset directory for " + dsRef);
         }
 
-        console.getClient(GetDataSetDirectoryClient.class).execute(dao);
+        PaginationContext ctx = new PaginationContext();
+        console.getClient(GetDataSetDirectoryClient.class).execute(dao, ctx);
 
-        List<GetDataSetDirectoryClient.DirEntry> entries = console.getClient(GetDataSetDirectoryClient.class).getLastEntries();
+        @SuppressWarnings("unchecked")
+        List<GetDataSetDirectoryClient.DirEntry> entries = (List<GetDataSetDirectoryClient.DirEntry>) ctx.getResult();
+        if (entries == null) {
+            entries = java.util.Collections.emptyList();
+        }
 
         if (entries.isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
