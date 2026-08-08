@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.handler.report.setBrcbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.SetCbValuesServer;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.sequence.report.CmsSetBrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsSetBrcbValuesRequest;
@@ -11,132 +12,60 @@ import com.ysh.jcms.pdu.report.CmsSetBrcbValuesResponse;
 import com.ysh.jcms.pdu.report.CmsSetBrcbResult;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
-import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError> {
+public class SetBrcbValuesServer
+        extends SetCbValuesServer<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError, CmsSetBrcbEntry, CmsSetBrcbResult> {
 
     public SetBrcbValuesServer() {
         super(ServiceName.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsSetBrcbValuesRequest req, int reqId) {
-        log.info("SetBRCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.brcb.size());
-
-        // 8.7.3.2.c) Empty sequence → Response+
-        if (req.brcb.size() == 0) {
-            try {
-                return buildSuccess(new CmsSetBrcbValuesResponse().encode(), reqId);
-            } catch (Exception e) {
-                log.error("Failed to encode SetBRCBValuesResponse", e);
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-            }
-        }
-
-        SclIED ied = requireIed(session, reqId);
-
-        List<CmsSetBrcbResult> results = new ArrayList<>();
-        boolean hasAnyError = false;
-
-        for (int i = 0; i < req.brcb.size(); i++) {
-            CmsSetBrcbEntry entry = req.brcb.get(i);
-            String ref = entry.reference.value();
-
-            CmsSetBrcbResult result = processEntry(ied, entry, ref, session);
-            results.add(result);
-
-            // 8.7.3.2.e) Per-entry: result is empty when all fields succeed,
-            // contains only error fields on failure
-            if (hasEntryError(result)) {
-                hasAnyError = true;
-            }
-        }
-
-        // 8.7.3.2.d) All succeed → Response+, any failure → Response- with results
-        if (hasAnyError) {
-            CmsSetBrcbValuesError errResp = new CmsSetBrcbValuesError();
-            for (CmsSetBrcbResult r : results) {
-                errResp.result.add(r);
-            }
-            log.warn("SetBRCBValues: {} entries had errors", results.stream().filter(this::hasEntryError).count());
-            try {
-                return buildError(errResp.encode(), reqId);
-            } catch (Exception e) {
-                log.error("Failed to encode SetBRCBValuesError", e);
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-            }
-        }
-
-        try {
-            return buildSuccess(new CmsSetBrcbValuesResponse().encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode SetBRCBValuesResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+    protected List<CmsSetBrcbEntry> entries(CmsSetBrcbValuesRequest req) {
+        return req.brcb;
     }
 
-    /** Check if an entry result has any error. */
-    private boolean hasEntryError(CmsSetBrcbResult r) {
-        if (r.isPresent("error"))
-            return true;
-        if (r.isPresent("rptID"))
-            return true;
-        if (r.isPresent("rptEna"))
-            return true;
-        if (r.isPresent("datSet"))
-            return true;
-        if (r.isPresent("optFlds"))
-            return true;
-        if (r.isPresent("bufTm"))
-            return true;
-        if (r.isPresent("trgOps"))
-            return true;
-        if (r.isPresent("intgPd"))
-            return true;
-        if (r.isPresent("gi"))
-            return true;
-        if (r.isPresent("purgeBuf"))
-            return true;
-        if (r.isPresent("entryID"))
-            return true;
-        if (r.isPresent("resvTms"))
-            return true;
-        return false;
+    @Override
+    protected String entryRef(CmsSetBrcbEntry entry) {
+        return entry.reference.value();
     }
 
-    private CmsSetBrcbResult processEntry(SclIED ied, CmsSetBrcbEntry entry, String ref, Session session) {
+    @Override
+    protected CmsType successResp() {
+        return new CmsSetBrcbValuesResponse();
+    }
+
+    @Override
+    protected CmsSetBrcbValuesError errorResp() {
+        return new CmsSetBrcbValuesError();
+    }
+
+    @Override
+    protected void addResult(CmsSetBrcbValuesError errResp, CmsSetBrcbResult result) {
+        errResp.result.add(result);
+    }
+
+    @Override
+    protected CmsSetBrcbResult processEntry(SclIED ied, CmsSetBrcbEntry entry, String ref, Session session) {
         CmsSetBrcbResult result = new CmsSetBrcbResult();
 
-        // Validate ref format
-        if (!SclRefParser.isValid(ref)) {
+        SclRef sclRef = parseRef(ref);
+        if (sclRef == null) {
             log.warn("SetBRCBValues: invalid ref format {}", ref);
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null) {
-            log.warn("SetBRCBValues: invalid ref format {} (no CB name)", ref);
-            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            return result;
-        }
 
-        // Validate LN exists
-        SclLN ln = findLn(ied, ldName, lnName);
+        SclLN ln = findLn(ied, sclRef.ldInst(), sclRef.lnName());
         if (ln == null) {
-            log.warn("SetBRCBValues: cannot find LN {} in LD {}", lnName, ldName);
+            log.warn("SetBRCBValues: cannot find LN {} in LD {}", sclRef.lnName(), sclRef.ldInst());
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
@@ -144,13 +73,13 @@ public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesReque
         // Validate buffered RC exists
         SclReportControl rc = null;
         for (SclReportControl c : ln.reportControls()) {
-            if ("true".equals(c.buffered()) && c.name().equals(cbName)) {
+            if ("true".equals(c.buffered()) && c.name().equals(sclRef.doName())) {
                 rc = c;
                 break;
             }
         }
         if (rc == null) {
-            log.warn("SetBRCBValues: cannot find buffered RC {} in LN {}", cbName, lnName);
+            log.warn("SetBRCBValues: cannot find buffered RC {} in LN {}", sclRef.doName(), sclRef.lnName());
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
@@ -172,7 +101,7 @@ public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesReque
         } else if (hasRptEna && rptEnaVal) {
             // rptEna=true → set others first, then rptEna
             setOtherBrcbFields(result, entry, rtState);
-            if (!hasEntryError(result)) {
+            if (!result.hasAnyPresent()) {
                 rtState.rptEna(true);
                 result.setPresent("rptEna", false);
             }
@@ -185,7 +114,7 @@ public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesReque
         log.info("SetBRCBValues: applied fields to ref={}", ref);
 
         // 8.7.1 — ReportEngine hooks
-        if (!hasEntryError(result)) {
+        if (!result.hasAnyPresent()) {
             ReportEngine engine = ReportEngine.getInstance();
             if (engine != null) {
                 if (hasRptEna) {
@@ -275,10 +204,5 @@ public class SetBrcbValuesServer extends BaseServerHandler<CmsSetBrcbValuesReque
             rtState.resvTms(entry.resvTms.value());
             result.setPresent("resvTms", false);
         }
-    }
-
-    private static SclLN findLn(SclIED ied, String ldName, String lnName) {
-        SclLDevice ld = ied.lDevice(ldName);
-        return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 }

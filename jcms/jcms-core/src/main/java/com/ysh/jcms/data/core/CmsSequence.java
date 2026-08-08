@@ -243,6 +243,22 @@ public abstract class CmsSequence extends CmsType {
         return V.isPresent(inner._v, fieldName);
     }
 
+    /**
+     * True if any OPTIONAL field is currently marked present.
+     *
+     * <p>
+     * Set*Result PDUs (e.g. {@code SetBRCBResult}) encode "this field failed" as
+     * "the optional field is present", so a single call replaces the old
+     * per-field {@code hasEntryError()} enumeration.
+     */
+    public boolean hasAnyPresent() {
+        for (String name : SEQ_META.get(getClass()).optional) {
+            if (isPresent(name))
+                return true;
+        }
+        return false;
+    }
+
     // ── field access — direct to _v ──────────────────────────────────
 
     protected int getInt(String fieldName) {

@@ -1,9 +1,10 @@
 package com.ysh.jcms.app.handler.report.setUrcbValues;
 
-import com.ysh.jcms.app.handler.BaseServerHandler;
+import com.ysh.jcms.app.handler.SetCbValuesServer;
 import com.ysh.jcms.app.handler.report.report.ReportEngine;
-import com.ysh.jcms.data.sequence.block.CmsBrcb;
+import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
+import com.ysh.jcms.data.sequence.block.CmsBrcb;
 import com.ysh.jcms.data.sequence.report.CmsSetUrcbEntry;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesError;
 import com.ysh.jcms.pdu.report.CmsSetUrcbValuesRequest;
@@ -11,135 +12,73 @@ import com.ysh.jcms.pdu.report.CmsSetUrcbValuesResponse;
 import com.ysh.jcms.pdu.report.CmsSetUrcbResult;
 import com.ysh.jcms.utils.scl.model.control.SclReportControl;
 import com.ysh.jcms.utils.scl.model.ied.SclLN;
-import com.ysh.jcms.utils.scl.model.ied.SclLDevice;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
+import com.ysh.jcms.utils.scl.ref.SclRef;
 import com.ysh.jcms.utils.scl.state.RcbStateManager;
 import com.ysh.jcms.utils.transport.ServiceName;
-import com.ysh.jcms.utils.transport.frame.Frame;
-import com.ysh.jcms.utils.scl.ref.SclRef;
-import com.ysh.jcms.utils.scl.ref.SclRefParser;
 import com.ysh.jcms.utils.transport.session.Session;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class SetUrcbValuesServer extends BaseServerHandler<CmsSetUrcbValuesRequest, CmsSetUrcbValuesError> {
+public class SetUrcbValuesServer
+        extends SetCbValuesServer<CmsSetUrcbValuesRequest, CmsSetUrcbValuesError, CmsSetUrcbEntry, CmsSetUrcbResult> {
 
     public SetUrcbValuesServer() {
         super(ServiceName.SET_URCB_VALUES, CmsSetUrcbValuesRequest.class, CmsSetUrcbValuesError.class);
     }
 
     @Override
-    protected Frame onDecodeSuccess(Session session, CmsSetUrcbValuesRequest req, int reqId) {
-        log.info("SetURCBValues from {}: reqId={}, {} entries", session.getSessionId(), reqId, req.urcb.size());
-
-        // 8.7.5.2.c) Empty sequence → Response+
-        if (req.urcb.size() == 0) {
-            try {
-                return buildSuccess(new CmsSetUrcbValuesResponse().encode(), reqId);
-            } catch (Exception e) {
-                log.error("Failed to encode SetURCBValuesResponse", e);
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-            }
-        }
-
-        SclIED ied = requireIed(session, reqId);
-
-        List<CmsSetUrcbResult> results = new ArrayList<>();
-        boolean hasAnyError = false;
-
-        for (CmsSetUrcbEntry entry : req.urcb) {
-            String ref = entry.reference.value();
-
-            CmsSetUrcbResult result = processEntry(ied, entry, ref, session);
-            results.add(result);
-
-            if (hasEntryError(result)) {
-                hasAnyError = true;
-            }
-        }
-
-        // 8.7.5.2.d) All succeed → Response+, any failure → Response- with results
-        if (hasAnyError) {
-            CmsSetUrcbValuesError errResp = new CmsSetUrcbValuesError();
-            for (CmsSetUrcbResult r : results) {
-                errResp.result.add(r);
-            }
-            log.warn("SetURCBValues: {} entries had errors", results.stream().filter(this::hasEntryError).count());
-            try {
-                return buildError(errResp.encode(), reqId);
-            } catch (Exception e) {
-                log.error("Failed to encode SetURCBValuesError", e);
-                return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-            }
-        }
-
-        try {
-            return buildSuccess(new CmsSetUrcbValuesResponse().encode(), reqId);
-        } catch (Exception e) {
-            log.error("Failed to encode SetURCBValuesResponse", e);
-            return onDecodeError(reqId, CmsServiceError.FAILED_DUE_TO_SERVER_CONSTRAINT);
-        }
+    protected List<CmsSetUrcbEntry> entries(CmsSetUrcbValuesRequest req) {
+        return req.urcb;
     }
 
-    private boolean hasEntryError(CmsSetUrcbResult r) {
-        if (r.isPresent("error"))
-            return true;
-        if (r.isPresent("rptID"))
-            return true;
-        if (r.isPresent("rptEna"))
-            return true;
-        if (r.isPresent("datSet"))
-            return true;
-        if (r.isPresent("optFlds"))
-            return true;
-        if (r.isPresent("bufTm"))
-            return true;
-        if (r.isPresent("trgOps"))
-            return true;
-        if (r.isPresent("intgPd"))
-            return true;
-        if (r.isPresent("gi"))
-            return true;
-        if (r.isPresent("resv"))
-            return true;
-        return false;
+    @Override
+    protected String entryRef(CmsSetUrcbEntry entry) {
+        return entry.reference.value();
     }
 
-    private CmsSetUrcbResult processEntry(SclIED ied, CmsSetUrcbEntry entry, String ref, Session session) {
+    @Override
+    protected CmsType successResp() {
+        return new CmsSetUrcbValuesResponse();
+    }
+
+    @Override
+    protected CmsSetUrcbValuesError errorResp() {
+        return new CmsSetUrcbValuesError();
+    }
+
+    @Override
+    protected void addResult(CmsSetUrcbValuesError errResp, CmsSetUrcbResult result) {
+        errResp.result.add(result);
+    }
+
+    @Override
+    protected CmsSetUrcbResult processEntry(SclIED ied, CmsSetUrcbEntry entry, String ref, Session session) {
         CmsSetUrcbResult result = new CmsSetUrcbResult();
 
-        if (!SclRefParser.isValid(ref)) {
+        SclRef sclRef = parseRef(ref);
+        if (sclRef == null) {
             log.warn("SetURCBValues: invalid ref format {}", ref);
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
-        SclRef sclRef = SclRefParser.parse(ref);
-        String ldName = sclRef.ldInst();
-        String lnName = sclRef.lnName();
-        String cbName = sclRef.doName();
-        if (cbName == null) {
-            log.warn("SetURCBValues: invalid ref format {} (no CB name)", ref);
-            result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
-            return result;
-        }
 
-        SclLN ln = findLn(ied, ldName, lnName);
+        SclLN ln = findLn(ied, sclRef.ldInst(), sclRef.lnName());
         if (ln == null) {
-            log.warn("SetURCBValues: cannot find LN {} in LD {}", lnName, ldName);
+            log.warn("SetURCBValues: cannot find LN {} in LD {}", sclRef.lnName(), sclRef.ldInst());
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
 
         SclReportControl rc = null;
         for (SclReportControl c : ln.reportControls()) {
-            if (!"true".equals(c.buffered()) && c.name().equals(cbName)) {
+            if (!"true".equals(c.buffered()) && c.name().equals(sclRef.doName())) {
                 rc = c;
                 break;
             }
         }
         if (rc == null) {
-            log.warn("SetURCBValues: cannot find unbuffered RC {} in LN {}", cbName, lnName);
+            log.warn("SetURCBValues: cannot find unbuffered RC {} in LN {}", sclRef.doName(), sclRef.lnName());
             result.error(CmsServiceError.INSTANCE_NOT_AVAILABLE);
             return result;
         }
@@ -156,7 +95,7 @@ public class SetUrcbValuesServer extends BaseServerHandler<CmsSetUrcbValuesReque
             setOtherUrcbFields(result, entry, rtState);
         } else if (hasRptEna && rptEnaVal) {
             setOtherUrcbFields(result, entry, rtState);
-            if (!hasEntryError(result)) {
+            if (!result.hasAnyPresent()) {
                 rtState.rptEna(true);
                 result.setPresent("rptEna", false);
             }
@@ -167,7 +106,7 @@ public class SetUrcbValuesServer extends BaseServerHandler<CmsSetUrcbValuesReque
         log.info("SetURCBValues: applied fields to ref={}", ref);
 
         // 8.7.1 — ReportEngine hooks
-        if (!hasEntryError(result)) {
+        if (!result.hasAnyPresent()) {
             ReportEngine engine = ReportEngine.getInstance();
             if (engine != null) {
                 if (hasRptEna) {
@@ -237,10 +176,5 @@ public class SetUrcbValuesServer extends BaseServerHandler<CmsSetUrcbValuesReque
             }
             result.setPresent("resv", false);
         }
-    }
-
-    private static SclLN findLn(SclIED ied, String ldName, String lnName) {
-        SclLDevice ld = ied.lDevice(ldName);
-        return ld != null ? ld.findLnByFullName(lnName) : null;
     }
 }
