@@ -4,27 +4,19 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 public class SelectWithValueConsole extends CommandHandler<SelectWithValueDao, SelectWithValueClient> {
 
     public SelectWithValueConsole() {
         super(CommandInfo.SELECT_WITH_VALUE, false);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(
-                new Param("ref", "控制对象引用", null),
-                new Param("value", "控制值 (SPC: true/false)", ""),
-                new Param("origin", "操作源 (0=本地, 1=远程)", ""),
-                new Param("ctlNum", "控制序号", ""),
-                new Param("test", "测试标志", ""),
-                new Param("check", "校验 (syncheck,interlock)", ""));
+        param("ref", "控制对象引用", null);
+        param("value", "控制值 (SPC: true/false)", "");
+        param("origin", "操作源 (0=本地, 1=远程)", "");
+        param("ctlNum", "控制序号", "");
+        param("test", "测试标志", "");
+        param("check", "校验 (syncheck,interlock)", "");
     }
 
     @Override

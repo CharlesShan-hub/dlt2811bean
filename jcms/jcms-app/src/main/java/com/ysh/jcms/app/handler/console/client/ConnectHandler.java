@@ -4,7 +4,8 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
@@ -15,22 +16,20 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-public class ConnectHandler extends CommandHandler {
+public class ConnectHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public ConnectHandler() {
         super(CommandInfo.CONNECT);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"), new Param("port", "服务器端口（默认 8102，TLS 默认 9102）", ""),
-                new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
-                new Param("apsecure", "应用层安全认证（不传值，出现即启用）", ""), new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""),
-                new Param("version", "协议版本", ""));
+        param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1");
+        param("port", "服务器端口（默认 8102，TLS 默认 9102）", "");
+        param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", "");
+        param("secure", "使用 TLS 加密连接（不传值，出现即启用）", "");
+        param("apsecure", "应用层安全认证（不传值，出现即启用）", "");
+        param("apdu", "APDU 大小", "");
+        param("asdu", "ASDU 大小", "");
+        param("version", "协议版本", "");
     }
 
     @Override

@@ -4,23 +4,18 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.PaginationContext;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class GetDataSetDirectoryConsole extends CommandHandler {
+public class GetDataSetDirectoryConsole extends CommandHandler<GetDataSetDirectoryDao, GetDataSetDirectoryClient> {
 
     public GetDataSetDirectoryConsole() {
         super(CommandInfo.GET_DATASET_DIR);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("auto-pull", "自动续拉分页（true/false）", "false"));
+        param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null);
+        param("after", "起始引用（分页截取）", "");
+        param("auto-pull", "自动续拉分页（true/false）", "false");
     }
 
     @Override

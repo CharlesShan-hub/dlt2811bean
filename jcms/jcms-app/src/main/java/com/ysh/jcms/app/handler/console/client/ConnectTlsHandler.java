@@ -4,7 +4,8 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
@@ -15,21 +16,17 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-public class ConnectTlsHandler extends CommandHandler {
+public class ConnectTlsHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public ConnectTlsHandler() {
         super(CommandInfo.CONNECT_TLS);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1"),
-                new Param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("apduSize", "APDU 大小", ""),
-                new Param("asduSize", "ASDU 大小", ""), new Param("protocolVersion", "协议版本", ""));
+        param("host", "服务器地址（默认 127.0.0.1）", "127.0.0.1");
+        param("sap-ref", "ServerAccessPoint 引用（如 C_B5041X/S1）", "");
+        param("apduSize", "APDU 大小", "");
+        param("asduSize", "ASDU 大小", "");
+        param("protocolVersion", "协议版本", "");
     }
 
     @Override

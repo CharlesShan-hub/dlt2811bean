@@ -4,22 +4,15 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-public class SetDataSetValuesConsole extends CommandHandler {
+public class SetDataSetValuesConsole extends CommandHandler<SetDataSetValuesDao, SetDataSetValuesClient> {
 
     public SetDataSetValuesConsole() {
         super(CommandInfo.SET_DATASET_VALUES);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("values", "数据值列表（空格分隔），如 \"aa bb cc\"", null),
-                new Param("after", "起始引用（分页截取）", ""));
+        param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null);
+        param("values", "数据值列表（空格分隔），如 \"aa bb cc\"", null);
+        param("after", "起始引用（分页截取）", "");
     }
 
     @Override

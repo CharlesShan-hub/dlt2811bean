@@ -1,21 +1,17 @@
 package com.ysh.jcms.app.handler.console.client;
 
 import com.ysh.jcms.app.console.*;
-
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import java.util.*;
 
-public class HelpHandler extends CommandHandler {
+public class HelpHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     private final CmsConsole console;
 
     public HelpHandler(CmsConsole console) {
         super(CommandInfo.HELP);
         this.console = console;
-    }
-
-    @Override
-    public List<Param> params() {
-        return Collections.emptyList();
     }
 
     @Override
@@ -35,7 +31,7 @@ public class HelpHandler extends CommandHandler {
                 for (int i = 0; i < ps.size(); i++) {
                     if (i > 0)
                         line.append(" ");
-                    line.append(ps.get(i).name());
+                    line.append(ps.get(i).cliName());
                     String def = ps.get(i).defaultValue();
                     if (def != null)
                         line.append("=").append(def);

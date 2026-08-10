@@ -4,11 +4,9 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,15 +15,11 @@ import java.util.Map;
  * Toggles PDU tracing on/off (print raw bytes for every sent/received frame).
  * Works on both server and client consoles.
  */
-public class TracePduHandler extends CommandHandler {
+public class TracePduHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public TracePduHandler() {
         super(CommandInfo.TRACE_PDU);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("value", "true 或 false", ""));
+        param("value", "true 或 false", "");
     }
 
     @Override

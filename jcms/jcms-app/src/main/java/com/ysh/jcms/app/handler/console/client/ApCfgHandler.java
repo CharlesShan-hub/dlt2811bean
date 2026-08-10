@@ -4,13 +4,12 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,15 +19,11 @@ import java.util.Map;
  * 运行时查看/修改 AP 来源配置（对齐 trace-pdu 的内存开关模式，改完即生效， 无需改 yaml 重启）。影响 {@code ap-dir}
  * 的读取来源。
  */
-public class ApCfgHandler extends CommandHandler {
+public class ApCfgHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public ApCfgHandler() {
         super(CommandInfo.AP_CFG);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("source", "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读", ""));
+        param("source", "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读", "");
     }
 
     @Override

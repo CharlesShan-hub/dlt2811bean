@@ -4,20 +4,14 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
-import java.util.Arrays;
-import java.util.List;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import java.util.Map;
 
-public class DisconnectHandler extends CommandHandler {
+public class DisconnectHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public DisconnectHandler() {
         super(CommandInfo.DISCONNECT);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList();
     }
 
     @Override

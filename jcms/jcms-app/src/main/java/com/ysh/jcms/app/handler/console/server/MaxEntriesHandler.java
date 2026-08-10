@@ -4,11 +4,10 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.app.handler.BaseServerHandler;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,15 +26,11 @@ import java.util.Map;
  * <li>{@code max-entries 0} — restore default (from config)</li>
  * </ul>
  */
-public class MaxEntriesHandler extends CommandHandler {
+public class MaxEntriesHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public MaxEntriesHandler() {
         super(CommandInfo.MAX_ENTRIES);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("value", "最大返回条数（0 恢复默认）", ""));
+        param("value", "最大返回条数（0 恢复默认）", "");
     }
 
     @Override

@@ -8,7 +8,7 @@ import com.ysh.jcms.app.console.Param.ParamType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,17 +33,10 @@ import java.util.Map;
  *
  * <pre>
  * // Action command (no response data)
- * public class AbortConsole extends CommandHandler&lt;AbortClientDao, AbortClient&gt; {
+ * public class AbortConsole extends CommandHandler&lt;AbortDao, AbortClient&gt; {
  *     public AbortConsole() {
- *         super(CommandInfo.ABORT);
- *     }
- *     &#64;Override
- *     public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
- *         executeAction(c, a);
- *     }
- *     &#64;Override
- *     public List&lt;Param&gt; params() {
- *         return List.of(new Param("reason", "中止原因码", "0", ParamType.INT));
+ *         super(CommandInfo.ABORT, false);
+ *         param("reason", "中止原因码", "0", ParamType.INT);
  *     }
  * }
  *
@@ -51,14 +44,8 @@ import java.util.Map;
  * public class SvrDirConsole extends CommandHandler&lt;SvrDirDao, SvrDirClient&gt; {
  *     public SvrDirConsole() {
  *         super(CommandInfo.SERVER_DIR);
- *     }
- *     &#64;Override
- *     public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
- *         executeQuery(c, a);
- *     }
- *     &#64;Override
- *     public List&lt;Param&gt; params() {
- *         return List.of(new Param("after", "起始引用...", "", "referenceAfter"), new Param("auto-pull", "自动续拉分页", "false"));
+ *         param("after", "起始引用...", "", "referenceAfter");
+ *         param("auto-pull", "自动续拉分页", "false");
  *     }
  * }
  * </pre>
@@ -69,6 +56,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
     private final Class<C> clientClass;
     private final Class<D> daoClass;
     private final boolean isQuery;
+    private final List<Param> params = new ArrayList<>();
 
     @SuppressWarnings("unchecked")
     protected CommandHandler(CommandInfo info) {
@@ -80,9 +68,15 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         this.info = info;
         this.isQuery = isQuery;
         Type superClass = getClass().getGenericSuperclass();
-        ParameterizedType type = (ParameterizedType) superClass;
-        this.daoClass = (Class<D>) type.getActualTypeArguments()[0];
-        this.clientClass = (Class<C>) type.getActualTypeArguments()[1];
+        if (superClass instanceof ParameterizedType) {
+            ParameterizedType type = (ParameterizedType) superClass;
+            this.daoClass = (Class<D>) type.getActualTypeArguments()[0];
+            this.clientClass = (Class<C>) type.getActualTypeArguments()[1];
+        } else {
+            // Raw type: local-only handler without a DAO/Client (e.g. help, connect).
+            this.daoClass = null;
+            this.clientClass = null;
+        }
     }
 
     // ── Precondition ──
@@ -107,9 +101,47 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     // ── Subclass hooks ──
 
-    /** Parameter definitions for command-line parsing. */
-    public List<Param> params() {
-        return Arrays.asList();
+    /**
+     * Parameter definitions for command-line parsing. Declared via
+     * {@link #param(String, String)} calls in the subclass constructor; this
+     * method is final and should not be overridden.
+     */
+    public final List<Param> params() {
+        return params;
+    }
+
+    // ── Param declaration (call in subclass constructor, one per line) ──
+
+    protected final void param(String name, String description) {
+        params.add(new Param().cliName(name).description(description));
+    }
+
+    protected final void param(String name, String description, String defaultValue) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue));
+    }
+
+    protected final void param(String name, String description, String defaultValue, boolean required) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).required(required));
+    }
+
+    protected final void param(String name, String description, String defaultValue, String daoName) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName));
+    }
+
+    protected final void param(String name, String description, String defaultValue, ParamType type) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).type(type));
+    }
+
+    protected final void param(String name, String description, String defaultValue, ParamType type, boolean required) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).type(type).required(required));
+    }
+
+    protected final void param(String name, String description, String defaultValue, String daoName, ParamType type) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName).type(type));
+    }
+
+    protected final void param(String name, String description, String defaultValue, String daoName, ParamType type, boolean required) {
+        params.add(new Param().cliName(name).description(description).defaultValue(defaultValue).daoName(daoName).type(type).required(required));
     }
 
     /** Execute the command with parsed arguments. */
@@ -126,6 +158,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     /** Execute a one-way action command (no response data). */
     protected final void executeAction(CmsConsole console, Map<String, String> args) throws Exception {
+        requireDaoClient();
         D dao = daoClass.getDeclaredConstructor().newInstance();
         bindParams(dao, args);
         console.getClient(clientClass).execute(dao);
@@ -134,6 +167,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     /** Execute a data-query command (outputs JSON result). */
     protected final void executeQuery(CmsConsole console, Map<String, String> args) throws Exception {
+        requireDaoClient();
         D dao = daoClass.getDeclaredConstructor().newInstance();
         bindParams(dao, args);
         CmsContent<D> c = new CmsContent<>(dao, args.get("auto-pull"));
@@ -141,14 +175,21 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         ConsolePrinter.outputJson(c.res());
     }
 
+    private void requireDaoClient() {
+        if (daoClass == null || clientClass == null) {
+            throw new IllegalStateException(
+                    name() + ": raw CommandHandler cannot execute; extend CommandHandler<Dao, Client> instead");
+        }
+    }
+
     // ── Param binding ──
 
     private boolean validateRequired(Map<String, String> args) {
         for (Param p : params()) {
             if (p.required()) {
-                String value = args.get(p.name());
+                String value = args.get(p.cliName());
                 if (value == null || value.trim().isEmpty()) {
-                    ConsolePrinter.error("Missing required parameter: --" + p.name() + " (" + p.description() + ")");
+                    ConsolePrinter.error("Missing required parameter: --" + p.cliName() + " (" + p.description() + ")");
                     return false;
                 }
             }
@@ -161,13 +202,13 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
         if (params == null || params.isEmpty())
             return;
         for (Param p : params) {
-            String setter = p.setter();
-            if (setter == null)
+            String daoName = p.daoName();
+            if (daoName == null)
                 continue;
-            String value = args.get(p.name());
+            String value = args.get(p.cliName());
             if (value == null)
                 continue;
-            Method m = dao.getClass().getMethod(setter, p.type().javaType());
+            Method m = dao.getClass().getMethod(daoName, p.type().javaType());
             m.invoke(dao, convert(value, p.type()));
         }
     }

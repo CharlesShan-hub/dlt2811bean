@@ -1,10 +1,29 @@
 package com.ysh.jcms.app.console;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+/**
+ * Describes a single CLI parameter of a command.
+ *
+ * <p>
+ * Uses Lombok fluent accessors ({@code @Accessors(fluent = true)}) so a param
+ * is declared in one chain, e.g. {@code new Param().cliName("after")
+ * .description("...").daoName("referenceAfter")}. A {@code null}
+ * {@link #daoName} means the parameter is display-only (shown in help) and is
+ * not bound to the request DAO.
+ */
+@Getter
+@Setter
+@NoArgsConstructor
+@Accessors(fluent = true)
 public class Param {
 
     public enum ParamType {
-        STRING(String.class), INT(int.class), INTEGER(Integer.class), LONG(long.class), BOOLEAN(boolean.class), BYTE(byte.class), SHORT(
-                short.class), FLOAT(float.class), DOUBLE(double.class);
+        STRING(String.class), INT(int.class), INTEGER(Integer.class), LONG(long.class), BOOLEAN(boolean.class), BYTE(byte.class),
+        SHORT(short.class), FLOAT(float.class), DOUBLE(double.class);
 
         private final Class<?> javaType;
 
@@ -17,54 +36,21 @@ public class Param {
         }
     }
 
-    private final String name;
-    private final String description;
-    private final String defaultValue;
-    private final String setter;
-    private final ParamType type;
-    private final boolean required;
+    /** CLI flag name, e.g. "after" for {@code --after}. */
+    private String cliName = "";
 
-    public Param(String name, String description) {
-        this(name, description, null, null, ParamType.STRING, false);
-    }
+    /** Help text shown by the {@code help} command. */
+    private String description = "";
 
-    public Param(String name, String description, String defaultValue) {
-        this(name, description, defaultValue, null, ParamType.STRING, false);
-    }
+    /** Default value used when the flag is omitted; null = no default. */
+    private String defaultValue;
 
-    public Param(String name, String description, String defaultValue, boolean required) {
-        this(name, description, defaultValue, null, ParamType.STRING, required);
-    }
+    /** Fluent field/method name on the request DAO to bind to; null = display-only. */
+    private String daoName;
 
-    public Param(String name, String description, String defaultValue, String setter) {
-        this(name, description, defaultValue, setter, ParamType.STRING, false);
-    }
+    /** Value type for conversion; defaults to STRING. */
+    private ParamType type = ParamType.STRING;
 
-    public Param(String name, String description, String defaultValue, ParamType type) {
-        this(name, description, defaultValue, name, type, false);
-    }
-
-    public Param(String name, String description, String defaultValue, ParamType type, boolean required) {
-        this(name, description, defaultValue, name, type, required);
-    }
-
-    public Param(String name, String description, String defaultValue, String setter, ParamType type) {
-        this(name, description, defaultValue, setter, type, false);
-    }
-
-    public Param(String name, String description, String defaultValue, String setter, ParamType type, boolean required) {
-        this.name = name;
-        this.description = description;
-        this.defaultValue = defaultValue;
-        this.setter = setter != null ? setter : name;
-        this.type = type;
-        this.required = required;
-    }
-
-    public String name() { return name; }
-    public String description() { return description; }
-    public String defaultValue() { return defaultValue; }
-    public String setter() { return setter; }
-    public ParamType type() { return type; }
-    public boolean required() { return required; }
+    /** Whether the flag is required. */
+    private boolean required;
 }

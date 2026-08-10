@@ -4,24 +4,17 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.data.scalar.CmsFC;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-public class CreateDataSetConsole extends CommandHandler {
+public class CreateDataSetConsole extends CommandHandler<CreateDataSetDao, CreateDataSetClient> {
 
     public CreateDataSetConsole() {
         super(CommandInfo.CREATE_DATASET);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null),
-                new Param("members", "成员列表（空格分隔，每个成员的格式 ref,fc），如 \"LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST\"", null),
-                new Param("after", "追加到现有数据集后的最后一个成员引用", ""));
+        param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null);
+        param("members", "成员列表（空格分隔，每个成员的格式 ref,fc），如 \"LD0/GGIO1.Alm1,ST LD0/GGIO1.Alm2,ST\"", null);
+        param("after", "追加到现有数据集后的最后一个成员引用", "");
     }
 
     @Override

@@ -12,8 +12,8 @@ public enum CommandInfo {
 
     // @formatter:off
     // ── 连接管理 ──
-    CONNECT("connect", "连接到 CMS 服务器", Requirement.CONNECTED),
-    CONNECT_TLS("connect-tls", "TLS 连接 CMS 服务器", Requirement.CONNECTED),
+    CONNECT("connect", "连接到 CMS 服务器", Requirement.NONE),
+    CONNECT_TLS("connect-tls", "TLS 连接 CMS 服务器", Requirement.NONE),
     DISCONNECT("disconnect", "断开当前连接", Requirement.CONNECTED),
     ASSOCIATE("associate", "建立关联", Requirement.CONNECTED),
     RELEASE("release", "释放关联", Requirement.CONNECTED),

@@ -4,13 +4,13 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.ConsolePrinter;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 import com.ysh.jcms.utils.scl.reader.SclReader;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,16 +27,12 @@ import java.util.Map;
  * 使用 {@link SclReader#scanAccessPoints} 轻量扫描，只读取 IED/AccessPoint 名称属性，不构建完整 SCL
  * 模型，因此大 SCD（几百个 IED）也能秒级返回。
  */
-public class ApDirHandler extends CommandHandler {
+public class ApDirHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public ApDirHandler() {
         super(CommandInfo.AP_DIR);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("scd", "SCD 文件路径（默认取配置 server.sclFiles[0]）", ""),
-                new Param("ied", "只列出指定 IED 的 AP（如 C_B5041X）", ""));
+        param("scd", "SCD 文件路径（默认取配置 server.sclFiles[0]）", "");
+        param("ied", "只列出指定 IED 的 AP（如 C_B5041X）", "");
     }
 
     @Override

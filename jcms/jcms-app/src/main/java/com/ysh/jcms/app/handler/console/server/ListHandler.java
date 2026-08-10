@@ -4,23 +4,20 @@ import com.ysh.jcms.app.console.CmsConsole;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.BaseClientHandler;
+import com.ysh.jcms.app.handler.BaseDao;
 import com.ysh.jcms.utils.scl.model.ied.SclIED;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class ListHandler extends CommandHandler {
+public class ListHandler extends CommandHandler<BaseDao, BaseClientHandler<BaseDao>> {
 
     public ListHandler() {
         super(CommandInfo.LIST_AP);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList(new Param("limit", "数量（不传则列出全部）", ""), new Param("offset", "起始索引", "0"));
+        param("limit", "数量（不传则列出全部）", "");
+        param("offset", "起始索引", "0");
     }
 
     @Override
