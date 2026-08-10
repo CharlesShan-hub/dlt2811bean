@@ -79,6 +79,11 @@ public final class ConsolePrinter {
     public static void info(String msg) {
         println(CYAN + "  " + msg + RST);
     }
+    /** 输出 JSON 成功响应：{"success":true}。 */
+    public static void success() {
+        raw("{\"success\":true}");
+    }
+
     /** 输出 JSON 成功响应：{"success":true,"info":"...","data":null}。 */
     public static void success(String msg) {
         raw("{\"success\":true,\"info\":\"" + CmsFormatUtil.escapeJson(msg) + "\",\"data\":null}");

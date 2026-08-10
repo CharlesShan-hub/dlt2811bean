@@ -1,7 +1,7 @@
 package com.ysh.jcms.app.handler;
 
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
-import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
+import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.utils.transport.service.ServiceHandler;
@@ -114,7 +114,7 @@ public abstract class BaseLoopbackTest {
      * have been registered (otherwise it will fail with NullPointerException).
      */
     protected void associate() throws Exception {
-        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateDao().sapRef("E1Q1SB1/S1").secure(false));
         assertEquals(SessionState.ASSOCIATED, clientNode().client().session().state());
     }
 

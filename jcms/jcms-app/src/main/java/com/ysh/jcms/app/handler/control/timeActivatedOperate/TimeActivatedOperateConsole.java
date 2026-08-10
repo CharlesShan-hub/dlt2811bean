@@ -5,20 +5,26 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public class TimeActivatedOperateConsole extends CommandHandler {
+public class TimeActivatedOperateConsole extends CommandHandler<TimeActivatedOperateDao, TimeActivatedOperateClient> {
 
     public TimeActivatedOperateConsole() {
-        super(CommandInfo.TIME_ACT_OPE);
+        super(CommandInfo.TIME_ACT_OPE, false);
     }
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ref", "控制对象引用", null), new Param("oper-tm", "执行时间（UTC 秒级时间戳）", null), new Param("value", "控制值", ""),
-                new Param("origin", "操作源 (0=本地, 1=远程)", ""), new Param("ctlNum", "控制序号", ""), new Param("test", "测试标志", ""),
+        return Arrays.asList(
+                new Param("ref", "控制对象引用", null),
+                new Param("oper-tm", "执行时间（UTC 秒级时间戳）", null),
+                new Param("value", "控制值", ""),
+                new Param("origin", "操作源 (0=本地, 1=远程)", ""),
+                new Param("ctlNum", "控制序号", ""),
+                new Param("test", "测试标志", ""),
                 new Param("check", "校验码", ""));
     }
 

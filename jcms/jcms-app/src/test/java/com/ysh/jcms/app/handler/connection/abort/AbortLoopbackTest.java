@@ -2,7 +2,7 @@ package com.ysh.jcms.app.handler.connection.abort;
 
 import com.ysh.jcms.app.handler.BaseLoopbackTest;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
-import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
+import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.data.enumerate.CmsAbortReason;
@@ -31,7 +31,7 @@ public class AbortLoopbackTest extends BaseLoopbackTest {
 
     @Test
     public void associate_then_abort() throws Exception {
-        clientNode().getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
+        clientNode().getClient(AssociateClient.class).execute(new AssociateDao().sapRef("E1Q1SB1/S1").secure(false));
 
         Session session = clientNode().client().session();
 

@@ -5,8 +5,8 @@ package com.ysh.jcms.app.console;
  *
  * <p>
  * Each constant defines the command {@link #name} (used as the lookup key in
- * {@link CmsConsole}), its {@link #description} (shown in help output), and
- * its {@link Requirement} precondition.
+ * {@link CmsConsole}), its {@link #description} (shown in help output), and its
+ * {@link Requirement} precondition.
  */
 public enum CommandInfo {
 

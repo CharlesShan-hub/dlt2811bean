@@ -19,15 +19,15 @@ import java.security.PublicKey;
 import java.security.cert.X509Certificate;
 import java.time.Instant;
 
-public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
+public class AssociateClient extends BaseClientHandler<AssociateDao> {
 
     @Override
-    public void execute(AssociateClientDao dao) throws Exception {
+    public void execute(AssociateDao dao) throws Exception {
         send(ServiceName.ASSOCIATE, dao);
     }
 
     @Override
-    protected void beforeAll(AssociateClientDao dao) throws IOException {
+    protected void beforeAll(AssociateDao dao) throws IOException {
         if (!dao.secure()) {
             dao.authParam(null);
         }
@@ -39,7 +39,7 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, AssociateClientDao dao) throws IOException {
+    protected void onSuccess(Frame frame, AssociateDao dao) throws IOException {
         CmsAssociateResponse resp = decodeResp(frame, new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();

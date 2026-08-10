@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class AssociateClientDao extends BaseDao {
+public class AssociateDao extends BaseDao {
 
     /** Server access point reference (e.g. "IED1/AP1") */
     private String sapRef;

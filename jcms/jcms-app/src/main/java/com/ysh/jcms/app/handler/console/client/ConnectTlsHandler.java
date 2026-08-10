@@ -6,7 +6,7 @@ import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
-import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
+import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
@@ -81,7 +81,7 @@ public class ConnectTlsHandler extends CommandHandler {
 
         ConsolePrinter.info("Negotiated, associating with " + sapRef + " ...");
 
-        console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(true));
+        console.getClient(AssociateClient.class).execute(new AssociateDao().sapRef(sapRef).secure(true));
 
         ConsolePrinter.success("TLS associated: " + sapRef);
     }

@@ -3,7 +3,7 @@ package com.ysh.jcms.app.handler.connection.release;
 import com.ysh.jcms.app.handler.BaseLoopbackTest;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
-import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
+import com.ysh.jcms.app.handler.connection.associate.AssociateDao;
 import com.ysh.jcms.app.handler.connection.associate.AssociateServer;
 import com.ysh.jcms.utils.transport.session.SessionState;
 import org.junit.Test;
@@ -31,7 +31,7 @@ public class ReleaseLoopbackTest extends BaseLoopbackTest {
     public void associate_then_release() throws Exception {
         // First associate
         AssociateClient associate = clientNode().getClient(AssociateClient.class);
-        associate.execute(new AssociateClientDao().sapRef("E1Q1SB1/S1").secure(false));
+        associate.execute(new AssociateDao().sapRef("E1Q1SB1/S1").secure(false));
         assertEquals(SessionState.ASSOCIATED, clientNode().client().session().state());
         assertNotNull(clientNode().client().session().associationId());
 

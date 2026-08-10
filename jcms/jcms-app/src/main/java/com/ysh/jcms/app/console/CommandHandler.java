@@ -23,34 +23,42 @@ import java.util.Map;
  * subclasses only need to declare them in the class signature.
  *
  * <p>
- * Two convenience methods are provided for the common {@link #execute} patterns:
+ * Two convenience methods are provided for the common {@link #execute}
+ * patterns:
  * <ul>
- *   <li>{@link #executeAction} — for one-way commands (no response data)</li>
- *   <li>{@link #executeQuery} — for data-query commands (outputs JSON result)</li>
+ * <li>{@link #executeAction} — for one-way commands (no response data)</li>
+ * <li>{@link #executeQuery} — for data-query commands (outputs JSON
+ * result)</li>
  * </ul>
  *
  * <pre>
  * // Action command (no response data)
  * public class AbortConsole extends CommandHandler&lt;AbortClientDao, AbortClient&gt; {
- *     public AbortConsole() { super(CommandInfo.ABORT); }
- *     &#64;Override public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
+ *     public AbortConsole() {
+ *         super(CommandInfo.ABORT);
+ *     }
+ *     &#64;Override
+ *     public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
  *         executeAction(c, a);
  *     }
- *     &#64;Override public List&lt;Param&gt; params() {
+ *     &#64;Override
+ *     public List&lt;Param&gt; params() {
  *         return List.of(new Param("reason", "中止原因码", "0", ParamType.INT));
  *     }
  * }
  *
  * // Query command (returns JSON data)
  * public class SvrDirConsole extends CommandHandler&lt;SvrDirDao, SvrDirClient&gt; {
- *     public SvrDirConsole() { super(CommandInfo.SERVER_DIR); }
- *     &#64;Override public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
+ *     public SvrDirConsole() {
+ *         super(CommandInfo.SERVER_DIR);
+ *     }
+ *     &#64;Override
+ *     public void execute(CmsConsole c, Map&lt;String, String&gt; a) throws Exception {
  *         executeQuery(c, a);
  *     }
- *     &#64;Override public List&lt;Param&gt; params() {
- *         return List.of(
- *             new Param("after", "起始引用...", "", "referenceAfter"),
- *             new Param("auto-pull", "自动续拉分页", "false"));
+ *     &#64;Override
+ *     public List&lt;Param&gt; params() {
+ *         return List.of(new Param("after", "起始引用...", "", "referenceAfter"), new Param("auto-pull", "自动续拉分页", "false"));
  *     }
  * }
  * </pre>
@@ -106,6 +114,7 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     /** Execute the command with parsed arguments. */
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
+        if (!validateRequired(args)) return;
         if (isQuery) {
             executeQuery(console, args);
         } else {
@@ -134,14 +143,30 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     // ── Param binding ──
 
+    private boolean validateRequired(Map<String, String> args) {
+        for (Param p : params()) {
+            if (p.required()) {
+                String value = args.get(p.name());
+                if (value == null || value.trim().isEmpty()) {
+                    ConsolePrinter.error("Missing required parameter: --" + p.name() + " (" + p.description() + ")");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     private void bindParams(D dao, Map<String, String> args) throws Exception {
         List<Param> params = params();
-        if (params == null || params.isEmpty()) return;
+        if (params == null || params.isEmpty())
+            return;
         for (Param p : params) {
             String setter = p.setter();
-            if (setter == null) continue;
+            if (setter == null)
+                continue;
             String value = args.get(p.name());
-            if (value == null) continue;
+            if (value == null)
+                continue;
             Method m = dao.getClass().getMethod(setter, p.type().javaType());
             m.invoke(dao, convert(value, p.type()));
         }
@@ -149,16 +174,25 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
 
     private static Object convert(String value, ParamType type) {
         switch (type) {
-            case STRING: return value;
-            case INT:
-            case INTEGER: return Integer.parseInt(value);
-            case LONG: return Long.parseLong(value);
-            case BOOLEAN: return Boolean.parseBoolean(value);
-            case BYTE: return Byte.parseByte(value);
-            case SHORT: return Short.parseShort(value);
-            case FLOAT: return Float.parseFloat(value);
-            case DOUBLE: return Double.parseDouble(value);
-            default: throw new IllegalArgumentException("Unknown type: " + type);
+            case STRING :
+                return value;
+            case INT :
+            case INTEGER :
+                return Integer.parseInt(value);
+            case LONG :
+                return Long.parseLong(value);
+            case BOOLEAN :
+                return Boolean.parseBoolean(value);
+            case BYTE :
+                return Byte.parseByte(value);
+            case SHORT :
+                return Short.parseShort(value);
+            case FLOAT :
+                return Float.parseFloat(value);
+            case DOUBLE :
+                return Double.parseDouble(value);
+            default :
+                throw new IllegalArgumentException("Unknown type: " + type);
         }
     }
 }
