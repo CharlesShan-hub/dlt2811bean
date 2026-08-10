@@ -11,7 +11,7 @@ public class TimeActivatedOperateClient extends BaseClientHandler<TimeActivatedO
 
     @Override
     public void execute(TimeActivatedOperateDao dao) throws Exception {
-        send(ServiceName.TIME_ACTIVATED_OPERATE, dao.toRequest());
+        send(ServiceName.TIME_ACTIVATED_OPERATE, dao);
     }
 
     @Override

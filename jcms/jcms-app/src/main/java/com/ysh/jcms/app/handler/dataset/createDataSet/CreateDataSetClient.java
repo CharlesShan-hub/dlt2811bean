@@ -12,7 +12,7 @@ public class CreateDataSetClient extends BaseClientHandler<CreateDataSetDao> {
 
     @Override
     public void execute(CreateDataSetDao dao) throws Exception {
-        send(ServiceName.CREATE_DATA_SET, dao.toRequest());
+        send(ServiceName.CREATE_DATA_SET, dao);
     }
 
     @Override

@@ -11,7 +11,7 @@ public class QueryLogAfterClient extends BaseClientHandler<QueryLogAfterDao> {
 
     @Override
     public void execute(QueryLogAfterDao dao) throws Exception {
-        send(ServiceName.QUERY_LOG_AFTER, dao.toRequest());
+        send(ServiceName.QUERY_LOG_AFTER, dao);
     }
 
     @Override

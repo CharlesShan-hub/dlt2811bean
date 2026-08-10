@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GetRpcMethodDirectoryClient extends BaseClientHandler<GetRpcMethodDirectoryDao> {
     @Override
     public void execute(GetRpcMethodDirectoryDao dao) throws Exception {
-        send(ServiceName.GET_RPC_METHOD_DIRECTORY, dao.toRequest());
+        send(ServiceName.GET_RPC_METHOD_DIRECTORY, dao);
     }
     @Override
     protected void onError(Frame frame) throws IOException {

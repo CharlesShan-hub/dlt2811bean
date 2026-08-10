@@ -12,7 +12,7 @@ public class DeleteDataSetClient extends BaseClientHandler<DeleteDataSetDao> {
 
     @Override
     public void execute(DeleteDataSetDao dao) throws Exception {
-        send(ServiceName.DELETE_DATA_SET, dao.toRequest());
+        send(ServiceName.DELETE_DATA_SET, dao);
     }
 
     @Override

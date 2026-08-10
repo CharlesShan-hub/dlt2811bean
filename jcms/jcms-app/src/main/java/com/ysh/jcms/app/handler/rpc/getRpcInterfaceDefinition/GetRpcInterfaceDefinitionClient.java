@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GetRpcInterfaceDefinitionClient extends BaseClientHandler<GetRpcInterfaceDefinitionDao> {
     @Override
     public void execute(GetRpcInterfaceDefinitionDao dao) throws Exception {
-        send(ServiceName.GET_RPC_INTERFACE_DEFINITION, dao.toRequest());
+        send(ServiceName.GET_RPC_INTERFACE_DEFINITION, dao);
     }
     @Override
     protected void onError(Frame frame) throws IOException {

@@ -11,7 +11,7 @@ public class CancelClient extends BaseClientHandler<CancelDao> {
 
     @Override
     public void execute(CancelDao dao) throws Exception {
-        send(ServiceName.CANCEL, dao.toRequest());
+        send(ServiceName.CANCEL, dao);
     }
 
     @Override

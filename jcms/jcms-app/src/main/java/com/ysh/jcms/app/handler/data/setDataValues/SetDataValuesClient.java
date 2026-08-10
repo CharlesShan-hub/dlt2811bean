@@ -12,7 +12,7 @@ public class SetDataValuesClient extends BaseClientHandler<SetDataValuesDao> {
 
     @Override
     public void execute(SetDataValuesDao dao) throws Exception {
-        send(ServiceName.SET_DATA_VALUES, dao.toRequest());
+        send(ServiceName.SET_DATA_VALUES, dao);
     }
 
     @Override

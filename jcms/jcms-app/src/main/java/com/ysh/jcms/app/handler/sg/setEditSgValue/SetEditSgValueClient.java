@@ -13,7 +13,7 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
     @Override
     public void execute(SetEditSgValueDao dao) throws Exception {
-        send(ServiceName.SET_EDIT_SG_VALUE, dao.toRequest());
+        send(ServiceName.SET_EDIT_SG_VALUE, dao);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class SetEditSgValueClient extends BaseClientHandler<SetEditSgValueDao> {
 
     @Override
     protected void onSuccess(Frame frame) throws IOException {
-        CmsSetEditSgValueResponse resp = decodeResp(frame, new CmsSetEditSgValueResponse());
+        decodeResp(frame, new CmsSetEditSgValueResponse());
         log.info("SetEditSGValue succeeded");
     }
 }

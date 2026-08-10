@@ -4,7 +4,6 @@ import com.ysh.jcms.app.handler.BaseClientHandler;
 import com.ysh.jcms.data.enumerate.CmsServiceError;
 import com.ysh.jcms.data.sequence.common.CmsUtcTime;
 import com.ysh.jcms.pdu.connection.CmsAssociateError;
-import com.ysh.jcms.pdu.connection.CmsAssociateRequest;
 import com.ysh.jcms.pdu.connection.CmsAssociateResponse;
 import com.ysh.jcms.data.sequence.connection.CmsAuthenticationParameter;
 import com.ysh.jcms.utils.config.CmsConfig;
@@ -24,20 +23,14 @@ public class AssociateClient extends BaseClientHandler<AssociateClientDao> {
 
     @Override
     public void execute(AssociateClientDao dao) throws Exception {
-        CmsAssociateRequest req = new CmsAssociateRequest();
-        if (dao.sapRef() != null && !dao.sapRef().isEmpty()) {
-            req.serverAccessPointReference(dao.sapRef());
-        }
-
         if (dao.secure()) {
-            req.authenticationParameter(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
+            dao.authParam(buildAuthParam(node.getCredentialManager(), dao.sapRef()));
         }
+        send(ServiceName.ASSOCIATE, dao);
+    }
 
-        byte[] pdu = req.encode();
-        trace(">>>\n" + req);
-        Frame frame = send(ServiceName.ASSOCIATE, pdu);
-        // send() calls onError() which throws for error responses
-
+    @Override
+    protected void onSuccess(Frame frame, AssociateClientDao dao) throws IOException {
         CmsAssociateResponse resp = decodeResp(frame, new CmsAssociateResponse());
 
         int serviceError = resp.serviceError.value();

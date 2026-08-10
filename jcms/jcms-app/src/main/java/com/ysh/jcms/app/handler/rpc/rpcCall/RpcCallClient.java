@@ -10,7 +10,7 @@ import java.io.IOException;
 public class RpcCallClient extends BaseClientHandler<RpcCallDao> {
     @Override
     public void execute(RpcCallDao dao) throws Exception {
-        send(ServiceName.RPC_CALL, dao.toRequest());
+        send(ServiceName.RPC_CALL, dao);
     }
     @Override
     protected void onError(Frame frame) throws IOException {

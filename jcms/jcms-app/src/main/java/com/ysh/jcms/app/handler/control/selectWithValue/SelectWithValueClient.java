@@ -11,7 +11,7 @@ public class SelectWithValueClient extends BaseClientHandler<SelectWithValueDao>
 
     @Override
     public void execute(SelectWithValueDao dao) throws Exception {
-        send(ServiceName.SELECT_WITH_VALUE, dao.toRequest());
+        send(ServiceName.SELECT_WITH_VALUE, dao);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class DeleteFileClient extends BaseClientHandler<DeleteFileDao> {
 
     @Override
     public void execute(DeleteFileDao dao) throws Exception {
-        send(ServiceName.DELETE_FILE, dao.toRequest());
+        send(ServiceName.DELETE_FILE, dao);
     }
 
     @Override

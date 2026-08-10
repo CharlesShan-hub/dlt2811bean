@@ -13,7 +13,7 @@ public class SetLcbValuesClient extends BaseClientHandler<SetLcbValuesDao> {
 
     @Override
     public void execute(SetLcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_LCB_VALUES, dao.toRequest());
+        send(ServiceName.SET_LCB_VALUES, dao);
     }
 
     @Override

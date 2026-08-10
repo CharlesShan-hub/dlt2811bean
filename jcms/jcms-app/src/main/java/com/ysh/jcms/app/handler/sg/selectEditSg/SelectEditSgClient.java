@@ -12,7 +12,7 @@ public class SelectEditSgClient extends BaseClientHandler<SelectEditSgDao> {
 
     @Override
     public void execute(SelectEditSgDao dao) throws Exception {
-        send(ServiceName.SELECT_EDIT_SG, dao.toRequest());
+        send(ServiceName.SELECT_EDIT_SG, dao);
     }
 
     @Override

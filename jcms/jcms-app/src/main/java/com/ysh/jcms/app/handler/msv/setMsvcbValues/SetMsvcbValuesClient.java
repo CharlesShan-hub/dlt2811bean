@@ -11,7 +11,7 @@ public class SetMsvcbValuesClient extends BaseClientHandler<SetMsvcbValuesDao> {
 
     @Override
     public void execute(SetMsvcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_MSVCB_VALUES, dao.toRequest());
+        send(ServiceName.SET_MSVCB_VALUES, dao);
     }
 
     @Override

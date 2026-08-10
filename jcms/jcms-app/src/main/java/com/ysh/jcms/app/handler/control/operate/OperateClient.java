@@ -11,7 +11,7 @@ public class OperateClient extends BaseClientHandler<OperateDao> {
 
     @Override
     public void execute(OperateDao dao) throws Exception {
-        send(ServiceName.OPERATE, dao.toRequest());
+        send(ServiceName.OPERATE, dao);
     }
 
     @Override

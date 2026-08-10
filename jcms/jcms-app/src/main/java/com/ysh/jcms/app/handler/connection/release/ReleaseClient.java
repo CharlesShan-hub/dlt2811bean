@@ -18,7 +18,7 @@ public class ReleaseClient extends BaseClientHandler<ReleaseDao> {
         if (assocId != null && assocId.length > 0) {
             dao.associationId(assocId);
         }
-        send(ServiceName.RELEASE, dao.toRequest());
+        send(ServiceName.RELEASE, dao);
     }
 
     @Override

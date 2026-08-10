@@ -13,7 +13,7 @@ public class SetBrcbValuesClient extends BaseClientHandler<SetBrcbValuesDao> {
 
     @Override
     public void execute(SetBrcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_BRCB_VALUES, dao.toRequest());
+        send(ServiceName.SET_BRCB_VALUES, dao);
     }
 
     @Override

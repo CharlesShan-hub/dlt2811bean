@@ -11,7 +11,7 @@ public class SelectClient extends BaseClientHandler<SelectDao> {
 
     @Override
     public void execute(SelectDao dao) throws Exception {
-        send(ServiceName.SELECT, dao.toRequest());
+        send(ServiceName.SELECT, dao);
     }
 
     @Override

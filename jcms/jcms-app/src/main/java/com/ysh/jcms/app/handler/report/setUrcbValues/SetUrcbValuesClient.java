@@ -13,7 +13,7 @@ public class SetUrcbValuesClient extends BaseClientHandler<SetUrcbValuesDao> {
 
     @Override
     public void execute(SetUrcbValuesDao dao) throws Exception {
-        send(ServiceName.SET_URCB_VALUES, dao.toRequest());
+        send(ServiceName.SET_URCB_VALUES, dao);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class QueryLogByTimeClient extends BaseClientHandler<QueryLogByTimeDao> {
 
     @Override
     public void execute(QueryLogByTimeDao dao) throws Exception {
-        send(ServiceName.QUERY_LOG_BY_TIME, dao.toRequest());
+        send(ServiceName.QUERY_LOG_BY_TIME, dao);
     }
 
     @Override

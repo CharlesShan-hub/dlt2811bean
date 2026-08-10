@@ -10,7 +10,7 @@ import java.io.IOException;
 public class GetRpcMethodDefinitionClient extends BaseClientHandler<GetRpcMethodDefinitionDao> {
     @Override
     public void execute(GetRpcMethodDefinitionDao dao) throws Exception {
-        send(ServiceName.GET_RPC_METHOD_DEFINITION, dao.toRequest());
+        send(ServiceName.GET_RPC_METHOD_DEFINITION, dao);
     }
     @Override
     protected void onError(Frame frame) throws IOException {

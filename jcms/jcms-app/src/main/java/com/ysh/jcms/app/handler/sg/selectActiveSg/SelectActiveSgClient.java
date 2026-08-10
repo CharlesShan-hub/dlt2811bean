@@ -12,7 +12,7 @@ public class SelectActiveSgClient extends BaseClientHandler<SelectActiveSgDao> {
 
     @Override
     public void execute(SelectActiveSgDao dao) throws Exception {
-        send(ServiceName.SELECT_ACTIVE_SG, dao.toRequest());
+        send(ServiceName.SELECT_ACTIVE_SG, dao);
     }
 
     @Override

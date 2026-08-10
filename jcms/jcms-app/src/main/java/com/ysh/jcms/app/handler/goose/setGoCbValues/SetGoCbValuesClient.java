@@ -13,7 +13,7 @@ public class SetGoCbValuesClient extends BaseClientHandler<SetGoCbValuesDao> {
 
     @Override
     public void execute(SetGoCbValuesDao dao) throws Exception {
-        send(ServiceName.SET_GOCB_VALUES, dao.toRequest());
+        send(ServiceName.SET_GOCB_VALUES, dao);
     }
 
     @Override

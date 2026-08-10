@@ -12,7 +12,7 @@ public class ConfirmEditSgValuesClient extends BaseClientHandler<ConfirmEditSgVa
 
     @Override
     public void execute(ConfirmEditSgValuesDao dao) throws Exception {
-        send(ServiceName.CONFIRM_EDIT_SG_VALUES, dao.toRequest());
+        send(ServiceName.CONFIRM_EDIT_SG_VALUES, dao);
     }
 
     @Override
