@@ -59,7 +59,7 @@ public class LnDirConsole extends CommandHandler {
         Integer acsi = ACSI_MAP.get(acsiStr);
         if (acsi == null) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Unknown ACSI class: " + args.get("acsi"));
+                ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi"));
             } else {
                 ConsolePrinter.error("Unknown ACSI class: " + args.get("acsi")
                         + ". Available: data-object(1), data-set(2), brcb(3), urcb(4), lcb(5), log(6), sgcb(7), gocb(8), msvcb(10)");

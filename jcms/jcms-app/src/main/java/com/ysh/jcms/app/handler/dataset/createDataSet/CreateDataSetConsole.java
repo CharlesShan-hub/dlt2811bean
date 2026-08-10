@@ -46,7 +46,7 @@ public class CreateDataSetConsole extends CommandHandler {
             int commaIdx = token.indexOf(',');
             if (commaIdx <= 0) {
                 if (CmsConsole.isJsonMode(args)) {
-                    CmsConsole.jsonError("Invalid member: " + token + " (expected ref,fc)");
+                    ConsolePrinter.error("Invalid member: " + token + " (expected ref,fc)");
                 } else {
                     ConsolePrinter.error("Invalid member: " + token + " (expected ref,fc)");
                 }

@@ -30,7 +30,7 @@ public class SetDataValuesConsole extends CommandHandler {
         String pairsStr = args.get("pairs");
         if (pairsStr == null || pairsStr.trim().isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Missing --pairs.");
+                ConsolePrinter.error("Missing --pairs.");
             } else {
                 ConsolePrinter.error("Missing --pairs. Usage: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]");
             }
@@ -46,7 +46,7 @@ public class SetDataValuesConsole extends CommandHandler {
             int eqIdx = token.indexOf('=');
             if (eqIdx <= 0) {
                 if (CmsConsole.isJsonMode(args)) {
-                    CmsConsole.jsonError("Invalid pair: " + token + " (expected ref=value)");
+                    ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
                 } else {
                     ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
                 }

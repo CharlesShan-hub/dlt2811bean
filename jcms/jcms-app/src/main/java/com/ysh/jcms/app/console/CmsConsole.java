@@ -98,32 +98,6 @@ public abstract class CmsConsole extends CmsNode {
     }
 
     /**
-     * @deprecated JSON is now the only output format. Always returns {@code true}.
-     */
-    @Deprecated
-    public static boolean isJsonMode(Map<String, String> args) {
-        return true;
-    }
-
-    /** 输出 JSON 错误响应（委托 {@link ConsolePrinter#error}）。 */
-    public static void jsonError(String msg) {
-        ConsolePrinter.error(msg);
-    }
-
-    /** 输出 JSON 成功响应（委托 {@link ConsolePrinter#success}）。 */
-    public static void jsonMessage(String msg) {
-        ConsolePrinter.success(msg);
-    }
-
-    /**
-     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
-     */
-    @Deprecated
-    public static void jsonArray(String msg) {
-        ConsolePrinter.raw(msg);
-    }
-
-    /**
      * @deprecated Use {@link ConsolePrinter#outputJson(java.util.Map)} directly.
      */
     @Deprecated

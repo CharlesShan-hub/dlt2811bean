@@ -59,7 +59,7 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
 
         if (entries.isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonArray("");
+                ConsolePrinter.raw("");
             } else {
                 ConsolePrinter.info("No dataset directory entries");
             }

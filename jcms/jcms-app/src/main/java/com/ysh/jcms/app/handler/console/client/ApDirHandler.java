@@ -51,7 +51,7 @@ public class ApDirHandler extends CommandHandler {
         if (scd == null || scd.isEmpty()) {
             String msg = "SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。";
             if (jsonMode) {
-                CmsConsole.jsonError(msg);
+                ConsolePrinter.error(msg);
             } else {
                 ConsolePrinter.error(msg);
             }
@@ -65,7 +65,7 @@ public class ApDirHandler extends CommandHandler {
         } catch (Exception e) {
             String msg = "SCL 解析失败: " + scd + " - " + e.getMessage();
             if (jsonMode) {
-                CmsConsole.jsonError(msg);
+                ConsolePrinter.error(msg);
             } else {
                 ConsolePrinter.error(msg);
             }
@@ -78,7 +78,7 @@ public class ApDirHandler extends CommandHandler {
             if (!apsByIed.containsKey(iedFilter)) {
                 String msg = "IED 不存在: " + iedFilter;
                 if (jsonMode) {
-                    CmsConsole.jsonError(msg);
+                    ConsolePrinter.error(msg);
                 } else {
                     ConsolePrinter.error(msg);
                 }
@@ -112,7 +112,7 @@ public class ApDirHandler extends CommandHandler {
                 }
                 sb.append("]}");
             }
-            CmsConsole.jsonArray(sb.toString());
+            ConsolePrinter.raw(sb.toString());
             return;
         }
 

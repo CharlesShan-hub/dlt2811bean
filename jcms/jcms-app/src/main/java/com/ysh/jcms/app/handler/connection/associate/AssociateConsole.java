@@ -25,11 +25,11 @@ public class AssociateConsole extends CommandHandler {
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.clientConnected()) {
-            CmsConsole.jsonError("Not connected. Use 'connect' first.");
+            ConsolePrinter.error("Not connected. Use 'connect' first.");
             return;
         }
         if (console.connected()) {
-            CmsConsole.jsonError("Already associated. Use 'release' or 'disconnect' first.");
+            ConsolePrinter.error("Already associated. Use 'release' or 'disconnect' first.");
             return;
         }
 

@@ -39,7 +39,7 @@ public class SelectEditSgConsole extends CommandHandler {
             sgNum = Integer.parseInt(numStr.trim());
         } catch (NumberFormatException e) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Invalid group number: " + numStr);
+                ConsolePrinter.error("Invalid group number: " + numStr);
             } else {
                 ConsolePrinter.error("Invalid group number: " + numStr);
             }

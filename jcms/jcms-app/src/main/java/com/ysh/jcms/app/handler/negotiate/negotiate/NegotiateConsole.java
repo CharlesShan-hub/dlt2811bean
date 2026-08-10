@@ -5,10 +5,10 @@ import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.Param;
-import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,7 +23,7 @@ public class NegotiateConsole extends CommandHandler {
         com.ysh.jcms.utils.config.CmsConfig.Protocol.Negotiate cfg = CmsConfigLoader.load().protocol().negotiate();
         return Arrays.asList(new Param("apduSize", "APDU 大小", String.valueOf(cfg.apduSize())),
                 new Param("asduSize", "ASDU 大小", String.valueOf(cfg.asduSize())),
-                new Param("protocolVersion", "协议版本", String.valueOf(cfg.protocolVersion())), new Param("json", "JSON 格式输出", ""));
+                new Param("protocolVersion", "协议版本", String.valueOf(cfg.protocolVersion())));
     }
 
     @Override
@@ -47,18 +47,12 @@ public class NegotiateConsole extends CommandHandler {
 
         console.getClient(NegotiateClient.class).execute(dao);
 
-        if (CmsConsole.isJsonMode(args)) {
-            String json = "{\"success\":true,\"data\":{" + "\"apduSize\":" + dao.negotiatedApduSize() + "," + "\"asduSize\":"
-                    + dao.negotiatedAsduSize() + "," + "\"protocolVersion\":" + dao.negotiatedProtocolVersion() + ","
-                    + "\"modelVersion\":\"" + CmsFormatUtil.escapeJson(dao.modelVersion()) + "\"" + "}}";
-            ConsolePrinter.raw(json);
-        } else {
-            ConsolePrinter.success("Negotiate completed.");
-            ConsolePrinter.info("  apduSize: " + dao.negotiatedApduSize());
-            ConsolePrinter.info("  asduSize: " + dao.negotiatedAsduSize());
-            ConsolePrinter.info("  protocolVersion: " + dao.negotiatedProtocolVersion());
-            ConsolePrinter.info("  modelVersion: " + dao.modelVersion());
-        }
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("apduSize", dao.negotiatedApduSize());
+        data.put("asduSize", dao.negotiatedAsduSize());
+        data.put("protocolVersion", dao.negotiatedProtocolVersion());
+        data.put("modelVersion", dao.modelVersion());
+        ConsolePrinter.outputJson(data);
     }
 
     private static String firstNonEmpty(String a, String b) {

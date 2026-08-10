@@ -48,14 +48,14 @@ public class ApCfgHandler extends CommandHandler {
             } else {
                 String msg = "无效的 source: " + source + "（可选 scd|list）";
                 if (jsonMode) {
-                    CmsConsole.jsonError(msg);
+                    ConsolePrinter.error(msg);
                 } else {
                     ConsolePrinter.error(msg);
                 }
                 return;
             }
             if (jsonMode) {
-                CmsConsole.jsonMessage("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
+                ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
             } else {
                 ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
             }

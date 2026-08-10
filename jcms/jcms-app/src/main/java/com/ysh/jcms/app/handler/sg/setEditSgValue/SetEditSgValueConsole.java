@@ -59,7 +59,7 @@ public class SetEditSgValueConsole extends CommandHandler {
 
         if (refsStr == null || refsStr.trim().isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Missing --refs");
+                ConsolePrinter.error("Missing --refs");
             } else {
                 ConsolePrinter.error("Missing --refs");
             }
@@ -67,7 +67,7 @@ public class SetEditSgValueConsole extends CommandHandler {
         }
         if (valuesStr == null || valuesStr.trim().isEmpty()) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Missing --values (must match --refs count)");
+                ConsolePrinter.error("Missing --values (must match --refs count)");
             } else {
                 ConsolePrinter.error("Missing --values (must match --refs count)");
             }
@@ -78,7 +78,7 @@ public class SetEditSgValueConsole extends CommandHandler {
         String[] vals = valuesStr.trim().split("\\s+");
         if (refs.length != vals.length) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
+                ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
             } else {
                 ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
             }
@@ -88,7 +88,7 @@ public class SetEditSgValueConsole extends CommandHandler {
         Integer choiceType = TYPE_MAP.get(typeStr);
         if (choiceType == null) {
             if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Unknown type: " + typeStr
+                ConsolePrinter.error("Unknown type: " + typeStr
                         + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
             } else {
                 ConsolePrinter.error("Unknown type: " + typeStr
