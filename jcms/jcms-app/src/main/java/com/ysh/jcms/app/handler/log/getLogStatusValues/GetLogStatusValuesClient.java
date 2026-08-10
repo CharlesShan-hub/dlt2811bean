@@ -24,12 +24,7 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
 
     @Override
     public void execute(GetLogStatusValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetLogStatusValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_LOG_STATUS_VALUES, dao, ctx);
+        send(ServiceName.GET_LOG_STATUS_VALUES, dao);
     }
 
     @Override
@@ -39,7 +34,8 @@ public class GetLogStatusValuesClient extends BaseClientHandler<GetLogStatusValu
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetLogStatusValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetLogStatusValuesResponse resp = decodeResp(frame, new CmsGetLogStatusValuesResponse());
 
         List<LogStatusEntry> entries = new ArrayList<>();

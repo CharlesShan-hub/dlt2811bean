@@ -9,20 +9,20 @@ import com.ysh.jcms.utils.transport.ServiceName;
 import com.ysh.jcms.utils.transport.frame.Frame;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(SvrDirDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(SvrDirDao dao, PaginationContext ctx) throws Exception {
-        ctx.getAccumulatedRefs().clear();
-        send(ServiceName.GET_SERVER_DIRECTORY, dao, ctx);
-        node.getContentManager().initServerDir(new java.util.ArrayList<>(ctx.getAccumulatedRefs()));
-        log.info("GetServerDirectory succeeded: {} logical devices", ctx.getAccumulatedRefs().size());
+        PaginationContext ctx = dao.paginationContext();
+        ctx.setResult(null);
+        send(ServiceName.GET_SERVER_DIRECTORY, dao);
+        List<CmsObjectReference> refs = (List<CmsObjectReference>) ctx.getResult();
+        node.getContentManager().initServerDir(refs.stream().map(CmsObjectReference::value).collect(Collectors.toList()));
+        log.info("GetServerDirectory succeeded: {} logical devices", refs.size());
     }
 
     @Override
@@ -32,14 +32,22 @@ public class SvrDirClient extends BaseClientHandler<SvrDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, SvrDirDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetServerDirectoryResponse resp = decodeResp(frame, new CmsGetServerDirectoryResponse());
 
-        for (CmsObjectReference ref : resp.reference) {
-            ctx.getAccumulatedRefs().add(ref.value());
+        // Accumulate raw CmsObjectReference (not extracted String) across pages
+        List<CmsObjectReference> accumulated;
+        if (ctx.getResult() == null) {
+            accumulated = new java.util.ArrayList<>();
+            ctx.setResult(accumulated);
+        } else {
+            accumulated = (List<CmsObjectReference>) ctx.getResult();
         }
+        accumulated.addAll(resp.reference);
+
         ctx.setLastMoreFollows(resp.moreFollows.value());
-        if (resp.reference.size() > 0) {
+        if (!resp.reference.isEmpty()) {
             ctx.setLastReference(resp.reference.get(resp.reference.size() - 1).value());
         }
         log.info("GetServerDirectory page: {} refs (moreFollows={})", resp.reference.size(), ctx.isLastMoreFollows());

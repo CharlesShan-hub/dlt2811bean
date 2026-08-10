@@ -21,7 +21,8 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.List;
 
 public class SetUrcbValuesServer
-        extends SetCbValuesServer<CmsSetUrcbValuesRequest, CmsSetUrcbValuesError, CmsSetUrcbEntry, CmsSetUrcbResult> {
+        extends
+            SetCbValuesServer<CmsSetUrcbValuesRequest, CmsSetUrcbValuesError, CmsSetUrcbEntry, CmsSetUrcbResult> {
 
     public SetUrcbValuesServer() {
         super(ServiceName.SET_URCB_VALUES, CmsSetUrcbValuesRequest.class, CmsSetUrcbValuesError.class);

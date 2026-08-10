@@ -1,5 +1,7 @@
 package com.ysh.jcms.app.handler;
 
+import com.ysh.jcms.app.console.ConsolePrinter;
+import com.ysh.jcms.utils.config.CmsConfigLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,9 +16,14 @@ public abstract class BaseHandler {
 
     protected final Logger log = LoggerFactory.getLogger(getClass());
 
-    /** Trace a PDU string (logged at INFO level). Subclasses may override. */
+    /**
+     * Trace a PDU string. Output is controlled by the {@code trace-pdu} config
+     * flag. When enabled, prints directly to the console (bypassing the log-level
+     * filter used by CLI mode).
+     */
     protected static void trace(String msg) {
-        // using a static logger to avoid per-instance overhead
-        LoggerFactory.getLogger(BaseHandler.class).info(msg);
+        if (CmsConfigLoader.load().client().console().tracePdu()) {
+            ConsolePrinter.raw(msg);
+        }
     }
 }

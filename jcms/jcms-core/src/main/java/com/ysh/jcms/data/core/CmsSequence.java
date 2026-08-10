@@ -248,8 +248,8 @@ public abstract class CmsSequence extends CmsType {
      *
      * <p>
      * Set*Result PDUs (e.g. {@code SetBRCBResult}) encode "this field failed" as
-     * "the optional field is present", so a single call replaces the old
-     * per-field {@code hasEntryError()} enumeration.
+     * "the optional field is present", so a single call replaces the old per-field
+     * {@code hasEntryError()} enumeration.
      */
     public boolean hasAnyPresent() {
         for (String name : SEQ_META.get(getClass()).optional) {

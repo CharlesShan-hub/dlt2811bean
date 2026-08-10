@@ -31,12 +31,7 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
 
     @Override
     public void execute(GetSgcbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetSgcbValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_SGCB_VALUES, dao, ctx);
+        send(ServiceName.GET_SGCB_VALUES, dao);
     }
 
     @Override
@@ -46,7 +41,8 @@ public class GetSgcbValuesClient extends BaseClientHandler<GetSgcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetSgcbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetSgcbValuesResponse resp = decodeResp(frame, new CmsGetSgcbValuesResponse());
 
         List<SgcbResult> results = new ArrayList<>();

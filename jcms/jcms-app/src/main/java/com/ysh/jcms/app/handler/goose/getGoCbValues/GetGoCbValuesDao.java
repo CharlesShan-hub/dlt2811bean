@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.goose.getGoCbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.goose.CmsGetGoCbValuesRequest;
@@ -15,6 +16,10 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public class GetGoCbValuesDao extends BaseDao {
+    public GetGoCbValuesDao() {
+        paginationContext(new PaginationContext());
+    }
+
     private final List<String> refs = new ArrayList<>();
 
     public GetGoCbValuesDao addRef(String ref) {

@@ -21,7 +21,8 @@ import com.ysh.jcms.utils.transport.session.Session;
 import java.util.List;
 
 public class SetBrcbValuesServer
-        extends SetCbValuesServer<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError, CmsSetBrcbEntry, CmsSetBrcbResult> {
+        extends
+            SetCbValuesServer<CmsSetBrcbValuesRequest, CmsSetBrcbValuesError, CmsSetBrcbEntry, CmsSetBrcbResult> {
 
     public SetBrcbValuesServer() {
         super(ServiceName.SET_BRCB_VALUES, CmsSetBrcbValuesRequest.class, CmsSetBrcbValuesError.class);

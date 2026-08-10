@@ -25,12 +25,7 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
 
     @Override
     public void execute(GetEditSgValueDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetEditSgValueDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_EDIT_SG_VALUE, dao, ctx);
+        send(ServiceName.GET_EDIT_SG_VALUE, dao);
     }
 
     @Override
@@ -40,7 +35,8 @@ public class GetEditSgValueClient extends BaseClientHandler<GetEditSgValueDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetEditSgValueDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetEditSgValueResponse resp = decodeResp(frame, new CmsGetEditSgValueResponse());
 
         List<ValueEntry> values = new ArrayList<>();

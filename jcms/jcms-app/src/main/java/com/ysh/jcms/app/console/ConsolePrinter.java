@@ -1,10 +1,13 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.data.InnerBase;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 public final class ConsolePrinter {
@@ -110,5 +113,39 @@ public final class ConsolePrinter {
         }
         for (int i = 0; i < items.size(); i++)
             println(GRY + "    [" + i + "] " + RST + formatter.apply(items.get(i)));
+    }
+
+    /**
+     * 输出 JSON 成功响应，自动添加 {@code "success":true} 前缀。 {@code jsonBody} 的格式应为
+     * {@code "key1":val1,"key2":val2,...}（不含外层大括号）。
+     */
+    public static void jsonSuccess(String jsonBody) {
+        raw("{\"success\":true," + jsonBody + "}");
+    }
+
+    /**
+     * 输出 JSON 成功响应，自动将 Map 字段序列化为 JSON 并添加 {@code "success":true}。
+     * <p>
+     * 示例：
+     *
+     * <pre>
+     * {
+     *     &#64;code
+     *     Map<String, Object> fields = new LinkedHashMap<>();
+     *     fields.put("moreFollows", false);
+     *     fields.put("data", refs); // refs.toString() 为有效 JSON 数组
+     *     ConsolePrinter.outputJson(fields);
+     * }
+     * </pre>
+     */
+    public static void outputJson(Map<String, Object> fields) {
+        try {
+            LinkedHashMap<String, Object> all = new LinkedHashMap<>();
+            all.put("success", true);
+            all.putAll(fields);
+            raw(InnerBase.MAPPER.writeValueAsString(all));
+        } catch (Exception e) {
+            raw("{\"success\":true,\"error\":\"serialization failed\"}");
+        }
     }
 }

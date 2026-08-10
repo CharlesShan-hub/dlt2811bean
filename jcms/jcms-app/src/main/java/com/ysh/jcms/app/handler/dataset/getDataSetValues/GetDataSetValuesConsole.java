@@ -53,8 +53,8 @@ public class GetDataSetValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching dataset values for " + dsRef);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetDataSetValuesClient.class).execute(dao, ctx);
+        console.getClient(GetDataSetValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetDataSetValuesClient.DataSetValue> values = (List<GetDataSetValuesClient.DataSetValue>) ctx.getResult();

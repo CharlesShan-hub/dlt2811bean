@@ -60,8 +60,8 @@ public class AllDataValuesConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(AllDataValuesClient.class).execute(dao, ctx);
+        console.getClient(AllDataValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
 
         @SuppressWarnings("unchecked")

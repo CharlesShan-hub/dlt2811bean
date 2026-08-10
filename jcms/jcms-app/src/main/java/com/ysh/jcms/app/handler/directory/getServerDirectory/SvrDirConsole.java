@@ -6,8 +6,9 @@ import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.app.handler.PaginationContext;
+import com.ysh.jcms.data.scalar.CmsObjectReference;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +24,7 @@ public class SvrDirConsole extends CommandHandler {
                 new Param("json", "JSON 格式输出（不传则输出人类可读文本）", ""));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
         if (!console.requireConnected(args))
@@ -44,10 +46,18 @@ public class SvrDirConsole extends CommandHandler {
         if ("true".equalsIgnoreCase(autoPull)) {
             dao.autoPull(true);
         }
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(SvrDirClient.class).execute(dao, ctx);
+        console.getClient(SvrDirClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
-        List<String> ldNames = new ArrayList<>(ctx.getAccumulatedRefs());
-        CmsConsole.outputList("Logical Devices", ldNames, s -> s, args, moreFollows);
+        List<CmsObjectReference> refs = (List<CmsObjectReference>) ctx.getResult();
+
+        if (CmsConsole.isJsonMode(args)) {
+            Map<String, Object> fields = new LinkedHashMap<>();
+            fields.put("moreFollows", moreFollows);
+            fields.put("data", refs);
+            ConsolePrinter.outputJson(fields);
+        } else {
+            ConsolePrinter.list("Logical Devices", refs, ref -> ref.value());
+        }
     }
 }

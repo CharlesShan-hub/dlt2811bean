@@ -48,8 +48,8 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
             ConsolePrinter.info("Fetching dataset directory for " + dsRef);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetDataSetDirectoryClient.class).execute(dao, ctx);
+        console.getClient(GetDataSetDirectoryClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetDataSetDirectoryClient.DirEntry> entries = (List<GetDataSetDirectoryClient.DirEntry>) ctx.getResult();

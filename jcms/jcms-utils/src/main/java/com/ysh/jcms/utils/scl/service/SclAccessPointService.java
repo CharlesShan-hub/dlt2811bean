@@ -35,8 +35,7 @@ public final class SclAccessPointService {
      * @param scl
      *            SCL 文档
      * @param sapRef
-     *            访问点引用，格式 {@code IEDName[/AccessPointName]}，缺省 AP 名为
-     *            {@code S1}
+     *            访问点引用，格式 {@code IEDName[/AccessPointName]}，缺省 AP 名为 {@code S1}
      * @return 解析结果，IED 或 AP 不存在时返回 {@code null}
      */
     public static ResolvedAp resolve(SclDocument scl, String sapRef) {

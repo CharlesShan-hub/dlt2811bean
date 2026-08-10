@@ -26,15 +26,10 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
     }
 
     @Override
-    public void execute(GetDataDirectoryDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void execute(GetDataDirectoryDao dao, PaginationContext ctx) throws Exception {
-        ctx.setResult(new ArrayList<DirEntry>());
-        send(ServiceName.GET_DATA_DIRECTORY, dao, ctx);
+    public void execute(GetDataDirectoryDao dao) throws Exception {
+        dao.paginationContext().setResult(new ArrayList<DirEntry>());
+        send(ServiceName.GET_DATA_DIRECTORY, dao);
     }
 
     @Override
@@ -45,7 +40,8 @@ public class GetDataDirectoryClient extends BaseClientHandler<GetDataDirectoryDa
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetDataDirectoryDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetDataDirectoryResponse resp = decodeResp(frame, new CmsGetDataDirectoryResponse());
 
         List<DirEntry> entries = new ArrayList<>();

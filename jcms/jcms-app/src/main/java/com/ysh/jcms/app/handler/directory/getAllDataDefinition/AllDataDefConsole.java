@@ -60,8 +60,8 @@ public class AllDataDefConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(AllDataDefClient.class).execute(dao, ctx);
+        console.getClient(AllDataDefClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
 
         @SuppressWarnings("unchecked")

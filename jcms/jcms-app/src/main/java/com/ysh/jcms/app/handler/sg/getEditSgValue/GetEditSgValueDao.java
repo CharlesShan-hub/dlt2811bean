@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.sg.getEditSgValue;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.sg.CmsSgRefFcEntry;
 import com.ysh.jcms.pdu.sg.CmsGetEditSgValueRequest;
@@ -14,6 +15,10 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public class GetEditSgValueDao extends BaseDao {
+    public GetEditSgValueDao() {
+        paginationContext(new PaginationContext());
+    }
+
     private List<RefFcPair> refs = new ArrayList<>();
 
     @Setter

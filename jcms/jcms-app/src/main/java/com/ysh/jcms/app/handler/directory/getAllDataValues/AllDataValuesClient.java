@@ -16,16 +16,11 @@ import java.util.List;
 public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
 
     @Override
-    public void execute(AllDataValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void execute(AllDataValuesDao dao, PaginationContext ctx) throws Exception {
-        ctx.setResult(new ArrayList<ContentManager.AllDataEntry>());
+    public void execute(AllDataValuesDao dao) throws Exception {
+        dao.paginationContext().setResult(new ArrayList<ContentManager.AllDataEntry>());
         node.getContentManager().initAllData(new ArrayList<>()); // clear before fresh pull
-        send(ServiceName.GET_ALL_DATA_VALUES, dao, ctx);
+        send(ServiceName.GET_ALL_DATA_VALUES, dao);
     }
 
     @Override
@@ -35,7 +30,8 @@ public class AllDataValuesClient extends BaseClientHandler<AllDataValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, AllDataValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetAllDataValuesResponse resp = decodeResp(frame, new CmsGetAllDataValuesResponse());
 
         List<ContentManager.AllDataEntry> entries = new ArrayList<>();

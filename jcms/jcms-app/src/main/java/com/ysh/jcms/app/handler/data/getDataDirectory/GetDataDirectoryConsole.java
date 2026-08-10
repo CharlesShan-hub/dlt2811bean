@@ -48,8 +48,8 @@ public class GetDataDirectoryConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data directory for " + ref);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetDataDirectoryClient.class).execute(dao, ctx);
+        console.getClient(GetDataDirectoryClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         boolean moreFollows = ctx.isLastMoreFollows();
         @SuppressWarnings("unchecked")

@@ -24,12 +24,7 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
 
     @Override
     public void execute(GetGoCbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetGoCbValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_GOCB_VALUES, dao, ctx);
+        send(ServiceName.GET_GOCB_VALUES, dao);
     }
 
     @Override
@@ -39,7 +34,8 @@ public class GetGoCbValuesClient extends BaseClientHandler<GetGoCbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetGoCbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetGoCbValuesResponse resp = decodeResp(frame, new CmsGetGoCbValuesResponse());
 
         List<GoCbEntry> entries = new ArrayList<>();

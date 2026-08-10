@@ -29,7 +29,8 @@ import java.util.List;
  * process one entry, and how to build the success/error PDUs.
  */
 public abstract class SetCbValuesServer<R extends CmsType, E extends CmsType, Entry extends CmsType, Result extends CmsSequence>
-        extends BaseServerHandler<R, E> {
+        extends
+            BaseServerHandler<R, E> {
 
     protected SetCbValuesServer(com.ysh.jcms.utils.transport.ServiceName serviceName, Class<R> requestType, Class<E> errorType) {
         super(serviceName, requestType, errorType);

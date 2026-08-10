@@ -17,8 +17,7 @@ import com.ysh.jcms.utils.transport.session.Session;
 
 import java.util.List;
 
-public class SetLcbValuesServer
-        extends SetCbValuesServer<CmsSetLcbValuesRequest, CmsSetLcbValuesError, CmsSetLcbEntry, CmsSetLcbResult> {
+public class SetLcbValuesServer extends SetCbValuesServer<CmsSetLcbValuesRequest, CmsSetLcbValuesError, CmsSetLcbEntry, CmsSetLcbResult> {
 
     public SetLcbValuesServer() {
         super(ServiceName.SET_LCB_VALUES, CmsSetLcbValuesRequest.class, CmsSetLcbValuesError.class);

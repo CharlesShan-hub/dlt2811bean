@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.getUrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetUrcbValuesRequest;
@@ -15,6 +16,10 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public class GetUrcbValuesDao extends BaseDao {
+    public GetUrcbValuesDao() {
+        paginationContext(new PaginationContext());
+    }
+
     private final List<String> refs = new ArrayList<>();
 
     public GetUrcbValuesDao addRef(String ref) {

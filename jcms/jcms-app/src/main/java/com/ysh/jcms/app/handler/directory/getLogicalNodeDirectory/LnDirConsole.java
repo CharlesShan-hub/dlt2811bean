@@ -84,8 +84,8 @@ public class LnDirConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        LnDirContext ctx = new LnDirContext();
-        console.getClient(LnDirClient.class).execute(dao, ctx);
+        console.getClient(LnDirClient.class).execute(dao);
+        LnDirContext ctx = (LnDirContext) dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
         List<String> items = new ArrayList<>(ctx.getAccumulatedRefs());
         CmsConsole.outputList("References (" + acsiStr + ")", items, s -> s, args, moreFollows);

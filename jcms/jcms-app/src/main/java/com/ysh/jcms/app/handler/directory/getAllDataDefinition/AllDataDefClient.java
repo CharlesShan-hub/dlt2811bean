@@ -16,16 +16,11 @@ import java.util.List;
 public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
 
     @Override
-    public void execute(AllDataDefDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void execute(AllDataDefDao dao, PaginationContext ctx) throws Exception {
-        ctx.setResult(new ArrayList<ContentManager.DataDefEntry>());
+    public void execute(AllDataDefDao dao) throws Exception {
+        dao.paginationContext().setResult(new ArrayList<ContentManager.DataDefEntry>());
         node.getContentManager().initDataDef(new ArrayList<>()); // clear before fresh pull
-        send(ServiceName.GET_ALL_DATA_DEFINITION, dao, ctx);
+        send(ServiceName.GET_ALL_DATA_DEFINITION, dao);
     }
 
     @Override
@@ -35,7 +30,8 @@ public class AllDataDefClient extends BaseClientHandler<AllDataDefDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, AllDataDefDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetAllDataDefinitionResponse resp = decodeResp(frame, new CmsGetAllDataDefinitionResponse());
 
         List<ContentManager.DataDefEntry> entries = new ArrayList<>();

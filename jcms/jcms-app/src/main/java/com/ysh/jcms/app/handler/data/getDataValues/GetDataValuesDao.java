@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.data.getDataValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.sequence.data.CmsDataRefEntry;
 import com.ysh.jcms.pdu.data.CmsGetDataValuesRequest;
@@ -15,6 +16,10 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public class GetDataValuesDao extends BaseDao {
+
+    public GetDataValuesDao() {
+        paginationContext(new PaginationContext());
+    }
 
     /** Data reference entries (reference + optional fc) */
     private List<DataRef> dataRefs = new ArrayList<>();

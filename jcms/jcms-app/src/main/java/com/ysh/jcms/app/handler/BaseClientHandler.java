@@ -13,15 +13,6 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     /** All client handlers must implement this as their entry point. */
     public abstract void execute(D dao) throws Exception;
 
-    /**
-     * Execute with a pagination context. Default implementation delegates to
-     * {@link #execute(BaseDao)}. Subclasses that support pagination should override
-     * this and use the context for state passing.
-     */
-    public void execute(D dao, PaginationContext ctx) throws Exception {
-        execute(dao);
-    }
-
     protected CmsNode node;
 
     protected BaseClientHandler() {
@@ -45,15 +36,39 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
 
     /**
-     * Send a request built from the DAO with a pagination context for state
-     * passing. If {@link BaseDao#autoPull()} is true, automatically follows
+     * Send a request built from the DAO. If {@link D#paginationContext()} is
+     * non-null and {@link BaseDao#autoPull()} is true, automatically follows
      * {@code moreFollows} pagination.
      * <p>
      * Subclasses <b>must</b> call {@link PaginationContext#setLastMoreFollows} and
      * {@link PaginationContext#setLastReference} inside their
-     * {@link #onSuccess(Frame, PaginationContext)} override for auto-pull to work.
+     * {@link #onSuccess(Frame, BaseDao)} override for auto-pull to work.
      */
-    protected Frame send(ServiceName sc, D dao, PaginationContext ctx) throws IOException {
+    protected Frame send(ServiceName sc, D dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
+        if (ctx != null) {
+            return sendWithPagination(sc, dao, ctx);
+        }
+        // Simple non-paginated send
+        if (node == null)
+            throw new IOException("BaseClientHandler node not set");
+        byte[] pdu = dao.toRequest().encode();
+        trace(">>>\n" + dao.toRequest());
+        Frame frame = node.sendRequest(sc, pdu);
+        if (frame == null)
+            throw new IOException("Request timed out for " + sc);
+        if (frame.header().err())
+            onError(frame);
+        onSuccess(frame, dao);
+        return frame;
+    }
+
+    /**
+     * Internal pagination loop. Reads state from the context and writes back
+     * accumulated results. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
+     * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
+     */
+    private Frame sendWithPagination(ServiceName sc, D dao, PaginationContext ctx) throws IOException {
         ctx.setLastMoreFollows(false);
         ctx.setLastReference(null);
         Frame frame = null;
@@ -65,9 +80,16 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
             }
             byte[] pdu = dao.toRequest().encode();
             trace(">>>\n" + dao.toRequest());
-            frame = sendPdu(sc, pdu, ctx);
-            if (frame == null || frame.header().err())
+            if (node == null)
+                throw new IOException("BaseClientHandler node not set");
+            frame = node.sendRequest(sc, pdu);
+            if (frame == null)
+                throw new IOException("Request timed out for " + sc);
+            if (frame.header().err()) {
+                onError(frame);
                 break;
+            }
+            onSuccess(frame, dao);
             if (dao.autoPull() && ctx.isLastMoreFollows()) {
                 String ref = ctx.getLastReference();
                 if (ref == null || ref.isEmpty()) {
@@ -82,43 +104,6 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
                 break;
             }
         } while (true);
-        return frame;
-    }
-
-    /**
-     * Send raw PDU bytes and invoke the ctx-aware callback instead of the no-arg
-     * {@link #onSuccess(Frame)}.
-     */
-    private Frame sendPdu(ServiceName sc, byte[] pduBytes, PaginationContext ctx) throws IOException {
-        if (node == null)
-            throw new IOException("BaseClientHandler node not set");
-        Frame frame = node.sendRequest(sc, pduBytes);
-        if (frame == null)
-            throw new IOException("Request timed out for " + sc);
-        if (frame.header().err())
-            onError(frame);
-        onSuccess(frame, ctx);
-        return frame;
-    }
-
-    /**
-     * Send a request built from the DAO. Calls {@link #onSuccess(Frame, BaseDao)}
-     * with the DAO reference so subclasses can store results directly on the DAO.
-     * <p>
-     * This is a non-paginated send. For pagination, use
-     * {@link #send(ServiceName, BaseDao, PaginationContext)}.
-     */
-    protected Frame send(ServiceName sc, D dao) throws IOException {
-        if (node == null)
-            throw new IOException("BaseClientHandler node not set");
-        byte[] pdu = dao.toRequest().encode();
-        trace(">>>\n" + dao.toRequest());
-        Frame frame = node.sendRequest(sc, pdu);
-        if (frame == null)
-            throw new IOException("Request timed out for " + sc);
-        if (frame.header().err())
-            onError(frame);
-        onSuccess(frame, dao);
         return frame;
     }
 
@@ -181,20 +166,13 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
-     * Callback invoked after each successful response during auto-pull. Default
-     * implementation delegates to {@link #onSuccess(Frame)}. Subclasses that use a
-     * pagination context should override this to populate the context with
-     * accumulated data and pagination state.
-     */
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
-        onSuccess(frame);
-    }
-
-    /**
      * Callback invoked after each successful response when using
-     * {@link #send(ServiceName, BaseDao)}. Provides both the response frame and
-     * the DAO so subclasses can store decoded results directly on the DAO.
-     * Default implementation delegates to {@link #onSuccess(Frame)}.
+     * {@link #send(ServiceName, BaseDao)}. Provides both the response frame and the
+     * DAO so subclasses can store decoded results directly on the DAO.
+     * <p>
+     * For paginated requests, the {@link PaginationContext} is available via
+     * {@code dao.paginationContext()}. Default implementation delegates to
+     * {@link #onSuccess(Frame)}.
      */
     protected void onSuccess(Frame frame, D dao) throws IOException {
         onSuccess(frame);

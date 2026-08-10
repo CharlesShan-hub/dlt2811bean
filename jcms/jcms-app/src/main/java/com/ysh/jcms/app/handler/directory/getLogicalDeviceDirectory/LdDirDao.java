@@ -4,6 +4,7 @@ import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.pdu.directory.CmsGetLogicalDeviceDirectoryRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -11,6 +12,10 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class LdDirDao extends BaseDao {
+
+    public LdDirDao() {
+        paginationContext(new PaginationContext());
+    }
 
     private String ldName;
     private String referenceAfter;

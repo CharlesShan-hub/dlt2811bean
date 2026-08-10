@@ -24,12 +24,7 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
 
     @Override
     public void execute(GetUrcbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetUrcbValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_URCB_VALUES, dao, ctx);
+        send(ServiceName.GET_URCB_VALUES, dao);
     }
 
     @Override
@@ -39,7 +34,8 @@ public class GetUrcbValuesClient extends BaseClientHandler<GetUrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetUrcbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetUrcbValuesResponse resp = decodeResp(frame, new CmsGetUrcbValuesResponse());
 
         List<UrcbEntry> entries = new ArrayList<>();

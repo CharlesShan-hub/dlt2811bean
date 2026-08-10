@@ -20,10 +20,17 @@ public abstract class BaseDao {
     private boolean autoPull = false;
 
     /**
-     * Result holder for passing decoded response data back to the caller.
-     * Each DAO subclass decides what type goes in here.
+     * Result holder for passing decoded response data back to the caller. Each DAO
+     * subclass decides what type goes in here.
      */
     private Object result;
+
+    /**
+     * Pagination context for auto-pull support. When non-null,
+     * {@link BaseClientHandler#send} will automatically follow {@code moreFollows}
+     * pagination.
+     */
+    private PaginationContext paginationContext;
 
     public boolean autoPull() {
         return autoPull;
@@ -40,6 +47,14 @@ public abstract class BaseDao {
     public BaseDao result(Object result) {
         this.result = result;
         return this;
+    }
+
+    public PaginationContext paginationContext() {
+        return paginationContext;
+    }
+
+    public void paginationContext(PaginationContext paginationContext) {
+        this.paginationContext = paginationContext;
     }
 
     /**

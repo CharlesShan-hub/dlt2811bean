@@ -45,8 +45,8 @@ public class GetSgcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching SGCB values for " + dao.references().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetSgcbValuesClient.class).execute(dao, ctx);
+        console.getClient(GetSgcbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetSgcbValuesClient.SgcbResult> results = (List<GetSgcbValuesClient.SgcbResult>) ctx.getResult();

@@ -45,8 +45,8 @@ public class GetLogStatusValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching log status for " + dao.refs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetLogStatusValuesClient.class).execute(dao, ctx);
+        console.getClient(GetLogStatusValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetLogStatusValuesClient.LogStatusEntry> entries = (List<GetLogStatusValuesClient.LogStatusEntry>) ctx.getResult();

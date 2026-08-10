@@ -59,8 +59,8 @@ public class GetDataValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data values for " + dao.dataRefs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetDataValuesClient.class).execute(dao, ctx);
+        console.getClient(GetDataValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetDataValuesClient.DataValue> values = (List<GetDataValuesClient.DataValue>) ctx.getResult();

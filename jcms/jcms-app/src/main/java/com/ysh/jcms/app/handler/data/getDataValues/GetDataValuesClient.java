@@ -26,12 +26,7 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
 
     @Override
     public void execute(GetDataValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetDataValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_DATA_VALUES, dao, ctx);
+        send(ServiceName.GET_DATA_VALUES, dao);
     }
 
     @Override
@@ -41,8 +36,10 @@ public class GetDataValuesClient extends BaseClientHandler<GetDataValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetDataValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetDataValuesResponse resp = decodeResp(frame, new CmsGetDataValuesResponse());
+        log.warn("GetDataValues page: {} values", resp);
 
         List<DataValue> values = new ArrayList<>();
         for (CmsData d : resp.value) {

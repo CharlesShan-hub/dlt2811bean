@@ -26,12 +26,7 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
 
     @Override
     public void execute(GetDataDefinitionDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetDataDefinitionDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_DATA_DEFINITION, dao, ctx);
+        send(ServiceName.GET_DATA_DEFINITION, dao);
     }
 
     @Override
@@ -41,7 +36,8 @@ public class GetDataDefinitionClient extends BaseClientHandler<GetDataDefinition
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetDataDefinitionDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetDataDefinitionResponse resp = decodeResp(frame, new CmsGetDataDefinitionResponse());
 
         List<DefEntry> entries = new ArrayList<>();

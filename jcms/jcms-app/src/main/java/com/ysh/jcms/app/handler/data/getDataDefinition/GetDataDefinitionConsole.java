@@ -59,8 +59,8 @@ public class GetDataDefinitionConsole extends CommandHandler {
             ConsolePrinter.info("Fetching data definitions for " + dao.dataRefs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetDataDefinitionClient.class).execute(dao, ctx);
+        console.getClient(GetDataDefinitionClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetDataDefinitionClient.DefEntry> entries = (List<GetDataDefinitionClient.DefEntry>) ctx.getResult();

@@ -48,12 +48,9 @@ public class NegotiateConsole extends CommandHandler {
         console.getClient(NegotiateClient.class).execute(dao);
 
         if (CmsConsole.isJsonMode(args)) {
-            String json = "{\"success\":true,\"data\":{"
-                    + "\"apduSize\":" + dao.negotiatedApduSize() + ","
-                    + "\"asduSize\":" + dao.negotiatedAsduSize() + ","
-                    + "\"protocolVersion\":" + dao.negotiatedProtocolVersion() + ","
-                    + "\"modelVersion\":\"" + CmsFormatUtil.escapeJson(dao.modelVersion()) + "\""
-                    + "}}";
+            String json = "{\"success\":true,\"data\":{" + "\"apduSize\":" + dao.negotiatedApduSize() + "," + "\"asduSize\":"
+                    + dao.negotiatedAsduSize() + "," + "\"protocolVersion\":" + dao.negotiatedProtocolVersion() + ","
+                    + "\"modelVersion\":\"" + CmsFormatUtil.escapeJson(dao.modelVersion()) + "\"" + "}}";
             ConsolePrinter.raw(json);
         } else {
             ConsolePrinter.success("Negotiate completed.");

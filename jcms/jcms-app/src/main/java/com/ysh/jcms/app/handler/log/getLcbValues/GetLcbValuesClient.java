@@ -24,12 +24,7 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
 
     @Override
     public void execute(GetLcbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetLcbValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_LCB_VALUES, dao, ctx);
+        send(ServiceName.GET_LCB_VALUES, dao);
     }
 
     @Override
@@ -39,7 +34,8 @@ public class GetLcbValuesClient extends BaseClientHandler<GetLcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetLcbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetLcbValuesResponse resp = decodeResp(frame, new CmsGetLcbValuesResponse());
 
         List<LcbEntry> entries = new ArrayList<>();

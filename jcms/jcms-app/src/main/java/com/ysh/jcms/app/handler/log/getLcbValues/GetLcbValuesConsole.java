@@ -45,8 +45,8 @@ public class GetLcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching LCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetLcbValuesClient.class).execute(dao, ctx);
+        console.getClient(GetLcbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetLcbValuesClient.LcbEntry> entries = (List<GetLcbValuesClient.LcbEntry>) ctx.getResult();

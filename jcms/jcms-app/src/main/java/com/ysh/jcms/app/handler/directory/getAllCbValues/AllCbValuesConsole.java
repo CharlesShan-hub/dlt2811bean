@@ -93,8 +93,8 @@ public class AllCbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching CB values: target=" + target + " type=" + cbTypeName);
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(AllCbValuesClient.class).execute(dao, ctx);
+        console.getClient(AllCbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
 
         @SuppressWarnings("unchecked")

@@ -26,15 +26,10 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
     }
 
     @Override
-    public void execute(AllCbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void execute(AllCbValuesDao dao, PaginationContext ctx) throws Exception {
-        ctx.setResult(new ArrayList<CbEntry>());
-        send(ServiceName.GET_ALL_CB_VALUES, dao, ctx);
+    public void execute(AllCbValuesDao dao) throws Exception {
+        dao.paginationContext().setResult(new ArrayList<CbEntry>());
+        send(ServiceName.GET_ALL_CB_VALUES, dao);
     }
 
     @Override
@@ -45,7 +40,8 @@ public class AllCbValuesClient extends BaseClientHandler<AllCbValuesDao> {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, AllCbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetAllCbValuesResponse resp = decodeResp(frame, new CmsGetAllCbValuesResponse());
 
         List<CbEntry> entries = new ArrayList<>();

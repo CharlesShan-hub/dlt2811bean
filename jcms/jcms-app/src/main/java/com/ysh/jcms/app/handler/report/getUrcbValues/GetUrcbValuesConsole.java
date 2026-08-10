@@ -44,8 +44,8 @@ public class GetUrcbValuesConsole extends CommandHandler {
         if (!jsonMode) {
             ConsolePrinter.info("Fetching URCB values for " + dao.refs().size() + " reference(s)");
         }
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetUrcbValuesClient.class).execute(dao, ctx);
+        console.getClient(GetUrcbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetUrcbValuesClient.UrcbEntry> entries = (List<GetUrcbValuesClient.UrcbEntry>) ctx.getResult();

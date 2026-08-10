@@ -41,8 +41,8 @@ public class LdDirConsole extends CommandHandler {
         if ("true".equalsIgnoreCase(autoPull)) {
             dao.autoPull(true);
         }
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(LdDirClient.class).execute(dao, ctx);
+        console.getClient(LdDirClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
         List<String> items = new ArrayList<>(ctx.getAccumulatedRefs());
         CmsConsole.outputList("Logical Nodes", items, s -> s, args, moreFollows);

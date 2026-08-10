@@ -54,8 +54,8 @@ public class GetEditSgValueConsole extends CommandHandler {
             ConsolePrinter.info("Fetching edit SG values (" + fcStr + ") for " + dao.refs().size() + " ref(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetEditSgValueClient.class).execute(dao, ctx);
+        console.getClient(GetEditSgValueClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetEditSgValueClient.ValueEntry> values = (List<GetEditSgValueClient.ValueEntry>) ctx.getResult();

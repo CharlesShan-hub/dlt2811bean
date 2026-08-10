@@ -15,13 +15,9 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
 
     @Override
     public void execute(LdDirDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(LdDirDao dao, PaginationContext ctx) throws Exception {
+        PaginationContext ctx = dao.paginationContext();
         ctx.getAccumulatedRefs().clear();
-        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao, ctx);
+        send(ServiceName.GET_LOGIC_DEVICE_DIRECTORY, dao);
         node.getContentManager().initLdDir(new ArrayList<>(ctx.getAccumulatedRefs()));
         log.info("GetLogicalDeviceDirectory succeeded: {} logical nodes", ctx.getAccumulatedRefs().size());
     }
@@ -33,7 +29,8 @@ public class LdDirClient extends BaseClientHandler<LdDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, LdDirDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetLogicalDeviceDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalDeviceDirectoryResponse());
 
         for (CmsSubReference ref : resp.lnReference) {

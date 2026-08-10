@@ -16,20 +16,13 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
 
     @Override
     public void execute(LnDirDao dao) throws Exception {
-        LnDirContext ctx = new LnDirContext();
+        LnDirContext ctx = (LnDirContext) dao.paginationContext();
         ctx.setAcsiClass(dao.acsiClass());
-        execute(dao, ctx);
-    }
-
-    @Override
-    public void execute(LnDirDao dao, PaginationContext ctx) throws Exception {
-        LnDirContext lnCtx = (LnDirContext) ctx;
-        lnCtx.setAcsiClass(dao.acsiClass());
-        lnCtx.getAccumulatedRefs().clear();
-        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao, lnCtx);
-        List<String> refs = new ArrayList<>(lnCtx.getAccumulatedRefs());
-        node.getContentManager().initNodeDir(lnCtx.getAcsiClass(), refs);
-        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", refs.size(), lnCtx.getAcsiClass());
+        ctx.getAccumulatedRefs().clear();
+        send(ServiceName.GET_LOGIC_NODE_DIRECTORY, dao);
+        List<String> refs = new ArrayList<>(ctx.getAccumulatedRefs());
+        node.getContentManager().initNodeDir(ctx.getAcsiClass(), refs);
+        log.info("GetLogicalNodeDirectory succeeded: {} references, acsiClass={}", refs.size(), ctx.getAcsiClass());
     }
 
     @Override
@@ -39,7 +32,8 @@ public class LnDirClient extends BaseClientHandler<LnDirDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, LnDirDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         LnDirContext lnCtx = (LnDirContext) ctx;
         CmsGetLogicalNodeDirectoryResponse resp = decodeResp(frame, new CmsGetLogicalNodeDirectoryResponse());
 

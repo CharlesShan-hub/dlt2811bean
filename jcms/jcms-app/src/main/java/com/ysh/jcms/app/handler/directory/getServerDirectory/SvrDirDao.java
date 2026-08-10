@@ -5,6 +5,7 @@ import com.ysh.jcms.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
 import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
@@ -12,6 +13,10 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class SvrDirDao extends BaseDao {
+
+    public SvrDirDao() {
+        paginationContext(new PaginationContext());
+    }
 
     private int objectClass = CmsObjectClass.LOGICAL_DEVICE;
     private String referenceAfter;

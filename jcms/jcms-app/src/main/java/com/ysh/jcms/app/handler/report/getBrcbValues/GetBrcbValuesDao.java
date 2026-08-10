@@ -1,6 +1,7 @@
 package com.ysh.jcms.app.handler.report.getBrcbValues;
 
 import com.ysh.jcms.app.handler.BaseDao;
+import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.scalar.CmsObjectReference;
 import com.ysh.jcms.pdu.report.CmsGetBrcbValuesRequest;
@@ -15,6 +16,10 @@ import java.util.List;
 @Getter
 @Accessors(fluent = true)
 public class GetBrcbValuesDao extends BaseDao {
+    public GetBrcbValuesDao() {
+        paginationContext(new PaginationContext());
+    }
+
     private final List<String> refs = new ArrayList<>();
 
     public GetBrcbValuesDao addRef(String ref) {

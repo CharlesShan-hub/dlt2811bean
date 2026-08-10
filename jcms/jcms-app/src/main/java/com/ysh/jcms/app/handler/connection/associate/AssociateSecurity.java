@@ -19,8 +19,8 @@ import java.util.Optional;
  * Associate 服务的认证与签名支持。
  *
  * <p>
- * 承载服务端安全状态的懒加载（authenticator / 私钥 / 证书）、客户端认证参数校验
- * 以及服务端证书与签名参数的构造。与 {@link AssociateServer} 分离，使主类只保留编排。
+ * 承载服务端安全状态的懒加载（authenticator / 私钥 / 证书）、客户端认证参数校验 以及服务端证书与签名参数的构造。与
+ * {@link AssociateServer} 分离，使主类只保留编排。
  */
 public class AssociateSecurity {
 
@@ -71,8 +71,8 @@ public class AssociateSecurity {
             try {
                 byte[] signedData = buildServerSignedData(sapRef);
                 byte[] signature = GmSignature.sign(serverPrivateKey, signedData);
-                return new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes)
-                        .signedTime(new CmsUtcTime().now()).signedValue(signature);
+                return new CmsAuthenticationParameter().signatureCertificate(serverCertificateBytes).signedTime(new CmsUtcTime().now())
+                        .signedValue(signature);
             } catch (Exception e) {
                 log.warn("Failed to sign server auth param", e);
             }

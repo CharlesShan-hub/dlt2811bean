@@ -45,8 +45,8 @@ public class GetGoCbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching GoCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetGoCbValuesClient.class).execute(dao, ctx);
+        console.getClient(GetGoCbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetGoCbValuesClient.GoCbEntry> entries = (List<GetGoCbValuesClient.GoCbEntry>) ctx.getResult();

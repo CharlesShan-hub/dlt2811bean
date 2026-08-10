@@ -24,12 +24,7 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
 
     @Override
     public void execute(GetBrcbValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
-    public void execute(GetBrcbValuesDao dao, PaginationContext ctx) throws Exception {
-        send(ServiceName.GET_BRCB_VALUES, dao, ctx);
+        send(ServiceName.GET_BRCB_VALUES, dao);
     }
 
     @Override
@@ -39,7 +34,8 @@ public class GetBrcbValuesClient extends BaseClientHandler<GetBrcbValuesDao> {
     }
 
     @Override
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetBrcbValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetBrcbValuesResponse resp = decodeResp(frame, new CmsGetBrcbValuesResponse());
 
         List<BrcbEntry> entries = new ArrayList<>();

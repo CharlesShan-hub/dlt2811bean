@@ -25,15 +25,10 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
     }
 
     @Override
-    public void execute(GetDataSetValuesDao dao) throws Exception {
-        execute(dao, new PaginationContext());
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
-    public void execute(GetDataSetValuesDao dao, PaginationContext ctx) throws Exception {
-        ctx.setResult(new ArrayList<DataSetValue>());
-        send(ServiceName.GET_DATA_SET_VALUES, dao, ctx);
+    public void execute(GetDataSetValuesDao dao) throws Exception {
+        dao.paginationContext().setResult(new ArrayList<DataSetValue>());
+        send(ServiceName.GET_DATA_SET_VALUES, dao);
     }
 
     @Override
@@ -44,7 +39,8 @@ public class GetDataSetValuesClient extends BaseClientHandler<GetDataSetValuesDa
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void onSuccess(Frame frame, PaginationContext ctx) throws IOException {
+    protected void onSuccess(Frame frame, GetDataSetValuesDao dao) throws IOException {
+        PaginationContext ctx = dao.paginationContext();
         CmsGetDataSetValuesResponse resp = decodeResp(frame, new CmsGetDataSetValuesResponse());
 
         List<DataSetValue> entries = new ArrayList<>();

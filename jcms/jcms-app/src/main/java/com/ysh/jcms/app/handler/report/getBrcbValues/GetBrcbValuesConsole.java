@@ -45,8 +45,8 @@ public class GetBrcbValuesConsole extends CommandHandler {
             ConsolePrinter.info("Fetching BRCB values for " + dao.refs().size() + " reference(s)");
         }
 
-        PaginationContext ctx = new PaginationContext();
-        console.getClient(GetBrcbValuesClient.class).execute(dao, ctx);
+        console.getClient(GetBrcbValuesClient.class).execute(dao);
+        PaginationContext ctx = dao.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetBrcbValuesClient.BrcbEntry> entries = (List<GetBrcbValuesClient.BrcbEntry>) ctx.getResult();
