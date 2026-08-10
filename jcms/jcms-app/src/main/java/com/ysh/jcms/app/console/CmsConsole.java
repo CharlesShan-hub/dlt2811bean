@@ -1,5 +1,6 @@
 package com.ysh.jcms.app.console;
 
+import com.ysh.jcms.app.console.CommandInfo.Requirement;
 import com.ysh.jcms.app.node.CmsNode;
 import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
@@ -249,6 +250,16 @@ public abstract class CmsConsole extends CmsNode {
                         args.put(key, "true"); // boolean flag: --secure → true
                     }
                 }
+            }
+
+            Requirement req = handler.requirement();
+            if (req == Requirement.ASSOCIATED && !connected()) {
+                ConsolePrinter.error("Not associated. Use 'associate' first.");
+                return false;
+            }
+            if (req == Requirement.CONNECTED && !clientConnected()) {
+                ConsolePrinter.error("Not connected. Use 'connect' first.");
+                return false;
             }
 
             handler.execute(this, args);

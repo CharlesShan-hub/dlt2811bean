@@ -5,6 +5,7 @@ import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
+import com.ysh.jcms.app.handler.CmsContent;
 import com.ysh.jcms.app.handler.PaginationContext;
 import com.ysh.jcms.util.CmsFormatUtil;
 
@@ -40,8 +41,8 @@ public class GetGoCbValuesConsole extends CommandHandler {
                 dao.addRef(ref.trim());
         }
 
-        console.getClient(GetGoCbValuesClient.class).execute(dao);
-        PaginationContext ctx = dao.paginationContext();
+        CmsContent c = console.getClient(GetGoCbValuesClient.class).executeResult(dao);
+        PaginationContext ctx = c.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetGoCbValuesClient.GoCbEntry> entries = (List<GetGoCbValuesClient.GoCbEntry>) ctx.getResult();

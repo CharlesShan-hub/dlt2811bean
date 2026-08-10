@@ -2,18 +2,56 @@ package com.ysh.jcms.app.console;
 
 public class Param {
 
+    public enum ParamType {
+        STRING(String.class),
+        INT(int.class),
+        INTEGER(Integer.class),
+        LONG(long.class),
+        BOOLEAN(boolean.class),
+        BYTE(byte.class),
+        SHORT(short.class),
+        FLOAT(float.class),
+        DOUBLE(double.class);
+
+        private final Class<?> javaType;
+
+        ParamType(Class<?> javaType) {
+            this.javaType = javaType;
+        }
+
+        public Class<?> javaType() {
+            return javaType;
+        }
+    }
+
     private final String name;
     private final String description;
     private final String defaultValue;
+    private final String setter;
+    private final ParamType type;
 
     public Param(String name, String description) {
-        this(name, description, null);
+        this(name, description, null, null, ParamType.STRING);
     }
 
     public Param(String name, String description, String defaultValue) {
+        this(name, description, defaultValue, null, ParamType.STRING);
+    }
+
+    public Param(String name, String description, String defaultValue, String setter) {
+        this(name, description, defaultValue, setter, ParamType.STRING);
+    }
+
+    public Param(String name, String description, String defaultValue, ParamType type) {
+        this(name, description, defaultValue, name, type);
+    }
+
+    public Param(String name, String description, String defaultValue, String setter, ParamType type) {
         this.name = name;
         this.description = description;
         this.defaultValue = defaultValue;
+        this.setter = setter;
+        this.type = type;
     }
 
     public String name() {
@@ -24,5 +62,11 @@ public class Param {
     }
     public String defaultValue() {
         return defaultValue;
+    }
+    public String setter() {
+        return setter;
+    }
+    public ParamType type() {
+        return type;
     }
 }

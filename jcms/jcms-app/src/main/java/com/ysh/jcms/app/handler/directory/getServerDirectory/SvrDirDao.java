@@ -3,23 +3,28 @@ package com.ysh.jcms.app.handler.directory.getServerDirectory;
 import com.ysh.jcms.data.core.CmsType;
 import com.ysh.jcms.data.enumerate.CmsObjectClass;
 import com.ysh.jcms.pdu.directory.CmsGetServerDirectoryRequest;
-import lombok.Getter;
 import com.ysh.jcms.app.handler.BaseDao;
-import com.ysh.jcms.app.handler.PaginationContext;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Setter
-@Getter
 @Accessors(fluent = true)
 public class SvrDirDao extends BaseDao {
 
-    public SvrDirDao() {
-        paginationContext(new PaginationContext());
-    }
-
     private int objectClass = CmsObjectClass.LOGICAL_DEVICE;
-    private String referenceAfter;
+
+    private String referenceAfter = null;
+
+    /**
+     * Set the reference after cursor. Ignores null/empty values so callers can pass
+     * raw CLI args without checking.
+     */
+    public SvrDirDao referenceAfter(String referenceAfter) {
+        if (referenceAfter != null && !referenceAfter.isEmpty()) {
+            this.referenceAfter = referenceAfter;
+        }
+        return this;
+    }
 
     @Override
     public CmsType toRequest() {

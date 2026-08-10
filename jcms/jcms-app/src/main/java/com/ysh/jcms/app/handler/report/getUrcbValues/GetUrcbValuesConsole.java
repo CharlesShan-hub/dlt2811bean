@@ -40,8 +40,8 @@ public class GetUrcbValuesConsole extends CommandHandler {
                 dao.addRef(ref.trim());
         }
 
-        console.getClient(GetUrcbValuesClient.class).execute(dao);
-        PaginationContext ctx = dao.paginationContext();
+        CmsContent c = console.getClient(GetUrcbValuesClient.class).executeResult(dao);
+        PaginationContext ctx = c.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetUrcbValuesClient.UrcbEntry> entries = (List<GetUrcbValuesClient.UrcbEntry>) ctx.getResult();

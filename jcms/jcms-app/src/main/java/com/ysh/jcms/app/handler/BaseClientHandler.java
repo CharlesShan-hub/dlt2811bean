@@ -10,6 +10,43 @@ import java.io.IOException;
 
 public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
+    private CmsContent<D> currentContent;
+
+    /**
+     * Execute the client handler and populate the given {@link CmsContent} with the
+     * response data and pagination context.
+     * <p>
+     * Console usage:
+     *
+     * <pre>
+     * {
+     *     &#64;code
+     *     CmsContent<SvrDirDao> c = new CmsContent<>(new SvrDirDao());
+     *     c.req().referenceAfter("...");
+     *     console.getClient(SvrDirClient.class).executeResult(c);
+     *     ConsolePrinter.outputJson(c.res());
+     * }
+     * </pre>
+     */
+    public void executeResult(CmsContent<D> content) throws Exception {
+        this.currentContent = content;
+        try {
+            execute(content.req());
+        } finally {
+            this.currentContent = null;
+        }
+    }
+
+    /**
+     * Returns the current {@link CmsContent} being executed. Available during
+     * {@link #execute(BaseDao)} and its callbacks ({@code beforeAll},
+     * {@code onSuccess}, {@code afterAll}). Returns {@code null} outside of an
+     * {@code executeResult} call.
+     */
+    protected CmsContent<D> content() {
+        return currentContent;
+    }
+
     /** All client handlers must implement this as their entry point. */
     public abstract void execute(D dao) throws Exception;
 
@@ -36,8 +73,8 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     private static final int MAX_AUTO_PULL_ITERATIONS = 10000;
 
     /**
-     * Send a request built from the DAO. If {@link D#paginationContext()} is
-     * non-null and {@link BaseDao#autoPull()} is true, automatically follows
+     * Send a request built from the DAO. If {@link CmsContent#paginationContext()}
+     * is available and {@link CmsContent#autoPull()} is true, automatically follows
      * {@code moreFollows} pagination.
      * <p>
      * Subclasses <b>must</b> call {@link PaginationContext#setLastMoreFollows} and
@@ -45,10 +82,11 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      * {@link #onSuccess(Frame, BaseDao)} override for auto-pull to work.
      */
     protected Frame send(ServiceName sc, D dao) throws IOException {
-        PaginationContext ctx = dao.paginationContext();
+        CmsContent<D> content = content();
+        PaginationContext ctx = content != null ? content.paginationContext() : null;
         beforeAll(dao);
         if (ctx != null) {
-            return sendWithPagination(sc, dao, ctx);
+            return sendWithPagination(sc, dao, content);
         }
         // Simple non-paginated send
         if (node == null)
@@ -66,11 +104,12 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
     }
 
     /**
-     * Internal pagination loop. Reads state from the context and writes back
+     * Internal pagination loop. Reads state from the content and writes back
      * accumulated results. Calls {@link #onSuccess(Frame, BaseDao)} for each page,
      * and {@link #setPaginationCursor(BaseDao, String)} to advance the cursor.
      */
-    private Frame sendWithPagination(ServiceName sc, D dao, PaginationContext ctx) throws IOException {
+    private Frame sendWithPagination(ServiceName sc, D dao, CmsContent<D> content) throws IOException {
+        PaginationContext ctx = content.paginationContext();
         ctx.setLastMoreFollows(false);
         ctx.setLastReference(null);
         Frame frame = null;
@@ -92,7 +131,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
                 break;
             }
             onSuccess(frame, dao);
-            if (dao.autoPull() && ctx.isLastMoreFollows()) {
+            if (content.autoPull() && ctx.isLastMoreFollows()) {
                 String ref = ctx.getLastReference();
                 if (ref == null || ref.isEmpty()) {
                     log.warn("Auto-pull: lastReference is null/empty for {}, stopping", sc);
@@ -112,7 +151,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
 
     /**
      * Bridge method for subclasses to set the pagination cursor on their specific
-     * DAO type. Default is no-op; subclasses that support auto-pull must override
+     * DAO type. Default is no-op; subclasses that support pagination must override
      * to call {@code dao.referenceAfter(cursor)}.
      */
     protected void setPaginationCursor(D dao, String cursor) {
@@ -189,7 +228,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      * DAO so subclasses can store decoded results directly on the DAO.
      * <p>
      * For paginated requests, the {@link PaginationContext} is available via
-     * {@code dao.paginationContext()}. Default implementation delegates to
+     * {@link CmsContent#paginationContext()}. Default implementation delegates to
      * {@link #onSuccess(Frame)}.
      */
     protected void onSuccess(Frame frame, D dao) throws IOException {

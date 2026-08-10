@@ -40,8 +40,8 @@ public class GetBrcbValuesConsole extends CommandHandler {
                 dao.addRef(ref.trim());
         }
 
-        console.getClient(GetBrcbValuesClient.class).execute(dao);
-        PaginationContext ctx = dao.paginationContext();
+        CmsContent c = console.getClient(GetBrcbValuesClient.class).executeResult(dao);
+        PaginationContext ctx = c.paginationContext();
 
         @SuppressWarnings("unchecked")
         List<GetBrcbValuesClient.BrcbEntry> entries = (List<GetBrcbValuesClient.BrcbEntry>) ctx.getResult();
