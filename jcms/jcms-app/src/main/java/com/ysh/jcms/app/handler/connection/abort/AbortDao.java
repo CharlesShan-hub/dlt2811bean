@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 @Setter
 @Getter
 @Accessors(fluent = true)
-public class AbortClientDao extends BaseDao {
+public class AbortDao extends BaseDao {
     private int reason;
 
     @Override

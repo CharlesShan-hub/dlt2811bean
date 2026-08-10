@@ -1,31 +1,11 @@
 package com.ysh.jcms.app.handler.connection.release;
 
-import com.ysh.jcms.app.console.CmsConsole;
-import com.ysh.jcms.app.console.ConsolePrinter;
 import com.ysh.jcms.app.console.CommandHandler;
 import com.ysh.jcms.app.console.CommandInfo;
-import com.ysh.jcms.app.console.Param;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-public class ReleaseConsole extends CommandHandler {
+public class ReleaseConsole extends CommandHandler<ReleaseDao, ReleaseClient> {
 
     public ReleaseConsole() {
-        super(CommandInfo.RELEASE);
-    }
-
-    @Override
-    public List<Param> params() {
-        return Arrays.asList();
-    }
-
-    @Override
-    public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        if (!console.requireAssociated(args))
-            return;
-        console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute(new ReleaseDao());
-        ConsolePrinter.success("Released.");
+        super(CommandInfo.RELEASE, false);
     }
 }

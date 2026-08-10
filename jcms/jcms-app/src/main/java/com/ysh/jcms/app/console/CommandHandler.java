@@ -8,6 +8,7 @@ import com.ysh.jcms.app.console.Param.ParamType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -99,7 +100,9 @@ public abstract class CommandHandler<D extends BaseDao, C extends BaseClientHand
     // ── Subclass hooks ──
 
     /** Parameter definitions for command-line parsing. */
-    public abstract List<Param> params();
+    public List<Param> params() {
+        return Arrays.asList();
+    }
 
     /** Execute the command with parsed arguments. */
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {

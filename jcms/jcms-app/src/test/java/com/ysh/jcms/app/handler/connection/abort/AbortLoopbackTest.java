@@ -38,7 +38,7 @@ public class AbortLoopbackTest extends BaseLoopbackTest {
         assertEquals(SessionState.ASSOCIATED, session.state());
         assertNotNull(session.associationId());
 
-        clientNode().getClient(AbortClient.class).execute(new AbortClientDao().reason(CmsAbortReason.INVALID_ARGUMENT));
+        clientNode().getClient(AbortClient.class).execute(new AbortDao().reason(CmsAbortReason.INVALID_ARGUMENT));
 
         assertEquals(SessionState.DISCONNECTED, session.state());
         assertNull(session.associationId());
