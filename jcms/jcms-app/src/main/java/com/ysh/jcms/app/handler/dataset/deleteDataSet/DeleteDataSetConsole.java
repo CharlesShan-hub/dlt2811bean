@@ -18,7 +18,7 @@ public class DeleteDataSetConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.myDs\"", null));
     }
 
     @Override

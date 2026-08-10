@@ -8,6 +8,8 @@ import com.ysh.jcms.utils.transport.frame.Frame;
 import com.ysh.jcms.utils.transport.session.ClientSession;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
 
@@ -33,11 +35,13 @@ public class NegotiateClient extends BaseClientHandler<NegotiateClientDao> {
         session.connection().maxFrameSize(resp.apduSize.value());
         session.connection().peerAsduSize((int) resp.asduSize.value());
 
-        // 回填响应值到 DAO，供 Console 输出
-        dao.negotiatedApduSize(resp.apduSize.value());
-        dao.negotiatedAsduSize(resp.asduSize.value());
-        dao.negotiatedProtocolVersion(resp.protocolVersion.value());
-        dao.modelVersion(resp.modelVersion.value());
+        // 回填响应值到 DAO.result，供 Console 输出
+        Map<String, Object> resultMap = new LinkedHashMap<>();
+        resultMap.put("apduSize", resp.apduSize.value());
+        resultMap.put("asduSize", resp.asduSize.value());
+        resultMap.put("protocolVersion", resp.protocolVersion.value());
+        resultMap.put("modelVersion", resp.modelVersion.value());
+        dao.result(resultMap);
     }
 
     @Override

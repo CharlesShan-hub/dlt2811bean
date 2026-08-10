@@ -18,7 +18,7 @@ public class SetMsvcbValuesConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "MSVCB引用", null), new Param("sv-ena", "启用采样值发送", ""), new Param("msv-id", "MSV标识", ""),
-                new Param("dat-set", "数据集引用", ""), new Param("json", "JSON 格式输出", ""));
+                new Param("dat-set", "数据集引用", ""));
     }
 
     @Override

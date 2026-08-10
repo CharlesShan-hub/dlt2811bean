@@ -17,8 +17,7 @@ public class GetMsvcbValuesConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("refs", "MSVCB引用列表，如 \"LD0/SV1.msvcb01 LD0/SV1.msvcb02\"", null),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("refs", "MSVCB引用列表，如 \"LD0/SV1.msvcb01 LD0/SV1.msvcb02\"", null));
     }
 
     @Override

@@ -19,7 +19,7 @@ public class QueryLogByTimeConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "日志控制块引用 (ObjectReference)", null), new Param("start", "起始时间 (毫秒时间戳)", null),
-                new Param("stop", "截止时间 (毫秒时间戳)", null), new Param("json", "JSON 格式输出", ""));
+                new Param("stop", "截止时间 (毫秒时间戳)", null));
     }
 
     @Override
@@ -40,9 +40,6 @@ public class QueryLogByTimeConsole extends CommandHandler {
         if (stopStr != null && !stopStr.isEmpty())
             dao.stopTime(Long.parseLong(stopStr));
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Querying log by time: ref=" + ref);
-        }
         console.getClient(QueryLogByTimeClient.class).execute(dao);
         ConsolePrinter.success("QueryLogByTime completed");
     }

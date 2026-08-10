@@ -25,12 +25,11 @@ public class TracePduHandler extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("value", "true 或 false", ""), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("value", "true 或 false", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
         String value = args.get("value");
         if (value == null || value.isEmpty()) {
             boolean current = CmsConfigLoader.load().client().console().tracePdu();

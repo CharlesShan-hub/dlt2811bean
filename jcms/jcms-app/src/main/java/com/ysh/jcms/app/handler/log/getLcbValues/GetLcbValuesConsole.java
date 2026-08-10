@@ -20,12 +20,11 @@ public class GetLcbValuesConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("refs", "LCB 引用列表（空格分隔），如 \"LD0/LLN0.lcb1\"", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("refs", "LCB 引用列表（空格分隔），如 \"LD0/LLN0.lcb1\"", null));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -41,10 +40,6 @@ public class GetLcbValuesConsole extends CommandHandler {
                 dao.addRef(ref.trim());
         }
 
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching LCB values for " + dao.refs().size() + " reference(s)");
-        }
-
         console.getClient(GetLcbValuesClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
 
@@ -52,30 +47,19 @@ public class GetLcbValuesConsole extends CommandHandler {
         List<GetLcbValuesClient.LcbEntry> entries = (List<GetLcbValuesClient.LcbEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
-            } else {
-                ConsolePrinter.info("No LCB values returned");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
             return;
         }
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < entries.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                String ref = i < refs.length ? refs[i] : "#" + i;
-                sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(ref)).append("\",\"desc\":\"")
-                        .append(CmsFormatUtil.escapeJson(entries.get(i).desc)).append("\"}");
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            for (int i = 0; i < entries.size(); i++) {
-                String ref = i < refs.length ? refs[i] : "#" + i;
-                ConsolePrinter.info("  [" + ref + "] " + entries.get(i).desc);
-            }
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+        for (int i = 0; i < entries.size(); i++) {
+            if (i > 0)
+                sb.append(',');
+            String ref = i < refs.length ? refs[i] : "#" + i;
+            sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(ref)).append("\",\"desc\":\"")
+                    .append(CmsFormatUtil.escapeJson(entries.get(i).desc)).append("\"}");
         }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
     }
 }

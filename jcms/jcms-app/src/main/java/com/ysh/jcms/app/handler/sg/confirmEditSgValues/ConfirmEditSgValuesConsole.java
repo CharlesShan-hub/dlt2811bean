@@ -18,7 +18,7 @@ public class ConfirmEditSgValuesConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ref", "SGCB 引用，如 PROT/DeZonePTOC1.SG1", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("ref", "SGCB 引用，如 PROT/DeZonePTOC1.SG1", null));
     }
 
     @Override

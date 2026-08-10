@@ -9,6 +9,7 @@ import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -27,13 +28,11 @@ public class NegCfgHandler extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""), new Param("version", "协议版本", ""),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""), new Param("version", "协议版本", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
         CmsConfig.Protocol.Negotiate neg = CmsConfigLoader.load().protocol().negotiate();
 
         String apdu = args.get("apdu");
@@ -46,17 +45,11 @@ public class NegCfgHandler extends CommandHandler {
         if (version != null && !version.isEmpty())
             neg.protocolVersion(Integer.parseInt(version));
 
-        if (jsonMode) {
-            String json = "{\"apduSize\":" + neg.apduSize() + ",\"asduSize\":" + neg.asduSize() + ",\"protocolVersion\":"
-                    + neg.protocolVersion() + ",\"modelVersion\":\"" + neg.modelVersion() + "\"}";
-            ConsolePrinter.raw("{\"success\":true,\"data\":" + json + "}");
-            return;
-        }
-
-        ConsolePrinter.info("协商参数:");
-        ConsolePrinter.info("  apduSize: " + neg.apduSize());
-        ConsolePrinter.info("  asduSize: " + neg.asduSize());
-        ConsolePrinter.info("  protocolVersion: " + neg.protocolVersion());
-        ConsolePrinter.info("  modelVersion: " + neg.modelVersion());
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("apduSize", neg.apduSize());
+        data.put("asduSize", neg.asduSize());
+        data.put("protocolVersion", neg.protocolVersion());
+        data.put("modelVersion", neg.modelVersion());
+        ConsolePrinter.outputJson(data);
     }
 }

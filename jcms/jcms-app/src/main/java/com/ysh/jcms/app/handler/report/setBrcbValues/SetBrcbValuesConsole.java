@@ -22,7 +22,7 @@ public class SetBrcbValuesConsole extends CommandHandler {
                 new Param("rpt-ena", "报告使能 (true/false)", null), new Param("dat-set", "数据集引用 (ObjectReference)", null),
                 new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null), new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null),
                 new Param("gi", "总召唤命令 (BOOLEAN: true=触发一次)", null), new Param("purge-buf", "清空缓存命令 (BOOLEAN: true=触发一次)", null),
-                new Param("resv-tms", "保留时间 (INT16)", null), new Param("json", "JSON 格式输出", ""));
+                new Param("resv-tms", "保留时间 (INT16)", null));
     }
 
     @Override

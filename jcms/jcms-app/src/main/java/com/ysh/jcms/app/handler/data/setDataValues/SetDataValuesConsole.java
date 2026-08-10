@@ -19,7 +19,7 @@ public class SetDataValuesConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("pairs", "数据引用=值 对（空格分隔），如 \"LD0/LLN0.Mod.stVal=true LD0/LLN0.Beh.stVal=1\"", null),
-                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"), new Param("json", "JSON 格式输出", ""));
+                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"));
     }
 
     @Override
@@ -29,11 +29,7 @@ public class SetDataValuesConsole extends CommandHandler {
 
         String pairsStr = args.get("pairs");
         if (pairsStr == null || pairsStr.trim().isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("Missing --pairs.");
-            } else {
-                ConsolePrinter.error("Missing --pairs. Usage: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]");
-            }
+            ConsolePrinter.error("Missing --pairs. Usage: set-data-values --pairs \"<ref1>=<val1> <ref2>=<val2>...\" [--fc FC]");
             return;
         }
 
@@ -45,11 +41,7 @@ public class SetDataValuesConsole extends CommandHandler {
                 continue;
             int eqIdx = token.indexOf('=');
             if (eqIdx <= 0) {
-                if (CmsConsole.isJsonMode(args)) {
-                    ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
-                } else {
-                    ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
-                }
+                ConsolePrinter.error("Invalid pair: " + token + " (expected ref=value)");
                 return;
             }
             String ref = token.substring(0, eqIdx);

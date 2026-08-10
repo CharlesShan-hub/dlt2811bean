@@ -15,7 +15,7 @@ public class RpcCallConsole extends CommandHandler {
     }
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("method", "方法引用（接口名.方法名）", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("method", "方法引用（接口名.方法名）", null));
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {

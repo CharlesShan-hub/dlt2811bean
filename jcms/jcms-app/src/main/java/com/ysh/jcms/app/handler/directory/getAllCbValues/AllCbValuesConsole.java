@@ -42,12 +42,11 @@ public class AllCbValuesConsole extends CommandHandler {
     public List<Param> params() {
         return Arrays.asList(new Param("ln", "ldName 或 lnReference（如 LD0 或 LD0/LLN0）", null),
                 new Param("acsi", "ACSI 类型: brcb/urcb/lcb/sgcb/gocb/msvcb 或数字", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -60,11 +59,7 @@ public class AllCbValuesConsole extends CommandHandler {
         String acsiStr = args.get("acsi");
         Integer acsiClass = ACSI_MAP.get(acsiStr.toLowerCase());
         if (acsiClass == null) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid acsiClass: " + CmsFormatUtil.escapeJson(acsiStr) + ".\"}");
-            } else {
-                ConsolePrinter.error("Invalid acsiClass: " + acsiStr + ". Valid values: brcb, urcb, lcb, sgcb, gocb, msvcb");
-            }
+            ConsolePrinter.raw("{\"success\":false,\"error\":\"Invalid acsiClass: " + CmsFormatUtil.escapeJson(acsiStr) + ".\"}");
             return;
         }
 
@@ -86,13 +81,6 @@ public class AllCbValuesConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        String cbTypeName = acsiClass >= 3 && acsiClass <= 10
-                ? CB_TYPE_NAMES[acsiClass == 10 ? 5 : acsiClass - 3]
-                : String.valueOf(acsiClass);
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching CB values: target=" + target + " type=" + cbTypeName);
-        }
-
         console.getClient(AllCbValuesClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
         boolean moreFollows = ctx.isLastMoreFollows();
@@ -103,32 +91,20 @@ public class AllCbValuesConsole extends CommandHandler {
             entries = java.util.Collections.emptyList();
         }
         if (entries.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
-            } else {
-                ConsolePrinter.info("No CB values found");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
             return;
         }
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[");
-            for (int i = 0; i < entries.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                AllCbValuesClient.CbEntry e = entries.get(i);
-                int idx = e.cbType;
-                String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
-                sb.append("{\"reference\":\"").append(CmsFormatUtil.escapeJson(e.reference)).append("\",\"type\":\"")
-                        .append(CmsFormatUtil.escapeJson(typeName)).append("\"}");
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("CB values (" + entries.size() + " items)", new java.util.ArrayList<>(entries), e -> {
-                int idx = e.cbType; /* CmsCbValueChoice: 0=BRCB, 1=URCB, 2=LCB, 3=SGCB, 4=GOCB, 5=MSVCB */
-                String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
-                return e.reference + "  [" + typeName + "]";
-            });
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[");
+        for (int i = 0; i < entries.size(); i++) {
+            if (i > 0)
+                sb.append(',');
+            AllCbValuesClient.CbEntry e = entries.get(i);
+            int idx = e.cbType;
+            String typeName = idx >= 0 && idx < CB_TYPE_NAMES.length ? CB_TYPE_NAMES[idx] : "?";
+            sb.append("{\"reference\":\"").append(CmsFormatUtil.escapeJson(e.reference)).append("\",\"type\":\"")
+                    .append(CmsFormatUtil.escapeJson(typeName)).append("\"}");
         }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
     }
 }

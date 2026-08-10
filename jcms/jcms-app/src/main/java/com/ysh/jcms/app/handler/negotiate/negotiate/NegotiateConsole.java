@@ -8,7 +8,6 @@ import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,12 +46,9 @@ public class NegotiateConsole extends CommandHandler {
 
         console.getClient(NegotiateClient.class).execute(dao);
 
-        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
-        data.put("apduSize", dao.negotiatedApduSize());
-        data.put("asduSize", dao.negotiatedAsduSize());
-        data.put("protocolVersion", dao.negotiatedProtocolVersion());
-        data.put("modelVersion", dao.modelVersion());
-        ConsolePrinter.outputJson(data);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resultMap = (Map<String, Object>) dao.result();
+        ConsolePrinter.outputJson(resultMap);
     }
 
     private static String firstNonEmpty(String a, String b) {

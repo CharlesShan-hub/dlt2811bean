@@ -42,8 +42,7 @@ public class SetEditSgValueConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("refs", "数据引用列表（空格分隔），如 \"PROT/OCPTOC2.StrVal PROT/OCPTOC2.OpDlTmms\"", null),
-                new Param("values", "定值列表（空格分隔），与 refs 一一对应", null), new Param("type", "数据类型，默认 visible-string", "visible-string"),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("values", "定值列表（空格分隔），与 refs 一一对应", null), new Param("type", "数据类型，默认 visible-string", "visible-string"));
     }
 
     @Override
@@ -58,42 +57,25 @@ public class SetEditSgValueConsole extends CommandHandler {
             typeStr = "visible-string";
 
         if (refsStr == null || refsStr.trim().isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("Missing --refs");
-            } else {
-                ConsolePrinter.error("Missing --refs");
-            }
+            ConsolePrinter.error("Missing --refs");
             return;
         }
         if (valuesStr == null || valuesStr.trim().isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("Missing --values (must match --refs count)");
-            } else {
-                ConsolePrinter.error("Missing --values (must match --refs count)");
-            }
+            ConsolePrinter.error("Missing --values (must match --refs count)");
             return;
         }
 
         String[] refs = refsStr.trim().split("\\s+");
         String[] vals = valuesStr.trim().split("\\s+");
         if (refs.length != vals.length) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
-            } else {
-                ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
-            }
+            ConsolePrinter.error("--refs count (" + refs.length + ") != --values count (" + vals.length + ")");
             return;
         }
 
         Integer choiceType = TYPE_MAP.get(typeStr);
         if (choiceType == null) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("Unknown type: " + typeStr
-                        + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
-            } else {
-                ConsolePrinter.error("Unknown type: " + typeStr
-                        + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
-            }
+            ConsolePrinter.error("Unknown type: " + typeStr
+                    + ". Supported: visible-string, int32, float32, boolean, int8, int16, int8u, int16u, int32u, int64, int64u, float64, octet-string");
             return;
         }
 

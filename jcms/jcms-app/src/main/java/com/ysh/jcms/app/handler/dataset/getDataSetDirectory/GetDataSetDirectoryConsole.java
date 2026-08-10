@@ -20,7 +20,7 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"));
     }
 
     @Override
@@ -44,10 +44,6 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Fetching dataset directory for " + dsRef);
-        }
-
         console.getClient(GetDataSetDirectoryClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
 
@@ -58,11 +54,7 @@ public class GetDataSetDirectoryConsole extends CommandHandler {
         }
 
         if (entries.isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.raw("");
-            } else {
-                ConsolePrinter.info("No dataset directory entries");
-            }
+            ConsolePrinter.raw("No dataset directory entries");
             return;
         }
 

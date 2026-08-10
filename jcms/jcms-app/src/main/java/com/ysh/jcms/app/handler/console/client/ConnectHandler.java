@@ -9,7 +9,6 @@ import com.ysh.jcms.app.handler.connection.associate.AssociateClient;
 import com.ysh.jcms.app.handler.connection.associate.AssociateClientDao;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClient;
 import com.ysh.jcms.app.handler.negotiate.negotiate.NegotiateClientDao;
-import com.ysh.jcms.util.CmsFormatUtil;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
 
 import javax.net.ssl.SSLContext;
@@ -31,19 +30,13 @@ public class ConnectHandler extends CommandHandler {
         return Arrays.asList(new Param("ip", "服务器地址（默认 127.0.0.1）", "127.0.0.1"), new Param("port", "服务器端口（默认 8102，TLS 默认 9102）", ""),
                 new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "使用 TLS 加密连接（不传值，出现即启用）", ""),
                 new Param("apsecure", "应用层安全认证（不传值，出现即启用）", ""), new Param("apdu", "APDU 大小", ""), new Param("asdu", "ASDU 大小", ""),
-                new Param("version", "协议版本", ""), new Param("json", "JSON 格式输出", ""));
+                new Param("version", "协议版本", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
         if (console.connected()) {
-            String msg = "Already connected. Type 'disconnect' first.";
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.error(msg);
-            }
+            ConsolePrinter.error("Already connected. Type 'disconnect' first.");
             return;
         }
 
@@ -85,11 +78,7 @@ public class ConnectHandler extends CommandHandler {
         // 只给了 host → 纯 connect，不做 negotiate/associate
         if (sapRef == null || sapRef.isEmpty()) {
             String msg = (secure ? "TLS " : "") + "Connected: " + host + ":" + port;
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-            } else {
-                ConsolePrinter.success(msg);
-            }
+            ConsolePrinter.success(msg);
             return;
         }
 
@@ -113,10 +102,6 @@ public class ConnectHandler extends CommandHandler {
         console.getClient(AssociateClient.class).execute(new AssociateClientDao().sapRef(sapRef).secure(secure || apSecure));
 
         String msg = (secure ? "TLS " : "") + "Associated: " + sapRef;
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
-        } else {
-            ConsolePrinter.success(msg);
-        }
+        ConsolePrinter.success(msg);
     }
 }

@@ -7,11 +7,9 @@ import com.ysh.jcms.app.console.CommandInfo;
 import com.ysh.jcms.app.console.Param;
 import com.ysh.jcms.utils.config.CmsConfig;
 import com.ysh.jcms.utils.config.CmsConfigLoader;
-import com.ysh.jcms.utils.scl.reader.SclReader;
-import com.ysh.jcms.util.CmsFormatUtil;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,12 +28,11 @@ public class ApCfgHandler extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("source", "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读", ""), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("source", "AP 来源: scd=从 SCD 读, list=从 defaultAps 列表读", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = "true".equals(args.get("json"));
         CmsConfig.Client.AccessPoint apCfg = CmsConfigLoader.load().client().accessPoint();
 
         // --source 只设置来源，输出简洁确认
@@ -46,61 +43,17 @@ public class ApCfgHandler extends CommandHandler {
             } else if ("list".equalsIgnoreCase(source)) {
                 apCfg.fromScd(false);
             } else {
-                String msg = "无效的 source: " + source + "（可选 scd|list）";
-                if (jsonMode) {
-                    ConsolePrinter.error(msg);
-                } else {
-                    ConsolePrinter.error(msg);
-                }
+                ConsolePrinter.error("无效的 source: " + source + "（可选 scd|list）");
                 return;
             }
-            if (jsonMode) {
-                ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
-            } else {
-                ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
-            }
+            ConsolePrinter.success("AP 来源已设为: " + (apCfg.fromScd() ? "scd" : "list"));
             return;
         }
 
         // 无参数 → 查看当前来源（即上一次设置的结果）
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder();
-            sb.append("{\"fromScd\":").append(apCfg.fromScd()).append(",\"defaultAps\":[");
-            List<String> aps = apCfg.defaultAps();
-            for (int i = 0; i < aps.size(); i++) {
-                if (i > 0) {
-                    sb.append(',');
-                }
-                sb.append('"').append(CmsFormatUtil.escapeJson(aps.get(i))).append('"');
-            }
-            sb.append("]}");
-            ConsolePrinter.raw("{\"success\":true,\"data\":" + sb + "}");
-            return;
-        }
-
-        ConsolePrinter.info("AP 来源: " + (apCfg.fromScd() ? "scd（从 SCD 文件读）" : "list（从 defaultAps 列表读）"));
-        if (apCfg.fromScd()) {
-            String scl = CmsConfigLoader.load().server().getResolvedSclFile();
-            if (scl != null && !scl.isEmpty()) {
-                ConsolePrinter.info("SCL: " + scl);
-                // 轻量扫描 SCD，拼出 IED/AP 完整引用列表
-                try {
-                    Map<String, List<String>> apsByIed = SclReader.scanAccessPoints(java.nio.file.Paths.get(scl));
-                    List<String> refs = new ArrayList<>();
-                    for (Map.Entry<String, List<String>> e : apsByIed.entrySet()) {
-                        for (String ap : e.getValue()) {
-                            refs.add(e.getKey() + "/" + ap);
-                        }
-                    }
-                    ConsolePrinter.listItems(refs, s -> s);
-                } catch (Exception e) {
-                    ConsolePrinter.error("SCL 解析失败: " + scl + " - " + e.getMessage());
-                }
-            } else {
-                ConsolePrinter.info("SCL: （未配置 server.sclFiles）");
-            }
-        } else {
-            ConsolePrinter.listItems(apCfg.defaultAps(), s -> s);
-        }
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("fromScd", apCfg.fromScd());
+        data.put("defaultAps", apCfg.defaultAps());
+        ConsolePrinter.outputJson(data);
     }
 }

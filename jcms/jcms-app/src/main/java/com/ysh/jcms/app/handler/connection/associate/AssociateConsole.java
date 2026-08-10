@@ -18,8 +18,7 @@ public class AssociateConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "加密关联（不传值，出现即启用）", ""),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("ap", "ServerAccessPoint 引用（如 C_B5041X/S1）", ""), new Param("secure", "加密关联（不传值，出现即启用）", ""));
     }
 
     @Override

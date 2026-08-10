@@ -19,7 +19,7 @@ public class QueryLogAfterConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "日志控制块引用 (ObjectReference)", null), new Param("entry", "起始条目 ID (EntryID)", null),
-                new Param("start", "起始时间 (毫秒时间戳, OPTIONAL)", null), new Param("json", "JSON 格式输出", ""));
+                new Param("start", "起始时间 (毫秒时间戳, OPTIONAL)", null));
     }
 
     @Override
@@ -40,9 +40,6 @@ public class QueryLogAfterConsole extends CommandHandler {
         if (startStr != null && !startStr.isEmpty())
             dao.startTime(Long.parseLong(startStr));
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Querying log after entry: ref=" + ref + " entry=" + entryId);
-        }
         console.getClient(QueryLogAfterClient.class).execute(dao);
         ConsolePrinter.success("QueryLogAfter completed");
     }

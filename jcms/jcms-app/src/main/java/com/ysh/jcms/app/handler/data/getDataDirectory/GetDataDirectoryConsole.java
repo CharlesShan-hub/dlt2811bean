@@ -20,7 +20,7 @@ public class GetDataDirectoryConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "数据引用，如 LD0/LLN0 或 LD0/LLN0.Mod", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"));
     }
 
     @Override
@@ -44,10 +44,6 @@ public class GetDataDirectoryConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Fetching data directory for " + ref);
-        }
-
         console.getClient(GetDataDirectoryClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
 
@@ -59,11 +55,7 @@ public class GetDataDirectoryConsole extends CommandHandler {
         }
 
         if (entries.isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
-            } else {
-                ConsolePrinter.info("No data directory entries");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[]}");
             return;
         }
 

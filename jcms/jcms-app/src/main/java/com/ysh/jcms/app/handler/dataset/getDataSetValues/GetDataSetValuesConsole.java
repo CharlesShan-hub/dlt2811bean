@@ -23,12 +23,11 @@ public class GetDataSetValuesConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("after", "起始引用（分页截取）", ""),
-                new Param("auto-pull", "自动续拉分页（true/false）", "false"), new Param("json", "JSON 格式输出", ""));
+                new Param("auto-pull", "自动续拉分页（true/false）", "false"));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -49,10 +48,6 @@ public class GetDataSetValuesConsole extends CommandHandler {
             dao.autoPull(true);
         }
 
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching dataset values for " + dsRef);
-        }
-
         console.getClient(GetDataSetValuesClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
 
@@ -63,35 +58,20 @@ public class GetDataSetValuesConsole extends CommandHandler {
         }
 
         if (values.isEmpty()) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
-            } else {
-                ConsolePrinter.info("No dataset values returned");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
             return;
         }
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < values.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                GetDataSetValuesClient.DataSetValue v = values.get(i);
-                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
-                        ? CmsData.CHOICE_NAMES[v.choiceType]
-                        : "?";
-                sb.append("{\"type\":\"").append(CmsFormatUtil.escapeJson(typeName)).append("\",\"value\":\"")
-                        .append(CmsFormatUtil.escapeJson(v.valueString)).append("\"}");
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("DataSet values (" + values.size() + " items)", new java.util.ArrayList<>(values), v -> {
-                String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length
-                        ? CmsData.CHOICE_NAMES[v.choiceType]
-                        : "?";
-                return "[" + typeName + "] " + v.valueString;
-            });
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+        for (int i = 0; i < values.size(); i++) {
+            if (i > 0)
+                sb.append(',');
+            GetDataSetValuesClient.DataSetValue v = values.get(i);
+            String typeName = v.choiceType >= 0 && v.choiceType < CmsData.CHOICE_NAMES.length ? CmsData.CHOICE_NAMES[v.choiceType] : "?";
+            sb.append("{\"type\":\"").append(CmsFormatUtil.escapeJson(typeName)).append("\",\"value\":\"")
+                    .append(CmsFormatUtil.escapeJson(v.valueString)).append("\"}");
         }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
     }
 }

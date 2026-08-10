@@ -19,7 +19,7 @@ public class SetDataSetValuesConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ds", "数据集引用，如 \"LD0/LLN0.dsAlarm\"", null), new Param("values", "数据值列表（空格分隔），如 \"aa bb cc\"", null),
-                new Param("after", "起始引用（分页截取）", ""), new Param("json", "JSON 格式输出", ""));
+                new Param("after", "起始引用（分页截取）", ""));
     }
 
     @Override

@@ -21,8 +21,7 @@ public class SetUrcbValuesConsole extends CommandHandler {
         return Arrays.asList(new Param("ref", "URCB 引用，如 LD0/LLN0.urcb1", null), new Param("rpt-id", "报告标识 (VisibleString129)", null),
                 new Param("rpt-ena", "报告使能 (true/false)", null), new Param("dat-set", "数据集引用 (ObjectReference)", null),
                 new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null), new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null),
-                new Param("gi", "总召唤命令 (BOOLEAN: true=触发一次)", null), new Param("resv", "保留 (BOOLEAN)", null),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("gi", "总召唤命令 (BOOLEAN: true=触发一次)", null), new Param("resv", "保留 (BOOLEAN)", null));
     }
 
     @Override

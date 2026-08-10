@@ -15,7 +15,7 @@ public class GetRpcMethodDirectoryConsole extends CommandHandler {
     }
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("interface", "接口名称", ""), new Param("after", "分页起始引用", ""), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("interface", "接口名称", ""), new Param("after", "分页起始引用", ""));
     }
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {

@@ -35,26 +35,19 @@ public class ApDirHandler extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("scd", "SCD 文件路径（默认取配置 server.sclFiles[0]）", ""), new Param("ied", "只列出指定 IED 的 AP（如 C_B5041X）", ""),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("scd", "SCD 文件路径（默认取配置 server.sclFiles[0]）", ""),
+                new Param("ied", "只列出指定 IED 的 AP（如 C_B5041X）", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
-
         // 解析 SCL：优先 --scd，其次配置里的 server.sclFiles
         String scd = args.get("scd");
         if (scd == null || scd.isEmpty()) {
             scd = CmsConfigLoader.load().server().getResolvedSclFile();
         }
         if (scd == null || scd.isEmpty()) {
-            String msg = "SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。";
-            if (jsonMode) {
-                ConsolePrinter.error(msg);
-            } else {
-                ConsolePrinter.error(msg);
-            }
+            ConsolePrinter.error("SCL 未加载。请用 --scd <path> 指定 SCD 文件，或在配置中设置 server.sclFiles。");
             return;
         }
 
@@ -63,12 +56,7 @@ public class ApDirHandler extends CommandHandler {
             // 轻量扫描：只取 IED/AccessPoint 名称，大文件也秒级完成
             apsByIed = SclReader.scanAccessPoints(Paths.get(scd));
         } catch (Exception e) {
-            String msg = "SCL 解析失败: " + scd + " - " + e.getMessage();
-            if (jsonMode) {
-                ConsolePrinter.error(msg);
-            } else {
-                ConsolePrinter.error(msg);
-            }
+            ConsolePrinter.error("SCL 解析失败: " + scd + " - " + e.getMessage());
             return;
         }
 
@@ -76,12 +64,7 @@ public class ApDirHandler extends CommandHandler {
         String iedFilter = args.get("ied");
         if (iedFilter != null && !iedFilter.isEmpty()) {
             if (!apsByIed.containsKey(iedFilter)) {
-                String msg = "IED 不存在: " + iedFilter;
-                if (jsonMode) {
-                    ConsolePrinter.error(msg);
-                } else {
-                    ConsolePrinter.error(msg);
-                }
+                ConsolePrinter.error("IED 不存在: " + iedFilter);
                 return;
             }
             apsByIed = new LinkedHashMap<>(Collections.singletonMap(iedFilter, apsByIed.get(iedFilter)));
@@ -95,32 +78,10 @@ public class ApDirHandler extends CommandHandler {
             }
         }
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder();
-            boolean first = true;
-            for (Map.Entry<String, List<String>> e : apsByIed.entrySet()) {
-                if (!first) {
-                    sb.append(',');
-                }
-                first = false;
-                sb.append("{\"ied\":\"").append(e.getKey()).append("\",\"aps\":[");
-                for (int j = 0; j < e.getValue().size(); j++) {
-                    if (j > 0) {
-                        sb.append(',');
-                    }
-                    sb.append('"').append(e.getValue().get(j)).append('"');
-                }
-                sb.append("]}");
-            }
-            ConsolePrinter.raw(sb.toString());
-            return;
-        }
-
-        ConsolePrinter.info("SCL: " + scd);
-        if (refs.isEmpty()) {
-            ConsolePrinter.info("（未发现 AccessPoint）");
-            return;
-        }
-        ConsolePrinter.listItems(refs, s -> s);
+        // 输出 JSON
+        LinkedHashMap<String, Object> data = new LinkedHashMap<>();
+        data.put("scd", scd);
+        data.put("accessPoints", refs);
+        ConsolePrinter.outputJson(data);
     }
 }

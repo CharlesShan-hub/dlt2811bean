@@ -18,7 +18,7 @@ public class SetGoCbValuesConsole extends CommandHandler {
 
     // @Override
     // public String description() {
-    // return "设置 GOOSE 控制块值 (SetGoCBValues) [--json]。\n" + " 案例:\n"
+    // return "设置 GOOSE 控制块值 (SetGoCBValues)。\n" + " 案例:\n"
     // + " set-gocb-vals --ref LD0/LLN0.gocb1 # 仅引用（无字段修改）\n"
     // + " set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena true # 启用GOOSE\n"
     // + " set-gocb-vals --ref LD0/LLN0.gocb1 --go-ena false # 停用GOOSE\n"

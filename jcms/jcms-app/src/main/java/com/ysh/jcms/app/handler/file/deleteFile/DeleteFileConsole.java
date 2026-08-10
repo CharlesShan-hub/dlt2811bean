@@ -18,7 +18,7 @@ public class DeleteFileConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null));
     }
 
     @Override

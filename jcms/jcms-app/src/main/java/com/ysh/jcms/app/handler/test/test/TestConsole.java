@@ -18,7 +18,7 @@ public class TestConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList();
     }
 
     @Override

@@ -24,12 +24,11 @@ public class GetDataDefinitionConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("refs", "数据引用列表（空格分隔），如 \"LD0/LLN0.Mod LD0/LLN0.Beh.stVal\"", null),
-                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"), new Param("json", "JSON 格式输出", ""));
+                new Param("fc", "功能约束过滤（如 ST, MX, CF, DC），默认 XX 即不过滤", "XX"));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -55,10 +54,6 @@ public class GetDataDefinitionConsole extends CommandHandler {
             }
         }
 
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching data definitions for " + dao.dataRefs().size() + " reference(s)");
-        }
-
         console.getClient(GetDataDefinitionClient.class).execute(dao);
         PaginationContext ctx = dao.paginationContext();
 
@@ -66,43 +61,21 @@ public class GetDataDefinitionConsole extends CommandHandler {
         List<GetDataDefinitionClient.DefEntry> entries = (List<GetDataDefinitionClient.DefEntry>) ctx.getResult();
 
         if (entries.isEmpty()) {
-            ConsolePrinter.info("No data definitions returned");
+            ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
             return;
         }
 
-        List<RefDefPair> displayPairs = new java.util.ArrayList<>();
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
         for (int i = 0; i < entries.size(); i++) {
+            if (i > 0)
+                sb.append(',');
             GetDataDefinitionClient.DefEntry e = entries.get(i);
             String typeName = e.choiceType >= 0 && e.choiceType < CmsData.CHOICE_NAMES.length ? CmsData.CHOICE_NAMES[e.choiceType] : "?";
             String ref = i < refs.length ? refs[i] : "#" + i;
             String cdcPart = e.cdcType.isEmpty() ? "" : "  cdc=" + e.cdcType;
-            displayPairs.add(new RefDefPair(ref, typeName, cdcPart));
+            sb.append('"').append(CmsFormatUtil.escapeJson(ref + "  [" + typeName + "]" + cdcPart)).append('"');
         }
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
-            for (int i = 0; i < displayPairs.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                RefDefPair p = displayPairs.get(i);
-                String val = p.ref + "  [" + p.typeName + "]" + p.cdcPart;
-                sb.append('"').append(CmsFormatUtil.escapeJson(val)).append('"');
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.list("Data definitions (" + entries.size() + " items)", displayPairs,
-                    p -> p.ref + "  [" + p.typeName + "]" + p.cdcPart);
-        }
-    }
-
-    private static final class RefDefPair {
-        final String ref;
-        final String typeName;
-        final String cdcPart;
-        RefDefPair(String ref, String typeName, String cdcPart) {
-            this.ref = ref;
-            this.typeName = typeName;
-            this.cdcPart = cdcPart;
-        }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
     }
 }

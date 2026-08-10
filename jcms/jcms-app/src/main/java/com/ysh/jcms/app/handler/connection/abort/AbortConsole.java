@@ -19,7 +19,7 @@ public class AbortConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("reason", "中止原因码", "0"), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("reason", "中止原因码", "0"));
     }
 
     @Override

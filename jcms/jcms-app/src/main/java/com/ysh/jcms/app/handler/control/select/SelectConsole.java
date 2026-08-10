@@ -21,8 +21,7 @@ public class SelectConsole extends CommandHandler {
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "控制对象引用，如 LD0/CTRL1.SPC1", null),
                 new Param("value", "控制值（有值则走 SelectWithValue，无则走 Select）", ""), new Param("origin", "操作源 (0=本地, 1=远程)", ""),
-                new Param("ctlNum", "控制序号", ""), new Param("test", "测试标志", ""), new Param("check", "校验 (syncheck,interlock)", ""),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("ctlNum", "控制序号", ""), new Param("test", "测试标志", ""), new Param("check", "校验 (syncheck,interlock)", ""));
     }
 
     @Override

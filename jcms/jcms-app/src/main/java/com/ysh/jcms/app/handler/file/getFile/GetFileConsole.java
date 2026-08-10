@@ -19,13 +19,11 @@ public class GetFileConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("file", "远程文件路径，如 \"/config/myfile.txt\"", null), new Param("output", "本地保存路径（可选），不指定则只打印信息", ""),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("file", "远程文件路径，如 \"/config/myfile.txt\"", null), new Param("output", "本地保存路径（可选），不指定则只打印信息", ""));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -43,14 +41,12 @@ public class GetFileConsole extends CommandHandler {
         ConsolePrinter.info("Downloading " + file + " ...");
         console.getClient(GetFileClient.class).execute(dao);
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":{");
-            sb.append("\"file\":\"").append(CmsFormatUtil.escapeJson(file.trim())).append('"');
-            if (output != null && !output.trim().isEmpty()) {
-                sb.append(",\"output\":\"").append(CmsFormatUtil.escapeJson(output.trim())).append('"');
-            }
-            sb.append("}}");
-            ConsolePrinter.raw(sb.toString());
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":{");
+        sb.append("\"file\":\"").append(CmsFormatUtil.escapeJson(file.trim())).append('"');
+        if (output != null && !output.trim().isEmpty()) {
+            sb.append(",\"output\":\"").append(CmsFormatUtil.escapeJson(output.trim())).append('"');
         }
+        sb.append("}}");
+        ConsolePrinter.raw(sb.toString());
     }
 }

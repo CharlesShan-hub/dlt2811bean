@@ -18,8 +18,7 @@ public class SelectActiveSgConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ref", "SGCB 引用，如 LD0/LLN0.SG1", null), new Param("num", "定值组号（1~numOfSG）", null),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("ref", "SGCB 引用，如 LD0/LLN0.SG1", null), new Param("num", "定值组号（1~numOfSG）", null));
     }
 
     @Override
@@ -38,11 +37,7 @@ public class SelectActiveSgConsole extends CommandHandler {
         try {
             sgNum = Integer.parseInt(numStr.trim());
         } catch (NumberFormatException e) {
-            if (CmsConsole.isJsonMode(args)) {
-                ConsolePrinter.error("Invalid group number: " + numStr);
-            } else {
-                ConsolePrinter.error("Invalid group number: " + numStr);
-            }
+            ConsolePrinter.error("Invalid group number: " + numStr);
             return;
         }
 

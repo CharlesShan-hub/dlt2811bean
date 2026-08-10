@@ -19,12 +19,11 @@ public class GetFileAttributeValuesConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null), new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("file", "文件路径，如 \"/config/myfile.txt\"", null));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -35,32 +34,17 @@ public class GetFileAttributeValuesConsole extends CommandHandler {
 
         GetFileAttributeValuesDao dao = new GetFileAttributeValuesDao().fileName(file.trim());
 
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching file attributes for " + file);
-        }
-
         console.getClient(GetFileAttributeValuesClient.class).execute(dao);
 
         GetFileAttributeValuesClient.FileAttrResult result = (GetFileAttributeValuesClient.FileAttrResult) dao.result();
 
         if (result == null) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"data\":null}");
-            } else {
-                ConsolePrinter.info("No file attributes returned");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"data\":null}");
             return;
         }
 
-        if (jsonMode) {
-            ConsolePrinter.raw("{\"success\":true,\"data\":{" + "\"fileName\":\"" + CmsFormatUtil.escapeJson(result.fileName) + "\","
-                    + "\"fileSize\":" + result.fileSize + "," + "\"lastModified\":" + result.lastModified + "," + "\"checkSum\":"
-                    + result.checkSum + "}}");
-        } else {
-            ConsolePrinter.info("  fileName=" + result.fileName);
-            ConsolePrinter.info("  fileSize=" + result.fileSize);
-            ConsolePrinter.info("  lastModified=" + result.lastModified);
-            ConsolePrinter.info("  checkSum=" + result.checkSum);
-        }
+        ConsolePrinter.raw("{\"success\":true,\"data\":{" + "\"fileName\":\"" + CmsFormatUtil.escapeJson(result.fileName) + "\","
+                + "\"fileSize\":" + result.fileSize + "," + "\"lastModified\":" + result.lastModified + "," + "\"checkSum\":"
+                + result.checkSum + "}}");
     }
 }

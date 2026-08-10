@@ -18,7 +18,7 @@ public class SetLcbValuesConsole extends CommandHandler {
 
     // @Override
     // public String description() {
-    // return "设置日志控制块值 (SetLCBValues) [--json]。\n" + " 案例:\n"
+    // return "设置日志控制块值 (SetLCBValues)。\n" + " 案例:\n"
     // + " set-lcb-vals --ref LD0/LLN0.lcb1 # 仅引用（无字段修改）\n"
     // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena true # 启用日志\n"
     // + " set-lcb-vals --ref LD0/LLN0.lcb1 --log-ena false # 停用日志\n"

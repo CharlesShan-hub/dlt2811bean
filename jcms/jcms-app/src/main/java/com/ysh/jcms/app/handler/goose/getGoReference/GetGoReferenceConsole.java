@@ -19,13 +19,11 @@ public class GetGoReferenceConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null), new Param("offsets", "成员偏移列表（空格分隔），如 \"0 1 2\"", null),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null), new Param("offsets", "成员偏移列表（空格分隔），如 \"0 1 2\"", null));
     }
 
     @Override
     public void execute(CmsConsole console, Map<String, String> args) throws Exception {
-        boolean jsonMode = CmsConsole.isJsonMode(args);
         if (!console.requireAssociated(args))
             return;
 
@@ -43,45 +41,27 @@ public class GetGoReferenceConsole extends CommandHandler {
                 dao.addMemberOffset(Integer.parseInt(s));
         }
 
-        if (!jsonMode) {
-            ConsolePrinter.info("Fetching Go reference for " + ref + " with " + dao.memberOffsets().size() + " offset(s)");
-        }
-
         console.getClient(GetGoReferenceClient.class).execute(dao);
 
         GetGoReferenceClient.GoRefResult result = (GetGoReferenceClient.GoRefResult) dao.result();
 
         if (result == null) {
-            if (jsonMode) {
-                ConsolePrinter.raw("{\"success\":true,\"data\":null}");
-            } else {
-                ConsolePrinter.info("No Go reference returned");
-            }
+            ConsolePrinter.raw("{\"success\":true,\"data\":null}");
             return;
         }
 
-        if (jsonMode) {
-            StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":{");
-            sb.append("\"gocbRef\":\"").append(CmsFormatUtil.escapeJson(result.gocbReference)).append("\",");
-            sb.append("\"confRev\":").append(result.confRev).append(",");
-            sb.append("\"datSet\":\"").append(CmsFormatUtil.escapeJson(result.datSet)).append("\",");
-            sb.append("\"members\":[");
-            for (int i = 0; i < result.members.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
-                sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(m.reference)).append("\",\"fc\":").append(m.fc).append("}");
-            }
-            sb.append("]}");
-            ConsolePrinter.raw(sb.toString());
-        } else {
-            ConsolePrinter.info("  gocbRef=" + result.gocbReference);
-            ConsolePrinter.info("  confRev=" + result.confRev);
-            ConsolePrinter.info("  datSet=" + result.datSet);
-            for (int i = 0; i < result.members.size(); i++) {
-                GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
-                ConsolePrinter.info("  member[" + i + "]: ref=" + m.reference + " fc=" + m.fc);
-            }
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":{");
+        sb.append("\"gocbRef\":\"").append(CmsFormatUtil.escapeJson(result.gocbReference)).append("\",");
+        sb.append("\"confRev\":").append(result.confRev).append(",");
+        sb.append("\"datSet\":\"").append(CmsFormatUtil.escapeJson(result.datSet)).append("\",");
+        sb.append("\"members\":[");
+        for (int i = 0; i < result.members.size(); i++) {
+            if (i > 0)
+                sb.append(',');
+            GetGoReferenceClient.MemberDataEntry m = result.members.get(i);
+            sb.append("{\"ref\":\"").append(CmsFormatUtil.escapeJson(m.reference)).append("\",\"fc\":").append(m.fc).append("}");
         }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
     }
 }
