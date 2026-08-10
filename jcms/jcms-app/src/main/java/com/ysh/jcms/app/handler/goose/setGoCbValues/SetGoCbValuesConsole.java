@@ -29,8 +29,7 @@ public class SetGoCbValuesConsole extends CommandHandler {
     @Override
     public List<Param> params() {
         return Arrays.asList(new Param("ref", "GoCB 引用，如 LD0/LLN0.gocb1", null), new Param("go-ena", "GOOSE 使能 (true/false)", null),
-                new Param("go-id", "GOOSE ID (VisibleString129)", null), new Param("dat-set", "数据集引用 (ObjectReference)", null),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("go-id", "GOOSE ID (VisibleString129)", null), new Param("dat-set", "数据集引用 (ObjectReference)", null));
     }
 
     @Override
@@ -55,10 +54,8 @@ public class SetGoCbValuesConsole extends CommandHandler {
         if (v != null && !v.isEmpty())
             dao.datSet(v);
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Setting GoCB values: ref=" + ref);
-        }
+        ConsolePrinter.info("Setting GoCB values: ref=" + ref);
         console.getClient(SetGoCbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("GoCB values set for " + ref, args);
+        CmsConsole.outputMessage("GoCB values set for " + ref);
     }
 }

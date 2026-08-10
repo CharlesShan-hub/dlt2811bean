@@ -18,8 +18,7 @@ public class SetFileConsole extends CommandHandler {
 
     @Override
     public List<Param> params() {
-        return Arrays.asList(new Param("local", "本地文件路径", null), new Param("remote", "远程目标路径，如 \"/config/myfile.txt\"", null),
-                new Param("json", "JSON 格式输出", ""));
+        return Arrays.asList(new Param("local", "本地文件路径", null), new Param("remote", "远程目标路径，如 \"/config/myfile.txt\"", null));
     }
 
     @Override
@@ -30,11 +29,7 @@ public class SetFileConsole extends CommandHandler {
         String local = args.get("local");
         String remote = args.get("remote");
         if (local == null || local.trim().isEmpty() || remote == null || remote.trim().isEmpty()) {
-            if (CmsConsole.isJsonMode(args)) {
-                CmsConsole.jsonError("Missing --local or --remote.");
-            } else {
-                ConsolePrinter.error("Usage: set-file --local <localPath> --remote <remotePath>");
-            }
+            ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --local or --remote.\"}");
             return;
         }
 
@@ -43,6 +38,6 @@ public class SetFileConsole extends CommandHandler {
         ConsolePrinter.info("Uploading " + local + " -> " + remote + " ...");
         console.getClient(SetFileClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Uploaded " + local + " to " + remote + " successfully", args);
+        CmsConsole.outputMessage("Uploaded " + local + " to " + remote + " successfully");
     }
 }

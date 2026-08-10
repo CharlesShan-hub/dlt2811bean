@@ -61,6 +61,6 @@ public class SetUrcbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting URCB values: ref=" + ref);
         console.getClient(SetUrcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("URCB values set for " + ref, args);
+        CmsConsole.outputMessage("URCB values set for " + ref);
     }
 }

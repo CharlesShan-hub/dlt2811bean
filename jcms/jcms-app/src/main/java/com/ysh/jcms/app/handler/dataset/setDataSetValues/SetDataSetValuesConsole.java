@@ -52,6 +52,6 @@ public class SetDataSetValuesConsole extends CommandHandler {
 
         console.getClient(SetDataSetValuesClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Set " + dao.values().size() + " dataset value(s) successfully", args);
+        CmsConsole.outputMessage("Set " + dao.values().size() + " dataset value(s) successfully");
     }
 }

@@ -25,6 +25,6 @@ public class TestConsole extends CommandHandler {
         if (!console.requireConnected(args))
             return;
         console.getClient(TestClient.class).execute(new TestDao());
-        CmsConsole.outputMessage("Ping/pong OK", args);
+        CmsConsole.outputMessage("Ping/pong OK");
     }
 }

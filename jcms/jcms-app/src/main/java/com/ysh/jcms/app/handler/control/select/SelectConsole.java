@@ -39,12 +39,12 @@ public class SelectConsole extends CommandHandler {
             ConsolePrinter.info("Selecting (with value): " + ref);
             SelectWithValueDao dao = new SelectWithValueDao().ref(ref).args(args);
             console.getClient(SelectWithValueClient.class).execute(dao);
-            CmsConsole.outputMessage("Selected (with value) " + ref, args);
+            CmsConsole.outputMessage("Selected (with value) " + ref);
         } else {
-            ConsolePrinter.info("Selecting: " + ref);
+            CmsConsole.outputMessage("Selected " + ref);
             SelectDao dao = new SelectDao().ref(ref);
             console.getClient(SelectClient.class).execute(dao);
-            CmsConsole.outputMessage("Selected " + ref, args);
+            CmsConsole.outputMessage("Selected " + ref);
         }
     }
 }

@@ -36,6 +36,6 @@ public class DeleteFileConsole extends CommandHandler {
 
         console.getClient(DeleteFileClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Deleted file " + file + " successfully", args);
+        CmsConsole.outputMessage("Deleted file " + file + " successfully");
     }
 }

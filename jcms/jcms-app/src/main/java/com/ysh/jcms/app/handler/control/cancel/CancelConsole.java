@@ -33,6 +33,6 @@ public class CancelConsole extends CommandHandler {
         ConsolePrinter.info("Cancelling: " + ref);
         CancelDao dao = new CancelDao().ref(ref).args(args);
         console.getClient(CancelClient.class).execute(dao);
-        CmsConsole.outputMessage("Cancelled " + ref, args);
+        CmsConsole.outputMessage("Cancelled " + ref);
     }
 }

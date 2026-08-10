@@ -33,6 +33,6 @@ public class OperateConsole extends CommandHandler {
         ConsolePrinter.info("Operating: " + ref);
         OperateDao dao = new OperateDao().ref(ref).args(args);
         console.getClient(OperateClient.class).execute(dao);
-        CmsConsole.outputMessage("Operated " + ref, args);
+        CmsConsole.outputMessage("Operated " + ref);
     }
 }

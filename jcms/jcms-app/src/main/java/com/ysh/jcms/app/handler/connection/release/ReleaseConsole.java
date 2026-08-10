@@ -25,6 +25,6 @@ public class ReleaseConsole extends CommandHandler {
         if (!console.requireConnected(args))
             return;
         console.getClient(com.ysh.jcms.app.handler.connection.release.ReleaseClient.class).execute(new ReleaseDao());
-        CmsConsole.outputMessage("Released.", args);
+        CmsConsole.outputMessage("Released.");
     }
 }

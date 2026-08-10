@@ -36,6 +36,6 @@ public class SetMsvcbValuesConsole extends CommandHandler {
         ConsolePrinter.info("Setting MSVCB values: ref=" + ref);
         SetMsvcbValuesDao dao = new SetMsvcbValuesDao().ref(ref).svEna(svEna).msvId(msvId).datSet(datSet);
         console.getClient(SetMsvcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("MSVCB values set for " + ref, args);
+        CmsConsole.outputMessage("MSVCB values set for " + ref);
     }
 }

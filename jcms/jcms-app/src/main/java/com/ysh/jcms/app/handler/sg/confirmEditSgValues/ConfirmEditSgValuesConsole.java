@@ -36,6 +36,6 @@ public class ConfirmEditSgValuesConsole extends CommandHandler {
 
         console.getClient(ConfirmEditSgValuesClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Edit SG values confirmed for " + ref, args);
+        CmsConsole.outputMessage("Edit SG values confirmed for " + ref);
     }
 }

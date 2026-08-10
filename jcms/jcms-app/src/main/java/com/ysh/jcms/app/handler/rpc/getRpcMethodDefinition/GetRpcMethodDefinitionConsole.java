@@ -27,6 +27,6 @@ public class GetRpcMethodDefinitionConsole extends CommandHandler {
         ConsolePrinter.info("Fetching RPC method definition for " + refs.size() + " ref(s)");
         GetRpcMethodDefinitionDao dao = new GetRpcMethodDefinitionDao().refs(refs);
         console.getClient(GetRpcMethodDefinitionClient.class).execute(dao);
-        CmsConsole.outputMessage("RPC method definition fetched", args);
+        CmsConsole.outputMessage("RPC method definition fetched");
     }
 }

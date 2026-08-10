@@ -36,6 +36,6 @@ public class DeleteDataSetConsole extends CommandHandler {
 
         console.getClient(DeleteDataSetClient.class).execute(dao);
 
-        CmsConsole.outputMessage("Deleted dataset " + dsRef + " successfully", args);
+        CmsConsole.outputMessage("Deleted dataset " + dsRef + " successfully");
     }
 }

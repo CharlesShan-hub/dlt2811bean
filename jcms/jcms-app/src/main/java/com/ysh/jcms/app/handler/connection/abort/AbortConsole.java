@@ -27,6 +27,6 @@ public class AbortConsole extends CommandHandler {
             return;
         int reason = Integer.parseInt(args.get("reason"));
         console.getClient(AbortClient.class).execute(new AbortClientDao().reason(reason));
-        CmsConsole.outputMessage("Abort sent: " + new CmsAbortReason(reason).value() + " (" + reason + ")", args);
+        CmsConsole.outputMessage("Abort sent: " + new CmsAbortReason(reason).value() + " (" + reason + ")");
     }
 }

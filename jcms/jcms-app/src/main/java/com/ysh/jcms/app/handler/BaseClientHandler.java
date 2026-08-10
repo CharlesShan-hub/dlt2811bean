@@ -46,6 +46,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
      */
     protected Frame send(ServiceName sc, D dao) throws IOException {
         PaginationContext ctx = dao.paginationContext();
+        beforeAll(dao);
         if (ctx != null) {
             return sendWithPagination(sc, dao, ctx);
         }
@@ -60,6 +61,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
         if (frame.header().err())
             onError(frame);
         onSuccess(frame, dao);
+        afterAll(dao);
         return frame;
     }
 
@@ -104,6 +106,7 @@ public abstract class BaseClientHandler<D extends BaseDao> extends BaseHandler {
                 break;
             }
         } while (true);
+        afterAll(dao);
         return frame;
     }
 

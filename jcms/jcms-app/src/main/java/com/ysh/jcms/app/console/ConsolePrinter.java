@@ -19,6 +19,7 @@ public final class ConsolePrinter {
     private static final String CYAN = "\u001B[36m";
     private static final String GRN = "\u001B[32m";
     private static final String RED = "\u001B[31m";
+    private static final String YEL = "\u001B[33m";
     private static final String GRY = "\u001B[90m";
     private static final String BOLD = "\u001B[1m";
 
@@ -124,28 +125,41 @@ public final class ConsolePrinter {
     }
 
     /**
-     * 输出 JSON 成功响应，自动将 Map 字段序列化为 JSON 并添加 {@code "success":true}。
-     * <p>
-     * 示例：
-     *
-     * <pre>
-     * {
-     *     &#64;code
-     *     Map<String, Object> fields = new LinkedHashMap<>();
-     *     fields.put("moreFollows", false);
-     *     fields.put("data", refs); // refs.toString() 为有效 JSON 数组
-     *     ConsolePrinter.outputJson(fields);
-     * }
-     * </pre>
+     * 输出 JSON 成功响应，接受 {@code dao.result()} 返回的任意对象（内部自动识别 Map 类型）。
      */
+    public static void outputJson(Object result) {
+        if (result instanceof Map) {
+            outputJson((Map<String, Object>) result);
+        } else {
+            raw("{\"success\":true,\"error\":\"result is not a Map\"}");
+        }
+    }
+
     public static void outputJson(Map<String, Object> fields) {
         try {
             LinkedHashMap<String, Object> all = new LinkedHashMap<>();
             all.put("success", true);
             all.putAll(fields);
-            raw(InnerBase.MAPPER.writeValueAsString(all));
+            String json = InnerBase.MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(all);
+            if (captureStream.get() == null) {
+                json = highlightJson(json);
+            }
+            raw(json);
         } catch (Exception e) {
             raw("{\"success\":true,\"error\":\"serialization failed\"}");
         }
+    }
+
+    /**
+     * JSON 语法高亮：键=青色，字符串值=绿色，布尔/数字=黄色，null=灰色。 仅用于终端输出（CLI 模式），API server 模式输出原始
+     * JSON。
+     */
+    private static String highlightJson(String json) {
+        json = json.replaceAll("(\"[^\"]*\")(\\s*:)", CYAN + "$1" + RST + "$2");
+        json = json.replaceAll("(:\\s*)(\"[^\"]*\")", "$1" + GRN + "$2" + RST);
+        json = json.replaceAll("(:\\s*)(true|false)", "$1" + YEL + "$2" + RST);
+        json = json.replaceAll("(:\\s*)(null)", "$1" + GRY + "$2" + RST);
+        json = json.replaceAll("(:\\s*)(-?\\d+\\.?\\d*)", "$1" + YEL + "$2" + RST);
+        return json;
     }
 }

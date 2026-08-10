@@ -36,6 +36,6 @@ public class TimeActivatedOperateConsole extends CommandHandler {
         ConsolePrinter.info("TimeActivatedOperate: " + ref + " at " + operTm);
         TimeActivatedOperateDao dao = new TimeActivatedOperateDao().ref(ref).operTmEpochSeconds(operTm).args(args);
         console.getClient(TimeActivatedOperateClient.class).execute(dao);
-        CmsConsole.outputMessage("TimeActivatedOperate scheduled for " + ref, args);
+        CmsConsole.outputMessage("TimeActivatedOperate scheduled for " + ref);
     }
 }

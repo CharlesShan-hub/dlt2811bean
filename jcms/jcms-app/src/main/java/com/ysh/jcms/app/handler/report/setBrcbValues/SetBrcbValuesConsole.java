@@ -64,6 +64,6 @@ public class SetBrcbValuesConsole extends CommandHandler {
 
         ConsolePrinter.info("Setting BRCB values: ref=" + ref);
         console.getClient(SetBrcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("BRCB values set for " + ref, args);
+        CmsConsole.outputMessage("BRCB values set for " + ref);
     }
 }

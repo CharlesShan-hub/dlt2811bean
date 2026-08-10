@@ -69,20 +69,11 @@ public abstract class CmsConsole extends CmsNode {
 
     // ── helpers for console command handlers ──
 
-    /** Get json flag from args. */
-    public static boolean isJsonMode(Map<String, String> args) {
-        return "true".equals(args.get("json"));
-    }
-
     /** Check connected, output error and return false if not. */
     public boolean requireConnected(Map<String, String> args) {
         if (isConnected())
             return true;
-        if (isJsonMode(args)) {
-            ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected.\"}");
-        } else {
-            ConsolePrinter.error("Not connected. Type 'connect' first.");
-        }
+        ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected.\"}");
         return false;
     }
 
@@ -93,11 +84,7 @@ public abstract class CmsConsole extends CmsNode {
     public boolean requireTcpConnected(Map<String, String> args) {
         if (isClientConnected())
             return true;
-        if (isJsonMode(args)) {
-            ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Use 'connect' first.\"}");
-        } else {
-            ConsolePrinter.error("Not connected. Use 'connect' first.");
-        }
+        ConsolePrinter.raw("{\"success\":false,\"error\":\"Not connected. Use 'connect' first.\"}");
         return false;
     }
 
@@ -106,60 +93,82 @@ public abstract class CmsConsole extends CmsNode {
         String v = args.get(key);
         if (v != null && !v.isEmpty())
             return true;
-        boolean json = isJsonMode(args);
-        if (json) {
-            ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --" + key + ".\"}");
-        } else {
-            ConsolePrinter.error("Missing --" + key + ". " + usage);
-        }
+        ConsolePrinter.raw("{\"success\":false,\"error\":\"Missing --" + key + ".\"}");
         return false;
     }
 
-    /** Output a JSON success response with data array. */
-    public static void jsonArray(String jsonItems) {
-        ConsolePrinter.raw("{\"success\":true,\"data\":[" + jsonItems + "]}");
+    /** Output a JSON success message. */
+    public static void outputMessage(String msg) {
+        ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
 
-    /** Output a JSON error response. */
+    /**
+     * @deprecated JSON is now the only output format. Always returns {@code true}.
+     */
+    @Deprecated
+    public static boolean isJsonMode(Map<String, String> args) {
+        return true;
+    }
+
+    /**
+     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
+     */
+    @Deprecated
     public static void jsonError(String msg) {
         ConsolePrinter.raw("{\"success\":false,\"error\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
 
-    /** Output a JSON success message. */
+    /**
+     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
+     */
+    @Deprecated
     public static void jsonMessage(String msg) {
         ConsolePrinter.raw("{\"success\":true,\"message\":\"" + CmsFormatUtil.escapeJson(msg) + "\"}");
     }
 
-    /** Output items as list (text) or JSON array (json mode), with moreFollows. */
-    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args,
-            boolean moreFollows) {
-        if (isJsonMode(args)) {
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < items.size(); i++) {
-                if (i > 0)
-                    sb.append(',');
-                sb.append('"').append(CmsFormatUtil.escapeJson(fmt.apply(items.get(i)))).append('"');
-            }
-            ConsolePrinter.raw("{\"success\":true,\"moreFollows\":" + moreFollows + ",\"data\":[" + sb.toString() + "]}");
-        } else {
-            ConsolePrinter.list(title, items, fmt);
-        }
+    /**
+     * @deprecated Use {@link ConsolePrinter#raw(String)} directly.
+     */
+    @Deprecated
+    public static void jsonArray(String msg) {
+        ConsolePrinter.raw(msg);
     }
 
     /**
-     * Output items as list (text) or JSON array (json mode), without moreFollows.
+     * @deprecated The outputMessage(Map) variant is no longer needed.
      */
-    public static <T> void outputList(String title, List<T> items, java.util.function.Function<T, String> fmt, Map<String, String> args) {
-        outputList(title, items, fmt, args, false);
+    @Deprecated
+    public static void outputMessage(String msg, Map<String, String> args) {
+        outputMessage(msg);
     }
 
-    /** Output a message as text (success) or JSON. */
-    public static void outputMessage(String msg, Map<String, String> args) {
-        if (isJsonMode(args)) {
-            jsonMessage(msg);
-        } else {
-            ConsolePrinter.success(msg);
+    /**
+     * @deprecated Use {@link ConsolePrinter#outputJson(java.util.Map)} directly.
+     */
+    @Deprecated
+    public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
+            Map<String, String> args, boolean numbered) {
+        if (items == null || items.isEmpty()) {
+            ConsolePrinter.raw("{\"success\":true,\"data\":[]}");
+            return;
         }
+        StringBuilder sb = new StringBuilder("{\"success\":true,\"data\":[");
+        for (int i = 0; i < items.size(); i++) {
+            if (i > 0)
+                sb.append(",");
+            sb.append("\"").append(CmsFormatUtil.escapeJson(formatter.apply(items.get(i)))).append("\"");
+        }
+        sb.append("]}");
+        ConsolePrinter.raw(sb.toString());
+    }
+
+    /**
+     * @deprecated Use {@link ConsolePrinter#outputJson(java.util.Map)} directly.
+     */
+    @Deprecated
+    public static <T> void outputList(String title, java.util.List<T> items, java.util.function.Function<T, String> formatter,
+            Map<String, String> args) {
+        outputList(title, items, formatter, args, false);
     }
 
     // ── main loop ──

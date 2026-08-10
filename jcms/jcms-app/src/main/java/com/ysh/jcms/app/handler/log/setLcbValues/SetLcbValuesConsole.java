@@ -32,8 +32,7 @@ public class SetLcbValuesConsole extends CommandHandler {
         return Arrays.asList(new Param("ref", "LCB 引用，如 LD0/LLN0.lcb1", null), new Param("log-ena", "日志使能 (true/false)", null),
                 new Param("dat-set", "数据集引用 (ObjectReference)", null), new Param("trg-ops", "触发条件 (bitmask)", null),
                 new Param("intg-pd", "完整性周期 (INT32U, 毫秒)", null), new Param("log-ref", "日志引用 (ObjectReference)", null),
-                new Param("opt-flds", "选项字段 (LCBOptFlds bitmask)", null), new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null),
-                new Param("json", "JSON 格式输出", ""));
+                new Param("opt-flds", "选项字段 (LCBOptFlds bitmask)", null), new Param("buf-tm", "缓存时间 (INT32U, 毫秒)", null));
     }
 
     @Override
@@ -70,10 +69,8 @@ public class SetLcbValuesConsole extends CommandHandler {
         if (v != null && !v.isEmpty())
             dao.bufTm(Integer.parseInt(v));
 
-        if (!CmsConsole.isJsonMode(args)) {
-            ConsolePrinter.info("Setting LCB values: ref=" + ref);
-        }
+        ConsolePrinter.info("Setting LCB values: ref=" + ref);
         console.getClient(SetLcbValuesClient.class).execute(dao);
-        CmsConsole.outputMessage("LCB values set for " + ref, args);
+        CmsConsole.outputMessage("LCB values set for " + ref);
     }
 }
